@@ -50,6 +50,7 @@ xidel -e \
 | vmb2pbn | Push-button interface for Niko 1- or 2-fold push-buttons |
 | vmb4an | Analog I/O module |
 | vmb4dc | 4-channel 0/1-10V dimmer controller |
+| vmb4pb | 4 button interface module |
 | vmb4ry | 4-channel relay module |
 | vmb4ryld | 4-channel relay module with voltage outputs |
 | vmb4ryno | 4-channel relay module with potential-free contacts |
@@ -60,40 +61,32 @@ xidel -e \
 | vmb8pb | 8-Channel Push Button module |
 | vmb8pbu | Push-button interface with 8 channels for universal mounting |
 | vmbdme | Dimmer for electronic/resistive load |
-| vmbdmi | Single channel triac dimmer for resistive and inductive loads |
 | vmbdmir | Single channel triac dimmer for resistive and inductive loads |
+| vmbdmi | Single channel triac dimmer for resistive and inductive loads |
 | vmbel1 | Edge-lit one touch button module |
 | vmbel2 | Edge-lit two touch buttons module |
 | vmbel4 | Edge-lit four touch buttons module |
 | vmbelo | Edge-lit touch panel with Oled display |
 | vmbelpir | Edge-lit Motion detector with one touch button |
-| vmbgp1 | Glass control module with 1 touch key |
 | vmbgp1-2 | Glass control module with 1 touch key (Edition 2) |
-| vmbgp2 | Glass control module with 2 touch keys |
+| vmbgp1 | Glass control module with 1 touch key |
 | vmbgp2-2 | Glass control module with 2 touch keys (Edition 2) |
-| vmbgp4 | Glass control module with 4 touch keys |
+| vmbgp2 | Glass control module with 2 touch keys |
 | vmbgp4-2 | Glass control module with 4 touch keys (Edition 2) |
-| vmbgp4pir | Glass control module with 4 touch keys and built-in motion and twilight sensor |
+| vmbgp4 | Glass control module with 4 touch keys |
 | vmbgp4pir-2 | Glass control module with 4 touch keys and built-in motion and twilight sensor (Edition 2) |
-| vmbgpo | Glass control module with oled display |
-| vmbgpod | Glass control module with oled display and temperature controller |
+| vmbgp4pir | Glass control module with 4 touch keys and built-in motion and twilight sensor |
 | vmbgpod-2 | Glass control module with oled display and temperature controller (Edition 2) |
+| vmbgpod | Glass control module with oled display and temperature controller |
+| vmbgpo | Glass control module with oled display |
+| vmbin | 1-channel input module |
+| vmbkp | Keypad interface module |
 | vmbmeteo | Weather station with thermometer, anemometer, rain sensor and light sensor |
 | vmbpirc | Motion and twilight sensor for ceiling mounting |
 | vmbpirm | Mini motion and twilight sensor for recessed or surface mounting |
 | vmbpiro | Outdoor motion, twilight and temperature sensor, Theben |
 | vmbrfr8s | 8 channel RF receiver module |
 | vmbvp1 | Doorbird interface module |
-| vmbkp | Keypad interface module |
-| vmbin | 1-channel input module |
-| vmb4pb | 4 button interface module |
-
-The module type is the second segment of the unique thing ID. For example, a channel link to the
-channel `CH1` of the `VMB4RYLD` module with an assigned address `01` might look like this:
-
-```text
-velbus:vmb4ryld:0424e5d2:01:CH1
-```
 
 ## Discovery
 
@@ -198,6 +191,16 @@ Here:
 * `"Label"` is an optional label for the thing;
 * `@ "Location"` is an optional specification of the location of the thing;
 * The `CHx="..."` properties are optional and can be used to specify names of the module channels.
+
+Individual module `Thing`’s channels can be linked to items via channel names like these:
+
+```text
+velbus:vmb4ryld:1:0A:CH1
+```
+
+Where in order we have the binding name, the module type (`<thingType> = vmb4ryld`), the bridge id
+(1), module’s address hexadecimal address (`<thingId> = 0A`) and the channel within the module
+(`CH1`).
 
 #### Additional properties
 
