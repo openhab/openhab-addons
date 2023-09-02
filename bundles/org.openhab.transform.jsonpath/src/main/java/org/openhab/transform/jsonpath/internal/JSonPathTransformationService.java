@@ -59,13 +59,17 @@ public class JSonPathTransformationService implements TransformationService {
 
         logger.debug("about to transform '{}' by the function '{}'", source, jsonPathExpression);
 
+        if (source.isBlank()) {
+            // return null if source is empty/blank, JSONPath will throw an IAE on empty input strings
+            return null;
+        }
         try {
             Object transformationResult = JsonPath.read(source, jsonPathExpression);
             logger.debug("transformation resulted in '{}'", transformationResult);
             if (transformationResult == null) {
                 return null;
-            } else if (transformationResult instanceof List) {
-                return flattenList((List<?>) transformationResult);
+            } else if (transformationResult instanceof List list) {
+                return flattenList(list);
             } else {
                 return transformationResult.toString();
             }

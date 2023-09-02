@@ -71,17 +71,22 @@ The tariffs are downloaded using pre-configured filters for the different [Grid 
 If your company is not in the list, or the filters are not working, they can be manually overridden.
 To override filters, the channel `net-tariff` has the following configuration parameters:
 
-| Name            | Type    | Description                                                                                                                | Default | Required | Advanced |
-|-----------------|---------|----------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
-| chargeTypeCodes | text    | Comma-separated list of charge type codes                                                                                  |         | no       | yes      |
-| notes           | text    | Comma-separated list of notes                                                                                              |         | no       | yes      |
-| start           | text    | Query start date parameter expressed as either YYYY-MM-DD or dynamically as one of StartOfDay, StartOfMonth or StartOfYear |         | no       | yes      |
+| Name            | Type    | Description                                                                                                                      | Default | Required | Advanced |
+|-----------------|---------|----------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
+| chargeTypeCodes | text    | Comma-separated list of charge type codes                                                                                        |         | no       | yes      |
+| notes           | text    | Comma-separated list of notes                                                                                                    |         | no       | yes      |
+| start           | text    | Query start date parameter expressed as either YYYY-MM-DD or dynamically as one of `StartOfDay`, `StartOfMonth` or `StartOfYear` |         | no       | yes      |
+| offset          | text    | Query start date offset expressed as an ISO 8601 duration                                                                        |         | no       | yes      |
 
 The parameters `chargeTypeCodes` and `notes` are logically combined with "AND", so if only one parameter is needed for the filter, only provide this parameter and leave the other one empty.
 Using any of these parameters will override the pre-configured filter entirely.
 
 The parameter `start` can be used independently to override the query start date parameter.
 If used while leaving `chargeTypeCodes` and `notes` empty, only the date will be overridden.
+
+The parameter `offset` can be used in combination with `start` to provide an offset to a dynamic start date parameter, i.e. `StartOfDay`, `StartOfMonth` or `StartOfYear`.
+The needed amount of historic hours is automatically taken into consideration.
+This parameter is ignored when start date is supplied as YYYY-MM-DD.
 
 Determining the right filters can be tricky, so if in doubt ask in the community forum.
 See also [Datahub Price List](https://www.energidataservice.dk/tso-electricity/DatahubPricelist).
@@ -97,8 +102,10 @@ _N1:_
 _Nord Energi Net:_
 | Parameter       | Value      |
 |-----------------|------------|
-| chargeTypeCodes | TA031U200  |
+| chargeTypeCodes | TAC        |
 | notes           | Nettarif C |
+| start           | StartOfDay |
+| offset          | -P1D       |
 
 #### Hourly Prices
 

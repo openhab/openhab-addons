@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 public class GardenaSmartWebSocket {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartWebSocket.class);
     private final GardenaSmartWebSocketListener socketEventListener;
-    private final int MAX_UNANSWERED_PINGS = 5;
+    private static final int MAX_UNANSWERED_PINGS = 5;
 
     private WebSocketSession session;
     private WebSocketClient webSocketClient;

@@ -27,6 +27,7 @@
 /bundles/org.openhab.binding.androidtv/ @morph166955
 /bundles/org.openhab.binding.anel/ @paphko
 /bundles/org.openhab.binding.anthem/ @mhilbush
+/bundles/org.openhab.binding.asuswrt/ @wildcs
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.atlona/ @tmrobert8 @mlobstein
 /bundles/org.openhab.binding.autelis/ @digitaldan
@@ -45,6 +46,7 @@
 /bundles/org.openhab.binding.bluetooth.enoceanble/ @pfink
 /bundles/org.openhab.binding.bluetooth.generic/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.govee/ @cpmeister
+/bundles/org.openhab.binding.bluetooth.radoneye/ @petero-dk
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
 /bundles/org.openhab.binding.bondhome/ @ccutrer
@@ -322,6 +324,7 @@
 /bundles/org.openhab.binding.solarlog/ @johannrichard
 /bundles/org.openhab.binding.solarmax/ @jamietownsend
 /bundles/org.openhab.binding.solarwatt/ @sven-carstens
+/bundles/org.openhab.binding.solax/ @theater
 /bundles/org.openhab.binding.somfymylink/ @loungeflyz
 /bundles/org.openhab.binding.somfytahoma/ @octa22
 /bundles/org.openhab.binding.somneo/ @0x4d4d
@@ -398,6 +401,7 @@
 /bundles/org.openhab.io.openhabcloud/ @kaikreuzer
 /bundles/org.openhab.persistence.dynamodb/ @ssalonen
 /bundles/org.openhab.persistence.influxdb/ @lujop
+/bundles/org.openhab.persistence.inmemory/ @J-N-K
 /bundles/org.openhab.persistence.jdbc/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.jpa/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.mapdb/ @mkhl
@@ -427,6 +431,7 @@
 /bundles/org.openhab.voice.voicerss/ @JochenHiller @lolodomo
 /bundles/org.openhab.voice.voskstt/ @GiviMAD
 /bundles/org.openhab.voice.watsonstt/ @GiviMAD
+/itests/org.openhab.automation.groovyscripting.tests/ @wborn
 /itests/org.openhab.automation.jsscriptingnashorn.tests/ @wborn
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
@@ -437,6 +442,7 @@
 /itests/org.openhab.binding.modbus.tests/ @ssalonen
 /itests/org.openhab.binding.mqtt.homeassistant.tests/ @davidgraeff
 /itests/org.openhab.binding.mqtt.homie.tests/ @davidgraeff
+/itests/org.openhab.binding.mqtt.ruuvigateway.tests/ @ssalonen
 /itests/org.openhab.binding.nest.tests/ @wborn
 /itests/org.openhab.binding.ntp.tests/ @marcelrv
 /itests/org.openhab.binding.systeminfo.tests/ @svilenvul

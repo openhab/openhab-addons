@@ -14,6 +14,8 @@ package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -91,6 +93,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private static final int REFRESH_ALL_CHECK_DELAY_SEC = 20; // Delay to wait to check which devices are
                                                                // online/offline
 
+    private static final int DATETIME_SYNCH_DIFF_SEC = 60; // Difference from BUS date time
+
     private long lastRegisteredDeviceTS = -1; // timestamp when the last device has been associated to the bridge
     private long refreshAllDevicesDelay = 0; // delay waited before starting all devices refresh
 
@@ -114,6 +118,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private boolean scanIsActive = false; // a device scan has been activated by OpenWebNetDeviceDiscoveryService;
     private boolean discoveryByActivation;
+    private boolean dateTimeSynch = false;
 
     public OpenWebNetBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -201,8 +206,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 passwdMasked = "******";
             }
             discoveryByActivation = busBridgeConfig.getDiscoveryByActivation();
-            logger.debug("Creating new BUS gateway with config properties: {}:{}, pwd={}, discoveryByActivation={}",
-                    host, port, passwdMasked, discoveryByActivation);
+            dateTimeSynch = busBridgeConfig.getDateTimeSynch();
+            logger.debug(
+                    "Creating new BUS gateway with config properties: {}:{}, pwd={}, discoveryByActivation={}, dateTimeSynch={}",
+                    host, port, passwdMasked, discoveryByActivation, dateTimeSynch);
             return new BUSGateway(host, port, passwd);
         }
     }
@@ -499,7 +506,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         // GATEWAY MANAGEMENT
         if (msg instanceof GatewayMgmt) {
-            // noop
+            GatewayMgmt gwMsg = (GatewayMgmt) msg;
+            if (dateTimeSynch && GatewayMgmt.DimGatewayMgmt.DATETIME.equals(gwMsg.getDim())) {
+                checkDateTimeDiff(gwMsg);
+            }
             return;
         }
 
@@ -525,6 +535,31 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         } else {
             logger.debug("BridgeHandler ignoring frame {}. WHO={} is not supported by this binding", baseMsg,
                     baseMsg.getWho());
+        }
+    }
+
+    private void checkDateTimeDiff(GatewayMgmt gwMsg) {
+        try {
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime gwTime = GatewayMgmt.parseDateTime(gwMsg);
+            long diff = Math.abs(Duration.between(now, gwTime).toSeconds());
+            if (diff > DATETIME_SYNCH_DIFF_SEC) {
+                logger.debug("checkDateTimeDiff: difference is more than 60s: {}s", diff);
+                OpenGateway gw = gateway;
+                if (gw != null) {
+                    logger.debug("checkDateTimeDiff: synch DateTime to: {}", now);
+                    try {
+                        gw.send(GatewayMgmt.requestSetDateTime(now));
+                    } catch (OWNException e) {
+                        logger.warn("checkDateTimeDiff: Exception while sending set DateTime command: {}",
+                                e.getMessage());
+                    }
+                }
+            } else {
+                logger.debug("checkDateTimeDiff: DateTime difference: {}s", diff);
+            }
+        } catch (FrameException e) {
+            logger.warn("checkDateTimeDiff: FrameException while parsing {}", e.getMessage());
         }
     }
 
@@ -708,7 +743,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z,
                                              // Alarm Zone (#Z) --> Z
                     str = str.substring(1);
-                } else if (str.indexOf('#') > 0) { // Thermo zone Z and actuator N (Z#N, Z=[1-99], N=[1-9]) --> Z
+                } else if (str.indexOf('#') > 0 && str.charAt(0) != '0') { // Thermo zone Z and actuator N (Z#N,
+                                                                           // Z=[1-99], N=[1-9]) --> Z
                     str = str.substring(0, str.indexOf('#'));
                 }
             }

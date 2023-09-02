@@ -34,6 +34,7 @@ import org.openhab.binding.bticinosmarther.internal.config.SmartherModuleConfigu
 import org.openhab.binding.bticinosmarther.internal.model.ModuleSettings;
 import org.openhab.binding.bticinosmarther.internal.util.StringUtil;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -74,6 +75,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
     private final SmartherDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
     private final ChannelUID programChannelUID;
     private final ChannelUID endDateChannelUID;
+    private final TimeZoneProvider timeZoneProvider;
 
     // Module configuration
     private SmartherModuleConfiguration config;
@@ -98,11 +100,12 @@ public class SmartherModuleHandler extends BaseThingHandler {
      * @param provider
      *            the {@link SmartherDynamicStateDescriptionProvider} dynamic state description provider to be used
      */
-    public SmartherModuleHandler(Thing thing, CronScheduler scheduler,
-            SmartherDynamicStateDescriptionProvider provider) {
+    public SmartherModuleHandler(Thing thing, CronScheduler scheduler, SmartherDynamicStateDescriptionProvider provider,
+            final TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.cronScheduler = scheduler;
         this.dynamicStateDescriptionProvider = provider;
+        this.timeZoneProvider = timeZoneProvider;
         this.programChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_PROGRAM);
         this.endDateChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_ENDDATE);
         this.config = new SmartherModuleConfiguration();
@@ -710,7 +713,8 @@ public class SmartherModuleHandler extends BaseThingHandler {
             updateChannelState(CHANNEL_STATUS_MODE,
                     new StringType(StringUtil.capitalize(localChrono.getMode().toLowerCase())));
             updateChannelState(CHANNEL_STATUS_TEMPERATURE, localChrono.getSetPointTemperature().toState());
-            updateChannelState(CHANNEL_STATUS_ENDTIME, new StringType(localChrono.getActivationTimeLabel()));
+            updateChannelState(CHANNEL_STATUS_ENDTIME,
+                    new StringType(localChrono.getActivationTimeLabel(timeZoneProvider)));
             updateChannelState(CHANNEL_STATUS_TEMP_FORMAT, new StringType(localChrono.getTemperatureFormat()));
             final Program localProgram = localChrono.getProgram();
             if (localProgram != null) {

@@ -89,7 +89,7 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
             ThingUID thingUID = new ThingUID(PARTITION_THING_TYPE_UID, bridgeUid, thingId);
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUid)
                     .withLabel("Partition " + label).withProperty(PARTITION_THING_TYPE_ID, thingId)
-                    .withProperty("id", partition.getId()).build();
+                    .withProperty("label", label).withProperty("id", partition.getId()).build();
             logger.debug("Partition DiscoveryResult={}", result);
 
             thingDiscovered(result);
@@ -105,7 +105,7 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
             ThingUID thingUID = new ThingUID(ZONE_THING_TYPE_UID, bridgeUid, thingId);
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUid)
                     .withLabel("Zone " + label).withProperty(ZONE_THING_TYPE_ID, thingId)
-                    .withProperty("id", zone.getId()).build();
+                    .withProperty("id", zone.getId()).withProperty("label", label).build();
             logger.debug("Zone DiscoveryResult={}", result);
 
             thingDiscovered(result);

@@ -97,11 +97,21 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 
 ### Zone channels:
 
-| Channel         | Type    | Description                                                                    |
-|-----------------|---------|--------------------------------------------------------------------------------|
-| zoneLabel       | String  | Label of zone inside Paradox configuration                                     |
-| openedState     | Contact | Zone opened / closed                                                           |
-| tamperedState   | Switch  | Zone is tampered / not tampered                                                |
+| Channel                            | Type    | Description                                                                    |
+|------------------------------------|---------|--------------------------------------------------------------------------------|
+| zoneLabel                          | String  | Label of zone inside Paradox configuration                                     |
+| openedState                        | Contact | Zone opened / closed                                                           |
+| tamperedState                      | Switch  | Zone is tampered                                                               |
+| supervisionTrouble                 | Switch  | Zone is in supervision trouble                                                 |
+| inTxDelay                          | Switch  | Zone is in txDelay                                                             |
+| shutdown                           | Switch  | Zone is shutdown                                                               |
+| bypassed                           | Switch  | Zone is bypassed                                                               |
+| hasActivatedIntellizoneDelay       | Switch  | Zone is has an activated Intellizone delay                                     |
+| hasActivatedEntryDelay             | Switch  | Zone is has an activated entry delay                                           |
+| presentlyInAlarm                   | Switch  | Zone is currently in alarm                                                     |
+| generatedAlarm                     | Switch  | Zone has generated an alarm                                                    |
+| command                            | String  | Command for zone. Can be (BYPASS, CLEAR_BYPASS)                                |
+
 
 ## Example things configuration
 

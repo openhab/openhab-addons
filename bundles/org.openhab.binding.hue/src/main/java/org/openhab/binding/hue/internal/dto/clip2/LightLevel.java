@@ -40,16 +40,15 @@ public class LightLevel {
     }
 
     /**
-     * Raw sensor light level is '10000 * log10(lux) + 1' so apply the inverse formula to convert to Lux.
+     * Raw sensor light level formula is '10000 * log10(lux + 1)' so apply the inverse formula to convert back to Lux.
+     * NOTE: the Philips/Signify API documentation quotes the formula as '10000 * log10(lux) + 1', however this code
+     * author thinks that that formula is wrong since zero Lux would cause a log10(0) negative infinity overflow!
      *
      * @return a QuantityType with light level in Lux, or UNDEF.
      */
     public State getLightLevelState() {
         if (lightLevelValid) {
-            double rawLightLevel = lightLevel;
-            if (rawLightLevel > 1f) {
-                return new QuantityType<>(Math.pow(10f, (rawLightLevel - 1f) / 10000f), Units.LUX);
-            }
+            return new QuantityType<>(Math.pow(10f, (double) lightLevel / 10000f) - 1f, Units.LUX);
         }
         return UnDefType.UNDEF;
     }
