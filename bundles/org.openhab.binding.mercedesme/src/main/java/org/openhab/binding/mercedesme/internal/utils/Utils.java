@@ -12,11 +12,18 @@
  */
 package org.openhab.binding.mercedesme.internal.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -194,5 +201,33 @@ public class Utils {
             default:
                 return Constants.LOGIN_APP_ID;
         }
+    }
+
+    /** Read the object from Base64 string. */
+    public static Object fromString(String s) {
+        try {
+            byte[] data = Base64.getDecoder().decode(s);
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+            Object o = ois.readObject();
+            ois.close();
+            return o;
+        } catch (IOException | ClassNotFoundException e) {
+            LOGGER.warn("Error converting string to token {}", e.getMessage());
+        }
+        return Constants.NOT_SET;
+    }
+
+    /** Write the object to a Base64 string. */
+    public static String toString(Serializable o) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(o);
+            oos.close();
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
+        } catch (IOException e) {
+            LOGGER.warn("Error converting token to string {}", e.getMessage());
+        }
+        return Constants.NOT_SET;
     }
 }

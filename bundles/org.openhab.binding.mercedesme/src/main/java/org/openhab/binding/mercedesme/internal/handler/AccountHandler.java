@@ -26,9 +26,9 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
-import org.openhab.binding.mercedesme.internal.server.CallbackServer;
+import org.openhab.binding.mercedesme.internal.server.AuthServer;
+import org.openhab.binding.mercedesme.internal.server.AuthService;
 import org.openhab.binding.mercedesme.internal.server.MBWebsocket;
-import org.openhab.binding.mercedesme.internal.utils.AuthService;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -55,10 +55,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
-    private final Storage<AccessTokenResponse> storage;
+    private final Storage<String> storage;
     private final MBWebsocket ws;
     private final Map<String, VehicleHandler> vehicleDataMapper = new HashMap<String, VehicleHandler>();
-    private Optional<CallbackServer> server = Optional.empty();
+    private final int OPEN_TIME_MS = 30000;
+
+    private Optional<AuthServer> server = Optional.empty();
     private Optional<WebSocketClient> wsClient = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
     Optional<AccountConfiguration> config = Optional.empty();
@@ -86,8 +88,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         } else {
             String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
             thing.setProperty("callbackUrl", callbackUrl);
-            server = Optional.of(new CallbackServer(this, httpClient, config.get(), callbackUrl, localeProvider));
-            authService = Optional.of(new AuthService(httpClient, config.get(), localeProvider.getLocale(), storage));
+            server = Optional.of(new AuthServer(this, httpClient, config.get(), callbackUrl, localeProvider));
+            authService = Optional
+                    .of(new AuthService(this, httpClient, config.get(), localeProvider.getLocale(), storage));
             if (!server.get().start()) {
                 String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                         + Constants.STATUS_SERVER_RESTART;
@@ -95,7 +98,19 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
         }
         // open websocket for 1 min each 10 minutes
-        scheduler.scheduleWithFixedDelay(ws::open, 0, 10, TimeUnit.MINUTES);
+        scheduler.scheduleWithFixedDelay(this::openWS, 0, 10, TimeUnit.MINUTES);
+    }
+
+    public void openWS() {
+        if (authService.isPresent()) {
+            if (!authService.get().getToken().equals(Constants.NOT_SET)) {
+                ws.open(OPEN_TIME_MS);
+            } else {
+                logger.info("No Token available");
+            }
+        } else {
+            logger.info("No AuthService available");
+        }
     }
 
     private void autodetectCallback() {
@@ -156,9 +171,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
      */
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        if (!tokenResponse.getAccessToken().isEmpty()) {
-            // token not empty - fine
+        logger.info("Token received {}", tokenResponse);
+        if (!Constants.NOT_SET.equals(tokenResponse.getAccessToken())) {
             updateStatus(ThingStatus.ONLINE);
+            scheduler.schedule(this::openWS, 0, TimeUnit.SECONDS);
         } else if (server.isEmpty()) {
             // server not running - fix first
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()

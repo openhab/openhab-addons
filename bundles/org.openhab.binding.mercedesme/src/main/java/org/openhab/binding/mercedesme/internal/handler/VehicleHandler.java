@@ -27,6 +27,7 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -88,7 +89,14 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public void distributeContent(VEPUpdate data) {
+        updateStatus(ThingStatus.ONLINE);
         Map<String, VehicleAttributeStatus> atts = data.getAttributesMap();
+        // handle GPS
+        if (atts.containsKey("positionLat") && atts.containsKey("positionLong")) {
+            String gps = atts.get("positionLat").getDoubleValue() + "," + atts.get("positionLong").getDoubleValue();
+            PointType pt = new PointType(gps);
+            updateChannel(new ChannelStateMap("gps", "location", pt));
+        }
         atts.forEach((key, value) -> {
             ChannelStateMap csm = Mapper.getChannelStateMap(key, value);
             if (csm.isValid()) {
@@ -337,7 +345,7 @@ public class VehicleHandler extends BaseThingHandler {
                     }
                 }
             } else {
-                logger.warn("Unable to deliver state for {}", key);
+                // logger.trace("Unable to deliver state for {}", key);
             }
         });
     }

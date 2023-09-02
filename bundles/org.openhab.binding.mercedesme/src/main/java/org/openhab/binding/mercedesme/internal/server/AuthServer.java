@@ -33,14 +33,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CallbackServer} class defines an HTTP Server for authentication callbacks
+ * The {@link AuthServer} class defines an HTTP Server for authentication callbacks
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class CallbackServer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CallbackServer.class);
-    private static final Map<Integer, CallbackServer> SERVER_MAP = new HashMap<Integer, CallbackServer>();
+public class AuthServer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthServer.class);
+    private static final Map<Integer, AuthServer> SERVER_MAP = new HashMap<Integer, AuthServer>();
     private static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
 
     private final HttpClient httpClient;
@@ -52,7 +52,7 @@ public class CallbackServer {
     private AccountConfiguration config;
     public String callbackUrl;
 
-    public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, AccountConfiguration config, String callbackUrl,
+    public AuthServer(AccessTokenRefreshListener l, HttpClient hc, AccountConfiguration config, String callbackUrl,
             LocaleProvider lp) {
         listener = l;
         httpClient = hc;
@@ -83,7 +83,7 @@ public class CallbackServer {
         server.get().setConnectors(new Connector[] { connector });
         ServletHandler servletHandler = new ServletHandler();
         server.get().setHandler(servletHandler);
-        servletHandler.addServletWithMapping(CallbackServlet.class, Constants.CALLBACK_ENDPOINT);
+        servletHandler.addServletWithMapping(AuthServlet.class, Constants.CALLBACK_ENDPOINT);
         try {
             server.get().start();
         } catch (Exception e) {
@@ -106,7 +106,7 @@ public class CallbackServer {
     }
 
     @Nullable
-    public static CallbackServer getServer(int port) {
+    public static AuthServer getServer(int port) {
         return SERVER_MAP.get(port);
     }
 

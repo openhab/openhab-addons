@@ -19,7 +19,7 @@
 			<channel-group id="lights" typeId="light-values"/>
 			<channel-group id="lock" typeId="lock-values"/>
 			<channel-group id="location" typeId="location-values"/>
-			<channel-group id="image" typeId="image-values"/>
+			<channel-group id="tires" typeId="tires-values"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:mercedesme:conv"/>

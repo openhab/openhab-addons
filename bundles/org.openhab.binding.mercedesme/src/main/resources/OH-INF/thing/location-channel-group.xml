@@ -8,7 +8,7 @@
 		<description>Heading of vehicle</description>
 		<channels>
 			<channel id="heading" typeId="heading-channel"/>
-			<channel id="last-update" typeId="last-location-update-channel"/>
+			<channel id="gps" typeId="gps-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
