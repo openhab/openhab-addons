@@ -172,14 +172,14 @@ configuration method.
 
 * **UI-based configuration:** Invoke a manual scan from the Things menu in order to start the
 [discovery process](#discovery). Discovered modules can be found in the inbox.
-* **Textual `.thing` configuration** can declare Velbus modules in either of the following two
-ways:
+* **Textual `.thing` configuration** can declare Velbus modules either in a standalone fashion (a
+  bridge is still required):
 
   ```java
   Thing velbus:<thingType>:<bridgeId>:<thingId> "Label" @ "Location" [ CH1="Kitchen Light", CH2="Living Light" ]
   ```
 
-  Alternatively, configuration of `Thing`s may be nested in a bridge configuration:
+  Or, more concisely, by nesting modules within the `Bridge` they’re connected to:
 
   ```java
   Bridge velbus:bridge:1 [ port="COM1" ] {
