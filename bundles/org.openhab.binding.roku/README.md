@@ -27,7 +27,7 @@ The thing has a few configuration parameters:
 |-----------|------------------------------------------------------------------------------------------------------------|
 | hostName  | The host name or IP address of the Roku device. Mandatory.                                                 |
 | port      | The port on the Roku that listens for http connections. Default 8060                                       |
-| refresh   | Overrides the refresh interval for player status updates. Optional, the default and minimum is 10 seconds. |
+| refresh   | Overrides the refresh interval for player status updates. Optional, the default and minimum is 1 second.   |
 
 ## Channels
 
@@ -36,6 +36,7 @@ The following channels are available:
 | Channel ID         | Item Type            | Description                                                                                                                                                     |
 |--------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | activeApp          | String               | A dropdown containing a list of all apps installed on the Roku. The app currently running is automatically selected. The list updates every 10 minutes.         |
+| activeAppName      | String               | The name of the current app (ReadOnly).                                                                                                                         |
 | button             | String               | Sends a remote control command the Roku. See list of available commands below.                                                                                  |
 | playMode           | String               | The current playback mode ie: stop, play, pause (ReadOnly).                                                                                                     |
 | timeElapsed        | Number:Time          | The total number of seconds of playback time elapsed for the current playing title (ReadOnly).                                                                  |
@@ -47,6 +48,8 @@ The following channels are available:
 | programTitle       | String               | The name of the current TV program (ReadOnly).                                                                                                                  |
 | programDescription | String               | The description of the current TV program (ReadOnly).                                                                                                           |
 | programRating      | String               | The TV parental guideline rating of the current TV program (ReadOnly).                                                                                          |
+| power              | Switch               | Controls the power for the TV.                                                                                                                                  |
+| powerState         | String               | The current power state for the TV.                                                                                                                             |
 
 Some Notes:
 
@@ -104,6 +107,7 @@ roku:roku_tv:mytv1 "My Roku TV" [ hostName="192.168.10.1", refresh=10 ]
 // Roku streaming media player items:
 
 String Player_ActiveApp        "Current App: [%s]"         { channel="roku:roku_player:myplayer1:activeApp" }
+String Player_ActiveAppName    "Current App Name: [%s]"    { channel="roku:roku_player:myplayer1:activeAppName" }
 String Player_Button           "Send Command to Roku"      { channel="roku:roku_player:myplayer1:button" }
 String Player_PlayMode         "Status: [%s]"              { channel="roku:roku_player:myplayer1:playMode" }
 Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="roku:roku_player:myplayer1:timeElapsed" }
@@ -112,6 +116,7 @@ Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="roku:roku_
 // Roku TV items:
 
 String Player_ActiveApp          "Current App: [%s]"         { channel="roku:roku_tv:mytv1:activeApp" }
+String Player_ActiveAppName      "Current App Name: [%s]"    { channel="roku:roku_tv:mytv1:activeAppName" }
 String Player_Button             "Send Command to Roku"      { channel="roku:roku_tv:mytv1:button" }
 String Player_PlayMode           "Status: [%s]"              { channel="roku:roku_tv:mytv1:playMode" }
 Number:Time Player_TimeElapsed   "Elapsed Time: [%d %unit%]" { channel="roku:roku_tv:mytv1:timeElapsed" }
@@ -123,6 +128,8 @@ String Player_ChannelName        "Channel Name: [%s]"        { channel="roku:rok
 String Player_ProgramTitle       "Program Title: [%s]"       { channel="roku:roku_tv:mytv1:programTitle" }
 String Player_ProgramDescription "Program Description: [%s]" { channel="roku:roku_tv:mytv1:programDescription" }
 String Player_ProgramRating      "Program Rating: [%s]"      { channel="roku:roku_tv:mytv1:programRating" }
+Switch Player_Power              "Power: [%s]"               { channel="roku:roku_tv:mytv1:power" }
+String Player_PowerState         "Power State: [%s]          { channel="roku:roku_tv:mytv1:powerState" }
 
 ```
 
@@ -132,6 +139,7 @@ String Player_ProgramRating      "Program Rating: [%s]"      { channel="roku:rok
 sitemap roku label="Roku" {
     Frame label="My Roku" {
         Selection item=Player_ActiveApp icon="screen"
+        Text item=Player_ActiveAppName
         Selection item=Player_Button icon="screen"
         Text item=Player_PlayMode
         Text item=Player_TimeElapsed icon="time"
@@ -144,6 +152,8 @@ sitemap roku label="Roku" {
         Text item=Player_ProgramTitle
         Text item=Player_ProgramDescription
         Text item=Player_ProgramRating
+        Switch item=Player_Power
+        Text item=Player_PowerState
     }
 }
 ```
