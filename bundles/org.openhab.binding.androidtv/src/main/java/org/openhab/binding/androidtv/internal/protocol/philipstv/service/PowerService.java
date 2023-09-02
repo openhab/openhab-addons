@@ -65,6 +65,9 @@ public class PowerService implements PhilipsTVService {
                     handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.online");
                 } else if (powerStateDto.isStandby()) {
                     handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.standby");
+                    if (powerStateDto.isStandbyKeep()) {
+                        handler.checkPendingPowerOn();
+                    }
                 } else {
                     handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, EMPTY);
                 }

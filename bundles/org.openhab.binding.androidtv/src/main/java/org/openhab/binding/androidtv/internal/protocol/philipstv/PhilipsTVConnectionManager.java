@@ -125,6 +125,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
     private @Nullable ScheduledFuture<?> deviceHealthJob;
     private boolean isOnline = true;
+    private boolean pendingPowerOn = false;
 
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -277,6 +278,18 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         }
     }
 
+    public void checkPendingPowerOn() {
+        if (pendingPowerOn) {
+            @Nullable
+            PhilipsTVService powerService = channelServices.get(CHANNEL_POWER);
+            if (powerService != null) {
+                powerService.handleCommand(CHANNEL_POWER, OnOffType.ON);
+            }
+            pendingPowerOn = false;
+            startDeviceHealthJob(5, TimeUnit.SECONDS);
+        }
+    }
+
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
         String username = this.username;
@@ -350,6 +363,11 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             return;
         }
 
+        if ((!isLoggedIn) && (channelUID.getId().equals(CHANNEL_POWER)) && (command.equals(OnOffType.ON))) {
+            startDeviceHealthJob(1, TimeUnit.SECONDS);
+            pendingPowerOn = true;
+        }
+
         philipsTvService.handleCommand(channel, command);
         long stopTime = System.currentTimeMillis();
         long elapsedTime = stopTime - startTime;
@@ -370,8 +388,15 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         }
 
         connect();
+        startDeviceHealthJob(5, TimeUnit.SECONDS);
+    }
 
-        deviceHealthJob = scheduler.scheduleWithFixedDelay(this::checkHealth, 5, 5, TimeUnit.SECONDS);
+    private void startDeviceHealthJob(int interval, TimeUnit unit) {
+        ScheduledFuture<?> deviceHealthJob = this.deviceHealthJob;
+        if (deviceHealthJob != null) {
+            deviceHealthJob.cancel(true);
+        }
+        this.deviceHealthJob = scheduler.scheduleWithFixedDelay(this::checkHealth, interval, interval, unit);
     }
 
     private void connect() {
@@ -511,6 +536,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                 handler.updateChannelState(CHANNEL_POWER, OnOffType.OFF);
             } else {
                 handler.updateChannelState(CHANNEL_POWER, OnOffType.ON);
+                startDeviceHealthJob(5, TimeUnit.SECONDS);
+                pendingPowerOn = false;
             }
             if (isSchedulerInitializable()) { // Init refresh scheduler only, if pairing is completed
                 startRefreshScheduler();

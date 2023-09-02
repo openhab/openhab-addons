@@ -14,6 +14,7 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.
 
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.POWER_ON;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.STANDBY;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.STANDBYKEEP;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,6 +49,11 @@ public class PowerStateDto {
 
     @JsonIgnore
     public boolean isStandby() {
-        return powerState.equalsIgnoreCase(STANDBY);
+        return (powerState.equalsIgnoreCase(STANDBY) || powerState.equalsIgnoreCase(STANDBYKEEP));
+    }
+
+    @JsonIgnore
+    public boolean isStandbyKeep() {
+        return powerState.equalsIgnoreCase(STANDBYKEEP);
     }
 }
