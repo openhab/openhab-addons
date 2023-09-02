@@ -112,7 +112,7 @@ public class FreeboxOsSession {
                 getManager(LoginManager.class).closeSession();
                 session = null;
             } catch (FreeboxException e) {
-                logger.warn("Error closing session: {}", e);
+                logger.warn("Error closing session: {}", e.getMessage());
             }
         }
         appToken = "";

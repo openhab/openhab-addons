@@ -112,7 +112,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
                     });
                     logger.debug("Websocket manager connected to {}", uri);
                 } catch (Exception e) {
-                    logger.warn("Error connecting websocket client: {}", e);
+                    logger.warn("Error connecting websocket client: {}", e.getMessage());
                 }
             }, 0, reconnectInterval, TimeUnit.MINUTES));
         }
