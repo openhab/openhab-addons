@@ -167,40 +167,39 @@ Bridge velbus:bridge:1 [ port="COM1", reconnectionInterval="15" ]
 
 ### Velbus modules
 
-For a UI-based configuration, invoke a manual scan from the Things menu in order to start the
-[automatic discovery process](#discovery). The textual `.thing` configuration for Velbus modules
-follows the following syntax:
+Adding Velbus modules to your OpenHAB configuration follows the conventions of your preferred
+configuration method.
 
-```java
-Thing velbus:<thingType>:<bridgeId>:<thingId> "Label" @ "Location" [ CH1="Kitchen Light", CH2="Living Light" ]
-```
+* **UI-based configuration:** Invoke a manual scan from the Things menu in order to start the
+[discovery process](#discovery). Discovered modules can be found in the inbox.
+* **Textual `.thing` configuration** can declare Velbus modules in either of the following two
+ways:
 
-Alternatively, configuration of `Thing`s may be nested in a bridge configuration:
+  ```java
+  Thing velbus:<thingType>:<bridgeId>:<thingId> "Label" @ "Location" [ CH1="Kitchen Light", CH2="Living Light" ]
+  ```
 
-```java
-Bridge velbus:bridge:1 [ port="COM1" ] {
-    <thingType> <thingId> "Label" @ "Location" [ CH1="Kitchen Light", CH2="Living Light" ]
-}
-```
+  Alternatively, configuration of `Thing`s may be nested in a bridge configuration:
 
-Here:
+  ```java
+  Bridge velbus:bridge:1 [ port="COM1" ] {
+      <thingType> <thingId> "Label" @ "Location" [ CH1="Kitchen Light", CH2="Living Light" ]
+  }
+  ```
 
-* `<thingType>` is the type of the Velbus module. Refer to the type column of the table in the
-[Supported Things](#supported-things) section for the list of the supported `Thing` types;
-* `<thingId>` is the hexadecimal address of the Velbus module;
-* `"Label"` is an optional label for the thing;
-* `@ "Location"` is an optional specification of the location of the thing;
-* The `CHx="..."` properties are optional and can be used to specify names of the module channels.
+  Here:
 
-Individual module `Thing`’s channels can be linked to items via channel names like these:
+  * `<thingType>` is the type of the Velbus module. Refer to the [Supported
+    Things](#supported-things) table for valid `<thingType>` values;
+  * `<thingId>` is the hexadecimal address of the Velbus module;
+  * `"Label"` is an optional label for the thing;
+  * `@ "Location"` is an optional specification of the location of the thing;
+  * The `CHx="..."` properties are optional and can be used to specify names of the module channels.
 
-```text
-velbus:vmb4ryld:1:0A:CH1
-```
-
-Where in order we have the binding name, the module type (`<thingType> = vmb4ryld`), the bridge id
-(1), module’s address hexadecimal address (`<thingId> = 0A`) and the channel within the module
-(`CH1`).
+Individual module `Thing`’s channels can be linked to OpenHAB items via channel names like
+`velbus:vmb4ryld:1:0A:CH1`. Here, from left to right, the channel name consistes of the binding
+name, module type (`<thingType> = vmb4ryld`), bridge id (`1`), module’s hexadecimal address
+(`<thingId> = 0A`) and channel within the module (`CH1`).
 
 #### Additional properties
 
