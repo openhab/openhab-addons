@@ -15,7 +15,9 @@ package org.openhab.binding.roku.internal.handler;
 import static org.openhab.binding.roku.internal.RokuBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -69,6 +71,7 @@ public class RokuHandler extends BaseThingHandler {
     private DeviceInfo deviceInfo = new DeviceInfo();
     private int refreshInterval = DEFAULT_REFRESH_PERIOD_SEC;
     private boolean tvActive = false;
+    private Map<String, String> appMap = new HashMap<>();
 
     private Object sequenceLock = new Object();
 
@@ -158,6 +161,8 @@ public class RokuHandler extends BaseThingHandler {
                 }
 
                 updateState(ACTIVE_APP, new StringType(activeAppId));
+                updateState(ACTIVE_APPNAME, new StringType(appMap.get(activeAppId)));
+
                 if (TV_APP.equals(activeAppId)) {
                     tvActive = true;
                 } else {
@@ -245,18 +250,22 @@ public class RokuHandler extends BaseThingHandler {
         synchronized (sequenceLock) {
             try {
                 List<App> appList = communicator.getAppList();
+                Map<String, String> appMap = new HashMap<>();
 
                 List<StateOption> appListOptions = new ArrayList<>();
                 // Roku Home will be selected in the drop-down any time an app is not running.
                 appListOptions.add(new StateOption(ROKU_HOME_ID, ROKU_HOME));
+                appMap.put(ROKU_HOME_ID, ROKU_HOME);
 
                 appList.forEach(app -> {
                     appListOptions.add(new StateOption(app.getId(), app.getValue()));
+                    appMap.put(app.getId(), app.getValue());
                 });
 
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), ACTIVE_APP),
                         appListOptions);
 
+                this.appMap = appMap;
             } catch (RokuHttpException e) {
                 logger.debug("Unable to retrieve Roku installed app-list. Exception: {}", e.getMessage(), e);
             }

@@ -13,6 +13,7 @@
 
 		<channels>
 			<channel id="activeApp" typeId="activeApp"/>
+			<channel id="activeAppName" typeId="activeAppName"/>
 			<channel id="button" typeId="button"/>
 			<channel id="playMode" typeId="playMode"/>
 			<channel id="timeElapsed" typeId="timeElapsed"/>
@@ -42,6 +43,7 @@
 
 		<channels>
 			<channel id="activeApp" typeId="activeApp"/>
+			<channel id="activeAppName" typeId="activeAppName"/>
 			<channel id="button" typeId="buttonTv"/>
 			<channel id="playMode" typeId="playMode"/>
 			<channel id="timeElapsed" typeId="timeElapsed"/>
@@ -139,6 +141,12 @@
 	<channel-type id="activeApp">
 		<item-type>String</item-type>
 		<label>Active App</label>
+		<description>The Currently Running App on the Roku</description>
+	</channel-type>
+
+	<channel-type id="activeAppName">
+		<item-type>String</item-type>
+		<label>Active App Name</label>
 		<description>The Currently Running App on the Roku</description>
 	</channel-type>
 

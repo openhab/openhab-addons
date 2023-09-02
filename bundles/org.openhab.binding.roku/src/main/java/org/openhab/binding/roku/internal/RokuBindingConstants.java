@@ -49,6 +49,7 @@ public class RokuBindingConstants {
 
     // List of all Channel id's
     public static final String ACTIVE_APP = "activeApp";
+    public static final String ACTIVE_APPNAME = "activeAppName";
     public static final String BUTTON = "button";
     public static final String PLAY_MODE = "playMode";
     public static final String TIME_ELAPSED = "timeElapsed";
