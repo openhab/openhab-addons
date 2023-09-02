@@ -47,6 +47,7 @@ public class Constants {
     public static final String GROUP_LIGHTS = "lights";
     public static final String GROUP_LOCATION = "location";
     public static final String GROUP_IMAGE = "image";
+    public static final String GROUP_TIRES = "tires";
 
     public static final String MB_AUTH_URL = "https://ssoalpha.dvb.corpinter.net/v1/auth";
     public static final String MB_TOKEN_URL = "https://ssoalpha.dvb.corpinter.net/v1/token";

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mercedesme.internal.dto;
 
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.Constants;
 
@@ -26,4 +28,5 @@ public class TokenResponse {
     public String refresh_token = Constants.NOT_SET;
     public String token_type = Constants.NOT_SET;
     public int expires_in;
+    public Instant created = Instant.now();
 }

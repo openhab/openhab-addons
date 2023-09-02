@@ -101,6 +101,14 @@ public class Mapper {
                 case "positionHeading":
                     state = QuantityType.valueOf(Double.valueOf(value.getIntValue()), Units.DEGREE_ANGLE);
                     return new ChannelStateMap(ch[0], ch[1], state);
+
+                // tires
+                case "tirepressureFrontLeft":
+                case "tirepressureFrontRight":
+                case "tirepressureRearLeft":
+                case "tirepressureRearRight":
+                    state = QuantityType.valueOf(value.getDoubleValue(), Units.BAR);
+                    return new ChannelStateMap(ch[0], ch[1], state);
                 default:
                     LOGGER.trace("No mapping available for {}", key);
             }
@@ -147,5 +155,9 @@ public class Mapper {
         CHANNELS.put("doorlockstatusdecklid", new String[] { "deck-lid", GROUP_LOCK });
         CHANNELS.put("doorlockstatusgas", new String[] { "flap", GROUP_LOCK });
         CHANNELS.put("positionHeading", new String[] { "heading", GROUP_LOCATION });
+        CHANNELS.put("tirepressureRearRight", new String[] { "pressure-rear-right", GROUP_TIRES });
+        CHANNELS.put("tirepressureFrontRight", new String[] { "pressure-front-right", GROUP_TIRES });
+        CHANNELS.put("tirepressureRearLeft", new String[] { "pressure-rear-left", GROUP_TIRES });
+        CHANNELS.put("tirepressureFrontLeft", new String[] { "pressure-front-left", GROUP_TIRES });
     }
 }

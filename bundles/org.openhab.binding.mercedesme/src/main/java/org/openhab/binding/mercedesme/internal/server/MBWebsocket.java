@@ -15,7 +15,6 @@ package org.openhab.binding.mercedesme.internal.server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,9 +41,9 @@ import org.slf4j.LoggerFactory;
 @WebSocket
 public class MBWebsocket {
     private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
-    private final int OPEN_TIME_MS = 30000;
-    private WebSocketClient client;
+    private final int CONNECT_TIMEOUT_MS = 5000;
     private AccountHandler accountHandler;
+    private boolean running = false;
     private @Nullable Future<?> sessionFuture;
     private @Nullable Session session;
 
@@ -55,95 +54,30 @@ public class MBWebsocket {
     /**
      * Lifecycle handling
      */
-
-    public void open() {
-        WebSocketClient client = this.client;
-        if (client == null || !client.isRunning() || !isConnected()) {
-            if (client != null) {
-                try {
-                    client.stop();
-                } catch (Exception e) {
-                    logger.warn("OPEN FRAME - Failed to stop websocket client: {}", e.getMessage());
-                }
-                client.destroy();
+    public void open(int runtimeMS) {
+        synchronized (this) {
+            if (running) {
+                return;
+            } else {
+                running = true;
             }
-            client.setMaxIdleTimeout(OPEN_TIME_MS);
-            this.client = client;
-
+        }
+        try {
+            WebSocketClient client = new WebSocketClient();
+            client.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
-
-            try {
-                logger.debug("Starting Websocket connection");
-                client.start();
-            } catch (Exception e) {
-                logger.warn("Websocket Start Exception: {}", e.getMessage());
-            }
-            try {
-                logger.debug("Connecting Websocket connection");
-                sessionFuture = client.connect(this, new URI(accountHandler.getWSUri()), request);
-                try {
-                    Thread.sleep(OPEN_TIME_MS);
-                } catch (InterruptedException e) {
-                }
-                if (!isConnected()) {
-                    logger.warn("Unable to establish websocket session - Reattempting connection on next refresh");
-                } else {
-                    logger.debug("Websocket session established");
-                }
-            } catch (IOException e) {
-                logger.warn("Websocket Connect Exception: {}", e.getMessage());
-            } catch (URISyntaxException e) {
-                logger.warn("Websocket URI Exception: {}", e.getMessage());
-            }
-        } else {
-            logger.warn("Open: Websocket client already running");
-        }
-    }
-
-    public boolean isConnected() {
-        Session session = this.session;
-        return session != null && session.isOpen();
-    }
-
-    public void close() {
-        Session session = this.session;
-        if (session != null) {
-            try {
-                session.close();
-            } catch (Exception e) {
-                logger.warn("Unable to disconnect session");
-            }
-            this.session = null;
-        }
-        Future<?> sessionFuture = this.sessionFuture;
-        if (sessionFuture != null && !sessionFuture.isDone()) {
-            sessionFuture.cancel(true);
-        }
-        WebSocketClient client = this.client;
-        if (client != null) {
-            try {
-                client.stop();
-            } catch (Exception e) {
-                logger.warn("CLOSE FRAME - Failed to stop websocket client: {}", e.getMessage());
-            }
+            logger.info("Websocket start");
+            client.start();
+            sessionFuture = client.connect(this, new URI(accountHandler.getWSUri()), request);
+            Thread.sleep(runtimeMS);
+            logger.info("Websocket stop");
+            client.stop();
             client.destroy();
+        } catch (Exception e) {
+            logger.warn("Websocket handling exception: {}", e.getMessage());
         }
-    }
-
-    public void dispose() {
-        if (isConnected()) {
-            close();
-            WebSocketClient client = this.client;
-            if (client != null) {
-                try {
-                    logger.debug("DISPOSE - Stopping and Terminating Websocket connection");
-                    client.stop();
-                } catch (Exception e) {
-                    logger.warn("Websocket Client Stop Exception: {}", e.getMessage());
-                }
-                client.destroy();
-                this.client = null;
-            }
+        synchronized (this) {
+            running = false;
         }
     }
 

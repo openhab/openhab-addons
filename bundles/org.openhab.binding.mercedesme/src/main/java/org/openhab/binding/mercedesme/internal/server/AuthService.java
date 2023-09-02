@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercedesme.internal.utils;
+package org.openhab.binding.mercedesme.internal.server;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -34,6 +34,8 @@ import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.dto.PINRequest;
 import org.openhab.binding.mercedesme.internal.dto.TokenResponse;
+import org.openhab.binding.mercedesme.internal.utils.Utils;
+import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
@@ -51,28 +53,46 @@ public class AuthService {
     private static final Map<Integer, AuthService> AUTH_MAP = new HashMap<Integer, AuthService>();
     private final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
+    AccessTokenRefreshListener listener;
     private HttpClient httpClient;
     private String identifier;
     private AccountConfiguration config;
     private Locale locale;
-    private Storage<AccessTokenResponse> storage;
+    private Storage<String> storage;
     private AccessTokenResponse token;
 
-    public AuthService(HttpClient hc, AccountConfiguration ac, Locale l, Storage<AccessTokenResponse> store) {
+    public AuthService(AccessTokenRefreshListener atrl, HttpClient hc, AccountConfiguration ac, Locale l,
+            Storage<String> store) {
+        INVALID_TOKEN.setAccessToken(Constants.NOT_SET);
+        INVALID_TOKEN.setRefreshToken(Constants.NOT_SET);
+        listener = atrl;
         httpClient = hc;
-        identifier = config.email;
         config = ac;
+        identifier = config.email;
         locale = l;
         storage = store;
 
         // restore token
-        Object storedObject = storage.get(identifier);
+        String storedObject = storage.get(identifier);
         if (storedObject == null) {
+            logger.info("Got nothing from storage for {}", identifier);
             token = INVALID_TOKEN;
+            logger.info("no token found in storage");
+            listener.onAccessTokenResponse(token);
         } else {
-            token = (AccessTokenResponse) storedObject;
+            logger.info("Got {} from storage for {}", storedObject, identifier);
+            token = (AccessTokenResponse) Utils.fromString(storedObject);
             if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-                refreshToken();
+                if (!token.getRefreshToken().equals(Constants.NOT_SET)) {
+                    refreshToken();
+                    listener.onAccessTokenResponse(token);
+                } else {
+                    logger.info("Refresh token empty");
+                    token = INVALID_TOKEN;
+                    listener.onAccessTokenResponse(token);
+                }
+            } else {
+                listener.onAccessTokenResponse(token);
             }
         }
         AUTH_MAP.put(config.callbackPort, this);
@@ -128,7 +148,7 @@ public class AuthService {
             String clientid = "client_id="
                     + URLEncoder.encode(Utils.getLoginAppId(config.region), StandardCharsets.UTF_8.toString());
             String grantAttribute = "grant_type=password";
-            String userAttribute = "username=" + URLEncoder.encode(config.region, StandardCharsets.UTF_8.toString());
+            String userAttribute = "username=" + URLEncoder.encode(config.email, StandardCharsets.UTF_8.toString());
             String passwordAttribute = "password=" + URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
             String scopeAttribute = "scope=" + URLEncoder.encode(Constants.SCOPE, StandardCharsets.UTF_8.toString());
             String content = clientid + "&" + grantAttribute + "&" + userAttribute + "&" + passwordAttribute + "&"
@@ -140,9 +160,11 @@ public class AuthService {
             // Send
             ContentResponse cr = req.send();
             if (cr.getStatus() == 200) {
-                logger.info("Success getting token");
-                saveTokenResponse(cr.getContentAsString());
+                String responseString = cr.getContentAsString();
+                logger.info("Success getting token: {}", responseString);
+                saveTokenResponse(responseString);
                 logger.info("ATR {}", token);
+                listener.onAccessTokenResponse(token);
                 return true;
             } else {
                 logger.debug("Failed to get token {} {}", cr.getStatus(), cr.getContentAsString());
@@ -176,6 +198,7 @@ public class AuthService {
             if (cr.getStatus() == 200) {
                 logger.info("Success getting token");
                 saveTokenResponse(cr.getContentAsString());
+                listener.onAccessTokenResponse(token);
                 logger.info("ATR {}", token);
             } else {
                 logger.debug("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
@@ -186,12 +209,21 @@ public class AuthService {
     }
 
     public String getToken() {
+        logger.info("Investigate token {}", token);
         if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-            refreshToken();
-            // token shall be updated now - retry expired check
-            if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-                logger.warn("Not able to return fresh token");
-                return Constants.NOT_SET;
+            logger.info("Token {} expired", token);
+            if (!token.getRefreshToken().equals(Constants.NOT_SET)) {
+                refreshToken();
+                // token shall be updated now - retry expired check
+                if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
+                    token = INVALID_TOKEN;
+                    logger.warn("Not able to return fresh token");
+                    listener.onAccessTokenResponse(token);
+                    return Constants.NOT_SET;
+                }
+            } else {
+                token = INVALID_TOKEN;
+                logger.info("Refresh token empty");
             }
         }
         return token.getAccessToken();
@@ -208,16 +240,25 @@ public class AuthService {
     }
 
     private void saveTokenResponse(String response) {
-        logger.info("Save new token");
         TokenResponse tr = Utils.GSON.fromJson(response, TokenResponse.class);
         AccessTokenResponse atr = new AccessTokenResponse();
         atr.setAccessToken(tr.access_token);
         atr.setCreatedOn(Instant.now());
         atr.setExpiresIn(tr.expires_in);
-        atr.setRefreshToken(tr.refresh_token);
+        // Preserve refresh token if available
+        if (Constants.NOT_SET.equals(tr.refresh_token) && !Constants.NOT_SET.equals(token.getRefreshToken())) {
+            logger.info("Preserve refresh token {}", token.getRefreshToken());
+            atr.setRefreshToken(token.getRefreshToken());
+        } else if (!Constants.NOT_SET.equals(tr.refresh_token)) {
+            logger.info("New refresh token {}", tr.refresh_token);
+            atr.setRefreshToken(tr.refresh_token);
+        } else {
+            logger.info("Neither new nor old refresh token available");
+        }
         atr.setTokenType("Bearer");
         atr.setScope(Constants.SCOPE);
-        storage.put(identifier, atr);
+        logger.info("Store at {} token {}", identifier, atr);
+        storage.put(identifier, Utils.toString(atr));
         token = atr;
     }
 }

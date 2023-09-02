@@ -22,25 +22,24 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mercedesme.internal.Constants;
-import org.openhab.binding.mercedesme.internal.utils.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CallbackServlet} class provides authentication callback endpoint
+ * The {@link AuthServlet} class provides authentication callback endpoint
  *
  * @author Bernd Weymann - Initial contribution
  */
 @SuppressWarnings("serial")
 @NonNullByDefault
-public class CallbackServlet extends HttpServlet {
-    private final Logger logger = LoggerFactory.getLogger(CallbackServlet.class);
+public class AuthServlet extends HttpServlet {
+    private final Logger logger = LoggerFactory.getLogger(AuthServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AuthService myAuthService = AuthService.getAuthService(request.getLocalPort());
-        CallbackServer myServer = CallbackServer.getServer(request.getLocalPort());
+        AuthServer myServer = AuthServer.getServer(request.getLocalPort());
         HttpClient client = myServer.getHttpClient();
         String guid = request.getParameter(Constants.GUID);
         String pin = request.getParameter(Constants.PIN);
@@ -81,9 +80,13 @@ public class CallbackServlet extends HttpServlet {
             response.getWriter().println("<BR>");
             response.getWriter().println("Enter PIN in second input field - leave guid as it is!<BR>");
             response.getWriter().println("<form action=\"" + Constants.CALLBACK_ENDPOINT + "\">");
+            response.getWriter().println("<BR>");
+            response.getWriter().println("<label for=\"GUID\">GUID</label>");
             response.getWriter().println("<input type=\"text\" id=\"guid\" name=\"guid\" value=\"" + guid + "\">");
+            response.getWriter().println("<BR>");
             response.getWriter().println("<label for=\"PIN\">PIN</label>");
             response.getWriter().println("<input type=\"text\" id=\"pin\" name=\"pin\" placeholder=\"Your PIN\">");
+            response.getWriter().println("<BR>");
             response.getWriter().println("<input type=\"submit\" value=\"Submit\">");
             response.getWriter().println("</form>");
             response.getWriter().println("</BODY>");

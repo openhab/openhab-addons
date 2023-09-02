@@ -84,8 +84,9 @@ class ProtoTest {
                             .getAttributesMap();
                     m.forEach((key, value) -> {
                         System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
-                        if (key.equals("odo")) {
+                        if (key.contains("tirepressure")) {
                             System.out.println(Mapper.getChannelStateMap(key, value));
+                            System.out.println(value);
                         }
                     });
                 }
