@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freeboxos.internal.api.rest;
 
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.REACHABLE;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -98,7 +100,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
 
             stopReconnect();
             ScheduledExecutorService scheduler = ThreadPoolManager
-                    .getScheduledPool(FreeboxOsBindingConstants.BINDING_ID + uri.toString());
+                    .getScheduledPool(FreeboxOsBindingConstants.BINDING_ID);
             reconnectJob = Optional.of(scheduler.scheduleAtFixedRate(() -> {
                 try {
                     closeSession();
@@ -106,7 +108,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
                     client.connect(this, uri, request);
                     // Update listeners in case we would have lost data while disconnecting / reconnecting
                     listeners.values().forEach(host -> {
-                        host.handleCommand(new ChannelUID(host.getThing().getUID().toString()), RefreshType.REFRESH);
+                        host.handleCommand(new ChannelUID(host.getThing().getUID(), REACHABLE), RefreshType.REFRESH);
                     });
                     logger.debug("Websocket manager connected to {}", uri);
                 } catch (Exception e) {
