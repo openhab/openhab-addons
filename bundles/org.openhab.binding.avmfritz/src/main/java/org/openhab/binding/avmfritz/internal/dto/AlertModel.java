@@ -42,15 +42,15 @@ public class AlertModel {
     }
 
     public boolean hasObstructionAlarmOccurred() {
-        return (state.intValue() & 1) != 0;
+        return state != null && (state.intValue() & 1) != 0;
     }
 
     public boolean hasTemperaturAlarmOccurred() {
-        return (state.intValue() & 2) != 0;
+        return state != null && (state.intValue() & 2) != 0;
     }
 
     public boolean hasUnknownAlarmOccurred() {
-        return ((state.intValue() & 255) >> 2) != 0;
+        return state != null && ((state.intValue() & 255) >> 2) != 0;
     }
 
     @Override
