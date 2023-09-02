@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.gardena.internal.model.dto.api;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Time;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.core.library.unit.Units;
+
 /**
  * Represents a Gardena object that is sent via the Gardena API.
  *
@@ -23,4 +29,5 @@ public class ValveService {
     public TimestampedStringValue state;
     public TimestampedStringValue lastErrorCode;
     public TimestampedIntegerValue duration;
+    public @NonNull Unit<@NonNull Time> durationUnit = Units.SECOND;
 }

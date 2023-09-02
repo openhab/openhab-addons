@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.gardena.internal.model.dto.api;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.core.library.unit.Units;
+
 /**
  * Represents a Gardena object that is sent via the Gardena API.
  *
@@ -20,8 +26,10 @@ package org.openhab.binding.gardena.internal.model.dto.api;
 public class CommonService {
     public UserDefinedNameWrapper name;
     public TimestampedIntegerValue batteryLevel;
+    public @NonNull Unit<@NonNull Dimensionless> batteryLevelUnit = Units.PERCENT;
     public TimestampedStringValue batteryState;
     public TimestampedIntegerValue rfLinkLevel;
+    public @NonNull Unit<@NonNull Dimensionless> rfLinkLevelUnit = Units.PERCENT;
     public StringValue serial;
     public StringValue modelType;
     public TimestampedStringValue rfLinkState;

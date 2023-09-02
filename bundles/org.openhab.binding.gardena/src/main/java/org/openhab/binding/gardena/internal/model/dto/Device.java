@@ -15,8 +15,6 @@ package org.openhab.binding.gardena.internal.model.dto;
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.dto.api.CommonService;
@@ -60,23 +58,8 @@ public class Device {
     public ValveServiceDataItem valveSix;
     public ValveSetServiceDataItem valveSet;
 
-    private Map<String, LocalService> localServices = new HashMap<>();
-
     public Device(String id) {
         this.id = id;
-    }
-
-    /**
-     * Returns the local service or creates one if it does not exist.
-     */
-    public LocalService getLocalService(String key) {
-        LocalService localService = localServices.get(key);
-        if (localService == null) {
-            localService = new LocalService();
-            localServices.put(key, localService);
-            localService.commandDuration = 3600;
-        }
-        return localService;
     }
 
     /**
