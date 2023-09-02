@@ -62,7 +62,7 @@ FreeboxOS binding has the following configuration parameters:
 | Background Discovery Interval | discoveryInterval   | Interval in minutes - 0 disables background discovery         | No       | 10                   |
 | HTTPS Available               | httpsAvailable      | Tells if https has been configured on the Freebox             | No       | false                |
 | HTTPS port                    | httpsPort           | Port to use for remote https access to the Freebox Api        | No       | 15682                |
-| Websocket Reconnect Interval  | wsReconnectInterval | Disconnection interval frequency - 0 disables websocket usage | No       | true                 |
+| Websocket Reconnect Interval  | wsReconnectInterval | Disconnection interval frequency - 0 disables websocket usage | No       | 60                   |
 
 If the parameter *apiDomain* is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
 The bridge thing will initialize only if a valid application token (parameter *appToken*) is filled.
