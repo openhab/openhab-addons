@@ -31,6 +31,7 @@ import org.openhab.binding.roku.internal.dto.DeviceInfo;
 import org.openhab.binding.roku.internal.dto.Player;
 import org.openhab.binding.roku.internal.dto.TvChannel;
 import org.openhab.binding.roku.internal.dto.TvChannels.Channel;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -94,7 +95,7 @@ public class RokuHandler extends BaseThingHandler {
             return;
         }
 
-        if (config.refresh >= 10) {
+        if (config.refresh >= 1) {
             refreshInterval = config.refresh;
         }
 
@@ -134,6 +135,21 @@ public class RokuHandler extends BaseThingHandler {
         synchronized (sequenceLock) {
             String activeAppId = ROKU_HOME_ID;
             try {
+                if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+                    try {
+                        deviceInfo = communicator.getDeviceInfo();
+                        String powerMode = deviceInfo.getPowerMode();
+                        updateState(POWER_STATE, new StringType(powerMode));
+                        if (POWERON.equals(powerMode)) {
+                            updateState(POWER, OnOffType.ON);
+                        } else {
+                            updateState(POWER, OnOffType.OFF);
+                        }
+                    } catch (RokuHttpException e) {
+                        logger.debug("Unable to retrieve Roku device-info. Exception: {}", e.getMessage(), e);
+                    }
+                }
+
                 activeAppId = communicator.getActiveApp().getApp().getId();
 
                 // 562859 is now reported when on the home screen, reset to -1
@@ -318,6 +334,30 @@ public class RokuHandler extends BaseThingHandler {
                     logger.debug("Unable to change channel on Roku TV, channelNumber: {}, Exception: {}", command,
                             e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
+            }
+        } else if (channelUID.getId().equals(POWER) || channelUID.getId().equals(POWER_STATE)) {
+            synchronized (sequenceLock) {
+                if (command instanceof OnOffType) {
+                    try {
+                        if (command.equals(OnOffType.ON)) {
+                            communicator.keyPress("POWERON");
+                        } else {
+                            communicator.keyPress("PowerOff");
+                        }
+                    } catch (RokuHttpException e) {
+                        logger.debug("Unable to send keypress to Roku, key: {}, Exception: {}", command,
+                                e.getMessage());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    }
+                } else if (command instanceof StringType) {
+                    try {
+                        communicator.keyPress(command.toString());
+                    } catch (RokuHttpException e) {
+                        logger.debug("Unable to send keypress to Roku, key: {}, Exception: {}", command,
+                                e.getMessage());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    }
                 }
             }
         } else {

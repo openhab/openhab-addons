@@ -53,6 +53,8 @@
 			<channel id="programTitle" typeId="programTitle"/>
 			<channel id="programDescription" typeId="programDescription"/>
 			<channel id="programRating" typeId="programRating"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="powerState" typeId="powerState"/>
 		</channels>
 
 		<properties>
@@ -209,4 +211,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="powerState">
+		<item-type>String</item-type>
+		<label>Power State</label>
+		<description>Power State of the TV</description>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
