@@ -417,6 +417,7 @@ public class SpeedtestHandler extends BaseThingHandler {
                                 contentResponse.getHeaders().get(HttpHeader.CONTENT_TYPE));
 
                         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_IMAGE), image);
+                        break;
                     default:
                         logger.debug("HTTP GET failed: {}, {}", contentResponse.getStatus(),
                                 contentResponse.getReason());
