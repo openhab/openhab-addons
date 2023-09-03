@@ -42,6 +42,7 @@
 		</description>
 
 		<channels>
+			<channel id="power" typeId="system.power"/>
 			<channel id="activeApp" typeId="activeApp"/>
 			<channel id="activeAppName" typeId="activeAppName"/>
 			<channel id="button" typeId="buttonTv"/>
@@ -55,7 +56,6 @@
 			<channel id="programTitle" typeId="programTitle"/>
 			<channel id="programDescription" typeId="programDescription"/>
 			<channel id="programRating" typeId="programRating"/>
-			<channel id="power" typeId="system.power"/>
 			<channel id="powerState" typeId="powerState"/>
 		</channels>
 

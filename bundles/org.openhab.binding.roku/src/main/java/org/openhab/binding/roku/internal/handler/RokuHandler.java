@@ -147,6 +147,7 @@ public class RokuHandler extends BaseThingHandler {
                             updateState(POWER, OnOffType.ON);
                         } else {
                             updateState(POWER, OnOffType.OFF);
+                            return;
                         }
                     } catch (RokuHttpException e) {
                         logger.debug("Unable to retrieve Roku device-info. Exception: {}", e.getMessage(), e);
@@ -345,7 +346,7 @@ public class RokuHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
-        } else if (channelUID.getId().equals(POWER) || channelUID.getId().equals(POWER_STATE)) {
+        } else if (channelUID.getId().equals(POWER)) {
             synchronized (sequenceLock) {
                 if (command instanceof OnOffType) {
                     try {
@@ -354,14 +355,6 @@ public class RokuHandler extends BaseThingHandler {
                         } else {
                             communicator.keyPress("PowerOff");
                         }
-                    } catch (RokuHttpException e) {
-                        logger.debug("Unable to send keypress to Roku, key: {}, Exception: {}", command,
-                                e.getMessage());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    }
-                } else if (command instanceof StringType) {
-                    try {
-                        communicator.keyPress(command.toString());
                     } catch (RokuHttpException e) {
                         logger.debug("Unable to send keypress to Roku, key: {}, Exception: {}", command,
                                 e.getMessage());

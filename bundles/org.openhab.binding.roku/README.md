@@ -23,11 +23,11 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has a few configuration parameters:
 
-| Parameter | Description                                                                                                |
-|-----------|------------------------------------------------------------------------------------------------------------|
-| hostName  | The host name or IP address of the Roku device. Mandatory.                                                 |
-| port      | The port on the Roku that listens for http connections. Default 8060                                       |
-| refresh   | Overrides the refresh interval for player status updates. Optional, the default and minimum is 1 second.   |
+| Parameter | Description                                                                                                              |
+|-----------|--------------------------------------------------------------------------------------------------------------------------|
+| hostName  | The host name or IP address of the Roku device. Mandatory.                                                               |
+| port      | The port on the Roku that listens for http connections. Default 8060                                                     |
+| refresh   | Overrides the refresh interval for player status updates. Optional, the default is 10 seconds and minimum is 1 second.   |
 
 ## Channels
 
