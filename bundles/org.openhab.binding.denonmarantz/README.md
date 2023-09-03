@@ -122,3 +122,4 @@ These resources can be useful to learn what to send using the `command`channel:
 - [AVR-X4000](https://usa.denon.com/us/product/hometheater/receivers/avrx4000?docname=AVRX4000_PROTOCOL(10%203%200)_V03.pdf)
 - [AVR-3311CI/AVR-3311/AVR-991](https://www.awe-europe.com/documents/Control%20Docs/Denon/Archive/AVR3311CI_AVR3311_991_PROTOCOL_V7.1.0.pdf)
 - [Denon/Marantz Control Protocol](https://assets.eu.denon.com/DocumentMaster/DE/AVR1713_AVR1613_PROTOCOL_V8.6.0.pdf)
+- [Denon DRA-100 Control Protocol](https://assets.denon.com/DocumentMaster/RU/DRA-100_PROTOCOL_Ver100.pdf)

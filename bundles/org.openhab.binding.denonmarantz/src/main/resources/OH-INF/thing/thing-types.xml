@@ -197,6 +197,12 @@
 				<option value="IRP">IRP</option>
 				<option value="FVP">FVP</option>
 				<option value="OTP">OTP</option>
+				<option value="BLUETOOTH">BLUETOOTH</option>
+				<option value="COAXIAL">COAXIAL</option>
+				<option value="DIGITALIN1">DIGITALIN1</option>
+				<option value="DIGITALIN2">DIGITALIN2</option>
+				<option value="ANALOGIN">ANALOGIN</option>
+				<option value="ANALOGIN2">ANALOGIN2</option>
 			</options>
 		</state>
 	</channel-type>
