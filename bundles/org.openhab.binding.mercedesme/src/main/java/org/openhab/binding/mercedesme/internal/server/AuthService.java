@@ -75,19 +75,19 @@ public class AuthService {
         // restore token
         String storedObject = storage.get(identifier);
         if (storedObject == null) {
-            logger.info("Got nothing from storage for {}", identifier);
+            logger.info(prefix() + "Got nothing from storage for {}", identifier);
             token = INVALID_TOKEN;
-            logger.info("no token found in storage");
+            logger.info(prefix() + "no token found in storage");
             listener.onAccessTokenResponse(token);
         } else {
-            logger.info("Got {} from storage for {}", storedObject, identifier);
+            logger.info(prefix() + "Got {} from storage for {}", storedObject, identifier);
             token = (AccessTokenResponse) Utils.fromString(storedObject);
             if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
                 if (!token.getRefreshToken().equals(Constants.NOT_SET)) {
                     refreshToken();
                     listener.onAccessTokenResponse(token);
                 } else {
-                    logger.info("Refresh token empty");
+                    logger.info(prefix() + "Refresh token empty");
                     token = INVALID_TOKEN;
                     listener.onAccessTokenResponse(token);
                 }
@@ -121,23 +121,23 @@ public class AuthService {
         try {
             ContentResponse cr = req.send();
             if (cr.getStatus() == 200) {
-                logger.debug("Success requesting PIN");
+                logger.debug(prefix() + "Success requesting PIN");
                 return pr.nonce;
             } else {
-                logger.debug("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
+                logger.debug(prefix() + "Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error getting image resources {}", e.getMessage());
+            logger.debug(prefix() + "Error getting image resources {}", e.getMessage());
         }
         return Constants.NOT_SET;
     }
 
     public boolean requestToken(String password) {
-        logger.info("Request Token");
+        logger.info(prefix() + "Request Token");
         try {
             // Request + headers
             String url = Utils.getTokenUrl(config.region);
-            logger.info("Get Token base URL {}", url);
+            logger.info(prefix() + "Get Token base URL {}", url);
             Request req = httpClient.POST(url);
             addBasicHeaders(req);
             req.header("Stage", "prod");
@@ -153,7 +153,7 @@ public class AuthService {
             String scopeAttribute = "scope=" + URLEncoder.encode(Constants.SCOPE, StandardCharsets.UTF_8.toString());
             String content = clientid + "&" + grantAttribute + "&" + userAttribute + "&" + passwordAttribute + "&"
                     + scopeAttribute;
-            logger.info("Get Token Content {}", content);
+            logger.info(prefix() + "Get Token Content {}", content);
             req.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
             req.content(new StringContentProvider(content));
 
@@ -161,26 +161,26 @@ public class AuthService {
             ContentResponse cr = req.send();
             if (cr.getStatus() == 200) {
                 String responseString = cr.getContentAsString();
-                logger.info("Success getting token: {}", responseString);
+                logger.info(prefix() + "Success getting token: {}", responseString);
                 saveTokenResponse(responseString);
-                logger.info("ATR {}", token);
+                logger.info(prefix() + "ATR {}", token);
                 listener.onAccessTokenResponse(token);
                 return true;
             } else {
-                logger.debug("Failed to get token {} {}", cr.getStatus(), cr.getContentAsString());
+                logger.debug(prefix() + "Failed to get token {} {}", cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
-            logger.debug("Failed to get token {}", e.getMessage());
+            logger.debug(prefix() + "Failed to get token {}", e.getMessage());
         }
         return false;
     }
 
     public void refreshToken() {
-        logger.info("Refresh Token");
+        logger.info(prefix() + "Refresh Token");
         try {
             // Request + headers
             String url = Utils.getTokenUrl(config.region);
-            logger.info("Get Token base URL {}", url);
+            logger.info(prefix() + "Get Token base URL {}", url);
             Request req = httpClient.POST(url);
             req.header("X-Device-Id", UUID.randomUUID().toString());
             req.header("X-Request-Id", UUID.randomUUID().toString());
@@ -196,34 +196,34 @@ public class AuthService {
             // Send
             ContentResponse cr = req.send();
             if (cr.getStatus() == 200) {
-                logger.info("Success getting token");
+                logger.info(prefix() + "Success getting token");
                 saveTokenResponse(cr.getContentAsString());
                 listener.onAccessTokenResponse(token);
-                logger.info("ATR {}", token);
+                logger.info(prefix() + "ATR {}", token);
             } else {
-                logger.debug("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
+                logger.debug(prefix() + "Failed to refresh token {} {}", cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
-            logger.debug("Error getting image resources {}", e.getMessage());
+            logger.debug(prefix() + "Failed to refresh token {}", e.getMessage());
         }
     }
 
     public String getToken() {
-        logger.info("Investigate token {}", token);
+        logger.info(prefix() + "Investigate token {}", token);
         if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-            logger.info("Token {} expired", token);
+            logger.info(prefix() + "Token {} expired", token);
             if (!token.getRefreshToken().equals(Constants.NOT_SET)) {
                 refreshToken();
                 // token shall be updated now - retry expired check
                 if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-                    token = INVALID_TOKEN;
-                    logger.warn("Not able to return fresh token");
+                    // token = INVALID_TOKEN;
+                    logger.warn(prefix() + "Not able to return fresh token");
                     listener.onAccessTokenResponse(token);
                     return Constants.NOT_SET;
                 }
             } else {
-                token = INVALID_TOKEN;
-                logger.info("Refresh token empty");
+                // token = INVALID_TOKEN;
+                logger.info(prefix() + "Refresh token empty");
             }
         }
         return token.getAccessToken();
@@ -247,18 +247,22 @@ public class AuthService {
         atr.setExpiresIn(tr.expires_in);
         // Preserve refresh token if available
         if (Constants.NOT_SET.equals(tr.refresh_token) && !Constants.NOT_SET.equals(token.getRefreshToken())) {
-            logger.info("Preserve refresh token {}", token.getRefreshToken());
+            logger.info(prefix() + "Preserve refresh token {}", token.getRefreshToken());
             atr.setRefreshToken(token.getRefreshToken());
         } else if (!Constants.NOT_SET.equals(tr.refresh_token)) {
-            logger.info("New refresh token {}", tr.refresh_token);
+            logger.info(prefix() + "New refresh token {}", tr.refresh_token);
             atr.setRefreshToken(tr.refresh_token);
         } else {
-            logger.info("Neither new nor old refresh token available");
+            logger.info(prefix() + "Neither new nor old refresh token available");
         }
         atr.setTokenType("Bearer");
         atr.setScope(Constants.SCOPE);
-        logger.info("Store at {} token {}", identifier, atr);
+        logger.info(prefix() + "Store at {} token {}", identifier, atr);
         storage.put(identifier, Utils.toString(atr));
         token = atr;
+    }
+
+    private String prefix() {
+        return "[" + config.email + "] ";
     }
 }

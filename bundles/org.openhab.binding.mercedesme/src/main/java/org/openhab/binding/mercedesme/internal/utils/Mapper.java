@@ -107,7 +107,7 @@ public class Mapper {
                 case "tirepressureFrontRight":
                 case "tirepressureRearLeft":
                 case "tirepressureRearRight":
-                    state = QuantityType.valueOf(value.getDoubleValue(), Units.BAR);
+                    state = QuantityType.valueOf(Double.valueOf(value.getDisplayValue()), Units.BAR);
                     return new ChannelStateMap(ch[0], ch[1], state);
                 default:
                     LOGGER.trace("No mapping available for {}", key);

@@ -348,6 +348,7 @@ public class VehicleHandler extends BaseThingHandler {
                 // logger.trace("Unable to deliver state for {}", key);
             }
         });
+        updateRadius();
     }
 
     private void updateRadius() {

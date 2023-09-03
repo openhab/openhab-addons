@@ -13,7 +13,6 @@
 			<channel id="fuel-level" typeId="fuel-level-channel"/>
 			<channel id="fuel-remain" typeId="fuel-remain-channel"/>
 			<channel id="fuel-open" typeId="fuel-open-channel"/>
-			<channel id="last-update" typeId="last-range-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

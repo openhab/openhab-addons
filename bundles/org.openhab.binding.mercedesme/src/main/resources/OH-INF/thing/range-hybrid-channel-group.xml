@@ -20,7 +20,6 @@
 			<channel id="fuel-open" typeId="fuel-open-channel"/>
 			<channel id="range-hybrid" typeId="range-hybrid-channel"/>
 			<channel id="radius-hybrid" typeId="radius-fuel-channel"/>
-			<channel id="last-update" typeId="last-range-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

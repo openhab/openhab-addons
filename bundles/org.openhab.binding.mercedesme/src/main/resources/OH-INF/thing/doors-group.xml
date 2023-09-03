@@ -14,7 +14,6 @@
 			<channel id="deck-lid" typeId="deck-lid-channel"/>
 			<channel id="sunroof" typeId="sunroof-channel"/>
 			<channel id="rooftop" typeId="rooftop-channel"/>
-			<channel id="last-update" typeId="last-doors-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

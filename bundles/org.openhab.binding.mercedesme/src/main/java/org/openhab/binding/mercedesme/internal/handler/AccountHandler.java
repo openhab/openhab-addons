@@ -97,14 +97,13 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
             }
         }
-        // open websocket for 1 min each 10 minutes
-        scheduler.scheduleWithFixedDelay(this::openWS, 0, 10, TimeUnit.MINUTES);
+        scheduler.scheduleWithFixedDelay(this::update, 0, 10, TimeUnit.MINUTES);
     }
 
-    public void openWS() {
+    public void update() {
         if (authService.isPresent()) {
             if (!authService.get().getToken().equals(Constants.NOT_SET)) {
-                ws.open(OPEN_TIME_MS);
+                ws.run(OPEN_TIME_MS);
             } else {
                 logger.info("No Token available");
             }
@@ -174,7 +173,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         logger.info("Token received {}", tokenResponse);
         if (!Constants.NOT_SET.equals(tokenResponse.getAccessToken())) {
             updateStatus(ThingStatus.ONLINE);
-            scheduler.schedule(this::openWS, 0, TimeUnit.SECONDS);
+            scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
         } else if (server.isEmpty()) {
             // server not running - fix first
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
@@ -216,6 +215,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     public void registerVin(String vin, VehicleHandler handler) {
         vehicleDataMapper.put(vin, handler);
+        scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
     }
 
     public void unregisterVin(String vin) {
