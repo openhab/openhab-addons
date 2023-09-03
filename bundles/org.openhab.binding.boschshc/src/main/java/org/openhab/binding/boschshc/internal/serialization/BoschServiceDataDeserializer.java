@@ -1,9 +1,6 @@
 package org.openhab.binding.boschshc.internal.serialization;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
@@ -17,24 +14,26 @@ public class BoschServiceDataDeserializer implements JsonDeserializer<BoschSHCSe
                                             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 
 
-        switch (jsonElement.getAsJsonObject().get("@type").getAsString()) {
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        JsonElement dataType = jsonObject.get("@type");
+        switch (dataType.getAsString()) {
             case "DeviceServiceData" -> {
                 var deviceServiceData = new DeviceServiceData();
-                deviceServiceData.deviceId = jsonElement.getAsJsonObject().get("deviceId").getAsString();
-                deviceServiceData.state = jsonElement.getAsJsonObject().get("state");
-                deviceServiceData.id = jsonElement.getAsJsonObject().get("id").getAsString();
-                deviceServiceData.path = jsonElement.getAsJsonObject().get("path").getAsString();
+                deviceServiceData.deviceId = jsonObject.get("deviceId").getAsString();
+                deviceServiceData.state = jsonObject.get("state");
+                deviceServiceData.id = jsonObject.get("id").getAsString();
+                deviceServiceData.path = jsonObject.get("path").getAsString();
                 return deviceServiceData;
             }
             case "scenarioTriggered" -> {
                 var scenario = new Scenario();
-                scenario.id = jsonElement.getAsJsonObject().get("id").getAsString();
-                scenario.name = jsonElement.getAsJsonObject().get("name").getAsString();
-                scenario.lastTimeTriggered = jsonElement.getAsJsonObject().get("lastTimeTriggered").getAsString();
+                scenario.id = jsonObject.get("id").getAsString();
+                scenario.name = jsonObject.get("name").getAsString();
+                scenario.lastTimeTriggered = jsonObject.get("lastTimeTriggered").getAsString();
                 return scenario;
             }
             default -> {
-                return new BoschSHCServiceState(jsonElement.getAsJsonObject().get("@type").getAsString());
+                return new BoschSHCServiceState(dataType.getAsString());
             }
         }
     }

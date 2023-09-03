@@ -33,6 +33,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.*;
 import org.openhab.binding.boschshc.internal.discovery.ThingDiscoveryService;
@@ -42,11 +43,8 @@ import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.binding.boschshc.internal.services.dto.JsonRestExceptionResponse;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -410,7 +408,12 @@ public class BridgeHandler extends BaseBridgeHandler {
             if(DeviceServiceData.class == serviceState.getClass()) {
                 handleDeviceServiceData((DeviceServiceData) serviceState);
             } else if (Scenario.class == serviceState.getClass()) {
-
+                final Channel channel = this.getThing().getChannel(BoschSHCBindingConstants.CHANNEL_SCENARIO);
+                if(channel != null && isLinked(channel.getUID()) ){
+                    updateState(channel.getUID(), new StringType(((Scenario)serviceState).name));
+                } else {
+                    logger.info("no channel with id '{}' found or linked", BoschSHCBindingConstants.CHANNEL_SCENARIO);
+                }
             }
         }
     }
