@@ -100,3 +100,10 @@ jobs:
           title: CheckStyle Violations
           path: '**/checkstyle-result.xml'
           mode: inline
+
+      - name: Upload Binary
+        if: ${{ always() && (steps.build.outcome == 'success') }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: bundles/org.openhab.binding.boschshc/target/*.jar
