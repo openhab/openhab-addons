@@ -327,7 +327,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             } else if (device.isSwitchableOutlet()) {
                 return GROUP_SWITCH;
             }
-        } else if (device instanceof DeviceModel model && device.isHANFUNUnit()) {
+        } else if (device instanceof DeviceModel deviceModel && device.isHANFUNUnit()) {
             if (device.isHANFUNBlinds()) {
                 return DEVICE_HAN_FUN_BLINDS;
             } else if (device.isColorLight()) {
@@ -335,7 +335,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             } else if (device.isDimmableLight()) {
                 return DEVICE_HAN_FUN_DIMMABLE_BULB;
             }
-            List<String> interfaces = Arrays.asList(model.getEtsiunitinfo().getInterfaces().split(","));
+            List<String> interfaces = Arrays.asList(deviceModel.getEtsiunitinfo().getInterfaces().split(","));
             if (interfaces.contains(HAN_FUN_INTERFACE_ALERT)) {
                 return DEVICE_HAN_FUN_CONTACT;
             } else if (interfaces.contains(HAN_FUN_INTERFACE_SIMPLE_BUTTON)) {

@@ -349,13 +349,13 @@ public class SocketChannelSession implements SocketSession {
                     final Object response = responses.poll(1, TimeUnit.SECONDS);
 
                     if (response != null) {
-                        if (response instanceof String string) {
+                        if (response instanceof String stringCommand) {
                             try {
                                 logger.debug("Dispatching response: {}", response);
                                 final SocketSessionListener[] listeners = SocketChannelSession.this.listeners
                                         .toArray(new SocketSessionListener[0]);
                                 for (SocketSessionListener listener : listeners) {
-                                    listener.responseReceived(string);
+                                    listener.responseReceived(stringCommand);
                                 }
                             } catch (Exception e) {
                                 logger.warn("Exception occurred processing the response '{}': ", response, e);

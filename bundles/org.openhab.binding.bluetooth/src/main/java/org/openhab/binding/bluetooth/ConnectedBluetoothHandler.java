@@ -80,8 +80,8 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
         Object idleDisconnectDelayRaw = getConfig().get(BluetoothBindingConstants.CONFIGURATION_IDLE_DISCONNECT_DELAY);
         idleDisconnectDelay = 1000;
-        if (idleDisconnectDelayRaw instanceof Number number) {
-            idleDisconnectDelay = number.intValue();
+        if (idleDisconnectDelayRaw instanceof Number numberCommand) {
+            idleDisconnectDelay = numberCommand.intValue();
         }
 
         // Start the recurrent job if the device is always connected

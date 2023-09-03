@@ -68,8 +68,8 @@ public class RoamingHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof RoamingBluetoothAdapter adapter) {
-            UID uid = adapter.getUID();
+        if (thingHandler instanceof RoamingBluetoothAdapter bluetoothAdapter) {
+            UID uid = bluetoothAdapter.getUID();
             ServiceRegistration<?> serviceReg = this.serviceRegs.remove(uid);
             if (serviceReg != null) {
                 serviceReg.unregister();

@@ -159,9 +159,9 @@ public class FloureonThermostatHandler extends BroadlinkBaseHandler {
 
     private void handleSetpointCommand(ChannelUID channelUID, Command command) {
         FloureonDevice floureonDevice = this.floureonDevice;
-        if (command instanceof QuantityType type && floureonDevice != null) {
+        if (command instanceof QuantityType quantityCommand && floureonDevice != null) {
             try {
-                QuantityType<?> temperatureQuantityType = type.toUnit(SIUnits.CELSIUS);
+                QuantityType<?> temperatureQuantityType = quantityCommand.toUnit(SIUnits.CELSIUS);
                 if (temperatureQuantityType != null) {
                     floureonDevice.setThermostatTemp(temperatureQuantityType.doubleValue());
                 } else {
@@ -211,8 +211,8 @@ public class FloureonThermostatHandler extends BroadlinkBaseHandler {
     }
 
     private void handleSetTimeCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof DateTimeType type) {
-            ZonedDateTime zonedDateTime = type.getZonedDateTime();
+        if (command instanceof DateTimeType dateTimeCommand) {
+            ZonedDateTime zonedDateTime = dateTimeCommand.getZonedDateTime();
             try {
                 new SetTimeCommand(tob(zonedDateTime.getHour()), tob(zonedDateTime.getMinute()),
                         tob(zonedDateTime.getSecond()), tob(zonedDateTime.getDayOfWeek().getValue()))

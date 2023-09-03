@@ -204,8 +204,8 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
 
     private @Nullable Integer getTemperatureFromCommand(Command command) {
         BigDecimal newTemperature;
-        if (command instanceof DecimalType type) {
-            newTemperature = type.toBigDecimal();
+        if (command instanceof DecimalType decimalCommand) {
+            newTemperature = decimalCommand.toBigDecimal();
         } else if (command instanceof QuantityType) {
             @SuppressWarnings("unchecked")
             QuantityType<Temperature> temperatureCelsius = ((QuantityType<Temperature>) command).toUnit(CELSIUS);

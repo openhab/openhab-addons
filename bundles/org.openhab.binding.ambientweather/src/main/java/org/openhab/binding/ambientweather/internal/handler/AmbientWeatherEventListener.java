@@ -263,10 +263,10 @@ public class AmbientWeatherEventListener {
     private void handleError(String event, Object... args) {
         String reason = "Unknown";
         if (args.length > 0) {
-            if (args[0] instanceof String string) {
-                reason = string;
+            if (args[0] instanceof String stringCommand) {
+                reason = stringCommand;
             } else if (args[0] instanceof Exception exception) {
-                reason = String.format("Exception=%s Message=%s", args[0].getClass(), exception.getMessage());
+                reason = stringCommand.format("Exception=%s Message=%s", args[0].getClass(), exception.getMessage());
             }
         }
         logger.debug("Listener: Received socket event: {}, Reason: {}", event, reason);

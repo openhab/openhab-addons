@@ -235,7 +235,7 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
         }
         switch (channelUID.getId()) {
             case AM43BindingConstants.CHANNEL_ID_POSITION:
-                if (command instanceof PercentType percent) {
+                if (command instanceof PercentType percentCommand) {
                     MotorSettings settings = motorSettings;
                     if (settings == null) {
                         logger.warn("Cannot set position before settings have been received.");
@@ -248,15 +248,15 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                                 """);
                         return;
                     }
-                    int value = percent.intValue();
+                    int value = percentCommand.intValue();
                     if (getAM43Config().invertPosition) {
                         value = 100 - value;
                     }
                     submitCommand(new SetPositionCommand(value));
                     return;
                 }
-                if (command instanceof StopMoveType type) {
-                    switch (type) {
+                if (command instanceof StopMoveType stopMoveCommand) {
+                    switch (stopMoveCommand) {
                         case STOP:
                             submitCommand(new ControlCommand(ControlAction.STOP));
                             return;
@@ -265,8 +265,8 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                             return;
                     }
                 }
-                if (command instanceof UpDownType type) {
-                    switch (type) {
+                if (command instanceof UpDownType upDownCommand) {
+                    switch (upDownCommand) {
                         case UP:
                             submitCommand(new ControlCommand(ControlAction.OPEN));
                             return;
@@ -277,10 +277,10 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                 }
                 return;
             case AM43BindingConstants.CHANNEL_ID_SPEED:
-                if (command instanceof DecimalType speedType) {
+                if (command instanceof DecimalType decimalCommand) {
                     MotorSettings settings = motorSettings;
                     if (settings != null) {
-                        settings.setSpeed(speedType.intValue());
+                        settings.setSpeed(decimalCommand.intValue());
                         submitCommand(new SetSettingsCommand(settings));
                     } else {
                         logger.warn("Cannot set Speed before setting have been received");

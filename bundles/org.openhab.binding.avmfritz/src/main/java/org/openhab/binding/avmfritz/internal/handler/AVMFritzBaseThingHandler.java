@@ -496,10 +496,10 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             case CHANNEL_COLOR:
             case CHANNEL_BRIGHTNESS:
                 BigDecimal brightness = null;
-                if (command instanceof HSBType hsbType) {
-                    brightness = hsbType.getBrightness().toBigDecimal();
-                    fritzBox.setUnmappedHueAndSaturation(ain, hsbType.getHue().intValue(),
-                            ColorControlModel.fromPercent(hsbType.getSaturation()), 0);
+                if (command instanceof HSBType hsbCommand) {
+                    brightness = hsbCommand.getBrightness().toBigDecimal();
+                    fritzBox.setUnmappedHueAndSaturation(ain, hsbCommand.getHue().intValue(),
+                            ColorControlModel.fromPercent(hsbCommand.getSaturation()), 0);
                 } else if (command instanceof PercentType brightnessPercent) {
                     brightness = brightnessPercent.toBigDecimal();
                 } else if (command instanceof OnOffType) {
@@ -523,8 +523,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 break;
             case CHANNEL_COLORTEMPERATURE:
                 BigDecimal colorTemperaturePct = null;
-                if (command instanceof PercentType colorPercent) {
-                    colorTemperaturePct = colorPercent.toBigDecimal();
+                if (command instanceof PercentType percentCommand) {
+                    colorTemperaturePct = percentCommand.toBigDecimal();
                 }
                 if (colorTemperaturePct != null) {
                     int pct = colorTemperaturePct.intValue();
@@ -538,13 +538,13 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 break;
             case CHANNEL_COLORTEMPERATURE_ABS:
                 BigDecimal colorTemperature = null;
-                if (command instanceof QuantityType type) {
-                    QuantityType<?> convertedCommand = type.toInvertibleUnit(Units.KELVIN);
+                if (command instanceof QuantityType quantityCommand) {
+                    QuantityType<?> convertedCommand = quantityCommand.toInvertibleUnit(Units.KELVIN);
                     if (convertedCommand != null) {
                         colorTemperature = convertedCommand.toBigDecimal();
                     }
-                } else if (command instanceof DecimalType type) {
-                    colorTemperature = type.toBigDecimal();
+                } else if (command instanceof DecimalType decimalCommand) {
+                    colorTemperature = decimalCommand.toBigDecimal();
                 }
                 if (colorTemperature != null) {
                     fritzBox.setColorTemperature(ain, colorTemperature.intValue(), 0);
@@ -552,8 +552,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 break;
             case CHANNEL_SETTEMP:
                 BigDecimal temperature = null;
-                if (command instanceof DecimalType type) {
-                    temperature = normalizeCelsius(type.toBigDecimal());
+                if (command instanceof DecimalType decimalCommand) {
+                    temperature = normalizeCelsius(decimalCommand.toBigDecimal());
                 } else if (command instanceof QuantityType type) {
                     @SuppressWarnings("unchecked")
                     QuantityType<Temperature> convertedCommand = ((QuantityType<Temperature>) command)
@@ -625,8 +625,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     } else {
                         fritzBox.setBlind(ain, BlindCommand.CLOSE);
                     }
-                } else if (command instanceof PercentType type) {
-                    BigDecimal levelPercentage = type.toBigDecimal();
+                } else if (command instanceof PercentType percentCommand) {
+                    BigDecimal levelPercentage = percentCommand.toBigDecimal();
                     fritzBox.setLevelPercentage(ain, levelPercentage);
                 } else {
                     logger.debug("Received unknown rollershutter command type '{}'", command.toString());

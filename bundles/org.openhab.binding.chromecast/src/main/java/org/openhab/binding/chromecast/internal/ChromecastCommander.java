@@ -158,16 +158,16 @@ public class ChromecastCommander {
                 return;
             }
 
-            if (command instanceof PlayPauseType playPause) {
+            if (command instanceof PlayPauseType playPauseCommand) {
                 MediaStatus mediaStatus = chromeCast.getMediaStatus();
                 logger.debug("mediaStatus {}", mediaStatus);
                 if (mediaStatus == null || mediaStatus.playerState == MediaStatus.PlayerState.IDLE) {
                     logger.debug("{} command ignored because media is not loaded", command);
                     return;
                 }
-                if (playPause == PlayPauseType.PLAY) {
+                if (decimalCommand == PlayPauseType.PLAY) {
                     chromeCast.play();
-                } else if (playPause == PlayPauseType.PAUSE
+                } else if (decimalCommand == PlayPauseType.PAUSE
                         && ((mediaStatus.supportedMediaCommands & 0x00000001) == 0x1)) {
                     chromeCast.pause();
                 } else {
@@ -197,8 +197,8 @@ public class ChromecastCommander {
     }
 
     public void handleVolume(final Command command) {
-        if (command instanceof PercentType volume) {
-            setVolumeInternal(volume);
+        if (command instanceof PercentType percentCommand) {
+            setVolumeInternal(percentCommand);
         } else if (command == IncreaseDecreaseType.INCREASE) {
             setVolumeInternal(new PercentType(
                     Math.min(statusUpdater.getVolume().intValue() + VOLUMESTEP, PercentType.HUNDRED.intValue())));

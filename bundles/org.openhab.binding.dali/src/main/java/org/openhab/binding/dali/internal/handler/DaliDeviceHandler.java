@@ -93,25 +93,25 @@ public class DaliDeviceHandler extends BaseThingHandler {
 
                 boolean queryDeviceState = false;
 
-                if (command instanceof PercentType type) {
-                    byte dimmValue = (byte) ((type.floatValue() * DALI_SWITCH_100_PERCENT) / 100);
+                if (command instanceof PercentType percentCommand) {
+                    byte dimmValue = (byte) ((percentCommand.floatValue() * DALI_SWITCH_100_PERCENT) / 100);
                     // A dimm value of zero is handled correctly by DALI devices, i.e. they are turned off
                     getBridgeHandler().sendCommand(new DaliDAPCCommand(address, dimmValue));
-                } else if (command instanceof OnOffType type) {
-                    if (type == OnOffType.ON) {
+                } else if (command instanceof OnOffType onOffCommand) {
+                    if (onOffCommand == OnOffType.ON) {
                         getBridgeHandler().sendCommand(new DaliDAPCCommand(address, (byte) DALI_SWITCH_100_PERCENT));
                     } else {
                         getBridgeHandler().sendCommand(DaliStandardCommand.createOffCommand(address));
                     }
-                } else if (command instanceof IncreaseDecreaseType type) {
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     if (CHANNEL_DIM_AT_FADE_RATE.equals(channelUID.getId())) {
-                        if (type == IncreaseDecreaseType.INCREASE) {
+                        if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                             getBridgeHandler().sendCommand(DaliStandardCommand.createUpCommand(address));
                         } else {
                             getBridgeHandler().sendCommand(DaliStandardCommand.createDownCommand(address));
                         }
                     } else {
-                        if (type == IncreaseDecreaseType.INCREASE) {
+                        if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                             getBridgeHandler().sendCommand(DaliStandardCommand.createStepUpCommand(address));
                         } else {
                             getBridgeHandler().sendCommand(DaliStandardCommand.createStepDownCommand(address));

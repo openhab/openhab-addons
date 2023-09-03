@@ -76,16 +76,16 @@ public class DaliRgbHandler extends BaseThingHandler {
             if (CHANNEL_COLOR.equals(channelUID.getId())) {
                 boolean queryDeviceState = false;
 
-                if (command instanceof HSBType type) {
-                    PercentType[] rgb = type.toRGB();
+                if (command instanceof HSBType hsbCommand) {
+                    PercentType[] rgb = hsbCommand.toRGB();
 
                     for (int i = 0; i < 3; i++) {
                         byte dimmValue = (byte) ((rgb[i].floatValue() * DALI_SWITCH_100_PERCENT) / 100);
                         getBridgeHandler().sendCommand(
                                 new DaliDAPCCommand(DaliAddress.createShortAddress(outputs.get(i)), dimmValue));
                     }
-                } else if (command instanceof OnOffType type) {
-                    if (type == OnOffType.ON) {
+                } else if (command instanceof OnOffType onOffCommand) {
+                    if (onOffCommand == OnOffType.ON) {
                         for (Integer output : outputs) {
                             getBridgeHandler().sendCommand(new DaliDAPCCommand(DaliAddress.createShortAddress(output),
                                     (byte) DALI_SWITCH_100_PERCENT));

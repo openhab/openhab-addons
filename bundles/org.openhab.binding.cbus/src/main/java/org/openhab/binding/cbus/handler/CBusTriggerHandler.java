@@ -58,8 +58,8 @@ public class CBusTriggerHandler extends CBusGroupHandler {
             if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_VALUE)) {
                 logger.debug("Channel Value command for {}: {}", channelUID, command);
                 try {
-                    if (command instanceof DecimalType type) {
-                        group.TriggerEvent(type.intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        group.TriggerEvent(decimalCommand.intValue());
                     }
                 } catch (CGateException e) {
                     logger.debug("Failed to send trigger command {} to {}", command, group, e);

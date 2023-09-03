@@ -187,8 +187,8 @@ public class BigAssFanHandler extends BaseThingHandler {
         logger.debug("Handling fan speed command for {}: {}", thing.getUID(), command);
 
         // <mac;FAN;SPD;SET;0..7>
-        if (command instanceof PercentType speedPercent) {
-            sendCommand(macAddress, ";FAN;SPD;SET;".concat(BigAssFanConverter.percentToSpeed(speedPercent)));
+        if (command instanceof PercentType percentCommand) {
+            sendCommand(macAddress, ";FAN;SPD;SET;".concat(BigAssFanConverter.percentToSpeed(percentCommand)));
         }
     }
 
@@ -238,48 +238,48 @@ public class BigAssFanHandler extends BaseThingHandler {
     private void handleFanLearnSpeedMin(Command command) {
         logger.debug("Handling fan learn speed minimum command {}", command);
         // <mac;FAN;SPD;SET;MIN;0..7>
-        if (command instanceof PercentType type) {
+        if (command instanceof PercentType percentCommand) {
             // Send min speed set command
-            sendCommand(macAddress, ";LEARN;MINSPEED;SET;".concat(BigAssFanConverter.percentToSpeed(type)));
-            fanStateMap.put(CHANNEL_FAN_LEARN_MINSPEED, type);
+            sendCommand(macAddress, ";LEARN;MINSPEED;SET;".concat(BigAssFanConverter.percentToSpeed(percentCommand)));
+            fanStateMap.put(CHANNEL_FAN_LEARN_MINSPEED, percentCommand);
             // Don't let max be less than min
-            adjustMaxSpeed(type, CHANNEL_FAN_LEARN_MAXSPEED, ";LEARN;MAXSPEED;");
+            adjustMaxSpeed(percentCommand, CHANNEL_FAN_LEARN_MAXSPEED, ";LEARN;MAXSPEED;");
         }
     }
 
     private void handleFanLearnSpeedMax(Command command) {
         logger.debug("Handling fan learn speed maximum command {}", command);
         // <mac;FAN;SPD;SET;MAX;0..7>
-        if (command instanceof PercentType type) {
+        if (command instanceof PercentType percentCommand) {
             // Send max speed set command
-            sendCommand(macAddress, ";LEARN;MAXSPEED;SET;;".concat(BigAssFanConverter.percentToSpeed(type)));
-            fanStateMap.put(CHANNEL_FAN_LEARN_MAXSPEED, type);
+            sendCommand(macAddress, ";LEARN;MAXSPEED;SET;;".concat(BigAssFanConverter.percentToSpeed(percentCommand)));
+            fanStateMap.put(CHANNEL_FAN_LEARN_MAXSPEED, percentCommand);
             // Don't let min be greater than max
-            adjustMinSpeed(type, CHANNEL_FAN_LEARN_MINSPEED, ";LEARN;MINSPEED;");
+            adjustMinSpeed(percentCommand, CHANNEL_FAN_LEARN_MINSPEED, ";LEARN;MINSPEED;");
         }
     }
 
     private void handleFanSpeedMin(Command command) {
         logger.debug("Handling fan speed minimum command {}", command);
         // <mac;FAN;SPD;SET;MIN;0..7>
-        if (command instanceof PercentType type) {
+        if (command instanceof PercentType percentCommand) {
             // Send min speed set command
-            sendCommand(macAddress, ";FAN;SPD;SET;MIN;".concat(BigAssFanConverter.percentToSpeed(type)));
-            fanStateMap.put(CHANNEL_FAN_SPEED_MIN, type);
+            sendCommand(macAddress, ";FAN;SPD;SET;MIN;".concat(BigAssFanConverter.percentToSpeed(percentCommand)));
+            fanStateMap.put(CHANNEL_FAN_SPEED_MIN, percentCommand);
             // Don't let max be less than min
-            adjustMaxSpeed(type, CHANNEL_FAN_SPEED_MAX, ";FAN;SPD;SET;MAX;");
+            adjustMaxSpeed(percentCommand, CHANNEL_FAN_SPEED_MAX, ";FAN;SPD;SET;MAX;");
         }
     }
 
     private void handleFanSpeedMax(Command command) {
         logger.debug("Handling fan speed maximum command {}", command);
         // <mac;FAN;SPD;SET;MAX;0..7>
-        if (command instanceof PercentType type) {
+        if (command instanceof PercentType percentCommand) {
             // Send max speed set command
-            sendCommand(macAddress, ";FAN;SPD;SET;MAX;".concat(BigAssFanConverter.percentToSpeed(type)));
-            fanStateMap.put(CHANNEL_FAN_SPEED_MAX, type);
+            sendCommand(macAddress, ";FAN;SPD;SET;MAX;".concat(BigAssFanConverter.percentToSpeed(percentCommand)));
+            fanStateMap.put(CHANNEL_FAN_SPEED_MAX, percentCommand);
             // Don't let min be greater than max
-            adjustMinSpeed(type, CHANNEL_FAN_SPEED_MIN, ";FAN;SPD;SET;MIN;");
+            adjustMinSpeed(percentCommand, CHANNEL_FAN_SPEED_MIN, ";FAN;SPD;SET;MIN;");
         }
     }
 

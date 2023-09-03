@@ -59,8 +59,8 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     protected void handleCommand(final String channelId, final Command command) throws DraytonWiserApiException {
         switch (channelId) {
             case CHANNEL_CURRENT_SETPOINT:
-                if (command instanceof QuantityType type) {
-                    setSetPoint(type);
+                if (command instanceof QuantityType quantityCommand) {
+                    setSetPoint(quantityCommand);
                 }
                 break;
             case CHANNEL_MANUAL_MODE_STATE:
@@ -69,8 +69,8 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
                 }
                 break;
             case CHANNEL_ROOM_BOOST_DURATION:
-                if (command instanceof DecimalType type) {
-                    setBoostDuration(Math.round((type.floatValue() * 60)));
+                if (command instanceof DecimalType decimalCommand) {
+                    setBoostDuration(Math.round((decimalCommand.floatValue() * 60)));
                 }
                 break;
             case CHANNEL_ROOM_WINDOW_STATE_DETECTION:

@@ -931,8 +931,8 @@ public class DsAPIImpl implements DsAPI {
                             .addRequestClass(ClassKeys.ZONE).addFunction(FunctionKeys.SET_TEMEPERATURE_CONTROL_VALUE)
                             .addDefaultZoneParameter(sessionToken, zoneID, zoneName);
                     for (Object[] objAry : controlValues) {
-                        if (objAry.length == 2 && objAry[0] instanceof String string && objAry[1] instanceof Integer) {
-                            builder.addParameter(string, SimpleRequestBuilder.objectToString(objAry[1]));
+                        if (objAry.length == 2 && objAry[0] instanceof String stringCommand && objAry[1] instanceof Integer) {
+                            builder.addParameter(stringCommand, SimpleRequestBuilder.objectToString(objAry[1]));
                         } else {
                             builder.buildRequestString();
                             throw new IllegalArgumentException(

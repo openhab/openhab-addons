@@ -88,8 +88,8 @@ public class CBusLightHandler extends CBusGroupHandler {
                         } else if (command == OnOffType.OFF) {
                             group.off();
                         }
-                    } else if (command instanceof PercentType value) {
-                        group.ramp((int) Math.round(value.doubleValue() / 100 * 255), 0);
+                    } else if (command instanceof PercentType percentCommand) {
+                        group.ramp((int) Math.round(percentCommand.doubleValue() / 100 * 255), 0);
                     } else if (command instanceof IncreaseDecreaseType) {
                         int level = group.getLevel();
                         if (command == IncreaseDecreaseType.DECREASE) {

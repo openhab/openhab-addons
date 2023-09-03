@@ -222,14 +222,14 @@ public class SmartherModuleHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_SETTINGS_PROGRAM:
-                if (command instanceof DecimalType program) {
-                    localModuleSettings.setProgram(program.intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    localModuleSettings.setProgram(decimalCommand.intValue());
                     return;
                 }
                 break;
             case CHANNEL_SETTINGS_BOOSTTIME:
-                if (command instanceof DecimalType time) {
-                    localModuleSettings.setBoostTime(BoostTime.fromValue(time.intValue()));
+                if (command instanceof DecimalType decimalCommand) {
+                    localModuleSettings.setBoostTime(BoostTime.fromValue(decimalCommand.intValue()));
                     return;
                 }
                 break;
@@ -324,8 +324,8 @@ public class SmartherModuleHandler extends BaseThingHandler {
      * @return {@code true} if the change succeeded, {@code false} otherwise
      */
     private boolean changeTimeHour(Command command, final ModuleSettings settings) {
-        if (command instanceof DecimalType hour) {
-            int endHour = hour.intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            int endHour = decimalCommand.intValue();
             if (endHour >= 0 && endHour <= 23) {
                 settings.setEndHour(endHour);
                 return true;
