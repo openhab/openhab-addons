@@ -104,7 +104,8 @@ public class DimmerThingHandler extends DmxThingHandler {
                         return;
                     } else {
                         logger.trace("starting {} fade in thing {}", command, this.thing.getUID());
-                        targetValueSet = increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE) ? turnOnValue : turnOffValue;
+                        targetValueSet = increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE) ? turnOnValue
+                                : turnOffValue;
                         targetValueSet.setFadeTime(dimTime);
                         isDimming = true;
                     }

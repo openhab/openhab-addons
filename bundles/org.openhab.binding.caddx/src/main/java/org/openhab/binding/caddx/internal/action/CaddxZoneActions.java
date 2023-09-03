@@ -39,7 +39,7 @@ public class CaddxZoneActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ThingHandlerZone zoneHadler) {
+        if (handler instanceof ThingHandlerZone zoneHandler) {
             this.handler = zoneHandler;
         }
     }
