@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @WebSocket
 public class MBWebsocket {
     private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
-    private final int CONNECT_TIMEOUT_MS = 5000;
+    private final int CONNECT_TIMEOUT_MS = 10 * 1000;
     private AccountHandler accountHandler;
     private boolean running = false;
     private @Nullable Future<?> sessionFuture;
@@ -54,7 +54,7 @@ public class MBWebsocket {
     /**
      * Lifecycle handling
      */
-    public void open(int runtimeMS) {
+    public void run(int runtimeMS) {
         synchronized (this) {
             if (running) {
                 return;

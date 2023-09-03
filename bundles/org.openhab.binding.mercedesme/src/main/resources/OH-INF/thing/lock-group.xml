@@ -10,7 +10,6 @@
 			<channel id="doors" typeId="doors-lock-channel"/>
 			<channel id="deck-lid" typeId="deck-lid-lock-channel"/>
 			<channel id="flap" typeId="flap-lock-channel"/>
-			<channel id="last-update" typeId="last-lock-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

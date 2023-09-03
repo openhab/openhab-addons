@@ -9,12 +9,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.CommandRequest;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdatesByVIN;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
-import org.openhab.binding.mercedesme.internal.utils.Mapper;
 
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.MapEntry;
@@ -83,10 +84,10 @@ class ProtoTest {
                     Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433")
                             .getAttributesMap();
                     m.forEach((key, value) -> {
-                        System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
-                        if (key.contains("tirepressure")) {
-                            System.out.println(Mapper.getChannelStateMap(key, value));
-                            System.out.println(value);
+                        // System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
+                        if (key.contains("cond")) {
+                            // System.out.println(Mapper.getChannelStateMap(key, value));
+                            System.out.println(key + ":" + value);
                         }
                     });
                 }
@@ -96,5 +97,15 @@ class ProtoTest {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Test
+    void testCommandRequest() {
+        ClientMessage cm = ClientMessage.getDefaultInstance();
+        System.out.println(cm.getAllFields());
+        CommandRequest cr = CommandRequest.newBuilder().setVin("abc").setRequestId("xyz").build();
+        System.out.println(cr.getAllFields());
+        ClientMessage.newBuilder().setCommandRequest(cr).build();
+
     }
 }

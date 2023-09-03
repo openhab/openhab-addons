@@ -13,7 +13,6 @@
 			<channel id="soc" typeId="soc-channel"/>
 			<channel id="charged" typeId="charged-channel"/>
 			<channel id="uncharged" typeId="uncharged-channel"/>
-			<channel id="last-update" typeId="last-range-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
