@@ -270,7 +270,8 @@ public class BondDeviceHandler extends BaseThingHandler {
                 } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     logger.trace("Fan light brightness increase/decrease command {}", command);
                     api.executeDeviceAction(deviceId,
-                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? BondDeviceAction.INCREASE_BRIGHTNESS
+                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE
+                                    ? BondDeviceAction.INCREASE_BRIGHTNESS
                                     : BondDeviceAction.DECREASE_BRIGHTNESS),
                             null);
                 } else if (command instanceof OnOffType) {
@@ -311,7 +312,8 @@ public class BondDeviceHandler extends BaseThingHandler {
                 } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     logger.trace("Fan uplight brightness increase/decrease command {}", command);
                     api.executeDeviceAction(deviceId,
-                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? BondDeviceAction.INCREASE_UP_LIGHT_BRIGHTNESS
+                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE
+                                    ? BondDeviceAction.INCREASE_UP_LIGHT_BRIGHTNESS
                                     : BondDeviceAction.DECREASE_UP_LIGHT_BRIGHTNESS),
                             null);
                 } else if (command instanceof OnOffType) {
@@ -352,7 +354,8 @@ public class BondDeviceHandler extends BaseThingHandler {
                 } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     logger.trace("Fan down light brightness increase/decrease command");
                     api.executeDeviceAction(deviceId,
-                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? BondDeviceAction.INCREASE_DOWN_LIGHT_BRIGHTNESS
+                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE
+                                    ? BondDeviceAction.INCREASE_DOWN_LIGHT_BRIGHTNESS
                                     : BondDeviceAction.DECREASE_DOWN_LIGHT_BRIGHTNESS),
                             null);
                 } else if (command instanceof OnOffType) {

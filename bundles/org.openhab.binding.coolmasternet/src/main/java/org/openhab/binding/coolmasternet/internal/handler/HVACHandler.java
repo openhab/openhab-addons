@@ -149,7 +149,8 @@ public class HVACHandler extends BaseThingHandler {
                             updateState(ON, "1".equals(on) ? OnOffType.ON : OnOffType.OFF);
                         }
                     } else if (command instanceof OnOffType onOffCommand) {
-                        controller.sendCommand(String.format("%s %s", onOffCommand == OnOffType.ON ? "on" : "off", uid));
+                        controller
+                                .sendCommand(String.format("%s %s", onOffCommand == OnOffType.ON ? "on" : "off", uid));
                     }
                     break;
                 case SET_TEMP:

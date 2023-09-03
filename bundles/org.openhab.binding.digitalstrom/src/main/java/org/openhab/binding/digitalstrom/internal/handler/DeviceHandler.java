@@ -205,7 +205,8 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
         } else if (!device.isShade()) {
             if (DsChannelTypeProvider.isOutputChannel(channelUID.getId())) {
                 if (command instanceof PercentType percentCommand) {
-                    device.setOutputValue((short) fromPercentToValue(percentCommand.intValue(), device.getMaxOutputValue()));
+                    device.setOutputValue(
+                            (short) fromPercentToValue(percentCommand.intValue(), device.getMaxOutputValue()));
                 } else if (command instanceof OnOffType) {
                     if (OnOffType.ON.equals(command)) {
                         device.setIsOn(true);
@@ -227,7 +228,8 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
         } else {
             if (channelUID.getId().contains(DsChannelTypeProvider.ANGLE)) {
                 if (command instanceof PercentType percentCommand) {
-                    device.setAnglePosition((short) fromPercentToValue(percentCommand.intValue(), device.getMaxSlatAngle()));
+                    device.setAnglePosition(
+                            (short) fromPercentToValue(percentCommand.intValue(), device.getMaxSlatAngle()));
                 } else if (command instanceof OnOffType) {
                     if (OnOffType.ON.equals(command)) {
                         device.setAnglePosition(device.getMaxSlatAngle());

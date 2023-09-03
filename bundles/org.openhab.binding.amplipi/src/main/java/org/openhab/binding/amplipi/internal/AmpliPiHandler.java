@@ -102,8 +102,8 @@ public class AmpliPiHandler extends BaseBridgeHandler {
             } else if (command instanceof DecimalType decimalCommand) {
                 try {
                     ContentResponse response = this.httpClient
-                            .newRequest(url + "/api/presets/" + decimalCommand.intValue() + "/load").method(HttpMethod.POST)
-                            .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+                            .newRequest(url + "/api/presets/" + decimalCommand.intValue() + "/load")
+                            .method(HttpMethod.POST).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
                     if (response.getStatus() != HttpStatus.OK_200) {
                         logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
                         logger.debug("Content: {}", response.getContentAsString());
