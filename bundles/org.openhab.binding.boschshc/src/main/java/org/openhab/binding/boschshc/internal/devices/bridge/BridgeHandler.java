@@ -405,12 +405,12 @@ public class BridgeHandler extends BaseBridgeHandler {
      */
     private void handleLongPollResult(LongPollResult result) {
         for (BoschSHCServiceState serviceState : result.result) {
-            if(DeviceServiceData.class == serviceState.getClass()) {
+            if (DeviceServiceData.class == serviceState.getClass()) {
                 handleDeviceServiceData((DeviceServiceData) serviceState);
             } else if (Scenario.class == serviceState.getClass()) {
                 final Channel channel = this.getThing().getChannel(BoschSHCBindingConstants.CHANNEL_SCENARIO);
-                if(channel != null && isLinked(channel.getUID()) ){
-                    updateState(channel.getUID(), new StringType(((Scenario)serviceState).name));
+                if (channel != null && isLinked(channel.getUID())) {
+                    updateState(channel.getUID(), new StringType(((Scenario) serviceState).name));
                 } else {
                     logger.info("no channel with id '{}' found or linked", BoschSHCBindingConstants.CHANNEL_SCENARIO);
                 }

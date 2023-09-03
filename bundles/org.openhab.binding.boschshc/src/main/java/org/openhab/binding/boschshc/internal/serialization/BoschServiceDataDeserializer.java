@@ -1,18 +1,17 @@
 package org.openhab.binding.boschshc.internal.serialization;
 
-import com.google.gson.*;
+import java.lang.reflect.Type;
+
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
-import java.lang.reflect.Type;
+import com.google.gson.*;
 
 public class BoschServiceDataDeserializer implements JsonDeserializer<BoschSHCServiceState> {
     @Override
-    public BoschSHCServiceState deserialize(JsonElement jsonElement,
-                                            Type type,
-                                            JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-
+    public BoschSHCServiceState deserialize(JsonElement jsonElement, Type type,
+            JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         JsonElement dataType = jsonObject.get("@type");

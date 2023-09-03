@@ -7,6 +7,7 @@ public class Scenario extends BoschSHCServiceState {
     public String name;
     public String id;
     public String lastTimeTriggered;
+
     public Scenario() {
         super("scenarioTriggered");
     }

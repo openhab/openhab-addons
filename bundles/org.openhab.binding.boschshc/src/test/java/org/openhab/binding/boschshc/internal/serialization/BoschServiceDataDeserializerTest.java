@@ -1,27 +1,20 @@
 package org.openhab.binding.boschshc.internal.serialization;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.collection.IsIterableContainingInAnyOrder;
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
-import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
-import org.vesalainen.dev.jaxb.Dev;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class BoschServiceDataDeserializerTest {
 
     @Test
-    public void deserializationOfLongPollingResult(){
+    public void deserializationOfLongPollingResult() {
         var resultJson = """
                 {
                     "result": [

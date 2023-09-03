@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
-import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
-
 import java.util.ArrayList;
+
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * Response of the Controller for a Long Poll API call.

@@ -13,10 +13,10 @@
 package org.openhab.binding.boschshc.internal.serialization;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * Utilities for JSON serialization and deserialization using Google Gson.
