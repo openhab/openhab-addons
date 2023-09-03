@@ -123,7 +123,7 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof ElroConnectsBridgeHandler bridgeHandler) {
             this.bridgeHandler = bridgeHandler;
-            this.bridgeHandler.setDiscoveryService(this);
+            bridgeHandler.setDiscoveryService(this);
         }
     }
 

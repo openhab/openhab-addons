@@ -109,8 +109,8 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
-                if (command instanceof PercentType volume) {
-                    update.setVolDelta(AmpliPiUtils.percentTypeToVolume(volume));
+                if (command instanceof PercentType percentCommand) {
+                    update.setVolDelta(AmpliPiUtils.percentTypeToVolume(percentCommand));
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (groupState != null) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {

@@ -143,7 +143,7 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof ElroConnectsAccountHandler accountHandler) {
             this.accountHandler = accountHandler;
-            this.accountHandler.setDiscoveryService(this);
+            accountHandler.setDiscoveryService(this);
         }
     }
 

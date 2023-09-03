@@ -131,11 +131,11 @@ public class ColorThingHandler extends DmxThingHandler {
                         }
                         targetValueSet = turnOffValue;
                     }
-                } else if (command instanceof HSBType hsb) {
+                } else if (command instanceof HSBType hsbCommand) {
                     logger.trace("adding color fade to channels in thing {}", this.thing.getUID());
-                    targetValueSet.addValue(hsb.getRed());
-                    targetValueSet.addValue(hsb.getGreen());
-                    targetValueSet.addValue(hsb.getBlue());
+                    targetValueSet.addValue(hsbCommand.getRed());
+                    targetValueSet.addValue(hsbCommand.getGreen());
+                    targetValueSet.addValue(hsbCommand.getBlue());
                 } else if ((command instanceof PercentType) || (command instanceof DecimalType)) {
                     logger.trace("adding brightness fade to channels in thing {}", this.thing.getUID());
                     PercentType brightness = (command instanceof PercentType percentCommand) ? percentCommand

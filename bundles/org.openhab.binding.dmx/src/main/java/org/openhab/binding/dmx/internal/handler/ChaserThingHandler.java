@@ -104,8 +104,8 @@ public class ChaserThingHandler extends DmxThingHandler {
                 }
                 break;
             case CHANNEL_CONTROL:
-                if (command instanceof StringType type) {
-                    List<ValueSet> newValues = ValueSet.parseChaseConfig(type.toString());
+                if (command instanceof StringType stringCommand) {
+                    List<ValueSet> newValues = ValueSet.parseChaseConfig(stringCommand.toString());
                     if (!newValues.isEmpty()) {
                         values = newValues;
                         logger.debug("updated chase config in {}", this.thing.getUID());

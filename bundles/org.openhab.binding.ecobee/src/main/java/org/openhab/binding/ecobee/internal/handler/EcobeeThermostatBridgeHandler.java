@@ -333,11 +333,11 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
                     logger.debug("Set field of type Integer to value of DecimalType");
                     field.set(object, Integer.valueOf(decimalCommand.intValue()));
                     success = true;
-                } else if (command instanceof QuantityType value) {
-                    Unit<?> unit = value.getUnit();
+                } else if (command instanceof QuantityType quantityCommand) {
+                    Unit<?> unit = quantityCommand.getUnit();
                     logger.debug("Set field of type Integer to value of QuantityType with unit {}", unit);
                     if (unit.equals(ImperialUnits.FAHRENHEIT) || unit.equals(SIUnits.CELSIUS)) {
-                        QuantityType<?> quantity = value.toUnit(ImperialUnits.FAHRENHEIT);
+                        QuantityType<?> quantity = quantityCommand.toUnit(ImperialUnits.FAHRENHEIT);
                         if (quantity != null) {
                             field.set(object, quantity.intValue() * 10);
                             success = true;

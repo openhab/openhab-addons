@@ -166,8 +166,8 @@ public class AnthemHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_VOLUME_DB:
-                if (command instanceof DecimalType volume) {
-                    sendCommand(AnthemCommand.volume(zone, volume.intValue()));
+                if (command instanceof DecimalType decimalCommand) {
+                    sendCommand(AnthemCommand.volume(zone, decimalCommand.intValue()));
                 }
                 break;
             case CHANNEL_MUTE:
