@@ -81,16 +81,16 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_BRIGHTNESS: {
                 if (command instanceof PercentType || command instanceof DecimalType) {
-                    PercentType brightness = (command instanceof PercentType pt) ? pt
+                    PercentType brightness = (command instanceof PercentType percentCommand) ? percentCommand
                             : Util.toPercentValue(((DecimalType) command).intValue());
                     logger.trace("adding fade to channels in thing {}", this.thing.getUID());
                     targetValueSet.addValue(Util.toDmxValue(
                             Util.toDmxValue(brightness) * (100 - currentColorTemperature.intValue()) / 100));
                     targetValueSet.addValue(
                             Util.toDmxValue(Util.toDmxValue(brightness) * currentColorTemperature.intValue() / 100));
-                } else if (command instanceof OnOffType sw) {
+                } else if (command instanceof OnOffType onOffCommand) {
                     logger.trace("adding {} fade to channels in thing {}", command, this.thing.getUID());
-                    if (sw == OnOffType.ON) {
+                    if (onOffCommand == OnOffType.ON) {
                         targetValueSet = turnOnValue;
                     } else {
                         if (dynamicTurnOnValue) {
@@ -102,15 +102,15 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
                         }
                         targetValueSet = turnOffValue;
                     }
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    if (isDimming && incdec.equals(IncreaseDecreaseType.INCREASE)) {
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    if (isDimming && increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE)) {
                         logger.trace("stopping fade in thing {}", this.thing.getUID());
                         channels.forEach(DmxChannel::clearAction);
                         isDimming = false;
                         return;
                     } else {
                         logger.trace("starting {} fade in thing {}", command, this.thing.getUID());
-                        targetValueSet = incdec.equals(IncreaseDecreaseType.INCREASE) ? turnOnValue : turnOffValue;
+                        targetValueSet = increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE) ? turnOnValue : turnOffValue;
                         targetValueSet.setFadeTime(dimTime);
                         isDimming = true;
                     }

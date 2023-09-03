@@ -43,8 +43,8 @@ public class CaddxKeypadActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ThingHandlerKeypad keypad) {
-            this.handler = keypad;
+        if (handler instanceof ThingHandlerKeypad keypadHandler) {
+            this.handler = keypadHandler;
         }
     }
 

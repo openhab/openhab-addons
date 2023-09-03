@@ -180,8 +180,8 @@ public class AnthemHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_ACTIVE_INPUT:
-                if (command instanceof DecimalType channel) {
-                    sendCommand(AnthemCommand.activeInput(zone, channel.intValue()));
+                if (command instanceof DecimalType decimalCommand) {
+                    sendCommand(AnthemCommand.activeInput(zone, decimalCommand.intValue()));
                 }
                 break;
             default:

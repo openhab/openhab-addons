@@ -141,14 +141,9 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        ElroConnectsAccountHandler account = null;
-        if (handler instanceof ElroConnectsAccountHandler ahandler) {
-            account = ahandler;
-            accountHandler = account;
-        }
-
-        if (account != null) {
-            account.setDiscoveryService(this);
+        if (handler instanceof ElroConnectsAccountHandler accountHandler) {
+            this.accountHandler = accountHandler;
+            this.accountHandler.setDiscoveryService(this);
         }
     }
 

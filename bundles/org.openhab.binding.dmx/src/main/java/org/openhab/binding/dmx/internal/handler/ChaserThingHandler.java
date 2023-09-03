@@ -68,8 +68,8 @@ public class ChaserThingHandler extends DmxThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
             case CHANNEL_SWITCH:
-                if (command instanceof OnOffType sw) {
-                    if (sw.equals(OnOffType.ON)) {
+                if (command instanceof OnOffType onOffCommand) {
+                    if (onOffCommand.equals(OnOffType.ON)) {
                         Integer channelCounter = 0;
                         for (DmxChannel channel : channels) {
                             if (resumeAfter) {
@@ -206,8 +206,8 @@ public class ChaserThingHandler extends DmxThingHandler {
     @Override
     public void updateSwitchState(ChannelUID channelUID, State state) {
         logger.trace("received {} for {}", state, channelUID);
-        if (channelUID.getId().equals(CHANNEL_SWITCH) && (state instanceof OnOffType sw)) {
-            this.isRunning = sw;
+        if (channelUID.getId().equals(CHANNEL_SWITCH) && (state instanceof OnOffType onOffCommand)) {
+            this.isRunning = onOffCommand;
             updateState(channelUID, state);
         } else {
             logger.debug("unknown state received: {} in channel {} thing {}", state, channelUID, this.thing.getUID());

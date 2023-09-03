@@ -188,9 +188,9 @@ public class CoronaStatsWorldHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof CoronaStatsCountryHandler handler) {
+        if (childHandler instanceof CoronaStatsCountryHandler countryHandler) {
             logger.debug("Unregister thing listener.");
-            if (!countryListeners.remove(handler)) {
+            if (!countryListeners.remove(countryHandler)) {
                 logger.warn("Tried to remove listener {} but it was not registered. This is probably an error.",
                         childHandler);
             }

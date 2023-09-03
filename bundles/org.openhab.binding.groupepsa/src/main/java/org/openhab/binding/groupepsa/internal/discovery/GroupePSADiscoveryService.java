@@ -55,8 +55,8 @@ public class GroupePSADiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof GroupePSABridgeHandler bhandler) {
-            bridgeHandler = bhandler;
+        if (handler instanceof GroupePSABridgeHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
         }
     }
 

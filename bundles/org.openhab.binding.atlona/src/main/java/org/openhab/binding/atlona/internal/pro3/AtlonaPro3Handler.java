@@ -285,7 +285,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                                             .getCallback();
                                     final State state = callback.getState(AtlonaPro3Constants.CHANNEL_PORTMIRROR);
                                     int outPortNbr = 1;
-                                    if (state != null && state instanceof DecimalType type) {
+                                    if (state instanceof DecimalType type) {
                                         outPortNbr = type.intValue();
                                     }
                                     atlonaHandler.setPortMirror(hdmiPortNbr, outPortNbr);

@@ -53,7 +53,7 @@ public final class SunPhaseJob extends AbstractJob {
             Channel phaseNameChannel = astroHandler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
             if (phaseNameChannel != null) {
                 Planet planet = astroHandler.getPlanet();
-                if (planet != null && planet instanceof Sun theSun) {
+                if (planet instanceof Sun theSun) {
                     theSun.getPhase().setName(sunPhaseName);
                     astroHandler.publishChannelIfLinked(phaseNameChannel.getUID());
                 }

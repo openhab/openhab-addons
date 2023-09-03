@@ -115,9 +115,9 @@ public class AstroActions implements ThingActions {
         try {
             AstroThingHandler theHandler = this.handler;
             if (theHandler != null) {
-                if (theHandler instanceof SunHandler handler) {
+                if (theHandler instanceof SunHandler sunHandler) {
                     SunPhaseName phase = SunPhaseName.valueOf(phaseName.toUpperCase());
-                    return handler.getEventTime(phase, date != null ? date : ZonedDateTime.now(),
+                    return sunHandler.getEventTime(phase, date != null ? date : ZonedDateTime.now(),
                             moment == null || AstroBindingConstants.EVENT_START.equalsIgnoreCase(moment));
                 } else {
                     logger.info("Astro Action service ThingHandler is not a SunHandler!");

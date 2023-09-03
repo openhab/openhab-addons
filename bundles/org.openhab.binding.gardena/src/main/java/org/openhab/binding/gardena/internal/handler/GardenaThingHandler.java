@@ -217,7 +217,7 @@ public class GardenaThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Command received: {}", command);
         try {
-            boolean isOnCommand = command instanceof OnOffType sw && sw == OnOffType.ON;
+            boolean isOnCommand = command instanceof OnOffType onOffCommand && onOffCommand == OnOffType.ON;
             String dataItemProperty = getDeviceDataItemProperty(channelUID);
             if (RefreshType.REFRESH == command) {
                 logger.debug("Refreshing Gardena connection");

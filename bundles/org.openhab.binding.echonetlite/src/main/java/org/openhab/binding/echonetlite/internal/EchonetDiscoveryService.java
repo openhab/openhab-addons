@@ -100,8 +100,8 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof EchonetLiteBridgeHandler handler) {
-            this.bridgeHandler = handler;
+        if (thingHandler instanceof EchonetLiteBridgeHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
         }
     }
 

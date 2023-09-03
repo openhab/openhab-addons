@@ -125,8 +125,8 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_SOURCE:
-                if (command instanceof DecimalType channel) {
-                    update.setSourceId(channel.intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    update.setSourceId(decimalCommand.intValue());
                 }
                 break;
         }

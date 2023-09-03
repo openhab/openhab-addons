@@ -40,8 +40,8 @@ public class CaddxPartitionActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ThingHandlerPartition partition) {
-            this.handler = partition;
+        if (handler instanceof ThingHandlerPartition partitionHandler) {
+            this.handler = partitionHandler;
         }
     }
 

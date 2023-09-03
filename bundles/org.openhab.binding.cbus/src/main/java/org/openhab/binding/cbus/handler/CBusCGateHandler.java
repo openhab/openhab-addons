@@ -194,8 +194,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                         continue;
                     }
 
-                    if (thingThingHandler instanceof CBusGroupHandler handler) {
-                        handler.updateGroup(application, group, value);
+                    if (thingThingHandler instanceof CBusGroupHandler groupHandler) {
+                        groupHandler.updateGroup(application, group, value);
                     }
                 }
             }
