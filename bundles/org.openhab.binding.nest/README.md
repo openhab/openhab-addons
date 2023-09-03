@@ -8,6 +8,9 @@ Because the SDM API runs on servers in the cloud, a connection with the Internet
 The binding uses HTTPS to connect to the APIs using port 443.
 So make sure outbound connections to these ports are not blocked by a firewall.
 
+> Note: This binding no longer supports the Works with Nest (WWN) API because it has been discontinued by Google.
+See [Support for Works with Nest ending](https://support.google.com/googlenest/answer/9293712).
+
 ## Supported Things
 
 The table below lists the Nest binding thing types:
@@ -21,19 +24,18 @@ The table below lists the Nest binding thing types:
 | Nest Thermostat (E)                     | A Thermostat to control the various aspects of the house's HVAC system | sdm_thermostat |
 
 The SDM API currently does not support Nest Protect devices.
-There are no structure Things when using the SDM API, because the SDM API does not support setting the Home/Away status.
 
 To use the Nest SDM API, add an Account Thing using the UI and configure the required parameters.
 After configuring an Account Thing, you can use it to discover the connected devices which are then added the Inbox.
 
-## SDM Account Configuration
+## Account Configuration
 
 ### Google Account Requirement
 
 To be able to use the SDM API it is required that you use a Google Account with your Nest devices.
 To migrate to a Google account, follow the migration steps in the [Nest accounts FAQ](https://support.google.com/googlenest/answer/9297676?co=GENIE.Platform%3DiOS&hl=en&oco=0#accountmigration&accountmigration1&#accountmigration2&#accountmigration3&zippy=%2Chow-do-i-migrate-my-account)
 
-### SDM Configuration Parameters
+### Configuration Parameters
 
 These parameters configure which SDM project is accessed using the SDM API and configure the OAuth 2.0 client details used for accessing the project.
 
