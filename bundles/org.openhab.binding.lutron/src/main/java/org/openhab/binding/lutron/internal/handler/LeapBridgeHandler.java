@@ -96,6 +96,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private static final long KEEPALIVE_TIMEOUT_SECONDS = 30;
 
     private static final String STATUS_INITIALIZING = "Initializing";
+    private static final String LUTRON_RADIORA_3_PROJECT = "Lutron RadioRA 3 Project";
 
     private final Logger logger = LoggerFactory.getLogger(LeapBridgeHandler.class);
 
@@ -664,7 +665,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
     @Override
     public void handleProjectDefinition(Project project) {
-        isRadioRA3 = project.productType.equals("Lutron RadioRA 3 Project");
+        isRadioRA3 = LUTRON_RADIORA_3_PROJECT.equals(project.productType);
 
         if (project.masterDeviceList.devices.length > 0 && project.masterDeviceList.devices[0].href != null) {
             sendCommand(new LeapCommand(Request.getDevices(true)));

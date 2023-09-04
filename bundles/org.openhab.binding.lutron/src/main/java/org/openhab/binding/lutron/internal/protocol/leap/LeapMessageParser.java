@@ -18,7 +18,16 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lutron.internal.protocol.leap.dto.*;
+
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ExceptionDetail;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Header;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroupStatus;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -299,7 +308,6 @@ public class LeapMessageParser {
     }
 
     private void parseMultipleZoneStatus(JsonObject messageBody) {
-        logger.trace("Parsing zone status list");
         List<ZoneStatus> statusList = parseBodyMultiple(messageBody, "ZoneStatuses", ZoneStatus.class);
         for (ZoneStatus status : statusList) {
             logger.debug("Setting zone {} to level: {}", status.href, status.level);

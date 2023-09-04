@@ -15,7 +15,12 @@ package org.openhab.binding.lutron.internal.protocol.leap;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lutron.internal.protocol.leap.dto.*;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 
 /**
  * Interface defining callback routines used by LeapMessageParser
