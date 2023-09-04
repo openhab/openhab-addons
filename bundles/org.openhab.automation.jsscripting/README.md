@@ -39,11 +39,22 @@ to common openHAB functionality within rules including items, things, actions, l
 ## Configuration
 
 This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports its namespaces onto the global namespace.
+
 This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import them using `require()`.
 This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options.
 
-By default, the injection of the included [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached to improve performance and reduce memory usage.
-If you want to use a different version of openhab-js (installed to the `node_modules` folder) than the included one, you need to disable the usage of the included library.
+By default, the injection of the [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached (using a special mechanism instead of `require()`) to improve performance and reduce memory usage.
+
+When configuring the add-on, you should ask you these questions:
+
+1. Do I want to have the openhab-js namespaces automatically globally available (`injectionEnabled`)?
+   - Yes: "Use Built-In Variables"
+   - No: "Do Not Use Built-In Variables"
+2. Do I want to have a different version injected than the included one (`injectionCachingEnabled`)?
+   - Yes: "Do Not Cache Library Injection" and install your version to the `$OPENHAB_CONF/automation/js/node_modules` folder
+   - No: "Cache Library Injection"
+
+Note that in case you disable caching or your code uses `require()` to import the library and there is no installation of the library found in the node_modules folder, the add-on will fallback to its included version.
 
 ![openHAB Rule Configuration](doc/settings.png)
 
