@@ -17,14 +17,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
+import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.server.AuthServer;
 import org.openhab.binding.mercedesme.internal.server.AuthService;
@@ -53,6 +60,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
+    private final MercedesMeDiscoveryService discovery;
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
     private final Storage<String> storage;
@@ -63,10 +71,14 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private Optional<AuthServer> server = Optional.empty();
     private Optional<WebSocketClient> wsClient = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
+    private String capabilitiesEndpoint = "/v1/vehicle/%s/capabilities";
+    private String commandCapabilitiesEndpoint = "/v1/vehicle/%s/capabilities/commands";
+
     Optional<AccountConfiguration> config = Optional.empty();
 
     public AccountHandler(Bridge bridge, HttpClient hc, LocaleProvider lp, StorageService store) {
         super(bridge);
+        discovery = new MercedesMeDiscoveryService();
         ws = new MBWebsocket(this);
         httpClient = hc;
         localeProvider = lp;
@@ -97,7 +109,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
             }
         }
-        scheduler.scheduleWithFixedDelay(this::update, 0, 10, TimeUnit.MINUTES);
+        scheduler.scheduleWithFixedDelay(this::update, 0, 15, TimeUnit.MINUTES);
     }
 
     public void update() {
@@ -222,6 +234,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         vehicleDataMapper.remove(vin);
     }
 
+    public boolean hasVin(String vin) {
+        return vehicleDataMapper.containsKey(vin);
+    }
+
     public void distributeVepUpdates(Map<String, VEPUpdate> map) {
         map.forEach((key, value) -> {
             VehicleHandler h = vehicleDataMapper.get(key);
@@ -231,5 +247,90 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 logger.info("No VehicleHandler available for VIN {}", key);
             }
         });
+    }
+
+    public void discovery(String vin) {
+        if (vehicleDataMapper.containsKey(vin)) {
+            VehicleHandler vh = vehicleDataMapper.get(vin);
+            if (vh.getThing().getProperties().size() == 0) {
+                vh.getThing().setProperties(getStringCapabilities(vin));
+            }
+        } else {
+            // call discoveryService
+            discovery.vehicleDiscovered(this, vin, getCapabilities(vin));
+        }
+    }
+
+    private Map<String, String> getStringCapabilities(String vin) {
+        Map<String, Object> props = getCapabilities(vin);
+        Map<String, String> stringProps = new HashMap<String, String>();
+        props.forEach((key, value) -> {
+            stringProps.put(key, value.toString());
+        });
+        return stringProps;
+    }
+
+    private Map<String, Object> getCapabilities(String vin) {
+        Map<String, Object> featureMap = new HashMap<String, Object>();
+        try {
+            // add vehicle capabilities
+            String capabilitiesUrl = Utils.getRestAPIServer(config.get().region)
+                    + String.format(capabilitiesEndpoint, vin);
+            Request capabilitiesRequest = httpClient.newRequest(capabilitiesUrl);
+            authService.get().addBasicHeaders(capabilitiesRequest);
+            capabilitiesRequest.header("X-SessionId", UUID.randomUUID().toString());
+            capabilitiesRequest.header("X-TrackingId", UUID.randomUUID().toString());
+            ContentResponse capabilitiesResponse = capabilitiesRequest.send();
+            JSONObject jsonResponse = new JSONObject(capabilitiesResponse.getContentAsString());
+            JSONObject features = jsonResponse.getJSONObject("features");
+            features.keySet().forEach(key -> {
+                String value = features.get(key).toString();
+                String newKey = Character.toUpperCase(key.charAt(0)) + key.substring(1);
+                newKey = "feature" + newKey;
+                featureMap.put(newKey, value);
+            });
+
+            // get vehicle type
+            JSONObject vehicle = jsonResponse.getJSONObject("vehicle");
+            JSONArray fuelTypes = vehicle.getJSONArray("fuelTypes");
+            if (fuelTypes.length() > 1) {
+                featureMap.put("vehicle", Constants.HYBRID);
+            } else if ("ELECTRIC".equals(fuelTypes.get(0))) {
+                featureMap.put("vehicle", Constants.BEV);
+            } else {
+                featureMap.put("vehicle", Constants.COMBUSTION);
+            }
+
+            // add command capabilities
+            String commandCapabilitiesUrl = Utils.getRestAPIServer(config.get().region)
+                    + String.format(commandCapabilitiesEndpoint, vin);
+            Request commandCapabilitiesRequest = httpClient.newRequest(commandCapabilitiesUrl);
+            authService.get().addBasicHeaders(commandCapabilitiesRequest);
+            commandCapabilitiesRequest.header("X-SessionId", UUID.randomUUID().toString());
+            commandCapabilitiesRequest.header("X-TrackingId", UUID.randomUUID().toString());
+            ContentResponse commandCapabilitiesResponse = commandCapabilitiesRequest.send();
+            JSONObject commands = new JSONObject(commandCapabilitiesResponse.getContentAsString());
+            JSONArray commandArray = commands.getJSONArray("commands");
+            commandArray.forEach(object -> {
+                String commandName = ((JSONObject) object).get("commandName").toString();
+                String[] words = commandName.split("[\\W_]+");
+                StringBuilder builder = new StringBuilder();
+                builder.append("command");
+                for (int i = 0; i < words.length; i++) {
+                    String word = words[i];
+                    word = word.isEmpty() ? word
+                            : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase();
+                    builder.append(word);
+                }
+                String value = ((JSONObject) object).get("isAvailable").toString();
+                featureMap.put(commandName, value);
+            });
+
+            return featureMap;
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.info("Error retreiving capabilities: {}", e.getMessage());
+            featureMap.clear();
+        }
+        return featureMap;
     }
 }

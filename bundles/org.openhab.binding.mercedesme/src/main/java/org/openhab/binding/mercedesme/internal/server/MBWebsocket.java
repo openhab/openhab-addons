@@ -89,10 +89,18 @@ public class MBWebsocket {
     public void onBytes(InputStream is) {
         try {
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
+            // data update
             if (pm.hasVepUpdates()) {
                 accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
+            } else if (pm.hasAssignedVehicles()) {
+                for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
+                    String vin = pm.getAssignedVehicles().getVins(0);
+                    accountHandler.discovery(vin);
+                }
             }
-        } catch (IOException e) {
+        } catch (
+
+        IOException e) {
             logger.warn("Error parsing message {}", e.getMessage());
         }
     }

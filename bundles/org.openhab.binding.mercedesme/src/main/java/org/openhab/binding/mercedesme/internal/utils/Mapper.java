@@ -89,6 +89,9 @@ public class Mapper {
                 case "interiorLightsRear":
                 case "readingLampFrontLeft":
                 case "readingLampFrontRight":
+                case "warningbrakefluid":
+                case "warningbrakeliningwear":
+                case "warningwashwater":
                     state = OnOffType.from(value.getBoolValue());
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -140,11 +143,6 @@ public class Mapper {
         CHANNELS.put("doorstatusfrontright", new String[] { "passenger-front", GROUP_DOORS });
         CHANNELS.put("doorstatusrearleft", new String[] { "driver-rear", GROUP_DOORS });
         CHANNELS.put("doorstatusrearright", new String[] { "passenger-rear", GROUP_DOORS });
-        CHANNELS.put("interiorLightsFront", new String[] { "interior-front", GROUP_LIGHTS });
-        CHANNELS.put("interiorLightsRear", new String[] { "interior-rear", GROUP_LIGHTS });
-        CHANNELS.put("lightswitchposition", new String[] { "light-switch", GROUP_LIGHTS });
-        CHANNELS.put("readingLampFrontLeft", new String[] { "reading-left", GROUP_LIGHTS });
-        CHANNELS.put("readingLampFrontRight", new String[] { "reading-right", GROUP_LIGHTS });
         CHANNELS.put("rooftopstatus", new String[] { "rooftop", GROUP_DOORS });
         CHANNELS.put("sunroofstatus", new String[] { "sunroof", GROUP_DOORS });
         CHANNELS.put("windowstatusfrontleft", new String[] { "driver-front", GROUP_WINDOWS });
@@ -159,5 +157,8 @@ public class Mapper {
         CHANNELS.put("tirepressureFrontRight", new String[] { "pressure-front-right", GROUP_TIRES });
         CHANNELS.put("tirepressureRearLeft", new String[] { "pressure-rear-left", GROUP_TIRES });
         CHANNELS.put("tirepressureFrontLeft", new String[] { "pressure-front-left", GROUP_TIRES });
+        CHANNELS.put("warningbrakefluid", new String[] { "brake-fluid", GROUP_WARNINGS });
+        CHANNELS.put("warningbrakeliningwear", new String[] { "brake-lining-wear", GROUP_WARNINGS });
+        CHANNELS.put("warningwashwater", new String[] { "wash-water", GROUP_WARNINGS });
     }
 }

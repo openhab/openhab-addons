@@ -44,23 +44,11 @@ public class Constants {
     public static final String GROUP_DOORS = "doors";
     public static final String GROUP_WINDOWS = "windows";
     public static final String GROUP_LOCK = "lock";
-    public static final String GROUP_LIGHTS = "lights";
     public static final String GROUP_LOCATION = "location";
-    public static final String GROUP_IMAGE = "image";
     public static final String GROUP_TIRES = "tires";
+    public static final String GROUP_WARNINGS = "warning";
 
-    public static final String MB_AUTH_URL = "https://ssoalpha.dvb.corpinter.net/v1/auth";
-    public static final String MB_TOKEN_URL = "https://ssoalpha.dvb.corpinter.net/v1/token";
     public static final String CALLBACK_ENDPOINT = "/mb-auth";
-    public static final String OAUTH_CLIENT_NAME = "#byocar";
-
-    public static final String BASE_URL = "https://api.mercedes-benz.com/vehicledata/v2";
-    public static final String ODO_URL = BASE_URL + "/vehicles/%s/containers/payasyoudrive";
-    public static final String STATUS_URL = BASE_URL + "/vehicles/%s/containers/vehiclestatus";
-    public static final String LOCK_URL = BASE_URL + "/vehicles/%s/containers/vehiclelockstatus";
-    public static final String FUEL_URL = BASE_URL + "/vehicles/%s/containers/fuelstatus";
-    public static final String EV_URL = BASE_URL + "/vehicles/%s/containers/electricvehicle";
-
     // https://developer.mercedes-benz.com/content-page/api_migration_guide
     public static final String IMAGE_BASE_URL = "https://api.mercedes-benz.com/vehicle_images/v2";
     public static final String IMAGE_EXTERIOR_RESOURCE_URL = IMAGE_BASE_URL + "/vehicles/%s";

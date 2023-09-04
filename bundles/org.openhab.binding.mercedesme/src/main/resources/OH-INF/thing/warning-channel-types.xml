@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="brake-fluid-channel">
+		<item-type>Number</item-type>
+		<label>Driver Window</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="brake-lining-wear-channel">
+		<item-type>Number</item-type>
+		<label>Driver Window</label>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

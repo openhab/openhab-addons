@@ -1,0 +1,1406 @@
+{proto.PushMessage.vepUpdates=updates {
+  key: "W1N2437011J016433"
+  value {
+    vin: "W1N2437011J016433"
+    attributes {
+      key: "auxheatwarnings"
+      value {
+        timestamp: 1659023673
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1659023673000
+      }
+    }
+    attributes {
+      key: "averageSpeedReset"
+      value {
+        timestamp: 1692956198
+        double_value: 42.0
+        timestamp_in_ms: 1692956198000
+        display_value: "42"
+        speed_unit: KM_PER_HOUR
+      }
+    }
+    attributes {
+      key: "averageSpeedStart"
+      value {
+        timestamp: 1692959762
+        double_value: 13.0
+        timestamp_in_ms: 1692959762000
+        display_value: "13"
+        speed_unit: KM_PER_HOUR
+      }
+    }
+    attributes {
+      key: "chargeCouplerACStatus"
+      value {
+        timestamp: 1692956198
+        int_value: 2
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "chargeCouplerDCLockStatus"
+      value {
+        timestamp: 1692956198
+        int_value: 1
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "chargeCouplerDCStatus"
+      value {
+        timestamp: 1692956198
+        int_value: 2
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "chargeFlapDCStatus"
+      value {
+        timestamp: 1692956198
+        int_value: 1
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "chargePrograms"
+      value {
+        timestamp: 1692956198
+        timestamp_in_ms: 1692956198000
+        charge_programs_value {
+          charge_program_parameters {
+            max_soc: 100
+          }
+          charge_program_parameters {
+            charge_program: INSTANT_CHARGE_PROGRAM
+            max_soc: 100
+          }
+          charge_program_parameters {
+            charge_program: HOME_CHARGE_PROGRAM
+            max_soc: 80
+          }
+          charge_program_parameters {
+            charge_program: WORK_CHARGE_PROGRAM
+            max_soc: 100
+          }
+        }
+      }
+    }
+    attributes {
+      key: "chargingErrorDetails"
+      value {
+        timestamp: 1692956198
+        int_value: 0
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "chargingPower"
+      value {
+        timestamp: 1692996900
+        status: 3
+        nil_value: true
+        timestamp_in_ms: 1692996900000
+      }
+    }
+    attributes {
+      key: "chargingactive"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "chargingstatus"
+      value {
+        timestamp: 1692957319
+        int_value: 3
+        timestamp_in_ms: 1692957319000
+      }
+    }
+    attributes {
+      key: "decklidstatus"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "departureTimeMode"
+      value {
+        timestamp: 1692956198
+        int_value: 0
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "departureTimeWeekday"
+      value {
+        timestamp: 1692956198
+        status: 3
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "departuretime"
+      value {
+        timestamp: 1692996815
+        int_value: -1
+        timestamp_in_ms: 1692996815000
+        clock_hour_unit: T24H
+      }
+    }
+    attributes {
+      key: "departuretimesoc"
+      value {
+        timestamp: 1692996900
+        status: 3
+        nil_value: true
+        timestamp_in_ms: 1692996900000
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "distanceElectricalReset"
+      value {
+        timestamp: 1692957295
+        double_value: 11147.3
+        timestamp_in_ms: 1692957295000
+        display_value: "11147.3"
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "distanceElectricalStart"
+      value {
+        timestamp: 1692957295
+        double_value: 2.5
+        timestamp_in_ms: 1692957295000
+        display_value: "2.5"
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "distanceGasReset"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "distanceGasStart"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "distanceReset"
+      value {
+        timestamp: 1692957295
+        double_value: 11147.3
+        timestamp_in_ms: 1692957295000
+        display_value: "11147.3"
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "distanceStart"
+      value {
+        timestamp: 1692957295
+        double_value: 2.5
+        timestamp_in_ms: 1692957295000
+        display_value: "2.5"
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "distanceZEReset"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "distanceZEStart"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "doorLockStatusOverall"
+      value {
+        timestamp: 1692996844
+        int_value: 0
+        timestamp_in_ms: 1692996844000
+      }
+    }
+    attributes {
+      key: "doorStatusOverall"
+      value {
+        timestamp: 1692957344
+        int_value: 1
+        timestamp_in_ms: 1692957344000
+      }
+    }
+    attributes {
+      key: "doorlockstatusdecklid"
+      value {
+        timestamp: 1692996844
+        bool_value: false
+        timestamp_in_ms: 1692996844000
+      }
+    }
+    attributes {
+      key: "doorlockstatusfrontleft"
+      value {
+        timestamp: 1692996844
+        bool_value: false
+        timestamp_in_ms: 1692996844000
+      }
+    }
+    attributes {
+      key: "doorlockstatusfrontright"
+      value {
+        timestamp: 1692996844
+        bool_value: false
+        timestamp_in_ms: 1692996844000
+      }
+    }
+    attributes {
+      key: "doorlockstatusgas"
+      value {
+        timestamp: 1692996844
+        bool_value: false
+        timestamp_in_ms: 1692996844000
+      }
+    }
+    attributes {
+      key: "doorlockstatusrearleft"
+      value {
+        timestamp: 1692996844
+        bool_value: false
+        timestamp_in_ms: 1692996844000
+      }
+    }
+    attributes {
+      key: "doorlockstatusrearright"
+      value {
+        timestamp: 1692996844
+        bool_value: false
+        timestamp_in_ms: 1692996844000
+      }
+    }
+    attributes {
+      key: "doorlockstatusvehicle"
+      value {
+        timestamp: 1692996844
+        int_value: 2
+        timestamp_in_ms: 1692996844000
+      }
+    }
+    attributes {
+      key: "doorstatusfrontleft"
+      value {
+        timestamp: 1692957344
+        bool_value: false
+        timestamp_in_ms: 1692957344000
+      }
+    }
+    attributes {
+      key: "doorstatusfrontright"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "doorstatusrearleft"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "doorstatusrearright"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "drivenTimeReset"
+      value {
+        timestamp: 1692957273
+        int_value: 16069
+        timestamp_in_ms: 1692957273000
+      }
+    }
+    attributes {
+      key: "drivenTimeStart"
+      value {
+        timestamp: 1692957273
+        int_value: 11
+        timestamp_in_ms: 1692957273000
+      }
+    }
+    attributes {
+      key: "drivenTimeZEReset"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+      }
+    }
+    attributes {
+      key: "drivenTimeZEStart"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+      }
+    }
+    attributes {
+      key: "ecoscoreaccel"
+      value {
+        timestamp: 1692957302
+        int_value: 93
+        timestamp_in_ms: 1692957302000
+        display_value: "93"
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "ecoscorebonusrange"
+      value {
+        timestamp: 1692957235
+        double_value: 0.2
+        timestamp_in_ms: 1692957235000
+        display_value: "0.2"
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "ecoscoreconst"
+      value {
+        timestamp: 1692957315
+        int_value: 27
+        timestamp_in_ms: 1692957315000
+        display_value: "27"
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "ecoscorefreewhl"
+      value {
+        timestamp: 1692957291
+        int_value: 98
+        timestamp_in_ms: 1692957291000
+        display_value: "98"
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "ecoscoretotal"
+      value {
+        timestamp: 1692957298
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692957298000
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "electricRatioOverall"
+      value {
+        timestamp: 1668701631
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1668701631000
+      }
+    }
+    attributes {
+      key: "electricRatioReset"
+      value {
+        timestamp: 1668701631
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1668701631000
+      }
+    }
+    attributes {
+      key: "electricRatioStart"
+      value {
+        timestamp: 1668701631
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1668701631000
+      }
+    }
+    attributes {
+      key: "electricalRangeSkipIndication"
+      value {
+        timestamp: 1692957331
+        bool_value: false
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "electricconsumptionreset"
+      value {
+        timestamp: 1692956198
+        double_value: 21.1
+        timestamp_in_ms: 1692956198000
+        display_value: "21.1"
+        electricity_consumption_unit: KWH_PER_100KM
+      }
+    }
+    attributes {
+      key: "electricconsumptionstart"
+      value {
+        timestamp: 1692959762
+        double_value: 22.8
+        timestamp_in_ms: 1692959762000
+        display_value: "22.8"
+        electricity_consumption_unit: KWH_PER_100KM
+      }
+    }
+    attributes {
+      key: "endofChargeTimeWeekday"
+      value {
+        timestamp: 1692956198
+        status: 3
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "endofchargetime"
+      value {
+        timestamp: 1692956198
+        status: 3
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+        clock_hour_unit: T24H
+      }
+    }
+    attributes {
+      key: "engineHoodStatus"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "evRangeAssistDriveOnSOC"
+      value {
+        timestamp: 1692956198
+        status: 3
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "evRangeAssistDriveOnTime"
+      value {
+        timestamp: 1692956198
+        status: 3
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "filterParticleLoading"
+      value {
+        timestamp: 1692956198
+        status: 1
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "flipWindowStatus"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+      }
+    }
+    attributes {
+      key: "gasTankLevel"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+      }
+    }
+    attributes {
+      key: "gasTankLevelPercent"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "gasTankRange"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "gasconsumptionreset"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+        gas_consumption_unit: KG_PER_100KM
+      }
+    }
+    attributes {
+      key: "gasconsumptionstart"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+        gas_consumption_unit: KG_PER_100KM
+      }
+    }
+    attributes {
+      key: "hvBatteryThermalPropagationEvent"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+      }
+    }
+    attributes {
+      key: "hybridWarnings"
+      value {
+        timestamp: 1692956198
+        status: 3
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "ignitionstate"
+      value {
+        timestamp: 1692957336
+        int_value: 0
+        timestamp_in_ms: 1692957336000
+      }
+    }
+    attributes {
+      key: "keylineActivationState"
+      value {
+        timestamp: 1638508946
+        timestamp_in_ms: 1638508946000
+        36: {
+          1: 1
+        }
+      }
+    }
+    attributes {
+      key: "languageHU"
+      value {
+        timestamp: 1692956198
+        int_value: 0
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "liquidRangeSkipIndication"
+      value {
+        timestamp: 1692957331
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "liquidconsumptionreset"
+      value {
+        timestamp: 1688905509
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1688905509000
+        combustion_consumption_unit: LITER_PER_100KM
+      }
+    }
+    attributes {
+      key: "liquidconsumptionstart"
+      value {
+        timestamp: 1688905509
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1688905509000
+        combustion_consumption_unit: LITER_PER_100KM
+      }
+    }
+    attributes {
+      key: "maxSoc"
+      value {
+        timestamp: 1692956198
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "maxSocLowerLimit"
+      value {
+        timestamp: 1692956198
+        int_value: 50
+        timestamp_in_ms: 1692956198000
+        display_value: "50"
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "maxrange"
+      value {
+        timestamp: 1692996900
+        int_value: 401
+        timestamp_in_ms: 1692996900000
+        display_value: "401.0"
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "odo"
+      value {
+        timestamp: 1692957295
+        int_value: 14558
+        timestamp_in_ms: 1692957295000
+        display_value: "14558"
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "overallRange"
+      value {
+        timestamp: 1692996900
+        double_value: 259.0
+        timestamp_in_ms: 1692996900000
+        display_value: "259"
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "parkbrakestatus"
+      value {
+        timestamp: 1692957334
+        bool_value: true
+        timestamp_in_ms: 1692957334000
+      }
+    }
+    attributes {
+      key: "positionHeading"
+      value {
+        timestamp: 1692957336
+        double_value: 42.3
+        timestamp_in_ms: 1692957336000
+      }
+    }
+    attributes {
+      key: "positionLat"
+      value {
+        timestamp: 1692957336
+        double_value: 50.555985
+        timestamp_in_ms: 1692957336000
+      }
+    }
+    attributes {
+      key: "positionLong"
+      value {
+        timestamp: 1692957336
+        double_value: 8.495589
+        timestamp_in_ms: 1692957336000
+      }
+    }
+    attributes {
+      key: "precondActive"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "precondAtDepartureDisable"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "precondDuration"
+      value {
+        timestamp: 1692956198
+        int_value: 0
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "precondError"
+      value {
+        timestamp: 1692956198
+        int_value: 0
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "precondNow"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "precondNowError"
+      value {
+        timestamp: 1692956198
+        int_value: 0
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "precondSeatFrontLeft"
+      value {
+        timestamp: 1692956198
+        bool_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "precondSeatFrontRight"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "precondSeatRearLeft"
+      value {
+        timestamp: 1692956198
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "precondSeatRearRight"
+      value {
+        timestamp: 1692956198
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "precondState"
+      value {
+        timestamp: 1692956198
+        timestamp_in_ms: 1692956198000
+        44: {
+        }
+      }
+    }
+    attributes {
+      key: "precondatdeparture"
+      value {
+        timestamp: 1692956198
+        bool_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "proximityCalculationForVehiclePositionRequired"
+      value {
+        timestamp: 1692997532
+        bool_value: false
+        timestamp_in_ms: 1692997532220
+      }
+    }
+    attributes {
+      key: "rangeAdBlue"
+      value {
+        timestamp: 1692593406
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692593406000
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "rangeElectricWltp"
+      value {
+        timestamp: 1692996900
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692996900000
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "rangeelectric"
+      value {
+        timestamp: 1692996900
+        int_value: 259
+        timestamp_in_ms: 1692996900000
+        display_value: "259"
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "rangeliquid"
+      value {
+        timestamp: 1692996900
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692996900000
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "remoteStartTemperature"
+      value {
+        timestamp: 1692957331
+        double_value: 23.5
+        timestamp_in_ms: 1692957331000
+        display_value: "23.5"
+        temperature_unit: CELSIUS
+      }
+    }
+    attributes {
+      key: "rooftopstatus"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+      }
+    }
+    attributes {
+      key: "selectedChargeProgram"
+      value {
+        timestamp: 1692956198
+        int_value: 0
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "serviceintervaldays"
+      value {
+        timestamp: 1692996825
+        int_value: 160
+        timestamp_in_ms: 1692996825000
+      }
+    }
+    attributes {
+      key: "serviceintervaldistance"
+      value {
+        timestamp: 1692996825
+        status: 3
+        nil_value: true
+        timestamp_in_ms: 1692996825000
+        distance_unit: KILOMETERS
+      }
+    }
+    attributes {
+      key: "smartCharging"
+      value {
+        timestamp: 1692956198
+        int_value: 0
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "soc"
+      value {
+        timestamp: 1692957319
+        int_value: 64
+        timestamp_in_ms: 1692957319000
+        display_value: "64"
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "socprofile"
+      value {
+        timestamp: 1638508946
+        status: 1
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+      }
+    }
+    attributes {
+      key: "speedUnitFromIC"
+      value {
+        timestamp: 1654831900
+        status: 1
+        nil_value: true
+        timestamp_in_ms: 1654831900642
+      }
+    }
+    attributes {
+      key: "starterBatteryState"
+      value {
+        timestamp: 1692996900
+        int_value: 0
+        timestamp_in_ms: 1692996900000
+      }
+    }
+    attributes {
+      key: "sunroofEvent"
+      value {
+        timestamp: 1692956198
+        int_value: 0
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "sunroofEventActive"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "sunroofStatusFrontBlind"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+      }
+    }
+    attributes {
+      key: "sunroofStatusRearBlind"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+      }
+    }
+    attributes {
+      key: "sunroofstatus"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+      }
+    }
+    attributes {
+      key: "tankLevelAdBlue"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "tanklevelpercent"
+      value {
+        timestamp: 1638508946
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1638508946000
+        ratio_unit: PERCENT
+      }
+    }
+    attributes {
+      key: "tcuConnectionStateLowChannel"
+      value {
+        timestamp: 1692996993
+        timestamp_in_ms: 1692996993453
+        38: 3
+      }
+    }
+    attributes {
+      key: "temperaturePoints"
+      value {
+        timestamp: 1692956198
+        timestamp_in_ms: 1692956198000
+        temperature_unit: CELSIUS
+        temperature_points_value {
+          temperature_points {
+            zone: "frontCenter"
+            temperature: 21.0
+            temperature_display_value: "21.0"
+          }
+        }
+      }
+    }
+    attributes {
+      key: "temperatureUnitHU"
+      value {
+        timestamp: 1692956198
+        bool_value: false
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "timeFormatHU"
+      value {
+        timestamp: 1692956198
+        bool_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "tireMarkerFrontLeft"
+      value {
+        timestamp: 1692957331
+        int_value: 0
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "tireMarkerFrontRight"
+      value {
+        timestamp: 1692957331
+        int_value: 0
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "tireMarkerRearLeft"
+      value {
+        timestamp: 1692957331
+        int_value: 0
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "tireMarkerRearRight"
+      value {
+        timestamp: 1692957331
+        int_value: 0
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "tirePressMeasTimestamp"
+      value {
+        timestamp: 1692957331
+        int_value: 1692957331
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "tireSensorAvailable"
+      value {
+        timestamp: 1692957331
+        int_value: 0
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "tireWarningLevelPrw"
+      value {
+        timestamp: 1692957331
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "tiremarker"
+      value {
+        timestamp: 1692957331
+        int_value: 0
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "tirepressureFrontLeft"
+      value {
+        timestamp: 1692956618
+        double_value: 300.0
+        timestamp_in_ms: 1692956618000
+        display_value: "3.0"
+        pressure_unit: BAR
+      }
+    }
+    attributes {
+      key: "tirepressureFrontRight"
+      value {
+        timestamp: 1692957261
+        double_value: 300.0
+        timestamp_in_ms: 1692957261000
+        display_value: "3.0"
+        pressure_unit: BAR
+      }
+    }
+    attributes {
+      key: "tirepressureRearLeft"
+      value {
+        timestamp: 1692956637
+        double_value: 300.0
+        timestamp_in_ms: 1692956637000
+        display_value: "3.0"
+        pressure_unit: BAR
+      }
+    }
+    attributes {
+      key: "tirepressureRearRight"
+      value {
+        timestamp: 1692957290
+        double_value: 300.0
+        timestamp_in_ms: 1692957290000
+        display_value: "3.0"
+        pressure_unit: BAR
+      }
+    }
+    attributes {
+      key: "tirewarninglamp"
+      value {
+        timestamp: 1692957331
+        int_value: 0
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "tirewarningsprw"
+      value {
+        timestamp: 1692957331
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "tirewarningsrdk"
+      value {
+        timestamp: 1692957331
+        int_value: 0
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "trackingStateHU"
+      value {
+        timestamp: 1692956198
+        bool_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "vehicleDataConnectionState"
+      value {
+        timestamp: 1692996993
+        bool_value: false
+        timestamp_in_ms: 1692996993453
+      }
+    }
+    attributes {
+      key: "vehicleHealthStatus"
+      value {
+        timestamp: 1654831900
+        status: 1
+        nil_value: true
+        timestamp_in_ms: 1654831900642
+      }
+    }
+    attributes {
+      key: "vehicleLockState"
+      value {
+        timestamp: 1692996844
+        int_value: 2
+        timestamp_in_ms: 1692996844000
+      }
+    }
+    attributes {
+      key: "vehiclePositionErrorCode"
+      value {
+        timestamp: 1692997532
+        int_value: 5
+        timestamp_in_ms: 1692997532220
+      }
+    }
+    attributes {
+      key: "vtime"
+      value {
+        timestamp: 1692996902
+        int_value: 1693004098
+        timestamp_in_ms: 1692996902000
+      }
+    }
+    attributes {
+      key: "warningbrakefluid"
+      value {
+        timestamp: 1692957331
+        bool_value: false
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "warningbrakeliningwear"
+      value {
+        timestamp: 1692957331
+        bool_value: false
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "warningcoolantlevellow"
+      value {
+        timestamp: 1692957331
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "warningenginelight"
+      value {
+        timestamp: 1654831900
+        status: 1
+        nil_value: true
+        timestamp_in_ms: 1654831900642
+      }
+    }
+    attributes {
+      key: "warningwashwater"
+      value {
+        timestamp: 1692957331
+        bool_value: false
+        timestamp_in_ms: 1692957331000
+      }
+    }
+    attributes {
+      key: "weeklyProfile"
+      value {
+        timestamp: 1675419313
+        timestamp_in_ms: 1675419313000
+        weekly_profile_value {
+          max_number_of_weekly_time_profile_slots: 21
+          max_number_of_time_profiles: -1
+          current_number_of_time_profiles: -1
+        }
+      }
+    }
+    attributes {
+      key: "weeklySetHU"
+      value {
+        timestamp: 1675419313
+        timestamp_in_ms: 1675419313000
+        weekly_settings_head_unit_value {
+        }
+      }
+    }
+    attributes {
+      key: "windowStatusOverall"
+      value {
+        timestamp: 1692956198
+        int_value: 1
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "windowStatusRearBlind"
+      value {
+        timestamp: 1692956198
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "windowStatusRearLeftBlind"
+      value {
+        timestamp: 1692956198
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "windowStatusRearRightBlind"
+      value {
+        timestamp: 1692956198
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "windowstatusfrontleft"
+      value {
+        timestamp: 1692956198
+        int_value: 2
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "windowstatusfrontright"
+      value {
+        timestamp: 1692956198
+        int_value: 2
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "windowstatusrearleft"
+      value {
+        timestamp: 1692956198
+        int_value: 2
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    attributes {
+      key: "windowstatusrearright"
+      value {
+        timestamp: 1692956198
+        int_value: 2
+        timestamp_in_ms: 1692956198000
+      }
+    }
+    full_update: true
+  }
+}

@@ -17,9 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.dto.PINRequest;
@@ -70,5 +74,49 @@ class ConfigurationTest {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testCapabilitiesEndpoint() {
+        String capabilitiesEndpoint = "/vehicle/%s/capabilities";
+        String capabilitiesUrl = Utils.getRestAPIServer("EU") + String.format(capabilitiesEndpoint, "123");
+        System.out.println(capabilitiesUrl);
+    }
+
+    @Test
+    public void testCapabilities() {
+        String capas = FileReader.readFileInString("src/test/resources/Capabilities.json");
+        JSONObject jo = new JSONObject(capas);
+        JSONObject features = jo.getJSONObject("features");
+        Map featureMap = new HashMap();
+        features.keySet().forEach(key -> {
+            Object value = features.get(key);
+            String newKey = Character.toUpperCase(key.charAt(0)) + key.substring(1);
+            newKey = "feature" + newKey;
+            featureMap.put(key, value);
+            System.out.println(newKey);
+        });
+        assertEquals(25, features.toMap().size(), "Size");
+        System.out.println(features.toMap().size());
+        String commandCapas = FileReader.readFileInString("src/test/resources/CommandCapabilities.json");
+        JSONObject commands = new JSONObject(commandCapas);
+        JSONArray commandArray = commands.getJSONArray("commands");
+        Map cmds = new HashMap();
+        commandArray.forEach(object -> {
+            String commandName = ((JSONObject) object).get("commandName").toString();
+            String[] words = commandName.split("[\\W_]+");
+            StringBuilder builder = new StringBuilder();
+            builder.append("command");
+            for (int i = 0; i < words.length; i++) {
+                String word = words[i];
+                word = word.isEmpty() ? word : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase();
+                builder.append(word);
+            }
+            String value = ((JSONObject) object).get("isAvailable").toString();
+            System.out.println(builder.toString() + ":" + value);
+            cmds.put(commandName, value);
+        });
+        System.out.println(cmds);
+        System.out.println(Constants.THING_TYPE_HYBRID.getId());
     }
 }
