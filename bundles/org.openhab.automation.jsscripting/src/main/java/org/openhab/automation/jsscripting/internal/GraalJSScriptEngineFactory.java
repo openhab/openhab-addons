@@ -45,7 +45,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
 @NonNullByDefault
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
-    private static final String CFG_USE_INCLUDED_LIBRARY = "useIncludedLibrary";
+    private static final String CFG_INJECTION_CACHING_ENABLED = "injectionCachingEnabled";
 
     private static final GraalJSEngineFactory factory = new GraalJSEngineFactory();
 
@@ -59,7 +59,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     }
 
     private boolean injectionEnabled = true;
-    private boolean useIncludedLibrary = true;
+    private boolean injectionCachingEnabled = true;
 
     private final JSScriptServiceUtil jsScriptServiceUtil;
     private final JSDependencyTracker jsDependencyTracker;
@@ -87,7 +87,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         if (!scriptTypes.contains(scriptType)) {
             return null;
         }
-        return new DebuggingGraalScriptEngine<>(new OpenhabGraalJSScriptEngine(injectionEnabled, useIncludedLibrary,
+        return new DebuggingGraalScriptEngine<>(new OpenhabGraalJSScriptEngine(injectionEnabled, injectionCachingEnabled,
                 jsScriptServiceUtil, jsDependencyTracker));
     }
 
@@ -99,6 +99,6 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     @Modified
     protected void modified(Map<String, ?> config) {
         this.injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Boolean.class, true);
-        this.useIncludedLibrary = ConfigParser.valueAsOrElse(config.get(CFG_USE_INCLUDED_LIBRARY), Boolean.class, true);
+        this.injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED), Boolean.class, true);
     }
 }
