@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mercedesme.internal.server;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -92,6 +94,11 @@ public class MBWebsocket {
             // data update
             if (pm.hasVepUpdates()) {
                 accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
+                // create proto blob for debugging
+                File blob = new File("/tmp/proto.blob");
+                if (!blob.exists()) {
+                    pm.writeTo(new FileOutputStream("/tmp/proto.blob"));
+                }
             } else if (pm.hasAssignedVehicles()) {
                 for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
                     String vin = pm.getAssignedVehicles().getVins(0);
