@@ -329,7 +329,7 @@ class BridgeHandlerTest {
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
         when(response.getContentAsString()).thenReturn("""
-                {\s
+                {
                     "@type":"DeviceServiceData",
                     "path":"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel",
                     "id":"BatteryLevel",

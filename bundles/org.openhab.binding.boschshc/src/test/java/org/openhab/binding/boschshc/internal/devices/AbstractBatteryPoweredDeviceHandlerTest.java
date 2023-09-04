@@ -58,12 +58,12 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     @Test
     public void testProcessUpdateBatteryLevelLowBattery() {
         JsonElement deviceServiceData = JsonParser.parseString("""
-                {\s
+                {
                     "@type":"DeviceServiceData",
                     "path":"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel",
                     "id":"BatteryLevel",
                     "deviceId":"hdm:ZigBee:000d6f0004b93361",
-                    "faults":{\s
+                    "faults":{
                         "entries":[
                           {
                             "type":"LOW_BATTERY",
@@ -82,12 +82,12 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     @Test
     public void testProcessUpdateBatteryLevelCriticalLow() {
         JsonElement deviceServiceData = JsonParser.parseString("""
-                {\s
+                {
                     "@type":"DeviceServiceData",
                     "path":"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel",
                     "id":"BatteryLevel",
                     "deviceId":"hdm:ZigBee:000d6f0004b93361",
-                    "faults":{\s
+                    "faults":{
                         "entries":[
                           {
                             "type":"CRITICAL_LOW",
@@ -106,12 +106,12 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     @Test
     public void testProcessUpdateBatteryLevelCriticallyLowBattery() {
         JsonElement deviceServiceData = JsonParser.parseString("""
-                {\s
+                {
                     "@type":"DeviceServiceData",
                     "path":"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel",
                     "id":"BatteryLevel",
                     "deviceId":"hdm:ZigBee:000d6f0004b93361",
-                    "faults":{\s
+                    "faults":{
                         "entries":[
                           {
                             "type":"CRITICALLY_LOW_BATTERY",
@@ -130,7 +130,7 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     @Test
     public void testProcessUpdateBatteryLevelOK() {
         JsonElement deviceServiceData = JsonParser.parseString("""
-                {\s
+                {
                     "@type":"DeviceServiceData",
                     "path":"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel",
                     "id":"BatteryLevel",
@@ -147,12 +147,12 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     @Test
     public void testProcessUpdateBatteryLevelNotAvailable() {
         JsonElement deviceServiceData = JsonParser.parseString("""
-                {\s
+                {
                     "@type":"DeviceServiceData",
                     "path":"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel",
                     "id":"BatteryLevel",
                     "deviceId":"hdm:ZigBee:000d6f0004b93361",
-                    "faults":{\s
+                    "faults":{
                         "entries":[
                           {
                             "type":"NOT_AVAILABLE",

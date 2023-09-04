@@ -88,31 +88,31 @@ class IntrusionDetectionControlStateServiceTest {
     void onStateUpdate() {
         final String json = """
                 {
-                "@type": "intrusionDetectionControlState",
-                "activeProfile": "0",
-                "alarmActivationDelayTime": 30,
-                "actuators": [
-                {
-                "readonly": false,
-                "active": true,
-                "id": "intrusion:video"
-                },
-                {
-                "readonly": false,
-                "active": false,
-                "id": "intrusion:siren"
-                }
-                ],
-                "remainingTimeUntilArmed": 28959,
-                "armActivationDelayTime": 30,
-                "triggers": [
-                {
-                "readonly": false,
-                "active": true,
-                "id": "hdm:ZigBee:000d6f0422f42378"
-                }
-                ],
-                "value": "SYSTEM_ARMING"
+                    "@type":"intrusionDetectionControlState",
+                    "activeProfile":"0",
+                    "alarmActivationDelayTime":30,
+                    "actuators":[
+                        {
+                            "readonly":false,
+                            "active":true,
+                            "id":"intrusion:video"
+                        },
+                        {
+                            "readonly":false,
+                            "active":false,
+                            "id":"intrusion:siren"
+                        }
+                    ],
+                    "remainingTimeUntilArmed":28959,
+                    "armActivationDelayTime":30,
+                    "triggers":[
+                        {
+                            "readonly":false,
+                            "active":true,
+                            "id":"hdm:ZigBee:000d6f0422f42378"
+                        }
+                    ],
+                    "value":"SYSTEM_ARMING"
                 }\
                 """;
         JsonElement jsonElement = JsonParser.parseString(json);
