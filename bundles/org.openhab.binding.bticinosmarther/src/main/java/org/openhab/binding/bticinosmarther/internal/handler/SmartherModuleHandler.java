@@ -344,8 +344,8 @@ public class SmartherModuleHandler extends BaseThingHandler {
      * @return {@code true} if the change succeeded, {@code false} otherwise
      */
     private boolean changeTimeMinute(Command command, final ModuleSettings settings) {
-        if (command instanceof DecimalType minute) {
-            int endMinute = minute.intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            int endMinute = decimalCommand.intValue();
             if (endMinute >= 0 && endMinute <= 59) {
                 // Only 15 min increments are allowed
                 endMinute = Math.round(endMinute / 15) * 15;
