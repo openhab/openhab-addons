@@ -18,7 +18,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
