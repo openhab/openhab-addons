@@ -53,13 +53,13 @@ public class LcnModuleCodeSubHandler extends AbstractLcnModuleSubHandler {
     public void handleStatusMessage(Matcher matcher) {
         String code;
 
+        int base = 10;
         if (matcher.pattern() == FINGERPRINT_PATTERN_HEX) {
-            code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0"), 16),
-                    Integer.parseInt(matcher.group("byte1"), 16), Integer.parseInt(matcher.group("byte2"), 16));
-        } else {
-            code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0")),
-                    Integer.parseInt(matcher.group("byte1")), Integer.parseInt(matcher.group("byte2")));
+            base = 16;
         }
+
+        code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0"), base),
+                Integer.parseInt(matcher.group("byte1"), base), Integer.parseInt(matcher.group("byte2"), base));
 
         if (matcher.pattern() == TRANSPONDER_PATTERN) {
             handler.triggerChannel(LcnChannelGroup.CODE, "transponder", code);
