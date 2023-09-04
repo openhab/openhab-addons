@@ -83,14 +83,14 @@ class ProtoTest {
             try {
                 FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
                 PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
-                System.out.println(pm.getAllFields());
+                // System.out.println(pm.getAllFields());
                 if (pm.hasVepUpdates()) {
                     VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
                     Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433")
                             .getAttributesMap();
                     m.forEach((key, value) -> {
                         // System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
-                        if (key.contains("evRangeAssistDriveOnSOC")) {
+                        if (key.contains("arning")) {
                             // System.out.println(Mapper.getChannelStateMap(key, value));
                             System.out.println(key + ":" + value);
                             // System.out.println(

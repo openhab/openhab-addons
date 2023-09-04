@@ -92,7 +92,13 @@ public class Mapper {
                 case "warningbrakefluid":
                 case "warningbrakeliningwear":
                 case "warningwashwater":
-                    state = OnOffType.from(value.getBoolValue());
+                case "warningcoolantlevellow":
+                case "warningenginelight":
+                    if (value.hasBoolValue()) {
+                        state = OnOffType.from(value.getBoolValue());
+                    } else {
+                        state = UnDefType.UNDEF;
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 case "doorlockstatusdecklid":
@@ -160,5 +166,7 @@ public class Mapper {
         CHANNELS.put("warningbrakefluid", new String[] { "brake-fluid", GROUP_WARNINGS });
         CHANNELS.put("warningbrakeliningwear", new String[] { "brake-lining-wear", GROUP_WARNINGS });
         CHANNELS.put("warningwashwater", new String[] { "wash-water", GROUP_WARNINGS });
+        CHANNELS.put("warningcoolantlevellow", new String[] { "coolant-fluid", GROUP_WARNINGS });
+        CHANNELS.put("warningenginelight", new String[] { "engine", GROUP_WARNINGS });
     }
 }

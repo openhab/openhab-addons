@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="air-condition-temp-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Air Condition Temperature</label>
+		<state min="16" max="25" step="0.5" pattern="%d" readOnly="false"/>
+	</channel-type>
+	<channel-type id="air-condition-channel">
+		<item-type>Switch</item-type>
+		<label>Air Condition Temperature</label>
+	</channel-type>
+	<channel-type id="position-channel">
+		<item-type>Number</item-type>
+		<label>Show Vehicle Position</label>
+		<state>
+			<options>
+				<option value="0">Position Lights</option>
+				<option value="1">Position Horn</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="max-soc-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Maximum Charge SoC</label>
+		<state min="50" max="100" step="10" pattern="%d" readOnly="false"/>
+	</channel-type>
+	<channel-type id="door-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Lock and Unlock Doors</label>
+	</channel-type>
+	<channel-type id="window-channel">
+		<item-type>Number</item-type>
+		<label>Window Control</label>
+		<state>
+			<options>
+				<option value="0">Close</option>
+				<option value="1">Open</option>
+				<option value="2">Ventilate</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="sunroof-channel">
+		<item-type>Number</item-type>
+		<label>Sunroof Control</label>
+		<state>
+			<options>
+				<option value="0">Close</option>
+				<option value="1">Open</option>
+				<option value="2">Lift</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
