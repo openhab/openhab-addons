@@ -4,13 +4,28 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="brake-fluid-channel">
-		<item-type>Number</item-type>
-		<label>Driver Window</label>
+		<item-type>Switch</item-type>
+		<label>Brake Fluid</label>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="brake-lining-wear-channel">
-		<item-type>Number</item-type>
-		<label>Driver Window</label>
+		<item-type>Switch</item-type>
+		<label>Break Lining Wear</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="wash-water-channel">
+		<item-type>Switch</item-type>
+		<label>Wash Water</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="coolant-channel">
+		<item-type>Switch</item-type>
+		<label>Coolant Fluid Low</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="engine-channel">
+		<item-type>Switch</item-type>
+		<label>Engine Warning</label>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

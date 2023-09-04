@@ -46,7 +46,7 @@ public class Constants {
     public static final String GROUP_LOCK = "lock";
     public static final String GROUP_LOCATION = "location";
     public static final String GROUP_TIRES = "tires";
-    public static final String GROUP_WARNINGS = "warning";
+    public static final String GROUP_WARNINGS = "warnings";
 
     public static final String CALLBACK_ENDPOINT = "/mb-auth";
     // https://developer.mercedes-benz.com/content-page/api_migration_guide

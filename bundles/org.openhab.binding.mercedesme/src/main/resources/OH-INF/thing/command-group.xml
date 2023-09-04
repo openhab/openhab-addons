@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="command-values">
+		<label>Vehicle Commands</label>
+		<description>Commands send to vehcile</description>
+		<channels>
+			<channel id="air-condition-temp" typeId="air-condition-temp-channel"/>
+			<channel id="air-condition" typeId="air-condition-channel"/>
+			<channel id="max-soc" typeId="max-soc-channel"/>
+			<channel id="position" typeId="position-channel"/>
+			<channel id="door-lock" typeId="door-lock-channel"/>
+			<channel id="window" typeId="window-channel"/>
+			<channel id="sunroof" typeId="sunroof-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

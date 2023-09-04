@@ -12,6 +12,5 @@
 			<label>Battery Capacity</label>
 			<description>Battery capacity in kWh of vehicle</description>
 		</parameter>
-		#
 	</config-description>
 </config-description:config-descriptions>
