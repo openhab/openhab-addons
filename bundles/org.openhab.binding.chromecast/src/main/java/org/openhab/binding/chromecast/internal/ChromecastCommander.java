@@ -165,9 +165,9 @@ public class ChromecastCommander {
                     logger.debug("{} command ignored because media is not loaded", command);
                     return;
                 }
-                if (decimalCommand == PlayPauseType.PLAY) {
+                if (playPauseCommand == PlayPauseType.PLAY) {
                     chromeCast.play();
-                } else if (decimalCommand == PlayPauseType.PAUSE
+                } else if (playPauseCommand == PlayPauseType.PAUSE
                         && ((mediaStatus.supportedMediaCommands & 0x00000001) == 0x1)) {
                     chromeCast.pause();
                 } else {
