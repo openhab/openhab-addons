@@ -73,7 +73,7 @@ public class CBusDaliHandler extends CBusGroupHandler {
                             group.off();
                         }
                     } else if (command instanceof PercentType percentCommand) {
-                        group.ramp((int) Math.round(decimalCommand.doubleValue() / 100 * 255), 0);
+                        group.ramp((int) Math.round(percentCommand.doubleValue() / 100 * 255), 0);
                     } else if (command instanceof IncreaseDecreaseType) {
                         int level = group.getLevel();
                         if (command == IncreaseDecreaseType.DECREASE) {
