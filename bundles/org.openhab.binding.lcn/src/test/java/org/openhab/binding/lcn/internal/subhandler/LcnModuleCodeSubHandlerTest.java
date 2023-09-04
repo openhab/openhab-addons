@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,8 +43,32 @@ public class LcnModuleCodeSubHandlerTest extends AbstractTestLcnModuleSubHandler
 
     @Test
     public void testDecFingerprint() {
-        tryParseAllHandlers("=M000005.ZF255255255");
-        verify(handler).triggerChannel(LcnChannelGroup.CODE, "fingerprint", "FFFFFF");
+        tryParseAllHandlers("=M000005.ZF255001002");
+        verify(handler).triggerChannel(LcnChannelGroup.CODE, "fingerprint", "FF0102");
         verify(handler).triggerChannel(any(), any(), any());
+    }
+
+    @Test
+    public void testTransponder() {
+        tryParseAllHandlers("=M000005.ZT255001002");
+        verify(handler).triggerChannel(LcnChannelGroup.CODE, "transponder", "FF0102");
+        verify(handler).triggerChannel(any(), any(), any());
+    }
+
+    @Test
+    public void testRemote() {
+        tryParseAllHandlers("=M000005.ZI255001002013001");
+        verify(handler).triggerChannel(LcnChannelGroup.CODE, "remotecontrolkey", "B3:HIT");
+        verify(handler).triggerChannel(LcnChannelGroup.CODE, "remotecontrolcode", "FF0102:B3:HIT");
+        verify(handler, times(2)).triggerChannel(any(), any(), any());
+    }
+
+    @Test
+    public void testRemoteBatteryLow() {
+        tryParseAllHandlers("=M000005.ZI255001002008012");
+        verify(handler).triggerChannel(LcnChannelGroup.CODE, "remotecontrolkey", "A8:MAKE");
+        verify(handler).triggerChannel(LcnChannelGroup.CODE, "remotecontrolcode", "FF0102:A8:MAKE");
+        verify(handler).triggerChannel(LcnChannelGroup.CODE, "remotecontrolbatterylow", "FF0102");
+        verify(handler, times(3)).triggerChannel(any(), any(), any());
     }
 }

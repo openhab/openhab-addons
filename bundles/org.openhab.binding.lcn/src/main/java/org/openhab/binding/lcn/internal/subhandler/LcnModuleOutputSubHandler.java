@@ -31,6 +31,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,14 +109,15 @@ public class LcnModuleOutputSubHandler extends AbstractLcnModuleSubHandler {
         currentColor = hsbType;
         handler.updateChannel(LcnChannelGroup.OUTPUT, OUTPUT_COLOR, currentColor);
 
+        PercentType[] rgb = ColorUtil.hsbToRgbPercent(currentColor);
+
         if (info.getFirmwareVersion().map(v -> v >= LcnBindingConstants.FIRMWARE_2014).orElse(true)) {
-            handler.sendPck(PckGenerator.dimAllOutputs(currentColor.getRed().doubleValue(),
-                    currentColor.getGreen().doubleValue(), currentColor.getBlue().doubleValue(), output4.doubleValue(),
-                    COLOR_RAMP_MS));
+            handler.sendPck(PckGenerator.dimAllOutputs(rgb[0].doubleValue(), rgb[1].doubleValue(), rgb[2].doubleValue(),
+                    output4.doubleValue(), COLOR_RAMP_MS));
         } else {
-            handler.sendPck(PckGenerator.dimOutput(0, currentColor.getRed().doubleValue(), COLOR_RAMP_MS));
-            handler.sendPck(PckGenerator.dimOutput(1, currentColor.getGreen().doubleValue(), COLOR_RAMP_MS));
-            handler.sendPck(PckGenerator.dimOutput(2, currentColor.getBlue().doubleValue(), COLOR_RAMP_MS));
+            handler.sendPck(PckGenerator.dimOutput(0, rgb[0].doubleValue(), COLOR_RAMP_MS));
+            handler.sendPck(PckGenerator.dimOutput(1, rgb[1].doubleValue(), COLOR_RAMP_MS));
+            handler.sendPck(PckGenerator.dimOutput(2, rgb[2].doubleValue(), COLOR_RAMP_MS));
         }
     }
 
