@@ -11,11 +11,15 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.CommandRequest;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.DoorsUnlock;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ZEVPreconditioningStart;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdatesByVIN;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.MapEntry;
@@ -79,15 +83,18 @@ class ProtoTest {
             try {
                 FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
                 PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
+                System.out.println(pm.getAllFields());
                 if (pm.hasVepUpdates()) {
                     VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
                     Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433")
                             .getAttributesMap();
                     m.forEach((key, value) -> {
                         // System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
-                        if (key.contains("cond")) {
+                        if (key.contains("evRangeAssistDriveOnSOC")) {
                             // System.out.println(Mapper.getChannelStateMap(key, value));
                             System.out.println(key + ":" + value);
+                            // System.out.println(
+                            // "a:" + value.getTemperaturePointsValue().getTemperaturePoints(0).getTemperature());
                         }
                     });
                 }
@@ -106,6 +113,32 @@ class ProtoTest {
         CommandRequest cr = CommandRequest.newBuilder().setVin("abc").setRequestId("xyz").build();
         System.out.println(cr.getAllFields());
         ClientMessage.newBuilder().setCommandRequest(cr).build();
+        ZEVPreconditioningStart precond = ZEVPreconditioningStart.newBuilder().build();
+        DoorsUnlock du = DoorsUnlock.newBuilder().getDefaultInstanceForType();
+        ClientMessage cmm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+        // cm.writeTo(null);
+    }
 
+    @Test
+    void testAssociatedVin() {
+        for (int i = 1; i < 12; i++) {
+            try {
+                FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
+                PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
+                System.out.println(pm.hasAssignedVehicles());
+                if (pm.hasAssignedVehicles()) {
+                    System.out.println(pm.getAssignedVehicles().getVinsCount());
+                    System.out.println(pm.getAssignedVehicles().getVins(0));
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    public void testTirePressure() {
+        System.out.println(Double.valueOf("3.0"));
+        System.out.println(QuantityType.valueOf(Double.valueOf("3.0"), Units.BAR));
     }
 }

@@ -216,20 +216,20 @@ public class AuthService {
                 refreshToken();
                 // token shall be updated now - retry expired check
                 if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-                    // token = INVALID_TOKEN;
+                    token = INVALID_TOKEN;
                     logger.warn(prefix() + "Not able to return fresh token");
                     listener.onAccessTokenResponse(token);
                     return Constants.NOT_SET;
                 }
             } else {
-                // token = INVALID_TOKEN;
+                token = INVALID_TOKEN;
                 logger.info(prefix() + "Refresh token empty");
             }
         }
         return token.getAccessToken();
     }
 
-    private void addBasicHeaders(Request req) {
+    public void addBasicHeaders(Request req) {
         req.header("Ris-Os-Name", Constants.RIS_OS_NAME);
         req.header("Ris-Os-Version", Constants.RIS_OS_VERSION);
         req.header("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
