@@ -148,6 +148,7 @@
 		<item-type>String</item-type>
 		<label>Active App Name</label>
 		<description>The Currently Running App on the Roku</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="playMode">

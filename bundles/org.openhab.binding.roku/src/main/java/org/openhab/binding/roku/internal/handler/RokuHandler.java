@@ -143,7 +143,7 @@ public class RokuHandler extends BaseThingHandler {
                         deviceInfo = communicator.getDeviceInfo();
                         String powerMode = deviceInfo.getPowerMode();
                         updateState(POWER_STATE, new StringType(powerMode));
-                        if (POWERON.equals(powerMode)) {
+                        if (POWERON.equalsIgnoreCase(powerMode)) {
                             updateState(POWER, OnOffType.ON);
                         } else {
                             updateState(POWER, OnOffType.OFF);
