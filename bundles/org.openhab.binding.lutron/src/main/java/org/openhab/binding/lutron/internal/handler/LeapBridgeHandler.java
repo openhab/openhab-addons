@@ -322,7 +322,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         if (!isRadioRA3) {
             sendCommand(new LeapCommand(Request.getDevices()));
         } else {
-            sendCommand(new LeapCommand(Request.getRA3Devices()));
+            sendCommand(new LeapCommand(Request.getDevices(false)));
         }
         sendCommand(new LeapCommand(Request.getAreas()));
         sendCommand(new LeapCommand(Request.getOccupancyGroups()));
@@ -667,8 +667,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         isRadioRA3 = project.productType.equals("Lutron RadioRA 3 Project");
 
         if (project.masterDeviceList.devices.length > 0 && project.masterDeviceList.devices[0].href != null) {
-            int deviceId = project.masterDeviceList.getDeviceIdFromHref(0);
-            sendCommand(new LeapCommand(Request.getDevice(deviceId)));
+            sendCommand(new LeapCommand(Request.getDevices(true)));
         }
 
         sendCommand(new LeapCommand(Request.getButtonGroups()));
