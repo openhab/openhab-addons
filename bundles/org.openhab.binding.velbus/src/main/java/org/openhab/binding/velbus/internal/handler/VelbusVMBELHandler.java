@@ -43,10 +43,10 @@ public class VelbusVMBELHandler extends VelbusThermostatHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_VMBEL1, THING_TYPE_VMBEL2, THING_TYPE_VMBEL4, THING_TYPE_VMBELPIR));
 
-    private final ChannelUID outputChannel = new ChannelUID(thing.getUID(), "output", "output");
+    private final ChannelUID outputChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_OUTPUT, CHANNEL_OUTPUT);
 
     public VelbusVMBELHandler(Thing thing) {
-        super(thing, 4, new ChannelUID(thing.getUID(), "input", "CH9"));
+        super(thing, 4, new ChannelUID(thing.getUID(), CHANNEL_GROUP_INPUT, "CH9"));
     }
 
     @Override
@@ -67,8 +67,7 @@ public class VelbusVMBELHandler extends VelbusThermostatHandler {
         } else if (command instanceof OnOffType) {
             byte commandByte = determineCommandByte((OnOffType) command);
 
-            VelbusRelayPacket packet = new VelbusRelayPacket(getModuleAddress().getChannelIdentifier(channelUID),
-                    commandByte, true);
+            VelbusRelayPacket packet = new VelbusRelayPacket(getModuleAddress(), commandByte);
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);
@@ -88,8 +87,8 @@ public class VelbusVMBELHandler extends VelbusThermostatHandler {
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
 
-            if (command == COMMAND_MODULE_STATUS && packet.length >= 8) {
-                boolean on = packet[7] != 0x80;
+            if (command == COMMAND_MODULE_STATUS && packet.length >= 7) {
+                boolean on = (packet[7] & (byte) 0x80) == (byte) 0x80;
 
                 OnOffType state = on ? OnOffType.ON : OnOffType.OFF;
                 updateState(outputChannel, state);

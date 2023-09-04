@@ -271,12 +271,14 @@ public class VelbusBindingConstants {
     public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE = "clockAlarm#clockAlarm2WakeupMinute";
     public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR = "clockAlarm#clockAlarm2BedtimeHour";
     public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE = "clockAlarm#clockAlarm2BedtimeMinute";
+    public static final String CHANNEL_OUTPUT = "output";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_GROUP_INPUT = "input";
     public static final String CHANNEL_GROUP_FEEDBACK = "feedback";
     public static final String CHANNEL_GROUP_BUTTON = "button";
+    public static final String CHANNEL_GROUP_OUTPUT = "output";
     public static final String CHANNEL_GROUP_COLOR = "color";
     public static final String CHANNEL_GROUP_SCENE = "scene";
 

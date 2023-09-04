@@ -152,9 +152,11 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
                 if (subAddress != null) {
                     subAddresses[i] = hexToByte(subAddress);
                 } else {
-                    subAddress = getConfig().get(propertyKey).toString();
-                    if (subAddress != null) {
-                        subAddresses[i] = hexToByte(subAddress);
+                    if (getConfig().get(propertyKey) != null) {
+                        subAddress = getConfig().get(propertyKey).toString();
+                        if (subAddress != null) {
+                            subAddresses[i] = hexToByte(subAddress);
+                        }
                     } else {
                         subAddresses[i] = (byte) 0xFF;
                     }
