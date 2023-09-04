@@ -96,8 +96,8 @@ public class DaliRgbHandler extends BaseThingHandler {
                                     DaliStandardCommand.createOffCommand(DaliAddress.createShortAddress(output)));
                         }
                     }
-                } else if (command instanceof IncreaseDecreaseType type) {
-                    if (type == IncreaseDecreaseType.INCREASE) {
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                         for (Integer output : outputs) {
                             getBridgeHandler().sendCommand(
                                     DaliStandardCommand.createUpCommand(DaliAddress.createShortAddress(output)));

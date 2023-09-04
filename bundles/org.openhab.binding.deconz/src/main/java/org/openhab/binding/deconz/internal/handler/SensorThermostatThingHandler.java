@@ -101,8 +101,8 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                 newConfig.offset = newOffset;
             }
             case CHANNEL_THERMOSTAT_MODE -> {
-                if (command instanceof StringType type) {
-                    String thermostatMode = type.toString();
+                if (command instanceof StringType stringCommand) {
+                    String thermostatMode = stringCommand.toString();
                     try {
                         newConfig.mode = ThermostatMode.valueOf(thermostatMode);
                     } catch (IllegalArgumentException ex) {

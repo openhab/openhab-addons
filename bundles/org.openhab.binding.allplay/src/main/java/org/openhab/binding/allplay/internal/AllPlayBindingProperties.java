@@ -63,9 +63,9 @@ public class AllPlayBindingProperties {
     private int getIntegerProperty(Dictionary<String, Object> properties, String propertyKey, int defaultValue) {
         Object configValue = properties.get(propertyKey);
         int value = defaultValue;
-        if (configValue instanceof String stringCommand) {
+        if (configValue instanceof String stringValue) {
             try {
-                value = Integer.parseInt(stringCommand);
+                value = Integer.parseInt(stringValue);
             } catch (NumberFormatException e) {
                 logger.warn("Unable to convert value {} for config property {} to integer. Using default value.",
                         configValue, propertyKey);

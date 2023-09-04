@@ -360,8 +360,8 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         logger.debug("Handling light level command {}", command);
         // <mac;LIGHT;LEVEL;SET;0..16>
-        if (command instanceof PercentType type) {
-            sendCommand(macAddress, ";LIGHT;LEVEL;SET;".concat(BigAssFanConverter.percentToLevel(type)));
+        if (command instanceof PercentType percentCommand) {
+            sendCommand(macAddress, ";LIGHT;LEVEL;SET;".concat(BigAssFanConverter.percentToLevel(percentCommand)));
         }
     }
 
@@ -373,8 +373,9 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         logger.debug("Handling light hue command {}", command);
         // <mac;LIGHT;COLOR;TEMP;SET;2200..5000>
-        if (command instanceof PercentType type) {
-            sendCommand(macAddress, ";LIGHT;COLOR;TEMP;VALUE;SET;".concat(BigAssFanConverter.percentToHue(type)));
+        if (command instanceof PercentType percentCommand) {
+            sendCommand(macAddress,
+                    ";LIGHT;COLOR;TEMP;VALUE;SET;".concat(BigAssFanConverter.percentToHue(percentCommand)));
         }
     }
 
@@ -420,11 +421,11 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         logger.debug("Handling light level minimum command {}", command);
         // <mac;LIGHT;LEVEL;MIN;0-16>
-        if (command instanceof PercentType type) {
+        if (command instanceof PercentType percentCommand) {
             // Send min light level set command
-            sendCommand(macAddress, ";LIGHT;LEVEL;MIN;".concat(BigAssFanConverter.percentToLevel(type)));
+            sendCommand(macAddress, ";LIGHT;LEVEL;MIN;".concat(BigAssFanConverter.percentToLevel(percentCommand)));
             // Don't let max be less than min
-            adjustMaxLevel(type);
+            adjustMaxLevel(percentCommand);
         }
     }
 
@@ -436,11 +437,11 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         logger.debug("Handling light level maximum command {}", command);
         // <mac;LIGHT;LEVEL;MAX;0-16>
-        if (command instanceof PercentType type) {
+        if (command instanceof PercentType percentCommand) {
             // Send max light level set command
-            sendCommand(macAddress, ";LIGHT;LEVEL;MAX;".concat(BigAssFanConverter.percentToLevel(type)));
+            sendCommand(macAddress, ";LIGHT;LEVEL;MAX;".concat(BigAssFanConverter.percentToLevel(percentCommand)));
             // Don't let min be greater than max
-            adjustMinLevel(type);
+            adjustMinLevel(percentCommand);
         }
     }
 
