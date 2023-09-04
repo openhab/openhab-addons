@@ -63,14 +63,14 @@ public class A5_38_08_Dimming extends _4BSMessage {
             case CHANNEL_DIMMER:
                 byte dimmValue;
 
-                if (outputCommand instanceof DecimalType type) {
-                    dimmValue = type.byteValue();
-                } else if (outputCommand instanceof OnOffType type) {
-                    dimmValue = (type == OnOffType.ON) ? SWITCH_100_PERCENT : ZERO;
-                } else if (outputCommand instanceof IncreaseDecreaseType type) {
-                    dimmValue = (type == IncreaseDecreaseType.INCREASE) ? SWITCH_100_PERCENT : ZERO;
-                } else if (outputCommand instanceof UpDownType type) {
-                    dimmValue = (type == UpDownType.UP) ? SWITCH_100_PERCENT : ZERO;
+                if (outputCommand instanceof DecimalType decimalCommand) {
+                    dimmValue = decimalCommand.byteValue();
+                } else if (outputCommand instanceof OnOffType onOffCommand) {
+                    dimmValue = (onOffCommand == OnOffType.ON) ? SWITCH_100_PERCENT : ZERO;
+                } else if (outputCommand instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    dimmValue = (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) ? SWITCH_100_PERCENT : ZERO;
+                } else if (outputCommand instanceof UpDownType upDownCommand) {
+                    dimmValue = (upDownCommand == UpDownType.UP) ? SWITCH_100_PERCENT : ZERO;
                 } else {
                     throw new IllegalArgumentException(outputCommand.toFullString() + " is no valid dimming command.");
                 }

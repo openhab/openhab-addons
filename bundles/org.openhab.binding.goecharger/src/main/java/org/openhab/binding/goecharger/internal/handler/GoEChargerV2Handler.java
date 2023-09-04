@@ -244,8 +244,8 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
         switch (channelUID.getId()) {
             case MAX_CURRENT:
                 key = "amp";
-                if (command instanceof DecimalType current) {
-                    value = String.valueOf(current.intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    value = String.valueOf(decimalCommand.intValue());
                 } else if (command instanceof QuantityType<?>) {
                     value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
                 }
@@ -253,8 +253,8 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 key = "dwo";
                 var multiplier = 1000;
-                if (command instanceof DecimalType limit) {
-                    value = String.valueOf(limit.intValue() * multiplier);
+                if (command instanceof DecimalType decimalCommand) {
+                    value = String.valueOf(decimalCommand.intValue() * multiplier);
                 } else if (command instanceof QuantityType<?>) {
                     value = String.valueOf(
                             ((QuantityType<Energy>) command).toUnit(Units.KILOWATT_HOUR).intValue() * multiplier);
@@ -262,9 +262,9 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 break;
             case PHASES:
                 key = "psm";
-                if (command instanceof DecimalType help) {
+                if (command instanceof DecimalType decimalCommand) {
                     var phases = 1;
-                    if (help.intValue() == 3) {
+                    if (decimalCommand.intValue() == 3) {
                         // set value 2 for 3 phases
                         phases = 2;
                     }
@@ -273,14 +273,14 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 break;
             case FORCE_STATE:
                 key = "frc";
-                if (command instanceof DecimalType forceState) {
-                    value = String.valueOf(forceState.intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    value = String.valueOf(decimalCommand.intValue());
                 }
                 break;
             case TRANSACTION:
                 key = "trx";
-                if (command instanceof DecimalType transaction) {
-                    value = String.valueOf(transaction.intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    value = String.valueOf(decimalCommand.intValue());
                 }
                 break;
         }

@@ -864,9 +864,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             if (SCENE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
                     updateState(SCENE, new StringType(String.valueOf(currentScene)));
-                } else if (command instanceof StringType type) {
+                } else if (command instanceof StringType stringCommand) {
                     try {
-                        selectScene(Integer.valueOf(type.toString()));
+                        selectScene(Integer.valueOf(stringCommand.toString()));
                     } catch (NumberFormatException nfe) {
                         logger.debug("Cannot interpret scene command {}", command);
                     }

@@ -224,9 +224,9 @@ public class GreeHandler extends BaseThingHandler {
         int mode = -1;
         String modeStr = "";
         boolean isNumber = false;
-        if (command instanceof DecimalType type) {
+        if (command instanceof DecimalType decimalCommand) {
             // backward compatibility when channel was Number
-            mode = type.intValue();
+            mode = decimalCommand.intValue();
         } else if (command instanceof OnOffType) {
             // Switch
             logger.debug("{}: Send Power-{}", thingId, command);
@@ -295,8 +295,8 @@ public class GreeHandler extends BaseThingHandler {
 
     private void handleQuietCommand(DatagramSocket socket, Command command) throws GreeException {
         int mode = -1;
-        if (command instanceof DecimalType type) {
-            mode = type.intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            mode = decimalCommand.intValue();
         } else if (command instanceof StringType) {
             switch (command.toString().toLowerCase()) {
                 case QUIET_OFF:
@@ -321,8 +321,8 @@ public class GreeHandler extends BaseThingHandler {
         if (command instanceof OnOffType) {
             return command == OnOffType.ON ? 1 : 0;
         }
-        if (command instanceof DecimalType type) {
-            int value = type.intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            int value = decimalCommand.intValue();
             if ((value == 0) || (value == 1)) {
                 return value;
             }
@@ -331,8 +331,8 @@ public class GreeHandler extends BaseThingHandler {
     }
 
     private int getNumber(Command command) {
-        if (command instanceof DecimalType type) {
-            return type.intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.intValue();
         }
         throw new IllegalArgumentException("Invalid Number type");
     }
@@ -345,8 +345,8 @@ public class GreeHandler extends BaseThingHandler {
             return toQuantityType(temperature, DIGITS_TEMP,
                     unit == TEMP_UNIT_CELSIUS ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT);
         }
-        if (command instanceof QuantityType type) {
-            return type;
+        if (command instanceof QuantityType quantityCommand) {
+            return quantityCommand;
         }
         throw new IllegalArgumentException("Invalud Temp type");
     }

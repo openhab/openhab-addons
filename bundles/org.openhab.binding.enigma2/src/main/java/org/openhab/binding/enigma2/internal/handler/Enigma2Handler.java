@@ -155,10 +155,10 @@ public class Enigma2Handler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             client.refreshVolume();
             updateState(channelUID, new PercentType(client.getVolume()));
-        } else if (command instanceof PercentType volume) {
-            client.setVolume(volume.intValue());
-        } else if (command instanceof DecimalType volume) {
-            client.setVolume(volume.intValue());
+        } else if (command instanceof PercentType percentCommand) {
+            client.setVolume(percentCommand.intValue());
+        } else if (command instanceof DecimalType decimalCommand) {
+            client.setVolume(decimalCommand.intValue());
         } else {
             logger.info("Channel {} only accepts PercentType, DecimalType, RefreshType. Type was {}.", channelUID,
                     command.getClass());

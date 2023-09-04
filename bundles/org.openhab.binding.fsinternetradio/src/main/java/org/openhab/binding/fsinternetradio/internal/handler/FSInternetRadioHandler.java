@@ -200,8 +200,8 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         radio.increaseVolumeAbsolute();
                     } else if (IncreaseDecreaseType.DECREASE.equals(command) || UpDownType.DOWN.equals(command)) {
                         radio.decreaseVolumeAbsolute();
-                    } else if (command instanceof PercentType type) {
-                        radio.setVolumePercent(type.intValue());
+                    } else if (command instanceof PercentType percentCommand) {
+                        radio.setVolumePercent(percentCommand.intValue());
                     }
                     // absolute value should also be updated now, so let's update all items
                     scheduler.schedule(updateRunnable, 1, SECONDS);
@@ -218,13 +218,13 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                     scheduler.schedule(updateRunnable, 1, SECONDS);
                     break;
                 case CHANNEL_MODE:
-                    if (command instanceof DecimalType type) {
-                        radio.setMode(type.intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        radio.setMode(decimalCommand.intValue());
                     }
                     break;
                 case CHANNEL_PRESET:
-                    if (command instanceof DecimalType type) {
-                        radio.setPreset(type.intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        radio.setPreset(decimalCommand.intValue());
                     }
                     break;
                 case CHANNEL_MUTE:

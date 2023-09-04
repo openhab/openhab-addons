@@ -88,10 +88,10 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
             } else {
                 updateState(channelUID, currentState);
             }
-        } else if (command instanceof State state) {
+        } else if (command instanceof State stateCommand) {
             logger.debug("Updating: {} to {}", channelUID, command);
 
-            handler.updateDevice(requireNonNull(instanceKey), channelUID.getId(), state);
+            handler.updateDevice(requireNonNull(instanceKey), channelUID.getId(), stateCommand);
         }
     }
 

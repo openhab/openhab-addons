@@ -371,8 +371,8 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                 } catch (DataParsingException e) {
                     listener.onEventStreamFailure(EcovacsXmppDevice.this, e);
                 }
-            } else if (iqRequest instanceof ErrorIQ iQ) {
-                StanzaError error = iQ.getError();
+            } else if (iqRequest instanceof ErrorIQ errorIQ) {
+                StanzaError error = errorIQ.getError();
                 logger.trace("{}: Got error response {}", getSerialNumber(), error);
                 listener.onEventStreamFailure(EcovacsXmppDevice.this,
                         new XMPPException.XMPPErrorException(iqRequest, error));

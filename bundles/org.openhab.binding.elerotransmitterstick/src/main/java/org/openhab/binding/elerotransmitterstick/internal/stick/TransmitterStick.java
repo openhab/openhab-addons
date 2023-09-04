@@ -306,8 +306,8 @@ public class TransmitterStick {
                                 }
                             }
 
-                            if (cmd instanceof TimedCommand tcommand) {
-                                long delay = 1000 * tcommand.getDuration();
+                            if (cmd instanceof TimedCommand timedCommand) {
+                                long delay = 1000 * timedCommand.getDuration();
                                 logger.debug("adding timed command STOP for channel ids {} to queue with delay {}...",
                                         cmd.getChannelIds(), delay);
 

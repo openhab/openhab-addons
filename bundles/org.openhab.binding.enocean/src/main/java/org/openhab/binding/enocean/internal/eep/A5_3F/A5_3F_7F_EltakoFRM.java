@@ -52,19 +52,19 @@ public class A5_3F_7F_EltakoFRM extends _4BSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
-        if (command instanceof PercentType target) {
-            int rawPosition = Math.round(
-                    (PercentType.HUNDRED.floatValue() - target.floatValue()) * TOP / PercentType.HUNDRED.floatValue());
+        if (command instanceof PercentType percentCommand) {
+            int rawPosition = Math.round((PercentType.HUNDRED.floatValue() - percentCommand.floatValue()) * TOP
+                    / PercentType.HUNDRED.floatValue());
             int position = Math.min(TOP, Math.max(BOTTOM, rawPosition));
             setData((byte) position, ZERO, MOVE, TEACHIN_BIT);
-        } else if (command instanceof UpDownType type) {
-            if (type == UpDownType.UP) {
+        } else if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 setData((byte) TOP, ZERO, MOVE, TEACHIN_BIT); // => 0 percent
-            } else if (type == UpDownType.DOWN) {
+            } else if (upDownCommand == UpDownType.DOWN) {
                 setData((byte) BOTTOM, ZERO, MOVE, TEACHIN_BIT); // => 100 percent
             }
-        } else if (command instanceof StopMoveType type) {
-            if (type == StopMoveType.STOP) {
+        } else if (command instanceof StopMoveType stopMoveCommand) {
+            if (stopMoveCommand == StopMoveType.STOP) {
                 setData(ZERO, ZERO, STOP, TEACHIN_BIT);
             }
         }

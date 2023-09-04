@@ -542,10 +542,10 @@ public class FreeboxHandler extends BaseBridgeHandler {
             } else if (command instanceof OnOffType) {
                 updateChannelDecimalState(LCDBRIGHTNESS,
                         apiManager.setLcdBrightness((command == OnOffType.ON) ? 100 : 0));
-            } else if (command instanceof DecimalType type) {
-                updateChannelDecimalState(LCDBRIGHTNESS, apiManager.setLcdBrightness(type.intValue()));
-            } else if (command instanceof PercentType type) {
-                updateChannelDecimalState(LCDBRIGHTNESS, apiManager.setLcdBrightness(type.intValue()));
+            } else if (command instanceof DecimalType decimalCommand) {
+                updateChannelDecimalState(LCDBRIGHTNESS, apiManager.setLcdBrightness(decimalCommand.intValue()));
+            } else if (command instanceof PercentType percentCommand) {
+                updateChannelDecimalState(LCDBRIGHTNESS, apiManager.setLcdBrightness(percentCommand.intValue()));
             } else {
                 logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command,
                         channelUID.getId());
