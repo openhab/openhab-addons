@@ -282,6 +282,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             capabilitiesRequest.header("X-TrackingId", UUID.randomUUID().toString());
             ContentResponse capabilitiesResponse = capabilitiesRequest.send();
             JSONObject jsonResponse = new JSONObject(capabilitiesResponse.getContentAsString());
+            logger.info(jsonResponse.toString());
             JSONObject features = jsonResponse.getJSONObject("features");
             features.keySet().forEach(key -> {
                 String value = features.get(key).toString();
@@ -310,6 +311,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             commandCapabilitiesRequest.header("X-TrackingId", UUID.randomUUID().toString());
             ContentResponse commandCapabilitiesResponse = commandCapabilitiesRequest.send();
             JSONObject commands = new JSONObject(commandCapabilitiesResponse.getContentAsString());
+            logger.info(commands.toString());
             JSONArray commandArray = commands.getJSONArray("commands");
             commandArray.forEach(object -> {
                 String commandName = ((JSONObject) object).get("commandName").toString();
