@@ -14,7 +14,6 @@
 
 		<channel-groups>
 			<channel-group id="range" typeId="range-hybrid-values"/>
-			<channel-group id="command" typeId="command-values"/>
 			<channel-group id="warnings" typeId="warning-conv-values"/>
 			<channel-group id="doors" typeId="door-values"/>
 			<channel-group id="windows" typeId="window-values"/>

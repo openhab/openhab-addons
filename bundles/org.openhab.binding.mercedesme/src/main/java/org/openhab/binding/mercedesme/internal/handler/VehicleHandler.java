@@ -30,6 +30,7 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.CommandRequ
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.DoorsLock;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.DoorsUnlock;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.HornType;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.LightType;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.SigposType;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SunroofClose;
@@ -135,12 +136,29 @@ public class VehicleHandler extends BaseThingHandler {
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Signal Position supported? {}", supported);
                 } else {
-                    SigPosStart sps = SigPosStart.newBuilder().setSigposType(SigposType.LIGHT_ONLY)
-                            .setLightType(LightType.DIPPED_HEAD_LIGHT).setSigposDuration(10).build();
-                    CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
-                            .setRequestId(UUID.randomUUID().toString()).setSigposStart(sps).build();
-                    ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                    accountHandler.get().sendCommand(cm);
+                    SigPosStart sps;
+                    CommandRequest cr;
+                    ClientMessage cm;
+                    switch (((DecimalType) command).intValue()) {
+                        case 0: // light
+                            sps = SigPosStart.newBuilder().setSigposType(SigposType.LIGHT_ONLY)
+                                    .setLightType(LightType.DIPPED_HEAD_LIGHT).setSigposDuration(10).build();
+                            cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                    .setRequestId(UUID.randomUUID().toString()).setSigposStart(sps).build();
+                            cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                            accountHandler.get().sendCommand(cm);
+                            break;
+                        case 1: // horn
+                            sps = SigPosStart.newBuilder().setSigposType(SigposType.HORN_ONLY).setHornRepeat(3)
+                                    .setHornType(HornType.HORN_LOW_VOLUME).build();
+                            cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                    .setRequestId(UUID.randomUUID().toString()).setSigposStart(sps).build();
+                            cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                            accountHandler.get().sendCommand(cm);
+                            break;
+                        default:
+                            logger.info("No Positioning known for {}", command);
+                    }
                 }
             } else if ("max-soc".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandBatteryMaxSocConfigure");
@@ -177,7 +195,7 @@ public class VehicleHandler extends BaseThingHandler {
                         }
                     }
                 }
-            } else if ("window".equals(channelUID.getIdWithoutGroup())) {
+            } else if ("window-control".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandWindowsOpen");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Windows supported? {}", supported);
@@ -218,7 +236,7 @@ public class VehicleHandler extends BaseThingHandler {
                             logger.info("No Windows movement known for {}", command);
                     }
                 }
-            } else if ("sunroof".equals(channelUID.getIdWithoutGroup())) {
+            } else if ("sunroof-control".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandSunroofOpen");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Sunroof supported? {}", supported);

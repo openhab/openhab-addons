@@ -11,6 +11,7 @@
 			<channel id="driver-rear" typeId="window-driver-rear-channel"/>
 			<channel id="passenger-front" typeId="window-passenger-front-channel"/>
 			<channel id="passenger-rear" typeId="window-passenger-rear-channel"/>
+            <channel id="window-control" typeId="window-control-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
