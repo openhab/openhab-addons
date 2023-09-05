@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,12 +34,14 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneState;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -410,7 +415,30 @@ public class Resource {
 
     public State getMotionState() {
         Motion motion = this.motion;
-        return Objects.nonNull(motion) ? motion.getMotionState() : UnDefType.NULL;
+        if (motion == null) {
+            return UnDefType.NULL;
+        }
+        MotionReport motionReport = motion.getMotionReport();
+        if (motionReport == null) {
+            return motion.getMotionState();
+        }
+        return OnOffType.from(motionReport.isMotion());
+    }
+
+    public State getMotionLastUpdatedState(ZoneId zoneId) {
+        Motion motion = this.motion;
+        if (motion == null) {
+            return UnDefType.NULL;
+        }
+        MotionReport motionReport = motion.getMotionReport();
+        if (motionReport == null) {
+            return UnDefType.UNDEF;
+        }
+        Instant lastChanged = motionReport.getLastChanged();
+        if (lastChanged == null) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
     }
 
     public State getMotionValidState() {
@@ -559,7 +587,30 @@ public class Resource {
 
     public State getTemperatureState() {
         Temperature temperature = this.temperature;
-        return Objects.nonNull(temperature) ? temperature.getTemperatureState() : UnDefType.NULL;
+        if (temperature == null) {
+            return UnDefType.NULL;
+        }
+        TemperatureReport temperatureReport = temperature.getTemperatureReport();
+        if (temperatureReport == null) {
+            return temperature.getTemperatureState();
+        }
+        return new QuantityType<>(temperatureReport.getTemperature(), SIUnits.CELSIUS);
+    }
+
+    public State getTemperatureLastUpdatedState(ZoneId zoneId) {
+        Temperature temperature = this.temperature;
+        if (temperature == null) {
+            return UnDefType.NULL;
+        }
+        TemperatureReport temperatureReport = temperature.getTemperatureReport();
+        if (temperatureReport == null) {
+            return UnDefType.UNDEF;
+        }
+        Instant lastChanged = temperatureReport.getLastChanged();
+        if (lastChanged == null) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
     }
 
     public State getTemperatureValidState() {

@@ -26,6 +26,10 @@
 			<channel id="button-last-event" typeId="button-last-event"/>
 			<channel id="rotary-steps" typeId="rotary-steps"/>
 			<channel id="motion" typeId="system.motion"/>
+			<channel id="motion-last-updated" typeId="last-updated-v2">
+				<label>Motion Last Updated</label>
+				<description>The date and time when the motion value was last updated.</description>
+			</channel>
 			<channel id="motion-enabled" typeId="sensor-enabled">
 				<description>Motion sensor enabled.</description>
 			</channel>
@@ -38,6 +42,10 @@
 			<channel id="temperature" typeId="system.indoor-temperature">
 				<label>Temperature</label>
 				<description>Temperature at the sensor location.</description>
+			</channel>
+			<channel id="temperature-last-updated" typeId="last-updated-v2">
+				<label>Temperature Last Updated</label>
+				<description>The date and time when the temperature was last updated.</description>
 			</channel>
 			<channel id="temperature-enabled" typeId="sensor-enabled">
 				<description>Temperature sensor enabled.</description>
@@ -57,6 +65,10 @@
 				<description>Set the on/off parameter of the light without changing other state parameters.</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>resourceId</representation-property>
 

@@ -19,6 +19,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -55,6 +57,8 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RotationEventType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.dto.clip2.helper.Setters;
+import org.openhab.binding.hue.internal.serialization.InstantDeserializer;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -66,6 +70,7 @@ import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -79,7 +84,8 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 class Clip2DtoTest {
 
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
+            .create();
     private static final Double MINIMUM_DIMMING_LEVEL = Double.valueOf(12.34f);
 
     /**
@@ -493,6 +499,24 @@ class Clip2DtoTest {
         Boolean enabled = item.getEnabled();
         assertNotNull(enabled);
         assertTrue(enabled);
+        assertEquals(OnOffType.ON, item.getMotionState());
+        assertEquals(new DateTimeType("2023-09-04T20:04:30.395+0000"),
+                item.getMotionLastUpdatedState(ZoneId.of("UTC")));
+    }
+
+    @Test
+    void testSensor2MotionDeprecated() {
+        String json = load(ResourceType.MOTION.name().toLowerCase() + "_deprecated");
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.MOTION, item.getType());
+        Boolean enabled = item.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
         Motion motion = item.getMotion();
         assertNotNull(motion);
         assertTrue(motion.isMotion());
@@ -563,6 +587,27 @@ class Clip2DtoTest {
         assertEquals(1, list.size());
         Resource item = list.get(0);
         assertEquals(ResourceType.TEMPERATURE, item.getType());
+        Boolean enabled = item.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
+        assertEquals(QuantityType.valueOf("23.34 °C"), item.getTemperatureState());
+        assertEquals(new DateTimeType("2023-09-06T18:22:07.016+0000"),
+                item.getTemperatureLastUpdatedState(ZoneId.of("UTC")));
+    }
+
+    @Test
+    void testTemperatureDeprecated() {
+        String json = load(ResourceType.TEMPERATURE.name().toLowerCase() + "_deprecated");
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.TEMPERATURE, item.getType());
+        Boolean enabled = item.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
         Temperature temperature = item.getTemperature();
         assertNotNull(temperature);
         assertEquals(17.2, temperature.getTemperature(), 0.1);
