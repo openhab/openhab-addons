@@ -527,7 +527,7 @@
 
 	<channel-type id="scenario">
 		<item-type>String</item-type>
-		<label>Scenario triggered</label>
+		<label>Triggered scenario</label>
 		<description>Name of the triggered scenario</description>
 		<state readOnly="true"/>
 	</channel-type>
