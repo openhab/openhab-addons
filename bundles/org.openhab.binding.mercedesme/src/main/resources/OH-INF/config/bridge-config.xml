@@ -19,5 +19,10 @@
 				<option value="CN">China</option>
 			</options>
 		</parameter>
+		<parameter name="pin" type="text" required="false">
+			<label>PIN</label>
+			<description>PIN for commands</description>
+			<context>password</context>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

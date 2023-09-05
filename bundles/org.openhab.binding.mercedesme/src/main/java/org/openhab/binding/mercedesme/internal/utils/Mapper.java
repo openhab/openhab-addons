@@ -108,7 +108,7 @@ public class Mapper {
 
                 // Angle
                 case "positionHeading":
-                    state = QuantityType.valueOf(Double.valueOf(value.getIntValue()), Units.DEGREE_ANGLE);
+                    state = QuantityType.valueOf(Double.valueOf(value.getDoubleValue()), Units.DEGREE_ANGLE);
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 // tires
@@ -119,10 +119,10 @@ public class Mapper {
                     state = QuantityType.valueOf(Double.valueOf(value.getDisplayValue()), Units.BAR);
                     return new ChannelStateMap(ch[0], ch[1], state);
                 default:
-                    LOGGER.trace("No mapping available for {}", key);
+                    // LOGGER.trace("No mapping available for {}", key);
             }
         } else {
-            LOGGER.trace("No mapping available for {}", key);
+            // LOGGER.trace("No mapping available for {}", key);
         }
         return INVALID_MAP;
     }

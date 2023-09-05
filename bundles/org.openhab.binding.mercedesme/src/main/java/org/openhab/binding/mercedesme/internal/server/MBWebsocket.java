@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.mercedesme.internal.server;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.concurrent.Future;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -29,6 +32,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
+import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
 import org.slf4j.Logger;
@@ -43,11 +47,12 @@ import org.slf4j.LoggerFactory;
 @WebSocket
 public class MBWebsocket {
     private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
-    private final int CONNECT_TIMEOUT_MS = 10 * 1000;
+    private final int CONNECT_TIMEOUT_MS = 30 * 1000;
     private AccountHandler accountHandler;
     private boolean running = false;
     private @Nullable Future<?> sessionFuture;
     private @Nullable Session session;
+    private @Nullable ClientMessage message;
 
     public MBWebsocket(AccountHandler ah) {
         accountHandler = ah;
@@ -59,6 +64,7 @@ public class MBWebsocket {
     public void run(int runtimeMS) {
         synchronized (this) {
             if (running) {
+                sendMessage();
                 return;
             } else {
                 running = true;
@@ -83,6 +89,27 @@ public class MBWebsocket {
         }
     }
 
+    public void setCommand(@NonNull ClientMessage cm) {
+        message = cm;
+    }
+
+    private void sendMessage() {
+        if (message != null && this.session != null) {
+            logger.info("Send Message {}", message.getAllFields());
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                message.writeTo(baos);
+                session.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+            } catch (IOException e) {
+                logger.warn("Error sending message {} : {}", message.getAllFields(), e.getMessage());
+            }
+            logger.info("Send Message {} done", message.getAllFields());
+            message = null;
+        } else {
+            logger.info("Message {} or Session {} is null", message, session);
+        }
+    }
+
     /**
      * endpoints
      */
@@ -91,6 +118,11 @@ public class MBWebsocket {
     public void onBytes(InputStream is) {
         try {
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
+            logger.info("Message {}", pm.getAllFields().keySet());
+            if (pm.hasApptwinCommandStatusUpdatesByVin()) {
+                logger.info("Status Updates {}", pm.getApptwinCommandStatusUpdatesByVin().getAllFields());
+            }
+
             // data update
             if (pm.hasVepUpdates()) {
                 accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
@@ -115,12 +147,14 @@ public class MBWebsocket {
     @OnWebSocketClose
     public void onDisconnect(Session session, int statusCode, String reason) {
         logger.info("Disonnected from server. Status {} Reason {}", statusCode, reason);
+        this.session = null;
     }
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
         logger.info("Connected to server");
         this.session = session;
+        sendMessage();
     }
 
     @OnWebSocketError

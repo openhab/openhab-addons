@@ -10,6 +10,10 @@
     <version>4.2.0-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <bnd.importpackage>javax.measure.*;version="[2.1,3)"</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <!-- version needs to match with other projects like org.openhab.io.openhabcloud.pom.xml -->
     <dependency>

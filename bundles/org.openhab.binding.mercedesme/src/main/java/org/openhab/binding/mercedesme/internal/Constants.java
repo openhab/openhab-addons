@@ -49,6 +49,7 @@ public class Constants {
             .unmodifiableSet(Stream.of(THING_TYPE_COMB, THING_TYPE_HYBRID, THING_TYPE_BEV).collect(Collectors.toSet()));
 
     public static final String GROUP_RANGE = "range";
+    public static final String GROUP_COMMAND = "command";
     public static final String GROUP_DOORS = "doors";
     public static final String GROUP_WINDOWS = "windows";
     public static final String GROUP_LOCK = "lock";
