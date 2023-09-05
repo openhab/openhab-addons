@@ -13,8 +13,8 @@
 package org.openhab.binding.caddx.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -258,7 +258,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(CaddxPanelActions.class);
+        return Set.of(CaddxPanelActions.class);
     }
 
     private void sendPrimaryCommand(String pin, String function) {

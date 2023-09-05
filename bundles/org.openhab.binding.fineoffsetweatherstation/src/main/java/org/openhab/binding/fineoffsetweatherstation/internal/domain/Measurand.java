@@ -336,6 +336,7 @@ public enum Measurand {
             }
         }
 
+        @Override
         public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
                 @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
             MeasureType measureType = getMeasureType(customizationType);

@@ -103,8 +103,13 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
 
     @Test
     public void testUpdateChannelPowerMeterServiceState() {
-        JsonElement jsonObject = JsonParser.parseString("{\n" + "  \"@type\": \"powerMeterState\",\n"
-                + "  \"powerConsumption\": \"23\",\n" + "  \"energyConsumption\": 42\n" + "}");
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                  "@type": "powerMeterState",
+                  "powerConsumption": "23",
+                  "energyConsumption": 42
+                }\
+                """);
         getFixture().processUpdate("PowerMeter", jsonObject);
 
         verify(getCallback()).stateUpdated(eq(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION)),

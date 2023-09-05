@@ -16,8 +16,8 @@ import static org.openhab.binding.enigma2.internal.Enigma2BindingConstants.*;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -155,10 +155,10 @@ public class Enigma2Handler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             client.refreshVolume();
             updateState(channelUID, new PercentType(client.getVolume()));
-        } else if (command instanceof PercentType) {
-            client.setVolume(((PercentType) command).intValue());
-        } else if (command instanceof DecimalType) {
-            client.setVolume(((DecimalType) command).intValue());
+        } else if (command instanceof PercentType percentCommand) {
+            client.setVolume(percentCommand.intValue());
+        } else if (command instanceof DecimalType decimalCommand) {
+            client.setVolume(decimalCommand.intValue());
         } else {
             logger.info("Channel {} only accepts PercentType, DecimalType, RefreshType. Type was {}.", channelUID,
                     command.getClass());
@@ -293,7 +293,7 @@ public class Enigma2Handler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(Enigma2Actions.class);
+        return Set.of(Enigma2Actions.class);
     }
 
     /**

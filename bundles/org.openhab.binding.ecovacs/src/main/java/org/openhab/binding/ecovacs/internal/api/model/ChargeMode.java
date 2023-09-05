@@ -28,5 +28,5 @@ public enum ChargeMode {
     @SerializedName("SlotCharging")
     CHARGING,
     @SerializedName("Idle")
-    IDLE;
+    IDLE
 }

@@ -57,13 +57,13 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (channelUID.getId().equals("run")) {
+            if ("run".equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     getBridgeHandler().sendCommand("unpause " + myId());
                 } else if (command == OnOffType.OFF) {
                     getBridgeHandler().sendCommand("pause " + myId());
                 }
-            } else if (channelUID.getId().equals("finish")) {
+            } else if ("finish".equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     getBridgeHandler().sendCommand("finish " + myId());
                 } else if (command == OnOffType.OFF) {

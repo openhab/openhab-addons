@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.airvisualnode.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,12 +48,10 @@ public class AirVisualNodeBindingConstants {
             .getUID().getId();
 
     // List of all supported Thing UIDs
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_AVNODE)));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AVNODE);
 
     // List of all supported Channel ids
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_CO2, CHANNEL_HUMIDITY, CHANNEL_AQI_US, CHANNEL_PM_25,
-                    CHANNEL_PM_10, CHANNEL_PM_01, CHANNEL_TEMP_CELSIUS, CHANNEL_BATTERY_LEVEL, CHANNEL_WIFI_STRENGTH,
-                    CHANNEL_TIMESTAMP, CHANNEL_USED_MEMORY)));
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(CHANNEL_CO2, CHANNEL_HUMIDITY, CHANNEL_AQI_US,
+            CHANNEL_PM_25, CHANNEL_PM_10, CHANNEL_PM_01, CHANNEL_TEMP_CELSIUS, CHANNEL_BATTERY_LEVEL,
+            CHANNEL_WIFI_STRENGTH, CHANNEL_TIMESTAMP, CHANNEL_USED_MEMORY);
 }

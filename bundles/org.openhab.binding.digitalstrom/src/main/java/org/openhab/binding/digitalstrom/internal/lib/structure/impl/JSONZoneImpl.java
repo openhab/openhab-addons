@@ -129,8 +129,7 @@ public class JSONZoneImpl implements Zone {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Zone) {
-            Zone other = (Zone) obj;
+        if (obj instanceof Zone other) {
             return (other.getZoneId() == this.getZoneId());
         }
         return false;

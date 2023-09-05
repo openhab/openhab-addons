@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -236,9 +235,9 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
 
     private static List<String> listFromEventStatus(final @Nullable EventStatus value) {
         if (value == null) {
-            return Collections.emptyList();
+            return List.of();
         } else {
-            return Collections.singletonList(value.value());
+            return List.of(value.value());
         }
     }
 
@@ -247,14 +246,14 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     }
 
     private static List<String> nullToEmptyList(@Nullable final List<String> value) {
-        return value == null ? Collections.emptyList() : value;
+        return value == null ? List.of() : value;
     }
 
     /**
      * Returns a list containing only the given value or empty list if value is <code>null</code>.
      */
     private static List<String> singletonList(@Nullable String value) {
-        return value == null ? Collections.emptyList() : Collections.singletonList(value);
+        return value == null ? List.of() : List.of(value);
     }
 
     private static OnOffType parseHidden(@Nullable Integer value) {
@@ -262,9 +261,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     }
 
     private static Function<Event, @Nullable Date> getDate(final Function<Event, @Nullable String> getValue) {
-        return (final Event event) -> {
-            return parseDate(getValue.apply(event));
-        };
+        return (final Event event) -> parseDate(getValue.apply(event));
     }
 
     private static BiConsumer<Event, Date> setDate(final BiConsumer<Event, String> setter) {
@@ -331,7 +328,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
      */
     private static List<String> mapMessagesToList(final @Nullable List<Message> messages) {
         if (messages == null || messages.isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         } else {
             return messages //
                     .stream()//
@@ -360,18 +357,18 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
 
     private static List<String> mapIntegerToStringList(@Nullable Integer value) {
         if (value == null) {
-            return Collections.emptyList();
+            return List.of();
         } else {
-            return Collections.singletonList(String.valueOf(value));
+            return List.of(String.valueOf(value));
         }
     }
 
     private static List<String> mapDateToStringList(@Nullable Date value) {
         if (value == null) {
-            return Collections.emptyList();
+            return List.of();
         } else {
             synchronized (DATETIME_FORMAT) {
-                return Collections.singletonList(DATETIME_FORMAT.format(value));
+                return List.of(DATETIME_FORMAT.format(value));
             }
         }
     }

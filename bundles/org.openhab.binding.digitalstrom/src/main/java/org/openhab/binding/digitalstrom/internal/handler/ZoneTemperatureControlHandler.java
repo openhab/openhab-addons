@@ -28,6 +28,7 @@ import org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlSt
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
 import org.openhab.binding.digitalstrom.internal.lib.listener.TemperatureControlStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
+import org.openhab.binding.digitalstrom.internal.lib.manager.impl.TemperatureControlManager;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
@@ -257,8 +258,8 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
             }
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof BridgeHandler) {
-                dssBridgeHandler = (BridgeHandler) handler;
+            if (handler instanceof BridgeHandler bridgeHandler) {
+                dssBridgeHandler = bridgeHandler;
             } else {
                 return null;
             }

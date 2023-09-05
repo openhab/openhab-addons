@@ -52,8 +52,8 @@ public class AstroActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof AstroThingHandler) {
-            this.handler = (AstroThingHandler) handler;
+        if (handler instanceof AstroThingHandler thingHandler) {
+            this.handler = thingHandler;
         }
     }
 
@@ -115,10 +115,9 @@ public class AstroActions implements ThingActions {
         try {
             AstroThingHandler theHandler = this.handler;
             if (theHandler != null) {
-                if (theHandler instanceof SunHandler) {
-                    SunHandler handler = (SunHandler) theHandler;
+                if (theHandler instanceof SunHandler sunHandler) {
                     SunPhaseName phase = SunPhaseName.valueOf(phaseName.toUpperCase());
-                    return handler.getEventTime(phase, date != null ? date : ZonedDateTime.now(),
+                    return sunHandler.getEventTime(phase, date != null ? date : ZonedDateTime.now(),
                             moment == null || AstroBindingConstants.EVENT_START.equalsIgnoreCase(moment));
                 } else {
                     logger.info("Astro Action service ThingHandler is not a SunHandler!");

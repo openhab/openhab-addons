@@ -71,8 +71,8 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof BsbLanBridgeHandler) {
-                this.bridgeHandler = (BsbLanBridgeHandler) handler;
+            if (handler instanceof BsbLanBridgeHandler lanBridgeHandler) {
+                this.bridgeHandler = lanBridgeHandler;
             }
         }
         return this.bridgeHandler;

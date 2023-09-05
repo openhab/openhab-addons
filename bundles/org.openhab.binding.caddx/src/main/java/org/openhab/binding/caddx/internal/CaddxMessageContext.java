@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum CaddxMessageContext {
     NONE,
     DISCOVERY,
-    COMMAND;
+    COMMAND
 }

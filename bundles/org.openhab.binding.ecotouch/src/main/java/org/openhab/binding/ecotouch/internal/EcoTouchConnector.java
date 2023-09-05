@@ -104,13 +104,13 @@ public class EcoTouchConnector {
             cause = e.toString();
         }
 
-        if (line2 != null && line2.trim().equals("#E_USER_DONT_EXIST")) {
+        if (line2 != null && "#E_USER_DONT_EXIST".equals(line2.trim())) {
             throw new IOException("Username does not exist.");
         }
-        if (line2 != null && line2.trim().equals("#E_PASS_DONT_MATCH")) {
+        if (line2 != null && "#E_PASS_DONT_MATCH".equals(line2.trim())) {
             throw new IOException("Password does not match.");
         }
-        if (line2 != null && line2.trim().equals("#E_TOO_MANY_USERS")) {
+        if (line2 != null && "#E_TOO_MANY_USERS".equals(line2.trim())) {
             throw new IOException("Too many users already logged in.");
         }
         if (cookies == null) {

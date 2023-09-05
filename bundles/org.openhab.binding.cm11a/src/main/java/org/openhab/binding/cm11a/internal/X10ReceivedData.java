@@ -79,13 +79,13 @@ public class X10ReceivedData {
     /**
      * Lookup table to convert House code received from the cm11a into an X10 house code
      */
-    public static final char HOUSE_CODE[] = new char[] { 'M', 'E', 'C', 'K', 'O', 'G', 'A', 'I', 'N', 'F', 'D', 'L',
+    public static final char[] HOUSE_CODE = new char[] { 'M', 'E', 'C', 'K', 'O', 'G', 'A', 'I', 'N', 'F', 'D', 'L',
             'P', 'H', 'B', 'J' };
 
     /**
      * Lookup table to convert Unit code received from the cm11a into an X10 unit code
      */
-    public static final byte UNIT_CODE[] = new byte[] { 13, 5, 3, 11, 15, 7, 1, 9, 14, 6, 4, 12, 16, 8, 2, 10 };
+    public static final byte[] UNIT_CODE = new byte[] { 13, 5, 3, 11, 15, 7, 1, 9, 14, 6, 4, 12, 16, 8, 2, 10 };
 
     private String[] addr;
     private X10COMMAND cmd;

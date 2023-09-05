@@ -38,7 +38,7 @@ public class CommandSendir extends AbstractCommand {
         super(thing, queue, "sendir", CommandType.COMMAND);
 
         this.command = command;
-        deviceCommand = "sendir," + mod + ":" + con + "," + String.valueOf(sendCounter) + "," + code;
+        deviceCommand = "sendir," + mod + ":" + con + "," + sendCounter + "," + code;
     }
 
     @Override

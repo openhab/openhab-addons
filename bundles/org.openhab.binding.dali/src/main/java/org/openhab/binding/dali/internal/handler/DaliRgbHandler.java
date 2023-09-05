@@ -76,16 +76,16 @@ public class DaliRgbHandler extends BaseThingHandler {
             if (CHANNEL_COLOR.equals(channelUID.getId())) {
                 boolean queryDeviceState = false;
 
-                if (command instanceof HSBType) {
-                    PercentType[] rgb = ((HSBType) command).toRGB();
+                if (command instanceof HSBType hsbCommand) {
+                    PercentType[] rgb = hsbCommand.toRGB();
 
                     for (int i = 0; i < 3; i++) {
                         byte dimmValue = (byte) ((rgb[i].floatValue() * DALI_SWITCH_100_PERCENT) / 100);
                         getBridgeHandler().sendCommand(
                                 new DaliDAPCCommand(DaliAddress.createShortAddress(outputs.get(i)), dimmValue));
                     }
-                } else if (command instanceof OnOffType) {
-                    if ((OnOffType) command == OnOffType.ON) {
+                } else if (command instanceof OnOffType onOffCommand) {
+                    if (onOffCommand == OnOffType.ON) {
                         for (Integer output : outputs) {
                             getBridgeHandler().sendCommand(new DaliDAPCCommand(DaliAddress.createShortAddress(output),
                                     (byte) DALI_SWITCH_100_PERCENT));
@@ -96,8 +96,8 @@ public class DaliRgbHandler extends BaseThingHandler {
                                     DaliStandardCommand.createOffCommand(DaliAddress.createShortAddress(output)));
                         }
                     }
-                } else if (command instanceof IncreaseDecreaseType) {
-                    if ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE) {
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                         for (Integer output : outputs) {
                             getBridgeHandler().sendCommand(
                                     DaliStandardCommand.createUpCommand(DaliAddress.createShortAddress(output)));

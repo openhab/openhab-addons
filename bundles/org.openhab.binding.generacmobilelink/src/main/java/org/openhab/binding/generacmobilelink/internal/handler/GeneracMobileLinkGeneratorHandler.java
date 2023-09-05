@@ -122,7 +122,7 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
             try {
                 if (p.value.signalStrength != null) {
                     updateState(CHANNEL_SIGNAL_STRENGH, new QuantityType<Dimensionless>(
-                            Integer.parseInt(p.value.signalStrength.replaceAll("%", "")), Units.PERCENT));
+                            Integer.parseInt(p.value.signalStrength.replace("%", "")), Units.PERCENT));
                 }
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse signalStrength {}", p.value.signalStrength);

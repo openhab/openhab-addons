@@ -45,8 +45,8 @@ public class ElectroluxAirDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ElectroluxAirBridgeHandler) {
-            this.handler = (ElectroluxAirBridgeHandler) handler;
+        if (handler instanceof ElectroluxAirBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 

@@ -61,7 +61,7 @@ public class JSONResponseHandler {
      * @return jsonObject
      */
     public static JsonObject toJsonObject(String jsonResponse) {
-        if (jsonResponse != null && !jsonResponse.trim().equals("")) {
+        if (jsonResponse != null && !"".equals(jsonResponse.trim())) {
             try {
                 return (JsonObject) JsonParser.parseString(jsonResponse);
             } catch (JsonParseException e) {

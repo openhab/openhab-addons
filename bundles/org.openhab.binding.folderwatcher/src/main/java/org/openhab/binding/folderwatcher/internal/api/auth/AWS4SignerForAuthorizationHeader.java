@@ -63,8 +63,7 @@ public class AWS4SignerForAuthorizationHeader extends AWS4SignerBase {
         String credentialsAuthorizationHeader = "Credential=" + awsAccessKey + "/" + scope;
         String signedHeadersAuthorizationHeader = "SignedHeaders=" + canonicalizedHeaderNames;
         String signatureAuthorizationHeader = "Signature=" + BinaryUtils.toHex(signature);
-        String authorizationHeader = SCHEME + "-" + ALGORITHM + " " + credentialsAuthorizationHeader + ", "
-                + signedHeadersAuthorizationHeader + ", " + signatureAuthorizationHeader;
-        return authorizationHeader;
+        return SCHEME + "-" + ALGORITHM + " " + credentialsAuthorizationHeader + ", " + signedHeadersAuthorizationHeader
+                + ", " + signatureAuthorizationHeader;
     }
 }

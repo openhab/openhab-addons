@@ -65,13 +65,13 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     throw new DaliException("unknown device type");
                 }
                 int mirek;
-                if (command instanceof DecimalType) {
+                if (command instanceof DecimalType decimalCommand) {
                     // Color temperature in DALI is represented in mirek ("reciprocal megakelvin")
                     // It is one million times the reciprocal of the color temperature (in Kelvin)
-                    mirek = (int) (1E6f / (Math.min(Math.max(((DecimalType) command).intValue(), 1000), 20000)));
-                } else if (command instanceof QuantityType) {
+                    mirek = (int) (1E6f / (Math.min(Math.max(decimalCommand.intValue(), 1000), 20000)));
+                } else if (command instanceof QuantityType quantityCommand) {
                     // ensure it's in the correct units
-                    QuantityType<?> commandQuantity = ((QuantityType) command).toInvertibleUnit(Units.MIRED);
+                    QuantityType<?> commandQuantity = quantityCommand.toInvertibleUnit(Units.MIRED);
                     if (commandQuantity == null) {
                         logger.warn("Unable to convert command {} to mireks", command);
                         return;
@@ -134,8 +134,8 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                 } else {
                     throw new DaliException("unknown device type");
                 }
-                if (command instanceof HSBType) {
-                    PercentType[] rgb = ((HSBType) command).toRGB();
+                if (command instanceof HSBType hsbCommand) {
+                    PercentType[] rgb = hsbCommand.toRGB();
                     final int r = (int) (254 * (rgb[0].floatValue() / 100));
                     final int g = (int) (254 * (rgb[1].floatValue() / 100));
                     final int b = (int) (254 * (rgb[2].floatValue() / 100));

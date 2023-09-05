@@ -44,12 +44,12 @@ public class LoginManager extends RestManager {
     private static final String AUTHORIZE_ACTION = "authorize";
     private static final String LOGOUT = "logout";
 
-    private static enum Status {
+    private enum Status {
         PENDING, // the user has not confirmed the autorization request yet
         TIMEOUT, // the user did not confirmed the authorization within the given time
         GRANTED, // the app_token is valid and can be used to open a session
         DENIED, // the user denied the authorization request
-        UNKNOWN; // the app_token is invalid or has been revoked
+        UNKNOWN // the app_token is invalid or has been revoked
     }
 
     private static record AuthorizationStatus(Status status, boolean loggedIn, String challenge,
@@ -65,7 +65,7 @@ public class LoginManager extends RestManager {
     private static class AuthResponse extends Response<Authorization> {
     }
 
-    public static enum Permission {
+    public enum Permission {
         PARENTAL,
         CONTACTS,
         EXPLORER,
@@ -81,7 +81,7 @@ public class LoginManager extends RestManager {
         VM,
         PLAYER,
         NONE,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Session(Map<LoginManager.Permission, @Nullable Boolean> permissions,

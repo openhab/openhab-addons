@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.folding.internal.discovery;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.openhab.binding.folding.internal.FoldingBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 public class FoldingSlotDiscoveryService extends AbstractDiscoveryService {
 
     public FoldingSlotDiscoveryService() {
-        super(Collections.singleton(FoldingBindingConstants.THING_TYPE_SLOT), 10, true);
+        super(Set.of(FoldingBindingConstants.THING_TYPE_SLOT), 10, true);
         FoldingDiscoveryProxy.getInstance().setService(this);
     }
 

@@ -122,9 +122,9 @@ class CustomResponseTransformer {
         String phase2 = Utils.getAsString(rawData, channelPhase2);
         String phase3 = Utils.getAsString(rawData, channelPhase3);
         if (channel != null && phase1 != null && phase2 != null && phase3 != null) {
-            phase1 = phase1.replaceAll("\\.0", "");
-            phase2 = phase2.replaceAll("\\.0", "");
-            phase3 = phase3.replaceAll("\\.0", "");
+            phase1 = phase1.replace(".0", "");
+            phase2 = phase2.replace(".0", "");
+            phase3 = phase3.replace(".0", "");
             result.put(channel, new StringType(phase1 + ";" + phase2 + ";" + phase3));
         }
     }

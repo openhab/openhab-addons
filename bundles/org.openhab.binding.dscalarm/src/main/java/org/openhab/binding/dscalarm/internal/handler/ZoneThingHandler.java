@@ -107,7 +107,7 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
 
         if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()
                 && channelUID.getId().equals(ZONE_BYPASS_MODE)) {
-            String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber()) + "#";
+            String data = getPartitionNumber() + "*1" + String.format("%02d", getZoneNumber()) + "#";
 
             dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
         }

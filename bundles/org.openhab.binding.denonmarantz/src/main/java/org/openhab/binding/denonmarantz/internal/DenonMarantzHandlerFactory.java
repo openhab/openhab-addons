@@ -14,7 +14,6 @@ package org.openhab.binding.denonmarantz.internal;
 
 import static org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants.THING_TYPE_AVR;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class DenonMarantzHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AVR);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AVR);
 
     private final HttpClient httpClient;
 

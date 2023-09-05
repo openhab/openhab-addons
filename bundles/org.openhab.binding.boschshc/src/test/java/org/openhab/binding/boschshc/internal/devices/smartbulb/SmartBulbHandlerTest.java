@@ -132,9 +132,15 @@ class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<SmartBulbHa
 
     @Test
     void testUpdateChannelHSBColorActuatorState() {
-        JsonElement jsonObject = JsonParser.parseString("{\"colorTemperatureRange\": {\n" + "        \"minCt\": 153,\n"
-                + "        \"maxCt\": 526\n" + "    },\n" + "    \"@type\": \"colorState\",\n"
-                + "    \"gamut\": \"LEDVANCE_GAMUT_A\",\n" + "    \"rgb\": -12427}");
+        JsonElement jsonObject = JsonParser.parseString("""
+                {"colorTemperatureRange": {
+                        "minCt": 153,
+                        "maxCt": 526
+                    },
+                    "@type": "colorState",
+                    "gamut": "LEDVANCE_GAMUT_A",
+                    "rgb": -12427}\
+                """);
         getFixture().processUpdate("HSBColorActuator", jsonObject);
         verify(getCallback()).stateUpdated(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_COLOR),
                 HSBType.fromRGB(255, 207, 117));

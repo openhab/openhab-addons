@@ -55,7 +55,7 @@ public final class StringUtil {
      * @return the passed in string, or the empty string if it was {@code null}
      *
      */
-    public static final String defaultString(@Nullable String str) {
+    public static String defaultString(@Nullable String str) {
         return (str == null) ? "" : str;
     }
 

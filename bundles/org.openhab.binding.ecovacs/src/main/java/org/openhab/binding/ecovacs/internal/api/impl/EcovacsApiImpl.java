@@ -172,7 +172,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
         List<EcovacsDevice> devices = new ArrayList<>();
         for (Device dev : getDeviceList()) {
             Optional<DeviceDescription> descOpt = Optional.ofNullable(descriptions.get(dev.getDeviceClass()));
-            if (!descOpt.isPresent()) {
+            if (descOpt.isEmpty()) {
                 if (products == null) {
                     products = getIotProductMap();
                 }
@@ -226,7 +226,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
             DeviceDescription desc = descEntry.getValue();
             if (desc.deviceClassLink != null) {
                 Optional<DeviceDescription> linkedDescOpt = Optional.ofNullable(descs.get(desc.deviceClassLink));
-                if (!linkedDescOpt.isPresent()) {
+                if (linkedDescOpt.isEmpty()) {
                     logger.warn("Device description {} links unknown description {}", desc.deviceClass,
                             desc.deviceClassLink);
                 }

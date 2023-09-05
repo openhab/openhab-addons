@@ -36,7 +36,7 @@ public class SystemManager extends ConfigurableRest<SystemManager.Config, System
         public enum SensorKind {
             FAN,
             TEMP,
-            UNKNOWN;
+            UNKNOWN
         }
 
         public SensorKind getKind() {
@@ -54,13 +54,13 @@ public class SystemManager extends ConfigurableRest<SystemManager.Config, System
 
     private static record Expansion(int slot, boolean probeDone, boolean present, boolean supported, String bundle,
             Type type) {
-        private static enum Type {
+        private enum Type {
             UNKNOWN, // unknown module
             DSL_LTE, // xDSL + LTE
             DSL_LTE_EXTERNAL_ANTENNAS, // xDSL + LTE with external antennas switch
             FTTH_P2P, // FTTH P2P
             FTTH_PON, // FTTH PON
-            SECURITY; // Security module
+            SECURITY // Security module
         }
     }
 
@@ -72,13 +72,13 @@ public class SystemManager extends ConfigurableRest<SystemManager.Config, System
     public static record Config(String firmwareVersion, MACAddress mac, String serial, String uptime, long uptimeVal,
             String boardName, boolean boxAuthenticated, DiskStatus diskStatus, String userMainStorage,
             List<Sensor> sensors, ModelInfo modelInfo, List<Sensor> fans, List<Expansion> expansions) {
-        private static enum DiskStatus {
+        private enum DiskStatus {
             NOT_DETECTED,
             DISABLED,
             INITIALIZING,
             ERROR,
             ACTIVE,
-            UNKNOWN;
+            UNKNOWN
         }
     }
 

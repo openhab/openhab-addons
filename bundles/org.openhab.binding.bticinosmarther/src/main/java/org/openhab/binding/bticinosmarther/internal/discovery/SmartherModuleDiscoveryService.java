@@ -14,7 +14,6 @@ package org.openhab.binding.bticinosmarther.internal.discovery;
 
 import static org.openhab.binding.bticinosmarther.internal.SmartherBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
 
     // Only modules can be discovered. A bridge must be manually added.
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODULE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_MODULE);
 
     private static final int DISCOVERY_TIME_SECONDS = 30;
 
@@ -86,8 +85,7 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SmartherAccountHandler) {
-            final SmartherAccountHandler localBridgeHandler = (SmartherAccountHandler) handler;
+        if (handler instanceof SmartherAccountHandler localBridgeHandler) {
             this.bridgeHandler = localBridgeHandler;
             this.bridgeUID = localBridgeHandler.getUID();
         }

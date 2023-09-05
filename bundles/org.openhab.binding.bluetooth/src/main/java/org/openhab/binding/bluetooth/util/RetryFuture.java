@@ -94,8 +94,7 @@ public class RetryFuture<T> extends HeritableFuture<T> {
                 if (th instanceof CompletionException) {
                     th = th.getCause();
                 }
-                if (th instanceof RetryException) {
-                    RetryException e = (RetryException) th;
+                if (th instanceof RetryException e) {
                     setParentFuture(() -> {
                         if (!isDone()) {
                             return scheduler.schedule(this, e.delay, e.unit);

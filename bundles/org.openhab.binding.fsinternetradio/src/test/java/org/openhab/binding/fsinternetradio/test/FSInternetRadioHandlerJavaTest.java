@@ -818,8 +818,8 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
 
     private boolean isConfigurationComplete(Configuration config) {
         String ip = (String) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_IP);
-        BigDecimal port = (BigDecimal) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PORT.toString());
-        String pin = (String) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PIN.toString());
+        BigDecimal port = (BigDecimal) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PORT);
+        String pin = (String) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PIN);
 
         return !(ip == null || port.compareTo(BigDecimal.ZERO) == 0 || pin == null || pin.isEmpty());
     }

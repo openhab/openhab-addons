@@ -86,8 +86,8 @@ public class AdorneHubConnection {
             return null; // Eat empty messages
         }
         logger.debug("Received message {}", msg);
-        if (msg instanceof JsonObject) {
-            msgJsonObject = (JsonObject) msg;
+        if (msg instanceof JsonObject object) {
+            msgJsonObject = object;
         }
         return msgJsonObject;
     }

@@ -90,8 +90,8 @@ public class SmartherHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof SmartherBridgeHandler) {
-            authService.removeSmartherAccountHandler((SmartherBridgeHandler) thingHandler);
+        if (thingHandler instanceof SmartherBridgeHandler bridgeHandler) {
+            authService.removeSmartherAccountHandler(bridgeHandler);
         }
     }
 }

@@ -65,8 +65,8 @@ public final class ClimateControlHandler extends BoschSHCDeviceHandler {
         super.handleCommand(channelUID, command);
         switch (channelUID.getId()) {
             case CHANNEL_SETPOINT_TEMPERATURE:
-                if (command instanceof QuantityType<?>) {
-                    updateSetpointTemperature((QuantityType<?>) command);
+                if (command instanceof QuantityType<?> temperature) {
+                    updateSetpointTemperature(temperature);
                 }
                 break;
         }

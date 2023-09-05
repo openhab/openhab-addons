@@ -52,7 +52,7 @@ public class FreeboxOsSession {
     private @Nullable Session session;
     private String appToken = "";
 
-    public static enum BoxModel {
+    public enum BoxModel {
         FBXGW_R1_FULL, // Freebox Server (v6) revision 1
         FBXGW_R2_FULL, // Freebox Server (v6) revision 2
         FBXGW_R1_MINI, // Freebox Mini revision 1
@@ -60,7 +60,7 @@ public class FreeboxOsSession {
         FBXGW_R1_ONE, // Freebox One revision 1
         FBXGW_R2_ONE, // Freebox One revision 2
         FBXGW7_R1_FULL, // Freebox v7 revision 1
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record ApiVersion(String apiBaseUrl, @Nullable String apiDomain, String apiVersion, BoxModel boxModel,
@@ -156,8 +156,8 @@ public class FreeboxOsSession {
                 manager = addManager(clazz, managerConstructor.newInstance(this));
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (cause instanceof PermissionException) {
-                    throw (PermissionException) cause;
+                if (cause instanceof PermissionException exception) {
+                    throw exception;
                 }
                 throw new FreeboxException(e, "Unable to call RestManager constructor for %s", clazz.getName());
             } catch (ReflectiveOperationException e) {

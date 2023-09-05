@@ -39,5 +39,5 @@ enum EcobeeAuthState {
     /*
      * This state indicates that the "authorize" and "token" steps were successful.
      */
-    COMPLETE;
+    COMPLETE
 }

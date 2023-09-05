@@ -108,7 +108,7 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
         if (channelID.charAt(30) != '-') {
             return false;
         }
-        return !(channelID.charAt(67) != '-');
+        return channelID.charAt(67) == '-';
     }
 
     public ChannelTypeUID registerChannelType(String characteristicUUID, boolean advanced, boolean readOnly,

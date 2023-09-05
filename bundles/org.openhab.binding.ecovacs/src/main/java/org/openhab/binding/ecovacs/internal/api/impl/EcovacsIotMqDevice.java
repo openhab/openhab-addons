@@ -177,8 +177,8 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
             logger.debug("Established MQTT connection to device {}", getSerialNumber());
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            boolean isAuthFailure = cause instanceof Mqtt3ConnAckException && ((Mqtt3ConnAckException) cause)
-                    .getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
+            boolean isAuthFailure = cause instanceof Mqtt3ConnAckException connAckException
+                    && connAckException.getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
             throw new EcovacsApiException(e, isAuthFailure);
         }
     }

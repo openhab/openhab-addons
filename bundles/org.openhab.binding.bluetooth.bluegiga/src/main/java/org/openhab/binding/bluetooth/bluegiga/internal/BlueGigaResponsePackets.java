@@ -194,8 +194,7 @@ class BlueGigaResponsePackets {
 
         try {
             ctor = bleClass.getConstructor(int[].class);
-            BlueGigaResponse bleFrame = (BlueGigaResponse) ctor.newInstance(data);
-            return bleFrame;
+            return (BlueGigaResponse) ctor.newInstance(data);
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException e) {
             logger.debug("Error instantiating BLE class", e);

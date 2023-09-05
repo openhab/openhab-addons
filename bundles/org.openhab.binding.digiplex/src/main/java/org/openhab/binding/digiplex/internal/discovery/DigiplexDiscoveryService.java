@@ -14,9 +14,9 @@ package org.openhab.binding.digiplex.internal.discovery;
 
 import static org.openhab.binding.digiplex.internal.DigiplexBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,7 +53,7 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
     private @Nullable DigiplexBridgeHandler bridgeHandler;
 
     public DigiplexDiscoveryService() {
-        super(Collections.singleton(THING_TYPE_ZONE), DISCOVERY_TIMEOUT, false);
+        super(Set.of(THING_TYPE_ZONE), DISCOVERY_TIMEOUT, false);
     }
 
     @Override
@@ -100,9 +100,8 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
     }
 
     private boolean isDefaultName(ZoneLabelResponse response) {
-        return ZONE_DEFAULT_NAMES.stream().anyMatch(format -> {
-            return String.format(format, response.zoneNo).equals(response.zoneName);
-        });
+        return ZONE_DEFAULT_NAMES.stream()
+                .anyMatch(format -> String.format(format, response.zoneNo).equals(response.zoneName));
     }
 
     @Override
@@ -127,8 +126,8 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DigiplexBridgeHandler) {
-            bridgeHandler = (DigiplexBridgeHandler) handler;
+        if (handler instanceof DigiplexBridgeHandler digiplexBridgeHandler) {
+            bridgeHandler = digiplexBridgeHandler;
             bridgeHandler.registerMessageHandler(this);
         }
     }

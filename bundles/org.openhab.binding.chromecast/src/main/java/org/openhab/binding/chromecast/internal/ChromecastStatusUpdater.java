@@ -318,8 +318,8 @@ public class ChromecastStatusUpdater {
             state = new DecimalType(((Integer) value).longValue());
         } else if (value instanceof String) {
             state = new StringType(value.toString());
-        } else if (value instanceof ZonedDateTime) {
-            state = new DateTimeType((ZonedDateTime) value);
+        } else if (value instanceof ZonedDateTime datetime) {
+            state = new DateTimeType(datetime);
         } else {
             state = UnDefType.UNDEF;
             logger.warn("Update channel {}: Unsupported value type {}", channelUID, value.getClass().getSimpleName());

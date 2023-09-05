@@ -110,7 +110,7 @@ public abstract class ElroConnectsDevice {
             typeName = getDeviceType();
         }
 
-        return deviceName.isEmpty() ? typeName + "-" + String.valueOf(deviceId) : deviceName;
+        return deviceName.isEmpty() ? typeName + "-" + deviceId : deviceName;
     }
 
     public String getDeviceType() {

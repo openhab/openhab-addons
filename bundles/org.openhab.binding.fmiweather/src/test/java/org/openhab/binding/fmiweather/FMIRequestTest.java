@@ -40,20 +40,24 @@ public class FMIRequestTest {
     @Test
     public void testObservationRequestToUrl() {
         ObservationRequest request = new ObservationRequest(new FMISID("101023"), 1552215664L, 1552215665L, 61);
-        assertThat(request.toUrl(), is(
-                "https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::observations::weather::multipointcoverage"
-                        + "&starttime=2019-03-10T11:01:04Z&endtime=2019-03-10T11:01:05Z&timestep=61&fmisid=101023"
-                        + "&parameters=t2m,rh,wd_10min,ws_10min,wg_10min,p_sea,r_1h,snow_aws,vis,n_man,wawa"));
+        assertThat(request.toUrl(),
+                is("""
+                        https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::observations::weather::multipointcoverage\
+                        &starttime=2019-03-10T11:01:04Z&endtime=2019-03-10T11:01:05Z&timestep=61&fmisid=101023\
+                        &parameters=t2m,rh,wd_10min,ws_10min,wg_10min,p_sea,r_1h,snow_aws,vis,n_man,wawa\
+                        """));
     }
 
     @Test
     public void testForecastRequestToUrl() {
         ForecastRequest request = new ForecastRequest(new LatLon(new BigDecimal("9"), new BigDecimal("8")), 1552215664L,
                 1552215665L, 61);
-        assertThat(request.toUrl(), is(
-                "https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::harmonie::surface::point::multipointcoverage"
-                        + "&starttime=2019-03-10T11:01:04Z&endtime=2019-03-10T11:01:05Z&timestep=61&latlon=9,8"
-                        + "&parameters=Temperature,Humidity,WindDirection,WindSpeedMS,WindGust,Pressure,Precipitation1h,TotalCloudCover,WeatherSymbol3"));
+        assertThat(request.toUrl(),
+                is("""
+                        https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::harmonie::surface::point::multipointcoverage\
+                        &starttime=2019-03-10T11:01:04Z&endtime=2019-03-10T11:01:05Z&timestep=61&latlon=9,8\
+                        &parameters=Temperature,Humidity,WindDirection,WindSpeedMS,WindGust,Pressure,Precipitation1h,TotalCloudCover,WeatherSymbol3\
+                        """));
     }
 
     @Test
@@ -68,9 +72,11 @@ public class FMIRequestTest {
             }
         };
         ObservationRequest request = new ObservationRequest(location, 1552215664L, 1552215665L, 61);
-        assertThat(request.toUrl(), is(
-                "https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::observations::weather::multipointcoverage"
-                        + "&starttime=2019-03-10T11:01:04Z&endtime=2019-03-10T11:01:05Z&timestep=61&lat=MYLAT&lon=FOO&special=x,y,z"
-                        + "&parameters=t2m,rh,wd_10min,ws_10min,wg_10min,p_sea,r_1h,snow_aws,vis,n_man,wawa"));
+        assertThat(request.toUrl(),
+                is("""
+                        https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::observations::weather::multipointcoverage\
+                        &starttime=2019-03-10T11:01:04Z&endtime=2019-03-10T11:01:05Z&timestep=61&lat=MYLAT&lon=FOO&special=x,y,z\
+                        &parameters=t2m,rh,wd_10min,ws_10min,wg_10min,p_sea,r_1h,snow_aws,vis,n_man,wawa\
+                        """));
     }
 }

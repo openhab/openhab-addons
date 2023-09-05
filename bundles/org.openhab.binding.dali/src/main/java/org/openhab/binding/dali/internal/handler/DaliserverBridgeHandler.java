@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DaliserverBridgeHandler extends BaseBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BRIDGE_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(BRIDGE_TYPE);
 
     private final Logger logger = LoggerFactory.getLogger(DaliserverBridgeHandler.class);
     private static final int DALI_DEFAULT_TIMEOUT = 5000;

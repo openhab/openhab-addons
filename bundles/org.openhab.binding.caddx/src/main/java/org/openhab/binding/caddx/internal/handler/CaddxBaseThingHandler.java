@@ -88,8 +88,8 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
 
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof CaddxBridgeHandler) {
-                this.caddxBridgeHandler = (CaddxBridgeHandler) handler;
+            if (handler instanceof CaddxBridgeHandler bridgeHandler) {
+                this.caddxBridgeHandler = bridgeHandler;
             } else {
                 logger.debug("getCaddxBridgeHandler(): Unable to get bridge handler!");
             }

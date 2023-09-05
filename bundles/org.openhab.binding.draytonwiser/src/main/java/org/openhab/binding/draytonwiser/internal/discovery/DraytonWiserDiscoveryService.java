@@ -202,8 +202,8 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable final ThingHandler handler) {
-        if (handler instanceof HeatHubHandler) {
-            bridgeHandler = (HeatHubHandler) handler;
+        if (handler instanceof HeatHubHandler hubHandler) {
+            bridgeHandler = hubHandler;
             bridgeUID = handler.getThing().getUID();
         } else {
             bridgeHandler = null;

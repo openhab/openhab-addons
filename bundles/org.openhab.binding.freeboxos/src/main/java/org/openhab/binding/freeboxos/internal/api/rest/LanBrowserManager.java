@@ -50,14 +50,14 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     protected static class InterfacesResponse extends Response<Interface> {
     }
 
-    public static enum Source {
+    public enum Source {
         DHCP,
         NETBIOS,
         MDNS,
         MDNS_SRV,
         UPNP,
         WSD,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public record HostName(@Nullable String name, Source source) {
@@ -69,9 +69,9 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     private static record WakeOnLineData(String mac, String password) {
     }
 
-    private static enum Type {
+    private enum Type {
         MAC_ADDRESS,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private static record L2Ident(MACAddress id, Type type) {
@@ -80,10 +80,10 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     private static record L3Connectivity(String addr, Af af, boolean active, boolean reachable,
             ZonedDateTime lastActivity, ZonedDateTime lastTimeReachable, String model) {
 
-        private static enum Af {
+        private enum Af {
             IPV4,
             IPV6,
-            UNKNOWN;
+            UNKNOWN
         }
 
         public IPAddress getIPAddress() {
@@ -97,7 +97,7 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     public static record HostIntf(LanHost host, Interface intf) {
     }
 
-    private static enum HostType {
+    private enum HostType {
         WORKSTATION,
         LAPTOP,
         SMARTPHONE,
@@ -120,7 +120,7 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
         MULTIMEDIA_DEVICE,
         CAR,
         OTHER,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record LanHost(String id, @Nullable String primaryName, HostType hostType, boolean primaryNameManual,

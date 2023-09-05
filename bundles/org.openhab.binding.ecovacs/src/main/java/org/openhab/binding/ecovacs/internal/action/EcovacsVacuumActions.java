@@ -71,14 +71,14 @@ public class EcovacsVacuumActions implements ThingActions {
     }
 
     public static void playSound(@Nullable ThingActions actions, String type) {
-        if (actions instanceof EcovacsVacuumActions) {
-            ((EcovacsVacuumActions) actions).playSound(type);
+        if (actions instanceof EcovacsVacuumActions action) {
+            action.playSound(type);
         }
     }
 
     public static void playSoundWithId(@Nullable ThingActions actions, int soundId) {
-        if (actions instanceof EcovacsVacuumActions) {
-            ((EcovacsVacuumActions) actions).playSoundWithId(soundId);
+        if (actions instanceof EcovacsVacuumActions action) {
+            action.playSoundWithId(soundId);
         }
     }
 }

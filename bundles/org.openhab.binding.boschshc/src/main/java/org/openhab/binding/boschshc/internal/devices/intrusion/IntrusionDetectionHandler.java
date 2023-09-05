@@ -122,18 +122,18 @@ public class IntrusionDetectionHandler extends BoschSHCHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_ARM_ACTION:
-                if (command instanceof StringType) {
-                    armIntrusionDetectionSystem((StringType) command);
+                if (command instanceof StringType stringCommand) {
+                    armIntrusionDetectionSystem(stringCommand);
                 }
                 break;
             case CHANNEL_DISARM_ACTION:
-                if (command instanceof OnOffType) {
-                    disarmIntrusionDetectionSystem((OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    disarmIntrusionDetectionSystem(onOffCommand);
                 }
                 break;
             case CHANNEL_MUTE_ACTION:
-                if (command instanceof OnOffType) {
-                    muteIntrusionDetectionSystem((OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    muteIntrusionDetectionSystem(onOffCommand);
                 }
                 break;
         }

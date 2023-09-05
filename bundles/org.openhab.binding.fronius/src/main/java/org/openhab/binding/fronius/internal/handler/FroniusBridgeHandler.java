@@ -93,8 +93,8 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof FroniusBaseThingHandler) {
-            this.services.add((FroniusBaseThingHandler) childHandler);
+        if (childHandler instanceof FroniusBaseThingHandler handler) {
+            this.services.add(handler);
             restartAutomaticRefresh();
         } else {
             logger.debug("Child handler {} not added because it is not an instance of FroniusBaseThingHandler",

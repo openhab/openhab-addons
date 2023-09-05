@@ -124,7 +124,7 @@ public class S3Actions {
 
         nameNodesList = doc.getElementsByTagName("IsTruncated");
         if (nameNodesList.getLength() > 0) {
-            if (nameNodesList.item(0).getFirstChild().getTextContent().equals("true")) {
+            if ("true".equals(nameNodesList.item(0).getFirstChild().getTextContent())) {
                 nameNodesList = doc.getElementsByTagName("NextContinuationToken");
                 if (nameNodesList.getLength() > 0) {
                     String continueToken = nameNodesList.item(0).getFirstChild().getTextContent();

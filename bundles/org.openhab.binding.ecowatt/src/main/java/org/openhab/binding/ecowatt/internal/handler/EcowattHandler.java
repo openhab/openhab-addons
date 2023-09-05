@@ -201,10 +201,10 @@ public class EcowattHandler extends BaseThingHandler {
             // Invalidate the cache to be sure the next request will trigger the API
             cachedApiResponse.invalidateValue();
 
-            if (retryIfApiLimitReached && exception instanceof EcowattApiLimitException
-                    && ((EcowattApiLimitException) exception).getRetryAfter() > 0) {
+            if (retryIfApiLimitReached && exception instanceof EcowattApiLimitException limitException
+                    && limitException.getRetryAfter() > 0) {
                 // Will retry when the API is available again (just after the limit expired)
-                retryDelay = ((EcowattApiLimitException) exception).getRetryAfter();
+                retryDelay = limitException.getRetryAfter();
             }
         } else {
             updateStatus(ThingStatus.ONLINE);

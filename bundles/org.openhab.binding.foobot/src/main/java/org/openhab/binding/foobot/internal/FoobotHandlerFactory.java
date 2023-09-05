@@ -48,7 +48,7 @@ public class FoobotHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections
             .unmodifiableSet(Stream.of(BRIDGE_TYPE_FOOBOTACCOUNT, THING_TYPE_FOOBOT).collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPE_UIDS = Collections.singleton(THING_TYPE_FOOBOT);
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPE_UIDS = Set.of(THING_TYPE_FOOBOT);
 
     private final FoobotApiConnector connector = new FoobotApiConnector();
 

@@ -77,15 +77,15 @@ public class A5_38_08_Blinds extends _4BSMessage {
                 byte angle = 0; // for now, no angle configuration supported
                 boolean doStop = false;
 
-                if (outputCommand instanceof DecimalType) {
-                    position = ((DecimalType) outputCommand).byteValue();
-                } else if (outputCommand instanceof OnOffType) {
-                    position = (byte) (((OnOffType) outputCommand == OnOffType.ON) ? 0 : 100);
+                if (outputCommand instanceof DecimalType decimalCommand) {
+                    position = decimalCommand.byteValue();
+                } else if (outputCommand instanceof OnOffType onOffCommand) {
+                    position = (byte) ((onOffCommand == OnOffType.ON) ? 0 : 100);
                 } else if (outputCommand instanceof StopMoveType) {
                     position = ZERO;
                     doStop = true;
-                } else if (outputCommand instanceof UpDownType) {
-                    position = (byte) (((UpDownType) outputCommand == UpDownType.UP) ? 0 : 100);
+                } else if (outputCommand instanceof UpDownType upDownCommand) {
+                    position = (byte) ((upDownCommand == UpDownType.UP) ? 0 : 100);
                 } else {
                     logger.warn("Unknown command type {}", outputCommand.getClass().getCanonicalName());
                     return;

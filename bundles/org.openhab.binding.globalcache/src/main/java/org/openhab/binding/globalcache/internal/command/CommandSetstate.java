@@ -69,7 +69,7 @@ public class CommandSetstate extends AbstractCommand {
             if (m.groupCount() == 4) {
                 setModule(m.group(2));
                 setConnector(m.group(3));
-                setState(m.group(4).equals("0") ? OnOffType.OFF : OnOffType.ON);
+                setState("0".equals(m.group(4)) ? OnOffType.OFF : OnOffType.ON);
                 return true;
             }
         }

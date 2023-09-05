@@ -75,12 +75,12 @@ public class Value2StateConverter {
     }
 
     private State convert2DateTime(Object value) {
-        if (value instanceof Instant) {
-            return new DateTimeType(ZonedDateTime.ofInstant((Instant) value, ZoneId.systemDefault()));
-        } else if (value instanceof Date) {
-            return new DateTimeType(ZonedDateTime.ofInstant(((Date) value).toInstant(), ZoneId.systemDefault()));
-        } else if (value instanceof String) {
-            return new DateTimeType((String) value);
+        if (value instanceof Instant instant) {
+            return new DateTimeType(ZonedDateTime.ofInstant(instant, ZoneId.systemDefault()));
+        } else if (value instanceof Date date) {
+            return new DateTimeType(ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()));
+        } else if (value instanceof String string) {
+            return new DateTimeType(string);
         } else {
             logger.warn("Can't convert {} to DateTimeType", value);
             return UnDefType.NULL;
@@ -96,16 +96,16 @@ public class Value2StateConverter {
             return new DecimalType((Float) value);
         } else if (value instanceof Double) {
             return new DecimalType((Double) value);
-        } else if (value instanceof BigDecimal) {
-            return new DecimalType((BigDecimal) value);
-        } else if (value instanceof BigInteger) {
-            return new DecimalType(new BigDecimal((BigInteger) value));
-        } else if (value instanceof Number) {
-            return new DecimalType(((Number) value).longValue());
-        } else if (value instanceof String) {
-            return DecimalType.valueOf((String) value);
-        } else if (value instanceof Duration) {
-            return new DecimalType(((Duration) value).toMillis());
+        } else if (value instanceof BigDecimal decimal) {
+            return new DecimalType(decimal);
+        } else if (value instanceof BigInteger integer) {
+            return new DecimalType(new BigDecimal(integer));
+        } else if (value instanceof Number number) {
+            return new DecimalType(number.longValue());
+        } else if (value instanceof String string) {
+            return DecimalType.valueOf(string);
+        } else if (value instanceof Duration duration) {
+            return new DecimalType(duration.toMillis());
         } else {
             logger.warn("Can't convert {} to DecimalType", value);
             return UnDefType.NULL;
@@ -113,25 +113,24 @@ public class Value2StateConverter {
     }
 
     private State convert2String(Object value) {
-        if (value instanceof String) {
-            return new StringType((String) value);
-        } else if (value instanceof byte[]) {
-            return new StringType(Base64.getEncoder().encodeToString((byte[]) value));
-        } else if (value instanceof QueryResult) {
-            return new StringType(jsonEncoder.encode((QueryResult) value));
+        if (value instanceof String string) {
+            return new StringType(string);
+        } else if (value instanceof byte[] bytes) {
+            return new StringType(Base64.getEncoder().encodeToString(bytes));
+        } else if (value instanceof QueryResult result) {
+            return new StringType(jsonEncoder.encode(result));
         } else {
             return new StringType(String.valueOf(value));
         }
     }
 
     private @Nullable Boolean convert2Boolean(Object value) {
-        if (value instanceof Boolean) {
-            return (Boolean) value;
-        } else if (value instanceof Number) {
-            return ((Number) value).doubleValue() != 0d;
-        } else if (value instanceof String) {
-            var svalue = (String) value;
-            return Boolean.parseBoolean(svalue) || (svalue.equalsIgnoreCase("on")) || svalue.equals("1");
+        if (value instanceof Boolean boolean1) {
+            return boolean1;
+        } else if (value instanceof Number number) {
+            return number.doubleValue() != 0d;
+        } else if (value instanceof String svalue) {
+            return Boolean.parseBoolean(svalue) || ("on".equalsIgnoreCase(svalue)) || "1".equals(svalue);
         } else {
             logger.warn("Can't convert {} to OnOffType or OpenClosedType", value);
             return null;

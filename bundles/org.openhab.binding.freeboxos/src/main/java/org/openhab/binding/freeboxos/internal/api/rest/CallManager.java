@@ -37,12 +37,12 @@ public class CallManager extends RestManager {
     private static class Calls extends Response<Call> {
     }
 
-    public static enum Type {
+    public enum Type {
         ACCEPTED,
         MISSED,
         OUTGOING,
         INCOMING,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Call(Type type, //

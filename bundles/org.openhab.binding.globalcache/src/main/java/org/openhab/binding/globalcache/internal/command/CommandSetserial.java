@@ -55,7 +55,7 @@ public class CommandSetserial extends AbstractCommand {
             return;
         }
 
-        String fields[] = deviceReply.split(",");
+        String[] fields = deviceReply.split(",");
         if (fields.length != 5) {
             return;
         }

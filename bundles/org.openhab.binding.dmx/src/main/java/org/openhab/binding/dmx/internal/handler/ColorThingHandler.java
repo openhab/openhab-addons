@@ -117,9 +117,9 @@ public class ColorThingHandler extends DmxThingHandler {
                     return;
                 }
             case CHANNEL_COLOR: {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType onOffCommand) {
                     logger.trace("adding {} fade to channels in thing {}", command, this.thing.getUID());
-                    if (((OnOffType) command) == OnOffType.ON) {
+                    if (onOffCommand == OnOffType.ON) {
                         targetValueSet = turnOnValue;
                     } else {
                         if (dynamicTurnOnValue) {
@@ -131,21 +131,21 @@ public class ColorThingHandler extends DmxThingHandler {
                         }
                         targetValueSet = turnOffValue;
                     }
-                } else if (command instanceof HSBType) {
+                } else if (command instanceof HSBType hsbCommand) {
                     logger.trace("adding color fade to channels in thing {}", this.thing.getUID());
-                    targetValueSet.addValue(((HSBType) command).getRed());
-                    targetValueSet.addValue(((HSBType) command).getGreen());
-                    targetValueSet.addValue(((HSBType) command).getBlue());
+                    targetValueSet.addValue(hsbCommand.getRed());
+                    targetValueSet.addValue(hsbCommand.getGreen());
+                    targetValueSet.addValue(hsbCommand.getBlue());
                 } else if ((command instanceof PercentType) || (command instanceof DecimalType)) {
                     logger.trace("adding brightness fade to channels in thing {}", this.thing.getUID());
-                    PercentType brightness = (command instanceof PercentType) ? (PercentType) command
+                    PercentType brightness = (command instanceof PercentType percentCommand) ? percentCommand
                             : Util.toPercentValue(((DecimalType) command).intValue());
                     HSBType targetColor = new HSBType(currentColor.getHue(), currentColor.getSaturation(), brightness);
                     targetValueSet.addValue(targetColor.getRed());
                     targetValueSet.addValue(targetColor.getGreen());
                     targetValueSet.addValue(targetColor.getBlue());
-                } else if (command instanceof IncreaseDecreaseType) {
-                    if (isDimming && ((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    if (isDimming && increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE)) {
                         logger.trace("stopping fade in thing {}", this.thing.getUID());
                         channels.forEach(DmxChannel::clearAction);
                         isDimming = false;
@@ -153,7 +153,7 @@ public class ColorThingHandler extends DmxThingHandler {
                     } else {
                         logger.trace("starting {} fade in thing {}", command, this.thing.getUID());
                         HSBType targetColor;
-                        if (((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
+                        if (increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE)) {
                             targetColor = new HSBType(currentColor.getHue(), currentColor.getSaturation(),
                                     PercentType.HUNDRED);
                         } else {
@@ -239,7 +239,7 @@ public class ColorThingHandler extends DmxThingHandler {
         dimTime = configuration.dimtime;
         logger.trace("setting dimTime to {} ms in {}", fadeTime, this.thing.getUID());
 
-        String turnOnValueString = String.valueOf(fadeTime) + ":" + configuration.turnonvalue + ":-1";
+        String turnOnValueString = fadeTime + ":" + configuration.turnonvalue + ":-1";
         ValueSet turnOnValue = ValueSet.fromString(turnOnValueString);
         if (turnOnValue.size() % 3 == 0) {
             this.turnOnValue = turnOnValue;
@@ -253,7 +253,7 @@ public class ColorThingHandler extends DmxThingHandler {
 
         dynamicTurnOnValue = configuration.dynamicturnonvalue;
 
-        String turnOffValueString = String.valueOf(fadeTime) + ":" + configuration.turnoffvalue + ":-1";
+        String turnOffValueString = fadeTime + ":" + configuration.turnoffvalue + ":-1";
         ValueSet turnOffValue = ValueSet.fromString(turnOffValueString);
         if (turnOffValue.size() % 3 == 0) {
             this.turnOffValue = turnOffValue;

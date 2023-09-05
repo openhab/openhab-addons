@@ -87,8 +87,8 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
-        if (handler instanceof AVMFritzBaseBridgeHandler) {
-            bridgeHandler = (AVMFritzBaseBridgeHandler) handler;
+        if (handler instanceof AVMFritzBaseBridgeHandler baseBridgeHandler) {
+            bridgeHandler = baseBridgeHandler;
         }
     }
 
@@ -128,9 +128,9 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
             properties.put(PRODUCT_NAME, device.getProductName());
             properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
             properties.put(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
-            if (device instanceof GroupModel && ((GroupModel) device).getGroupinfo() != null) {
-                properties.put(PROPERTY_MASTER, ((GroupModel) device).getGroupinfo().getMasterdeviceid());
-                properties.put(PROPERTY_MEMBERS, ((GroupModel) device).getGroupinfo().getMembers());
+            if (device instanceof GroupModel model && model.getGroupinfo() != null) {
+                properties.put(PROPERTY_MASTER, model.getGroupinfo().getMasterdeviceid());
+                properties.put(PROPERTY_MEMBERS, model.getGroupinfo().getMembers());
             }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.blukii.internal;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +41,7 @@ public class BlukiiDiscoveryParticipant implements BluetoothDiscoveryParticipant
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(BlukiiBindingConstants.THING_TYPE_BEACON);
+        return Set.of(BlukiiBindingConstants.THING_TYPE_BEACON);
     }
 
     @Override

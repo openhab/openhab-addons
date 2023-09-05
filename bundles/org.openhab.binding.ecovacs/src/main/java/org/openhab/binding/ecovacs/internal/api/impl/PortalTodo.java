@@ -24,5 +24,5 @@ public enum PortalTodo {
     @SerializedName("GetDeviceList")
     GET_DEVICE_LIST,
     @SerializedName("loginByItToken")
-    LOGIN_BY_TOKEN;
+    LOGIN_BY_TOKEN
 }

@@ -63,8 +63,8 @@ public class FreeboxOsCommandExtension extends AbstractConsoleCommandExtension {
             FreeboxOsHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof FreeboxOsHandler) {
-                    handler = (FreeboxOsHandler) thingHandler;
+                if (thingHandler instanceof FreeboxOsHandler osHandler) {
+                    handler = osHandler;
                 }
             }
             if (thing == null) {

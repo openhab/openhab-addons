@@ -126,7 +126,7 @@ public class BuienradarHandler extends BaseThingHandler {
         }
         try {
             final Optional<List<Prediction>> predictionsOpt = client.getPredictions(location);
-            if (!predictionsOpt.isPresent()) {
+            if (predictionsOpt.isEmpty()) {
                 // Did not get a result, retry the retrieval.
                 // Buienradar is not a very stable source and returns nothing quite regular
                 if (tries <= 2) {

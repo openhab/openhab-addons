@@ -283,11 +283,11 @@ public class SimpleRequestBuilder {
         if (obj == null) {
             return null;
         }
-        if (obj instanceof DSID) {
-            return ((DSID) obj).getValue();
+        if (obj instanceof DSID id) {
+            return id.getValue();
         }
-        if (obj instanceof Number) {
-            return ((Number) obj).intValue() > -1 ? obj.toString() : null;
+        if (obj instanceof Number number) {
+            return number.intValue() > -1 ? obj.toString() : null;
         }
         return obj.toString();
     }

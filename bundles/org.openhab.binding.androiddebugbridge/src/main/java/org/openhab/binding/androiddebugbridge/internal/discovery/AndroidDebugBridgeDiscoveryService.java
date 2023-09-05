@@ -161,7 +161,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
             String brand, String macAddress) {
         String friendlyName = String.format("%s (%s)", model, ip);
         thingDiscovered(
-                DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ANDROID_DEVICE, macAddress.replaceAll(":", ""))) //
+                DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ANDROID_DEVICE, macAddress.replace(":", ""))) //
                         .withProperties(Map.of( //
                                 PARAMETER_IP, ip, //
                                 PARAMETER_PORT, port, //

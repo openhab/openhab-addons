@@ -14,7 +14,6 @@ package org.openhab.binding.fsinternetradio.internal;
 
 import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -141,7 +140,7 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_RADIO);
+        return Set.of(THING_TYPE_RADIO);
     }
 
     @Override

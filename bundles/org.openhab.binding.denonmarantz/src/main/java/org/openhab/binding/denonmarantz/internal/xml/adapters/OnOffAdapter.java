@@ -24,7 +24,7 @@ public class OnOffAdapter extends XmlAdapter<String, Boolean> {
     @Override
     public Boolean unmarshal(String v) throws Exception {
         if (v != null) {
-            return Boolean.valueOf(v.toLowerCase().equals("on"));
+            return Boolean.valueOf("on".equals(v.toLowerCase()));
         }
 
         return Boolean.FALSE;

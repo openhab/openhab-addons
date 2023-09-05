@@ -14,7 +14,7 @@
 package org.openhab.binding.flicbutton.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,8 +34,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
  */
 @NonNullByDefault
 public abstract class ChildThingHandler<BridgeHandlerType extends BridgeHandler> extends BaseThingHandler {
-    private static final Collection<ThingStatus> DEFAULT_TOLERATED_BRIDGE_STATUSES = Collections
-            .singleton(ThingStatus.ONLINE);
+    private static final Collection<ThingStatus> DEFAULT_TOLERATED_BRIDGE_STATUSES = Set.of(ThingStatus.ONLINE);
     protected boolean bridgeValid = false;
     protected @Nullable BridgeHandlerType bridgeHandler;
 

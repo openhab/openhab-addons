@@ -41,9 +41,8 @@ public class GetVolumeCommand extends IotDeviceCommand<Integer> {
     @Override
     public Integer convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            JsonResponse resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    JsonResponse.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            JsonResponse resp = jsonResponse.getResponsePayloadAs(gson, JsonResponse.class);
             return resp.volume;
         } else {
             // unsupported in XML case?

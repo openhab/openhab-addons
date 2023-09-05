@@ -108,8 +108,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
 
     private void onDeviceAddedInternal(GeneralDeviceInformation device) {
         boolean isSupported = false;
-        if (device instanceof Device) {
-            Device tempDevice = (Device) device;
+        if (device instanceof Device tempDevice) {
             if ((tempDevice.isSensorDevice() && deviceType.equals(tempDevice.getHWinfo().replaceAll("-", "")))
                     || (deviceType.equals(tempDevice.getHWinfo().substring(0, 2))
                             && (tempDevice.isDeviceWithOutput() || tempDevice.isBinaryInputDevice())
@@ -135,18 +134,17 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
 
                 thingDiscovered(discoveryResult);
             } else {
-                if (device instanceof Device) {
-                    logger.debug("Discovered unsupported device hardware type '{}' with uid {}",
-                            ((Device) device).getHWinfo(), device.getDSUID());
+                if (device instanceof Device device1) {
+                    logger.debug("Discovered unsupported device hardware type '{}' with uid {}", device1.getHWinfo(),
+                            device.getDSUID());
                 }
             }
         } else {
-            if (device instanceof Device) {
-                logger.debug(
-                        "Discovered device with disabled or no output mode. Device was not added to inbox. "
-                                + "Device information: hardware info: {}, dSUID: {}, device-name: {}, output value: {}",
-                        ((Device) device).getHWinfo(), device.getDSUID(), device.getName(),
-                        ((Device) device).getOutputMode());
+            if (device instanceof Device device1) {
+                logger.debug("""
+                        Discovered device with disabled or no output mode. Device was not added to inbox. \
+                        Device information: hardware info: {}, dSUID: {}, device-name: {}, output value: {}\
+                        """, device1.getHWinfo(), device.getDSUID(), device.getName(), device1.getOutputMode());
             }
         }
     }
@@ -154,8 +152,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
     private ThingUID getThingUID(GeneralDeviceInformation device) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingTypeUID thingTypeUID = null;
-        if (device instanceof Device) {
-            Device tempDevice = (Device) device;
+        if (device instanceof Device tempDevice) {
             thingTypeUID = new ThingTypeUID(BINDING_ID, tempDevice.getHWinfo().substring(0, 2));
             if (tempDevice.isSensorDevice() && deviceType.equals(tempDevice.getHWinfo().replaceAll("-", ""))) {
                 thingTypeUID = new ThingTypeUID(BINDING_ID, deviceType);
@@ -166,8 +163,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
         }
         if (getSupportedThingTypes().contains(thingTypeUID)) {
             String thingDeviceId = device.getDSID().toString();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingDeviceId);
-            return thingUID;
+            return new ThingUID(thingTypeUID, bridgeUID, thingDeviceId);
         } else {
             return null;
         }

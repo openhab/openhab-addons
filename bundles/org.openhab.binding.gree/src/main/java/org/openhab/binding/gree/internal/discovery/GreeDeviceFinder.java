@@ -111,7 +111,7 @@ public class GreeDeviceFinder {
                     scanResponseGson.packJson = GSON.fromJson(decryptedMsg, GreeScanReponsePackDTO.class);
 
                     // Now make sure the device is reported as a Gree device
-                    if (scanResponseGson.packJson.brand.equalsIgnoreCase("gree")) {
+                    if ("gree".equalsIgnoreCase(scanResponseGson.packJson.brand)) {
                         // Create a new GreeDevice
                         logger.debug("Discovered device at {}:{}", remoteAddress.getHostAddress(), remotePort);
                         GreeAirDevice newDevice = new GreeAirDevice(remoteAddress, remotePort, scanResponseGson);

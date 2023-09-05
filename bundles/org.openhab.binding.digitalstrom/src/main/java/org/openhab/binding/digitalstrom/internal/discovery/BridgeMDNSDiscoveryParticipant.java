@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.digitalstrom.internal.discovery;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +47,7 @@ public class BridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(DigitalSTROMBindingConstants.THING_TYPE_DSS_BRIDGE);
+        return Set.of(DigitalSTROMBindingConstants.THING_TYPE_DSS_BRIDGE);
     }
 
     @Override

@@ -106,7 +106,7 @@ public class BsbLanParameterConverter {
 
     private static State getStateForSwitchValueChannel(BsbLanApiParameterDTO parameter) {
         // treat "0" as OFF and everything else as ON
-        return parameter.value.equals("0") ? OnOffType.OFF : OnOffType.ON;
+        return "0".equals(parameter.value) ? OnOffType.OFF : OnOffType.ON;
     }
 
     /**
@@ -134,9 +134,7 @@ public class BsbLanParameterConverter {
     }
 
     private static @Nullable String getValueForNumberValueChannel(Command command) {
-        if (command instanceof QuantityType<?>) {
-            // the target unit is yet unknown, so just use the value as is (without converting based on the unit)
-            QuantityType<?> quantity = (QuantityType<?>) command;
+        if (command instanceof QuantityType<?> quantity) {
             return String.valueOf(quantity.doubleValue());
         }
         // check if numeric

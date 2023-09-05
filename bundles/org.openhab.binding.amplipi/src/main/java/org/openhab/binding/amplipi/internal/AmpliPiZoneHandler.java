@@ -109,8 +109,8 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
-                if (command instanceof PercentType) {
-                    update.setVol(AmpliPiUtils.percentTypeToVolume((PercentType) command));
+                if (command instanceof PercentType percentCommand) {
+                    update.setVol(AmpliPiUtils.percentTypeToVolume(percentCommand));
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (zoneState != null) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
@@ -125,8 +125,8 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_SOURCE:
-                if (command instanceof DecimalType) {
-                    update.setSourceId(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    update.setSourceId(decimalCommand.intValue());
                 }
                 break;
         }

@@ -27,6 +27,7 @@ public class AwattarBestpriceConfiguration {
     public int length;
     public boolean consecutive;
 
+    @Override
     public String toString() {
         return String.format("{ s: %d, d: %d, l: %d, c: %b )", rangeStart, rangeDuration, length, consecutive);
     }

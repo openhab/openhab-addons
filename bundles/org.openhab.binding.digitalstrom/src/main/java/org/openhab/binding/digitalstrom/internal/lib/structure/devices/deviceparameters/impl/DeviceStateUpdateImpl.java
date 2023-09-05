@@ -85,8 +85,8 @@ public class DeviceStateUpdateImpl implements DeviceStateUpdate {
             if (value instanceof Short) {
                 return ((Short) value).intValue();
             }
-            if (value instanceof String) {
-                return Integer.parseInt((String) value);
+            if (value instanceof String string) {
+                return Integer.parseInt(string);
             }
         } catch (Exception e) {
             throw new ClassCastException();
@@ -105,8 +105,8 @@ public class DeviceStateUpdateImpl implements DeviceStateUpdate {
         if (value instanceof Short) {
             return ((Short) value).toString();
         }
-        if (value instanceof String) {
-            return (String) value;
+        if (value instanceof String string) {
+            return string;
         }
         throw new ClassCastException();
     }
@@ -128,8 +128,8 @@ public class DeviceStateUpdateImpl implements DeviceStateUpdate {
             if (value instanceof Short) {
                 return (Short) value;
             }
-            if (value instanceof String) {
-                return Short.parseShort((String) value);
+            if (value instanceof String string) {
+                return Short.parseShort(string);
             }
         } catch (Exception e) {
             throw new ClassCastException();
@@ -149,8 +149,8 @@ public class DeviceStateUpdateImpl implements DeviceStateUpdate {
             if (value instanceof Short) {
                 return ((Short) value).floatValue();
             }
-            if (value instanceof String) {
-                return Float.parseFloat((String) value);
+            if (value instanceof String string) {
+                return Float.parseFloat(string);
             }
         } catch (Exception e) {
             throw new ClassCastException();

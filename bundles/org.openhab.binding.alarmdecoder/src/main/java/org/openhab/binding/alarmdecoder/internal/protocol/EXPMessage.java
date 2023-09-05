@@ -40,7 +40,7 @@ public class EXPMessage extends ADMessage {
     public EXPMessage(String message) throws IllegalArgumentException {
         super(message);
 
-        String topLevel[] = message.split(":");
+        String[] topLevel = message.split(":");
         if (topLevel.length != 2) {
             throw new IllegalArgumentException("Multiple colons found in EXP message");
         }

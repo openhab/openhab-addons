@@ -56,7 +56,7 @@ public class GeneracMobileLinkDiscoveryService extends AbstractDiscoveryService 
         DiscoveryResult result = DiscoveryResultBuilder
                 .create(new ThingUID(THING_TYPE_GENERATOR, bridgeUID, String.valueOf(apparatus.apparatusId)))
                 .withLabel("MobileLink Generator " + apparatus.name)
-                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, String.valueOf(apparatus.serialNumber))
+                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, apparatus.serialNumber)
                 .withProperty(PROPERTY_GENERATOR_ID, String.valueOf(apparatus.apparatusId))
                 .withRepresentationProperty(PROPERTY_GENERATOR_ID).withBridge(bridgeUID).build();
         thingDiscovered(result);

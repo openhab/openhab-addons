@@ -159,14 +159,21 @@ class BridgeHandlerTest {
         Request devicesRequest = mock(Request.class);
         ContentResponse devicesResponse = mock(ContentResponse.class);
         when(devicesResponse.getStatus()).thenReturn(200);
-        when(devicesResponse.getContentAsString()).thenReturn("[{\"@type\":\"device\",\r\n"
-                + " \"rootDeviceId\":\"64-da-a0-02-14-9b\",\r\n"
-                + " \"id\":\"hdm:HomeMaticIP:3014F711A00004953859F31B\",\r\n"
-                + " \"deviceServiceIds\":[\"PowerMeter\",\"PowerSwitch\",\"PowerSwitchProgram\",\"Routing\"],\r\n"
-                + " \"manufacturer\":\"BOSCH\",\r\n" + " \"roomId\":\"hz_3\",\r\n" + " \"deviceModel\":\"PSM\",\r\n"
-                + " \"serial\":\"3014F711A00004953859F31B\",\r\n" + " \"profile\":\"GENERIC\",\r\n"
-                + " \"name\":\"Coffee Machine\",\r\n" + " \"status\":\"AVAILABLE\",\r\n" + " \"childDeviceIds\":[]\r\n"
-                + " }]");
+        when(devicesResponse.getContentAsString()).thenReturn("""
+                [{"@type":"device",
+                 "rootDeviceId":"64-da-a0-02-14-9b",
+                 "id":"hdm:HomeMaticIP:3014F711A00004953859F31B",
+                 "deviceServiceIds":["PowerMeter","PowerSwitch","PowerSwitchProgram","Routing"],
+                 "manufacturer":"BOSCH",
+                 "roomId":"hz_3",
+                 "deviceModel":"PSM",
+                 "serial":"3014F711A00004953859F31B",
+                 "profile":"GENERIC",
+                 "name":"Coffee Machine",
+                 "status":"AVAILABLE",
+                 "childDeviceIds":[]
+                 }]\
+                """);
         when(devicesRequest.send()).thenReturn(devicesResponse);
         when(httpClient.createRequest(contains("/devices"), same(HttpMethod.GET))).thenReturn(devicesRequest);
 
@@ -175,7 +182,7 @@ class BridgeHandlerTest {
 
         Request longPollRequest = mock(Request.class);
         when(httpClient.createRequest(anyString(), same(HttpMethod.POST),
-                argThat((JsonRpcRequest r) -> r.method.equals("RE/longPoll")))).thenReturn(longPollRequest);
+                argThat((JsonRpcRequest r) -> "RE/longPoll".equals(r.method)))).thenReturn(longPollRequest);
 
         fixture.initialAccess(httpClient);
         verify(thingHandlerCallback).statusUpdated(any(),
@@ -190,18 +197,37 @@ class BridgeHandlerTest {
         when(request.header(anyString(), anyString())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
-        when(response.getContentAsString()).thenReturn("{\r\n" + "     \"@type\": \"systemState\",\r\n"
-                + "     \"systemAvailability\": {\r\n" + "         \"@type\": \"systemAvailabilityState\",\r\n"
-                + "         \"available\": true,\r\n" + "         \"deleted\": false\r\n" + "     },\r\n"
-                + "     \"armingState\": {\r\n" + "         \"@type\": \"armingState\",\r\n"
-                + "         \"state\": \"SYSTEM_DISARMED\",\r\n" + "         \"deleted\": false\r\n" + "     },\r\n"
-                + "     \"alarmState\": {\r\n" + "         \"@type\": \"alarmState\",\r\n"
-                + "         \"value\": \"ALARM_OFF\",\r\n" + "         \"incidents\": [],\r\n"
-                + "         \"deleted\": false\r\n" + "     },\r\n" + "     \"activeConfigurationProfile\": {\r\n"
-                + "         \"@type\": \"activeConfigurationProfile\",\r\n" + "         \"deleted\": false\r\n"
-                + "     },\r\n" + "     \"securityGapState\": {\r\n" + "         \"@type\": \"securityGapState\",\r\n"
-                + "         \"securityGaps\": [],\r\n" + "         \"deleted\": false\r\n" + "     },\r\n"
-                + "     \"deleted\": false\r\n" + " }");
+        when(response.getContentAsString()).thenReturn("""
+                {
+                     "@type": "systemState",
+                     "systemAvailability": {
+                         "@type": "systemAvailabilityState",
+                         "available": true,
+                         "deleted": false
+                     },
+                     "armingState": {
+                         "@type": "armingState",
+                         "state": "SYSTEM_DISARMED",
+                         "deleted": false
+                     },
+                     "alarmState": {
+                         "@type": "alarmState",
+                         "value": "ALARM_OFF",
+                         "incidents": [],
+                         "deleted": false
+                     },
+                     "activeConfigurationProfile": {
+                         "@type": "activeConfigurationProfile",
+                         "deleted": false
+                     },
+                     "securityGapState": {
+                         "@type": "securityGapState",
+                         "securityGaps": [],
+                         "deleted": false
+                     },
+                     "deleted": false
+                 }\
+                """);
         when(request.send()).thenReturn(response);
         when(httpClient.createRequest(anyString(), same(HttpMethod.GET))).thenReturn(request);
 
@@ -302,12 +328,22 @@ class BridgeHandlerTest {
         when(request.header(anyString(), anyString())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
-        when(response.getContentAsString()).thenReturn("{ \n" + "    \"@type\":\"DeviceServiceData\",\n"
-                + "    \"path\":\"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel\",\n"
-                + "    \"id\":\"BatteryLevel\",\n" + "    \"deviceId\":\"hdm:ZigBee:000d6f0004b93361\",\n"
-                + "    \"faults\":{ \n" + "        \"entries\":[\n" + "          {\n"
-                + "            \"type\":\"LOW_BATTERY\",\n" + "            \"category\":\"WARNING\"\n" + "          }\n"
-                + "        ]\n" + "    }\n" + "}");
+        when(response.getContentAsString()).thenReturn("""
+                {
+                    "@type":"DeviceServiceData",
+                    "path":"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel",
+                    "id":"BatteryLevel",
+                    "deviceId":"hdm:ZigBee:000d6f0004b93361",
+                    "faults":{\s
+                        "entries":[
+                          {
+                            "type":"LOW_BATTERY",
+                            "category":"WARNING"
+                          }
+                        ]
+                    }
+                }\
+                """);
         when(request.send()).thenReturn(response);
         when(httpClient.createRequest(anyString(), same(HttpMethod.GET))).thenReturn(request);
 

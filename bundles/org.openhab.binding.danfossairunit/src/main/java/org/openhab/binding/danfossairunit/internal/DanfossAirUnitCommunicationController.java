@@ -52,6 +52,7 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
         this.port = port;
     }
 
+    @Override
     public synchronized void connect() throws IOException {
         if (connected) {
             return;
@@ -64,6 +65,7 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
         connected = true;
     }
 
+    @Override
     public synchronized void disconnect() {
         if (!connected) {
             return;
@@ -83,10 +85,12 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
         connected = false;
     }
 
+    @Override
     public byte[] sendRobustRequest(byte[] operation, byte[] register) throws IOException {
         return sendRobustRequest(operation, register, EMPTY);
     }
 
+    @Override
     public synchronized byte[] sendRobustRequest(byte[] operation, byte[] register, byte[] value) throws IOException {
         connect();
         byte[] request = new byte[4 + value.length];

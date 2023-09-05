@@ -47,6 +47,7 @@ public class AuthorizationController implements AuthorizationProvider {
         this.oAuthClientService = oAuthClientService;
     }
 
+    @Override
     public String getAuthorizationHeader() throws IndegoAuthenticationException {
         final AccessTokenResponse accessTokenResponse;
         try {

@@ -73,8 +73,8 @@ public class RevolutionHandler extends ServerHandler {
     }
 
     private void setOrientation(LcdManager manager, Config config, Command command) throws FreeboxException {
-        if (command instanceof DecimalType) {
-            manager.setOrientation(((DecimalType) command).intValue());
+        if (command instanceof DecimalType orientation) {
+            manager.setOrientation(orientation.intValue());
         } else {
             logger.warn("Invalid command {} from channel {}", command, LCD_ORIENTATION);
         }
@@ -93,8 +93,8 @@ public class RevolutionHandler extends ServerHandler {
             manager.setBrightness(() -> config.brightness() + (command == IncreaseDecreaseType.INCREASE ? 1 : -1));
         } else if (command instanceof OnOffType) {
             manager.setBrightness(() -> command == OnOffType.ON ? 100 : 0);
-        } else if (command instanceof QuantityType) {
-            manager.setBrightness(() -> ((QuantityType<?>) command).intValue());
+        } else if (command instanceof QuantityType brightness) {
+            manager.setBrightness(() -> brightness.intValue());
         } else if (command instanceof DecimalType || command instanceof PercentType) {
             manager.setBrightness(() -> ((DecimalType) command).intValue());
         } else {

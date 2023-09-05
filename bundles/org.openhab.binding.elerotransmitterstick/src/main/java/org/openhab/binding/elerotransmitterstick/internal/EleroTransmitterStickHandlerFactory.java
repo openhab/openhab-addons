@@ -82,9 +82,7 @@ public class EleroTransmitterStickHandlerFactory extends BaseThingHandlerFactory
 
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_ELERO_CHANNEL)) {
-            EleroChannelHandler h = new EleroChannelHandler(thing);
-
-            return h;
+            return new EleroChannelHandler(thing);
         }
 
         return null;

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +51,7 @@ public class BlueZDiscoveryService extends AbstractDiscoveryService {
 
     @Activate
     public BlueZDiscoveryService(@Reference DeviceManagerFactory deviceManagerFactory) {
-        super(Collections.singleton(BlueZAdapterConstants.THING_TYPE_BLUEZ), 1, true);
+        super(Set.of(BlueZAdapterConstants.THING_TYPE_BLUEZ), 1, true);
         this.deviceManagerFactory = deviceManagerFactory;
     }
 

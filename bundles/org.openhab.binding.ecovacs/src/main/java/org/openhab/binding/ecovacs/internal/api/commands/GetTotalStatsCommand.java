@@ -55,8 +55,8 @@ public class GetTotalStatsCommand extends IotDeviceCommand<GetTotalStatsCommand.
     @Override
     public TotalStats convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            return ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson, TotalStats.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            return jsonResponse.getResponsePayloadAs(gson, TotalStats.class);
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
             String area = XPathUtils.getFirstXPathMatch(payload, "//@a").getNodeValue();

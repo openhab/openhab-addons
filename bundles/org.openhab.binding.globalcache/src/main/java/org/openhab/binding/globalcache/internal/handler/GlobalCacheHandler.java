@@ -310,7 +310,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
             throw new HexCodeConversionException("Hex code is too short");
         }
 
-        if (!hexCodeArray[0].equals("0000")) {
+        if (!"0000".equals(hexCodeArray[0])) {
             throw new HexCodeConversionException("Illegal hex code element 0, should be 0000");
         }
 

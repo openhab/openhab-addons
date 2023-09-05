@@ -111,8 +111,8 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
             }
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof BridgeHandler) {
-                dssBridgeHandler = (BridgeHandler) handler;
+            if (handler instanceof BridgeHandler bridgeHandler) {
+                dssBridgeHandler = bridgeHandler;
             } else {
                 return null;
             }
@@ -179,8 +179,8 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
 
     @Override
     public void onDeviceRemoved(GeneralDeviceInformation device) {
-        if (device instanceof Circuit) {
-            this.circuit = (Circuit) device;
+        if (device instanceof Circuit circ) {
+            this.circuit = circ;
             if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 if (!circuit.isPresent()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
@@ -197,8 +197,8 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
 
     @Override
     public void onDeviceAdded(GeneralDeviceInformation device) {
-        if (device instanceof Circuit) {
-            this.circuit = (Circuit) device;
+        if (device instanceof Circuit circ) {
+            this.circuit = circ;
             if (this.circuit.isPresent()) {
                 ThingStatusInfo statusInfo = this.dssBridgeHandler.getThing().getStatusInfo();
                 updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());

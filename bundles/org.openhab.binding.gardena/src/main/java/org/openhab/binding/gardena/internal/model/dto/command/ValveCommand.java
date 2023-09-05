@@ -20,7 +20,7 @@ package org.openhab.binding.gardena.internal.model.dto.command;
 public class ValveCommand extends GardenaCommand {
     private static final String COMMAND_TYPE = "VALVE_CONTROL";
 
-    public static enum ValveControl {
+    public enum ValveControl {
         START_SECONDS_TO_OVERRIDE,
         STOP_UNTIL_NEXT_TASK,
         PAUSE,

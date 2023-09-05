@@ -46,7 +46,7 @@ public class ZoneHandler extends ADThingHandler {
     }
 
     /** Construct zone id from address and channel */
-    public static final String zoneID(int address, int channel) {
+    public static String zoneID(int address, int channel) {
         return String.format("%d-%d", address, channel);
     }
 

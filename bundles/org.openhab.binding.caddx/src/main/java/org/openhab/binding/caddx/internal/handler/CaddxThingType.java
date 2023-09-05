@@ -24,5 +24,5 @@ public enum CaddxThingType {
     PANEL,
     PARTITION,
     ZONE,
-    KEYPAD;
+    KEYPAD
 }

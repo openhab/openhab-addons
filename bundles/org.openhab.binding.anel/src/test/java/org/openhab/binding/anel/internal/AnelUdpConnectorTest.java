@@ -144,7 +144,7 @@ public class AnelUdpConnectorTest {
 
         // toggle state of switch 1
         final String auth = AnelAuthentication.getUserPasswordString(USER, PASSWORD, AuthMethod.of(status));
-        final String command = "Sw_" + (switch1state ? "off" : "on") + String.valueOf(switchNr) + auth;
+        final String command = "Sw_" + (switch1state ? "off" : "on") + switchNr + auth;
         final String status2 = sendAndReceiveSingle(command);
 
         // assert new state of switch 1

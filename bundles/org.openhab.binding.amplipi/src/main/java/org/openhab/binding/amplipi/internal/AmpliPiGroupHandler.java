@@ -109,8 +109,8 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
-                if (command instanceof PercentType) {
-                    update.setVolDelta(AmpliPiUtils.percentTypeToVolume((PercentType) command));
+                if (command instanceof PercentType percentCommand) {
+                    update.setVolDelta(AmpliPiUtils.percentTypeToVolume(percentCommand));
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (groupState != null) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
@@ -125,14 +125,13 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_SOURCE:
-                if (command instanceof DecimalType) {
-                    update.setSourceId(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    update.setSourceId(decimalCommand.intValue());
                 }
                 break;
         }
         if (bridgeHandler != null) {
             String url = bridgeHandler.getUrl() + "/api/groups/" + getId(thing);
-            ;
             StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
             try {
                 ContentResponse response = httpClient.newRequest(url).method(HttpMethod.PATCH)

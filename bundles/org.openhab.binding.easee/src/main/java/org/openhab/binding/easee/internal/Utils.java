@@ -61,8 +61,7 @@ public final class Utils {
             formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
         }
         LOGGER.trace("parsing: {}", date);
-        ZonedDateTime zdt = ZonedDateTime.parse(date, formatter);
-        return zdt;
+        return ZonedDateTime.parse(date, formatter);
     }
 
     /**

@@ -51,8 +51,12 @@ class MotionDetectorHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<
 
     @Test
     void testUpdateChannelsLatestMotionService() {
-        JsonElement jsonObject = JsonParser.parseString("{\n" + "   \"@type\": \"latestMotionState\",\n"
-                + "   \"latestMotionDetected\": \"2020-04-03T19:02:19.054Z\"\n" + " }");
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "latestMotionState",
+                   "latestMotionDetected": "2020-04-03T19:02:19.054Z"
+                 }\
+                """);
         getFixture().processUpdate("LatestMotion", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_LATEST_MOTION),

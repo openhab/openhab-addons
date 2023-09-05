@@ -32,7 +32,7 @@ import org.openhab.binding.caddx.internal.CaddxMessageReaderUtil;
 public class CaddxMessageParseTest {
 
     // @formatter:off
-    public static final List<Object[]> data() {
+    public static List<Object[]> data() {
         return Arrays.asList(new Object[][] {
             { "interface_configuration_message", "panel_firmware_version", "5.37", },
             { "interface_configuration_message", "panel_interface_configuration_message", "true", },

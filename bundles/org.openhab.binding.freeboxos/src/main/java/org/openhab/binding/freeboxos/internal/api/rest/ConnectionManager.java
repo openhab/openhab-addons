@@ -35,27 +35,27 @@ public class ConnectionManager extends ConfigurableRest<ConnectionManager.Status
     protected static class StatusResponse extends Response<Status> {
     }
 
-    private static enum State {
+    private enum State {
         GOING_UP,
         UP,
         GOING_DOWN,
         DOWN,
-        UNKNOWN;
+        UNKNOWN
     }
 
-    private static enum Type {
+    private enum Type {
         ETHERNET,
         RFC2684,
         PPPOATM,
-        UNKNOWN;
+        UNKNOWN
     }
 
-    private static enum Media {
+    private enum Media {
         FTTH,
         ETHERNET,
         XDSL,
         BACKUP_4G,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Status(State state, Type type, Media media, @Nullable List<Integer> ipv4PortRange,

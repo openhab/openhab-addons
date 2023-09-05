@@ -31,10 +31,10 @@ public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.
     protected class VirtualMachineResponse extends Response<VirtualMachine> {
     }
 
-    public static enum Status {
+    public enum Status {
         STOPPED,
         RUNNING,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record VirtualMachine(int id, String name, MACAddress mac, Status status) {
