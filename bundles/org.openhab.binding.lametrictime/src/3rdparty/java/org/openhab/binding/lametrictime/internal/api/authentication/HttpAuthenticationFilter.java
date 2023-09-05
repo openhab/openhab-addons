@@ -309,9 +309,9 @@ class HttpAuthenticationFilter implements ClientRequestFilter, ClientResponseFil
             byte[] pwdBytes;
             Object password = request.getProperty(passwordKey);
             if (password instanceof byte[] bytes) {
-                pwdBytes =bytes;
-            } else if (password instanceof String str) {
-                pwdBytes = str.getBytes(CHARACTER_SET);
+                pwdBytes = bytes;
+            } else if (password instanceof String stringValue) {
+                pwdBytes = stringValue.getBytes(CHARACTER_SET);
             } else {
                 throw new RequestAuthenticationException("Passwort invalid.");
             }

@@ -48,8 +48,8 @@ public class LeapMotionColorProfile implements TriggerProfile {
 
     @Override
     public void onStateUpdateFromItem(State state) {
-        if (state instanceof HSBType hsb) {
-            lastState = hsb;
+        if (state instanceof HSBType hsbState) {
+            lastState = hsbState;
         } else {
             PercentType currentBrightness = state.as(PercentType.class);
             if (currentBrightness != null) {

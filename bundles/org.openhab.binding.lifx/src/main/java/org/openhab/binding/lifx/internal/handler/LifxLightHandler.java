@@ -564,26 +564,26 @@ public class LifxLightHandler extends BaseThingHandler {
                 if (command instanceof DecimalType || (command instanceof QuantityType temperature
                         && temperature.toInvertibleUnit(Units.KELVIN) != null)) {
                     return () -> handleTemperatureCommand(command);
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    return () -> handleIncreaseDecreaseTemperatureCommand(incdec);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    return () -> handleIncreaseDecreaseTemperatureCommand(increaseDecreaseCommand);
                 }
             case CHANNEL_BRIGHTNESS:
-                if (command instanceof PercentType percent) {
-                    return () -> handlePercentCommand(percent);
-                } else if (command instanceof OnOffType sw) {
-                    return () -> handleOnOffCommand(sw);
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    return () -> handleIncreaseDecreaseCommand(incdec);
+                if (command instanceof PercentType percentCommand) {
+                    return () -> handlePercentCommand(percentCommand);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    return () -> handleOnOffCommand(onOffCommand);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    return () -> handleIncreaseDecreaseCommand(increaseDecreaseCommand);
                 }
             case CHANNEL_COLOR:
-                if (command instanceof HSBType hsb) {
-                    return () -> handleHSBCommand(hsb);
-                } else if (command instanceof PercentType percent) {
-                    return () -> handlePercentCommand(percent);
-                } else if (command instanceof OnOffType sw) {
-                    return () -> handleOnOffCommand(sw);
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    return () -> handleIncreaseDecreaseCommand(incdec);
+                if (command instanceof HSBType hsbCommand) {
+                    return () -> handleHSBCommand(hsbCommand);
+                } else if (command instanceof PercentType percentCommand) {
+                    return () -> handlePercentCommand(percentCommand);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    return () -> handleOnOffCommand(onOffCommand);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    return () -> handleIncreaseDecreaseCommand(increaseDecreaseCommand);
                 }
             case CHANNEL_EFFECT:
                 if (command instanceof StringType type && features.hasFeature(TILE_EFFECT)) {
@@ -594,8 +594,8 @@ public class LifxLightHandler extends BaseThingHandler {
                     return () -> handleHevCycleCommand(sw);
                 }
             case CHANNEL_INFRARED:
-                if (command instanceof PercentType percent) {
-                    return () -> handleInfraredCommand(percent);
+                if (command instanceof PercentType percentCommand) {
+                    return () -> handleInfraredCommand(percentCommand);
                 } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     return () -> handleIncreaseDecreaseInfraredCommand(increaseDecreaseCommand);
                 }
@@ -611,15 +611,15 @@ public class LifxLightHandler extends BaseThingHandler {
                         int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_COLOR_ZONE, ""));
                         if (command instanceof HSBType hsb) {
                             return () -> handleHSBCommand(hsb, zoneIndex);
-                        } else if (command instanceof PercentType percent) {
-                            return () -> handlePercentCommand(percent, zoneIndex);
+                        } else if (command instanceof PercentType percentCommand) {
+                            return () -> handlePercentCommand(percentCommand, zoneIndex);
                         } else if (command instanceof IncreaseDecreaseType incdec) {
                             return () -> handleIncreaseDecreaseCommand(incdec, zoneIndex);
                         }
                     } else if (channelUID.getId().startsWith(CHANNEL_TEMPERATURE_ZONE)) {
                         int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_TEMPERATURE_ZONE, ""));
-                        if (command instanceof PercentType percent) {
-                            return () -> handleTemperatureCommand(percent, zoneIndex);
+                        if (command instanceof PercentType percentCommand) {
+                            return () -> handleTemperatureCommand(percentCommand, zoneIndex);
                         } else if (command instanceof IncreaseDecreaseType incdec) {
                             return () -> handleIncreaseDecreaseTemperatureCommand(incdec, zoneIndex);
                         }

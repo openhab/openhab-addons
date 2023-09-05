@@ -229,8 +229,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                         }
                         break;
                     case VOLUME:
-                        if (command instanceof PercentType volumePercent) {
-                            this.volume = (int) volumePercent.doubleValue();
+                        if (command instanceof PercentType percentCommand) {
+                            this.volume = (int) percentCommand.doubleValue();
                             logger.debug("Got volume command {}", this.volume);
                             connector.sendCommand(SEND_EVENT_VOLUME_LEVEL_EQ + this.volume);
                         }

@@ -52,8 +52,8 @@ public class DimmerOutputProfile implements StateProfile {
         Optional<Object> outputs12 = getConfig(profileContext, "controlOutputs12");
 
         ramp.ifPresent(b -> {
-            if (b instanceof BigDecimal decimal) {
-                rampMs = (int) (decimal.doubleValue() * 1000);
+            if (b instanceof BigDecimal decimalValue) {
+                rampMs = (int) (decimalValue.doubleValue() * 1000);
             } else {
                 logger.warn("Could not parse 'ramp', unexpected type, should be float: {}", ramp);
             }

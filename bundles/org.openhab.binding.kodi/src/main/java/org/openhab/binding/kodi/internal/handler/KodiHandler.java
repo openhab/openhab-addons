@@ -134,8 +134,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     private int getIntConfigParameter(String key, int defaultValue) {
         Object obj = this.getConfig().get(key);
-        if (obj instanceof Number number) {
-            return number.intValue();
+        if (obj instanceof Number numberValue) {
+            return numberValue.intValue();
         } else if (obj instanceof String) {
             return Integer.parseInt(obj.toString());
         }
@@ -160,8 +160,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_VOLUME:
-                if (command instanceof PercentType volumePercent) {
-                    connection.setVolume(volumePercent.intValue());
+                if (command instanceof PercentType percentCommand) {
+                    connection.setVolume(percentCommand.intValue());
                 } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
                     connection.increaseVolume();
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
@@ -213,8 +213,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_PLAYNOTIFICATION:
-                if (command instanceof StringType str) {
-                    playNotificationSoundURI(str, true);
+                if (command instanceof StringType stringCommand) {
+                    playNotificationSoundURI(stringCommand, true);
                     updateState(CHANNEL_PLAYNOTIFICATION, UnDefType.UNDEF);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     updateState(CHANNEL_PLAYNOTIFICATION, UnDefType.UNDEF);
@@ -330,8 +330,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_CURRENTTIME:
-                if (command instanceof QuantityType time) {
-                    connection.setTime(time.intValue());
+                if (command instanceof QuantityType quantityCommand) {
+                    connection.setTime(quantityCommand.intValue());
                 }
                 break;
             case CHANNEL_CURRENTTIMEPERCENTAGE:

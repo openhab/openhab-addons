@@ -444,10 +444,10 @@ public class InsteonDeviceHandler extends BaseThingHandler {
         Map<String, Object> channelProperties = channel.getConfiguration().getProperties();
         for (String key : channelProperties.keySet()) {
             Object value = channelProperties.get(key);
-            if (value instanceof String string) {
-                params.put(key, string);
-            } else if (value instanceof BigDecimal decimal) {
-                String s = decimal.toPlainString();
+            if (value instanceof String stringValue) {
+                params.put(key, stringValue);
+            } else if (value instanceof BigDecimal decimalValue) {
+                String s = decimalValue.toPlainString();
                 params.put(key, s);
             } else {
                 logger.warn("not a string or big decimal value key '{}' value '{}' {}", key, value,

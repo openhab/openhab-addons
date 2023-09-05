@@ -88,11 +88,11 @@ public class KonnectedHandler extends BaseThingHandler {
         String zone = zoneConfig.zone;
         logger.debug("The channelUID is: {} and the zone is : {}", channelUID.getAsString(), zone);
         // if the command is OnOfftype
-        if (command instanceof OnOffType sw) {
+        if (command instanceof OnOffType onOffCommand) {
             if (channelType.contains(CHANNEL_SWITCH)) {
                 logger.debug("A command was sent to a sensor type so we are ignoring the command");
             } else {
-                sendActuatorCommand(sw, zone, channelUID);
+                sendActuatorCommand(onOffCommand, zone, channelUID);
             }
         } else if (command instanceof RefreshType) {
             // check to see if handler has been initialized before attempting to get state of pin, else wait one minute

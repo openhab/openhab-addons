@@ -112,10 +112,10 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
             return "0";
         } else if (command == OnOffType.ON) {
             return "1";
-        } else if (command instanceof DecimalType decimal) {
-            return decimal.toString();
-        } else if (command instanceof QuantityType quantity) {
-            return quantity.format("%1.0f");
+        } else if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.toString();
+        } else if (command instanceof QuantityType quantityCommand) {
+            return quantityCommand.format("%1.0f");
         } else {
             return command.toString();
         }

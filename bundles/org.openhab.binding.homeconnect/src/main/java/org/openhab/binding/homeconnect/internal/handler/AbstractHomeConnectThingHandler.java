@@ -1206,22 +1206,24 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected void handleTemperatureCommand(final ChannelUID channelUID, final Command command,
             final HomeConnectApiClient apiClient)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        if (command instanceof QuantityType quantity) {
+        if (command instanceof QuantityType quantityCommand) {
 
             String value;
             String unit;
 
             try {
-                if (quantity.getUnit().equals(SIUnits.CELSIUS) || quantity.getUnit().equals(ImperialUnits.FAHRENHEIT)) {
-                    unit = quantity.getUnit().toString();
-                    value = String.valueOf(quantity.intValue());
+                if (quantityCommand.getUnit().equals(SIUnits.CELSIUS)
+                        || quantityCommand.getUnit().equals(ImperialUnits.FAHRENHEIT)) {
+                    unit = quantityCommand.getUnit().toString();
+                    value = String.valueOf(quantityCommand.intValue());
                 } else {
                     logger.debug("Converting target temperature from {}{} to °C value. thing={}, haId={}",
-                            quantity.intValue(), quantity.getUnit().toString(), getThingLabel(), getThingHaId());
+                            quantityCommand.intValue(), quantityCommand.getUnit().toString(), getThingLabel(),
+                            getThingHaId());
                     unit = "°C";
-                    var celsius = quantity.toUnit(SIUnits.CELSIUS);
+                    var celsius = quantityCommand.toUnit(SIUnits.CELSIUS);
                     if (celsius == null) {
-                        logger.warn("Converting temperature to celsius failed! quantity={}", quantity);
+                        logger.warn("Converting temperature to celsius failed! quantity={}", quantityCommand);
                         value = null;
                     } else {
                         value = String.valueOf(celsius.intValue());
@@ -1307,8 +1309,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     apiClient.setAmbientLightColorState(getThingHaId(), STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR);
                 }
 
-                if (command instanceof HSBType hsb) {
-                    apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor(hsb));
+                if (command instanceof HSBType hsbCommand) {
+                    apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor(hsbCommand));
                 } else if (command instanceof StringType) {
                     apiClient.setAmbientLightCustomColorState(getThingHaId(), command.toFullString());
                 }

@@ -117,8 +117,8 @@ public class LcnModuleHandler extends BaseThingHandler {
                 Object invertUpDown = channel.getConfiguration().get("invertUpDown");
 
                 // Initialize value converters
-                if (unitObject instanceof String str) {
-                    switch (str) {
+                if (unitObject instanceof String stringValue) {
+                    switch (stringValue) {
                         case "power":
                         case "energy":
                             converters.put(channel.getUID(), new S0Converter(parameterObject));
@@ -207,33 +207,33 @@ public class LcnModuleHandler extends BaseThingHandler {
             if (command instanceof RefreshType) {
                 number.ifPresent(n -> subHandler.handleRefresh(channelGroup, n));
                 subHandler.handleRefresh(channelUid.getIdWithoutGroup());
-            } else if (command instanceof OnOffType sw) {
-                subHandler.handleCommandOnOff(sw, channelGroup, number.get());
+            } else if (command instanceof OnOffType onOffCommand) {
+                subHandler.handleCommandOnOff(onOffCommand, channelGroup, number.get());
             } else if (command instanceof DimmerOutputCommand outputCommand) {
                 subHandler.handleCommandDimmerOutput(outputCommand, number.get());
             } else if (command instanceof PercentType percentCommand && number.isPresent()) {
                 subHandler.handleCommandPercent(percentCommand, channelGroup, number.get());
-            } else if (command instanceof HSBType hsb) {
-                subHandler.handleCommandHsb(hsb, channelUid.getIdWithoutGroup());
+            } else if (command instanceof HSBType hsbCommand) {
+                subHandler.handleCommandHsb(hsbCommand, channelUid.getIdWithoutGroup());
             } else if (command instanceof PercentType percentCommand) {
                 subHandler.handleCommandPercent(percentCommand, channelGroup, channelUid.getIdWithoutGroup());
-            } else if (command instanceof StringType str) {
-                subHandler.handleCommandString(str, number.orElse(0));
-            } else if (command instanceof DecimalType decimalType) {
-                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalType.doubleValue());
+            } else if (command instanceof StringType stringCommand) {
+                subHandler.handleCommandString(stringCommand, number.orElse(0));
+            } else if (command instanceof DecimalType decimalCommand) {
+                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalCommand.doubleValue());
                 subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
-            } else if (command instanceof QuantityType quantityType) {
-                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityType);
+            } else if (command instanceof QuantityType quantityCommand) {
+                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityCommand);
                 subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
-            } else if (command instanceof UpDownType upDown) {
+            } else if (command instanceof UpDownType upDownCommand) {
                 Channel channel = thing.getChannel(channelUid);
                 if (channel != null) {
                     Object invertConfig = channel.getConfiguration().get("invertUpDown");
                     boolean invertUpDown = invertConfig instanceof Boolean bool && bool;
-                    subHandler.handleCommandUpDown(upDown, channelGroup, number.get(), invertUpDown);
+                    subHandler.handleCommandUpDown(upDownCommand, channelGroup, number.get(), invertUpDown);
                 }
-            } else if (command instanceof StopMoveType stopMove) {
-                subHandler.handleCommandStopMove(stopMove, channelGroup, number.get());
+            } else if (command instanceof StopMoveType stopMoveCommand) {
+                subHandler.handleCommandStopMove(stopMoveCommand, channelGroup, number.get());
             } else {
                 throw new LcnException("Unsupported command type");
             }

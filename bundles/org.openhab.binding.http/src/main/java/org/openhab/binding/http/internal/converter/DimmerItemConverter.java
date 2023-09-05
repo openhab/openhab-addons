@@ -70,14 +70,14 @@ public class DimmerItemConverter extends AbstractTransformingItemConverter {
             newState = PercentType.HUNDRED;
         } else if (string.equals(channelConfig.offValue)) {
             newState = PercentType.ZERO;
-        } else if (string.equals(channelConfig.increaseValue) && state instanceof PercentType pt) {
-            BigDecimal newBrightness = pt.toBigDecimal().add(channelConfig.step);
+        } else if (string.equals(channelConfig.increaseValue) && state instanceof PercentType brightnessState) {
+            BigDecimal newBrightness = brightnessState.toBigDecimal().add(channelConfig.step);
             if (HUNDRED.compareTo(newBrightness) < 0) {
                 newBrightness = HUNDRED;
             }
             newState = new PercentType(newBrightness);
-        } else if (string.equals(channelConfig.decreaseValue) && state instanceof PercentType pt) {
-            BigDecimal newBrightness = pt.toBigDecimal().subtract(channelConfig.step);
+        } else if (string.equals(channelConfig.decreaseValue) && state instanceof PercentType brightnessState) {
+            BigDecimal newBrightness = brightnessState.toBigDecimal().subtract(channelConfig.step);
             if (BigDecimal.ZERO.compareTo(newBrightness) > 0) {
                 newBrightness = BigDecimal.ZERO;
             }

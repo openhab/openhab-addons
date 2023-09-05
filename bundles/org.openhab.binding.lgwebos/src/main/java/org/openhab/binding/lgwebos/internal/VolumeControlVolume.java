@@ -53,8 +53,8 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
             percent = percentCommand;
         } else if (command instanceof DecimalType decimalCommand) {
             percent = new PercentType(decimalCommand.toBigDecimal());
-        } else if (command instanceof StringType str) {
-            percent = new PercentType(str.toString());
+        } else if (command instanceof StringType stringCommand) {
+            percent = new PercentType(stringCommand.toString());
         } else {
             percent = null;
         }

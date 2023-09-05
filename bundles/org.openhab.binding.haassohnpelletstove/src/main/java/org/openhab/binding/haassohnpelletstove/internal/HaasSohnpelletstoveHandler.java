@@ -82,10 +82,9 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
                 updateOvenData(postData);
             }
         } else if (channelUID.getId().equals(CHANNELSPTEMP)) {
-            if (command instanceof QuantityType<?> value) {
-
+            if (command instanceof QuantityType<?> quantityCommand) {
                 Unit<Temperature> unit = SIUnits.CELSIUS;
-                value = value.toUnit(unit);
+                QuantityType<?> value = quantityCommand.toUnit(unit);
                 if (value != null) {
                     double a = value.doubleValue();
                     String postdata = "{\"sp_temp\":" + a + "}";

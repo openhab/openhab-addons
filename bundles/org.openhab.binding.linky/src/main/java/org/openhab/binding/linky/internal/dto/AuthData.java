@@ -30,7 +30,7 @@ public class AuthData {
             public @Nullable Object value;
 
             public @Nullable String valueAsString() {
-                return (value instanceof String str) ? str : null;
+                return (value instanceof String stringValue) ? stringValue : null;
             }
         }
 
