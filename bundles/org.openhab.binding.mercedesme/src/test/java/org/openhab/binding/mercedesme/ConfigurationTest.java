@@ -114,7 +114,7 @@ class ConfigurationTest {
             }
             String value = ((JSONObject) object).get("isAvailable").toString();
             System.out.println(builder.toString() + ":" + value);
-            cmds.put(commandName, value);
+            cmds.put(builder.toString(), value);
         });
         System.out.println(cmds);
         System.out.println(Constants.THING_TYPE_HYBRID.getId());

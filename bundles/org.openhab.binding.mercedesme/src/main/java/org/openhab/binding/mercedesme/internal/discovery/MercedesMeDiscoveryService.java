@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mercedesme.internal.discovery;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,13 +39,12 @@ public class MercedesMeDiscoveryService extends AbstractDiscoveryService {
      * Creates a AdorneDiscoveryService with disabled auto-discovery.
      */
     public MercedesMeDiscoveryService() {
-        // Passing false as last argument to super constructor turns off background discovery
-        super(Collections.singleton(new ThingTypeUID(Constants.BINDING_ID, "-")), 10, false);
+        super(Constants.DISCOVERABLE_DEVICE_TYPE_UIDS, 0, false);
     }
 
     public void vehicleDiscovered(AccountHandler ac, String vin, Map<String, Object> properties) {
         String vehicleType = properties.get("vehicle").toString();
-        ThingTypeUID ttuid;
+        ThingTypeUID ttuid = null;
         switch (vehicleType) {
             case Constants.BEV:
                 ttuid = Constants.THING_TYPE_BEV;
@@ -58,13 +56,13 @@ public class MercedesMeDiscoveryService extends AbstractDiscoveryService {
                 ttuid = Constants.THING_TYPE_HYBRID;
                 break;
             default:
-                ttuid = Constants.THING_TYPE_COMB;
                 break;
         }
-        thingDiscovered(
-                DiscoveryResultBuilder.create(new ThingUID(ttuid, ac.getThing().getUID(), UUID.randomUUID().toString()))
-                        .withBridge(ac.getThing().getBridgeUID()).withRepresentationProperty("vin")
-                        .withProperties(properties).build());
+        if (ttuid != null) {
+            thingDiscovered(DiscoveryResultBuilder
+                    .create(new ThingUID(ttuid, ac.getThing().getUID(), UUID.randomUUID().toString()))
+                    .withBridge(ac.getThing().getBridgeUID()).withProperties(properties).build());
+        }
     }
 
     @Override
