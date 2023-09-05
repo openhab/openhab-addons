@@ -62,7 +62,8 @@ public class MiIoCrypto {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, vector);
-            return cipher.doFinal(cipherText);
+            byte[] encrypted = cipher.doFinal(cipherText);
+            return encrypted;
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             throw new MiIoCryptoException(e.getMessage(), e);

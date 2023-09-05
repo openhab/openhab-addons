@@ -314,7 +314,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             final MiIoAsyncCommunication connection = getConnection();
             return (connection != null) ? connection.queueCommand(command, params, cloudServer, sender) : 0;
         } catch (MiIoCryptoException | IOException e) {
-            logger.debug("Command {} for {} failed (type: {}): {}", command, getThing().getUID(),
+            logger.debug("Command {} for {} failed (type: {}): {}", command.toString(), getThing().getUID(),
                     getThing().getThingTypeUID(), e.getLocalizedMessage());
             disconnected(e.getMessage());
         }
@@ -327,7 +327,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         // simple and only have the option for cloud or direct.
         final MiIoBindingConfiguration configuration = this.configuration;
         if (configuration != null) {
-            return "cloud".equals(configuration.communication) ? cloudServer : "";
+            return configuration.communication.equals("cloud") ? cloudServer : "";
         }
         return "";
     }
@@ -526,7 +526,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return cmd;
         }
         String returnCmd = cmd.replace("\"$", "$").replace("$\"", "$");
-        String[] cmdParts = cmd.split("\\$");
+        String cmdParts[] = cmd.split("\\$");
         if (logger.isTraceEnabled()) {
             logger.debug("processSubstitutions {} ", cmd);
             for (Entry<String, Object> e : deviceVariables.entrySet()) {
@@ -544,10 +544,10 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 if (replacement instanceof Integer || replacement instanceof Long || replacement instanceof Double
                         || replacement instanceof BigDecimal || replacement instanceof Boolean) {
                     replacementString = replacement.toString();
-                } else if (replacement instanceof JsonPrimitive primitive) {
-                    replacementString = primitive.getAsString();
-                } else if (replacement instanceof String str) {
-                    replacementString = "\"" + str + "\"";
+                } else if (replacement instanceof JsonPrimitive) {
+                    replacementString = ((JsonPrimitive) replacement).getAsString();
+                } else if (replacement instanceof String) {
+                    replacementString = "\"" + (String) replacement + "\"";
                 } else {
                     replacementString = String.valueOf(replacement);
                 }

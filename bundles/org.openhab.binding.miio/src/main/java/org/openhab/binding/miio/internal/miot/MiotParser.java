@@ -241,7 +241,7 @@ public class MiotParser {
                         }
                         miIoBasicChannel.setRefresh(property.access.contains("read"));
                         // add option values
-                        if (property.valueList != null && !property.valueList.isEmpty()) {
+                        if (property.valueList != null && property.valueList.size() > 0) {
                             StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
                             if (stateDescription == null) {
                                 stateDescription = new StateDescriptionDTO();

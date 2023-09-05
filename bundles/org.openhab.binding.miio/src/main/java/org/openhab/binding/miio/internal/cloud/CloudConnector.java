@@ -46,7 +46,7 @@ public class CloudConnector {
 
     private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(60);
 
-    private enum DeviceListState {
+    private static enum DeviceListState {
         FAILED,
         STARTING,
         REFRESHING,
@@ -64,7 +64,9 @@ public class CloudConnector {
     private @Nullable MiCloudConnector cloudConnector;
     private final Logger logger = LoggerFactory.getLogger(CloudConnector.class);
 
-    private ExpiringCache<Boolean> logonCache = new ExpiringCache<Boolean>(CACHE_EXPIRY, () -> logon());
+    private ExpiringCache<Boolean> logonCache = new ExpiringCache<Boolean>(CACHE_EXPIRY, () -> {
+        return logon();
+    });
 
     private ExpiringCache<String> refreshDeviceList = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
         if (deviceListState == DeviceListState.FAILED && !isConnected()) {

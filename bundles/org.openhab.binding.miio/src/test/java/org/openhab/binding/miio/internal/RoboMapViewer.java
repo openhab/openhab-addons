@@ -76,13 +76,13 @@ public class RoboMapViewer extends JFrame {
     private static final long serialVersionUID = 2623447051590306992L;
 
     @Disabled
-    public static void main(String[] args) {
+    public static void main(String args[]) {
         System.setProperty("swing.defaultlaf", "javax.swing.plaf.metal.MetalLookAndFeel");
         RoboMapViewer vc = new RoboMapViewer(args);
         vc.setVisible(true);
     }
 
-    public RoboMapViewer(String[] args) {
+    public RoboMapViewer(String args[]) {
         super(TITLE);
         parent = this;
         setSize(500, 600);
@@ -319,8 +319,9 @@ public class RoboMapViewer extends JFrame {
     }
 
     protected boolean isRRFile(File fileEntry) {
-        return fileEntry.getName().toLowerCase().endsWith(".rrmap")
+        boolean isRRFile = fileEntry.getName().toLowerCase().endsWith(".rrmap")
                 || fileEntry.getName().toLowerCase().endsWith(".gz");
+        return isRRFile;
     }
 
     private void loadFirstFile() {

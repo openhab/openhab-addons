@@ -140,7 +140,7 @@ public class ReadmeHelper {
                 "|------------------------------------|------------------|------------------------|--------------|------------|\n");
 
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
-            if (!"unknown".equals(device.getModel())) {
+            if (!device.getModel().equals("unknown")) {
                 String link = device.getModel().replace(".", "-");
                 boolean isSupported = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED);
                 Boolean experimental = false;
@@ -212,7 +212,8 @@ public class ReadmeHelper {
             StringBuilder mapping = new StringBuilder();
             mapping.append("Value mapping `[");
             options.forEach((option) -> {
-                mapping.append(String.format("\"%s\"=\"%s\",", option.value, option.label));
+                mapping.append(
+                        String.format("\"%s\"=\"%s\",", String.valueOf(option.value), String.valueOf(option.label)));
             });
             mapping.deleteCharAt(mapping.length() - 1);
             mapping.append("]`");

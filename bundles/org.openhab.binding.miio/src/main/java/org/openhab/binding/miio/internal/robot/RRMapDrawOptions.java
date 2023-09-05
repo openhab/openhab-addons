@@ -93,8 +93,9 @@ public class RRMapDrawOptions {
                         throw new JsonParseException("missing json text");
                     }
                     JsonObject colorSave = json.getAsJsonObject();
-                    return new Color(colorSave.get("red").getAsInt(), colorSave.get("green").getAsInt(),
+                    Color color = new Color(colorSave.get("red").getAsInt(), colorSave.get("green").getAsInt(),
                             colorSave.get("blue").getAsInt(), colorSave.get("alpha").getAsInt());
+                    return color;
                 }
             }).create();
 
@@ -300,7 +301,8 @@ public class RRMapDrawOptions {
 
     public static RRMapDrawOptions getOptionsFromFile(String fileName, Logger logger) {
         try {
-            return GSON.fromJson(new FileReader(fileName), RRMapDrawOptions.class);
+            RRMapDrawOptions options = GSON.fromJson(new FileReader(fileName), RRMapDrawOptions.class);
+            return options;
         } catch (FileNotFoundException e) {
             logger.debug("Vacuum map draw options file {} not found. Using defaults", fileName);
             return new RRMapDrawOptions();

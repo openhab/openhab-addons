@@ -77,7 +77,8 @@ public class ActionConditions {
      * @return RGB value + brightness as first byte
      */
     private static @Nullable JsonElement hsvToBRGB(@Nullable Command command, @Nullable JsonElement value) {
-        if (command != null && command instanceof HSBType hsb) {
+        if (command != null && command instanceof HSBType) {
+            HSBType hsb = (HSBType) command;
             Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360, hsb.getSaturation().floatValue() / 100,
                     hsb.getBrightness().floatValue() / 100);
             return new JsonPrimitive((hsb.getBrightness().byteValue() << 24) + (color.getRed() << 16)
