@@ -121,8 +121,8 @@ public class DigiplexAreaHandler extends BaseThingHandler {
             case AREA_CONTROL:
                 if (command == RefreshType.REFRESH) {
                     updateState(AREA_CONTROL, lastCommandResult);
-                } else if (command instanceof StringType) {
-                    processControlCommand(((StringType) command).toString());
+                } else if (command instanceof StringType stringCommand) {
+                    processControlCommand(stringCommand.toString());
                 }
                 break;
         }

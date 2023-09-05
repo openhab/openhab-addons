@@ -57,10 +57,10 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
         }
     }
 
-    private static enum State {
+    private enum State {
         ASSOCIATED,
         AUTHENTICATED,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Station(String id, MACAddress mac, String bssid, @Nullable String hostname, LanHost host,
@@ -83,7 +83,7 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
 
     protected static record ApStatus(ApState state, int channelWidth, int primaryChannel, int secondaryChannel,
             int dfsCacRemainingTime, boolean dfsDisabled) {
-        private static enum ApState {
+        private enum ApState {
             SCANNING, // Ap is probing wifi channels
             NO_PARAM, // Ap is not configured
             BAD_PARAM, // Ap has an invalid configuration
@@ -96,7 +96,7 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
             DFS, // Ap is performing dynamic frequency selection
             ACTIVE, // Ap is active
             FAILED, // Ap has failed to start
-            UNKNOWN;
+            UNKNOWN
         }
     }
 
