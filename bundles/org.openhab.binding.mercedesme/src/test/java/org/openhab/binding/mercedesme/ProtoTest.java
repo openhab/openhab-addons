@@ -7,12 +7,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.BatteryMaxSocConfigure;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.CommandRequest;
-import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.DoorsUnlock;
-import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ZEVPreconditioningStart;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.LightType;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.SigposType;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
@@ -90,7 +93,7 @@ class ProtoTest {
                             .getAttributesMap();
                     m.forEach((key, value) -> {
                         // System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
-                        if (key.contains("arning")) {
+                        if (key.contains("decklidstatus")) {
                             // System.out.println(Mapper.getChannelStateMap(key, value));
                             System.out.println(key + ":" + value);
                             // System.out.println(
@@ -108,15 +111,27 @@ class ProtoTest {
 
     @Test
     void testCommandRequest() {
-        ClientMessage cm = ClientMessage.getDefaultInstance();
+        BatteryMaxSocConfigure batteryMax = BatteryMaxSocConfigure.newBuilder().setMaxSoc(60).build();
+        CommandRequest cr = CommandRequest.newBuilder().setVin("abc").setRequestId(UUID.randomUUID().toString())
+                .setBatteryMaxSoc(batteryMax).build();
+        ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
         System.out.println(cm.getAllFields());
-        CommandRequest cr = CommandRequest.newBuilder().setVin("abc").setRequestId("xyz").build();
-        System.out.println(cr.getAllFields());
-        ClientMessage.newBuilder().setCommandRequest(cr).build();
-        ZEVPreconditioningStart precond = ZEVPreconditioningStart.newBuilder().build();
-        DoorsUnlock du = DoorsUnlock.newBuilder().getDefaultInstanceForType();
-        ClientMessage cmm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-        // cm.writeTo(null);
+
+        FieldDescriptor fd = SigPosStart.getDescriptor().getFields().get(4);
+        SigPosStart sps = SigPosStart.newBuilder().setSigposType(SigposType.LIGHT_ONLY)
+                .setLightType(LightType.DIPPED_HEAD_LIGHT).setSigposDuration(10).build();
+        // sps = SigPosStart.getDefaultInstance();
+        System.out.println(sps.getSigposTypeValue());
+        System.out.println(sps.getAllFields());
+        cr = CommandRequest.newBuilder().setVin("abc").setRequestId(UUID.randomUUID().toString()).setSigposStart(sps)
+                .build();
+        cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+        // System.out.println(cm.getAllFields());
+        // System.out.println(cr.getAllFields());
+        // ClientMessage.newBuilder().setCommandRequest(cr).build();
+        // ZEVPreconditioningStart precond = ZEVPreconditioningStart.newBuilder().build();
+        // ClientMessage cmm = ClientMessage.newBuilder().setCommandRequest(sps);
+        System.out.println(cm.getAllFields());
     }
 
     @Test
@@ -125,6 +140,10 @@ class ProtoTest {
             try {
                 FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
                 PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
+                System.out.println(pm.getAllFields().keySet());
+                if (pm.hasApptwinPendingCommandRequest()) {
+                    System.out.println(pm.getApptwinPendingCommandRequest().getAllFields());
+                }
                 System.out.println(pm.hasAssignedVehicles());
                 if (pm.hasAssignedVehicles()) {
                     System.out.println(pm.getAssignedVehicles().getVinsCount());

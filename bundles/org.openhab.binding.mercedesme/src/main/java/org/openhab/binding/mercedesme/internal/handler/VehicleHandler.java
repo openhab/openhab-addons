@@ -16,6 +16,7 @@ import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.measure.quantity.Length;
 
@@ -23,10 +24,32 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
+import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.BatteryMaxSocConfigure;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.CommandRequest;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.DoorsLock;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.DoorsUnlock;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.LightType;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.SigposType;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SunroofClose;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SunroofLift;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SunroofOpen;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.TemperatureConfigure;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.TemperatureConfigure.TemperaturePoint;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.TemperatureConfigure.TemperaturePoint.Zone;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.WindowsClose;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.WindowsOpen;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.WindowsVentilate;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ZEVPreconditioningStart;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ZEVPreconditioningStop;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ZEVPreconditioningType;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -38,6 +61,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +86,183 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.info("Received command {} for {}", command, channelUID);
+        if (command instanceof RefreshType) {
+            // todo
+        } else if (Constants.GROUP_COMMAND.equals(channelUID.getGroupId())) {
+            String pin = accountHandler.get().config.get().pin;
+            if ("air-condition-temp".equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get("commandZevPreconditionConfigure");
+                if (Boolean.FALSE.toString().equals(supported)) {
+                    logger.info("Air Conditioning Temperature Setting supported? {}", supported);
+                } else {
+                    logger.info("Received Air Condition Temperature change {}", command.getClass());
+                    logger.info("Received DecimalType {}", ((QuantityType) command).doubleValue());
+                    TemperatureConfigure tc = TemperatureConfigure.newBuilder()
+                            .addTemperaturePoints(TemperaturePoint.newBuilder().setZone(Zone.FRONT_CENTER)
+                                    .setTemperatureInCelsius(((QuantityType) command).doubleValue()).build())
+                            .build();
+                    CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                            .setRequestId(UUID.randomUUID().toString()).setTemperatureConfigure(tc).build();
+                    ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                    accountHandler.get().sendCommand(cm);
+                }
+            } else if ("air-condition".equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get("commandZevPreconditioningStart");
+                if (Boolean.FALSE.toString().equals(supported)) {
+                    logger.info("Air Conditioning supported? {}", supported);
+                } else {
+                    if (OnOffType.ON.equals(command)) {
+                        ZEVPreconditioningStart precondStart = ZEVPreconditioningStart.newBuilder()
+                                .setType(ZEVPreconditioningType.NOW).build();
+                        CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                .setRequestId(UUID.randomUUID().toString()).setZevPreconditioningStart(precondStart)
+                                .build();
+                        ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                        accountHandler.get().sendCommand(cm);
+                    } else {
+                        ZEVPreconditioningStop precondStop = ZEVPreconditioningStop.newBuilder()
+                                .setType(ZEVPreconditioningType.NOW).build();
+                        CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                .setRequestId(UUID.randomUUID().toString()).setZevPreconditioningStop(precondStop)
+                                .build();
+                        ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                        accountHandler.get().sendCommand(cm);
+                    }
+                }
+            } else if ("position".equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get("commandSigposStart");
+                if (Boolean.FALSE.toString().equals(supported)) {
+                    logger.info("Signal Position supported? {}", supported);
+                } else {
+                    SigPosStart sps = SigPosStart.newBuilder().setSigposType(SigposType.LIGHT_ONLY)
+                            .setLightType(LightType.DIPPED_HEAD_LIGHT).setSigposDuration(10).build();
+                    CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                            .setRequestId(UUID.randomUUID().toString()).setSigposStart(sps).build();
+                    ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                    accountHandler.get().sendCommand(cm);
+                }
+            } else if ("max-soc".equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get("commandBatteryMaxSocConfigure");
+                if (Boolean.FALSE.toString().equals(supported)) {
+                    logger.info("Max SoC configuration supported? {}", supported);
+                } else {
+                    BatteryMaxSocConfigure batteryMax = BatteryMaxSocConfigure.newBuilder()
+                            .setMaxSoc(((QuantityType) command).intValue()).build();
+                    CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                            .setRequestId(UUID.randomUUID().toString()).setBatteryMaxSoc(batteryMax).build();
+                    ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                    accountHandler.get().sendCommand(cm);
+                }
+            } else if ("door-lock".equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get("commandDoorsLock");
+                if (Boolean.FALSE.toString().equals(supported)) {
+                    logger.info("Door Lock supported? {}", supported);
+                } else {
+                    if (OnOffType.ON.equals(command)) {
+                        DoorsLock dl = DoorsLock.newBuilder().build();
+                        CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                .setRequestId(UUID.randomUUID().toString()).setDoorsLock(dl).build();
+                        ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                        accountHandler.get().sendCommand(cm);
+                    } else {
+                        if (Constants.NOT_SET.equals(pin)) {
+                            logger.info("Security PIN? {}", pin);
+                        } else {
+                            DoorsUnlock du = DoorsUnlock.newBuilder().setPin(pin).build();
+                            CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                    .setRequestId(UUID.randomUUID().toString()).setDoorsUnlock(du).build();
+                            ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                            accountHandler.get().sendCommand(cm);
+                        }
+                    }
+                }
+            } else if ("window".equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get("commandWindowsOpen");
+                if (Boolean.FALSE.toString().equals(supported)) {
+                    logger.info("Windows supported? {}", supported);
+                } else {
+                    CommandRequest cr;
+                    ClientMessage cm;
+                    switch (((DecimalType) command).intValue()) {
+                        case 0:
+                            WindowsClose wc = WindowsClose.newBuilder().build();
+                            cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                    .setRequestId(UUID.randomUUID().toString()).setWindowsClose(wc).build();
+                            cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                            accountHandler.get().sendCommand(cm);
+                            break;
+                        case 1:
+                            if (Constants.NOT_SET.equals(pin)) {
+                                logger.info("Security PIN? {}", pin);
+                            } else {
+                                WindowsOpen wo = WindowsOpen.newBuilder().setPin(pin).build();
+                                cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                        .setRequestId(UUID.randomUUID().toString()).setWindowsOpen(wo).build();
+                                cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                                accountHandler.get().sendCommand(cm);
+                            }
+                            break;
+                        case 2:
+                            if (Constants.NOT_SET.equals(pin)) {
+                                logger.info("Security PIN? {}", pin);
+                            } else {
+                                WindowsVentilate wv = WindowsVentilate.newBuilder().setPin(pin).build();
+                                cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                        .setRequestId(UUID.randomUUID().toString()).setWindowsVentilate(wv).build();
+                                cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                                accountHandler.get().sendCommand(cm);
+                            }
+                            break;
+                        default:
+                            logger.info("No Windows movement known for {}", command);
+                    }
+                }
+            } else if ("sunroof".equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get("commandSunroofOpen");
+                if (Boolean.FALSE.toString().equals(supported)) {
+                    logger.info("Sunroof supported? {}", supported);
+                } else {
+                    CommandRequest cr;
+                    ClientMessage cm;
+                    switch (((DecimalType) command).intValue()) {
+                        case 0:
+                            SunroofClose sc = SunroofClose.newBuilder().build();
+                            cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                    .setRequestId(UUID.randomUUID().toString()).setSunroofClose(sc).build();
+                            cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                            accountHandler.get().sendCommand(cm);
+                            break;
+                        case 1:
+                            if (Constants.NOT_SET.equals(pin)) {
+                                logger.info("Security PIN? {}", pin);
+                            } else {
+                                SunroofOpen so = SunroofOpen.newBuilder().setPin(pin).build();
+                                cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                        .setRequestId(UUID.randomUUID().toString()).setSunroofOpen(so).build();
+                                cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                                accountHandler.get().sendCommand(cm);
+                            }
+                            break;
+                        case 2:
+                            if (Constants.NOT_SET.equals(pin)) {
+                                logger.info("Security PIN? {}", pin);
+                            } else {
+                                SunroofLift sl = SunroofLift.newBuilder().setPin(pin).build();
+                                cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                        .setRequestId(UUID.randomUUID().toString()).setSunroofLift(sl).build();
+                                cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                                accountHandler.get().sendCommand(cm);
+                            }
+                            break;
+                        default:
+                            logger.info("No Sunroof movement known for {}", command);
+                    }
+                }
+            } else {
+                logger.info("Command {} with value {} not known", channelUID, command);
+            }
+        }
     }
 
     @Override

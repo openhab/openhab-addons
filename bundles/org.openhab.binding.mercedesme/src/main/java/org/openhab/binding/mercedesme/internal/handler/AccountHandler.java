@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -32,6 +33,7 @@ import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
+import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.server.AuthServer;
 import org.openhab.binding.mercedesme.internal.server.AuthService;
@@ -72,6 +74,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private Optional<AuthServer> server = Optional.empty();
     private Optional<WebSocketClient> wsClient = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
+    private Optional<ScheduledFuture> scheduledFuture = Optional.empty();
+
     private String capabilitiesEndpoint = "/v1/vehicle/%s/capabilities";
     private String commandCapabilitiesEndpoint = "/v1/vehicle/%s/capabilities/commands";
 
@@ -89,7 +93,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // no commands available
     }
 
     @Override
@@ -111,7 +114,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
             }
         }
-        scheduler.scheduleWithFixedDelay(this::update, 0, 15, TimeUnit.MINUTES);
+        scheduledFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 0, 15, TimeUnit.MINUTES));
     }
 
     public void update() {
@@ -170,6 +173,11 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             server = Optional.empty();
             Utils.removePort(config.get().callbackPort);
         }
+        scheduledFuture.ifPresent(schedule -> {
+            if (!schedule.isCancelled()) {
+                schedule.cancel(true);
+            }
+        });
     }
 
     @Override
@@ -343,5 +351,11 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             featureMap.clear();
         }
         return featureMap;
+    }
+
+    public void sendCommand(ClientMessage cm) {
+        ws.setCommand(cm);
+        // open Websocket to send Command
+        scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
     }
 }

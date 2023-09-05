@@ -6,21 +6,21 @@
 	<channel-type id="pressure-front-right-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Front Right</label>
-		<state readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-rear-right-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Rear Right</label>
-		<state readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-front-left-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Front Left</label>
-		<state readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-rear-left-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Rear Left</label>
-		<state readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

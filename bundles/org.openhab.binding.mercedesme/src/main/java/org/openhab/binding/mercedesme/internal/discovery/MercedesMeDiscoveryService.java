@@ -61,7 +61,8 @@ public class MercedesMeDiscoveryService extends AbstractDiscoveryService {
         if (ttuid != null) {
             thingDiscovered(DiscoveryResultBuilder
                     .create(new ThingUID(ttuid, ac.getThing().getUID(), UUID.randomUUID().toString()))
-                    .withBridge(ac.getThing().getBridgeUID()).withProperties(properties).build());
+                    .withBridge(ac.getThing().getUID()).withProperties(properties)
+                    .withLabel("Mercedes Benz " + ttuid.getId().toUpperCase()).build());
         }
     }
 
