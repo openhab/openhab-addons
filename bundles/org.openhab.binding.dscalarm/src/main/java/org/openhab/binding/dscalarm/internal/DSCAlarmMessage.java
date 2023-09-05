@@ -233,15 +233,15 @@ public class DSCAlarmMessage {
                     case UserClosing: /* 700 */
                         user = message.substring(4);
                         name = name.concat(": " + user);
-                        description = codeReceived + ": Partition " + String.valueOf(partition)
-                                + " has been armed by user " + user + ".";
+                        description = codeReceived + ": Partition " + partition + " has been armed by user " + user
+                                + ".";
                         messageType = DSCAlarmMessageType.PARTITION_EVENT;
                         break;
                     case UserOpening: /* 750 */
                         user = message.substring(4);
                         name = name.concat(": " + user);
-                        description = codeReceived + ": Partition " + String.valueOf(partition)
-                                + " has been disarmed by user " + user + ".";
+                        description = codeReceived + ": Partition " + partition + " has been disarmed by user " + user
+                                + ".";
                         messageType = DSCAlarmMessageType.PARTITION_EVENT;
                         break;
 

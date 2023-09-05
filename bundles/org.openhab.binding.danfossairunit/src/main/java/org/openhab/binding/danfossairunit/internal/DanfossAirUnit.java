@@ -236,16 +236,16 @@ public class DanfossAirUnit {
     }
 
     private DecimalType setNumberTypeRegister(Command cmd, byte[] register) throws IOException {
-        if (cmd instanceof DecimalType) {
-            byte value = (byte) ((DecimalType) cmd).intValue();
+        if (cmd instanceof DecimalType decimalCommand) {
+            byte value = (byte) decimalCommand.intValue();
             set(REGISTER_1_WRITE, register, value);
         }
         return new DecimalType(BigDecimal.valueOf(getByte(REGISTER_1_READ, register)));
     }
 
     private PercentType setPercentTypeRegister(Command cmd, byte[] register) throws IOException {
-        if (cmd instanceof PercentType) {
-            byte value = (byte) ((((PercentType) cmd).intValue() + 5) / 10);
+        if (cmd instanceof PercentType percentCommand) {
+            byte value = (byte) ((percentCommand.intValue() + 5) / 10);
             set(REGISTER_1_WRITE, register, value);
         }
         return new PercentType(BigDecimal.valueOf(getByte(REGISTER_1_READ, register) * 10));
