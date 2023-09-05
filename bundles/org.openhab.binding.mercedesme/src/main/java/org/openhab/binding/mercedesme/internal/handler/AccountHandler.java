@@ -60,12 +60,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
-    private final MercedesMeDiscoveryService discovery;
+    private final MercedesMeDiscoveryService discoveryService;
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
     private final Storage<String> storage;
     private final MBWebsocket ws;
-    private final Map<String, VehicleHandler> vehicleDataMapper = new HashMap<String, VehicleHandler>();
+    private final Map<String, VehicleHandler> vehicleHandlerMap = new HashMap<String, VehicleHandler>();
+    private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<String, Map<String, Object>>();
     private final int OPEN_TIME_MS = 30000;
 
     private Optional<AuthServer> server = Optional.empty();
@@ -76,9 +77,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     Optional<AccountConfiguration> config = Optional.empty();
 
-    public AccountHandler(Bridge bridge, HttpClient hc, LocaleProvider lp, StorageService store) {
+    public AccountHandler(Bridge bridge, MercedesMeDiscoveryService mmds, HttpClient hc, LocaleProvider lp,
+            StorageService store) {
         super(bridge);
-        discovery = new MercedesMeDiscoveryService();
+        discoveryService = mmds;
         ws = new MBWebsocket(this);
         httpClient = hc;
         localeProvider = lp;
@@ -226,21 +228,17 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     public void registerVin(String vin, VehicleHandler handler) {
-        vehicleDataMapper.put(vin, handler);
+        vehicleHandlerMap.put(vin, handler);
         scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
     }
 
     public void unregisterVin(String vin) {
-        vehicleDataMapper.remove(vin);
-    }
-
-    public boolean hasVin(String vin) {
-        return vehicleDataMapper.containsKey(vin);
+        vehicleHandlerMap.remove(vin);
     }
 
     public void distributeVepUpdates(Map<String, VEPUpdate> map) {
         map.forEach((key, value) -> {
-            VehicleHandler h = vehicleDataMapper.get(key);
+            VehicleHandler h = vehicleHandlerMap.get(key);
             if (h != null) {
                 h.distributeContent(value);
             } else {
@@ -250,14 +248,16 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     public void discovery(String vin) {
-        if (vehicleDataMapper.containsKey(vin)) {
-            VehicleHandler vh = vehicleDataMapper.get(vin);
+        if (vehicleHandlerMap.containsKey(vin)) {
+            VehicleHandler vh = vehicleHandlerMap.get(vin);
             if (vh.getThing().getProperties().size() == 0) {
                 vh.getThing().setProperties(getStringCapabilities(vin));
             }
         } else {
-            // call discoveryService
-            discovery.vehicleDiscovered(this, vin, getCapabilities(vin));
+            if (!capabilitiesMap.containsKey(vin)) {
+                // only report new discovery if capabilities aren't discovered yet
+                discoveryService.vehicleDiscovered(this, vin, getCapabilities(vin));
+            }
         }
     }
 
@@ -271,6 +271,11 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     private Map<String, Object> getCapabilities(String vin) {
+        // check cache before hammering API
+        Map<String, Object> m = capabilitiesMap.get(vin);
+        if (m != null) {
+            return m;
+        }
         Map<String, Object> featureMap = new HashMap<String, Object>();
         try {
             // add vehicle capabilities
@@ -280,6 +285,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             authService.get().addBasicHeaders(capabilitiesRequest);
             capabilitiesRequest.header("X-SessionId", UUID.randomUUID().toString());
             capabilitiesRequest.header("X-TrackingId", UUID.randomUUID().toString());
+            capabilitiesRequest.header("Authorization", authService.get().getToken());
+
             ContentResponse capabilitiesResponse = capabilitiesRequest.send();
             JSONObject jsonResponse = new JSONObject(capabilitiesResponse.getContentAsString());
             logger.info(jsonResponse.toString());
@@ -309,6 +316,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             authService.get().addBasicHeaders(commandCapabilitiesRequest);
             commandCapabilitiesRequest.header("X-SessionId", UUID.randomUUID().toString());
             commandCapabilitiesRequest.header("X-TrackingId", UUID.randomUUID().toString());
+            commandCapabilitiesRequest.header("Authorization", authService.get().getToken());
             ContentResponse commandCapabilitiesResponse = commandCapabilitiesRequest.send();
             JSONObject commands = new JSONObject(commandCapabilitiesResponse.getContentAsString());
             logger.info(commands.toString());
@@ -325,9 +333,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                     builder.append(word);
                 }
                 String value = ((JSONObject) object).get("isAvailable").toString();
-                featureMap.put(commandName, value);
+                featureMap.put(builder.toString(), value);
             });
-
+            // store in cache
+            capabilitiesMap.put(vin, featureMap);
             return featureMap;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.info("Error retreiving capabilities: {}", e.getMessage());

@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.mercedesme.internal;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
@@ -39,6 +44,9 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_COMB = new ThingTypeUID(BINDING_ID, COMBUSTION);
     public static final ThingTypeUID THING_TYPE_HYBRID = new ThingTypeUID(BINDING_ID, HYBRID);
     public static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, BEV);
+
+    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_COMB, THING_TYPE_HYBRID, THING_TYPE_BEV).collect(Collectors.toSet()));
 
     public static final String GROUP_RANGE = "range";
     public static final String GROUP_DOORS = "doors";

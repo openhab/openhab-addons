@@ -19,8 +19,10 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.StorageService;
@@ -30,6 +32,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -53,6 +56,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
     private final StorageService storageService;
+    private final MercedesMeDiscoveryService discoveryService;
+    private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
     @Activate
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
@@ -68,6 +73,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         } catch (Exception e) {
             logger.warn("HTTP client not started: {} - no web access possible!", e.getLocalizedMessage());
         }
+        discoveryService = new MercedesMeDiscoveryService();
     }
 
     @Override
@@ -79,7 +85,11 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new AccountHandler((Bridge) thing, httpClient, localeProvider, storageService);
+            if (discoveryServiceReg == null) {
+                discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+                        null);
+            }
+            return new AccountHandler((Bridge) thing, discoveryService, httpClient, localeProvider, storageService);
         }
         return new VehicleHandler(thing);
     }
@@ -87,6 +97,9 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
+        if (discoveryServiceReg != null) {
+            discoveryServiceReg.unregister();
+        }
         try {
             httpClient.stop();
         } catch (Exception e) {
