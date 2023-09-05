@@ -14,6 +14,8 @@
 			<channel id="deck-lid" typeId="deck-lid-channel"/>
 			<channel id="sunroof" typeId="sunroof-channel"/>
 			<channel id="rooftop" typeId="rooftop-channel"/>
+			<channel id="door-lock" typeId="door-lock-channel"/>
+            <channel id="sunroof-control" typeId="sunroof-control-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -12,4 +12,14 @@
 		<item-type>Location</item-type>
 		<label>GPS coordinates</label>
 	</channel-type>
+	   <channel-type id="position-channel">
+        <item-type>Number</item-type>
+        <label>Show Vehicle Position</label>
+        <state>
+            <options>
+                <option value="0">Position Lights</option>
+                <option value="1">Position Horn</option>
+            </options>
+        </state>
+    </channel-type>
 </thing:thing-descriptions>

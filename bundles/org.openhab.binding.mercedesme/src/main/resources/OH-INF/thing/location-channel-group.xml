@@ -9,6 +9,7 @@
 		<channels>
 			<channel id="heading" typeId="heading-channel"/>
 			<channel id="gps" typeId="gps-channel"/>
+            <channel id="position" typeId="position-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

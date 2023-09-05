@@ -93,7 +93,7 @@ class ProtoTest {
                             .getAttributesMap();
                     m.forEach((key, value) -> {
                         // System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
-                        if (key.contains("decklidstatus")) {
+                        if (key.contains("doorlockstatusgas")) {
                             // System.out.println(Mapper.getChannelStateMap(key, value));
                             System.out.println(key + ":" + value);
                             // System.out.println(
