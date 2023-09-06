@@ -81,10 +81,8 @@ class CustomResponseTransformer {
     private void updateChargerStartStop(Map<Channel, State> result, String value, JsonObject rawData) {
         Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_START_STOP);
         if (channel != null) {
-            int state = Integer.parseInt(value);
-            boolean connectedAndAuthenticated = state >= CHARGER_OP_STATE_WAITING
-                    && state < CHARGER_OP_STATE_NOT_AUTHENTICATED;
-            result.put(channel, OnOffType.from(connectedAndAuthenticated));
+            ChargerOpState state = ChargerOpState.fromCode(value);
+            result.put(channel, OnOffType.from(state.isAuthenticatedState()));
         }
     }
 
