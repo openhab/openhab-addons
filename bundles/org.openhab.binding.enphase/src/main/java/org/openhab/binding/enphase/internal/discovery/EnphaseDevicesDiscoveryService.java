@@ -14,10 +14,10 @@ package org.openhab.binding.enphase.internal.discovery;
 
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,13 +52,13 @@ public class EnphaseDevicesDiscoveryService extends AbstractDiscoveryService
     private @Nullable EnvoyBridgeHandler envoyHandler;
 
     public EnphaseDevicesDiscoveryService() {
-        super(Collections.singleton(THING_TYPE_ENPHASE_INVERTER), TIMEOUT_SECONDS, false);
+        super(Set.of(THING_TYPE_ENPHASE_INVERTER), TIMEOUT_SECONDS, false);
     }
 
     @Override
     public void setThingHandler(final @Nullable ThingHandler handler) {
-        if (handler instanceof EnvoyBridgeHandler) {
-            envoyHandler = (EnvoyBridgeHandler) handler;
+        if (handler instanceof EnvoyBridgeHandler bridgeHandler) {
+            envoyHandler = bridgeHandler;
         }
     }
 

@@ -274,7 +274,7 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
      * Display info could contain some garbled text, attempt to clean it up.
      */
     private String cleanupDisplayInfo(String titleValue) {
-        byte firstByteRemoved[] = Arrays.copyOfRange(titleValue.getBytes(), 1, titleValue.getBytes().length);
+        byte[] firstByteRemoved = Arrays.copyOfRange(titleValue.getBytes(), 1, titleValue.getBytes().length);
         return new String(firstByteRemoved).replaceAll("[\u0000-\u001f]", "");
     }
 }

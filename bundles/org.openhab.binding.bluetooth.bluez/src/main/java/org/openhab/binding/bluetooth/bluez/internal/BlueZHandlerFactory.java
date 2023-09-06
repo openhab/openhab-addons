@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -45,8 +44,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluetooth.bluez")
 public class BlueZHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(BlueZAdapterConstants.THING_TYPE_BLUEZ);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BlueZAdapterConstants.THING_TYPE_BLUEZ);
 
     private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
 
@@ -82,8 +80,8 @@ public class BlueZHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof BluetoothAdapter) {
-            UID uid = ((BluetoothAdapter) thingHandler).getUID();
+        if (thingHandler instanceof BluetoothAdapter bluetoothAdapter) {
+            UID uid = bluetoothAdapter.getUID();
             ServiceRegistration<?> serviceReg = this.serviceRegs.remove(uid);
             if (serviceReg != null) {
                 serviceReg.unregister();

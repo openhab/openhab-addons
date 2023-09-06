@@ -194,8 +194,8 @@ public class OBISIdentifier {
     @Override
     public boolean equals(@Nullable final Object other) {
         OBISIdentifier o;
-        if (other != null && other instanceof OBISIdentifier) {
-            o = (OBISIdentifier) other;
+        if (other != null && other instanceof OBISIdentifier identifier) {
+            o = identifier;
         } else {
             return false;
         }
