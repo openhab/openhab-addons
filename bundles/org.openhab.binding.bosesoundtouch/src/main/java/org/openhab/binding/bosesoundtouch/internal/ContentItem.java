@@ -79,7 +79,8 @@ public class ContentItem {
      */
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj instanceof ContentItem other) {
+        if (obj instanceof ContentItem) {
+            ContentItem other = (ContentItem) obj;
             return Objects.equals(other.source, this.source) || Objects.equals(other.sourceAccount, this.sourceAccount)
                     || other.presetable == this.presetable || Objects.equals(other.location, this.location)
                     || Objects.equals(other.itemName, this.itemName);
@@ -187,11 +188,11 @@ public class ContentItem {
      * ' - &apos;
      */
     private String escapeXml(String xml) {
-        xml = xml.replace("&", "&amp;");
-        xml = xml.replace("<", "&lt;");
-        xml = xml.replace(">", "&gt;");
-        xml = xml.replace("\"", "&quot;");
-        xml = xml.replace("'", "&apos;");
+        xml = xml.replaceAll("&", "&amp;");
+        xml = xml.replaceAll("<", "&lt;");
+        xml = xml.replaceAll(">", "&gt;");
+        xml = xml.replaceAll("\"", "&quot;");
+        xml = xml.replaceAll("'", "&apos;");
         return xml;
     }
 
@@ -250,7 +251,7 @@ public class ContentItem {
     }
 
     public StateOption toStateOption() {
-        String stateOptionLabel = presetID + ": " + itemName;
+        String stateOptionLabel = String.valueOf(presetID) + ": " + itemName;
         return new StateOption(String.valueOf(presetID), stateOptionLabel);
     }
 

@@ -116,13 +116,13 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                                     }
                                 }
                             });
-                } else if (command instanceof StringType stringCommand) {
-                    sendMessage(ESP3PacketFactory.CO_WR_REPEATER(stringCommand),
+                } else if (command instanceof StringType) {
+                    sendMessage(ESP3PacketFactory.CO_WR_REPEATER((StringType) command),
                             new ResponseListenerIgnoringTimeouts<BaseResponse>() {
                                 @Override
                                 public void responseReceived(BaseResponse response) {
                                     if (response.isOK()) {
-                                        updateState(channelUID, stringCommand);
+                                        updateState(channelUID, (StringType) command);
                                     }
                                 }
                             });
@@ -130,9 +130,9 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                 break;
 
             case CHANNEL_SETBASEID:
-                if (command instanceof StringType stringCommand) {
+                if (command instanceof StringType) {
                     try {
-                        byte[] id = HexUtils.hexToBytes(stringCommand.toFullString());
+                        byte[] id = HexUtils.hexToBytes(((StringType) command).toFullString());
 
                         sendMessage(ESP3PacketFactory.CO_WR_IDBASE(id),
                                 new ResponseListenerIgnoringTimeouts<BaseResponse>() {

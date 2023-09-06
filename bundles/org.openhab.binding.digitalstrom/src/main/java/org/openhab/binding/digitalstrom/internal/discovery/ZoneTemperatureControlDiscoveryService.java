@@ -117,7 +117,8 @@ public class ZoneTemperatureControlDiscoveryService extends AbstractDiscoverySer
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, thingTypeID);
         if (getSupportedThingTypes().contains(thingTypeUID)) {
             String thingID = tempControlStatus.getZoneID().toString();
-            return new ThingUID(thingTypeUID, bridgeUID, thingID);
+            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingID);
+            return thingUID;
         } else {
             return null;
         }

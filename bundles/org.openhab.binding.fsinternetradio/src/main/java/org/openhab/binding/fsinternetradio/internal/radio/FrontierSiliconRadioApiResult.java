@@ -69,8 +69,8 @@ public class FrontierSiliconRadioApiResult {
             logger.trace("converting to XML failed: '{}' with {}: {}", requestResultString, e.getClass().getName(),
                     e.getMessage());
             logger.debug("converting to XML failed with {}: {}", e.getClass().getName(), e.getMessage());
-            if (e instanceof IOException exception) {
-                throw exception;
+            if (e instanceof IOException) {
+                throw (IOException) e;
             }
             throw new IOException(e);
         }
@@ -192,7 +192,8 @@ public class FrontierSiliconRadioApiResult {
      */
     public String getSessionId() {
         final NodeList sessionIdTagList = xmlDoc.getElementsByTagName("sessionId");
-        return getCharacterDataFromElement((Element) sessionIdTagList.item(0));
+        final String givenSessId = getCharacterDataFromElement((Element) sessionIdTagList.item(0));
+        return givenSessId;
     }
 
     /**
@@ -215,7 +216,8 @@ public class FrontierSiliconRadioApiResult {
         factory.setXIncludeAware(false);
         factory.setExpandEntityReferences(false);
         final DocumentBuilder builder = factory.newDocumentBuilder();
-        return builder.parse(new InputSource(new StringReader(xmlString)));
+        final Document xmlDocument = builder.parse(new InputSource(new StringReader(xmlString)));
+        return xmlDocument;
     }
 
     /**
@@ -227,7 +229,8 @@ public class FrontierSiliconRadioApiResult {
      */
     private static String getCharacterDataFromElement(Element e) {
         final Node child = e.getFirstChild();
-        if (child instanceof CharacterData cd) {
+        if (child instanceof CharacterData) {
+            final CharacterData cd = (CharacterData) child;
             return cd.getData();
         }
         return "";

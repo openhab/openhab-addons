@@ -21,7 +21,7 @@ package org.openhab.binding.freebox.internal.api.model;
  */
 public class FreeboxAirMediaReceiverRequest {
 
-    private enum MediaAction {
+    private static enum MediaAction {
         START("start"),
         STOP("stop");
 
@@ -36,7 +36,7 @@ public class FreeboxAirMediaReceiverRequest {
         }
     }
 
-    private enum MediaType {
+    private static enum MediaType {
         VIDEO("video"),
         PHOTO("photo");
 

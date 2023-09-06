@@ -12,39 +12,35 @@
  */
 package org.openhab.binding.autelis.internal.config;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * Configuration properties for connecting to an Autelis Controller
  *
  * @author Dan Cunningham - Initial contribution
  *
  */
-@NonNullByDefault
 public class AutelisConfiguration {
 
     /**
      * Host of the Autelis controller
      */
-    public String host = "";
-
+    public String host;
     /**
      * port of the Autelis controller
      */
-    public int port = 80;
+    public Integer port;
 
     /**
      * user to us when connecting to the Autelis controller
      */
-    public String user = "";
+    public String user;
 
     /**
      * password to us when connecting to the Autelis controller
      */
-    public String password = "";
+    public String password;
 
     /**
      * Rate we poll for new data
      */
-    public int refresh = 5;
+    public Integer refresh;
 }

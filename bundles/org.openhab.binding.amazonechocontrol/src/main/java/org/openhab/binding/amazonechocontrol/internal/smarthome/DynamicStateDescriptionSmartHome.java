@@ -55,10 +55,11 @@ public class DynamicStateDescriptionSmartHome implements DynamicStateDescription
             return null;
         }
         ThingHandler handler = thing.getHandler();
-        if (handler instanceof SmartHomeDeviceHandler smartHomeHandler) {
-            return smartHomeHandler;
+        if (!(handler instanceof SmartHomeDeviceHandler)) {
+            return null;
         }
-        return null;
+        SmartHomeDeviceHandler smartHomeHandler = (SmartHomeDeviceHandler) handler;
+        return smartHomeHandler;
     }
 
     @Override

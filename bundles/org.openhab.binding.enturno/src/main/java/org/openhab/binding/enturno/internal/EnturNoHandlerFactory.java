@@ -14,6 +14,7 @@ package org.openhab.binding.enturno.internal;
 
 import static org.openhab.binding.enturno.internal.EnturNoBindingConstants.LINESTOP;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.enturno", service = ThingHandlerFactory.class)
 public class EnturNoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(LINESTOP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(LINESTOP);
 
     private final HttpClient httpClient;
 

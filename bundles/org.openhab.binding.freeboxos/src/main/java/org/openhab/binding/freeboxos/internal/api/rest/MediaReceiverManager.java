@@ -40,18 +40,18 @@ public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverMa
     protected static class ReceiverResponse extends Response<Receiver> {
     }
 
-    public enum Action {
+    public static enum Action {
         START,
         STOP,
-        UNKNOWN
+        UNKNOWN;
     }
 
-    public enum MediaType {
+    public static enum MediaType {
         VIDEO,
         PHOTO,
         AUDIO,
         SCREEN,
-        UNKNOWN
+        UNKNOWN;
     }
 
     private static record Request(String password, Action action, MediaType mediaType, @Nullable String media,

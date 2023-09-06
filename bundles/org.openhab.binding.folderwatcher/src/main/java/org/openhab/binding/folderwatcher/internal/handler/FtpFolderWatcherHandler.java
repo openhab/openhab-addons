@@ -129,7 +129,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
         Instant dateNow = Instant.now();
         for (FTPFile file : ftpClient.listFiles(dirPath)) {
             String currentFileName = file.getName();
-            if (".".equals(currentFileName) || "..".equals(currentFileName)) {
+            if (currentFileName.equals(".") || currentFileName.equals("..")) {
                 continue;
             }
             String filePath = dirPath + "/" + currentFileName;

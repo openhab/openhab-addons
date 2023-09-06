@@ -143,7 +143,8 @@ public class KeypadMessage extends ADMessage {
             return false;
         } else if (this == obj) {
             return true;
-        } else if (obj instanceof KeypadMessage other) {
+        } else if (obj instanceof KeypadMessage) {
+            KeypadMessage other = (KeypadMessage) obj;
             return this.message.equals(other.message);
         } else {
             return false;

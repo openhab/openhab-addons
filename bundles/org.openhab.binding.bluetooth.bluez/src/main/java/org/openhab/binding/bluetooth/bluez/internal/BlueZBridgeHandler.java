@@ -194,7 +194,8 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
     @Override
     protected BlueZBluetoothDevice createDevice(BluetoothAddress address) {
         logger.debug("createDevice {}", address);
-        return new BlueZBluetoothDevice(this, address);
+        BlueZBluetoothDevice device = new BlueZBluetoothDevice(this, address);
+        return device;
     }
 
     @Override

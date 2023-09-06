@@ -148,9 +148,9 @@ public class HVACHandler extends BaseThingHandler {
                         if (on != null) {
                             updateState(ON, "1".equals(on) ? OnOffType.ON : OnOffType.OFF);
                         }
-                    } else if (command instanceof OnOffType onOffCommand) {
-                        controller
-                                .sendCommand(String.format("%s %s", onOffCommand == OnOffType.ON ? "on" : "off", uid));
+                    } else if (command instanceof OnOffType) {
+                        final OnOffType onoff = (OnOffType) command;
+                        controller.sendCommand(String.format("%s %s", onoff == OnOffType.ON ? "on" : "off", uid));
                     }
                     break;
                 case SET_TEMP:
@@ -161,8 +161,9 @@ public class HVACHandler extends BaseThingHandler {
                             final QuantityType<?> value = new QuantityType<>(temp, controller.getUnit());
                             updateState(SET_TEMP, value);
                         }
-                    } else if (command instanceof QuantityType quantityCommand) {
-                        final QuantityType<?> converted = quantityCommand.toUnit(controller.getUnit());
+                    } else if (command instanceof QuantityType) {
+                        final QuantityType<?> temp = (QuantityType) command;
+                        final QuantityType<?> converted = temp.toUnit(controller.getUnit());
                         final String formatted = converted.format("%.1f");
                         controller.sendCommand(String.format("temp %s %s", uid, formatted));
                     }
@@ -173,8 +174,8 @@ public class HVACHandler extends BaseThingHandler {
                         if (mode != null) {
                             updateState(MODE, new StringType(mode));
                         }
-                    } else if (command instanceof StringType stringCommand) {
-                        final String mode = stringCommand.toString();
+                    } else if (command instanceof StringType) {
+                        final String mode = ((StringType) command).toString();
                         controller.sendCommand(String.format("%s %s", mode, uid));
                     }
                     break;
@@ -184,8 +185,8 @@ public class HVACHandler extends BaseThingHandler {
                         if (fan != null) {
                             updateState(FAN_SPEED, new StringType(fan));
                         }
-                    } else if (command instanceof StringType stringCommand) {
-                        final String fan = stringCommand.toString();
+                    } else if (command instanceof StringType) {
+                        final String fan = ((StringType) command).toString();
                         controller.sendCommand(String.format("fspeed %s %s", uid, fan));
                     }
                     break;
@@ -195,8 +196,8 @@ public class HVACHandler extends BaseThingHandler {
                         if (louvre != null) {
                             updateState(LOUVRE, new StringType(louvre));
                         }
-                    } else if (command instanceof StringType stringCommand) {
-                        final String louvre = stringCommand.toString();
+                    } else if (command instanceof StringType) {
+                        final String louvre = ((StringType) command).toString();
                         controller.sendCommand(String.format("swing %s %s", uid, louvre));
                     }
                     break;

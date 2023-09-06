@@ -49,7 +49,6 @@ public class Measurements implements MeasurementsInterface {
         this.vocPpb = vocPpb;
     }
 
-    @Override
     public int getCo2Ppm() {
         return co2Ppm;
     }
@@ -58,7 +57,6 @@ public class Measurements implements MeasurementsInterface {
         this.co2Ppm = co2Ppm;
     }
 
-    @Override
     public int getHumidityRH() {
         return humidityRH;
     }
@@ -67,7 +65,6 @@ public class Measurements implements MeasurementsInterface {
         this.humidityRH = humidityRH;
     }
 
-    @Override
     public int getPm25AQICN() {
         return pm25AQICN;
     }
@@ -76,7 +73,6 @@ public class Measurements implements MeasurementsInterface {
         this.pm25AQICN = pm25AQICN;
     }
 
-    @Override
     public int getPm25AQIUS() {
         return pm25AQIUS;
     }
@@ -95,7 +91,6 @@ public class Measurements implements MeasurementsInterface {
         return 0;
     }
 
-    @Override
     public float getPm25Ugm3() {
         return pm25Ugm3;
     }
@@ -104,7 +99,6 @@ public class Measurements implements MeasurementsInterface {
         this.pm25Ugm3 = pm25Ugm3;
     }
 
-    @Override
     public float getTemperatureC() {
         return temperatureC;
     }
@@ -113,7 +107,6 @@ public class Measurements implements MeasurementsInterface {
         this.temperatureC = temperatureC;
     }
 
-    @Override
     public float getTemperatureF() {
         return temperatureF;
     }
@@ -122,7 +115,6 @@ public class Measurements implements MeasurementsInterface {
         this.temperatureF = temperatureF;
     }
 
-    @Override
     public int getVocPpb() {
         return vocPpb;
     }

@@ -137,7 +137,7 @@ public class DwdUnwetterHandlerTest extends JavaTest {
     private String getLabel(NodeList nodeList) {
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
-            if ("label".equals(node.getNodeName())) {
+            if (node.getNodeName().equals("label")) {
                 return node.getTextContent();
             }
         }

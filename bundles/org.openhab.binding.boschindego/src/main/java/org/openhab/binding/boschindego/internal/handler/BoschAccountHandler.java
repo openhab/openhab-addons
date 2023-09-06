@@ -130,12 +130,10 @@ public class BoschAccountHandler extends BaseBridgeHandler implements Authorizat
         }
     }
 
-    @Override
     public void onSuccessfulAuthorization() {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    @Override
     public void onFailedAuthorization(Throwable throwable) {
         logger.debug("Authorization failure", throwable);
         if (throwable instanceof IndegoAuthenticationException) {
@@ -146,7 +144,6 @@ public class BoschAccountHandler extends BaseBridgeHandler implements Authorizat
         }
     }
 
-    @Override
     public void onAuthorizationFlowCompleted() {
         // Ignore
     }

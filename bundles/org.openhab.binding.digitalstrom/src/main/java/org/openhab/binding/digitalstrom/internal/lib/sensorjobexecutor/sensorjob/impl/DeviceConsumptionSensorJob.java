@@ -79,7 +79,8 @@ public class DeviceConsumptionSensorJob implements SensorJob {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DeviceConsumptionSensorJob other) {
+        if (obj instanceof DeviceConsumptionSensorJob) {
+            DeviceConsumptionSensorJob other = (DeviceConsumptionSensorJob) obj;
             String device = this.device.getDSID().getValue() + this.sensorType.getSensorType();
             return device.equals(other.device.getDSID().getValue() + other.sensorType.getSensorType());
         }

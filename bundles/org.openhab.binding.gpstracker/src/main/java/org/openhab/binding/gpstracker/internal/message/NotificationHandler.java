@@ -48,11 +48,11 @@ public class NotificationHandler {
     public void handleNotification(LocationMessage msg) {
         synchronized (this) {
             String trackerId = msg.getTrackerId();
-            if (msg instanceof TransitionMessage message) {
+            if (msg instanceof TransitionMessage) {
                 List<TransitionMessage> transitionMessages = transitionNotifications.computeIfAbsent(trackerId,
                         k -> new ArrayList<>());
                 if (transitionMessages != null) {
-                    transitionMessages.add(message);
+                    transitionMessages.add((TransitionMessage) msg);
                 }
             } else {
                 locationNotifications.put(trackerId, msg);

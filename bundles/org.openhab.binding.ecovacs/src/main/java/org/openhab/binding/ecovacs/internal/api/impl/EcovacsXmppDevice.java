@@ -347,7 +347,8 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                 return null;
             }
 
-            if (iqRequest instanceof DeviceCommandIQ iq) {
+            if (iqRequest instanceof DeviceCommandIQ) {
+                DeviceCommandIQ iq = (DeviceCommandIQ) iqRequest;
 
                 try {
                     if (!iq.id.isEmpty()) {
@@ -371,8 +372,8 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                 } catch (DataParsingException e) {
                     listener.onEventStreamFailure(EcovacsXmppDevice.this, e);
                 }
-            } else if (iqRequest instanceof ErrorIQ errorIQ) {
-                StanzaError error = errorIQ.getError();
+            } else if (iqRequest instanceof ErrorIQ) {
+                StanzaError error = ((ErrorIQ) iqRequest).getError();
                 logger.trace("{}: Got error response {}", getSerialNumber(), error);
                 listener.onEventStreamFailure(EcovacsXmppDevice.this,
                         new XMPPException.XMPPErrorException(iqRequest, error));

@@ -31,10 +31,10 @@ public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManage
     protected static class Config extends Response<LanConfig> {
     }
 
-    private enum Mode {
+    private static enum Mode {
         ROUTER,
         BRIDGE,
-        UNKNOWN
+        UNKNOWN;
     }
 
     public static record LanConfig(IPAddress ip, String name, String nameDns, String nameMdns, String nameNetbios,

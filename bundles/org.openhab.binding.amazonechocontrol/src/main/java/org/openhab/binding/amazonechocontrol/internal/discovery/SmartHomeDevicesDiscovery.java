@@ -143,7 +143,8 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
             String deviceName = null;
             Map<String, Object> props = new HashMap<>();
 
-            if (smartHomeDevice instanceof SmartHomeDevice shd) {
+            if (smartHomeDevice instanceof SmartHomeDevice) {
+                SmartHomeDevice shd = (SmartHomeDevice) smartHomeDevice;
                 logger.trace("Found SmartHome device: {}", shd);
 
                 String entityId = shd.entityId;
@@ -164,7 +165,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                     // Connected through skill
                     continue;
                 }
-                if (smartHomeDeviceDiscoveryMode != 2 && "openHAB".equalsIgnoreCase(shd.manufacturerName)) {
+                if (!(smartHomeDeviceDiscoveryMode == 2) && "openHAB".equalsIgnoreCase(shd.manufacturerName)) {
                     // OpenHAB device
                     continue;
                 }
@@ -202,7 +203,8 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                     deviceName = shd.friendlyName;
                 }
                 props.put(DEVICE_PROPERTY_ID, id);
-            } else if (smartHomeDevice instanceof SmartHomeGroup shg) {
+            } else if (smartHomeDevice instanceof SmartHomeGroup) {
+                SmartHomeGroup shg = (SmartHomeGroup) smartHomeDevice;
                 logger.trace("Found SmartHome device: {}", shg);
 
                 String id = shg.findId();

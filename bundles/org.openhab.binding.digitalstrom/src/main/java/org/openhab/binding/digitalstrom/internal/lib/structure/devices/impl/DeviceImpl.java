@@ -952,7 +952,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Device device) {
+        if (obj instanceof Device) {
+            Device device = (Device) obj;
             return device.getDSID().equals(this.getDSID());
         }
         return false;
@@ -1780,7 +1781,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
         String[] scenes = propertries.split("\n");
         for (int i = 0; i < scenes.length; i++) {
             logger.debug("Find saved scene configuration for device with dSID {} and sceneID {}", dsid, i);
-            String[] sceneIdToConfig = scenes[i].replace(" ", "").split("=");
+            String[] sceneIdToConfig = scenes[i].replaceAll(" ", "").split("=");
             String[] sceneParm = sceneIdToConfig[1].split(",");
             JSONDeviceSceneSpecImpl sceneSpecNew = null;
             int sceneValue = -1;

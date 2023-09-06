@@ -22,6 +22,7 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -365,6 +366,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(AstroActions.class);
+        return Collections.singletonList(AstroActions.class);
     }
 }

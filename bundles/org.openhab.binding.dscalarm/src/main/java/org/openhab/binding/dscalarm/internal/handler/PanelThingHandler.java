@@ -202,17 +202,17 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     updateState(channelUID, new StringType(String.valueOf(-1)));
                     break;
                 case PANEL_TIME_STAMP:
-                    if (command instanceof OnOffType onOffCommand) {
+                    if (command instanceof OnOffType) {
                         cmd = command == OnOffType.ON ? 1 : 0;
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.TimeStampControl, String.valueOf(cmd));
-                        updateState(channelUID, onOffCommand);
+                        updateState(channelUID, (OnOffType) command);
                     }
                     break;
                 case PANEL_TIME_BROADCAST:
-                    if (command instanceof OnOffType onOffCommand) {
+                    if (command instanceof OnOffType) {
                         cmd = command == OnOffType.ON ? 1 : 0;
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.TimeDateBroadcastControl, String.valueOf(cmd));
-                        updateState(channelUID, onOffCommand);
+                        updateState(channelUID, (OnOffType) command);
                     }
                     break;
                 default:

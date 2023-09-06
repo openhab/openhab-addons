@@ -15,6 +15,7 @@ package org.openhab.binding.electroluxair.internal.handler;
 import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,7 +50,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
     private int refreshTimeInSeconds = 300;
 
@@ -99,7 +100,7 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(ElectroluxAirDiscoveryService.class);
+        return Collections.singleton(ElectroluxAirDiscoveryService.class);
     }
 
     @Override

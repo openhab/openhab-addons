@@ -539,7 +539,7 @@ public class BluetoothDiscoveryServiceTest {
 
         @Override
         public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-            return Set.of(typeUID);
+            return Collections.singleton(typeUID);
         }
 
         @Override

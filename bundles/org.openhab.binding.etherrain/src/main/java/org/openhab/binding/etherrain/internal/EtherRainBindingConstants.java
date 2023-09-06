@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.etherrain.internal;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,7 +36,7 @@ public class EtherRainBindingConstants {
     // List of all Thing Type UIDs
 
     public static final ThingTypeUID ETHERRAIN_THING = new ThingTypeUID(BINDING_ID, ETHERRAIN);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(ETHERRAIN_THING);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(ETHERRAIN_THING);
 
     // List of internal default values
 

@@ -16,6 +16,7 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.K
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -108,6 +109,6 @@ public class PlayerHandler extends HostHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(PlayerActions.class);
+        return Collections.singletonList(PlayerActions.class);
     }
 }

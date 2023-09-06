@@ -101,8 +101,9 @@ public abstract class AWS4SignerBase {
 
     protected static String getCanonicalRequest(URL endpoint, String httpMethod, String queryParameters,
             String canonicalizedHeaderNames, String canonicalizedHeaders, String bodyHash) {
-        return httpMethod + "\n" + getCanonicalizedResourcePath(endpoint) + "\n" + queryParameters + "\n"
-                + canonicalizedHeaders + "\n" + canonicalizedHeaderNames + "\n" + bodyHash;
+        String canonicalRequest = httpMethod + "\n" + getCanonicalizedResourcePath(endpoint) + "\n" + queryParameters
+                + "\n" + canonicalizedHeaders + "\n" + canonicalizedHeaderNames + "\n" + bodyHash;
+        return canonicalRequest;
     }
 
     protected static String getCanonicalizedResourcePath(URL endpoint) {
@@ -153,8 +154,9 @@ public abstract class AWS4SignerBase {
 
     protected static String getStringToSign(String scheme, String algorithm, String dateTime, String scope,
             String canonicalRequest) {
-        return scheme + "-" + algorithm + "\n" + dateTime + "\n" + scope + "\n"
+        String stringToSign = scheme + "-" + algorithm + "\n" + dateTime + "\n" + scope + "\n"
                 + BinaryUtils.toHex(hash(canonicalRequest));
+        return stringToSign;
     }
 
     public static byte[] hash(String text) {

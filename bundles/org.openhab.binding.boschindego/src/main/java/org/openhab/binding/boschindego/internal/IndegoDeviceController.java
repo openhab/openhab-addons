@@ -141,7 +141,9 @@ public class IndegoDeviceController extends IndegoController {
      * @throws IndegoException if any communication or parsing error occurred
      */
     public DeviceCalendarResponse getCalendar() throws IndegoAuthenticationException, IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/calendar", DeviceCalendarResponse.class);
+        DeviceCalendarResponse calendar = getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/calendar",
+                DeviceCalendarResponse.class);
+        return calendar;
     }
 
     /**

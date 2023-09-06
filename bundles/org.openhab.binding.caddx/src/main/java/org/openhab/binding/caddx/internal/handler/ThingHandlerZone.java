@@ -13,7 +13,7 @@
 package org.openhab.binding.caddx.internal.handler;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
@@ -147,7 +147,7 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(CaddxZoneActions.class);
+        return Collections.singleton(CaddxZoneActions.class);
     }
 
     public void bypass() {

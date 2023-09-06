@@ -65,7 +65,8 @@ public class SceneOutputValueReadingJob implements SensorJob {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof SceneOutputValueReadingJob other) {
+        if (obj instanceof SceneOutputValueReadingJob) {
+            SceneOutputValueReadingJob other = (SceneOutputValueReadingJob) obj;
             String str = other.device.getDSID().getValue() + "-" + other.sceneID;
             return (this.device.getDSID().getValue() + "-" + this.sceneID).equals(str);
         }

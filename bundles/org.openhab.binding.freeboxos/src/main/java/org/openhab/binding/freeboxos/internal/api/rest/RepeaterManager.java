@@ -45,25 +45,25 @@ public class RepeaterManager extends ListableRest<RepeaterManager.Repeater, Repe
     public static record RepeaterLed(int id, boolean ledActivated) {
     }
 
-    private enum Connection {
+    private static enum Connection {
         CONNECTED,
         DISCONNECTED,
-        UNKNOWN
+        UNKNOWN;
     }
 
-    private enum Status {
+    private static enum Status {
         STARTING,
         RUNNING,
         REBOOTING,
         UPDATING,
         REBOOT_FAILURE,
         UPDATE_FAILURE,
-        UNKNOWN
+        UNKNOWN;
     }
 
-    public enum Model {
+    public static enum Model {
         FBXWMR, // Répéteur Wifi
-        UNKNOWN
+        UNKNOWN;
     }
 
     public static record Repeater(int id, boolean ledActivated, boolean enabled, MACAddress mainMac,

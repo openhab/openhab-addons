@@ -196,6 +196,8 @@ public class GroupePSAConnectApi {
 
     public @Nullable VehicleStatus getVehicleStatus(String vin) throws GroupePSACommunicationException {
         ContentResponse responseOdometer = executeRequest(getBaseUrl() + "/user/vehicles/" + vin + "/status");
-        return parseResponse(responseOdometer, VehicleStatus.class);
+        VehicleStatus status = parseResponse(responseOdometer, VehicleStatus.class);
+
+        return status;
     }
 }

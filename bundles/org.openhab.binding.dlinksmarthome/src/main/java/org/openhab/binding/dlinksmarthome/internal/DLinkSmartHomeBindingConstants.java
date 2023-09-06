@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.dlinksmarthome.internal;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +32,7 @@ public class DLinkSmartHomeBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_DCHS150 = new ThingTypeUID(BINDING_ID, "DCH-S150");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DCHS150);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DCHS150);
 
     // Motion trigger channel
     public static final String MOTION = "motion";

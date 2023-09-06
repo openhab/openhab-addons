@@ -96,7 +96,6 @@ public abstract class EchonetObject {
     public void refreshAll(long nowMs) {
     }
 
-    @Override
     public String toString() {
         return "ItemBase{" + "instanceKey=" + instanceKey + ", pendingProperties=" + pendingGets + '}';
     }

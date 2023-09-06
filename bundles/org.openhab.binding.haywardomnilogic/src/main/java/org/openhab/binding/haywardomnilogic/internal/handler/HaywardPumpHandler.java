@@ -213,7 +213,6 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                                     cmdString = pumpMaxSpeed;
                                 }
                             }
-                            break;
                         case HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM:
                             // Convert cmdString from RPM to Percent
                             if (pumpMaxRpm != null && pumpMaxSpeed != null && pumpMinSpeed != null) {

@@ -464,7 +464,8 @@ public class FreeboxApiManager {
         // Parse the full response in case of success
         T fullResponse = gson.fromJson(jsonResponse, responseClass);
         fullResponse.evaluate();
-        return fullResponse.getResult();
+        F result = fullResponse.getResult();
+        return result;
     }
 
     private String encodeUrl(String url) throws FreeboxException {

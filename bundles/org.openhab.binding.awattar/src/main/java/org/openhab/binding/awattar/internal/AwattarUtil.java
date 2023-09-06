@@ -40,7 +40,9 @@ public class AwattarUtil {
         int offset = min % mod;
         offset = offset == 0 ? mod : offset;
         dt = dt.plusMinutes(offset);
-        return dt.toInstant().toEpochMilli() - now;
+        long result = dt.toInstant().toEpochMilli() - now;
+
+        return result;
     }
 
     public static ZonedDateTime getCalendarForHour(int hour, ZoneId zone) {

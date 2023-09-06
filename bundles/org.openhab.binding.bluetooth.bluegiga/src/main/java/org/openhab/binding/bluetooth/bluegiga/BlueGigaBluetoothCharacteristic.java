@@ -35,7 +35,6 @@ public class BlueGigaBluetoothCharacteristic extends BluetoothCharacteristic {
         super(null, handle);
     }
 
-    @Override
     public void setProperties(int properties) {
         this.properties = properties;
     }

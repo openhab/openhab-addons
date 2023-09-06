@@ -24,7 +24,6 @@ import org.openhab.binding.bticinosmarther.internal.api.dto.Enums.LoadState;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Enums.MeasureUnit;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherIllegalPropertyValueException;
 import org.openhab.binding.bticinosmarther.internal.util.DateUtil;
-import org.openhab.core.i18n.TimeZoneProvider;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -147,16 +146,12 @@ public class Chronothermostat {
      * @return a string containing the module operational activation time label, or {@code null} if the activation time
      *         cannot be parsed to a valid date/time
      */
-    public @Nullable String getActivationTimeLabel(TimeZoneProvider timeZoneProvider) {
+    public @Nullable String getActivationTimeLabel() {
         String timeLabel = TIME_FOREVER;
         if (activationTime != null) {
             try {
-                boolean dateActivationTimeIsZoned = activationTime.length() > 19;
-
-                final ZonedDateTime dateActivationTime = DateUtil.parseZonedTime(activationTime,
-                        dateActivationTimeIsZoned ? DTF_DATETIME_EXT : DTF_DATETIME);
-                final ZonedDateTime dateTomorrow = DateUtil.getZonedStartOfDay(1,
-                        dateActivationTimeIsZoned ? dateActivationTime.getZone() : timeZoneProvider.getTimeZone());
+                final ZonedDateTime dateActivationTime = DateUtil.parseZonedTime(activationTime, DTF_DATETIME_EXT);
+                final ZonedDateTime dateTomorrow = DateUtil.getZonedStartOfDay(1, dateActivationTime.getZone());
 
                 if (dateActivationTime.isBefore(dateTomorrow)) {
                     timeLabel = DateUtil.format(dateActivationTime, DTF_TODAY);

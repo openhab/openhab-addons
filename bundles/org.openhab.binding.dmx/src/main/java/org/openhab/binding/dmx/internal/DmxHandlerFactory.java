@@ -60,19 +60,26 @@ public class DmxHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_ARTNET_BRIDGE)) {
-            return new ArtnetBridgeHandler((Bridge) thing);
+            ArtnetBridgeHandler handler = new ArtnetBridgeHandler((Bridge) thing);
+            return handler;
         } else if (thingTypeUID.equals(THING_TYPE_LIB485_BRIDGE)) {
-            return new Lib485BridgeHandler((Bridge) thing);
+            Lib485BridgeHandler handler = new Lib485BridgeHandler((Bridge) thing);
+            return handler;
         } else if (thingTypeUID.equals(THING_TYPE_SACN_BRIDGE)) {
-            return new SacnBridgeHandler((Bridge) thing);
+            SacnBridgeHandler handler = new SacnBridgeHandler((Bridge) thing);
+            return handler;
         } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
-            return new DimmerThingHandler(thing);
+            DimmerThingHandler handler = new DimmerThingHandler(thing);
+            return handler;
         } else if (thingTypeUID.equals(THING_TYPE_COLOR)) {
-            return new ColorThingHandler(thing);
+            ColorThingHandler handler = new ColorThingHandler(thing);
+            return handler;
         } else if (thingTypeUID.equals(THING_TYPE_TUNABLEWHITE)) {
-            return new TunableWhiteThingHandler(thing);
+            TunableWhiteThingHandler handler = new TunableWhiteThingHandler(thing);
+            return handler;
         } else if (thingTypeUID.equals(THING_TYPE_CHASER)) {
-            return new ChaserThingHandler(thing);
+            ChaserThingHandler handler = new ChaserThingHandler(thing);
+            return handler;
         }
         return null;
     }

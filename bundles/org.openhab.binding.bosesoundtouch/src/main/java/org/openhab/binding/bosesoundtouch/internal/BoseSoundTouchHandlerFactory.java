@@ -53,7 +53,9 @@ public class BoseSoundTouchHandlerFactory extends BaseThingHandlerFactory {
                     ContentItem.class.getClassLoader());
             BoseStateDescriptionOptionProvider localDescriptionOptionProvider = stateOptionProvider;
             if (localDescriptionOptionProvider != null) {
-                return new BoseSoundTouchHandler(thing, new PresetContainer(storage), localDescriptionOptionProvider);
+                BoseSoundTouchHandler handler = new BoseSoundTouchHandler(thing, new PresetContainer(storage),
+                        localDescriptionOptionProvider);
+                return handler;
             }
         }
         return null;

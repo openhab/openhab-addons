@@ -349,23 +349,23 @@ public class SocketChannelSession implements SocketSession {
                     final Object response = responses.poll(1, TimeUnit.SECONDS);
 
                     if (response != null) {
-                        if (response instanceof String stringResponse) {
+                        if (response instanceof String) {
                             try {
                                 logger.debug("Dispatching response: {}", response);
                                 final SocketSessionListener[] listeners = SocketChannelSession.this.listeners
                                         .toArray(new SocketSessionListener[0]);
                                 for (SocketSessionListener listener : listeners) {
-                                    listener.responseReceived(stringResponse);
+                                    listener.responseReceived((String) response);
                                 }
                             } catch (Exception e) {
                                 logger.warn("Exception occurred processing the response '{}': ", response, e);
                             }
-                        } else if (response instanceof Exception exceptionResponse) {
+                        } else if (response instanceof Exception) {
                             logger.debug("Dispatching exception: {}", response);
                             final SocketSessionListener[] listeners = SocketChannelSession.this.listeners
                                     .toArray(new SocketSessionListener[0]);
                             for (SocketSessionListener listener : listeners) {
-                                listener.responseException(exceptionResponse);
+                                listener.responseException((Exception) response);
                             }
                         } else {
                             logger.warn("Unknown response class: {}", response);

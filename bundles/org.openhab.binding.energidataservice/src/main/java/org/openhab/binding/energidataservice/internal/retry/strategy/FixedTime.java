@@ -80,6 +80,7 @@ public class FixedTime implements RetryStrategy {
 
     @Override
     public final int hashCode() {
-        return 1;
+        final int result = 1;
+        return result;
     }
 }

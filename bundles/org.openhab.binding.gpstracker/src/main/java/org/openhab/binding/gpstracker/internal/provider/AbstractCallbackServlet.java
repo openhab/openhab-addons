@@ -120,8 +120,9 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
         if (!trackerId.isEmpty()) {
             TrackerHandler recorder = getHandlerById(trackerId);
             if (recorder != null) {
-                if (message instanceof TransitionMessage transitionMessage) {
-                    recorder.doTransition(transitionMessage);
+                if (message instanceof TransitionMessage) {
+                    TransitionMessage tm = (TransitionMessage) message;
+                    recorder.doTransition(tm);
                 } else {
                     recorder.updateLocation(message);
                 }

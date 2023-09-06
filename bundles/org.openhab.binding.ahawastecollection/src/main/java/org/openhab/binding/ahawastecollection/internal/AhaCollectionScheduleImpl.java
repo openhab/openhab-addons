@@ -81,7 +81,7 @@ final class AhaCollectionScheduleImpl implements AhaCollectionSchedule {
 
         final Elements table = doc.select("table");
 
-        if (table.isEmpty()) {
+        if (table.size() == 0) {
             logger.warn("No result table found.");
             return Collections.emptyMap();
         }
@@ -91,7 +91,7 @@ final class AhaCollectionScheduleImpl implements AhaCollectionSchedule {
 
         while (rowIt.hasNext()) {
             final Element currentRow = rowIt.next();
-            if (!"tr".equals(currentRow.tagName())) {
+            if (!currentRow.tagName().equals("tr")) {
                 continue;
             }
             // Skip header, empty and download button rows.

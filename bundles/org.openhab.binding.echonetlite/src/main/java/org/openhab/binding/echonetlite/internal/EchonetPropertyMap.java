@@ -86,7 +86,6 @@ public class EchonetPropertyMap {
         return properties;
     }
 
-    @Override
     public String toString() {
         return "EnPropertyMap{" + "propertyMap=" + HexUtil.hex(propertyMap) + '}';
     }

@@ -64,7 +64,8 @@ public class BondHomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BOND_BRIDGE.equals(thingTypeUID)) {
-            return new BondBridgeHandler((Bridge) thing, httpClientFactory);
+            final BondBridgeHandler handler = new BondBridgeHandler((Bridge) thing, httpClientFactory);
+            return handler;
         } else if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new BondDeviceHandler(thing);
         }

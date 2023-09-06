@@ -57,9 +57,10 @@ public class PropertyUtils {
         Object value = getPropertyValue(channelUID, instance);
         if (value == null) {
             return UnDefType.UNDEF;
-        } else if (value instanceof State state) {
-            return state;
-        } else if (value instanceof Calendar cal) {
+        } else if (value instanceof State) {
+            return (State) value;
+        } else if (value instanceof Calendar) {
+            Calendar cal = (Calendar) value;
             GregorianCalendar gregorianCal = (GregorianCalendar) DateTimeUtils.applyConfig(cal, config);
             cal.setTimeZone(TimeZone.getTimeZone(zoneId));
             ZonedDateTime zoned = gregorianCal.toZonedDateTime().withFixedOffsetZone();

@@ -204,9 +204,9 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
             }
         } else if (!device.isShade()) {
             if (DsChannelTypeProvider.isOutputChannel(channelUID.getId())) {
-                if (command instanceof PercentType percentCommand) {
+                if (command instanceof PercentType) {
                     device.setOutputValue(
-                            (short) fromPercentToValue(percentCommand.intValue(), device.getMaxOutputValue()));
+                            (short) fromPercentToValue(((PercentType) command).intValue(), device.getMaxOutputValue()));
                 } else if (command instanceof OnOffType) {
                     if (OnOffType.ON.equals(command)) {
                         device.setIsOn(true);
@@ -219,17 +219,17 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                     } else {
                         device.decrease();
                     }
-                } else if (command instanceof StringType stringCommand) {
-                    device.setOutputValue(Short.parseShort(stringCommand.toString()));
+                } else if (command instanceof StringType) {
+                    device.setOutputValue(Short.parseShort(((StringType) command).toString()));
                 }
             } else {
                 logger.debug("Command sent to an unknown channel id: {}", channelUID);
             }
         } else {
             if (channelUID.getId().contains(DsChannelTypeProvider.ANGLE)) {
-                if (command instanceof PercentType percentCommand) {
+                if (command instanceof PercentType) {
                     device.setAnglePosition(
-                            (short) fromPercentToValue(percentCommand.intValue(), device.getMaxSlatAngle()));
+                            (short) fromPercentToValue(((PercentType) command).intValue(), device.getMaxSlatAngle()));
                 } else if (command instanceof OnOffType) {
                     if (OnOffType.ON.equals(command)) {
                         device.setAnglePosition(device.getMaxSlatAngle());
@@ -244,9 +244,9 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                     }
                 }
             } else if (channelUID.getId().contains(DsChannelTypeProvider.SHADE)) {
-                if (command instanceof PercentType percentCommand) {
-                    int percent = percentCommand.intValue();
-                    if (!"GR-KL200".equals(device.getHWinfo())) {
+                if (command instanceof PercentType) {
+                    int percent = ((PercentType) command).intValue();
+                    if (!device.getHWinfo().equals("GR-KL200")) {
                         percent = 100 - percent;
                     }
                     device.setSlatPosition(fromPercentToValue(percent, device.getMaxSlatPosition()));
@@ -291,8 +291,8 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
             }
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof BridgeHandler bridgeHandler) {
-                dssBridgeHandler = bridgeHandler;
+            if (handler instanceof BridgeHandler) {
+                dssBridgeHandler = (BridgeHandler) handler;
             } else {
                 return null;
             }
@@ -398,7 +398,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                         default:
                             return;
                     }
-                    if (!"GR-KL210".equals(device.getHWinfo())) {
+                    if (!device.getHWinfo().equals("GR-KL210")) {
                         percent = 100 - percent;
                     }
                     updateState(DsChannelTypeProvider.SHADE, new PercentType(percent));
@@ -418,10 +418,10 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
 
     @Override
     public synchronized void onDeviceRemoved(GeneralDeviceInformation device) {
-        if (device instanceof Device dev) {
-            this.device = dev;
+        if (device instanceof Device) {
+            this.device = (Device) device;
             if (this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                if (!dev.isPresent()) {
+                if (!((Device) device).isPresent()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "Device is not present in the digitalSTROM-System.");
                 } else {
@@ -436,8 +436,8 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
 
     @Override
     public synchronized void onDeviceAdded(GeneralDeviceInformation device) {
-        if (device instanceof Device dev) {
-            this.device = dev;
+        if (device instanceof Device) {
+            this.device = (Device) device;
             if (this.device.isPresent()) {
                 ThingStatusInfo statusInfo = this.dssBridgeHandler.getThing().getStatusInfo();
                 updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
@@ -458,11 +458,11 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                     checkOutputChannel();
                 } else if (this.device.isBlind()) {
                     // load channel for set the angle of jalousie devices
-                    ApplicationGroup.Color color = dev.getFunctionalColorGroup() != null
-                            ? dev.getFunctionalColorGroup().getColor()
+                    ApplicationGroup.Color color = ((Device) device).getFunctionalColorGroup() != null
+                            ? ((Device) device).getFunctionalColorGroup().getColor()
                             : null;
-                    String channelTypeID = DsChannelTypeProvider.getOutputChannelTypeID(color, dev.getOutputMode(),
-                            dev.getOutputChannels());
+                    String channelTypeID = DsChannelTypeProvider.getOutputChannelTypeID(color,
+                            ((Device) device).getOutputMode(), ((Device) device).getOutputChannels());
                     loadOutputChannel(new ChannelTypeUID(BINDING_ID, channelTypeID),
                             DsChannelTypeProvider.getItemType(channelTypeID));
                 }
@@ -595,8 +595,8 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
         if (loadedSensorChannels == null) {
             loadedSensorChannels = new LinkedList<>();
         }
-        if (!loadedSensorChannels.contains(sensorChannelType)) {
-            return loadedSensorChannels.add(sensorChannelType);
+        if (!loadedSensorChannels.contains(sensorChannelType.toString())) {
+            return loadedSensorChannels.add(sensorChannelType.toString());
         }
         return false;
     }

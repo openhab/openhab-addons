@@ -52,7 +52,8 @@ public class ElroConnectsDynamicStateDescriptionProvider implements DynamicState
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
-        return descriptions.get(channel.getUID());
+        StateDescription description = descriptions.get(channel.getUID());
+        return description;
     }
 
     @Deactivate

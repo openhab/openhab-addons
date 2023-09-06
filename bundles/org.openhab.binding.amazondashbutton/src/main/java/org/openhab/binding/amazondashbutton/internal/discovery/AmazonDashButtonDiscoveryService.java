@@ -15,6 +15,7 @@ package org.openhab.binding.amazondashbutton.internal.discovery;
 import static org.openhab.binding.amazondashbutton.internal.AmazonDashButtonBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -107,7 +108,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
     private boolean backgroundScanning = false;
 
     public AmazonDashButtonDiscoveryService() {
-        super(Set.of(DASH_BUTTON_THING_TYPE), DISCOVER_TIMEOUT_SECONDS, false);
+        super(Collections.singleton(DASH_BUTTON_THING_TYPE), DISCOVER_TIMEOUT_SECONDS, false);
     }
 
     @Override

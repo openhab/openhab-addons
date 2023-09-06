@@ -15,6 +15,7 @@ package org.openhab.binding.dmx.internal.handler;
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -51,7 +52,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class DimmerThingHandler extends DmxThingHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DIMMER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIMMER);
 
     private final Logger logger = LoggerFactory.getLogger(DimmerThingHandler.class);
 
@@ -78,13 +79,13 @@ public class DimmerThingHandler extends DmxThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_BRIGHTNESS: {
                 if (command instanceof PercentType || command instanceof DecimalType) {
-                    PercentType brightness = (command instanceof PercentType percentCommand) ? percentCommand
+                    PercentType brightness = (command instanceof PercentType) ? (PercentType) command
                             : Util.toPercentValue(((DecimalType) command).intValue());
                     logger.trace("adding fade to channels in thing {}", this.thing.getUID());
                     targetValueSet.addValue(brightness);
-                } else if (command instanceof OnOffType onOffCommand) {
+                } else if (command instanceof OnOffType) {
                     logger.trace("adding {} fade to channels in thing {}", command, this.thing.getUID());
-                    if (onOffCommand == OnOffType.ON) {
+                    if (((OnOffType) command) == OnOffType.ON) {
                         targetValueSet = turnOnValue;
                     } else {
                         if (dynamicTurnOnValue) {
@@ -96,15 +97,16 @@ public class DimmerThingHandler extends DmxThingHandler {
                         }
                         targetValueSet = turnOffValue;
                     }
-                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
-                    if (isDimming && increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE)) {
+                } else if (command instanceof IncreaseDecreaseType) {
+                    if (isDimming && ((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
                         logger.trace("stopping fade in thing {}", this.thing.getUID());
                         channels.forEach(DmxChannel::clearAction);
                         isDimming = false;
                         return;
                     } else {
                         logger.trace("starting {} fade in thing {}", command, this.thing.getUID());
-                        targetValueSet = increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE) ? turnOnValue
+                        targetValueSet = ((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)
+                                ? turnOnValue
                                 : turnOffValue;
                         targetValueSet.setFadeTime(dimTime);
                         isDimming = true;
@@ -176,7 +178,7 @@ public class DimmerThingHandler extends DmxThingHandler {
         dimTime = configuration.dimtime;
         logger.trace("setting dimTime to {} ms in {}", fadeTime, this.thing.getUID());
 
-        String turnOnValueString = fadeTime + ":" + configuration.turnonvalue + ":-1";
+        String turnOnValueString = String.valueOf(fadeTime) + ":" + configuration.turnonvalue + ":-1";
 
         ValueSet turnOnValue = ValueSet.fromString(turnOnValueString);
         if (!turnOnValue.isEmpty()) {
@@ -192,7 +194,7 @@ public class DimmerThingHandler extends DmxThingHandler {
 
         dynamicTurnOnValue = configuration.dynamicturnonvalue;
 
-        String turnOffValueString = fadeTime + ":" + configuration.turnoffvalue + ":-1";
+        String turnOffValueString = String.valueOf(fadeTime) + ":" + configuration.turnoffvalue + ":-1";
         ValueSet turnOffValue = ValueSet.fromString(turnOffValueString);
         if (!turnOffValue.isEmpty()) {
             this.turnOffValue = turnOffValue;

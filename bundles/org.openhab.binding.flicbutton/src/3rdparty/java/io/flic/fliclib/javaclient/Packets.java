@@ -26,7 +26,7 @@ abstract class CommandPacket {
         return res;
     }
 
-    protected abstract void write(OutputStream stream) throws IOException;
+    abstract protected void write(OutputStream stream) throws IOException;
 }
 
 class CmdGetInfo extends CommandPacket {
@@ -210,7 +210,7 @@ abstract class EventPacket {
         }
     }
 
-    protected abstract void parseInternal(InputStream stream) throws IOException;
+    abstract protected void parseInternal(InputStream stream) throws IOException;
 }
 
 class EvtAdvertisementPacket extends EventPacket {
@@ -366,7 +366,7 @@ class EvtGetButtonInfoResponse extends EventPacket {
             sb.append(String.format("%02x", uuidBytes[i]));
         }
         uuid = sb.toString();
-        if ("00000000000000000000000000000000".equals(uuid)) {
+        if (uuid.equals("00000000000000000000000000000000")) {
             uuid = null;
         }
         color = StreamUtils.getString(stream, 16);

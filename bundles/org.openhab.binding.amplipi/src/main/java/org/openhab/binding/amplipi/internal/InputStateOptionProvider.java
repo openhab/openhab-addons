@@ -65,7 +65,7 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
     }
 
     private @Nullable String getLabel(Stream stream) {
-        if ("internetradio".equals(stream.getType())) {
+        if (stream.getType().equals("internetradio")) {
             return stream.getName();
         } else {
             return stream.getType().substring(0, 1).toUpperCase() + stream.getType().substring(1);

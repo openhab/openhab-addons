@@ -221,7 +221,6 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_EXHAUSTAIRFANAIRFLOWRATE = "exhaustAirFanAirFlowRate";
     public static final String CHANNEL_SUPPLYFANSPEED = "supplyFanSpeed";
     public static final String CHANNEL_EXHAUSTFANSPEED = "exhaustFanSpeed";
-    public final static String CHANNEL_DAYNIGHTMODESTATE = "dayNightModeState";
 
     public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Map.ofEntries(
             Map.entry(CHANNEL_GENERAL_SWITCHING,
@@ -264,7 +263,7 @@ public class EnOceanBindingConstants {
                             CoreItemFactory.NUMBER)),
             Map.entry(CHANNEL_FANSPEEDSTAGE,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_FANSPEEDSTAGE),
-                            CoreItemFactory.NUMBER)),
+                            CoreItemFactory.STRING)),
             Map.entry(CHANNEL_OCCUPANCY,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_OCCUPANCY),
                             CoreItemFactory.SWITCH)),
@@ -576,9 +575,6 @@ public class EnOceanBindingConstants {
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_EXHAUSTFANSPEED),
                             CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
                                     + Dimensionless.class.getSimpleName())),
-            Map.entry(CHANNEL_DAYNIGHTMODESTATE,
-                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_DAYNIGHTMODESTATE),
-                            CoreItemFactory.NUMBER)),
 
             Map.entry(CHANNEL_STATUS_REQUEST_EVENT,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_STATUS_REQUEST_EVENT), null,

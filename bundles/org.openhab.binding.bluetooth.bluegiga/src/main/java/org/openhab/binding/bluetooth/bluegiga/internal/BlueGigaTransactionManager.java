@@ -154,7 +154,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     private void sendNextTransactionIfNoOngoing() {
         synchronized (this) {
             logger.trace("Send next transaction if no ongoing");
-            if (ongoingTransactionId.isEmpty()) {
+            if (!ongoingTransactionId.isPresent()) {
                 sendNextFrame();
             }
         }
@@ -243,8 +243,9 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
 
                 logger.trace("Expected frame: {}, received frame: {}", expected.getSimpleName(), bleResponse);
 
-                if (bleCommand instanceof BlueGigaDeviceCommand devCommand
-                        && bleResponse instanceof BlueGigaDeviceResponse devResponse) {
+                if (bleCommand instanceof BlueGigaDeviceCommand && bleResponse instanceof BlueGigaDeviceResponse) {
+                    BlueGigaDeviceCommand devCommand = (BlueGigaDeviceCommand) bleCommand;
+                    BlueGigaDeviceResponse devResponse = (BlueGigaDeviceResponse) bleResponse;
 
                     logger.trace("Expected connection id: {}, received connection id: {}", devCommand.getConnection(),
                             devResponse.getConnection());

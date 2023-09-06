@@ -16,6 +16,7 @@ import static org.openhab.binding.dmx.internal.DmxBindingConstants.CHANNEL_MUTE;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -274,6 +275,6 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(DmxActions.class);
+        return Collections.singletonList(DmxActions.class);
     }
 }

@@ -13,6 +13,7 @@
 package org.openhab.binding.fmiweather.internal.client;
 
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,6 @@ public class FMISID implements QueryParameter {
 
     @Override
     public List<Map.Entry<String, String>> toRequestParameters() {
-        return List.of(new AbstractMap.SimpleImmutableEntry<>("fmisid", fmisid));
+        return Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>("fmisid", fmisid));
     }
 }

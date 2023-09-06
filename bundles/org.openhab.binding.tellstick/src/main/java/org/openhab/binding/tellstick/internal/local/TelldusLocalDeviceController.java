@@ -273,7 +273,7 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
         logger.trace("HTTP GET: {}", uri);
 
         Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT_MS,
-                TimeUnit.MILLISECONDS);
+                TimeUnit.MICROSECONDS);
         request.header("Authorization", authorizationHeader);
 
         ContentResponse response = request.send();

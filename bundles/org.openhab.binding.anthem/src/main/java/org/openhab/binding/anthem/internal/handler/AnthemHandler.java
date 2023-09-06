@@ -116,7 +116,7 @@ public class AnthemHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command {} received for channel {}", command, channelUID.getId());
+        logger.trace("Command {} received for channel {}", command, channelUID.getId().toString());
         String groupId = channelUID.getGroupId();
         if (groupId == null) {
             return;
@@ -166,8 +166,8 @@ public class AnthemHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_VOLUME_DB:
-                if (command instanceof DecimalType decimalCommand) {
-                    sendCommand(AnthemCommand.volume(zone, decimalCommand.intValue()));
+                if (command instanceof DecimalType) {
+                    sendCommand(AnthemCommand.volume(zone, ((DecimalType) command).intValue()));
                 }
                 break;
             case CHANNEL_MUTE:
@@ -180,8 +180,8 @@ public class AnthemHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_ACTIVE_INPUT:
-                if (command instanceof DecimalType decimalCommand) {
-                    sendCommand(AnthemCommand.activeInput(zone, decimalCommand.intValue()));
+                if (command instanceof DecimalType) {
+                    sendCommand(AnthemCommand.activeInput(zone, ((DecimalType) command).intValue()));
                 }
                 break;
             default:

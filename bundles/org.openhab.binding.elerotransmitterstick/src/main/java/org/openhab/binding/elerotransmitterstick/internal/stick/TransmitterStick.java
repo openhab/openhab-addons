@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -225,7 +226,7 @@ public class TransmitterStick {
             // handle commands that are sent to multiple channels correctly
             if (channelIds.size() > 1) {
                 for (int channelId : channelIds) {
-                    requestUpdates(List.of(channelId));
+                    requestUpdates(Collections.singletonList(channelId));
                 }
             } else if (!channelIds.isEmpty()) {
                 final Integer[] ids = channelIds.toArray(new Integer[channelIds.size()]);
@@ -240,7 +241,7 @@ public class TransmitterStick {
             // handle commands that are sent to multiple channels correctly
             if (channelIds.size() > 1) {
                 for (int channelId : channelIds) {
-                    executeCommand(command, List.of(channelId));
+                    executeCommand(command, Collections.singletonList(channelId));
                 }
             } else if (!channelIds.isEmpty()) {
                 final Integer[] ids = channelIds.toArray(new Integer[channelIds.size()]);
@@ -306,8 +307,8 @@ public class TransmitterStick {
                                 }
                             }
 
-                            if (cmd instanceof TimedCommand timedCommand) {
-                                long delay = 1000 * timedCommand.getDuration();
+                            if (cmd instanceof TimedCommand) {
+                                long delay = 1000 * ((TimedCommand) cmd).getDuration();
                                 logger.debug("adding timed command STOP for channel ids {} to queue with delay {}...",
                                         cmd.getChannelIds(), delay);
 

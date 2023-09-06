@@ -49,18 +49,15 @@ public interface StateCodec extends StateEncode, StateDecode {
             this.off = off;
         }
 
-        @Override
         public State decodeState(final ByteBuffer edt) {
             return b(on) == edt.get() ? OnOffType.ON : OnOffType.OFF;
         }
 
-        @Override
         public void encodeState(final State state, final ByteBuffer edt) {
             final OnOffType onOff = (OnOffType) state;
             edt.put(onOff == OnOffType.ON ? b(on) : b(off));
         }
 
-        @Override
         public String itemType() {
             return "Switch";
         }
@@ -70,7 +67,6 @@ public interface StateCodec extends StateEncode, StateDecode {
 
         INSTANCE;
 
-        @Override
         public State decodeState(final ByteBuffer edt) {
             final int pdc = edt.remaining();
             if (pdc != 4) {
@@ -80,7 +76,6 @@ public interface StateCodec extends StateEncode, StateDecode {
             return new StringType("" + (char) edt.get(edt.position() + 2));
         }
 
-        @Override
         public String itemType() {
             return "String";
         }
@@ -90,12 +85,10 @@ public interface StateCodec extends StateEncode, StateDecode {
 
         INSTANCE;
 
-        @Override
         public State decodeState(final ByteBuffer edt) {
             return new StringType(hex(edt, "", "", "", ""));
         }
 
-        @Override
         public String itemType() {
             return "String";
         }
@@ -104,7 +97,6 @@ public interface StateCodec extends StateEncode, StateDecode {
     enum OperatingTimeDecode implements StateDecode {
         INSTANCE;
 
-        @Override
         public State decodeState(final ByteBuffer edt) {
             // Specification isn't explicit about byte order, but seems to be work with testing.
             edt.order(ByteOrder.BIG_ENDIAN);
@@ -135,7 +127,6 @@ public interface StateCodec extends StateEncode, StateDecode {
             return new QuantityType<>(timeUnit.toSeconds(time), Units.SECOND);
         }
 
-        @Override
         public String itemType() {
             return "Number:Time";
         }
@@ -167,19 +158,16 @@ public interface StateCodec extends StateEncode, StateDecode {
             }
         }
 
-        @Override
         public String itemType() {
             return "String";
         }
 
-        @Override
         public State decodeState(final ByteBuffer edt) {
             final int value = edt.get() & 0xFF;
             final Option option = optionByValue[value];
             return null != option ? option.state : unknown;
         }
 
-        @Override
         public void encodeState(final State state, final ByteBuffer edt) {
             final Option option = optionByName.get(state.toFullString());
             if (null != option) {
@@ -194,18 +182,15 @@ public interface StateCodec extends StateEncode, StateDecode {
 
         INSTANCE;
 
-        @Override
         public String itemType() {
             return "Number";
         }
 
-        @Override
         public State decodeState(final ByteBuffer edt) {
             final int value = edt.get(); // Should expand to typed value (mask excluded)
             return new DecimalType(value);
         }
 
-        @Override
         public void encodeState(final State state, final ByteBuffer edt) {
             edt.put((byte) (((DecimalType) state).intValue()));
         }
@@ -214,18 +199,15 @@ public interface StateCodec extends StateEncode, StateDecode {
     enum Temperature8bitCodec implements StateCodec {
         INSTANCE;
 
-        @Override
         public State decodeState(final ByteBuffer edt) {
             final int value = edt.get();
             return new QuantityType<>(value, SIUnits.CELSIUS);
         }
 
-        @Override
         public String itemType() {
             return "Number:Temperature";
         }
 
-        @Override
         public void encodeState(final State state, final ByteBuffer edt) {
             final @Nullable QuantityType<?> tempCelsius = ((QuantityType<?>) state).toUnit(SIUnits.CELSIUS);
             edt.put((byte) (Objects.requireNonNull(tempCelsius).intValue()));

@@ -52,9 +52,9 @@ public class StatusFileInterpreter {
 
     private Optional<Document> doc = Optional.empty();
 
-    public enum StatusEntry {
+    public static enum StatusEntry {
         VERSION,
-        CONFIG_MAC
+        CONFIG_MAC;
     }
 
     public StatusFileInterpreter(String hostname, Ipx800EventListener listener) {

@@ -50,7 +50,8 @@ public class GetCleanStateCommand extends IotDeviceCommand<CleanMode> {
     @Override
     public CleanMode convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+        if (response instanceof PortalIotCommandJsonResponse) {
+            final PortalIotCommandJsonResponse jsonResponse = (PortalIotCommandJsonResponse) response;
             final CleanMode mode;
             if (version == ProtocolVersion.JSON) {
                 CleanReport resp = jsonResponse.getResponsePayloadAs(gson, CleanReport.class);

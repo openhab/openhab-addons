@@ -40,7 +40,6 @@ public class NodeData implements NodeDataInterface {
         this.status = status;
     }
 
-    @Override
     public DateAndTime getDateAndTime() {
         return dateAndTime;
     }
@@ -49,7 +48,6 @@ public class NodeData implements NodeDataInterface {
         this.dateAndTime = dateAndTime;
     }
 
-    @Override
     public MeasurementsInterface getMeasurements() {
         return measurements;
     }
@@ -58,7 +56,6 @@ public class NodeData implements NodeDataInterface {
         this.measurements = measurements;
     }
 
-    @Override
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -67,7 +64,6 @@ public class NodeData implements NodeDataInterface {
         this.serialNumber = serialNumber;
     }
 
-    @Override
     public Settings getSettings() {
         return settings;
     }
@@ -76,7 +72,6 @@ public class NodeData implements NodeDataInterface {
         this.settings = settings;
     }
 
-    @Override
     public Status getStatus() {
         return status;
     }

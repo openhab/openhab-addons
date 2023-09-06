@@ -42,14 +42,14 @@ public class HomeManager extends RestManager {
     private static class HomeNodesResponse extends Response<HomeNode> {
     }
 
-    private enum AccessType {
+    private static enum AccessType {
         R,
         W,
         RW,
-        UNKNOWN
+        UNKNOWN;
     }
 
-    private enum DisplayType {
+    private static enum DisplayType {
         TEXT,
         ICON,
         BUTTON,
@@ -57,7 +57,7 @@ public class HomeManager extends RestManager {
         TOGGLE,
         COLOR,
         WARNING,
-        UNKNOWN
+        UNKNOWN;
     }
 
     private static record EndpointValue<T> (T value) {
@@ -66,13 +66,13 @@ public class HomeManager extends RestManager {
     private static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
     }
 
-    private enum ValueType {
+    private static enum ValueType {
         BOOL,
         INT,
         FLOAT,
         VOID,
         STRING,
-        UNKNOWN
+        UNKNOWN;
     }
 
     public static record EndpointState(@Nullable String value, ValueType valueType, long refresh) {
@@ -91,7 +91,7 @@ public class HomeManager extends RestManager {
         }
     }
 
-    public enum EpType {
+    public static enum EpType {
         SIGNAL,
         SLOT,
         UNKNOWN;
@@ -106,23 +106,23 @@ public class HomeManager extends RestManager {
 
     public static record Endpoint(int id, String name, String label, EpType epType, Visibility visibility, int refresh,
             ValueType valueType, EndpointUi ui, @Nullable String category, Object value, List<LogEntry> history) {
-        private enum Visibility {
+        private static enum Visibility {
             INTERNAL,
             NORMAL,
             DASHBOARD,
-            UNKNOWN
+            UNKNOWN;
         }
     }
 
-    private enum Status {
+    private static enum Status {
         UNREACHABLE,
         DISABLED,
         ACTIVE,
         UNPAIRED,
-        UNKNOWN
+        UNKNOWN;
     }
 
-    public enum Category {
+    public static enum Category {
         BASIC_SHUTTER,
         SHUTTER,
         ALARM,

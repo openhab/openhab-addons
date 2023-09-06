@@ -610,7 +610,9 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
 
         @Override
         public boolean equals(Object object) {
-            return object instanceof TrashDevice td ? this.device.getDSID().equals(td.getDevice().getDSID()) : false;
+            return object instanceof TrashDevice
+                    ? this.device.getDSID().equals(((TrashDevice) object).getDevice().getDSID())
+                    : false;
         }
     }
 

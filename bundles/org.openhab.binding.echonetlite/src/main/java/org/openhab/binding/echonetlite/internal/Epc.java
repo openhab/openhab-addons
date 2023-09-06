@@ -234,19 +234,16 @@ public interface Epc {
             this(code, stateCodec, stateCodec);
         }
 
-        @Override
         public int code() {
             return code;
         }
 
         @Nullable
-        @Override
         public StateDecode decoder() {
             return stateDecode;
         }
 
         @Nullable
-        @Override
         public StateEncode encoder() {
             return stateEncode;
         }
@@ -366,19 +363,16 @@ public interface Epc {
             this(code, stateCodec, stateCodec);
         }
 
-        @Override
         public int code() {
             return code;
         }
 
         @Nullable
-        @Override
         public StateDecode decoder() {
             return stateDecode;
         }
 
         @Nullable
-        @Override
         public StateEncode encoder() {
             return stateEncode;
         }
@@ -395,7 +389,6 @@ public interface Epc {
             this.code = code;
         }
 
-        @Override
         public int code() {
             return code;
         }
@@ -428,19 +421,16 @@ public interface Epc {
             this(code, stateCodec, stateCodec);
         }
 
-        @Override
         public int code() {
             return code;
         }
 
         @Nullable
-        @Override
         public StateDecode decoder() {
             return stateDecode;
         }
 
         @Nullable
-        @Override
         public StateEncode encoder() {
             return stateEncode;
         }
@@ -455,7 +445,6 @@ public interface Epc {
             this.code = code;
         }
 
-        @Override
         public int code() {
             return code;
         }
@@ -491,7 +480,6 @@ public interface Epc {
             this.code = code;
         }
 
-        @Override
         public int code() {
             return code;
         }

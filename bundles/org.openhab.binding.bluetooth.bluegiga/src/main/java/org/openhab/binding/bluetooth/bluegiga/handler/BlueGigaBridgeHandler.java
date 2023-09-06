@@ -779,8 +779,9 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     @Override
     public void bluegigaEventReceived(@Nullable BlueGigaResponse event) {
-        if (event instanceof BlueGigaScanResponseEvent scanEvent) {
+        if (event instanceof BlueGigaScanResponseEvent) {
             if (initComplete) {
+                BlueGigaScanResponseEvent scanEvent = (BlueGigaScanResponseEvent) event;
 
                 // We use the scan event to add any devices we hear to the devices list
                 // The device gets created, and then manages itself for discovery etc.
@@ -794,11 +795,13 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             return;
         }
 
-        if (event instanceof BlueGigaConnectionStatusEvent connectionEvent) {
+        if (event instanceof BlueGigaConnectionStatusEvent) {
+            BlueGigaConnectionStatusEvent connectionEvent = (BlueGigaConnectionStatusEvent) event;
             connections.put(connectionEvent.getConnection(), new BluetoothAddress(connectionEvent.getAddress()));
         }
 
-        if (event instanceof BlueGigaDisconnectedEvent disconnectedEvent) {
+        if (event instanceof BlueGigaDisconnectedEvent) {
+            BlueGigaDisconnectedEvent disconnectedEvent = (BlueGigaDisconnectedEvent) event;
             connections.remove(disconnectedEvent.getConnection());
         }
     }

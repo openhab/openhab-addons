@@ -170,8 +170,9 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof DWDPollenflugRegionHandler regionListener) {
+        if (childHandler instanceof DWDPollenflugRegionHandler) {
             logger.debug("Register region listener.");
+            final DWDPollenflugRegionHandler regionListener = (DWDPollenflugRegionHandler) childHandler;
             if (regionListeners.add(regionListener)) {
                 final DWDPollenflug localPollenflug = pollenflug;
                 if (localPollenflug != null) {
@@ -186,9 +187,9 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof DWDPollenflugRegionHandler handler) {
+        if (childHandler instanceof DWDPollenflugRegionHandler) {
             logger.debug("Unregister region listener.");
-            if (!regionListeners.remove(handler)) {
+            if (!regionListeners.remove((DWDPollenflugRegionHandler) childHandler)) {
                 logger.warn("Tried to remove listener {} but it was not registered. This is probably an error.",
                         childHandler);
             }

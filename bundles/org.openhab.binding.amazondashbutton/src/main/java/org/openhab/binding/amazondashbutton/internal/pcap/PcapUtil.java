@@ -36,8 +36,9 @@ public class PcapUtil {
      */
     public static Set<PcapNetworkInterfaceWrapper> getAllNetworkInterfaces() {
         try {
-            return Collections.unmodifiableSet(Pcaps.findAllDevs().stream().map(PcapNetworkInterfaceWrapper.TRANSFORMER)
-                    .collect(Collectors.toSet()));
+            final Set<PcapNetworkInterfaceWrapper> allNetworkInterfaces = Collections.unmodifiableSet(Pcaps
+                    .findAllDevs().stream().map(PcapNetworkInterfaceWrapper.TRANSFORMER).collect(Collectors.toSet()));
+            return allNetworkInterfaces;
         } catch (PcapNativeException e) {
             throw new RuntimeException(e);
         }

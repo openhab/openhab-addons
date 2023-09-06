@@ -12,15 +12,6 @@
  */
 package org.openhab.binding.gardena.internal.model.dto.api;
 
-import javax.measure.Unit;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Illuminance;
-import javax.measure.quantity.Temperature;
-
-import org.eclipse.jdt.annotation.NonNull;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
-
 /**
  * Represents a Gardena object that is sent via the Gardena API.
  *
@@ -28,11 +19,7 @@ import org.openhab.core.library.unit.Units;
  */
 public class SensorService {
     public TimestampedIntegerValue soilHumidity;
-    public @NonNull Unit<@NonNull Dimensionless> soilHumidityUnit = Units.PERCENT;
     public TimestampedIntegerValue soilTemperature;
-    public @NonNull Unit<@NonNull Temperature> soilTemperatureUnit = SIUnits.CELSIUS;
     public TimestampedIntegerValue ambientTemperature;
-    public @NonNull Unit<@NonNull Temperature> ambientTemperatureUnit = SIUnits.CELSIUS;
     public TimestampedIntegerValue lightIntensity;
-    public @NonNull Unit<@NonNull Illuminance> lightIntensityUnit = Units.LUX;
 }

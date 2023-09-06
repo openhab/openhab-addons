@@ -54,9 +54,10 @@ public class AmpliPiMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         ThingUID uid = getThingUID(service);
         if (uid != null) {
-            return DiscoveryResultBuilder.create(uid).withLabel("AmpliPi Controller")
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("AmpliPi Controller")
                     .withProperty(AmpliPiBindingConstants.CFG_PARAM_HOSTNAME, getIpAddress(service).getHostAddress())
                     .withRepresentationProperty(AmpliPiBindingConstants.CFG_PARAM_HOSTNAME).build();
+            return result;
         } else {
             return null;
         }
@@ -67,7 +68,7 @@ public class AmpliPiMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant
         if (service.getName().equals(AMPLIPI_API)) {
             InetAddress ip = getIpAddress(service);
             if (ip != null) {
-                String id = ip.toString().substring(1).replace(".", "");
+                String id = ip.toString().substring(1).replaceAll("\\.", "");
                 return new ThingUID(AmpliPiBindingConstants.THING_TYPE_CONTROLLER, id);
             }
         }

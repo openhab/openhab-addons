@@ -170,7 +170,8 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
-        if (childHandler instanceof BondDeviceHandler handler) {
+        if (childHandler instanceof BondDeviceHandler) {
+            BondDeviceHandler handler = (BondDeviceHandler) childHandler;
             synchronized (handlers) {
                 // Start the BPUP update service after the first child device is added
                 startUDPListenerJob();
@@ -183,7 +184,8 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof BondDeviceHandler handler) {
+        if (childHandler instanceof BondDeviceHandler) {
+            BondDeviceHandler handler = (BondDeviceHandler) childHandler;
             synchronized (handlers) {
                 handlers.remove(handler);
                 if (handlers.isEmpty()) {
@@ -208,7 +210,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
         String deviceId = null;
         String topicType = null;
         if (topic != null) {
-            String[] parts = topic.split("/");
+            String parts[] = topic.split("/");
             deviceId = parts[1];
             topicType = parts[2];
         }
@@ -330,7 +332,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(BondDiscoveryService.class);
+        return Collections.singleton(BondDiscoveryService.class);
     }
 
     public void setDiscoveryService(BondDiscoveryService discoveryService) {

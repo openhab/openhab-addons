@@ -126,7 +126,7 @@ public class RadioThermostatConnector {
 
         try {
             Request request = httpClient.POST(buildRequestURL(resource)).timeout(REQUEST_TIMEOUT_MS,
-                    TimeUnit.MILLISECONDS);
+                    TimeUnit.MICROSECONDS);
             request.header(HttpHeader.ACCEPT, "text/plain");
             request.header(HttpHeader.CONTENT_TYPE, "text/plain");
             request.content(new StringContentProvider(postJson), "application/json");

@@ -70,7 +70,6 @@ public enum EchonetClass {
         return classProperties;
     }
 
-    @Override
     public String toString() {
         return name() + "{" + "groupCode=0x" + Integer.toHexString(groupCode) + ", classCode=0x"
                 + Integer.toHexString(0xFF & classCode) + '}';

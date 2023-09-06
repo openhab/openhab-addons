@@ -293,8 +293,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
             // Notification commands
             if (channelId.equals(CHANNEL_NOTIFICATION_VOLUME)) {
-                if (command instanceof PercentType percentCommand) {
-                    int volume = percentCommand.intValue();
+                if (command instanceof PercentType) {
+                    int volume = ((PercentType) command).intValue();
                     connection.notificationVolume(device, volume);
                     this.notificationVolumeLevel = volume;
                     waitForUpdate = -1;
@@ -318,18 +318,21 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // Media progress commands
             Long mediaPosition = null;
             if (channelId.equals(CHANNEL_MEDIA_PROGRESS)) {
-                if (command instanceof PercentType percentCommand) {
-                    int percent = percentCommand.intValue();
+                if (command instanceof PercentType) {
+                    PercentType value = (PercentType) command;
+                    int percent = value.intValue();
                     mediaPosition = Math.round((mediaLengthMs / 1000d) * (percent / 100d));
                 }
             }
             if (channelId.equals(CHANNEL_MEDIA_PROGRESS_TIME)) {
-                if (command instanceof DecimalType decimalCommand) {
-                    mediaPosition = decimalCommand.longValue();
+                if (command instanceof DecimalType) {
+                    DecimalType value = (DecimalType) command;
+                    mediaPosition = value.longValue();
                 }
-                if (command instanceof QuantityType<?> quantityCommand) {
+                if (command instanceof QuantityType<?>) {
+                    QuantityType<?> value = (QuantityType<?>) command;
                     @Nullable
-                    QuantityType<?> seconds = quantityCommand.toUnit(Units.SECOND);
+                    QuantityType<?> seconds = value.toUnit(Units.SECOND);
                     if (seconds != null) {
                         mediaPosition = seconds.longValue();
                     }
@@ -350,8 +353,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // Volume commands
             if (channelId.equals(CHANNEL_VOLUME)) {
                 Integer volume = null;
-                if (command instanceof PercentType percentCommand) {
-                    volume = percentCommand.intValue();
+                if (command instanceof PercentType) {
+                    PercentType value = (PercentType) command;
+                    volume = value.intValue();
                 } else if (command == OnOffType.OFF) {
                     volume = 0;
                 } else if (command == OnOffType.ON) {
@@ -389,7 +393,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             // shuffle command
             if (channelId.equals(CHANNEL_SHUFFLE)) {
-                if (command instanceof OnOffType value) {
+                if (command instanceof OnOffType) {
+                    OnOffType value = (OnOffType) command;
 
                     connection.command(device, "{\"type\":\"ShuffleCommand\",\"shuffle\":\""
                             + (value == OnOffType.ON ? "true" : "false") + "\"}");
@@ -424,8 +429,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // bluetooth commands
             if (channelId.equals(CHANNEL_BLUETOOTH_MAC)) {
                 needBluetoothRefresh = true;
-                if (command instanceof StringType stringCommand) {
-                    String address = stringCommand.toFullString();
+                if (command instanceof StringType) {
+                    String address = ((StringType) command).toFullString();
                     if (!address.isEmpty()) {
                         waitForUpdate = 4000;
                     }
@@ -561,8 +566,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
             }
             if (channelId.equals(CHANNEL_TEXT_TO_SPEECH_VOLUME)) {
-                if (command instanceof PercentType percentCommand) {
-                    textToSpeechVolume = percentCommand.intValue();
+                if (command instanceof PercentType) {
+                    PercentType value = (PercentType) command;
+                    textToSpeechVolume = value.intValue();
                 } else if (command == OnOffType.OFF) {
                     textToSpeechVolume = 0;
                 } else if (command == OnOffType.ON) {
@@ -674,7 +680,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (command instanceof RefreshType) {
             this.lastKnownEqualizer = null;
         }
-        if (command instanceof DecimalType decimalCommand) {
+        if (command instanceof DecimalType) {
+            DecimalType value = (DecimalType) command;
             if (this.lastKnownEqualizer == null) {
                 updateEqualizerState();
             }
@@ -682,13 +689,13 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             if (lastKnownEqualizer != null) {
                 JsonEqualizer newEqualizerSetting = lastKnownEqualizer.createClone();
                 if (channelId.equals(CHANNEL_EQUALIZER_BASS)) {
-                    newEqualizerSetting.bass = decimalCommand.intValue();
+                    newEqualizerSetting.bass = value.intValue();
                 }
                 if (channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)) {
-                    newEqualizerSetting.mid = decimalCommand.intValue();
+                    newEqualizerSetting.mid = value.intValue();
                 }
                 if (channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
-                    newEqualizerSetting.treble = decimalCommand.intValue();
+                    newEqualizerSetting.treble = value.intValue();
                 }
                 try {
                     connection.setEqualizer(device, newEqualizerSetting);

@@ -14,6 +14,7 @@ package org.openhab.binding.fsinternetradio.internal;
 
 import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindingConstants.THING_TYPE_RADIO;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class FSInternetRadioHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_RADIO);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RADIO);
 
     private final HttpClient httpClient;
 

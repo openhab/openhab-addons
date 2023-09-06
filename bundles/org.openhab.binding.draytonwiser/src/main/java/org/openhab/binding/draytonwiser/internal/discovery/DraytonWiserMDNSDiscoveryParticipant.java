@@ -15,6 +15,7 @@ package org.openhab.binding.draytonwiser.internal.discovery;
 import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.*;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class DraytonWiserMDNSDiscoveryParticipant implements MDNSDiscoveryPartic
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(THING_TYPE_BRIDGE);
+        return Collections.singleton(THING_TYPE_BRIDGE);
     }
 
     @Override

@@ -13,7 +13,7 @@
 package org.openhab.binding.caddx.internal.handler;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
@@ -99,7 +99,7 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(CaddxKeypadActions.class);
+        return Collections.singleton(CaddxKeypadActions.class);
     }
 
     public void enterTerminalMode() {

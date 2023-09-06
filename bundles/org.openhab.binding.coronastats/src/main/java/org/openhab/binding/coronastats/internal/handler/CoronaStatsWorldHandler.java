@@ -172,8 +172,9 @@ public class CoronaStatsWorldHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof CoronaStatsCountryHandler listener) {
+        if (childHandler instanceof CoronaStatsCountryHandler) {
             logger.debug("Register thing listener.");
+            final CoronaStatsCountryHandler listener = (CoronaStatsCountryHandler) childHandler;
             if (countryListeners.add(listener)) {
                 final CoronaStats localCoronaStats = coronaStats;
                 if (localCoronaStats != null) {
@@ -188,9 +189,9 @@ public class CoronaStatsWorldHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof CoronaStatsCountryHandler countryHandler) {
+        if (childHandler instanceof CoronaStatsCountryHandler) {
             logger.debug("Unregister thing listener.");
-            if (!countryListeners.remove(countryHandler)) {
+            if (!countryListeners.remove((CoronaStatsCountryHandler) childHandler)) {
                 logger.warn("Tried to remove listener {} but it was not registered. This is probably an error.",
                         childHandler);
             }

@@ -23,9 +23,9 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -864,9 +864,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             if (SCENE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
                     updateState(SCENE, new StringType(String.valueOf(currentScene)));
-                } else if (command instanceof StringType stringCommand) {
+                } else if (command instanceof StringType) {
                     try {
-                        selectScene(Integer.valueOf(stringCommand.toString()));
+                        selectScene(Integer.valueOf(((StringType) command).toString()));
                     } catch (NumberFormatException nfe) {
                         logger.debug("Cannot interpret scene command {}", command);
                     }
@@ -965,7 +965,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(ElroConnectsDiscoveryService.class);
+        return Collections.singleton(ElroConnectsDiscoveryService.class);
     }
 
     public Map<Integer, String> listDevicesFromConsole() {

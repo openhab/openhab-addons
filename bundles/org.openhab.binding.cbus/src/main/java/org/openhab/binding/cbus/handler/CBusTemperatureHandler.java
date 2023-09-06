@@ -66,7 +66,6 @@ public class CBusTemperatureHandler extends CBusGroupHandler {
         }
     }
 
-    @Override
     public void updateGroup(int updateApplicationId, int updateGroupId, String value) {
         if (updateGroupId == groupId && updateApplicationId == applicationId) {
             Thing thing = getThing();

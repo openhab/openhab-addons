@@ -75,7 +75,8 @@ public class JSONDetailedGroupInfoImpl implements DetailedGroupInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DetailedGroupInfo group) {
+        if (obj instanceof DetailedGroupInfo) {
+            DetailedGroupInfo group = (DetailedGroupInfo) obj;
             return group.getGroupID() == this.getGroupID();
         }
         return false;

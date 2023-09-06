@@ -260,10 +260,8 @@ public class BlueGigaSerialHandler {
 
     private void checkIfAlive() {
         if (!isAlive()) {
-            throw new IllegalStateException("""
-                    Bluegiga handler is dead. Most likely because of IO errors. \
-                    Re-initialization of the BlueGigaSerialHandler is required.\
-                    """);
+            throw new IllegalStateException("Bluegiga handler is dead. Most likely because of IO errors. "
+                    + "Re-initialization of the BlueGigaSerialHandler is required.");
         }
     }
 

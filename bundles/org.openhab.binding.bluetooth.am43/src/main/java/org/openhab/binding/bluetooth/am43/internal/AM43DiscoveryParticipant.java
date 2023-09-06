@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.am43.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +42,7 @@ public class AM43DiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(AM43BindingConstants.THING_TYPE_AM43);
+        return Collections.singleton(AM43BindingConstants.THING_TYPE_AM43);
     }
 
     @Override

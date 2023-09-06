@@ -10,19 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ecovacs.internal.api.impl;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
-import com.google.gson.annotations.SerializedName;
+package org.openhab.binding.gardena.internal.model.dto;
 
 /**
- * @author Johannes Ptaszyk - Initial contribution
+ * A local service exists only in openHAB and the state is not saved on restarts.
+ *
+ * @author Gerhard Riegler - Initial contribution
  */
-@NonNullByDefault
-public enum PortalTodo {
-    @SerializedName("GetDeviceList")
-    GET_DEVICE_LIST,
-    @SerializedName("loginByItToken")
-    LOGIN_BY_TOKEN;
+
+public class LocalService {
+    public Integer commandDuration;
 }

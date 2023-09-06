@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.astro.internal.job;
 
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.util.DateTimeUtils.*;
@@ -71,7 +72,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      */
     static void scheduleEvent(String thingUID, AstroThingHandler astroHandler, Calendar eventAt, String event,
             String channelId, boolean configAlreadyApplied) {
-        scheduleEvent(thingUID, astroHandler, eventAt, List.of(event), channelId, configAlreadyApplied);
+        scheduleEvent(thingUID, astroHandler, eventAt, singletonList(event), channelId, configAlreadyApplied);
     }
 
     /**

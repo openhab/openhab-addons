@@ -14,6 +14,7 @@ package org.openhab.binding.denonmarantz.internal.discovery;
 
 import static org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +66,7 @@ public class DenonMarantzDiscoveryParticipant implements MDNSDiscoveryParticipan
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(THING_TYPE_AVR);
+        return Collections.singleton(THING_TYPE_AVR);
     }
 
     @Override
@@ -114,8 +115,9 @@ public class DenonMarantzDiscoveryParticipant implements MDNSDiscoveryParticipan
             properties.put(Thing.PROPERTY_MODEL_ID, model);
 
             String label = friendlyName + " (" + vendor + ' ' + model + ")";
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(label)
+            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(label)
                     .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
+            return result;
 
         } else {
             return null;

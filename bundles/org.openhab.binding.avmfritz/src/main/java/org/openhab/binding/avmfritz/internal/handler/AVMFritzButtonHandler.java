@@ -78,7 +78,8 @@ public class AVMFritzButtonHandler extends DeviceHandler {
         if (thing.getUID().equals(thingUID)) {
             super.onDeviceUpdated(thingUID, device);
 
-            if (device instanceof DeviceModel deviceModel) {
+            if (device instanceof DeviceModel) {
+                DeviceModel deviceModel = (DeviceModel) device;
                 if (deviceModel.isHANFUNButton()) {
                     updateHANFUNButton(deviceModel.getButtons());
                 }

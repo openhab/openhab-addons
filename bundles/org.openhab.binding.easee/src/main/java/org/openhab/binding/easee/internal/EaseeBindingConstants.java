@@ -171,7 +171,7 @@ public class EaseeBindingConstants {
     public static final String THING_CONFIG_BACK_PLATE_ID = "backPlateId";
     public static final String THING_CONFIG_MASTER_BACK_PLATE_ID = "masterBackPlateId";
 
-    public static final Instant OUTDATED_DATE = Instant.EPOCH;
+    public static final Instant OUTDATED_DATE = Instant.MIN;
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static final String PARAMETER_NAME_WRITE_COMMAND = "writeCommand";

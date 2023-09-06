@@ -74,7 +74,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
         try {
             if (command instanceof RefreshType) {
                 refresh();
-            } else if ("run".equals(channelUID.getId())) {
+            } else if (channelUID.getId().equals("run")) {
                 if (command == OnOffType.ON) {
                     sendCommand("unpause");
                 } else if (command == OnOffType.OFF) {
@@ -82,7 +82,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
                 }
                 refresh();
                 delayedRefresh();
-            } else if ("finish".equals(channelUID.getId())) {
+            } else if (channelUID.getId().equals("finish")) {
                 if (command == OnOffType.ON) {
                     sendCommand("finish");
                 } else if (command == OnOffType.OFF) {

@@ -15,7 +15,6 @@ package org.openhab.binding.daikin.internal;
 import java.io.EOFException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -32,7 +31,6 @@ import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.EnergyInfoDayAndWeek;
 import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
 import org.openhab.binding.daikin.internal.api.Enums.SpecialMode;
-import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
@@ -112,11 +110,9 @@ public class DaikinWebTargets {
         return ControlInfo.parse(response);
     }
 
-    public boolean setControlInfo(ControlInfo info) throws DaikinCommunicationException {
+    public void setControlInfo(ControlInfo info) throws DaikinCommunicationException {
         Map<String, String> queryParams = info.getParamString();
-        String result = invoke(setControlInfoUri, queryParams);
-        Map<String, String> responseMap = InfoParser.parse(result);
-        return Optional.ofNullable(responseMap.get("ret")).orElse("").equals("OK");
+        invoke(setControlInfoUri, queryParams);
     }
 
     public SensorInfo getSensorInfo() throws DaikinCommunicationException {

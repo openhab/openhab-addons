@@ -21,7 +21,7 @@ package org.openhab.binding.freebox.internal.api.model;
  */
 public class FreeboxAuthorizationStatus {
 
-    private enum AuthorizationStatus {
+    private static enum AuthorizationStatus {
         UNKNOWN("unknown"),
         PENDING("pending"),
         TIMEOUT("timeout"),

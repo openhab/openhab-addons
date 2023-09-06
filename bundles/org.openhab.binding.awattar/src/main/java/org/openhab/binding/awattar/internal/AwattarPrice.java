@@ -50,7 +50,6 @@ public class AwattarPrice implements Comparable<AwattarPrice> {
         return price;
     }
 
-    @Override
     public String toString() {
         return String.format("(%1$tF %1$tR - %2$tR: %3$.3f)", startTimestamp, endTimestamp, getPrice());
     }

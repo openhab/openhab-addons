@@ -128,8 +128,8 @@ public class SmartherApiConnector {
         } catch (ExecutionException e) {
             final Throwable cause = e.getCause();
 
-            if (cause instanceof SmartherGatewayException gatewayException) {
-                throw gatewayException;
+            if (cause instanceof SmartherGatewayException) {
+                throw (SmartherGatewayException) cause;
             } else {
                 throw new SmartherGatewayException(e.getMessage(), e);
             }

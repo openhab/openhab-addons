@@ -121,12 +121,8 @@ class ThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<Ther
 
     @Test
     void testUpdateChannelsTemperatureLevelService() {
-        JsonElement jsonObject = JsonParser.parseString("""
-                {
-                   "@type": "temperatureLevelState",
-                   "temperature": 21.5
-                 }\
-                """);
+        JsonElement jsonObject = JsonParser.parseString(
+                "{\n" + "   \"@type\": \"temperatureLevelState\",\n" + "   \"temperature\": 21.5\n" + " }");
         getFixture().processUpdate("TemperatureLevel", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE),

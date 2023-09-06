@@ -13,7 +13,7 @@
 package org.openhab.binding.avmfritz.internal.handler;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.avmfritz.internal.actions.AVMFritzHeatingActions;
@@ -30,7 +30,7 @@ public interface AVMFritzHeatingActionsHandler extends ThingHandler {
 
     @Override
     default Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(AVMFritzHeatingActions.class);
+        return Collections.singleton(AVMFritzHeatingActions.class);
     }
 
     /**

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.enoceanble.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +46,7 @@ public class EnoceanBleDiscoveryParticipant implements BluetoothDiscoveryPartici
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(EnoceanBleBindingConstants.THING_TYPE_PTM215B);
+        return Collections.singleton(EnoceanBleBindingConstants.THING_TYPE_PTM215B);
     }
 
     @Override

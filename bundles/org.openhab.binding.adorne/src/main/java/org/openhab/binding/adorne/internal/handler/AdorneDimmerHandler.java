@@ -50,10 +50,10 @@ public class AdorneDimmerHandler extends AdorneSwitchHandler {
             if (channelUID.getId().equals(CHANNEL_BRIGHTNESS)) {
                 if (command instanceof RefreshType) {
                     refreshBrightness();
-                } else if (command instanceof PercentType percentCommand) {
+                } else if (command instanceof PercentType) {
                     // Change the brightness through the hub controller
                     AdorneHubController adorneHubController = getAdorneHubController();
-                    int level = percentCommand.intValue();
+                    int level = ((PercentType) command).intValue();
                     if (level >= 1 && level <= 100) { // Ignore commands outside of the supported 1-100 range
                         adorneHubController.setBrightness(zoneId, level);
                     } else {

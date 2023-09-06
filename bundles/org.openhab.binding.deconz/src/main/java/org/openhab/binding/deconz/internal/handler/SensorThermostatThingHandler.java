@@ -17,6 +17,7 @@ import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -62,7 +63,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class SensorThermostatThingHandler extends SensorBaseThingHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_THERMOSTAT);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_THERMOSTAT);
 
     private static final List<String> CONFIG_CHANNELS = List.of(CHANNEL_EXTERNAL_WINDOW_OPEN, CHANNEL_BATTERY_LEVEL,
             CHANNEL_BATTERY_LOW, CHANNEL_HEATSETPOINT, CHANNEL_TEMPERATURE_OFFSET, CHANNEL_THERMOSTAT_MODE,
@@ -101,8 +102,8 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                 newConfig.offset = newOffset;
             }
             case CHANNEL_THERMOSTAT_MODE -> {
-                if (command instanceof StringType stringCommand) {
-                    String thermostatMode = stringCommand.toString();
+                if (command instanceof StringType) {
+                    String thermostatMode = ((StringType) command).toString();
                     try {
                         newConfig.mode = ThermostatMode.valueOf(thermostatMode);
                     } catch (IllegalArgumentException ex) {
@@ -204,8 +205,8 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
 
     private @Nullable Integer getTemperatureFromCommand(Command command) {
         BigDecimal newTemperature;
-        if (command instanceof DecimalType decimalCommand) {
-            newTemperature = decimalCommand.toBigDecimal();
+        if (command instanceof DecimalType) {
+            newTemperature = ((DecimalType) command).toBigDecimal();
         } else if (command instanceof QuantityType) {
             @SuppressWarnings("unchecked")
             QuantityType<Temperature> temperatureCelsius = ((QuantityType<Temperature>) command).toUnit(CELSIUS);

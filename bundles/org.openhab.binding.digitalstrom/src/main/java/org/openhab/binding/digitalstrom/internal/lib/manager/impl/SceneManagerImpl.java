@@ -464,7 +464,7 @@ public class SceneManagerImpl implements SceneManager {
 
     @Override
     public void scenesGenerated(char[] scenesGenerated) {
-        if ("1111".equals(String.valueOf(scenesGenerated))) {
+        if (String.valueOf(scenesGenerated).equals("1111")) {
             this.scenesGenerated = true;
             stateChanged(ManagerStates.RUNNING);
         }

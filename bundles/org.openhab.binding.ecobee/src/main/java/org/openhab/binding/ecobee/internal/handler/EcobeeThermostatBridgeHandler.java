@@ -16,10 +16,10 @@ import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.*;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -237,9 +237,9 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
     public boolean actionPerformFunction(AbstractFunction function) {
         logger.debug("ThermostatBridge: Perform function '{}' on thermostat {}", function.type, thermostatId);
         SelectionDTO selection = new SelectionDTO();
-        selection.setThermostats(Set.of(thermostatId));
+        selection.setThermostats(Collections.singleton(thermostatId));
         FunctionRequest request = new FunctionRequest(selection);
-        request.functions = List.of(function);
+        request.functions = Collections.singletonList(function);
         EcobeeAccountBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             return handler.performThermostatFunction(request);
@@ -249,7 +249,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(EcobeeActions.class);
+        return Collections.singletonList(EcobeeActions.class);
     }
 
     public void updateChannels(ThermostatDTO thermostat) {
@@ -329,15 +329,15 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
                     success = true;
                 }
             } else if (Integer.class.isAssignableFrom(fieldClass)) {
-                if (command instanceof DecimalType decimalCommand) {
+                if (command instanceof DecimalType) {
                     logger.debug("Set field of type Integer to value of DecimalType");
-                    field.set(object, Integer.valueOf(decimalCommand.intValue()));
+                    field.set(object, Integer.valueOf(((DecimalType) command).intValue()));
                     success = true;
-                } else if (command instanceof QuantityType quantityCommand) {
-                    Unit<?> unit = quantityCommand.getUnit();
+                } else if (command instanceof QuantityType) {
+                    Unit<?> unit = ((QuantityType<?>) command).getUnit();
                     logger.debug("Set field of type Integer to value of QuantityType with unit {}", unit);
                     if (unit.equals(ImperialUnits.FAHRENHEIT) || unit.equals(SIUnits.CELSIUS)) {
-                        QuantityType<?> quantity = quantityCommand.toUnit(ImperialUnits.FAHRENHEIT);
+                        QuantityType<?> quantity = ((QuantityType<?>) command).toUnit(ImperialUnits.FAHRENHEIT);
                         if (quantity != null) {
                             field.set(object, quantity.intValue() * 10);
                             success = true;
@@ -801,7 +801,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
 
     private void performThermostatUpdate(ThermostatDTO thermostat) {
         SelectionDTO selection = new SelectionDTO();
-        selection.setThermostats(Set.of(thermostatId));
+        selection.setThermostats(Collections.singleton(thermostatId));
         ThermostatUpdateRequestDTO request = new ThermostatUpdateRequestDTO(selection);
         request.thermostat = thermostat;
         EcobeeAccountBridgeHandler handler = getBridgeHandler();

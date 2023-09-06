@@ -97,7 +97,7 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
         if (otherDmxChannel == null) {
             return -1;
         }
-        int universeCompare = Integer.compare(getUniverseId(), otherDmxChannel.getUniverseId());
+        int universeCompare = Integer.valueOf(getUniverseId()).compareTo(otherDmxChannel.getUniverseId());
         if (universeCompare == 0) {
             return Integer.compare(getChannelId(), otherDmxChannel.getChannelId());
         } else {
@@ -127,7 +127,7 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
             if (channelMatch.matches()) {
                 final int universeId = (channelMatch.group(1) == null) ? defaultUniverseId
                         : Integer.parseInt(channelMatch.group(1));
-                dmxChannelWidth = "".equals(channelMatch.group(3)) ? 1 : Integer.parseInt(channelMatch.group(3));
+                dmxChannelWidth = channelMatch.group(3).equals("") ? 1 : Integer.parseInt(channelMatch.group(3));
                 dmxChannelId = Integer.parseInt(channelMatch.group(2));
                 LOGGER.trace("parsed channel string {} to universe {}, id {}, width {}", singleDmxChannelString,
                         universeId, dmxChannelId, dmxChannelWidth);

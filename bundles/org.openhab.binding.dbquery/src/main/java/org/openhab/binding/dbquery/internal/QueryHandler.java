@@ -193,11 +193,13 @@ public class QueryHandler extends BaseThingHandler {
 
     private void updateStateWithParentBridgeStatus() {
         final @Nullable Bridge bridge = getBridge();
+        DatabaseBridgeHandler databaseBridgeHandler;
 
         if (bridge != null) {
             @Nullable
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof DatabaseBridgeHandler databaseBridgeHandler) {
+            if (bridgeHandler instanceof DatabaseBridgeHandler) {
+                databaseBridgeHandler = (DatabaseBridgeHandler) bridgeHandler;
                 database = databaseBridgeHandler.getDatabase();
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);

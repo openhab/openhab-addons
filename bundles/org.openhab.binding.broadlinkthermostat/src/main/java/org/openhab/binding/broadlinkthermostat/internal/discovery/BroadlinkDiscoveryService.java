@@ -90,7 +90,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
                     Integer.toHexString(dev.getDeviceType()), dev.getHost(), dev.getMac());
 
             ThingUID thingUID;
-            String id = dev.getHost().replace(".", "-");
+            String id = dev.getHost().replaceAll("\\.", "-");
             logger.debug("Device ID with IP address replacement: {}", id);
             try {
                 id = getHostnameWithoutDomain(InetAddress.getByName(dev.getHost()).getHostName());
@@ -187,11 +187,11 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
         if (hostname.matches(broadlinkRegex)) {
             String[] dotSeparatedString = hostname.split("\\.");
             logger.debug("Found original broadlink DNS name {}, removing domain", hostname);
-            return dotSeparatedString[0].replace(".", "-");
+            return dotSeparatedString[0].replaceAll("\\.", "-");
         } else {
             logger.debug("DNS name does not match original broadlink name: {}, using it without modification. ",
                     hostname);
-            return hostname.replace(".", "-");
+            return hostname.replaceAll("\\.", "-");
         }
     }
 }

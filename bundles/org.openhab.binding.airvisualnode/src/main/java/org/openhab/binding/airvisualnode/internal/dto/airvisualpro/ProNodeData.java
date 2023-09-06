@@ -44,7 +44,6 @@ public class ProNodeData implements NodeDataInterface {
         this.status = status;
     }
 
-    @Override
     public DateAndTime getDateAndTime() {
         return dateAndTime;
     }
@@ -53,7 +52,6 @@ public class ProNodeData implements NodeDataInterface {
         this.dateAndTime = dateAndTime;
     }
 
-    @Override
     public MeasurementsInterface getMeasurements() {
         return measurements.get(0);
     }
@@ -62,7 +60,6 @@ public class ProNodeData implements NodeDataInterface {
         this.measurements = measurements;
     }
 
-    @Override
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -71,7 +68,6 @@ public class ProNodeData implements NodeDataInterface {
         this.serialNumber = serialNumber;
     }
 
-    @Override
     public Settings getSettings() {
         return settings;
     }
@@ -80,7 +76,6 @@ public class ProNodeData implements NodeDataInterface {
         this.settings = settings;
     }
 
-    @Override
     public Status getStatus() {
         return status;
     }

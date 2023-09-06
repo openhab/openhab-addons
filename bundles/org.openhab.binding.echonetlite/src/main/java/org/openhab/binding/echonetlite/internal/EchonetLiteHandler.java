@@ -88,10 +88,10 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
             } else {
                 updateState(channelUID, currentState);
             }
-        } else if (command instanceof State stateCommand) {
+        } else if (command instanceof State) {
             logger.debug("Updating: {} to {}", channelUID, command);
 
-            handler.updateDevice(requireNonNull(instanceKey), channelUID.getId(), stateCommand);
+            handler.updateDevice(requireNonNull(instanceKey), channelUID.getId(), (State) command);
         }
     }
 
@@ -124,7 +124,6 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         }
     }
 
-    @Override
     public void handleRemoval() {
         @Nullable
         final EchonetLiteBridgeHandler bridgeHandler = bridgeHandler();
@@ -137,7 +136,6 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         bridgeHandler.removeDevice(requireNonNull(instanceKey));
     }
 
-    @Override
     public void onInitialised(String identifier, InstanceKey instanceKey, Map<String, String> channelIdAndType) {
         logger.debug("Initialised Channels: {}", channelIdAndType);
 
@@ -169,7 +167,6 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         updateStatus(ThingStatus.ONLINE);
     }
 
-    @Override
     public void onUpdated(final String channelId, final State value) {
         stateByChannelId.put(channelId, value);
 
@@ -179,12 +176,10 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         updateState(channelId, value);
     }
 
-    @Override
     public void onRemoved() {
         updateStatus(ThingStatus.REMOVED);
     }
 
-    @Override
     public void onOffline() {
         if (ThingStatus.OFFLINE != getThing().getStatus()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
