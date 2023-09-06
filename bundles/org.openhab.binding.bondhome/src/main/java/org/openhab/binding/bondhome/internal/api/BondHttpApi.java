@@ -17,7 +17,6 @@ import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
@@ -39,6 +39,7 @@ import org.openhab.binding.bondhome.internal.BondException;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -217,7 +218,7 @@ public class BondHttpApi {
                 final Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("BOND-Token",
                         bridgeHandler.getBridgeToken());
                 ContentResponse response;
-                response = request.send();
+                response = request.timeout(BOND_API_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
                 String encoding = response.getEncoding() != null ? response.getEncoding().replace("\"", "").trim()
                         : StandardCharsets.UTF_8.name();
                 try {
