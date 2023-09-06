@@ -85,8 +85,8 @@ public class ColorValue extends Value {
         HSBType oldvalue = (state == UnDefType.UNDEF) ? new HSBType() : (HSBType) state;
         if (command instanceof HSBType hsb) {
             return hsb;
-        } else if (command instanceof OnOffType sw) {
-            OnOffType boolValue = sw;
+        } else if (command instanceof OnOffType onOffCommand) {
+            OnOffType boolValue = onOffCommand;
             PercentType minOn = new PercentType(Math.max(oldvalue.getBrightness().intValue(), onBrightness));
             return new HSBType(oldvalue.getHue(), oldvalue.getSaturation(),
                     boolValue == OnOffType.ON ? minOn : new PercentType(0));

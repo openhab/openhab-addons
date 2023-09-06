@@ -169,16 +169,16 @@ class LxControlJalousie extends LxControl {
     }
 
     private void handleShadeCommands(Command command) throws IOException {
-        if (command instanceof OnOffType sw) {
-            if (sw == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_SHADE);
             }
         }
     }
 
     private void handleAutoShadeCommands(Command command) throws IOException {
-        if (command instanceof OnOffType sw) {
-            if (sw == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_AUTO);
             } else {
                 sendAction(CMD_NO_AUTO);

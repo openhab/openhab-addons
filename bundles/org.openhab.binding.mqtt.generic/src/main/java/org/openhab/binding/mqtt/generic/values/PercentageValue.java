@@ -95,8 +95,8 @@ public class PercentageValue extends Value {
             return oldvalue;
         } else //
                // Increase or decrease by "step"
-        if (command instanceof IncreaseDecreaseType type) {
-            if (type == IncreaseDecreaseType.INCREASE) {
+        if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+            if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                 final BigDecimal v = oldvalue.toBigDecimal().add(stepPercent);
                 return v.compareTo(HUNDRED) <= 0 ? new PercentType(v) : PercentType.HUNDRED;
             } else {
@@ -105,8 +105,8 @@ public class PercentageValue extends Value {
             }
         } else //
                // On/Off equals 100 or 0 percent
-        if (command instanceof OnOffType incdec) {
-            return incdec == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
+        if (command instanceof OnOffType increaseDecreaseCommand) {
+            return increaseDecreaseCommand == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
         } else//
               // Increase or decrease by "step"
         if (command instanceof UpDownType upDown) {

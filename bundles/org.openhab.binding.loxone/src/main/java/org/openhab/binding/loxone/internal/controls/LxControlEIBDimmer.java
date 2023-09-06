@@ -99,15 +99,15 @@ class LxControlEIBDimmer extends LxControl {
             } else {
                 sendAction(CMD_OFF);
             }
-        } else if (command instanceof PercentType percentCmd) {
-            setPosition(percentCmd.doubleValue());
-        } else if (command instanceof IncreaseDecreaseType incdec) {
+        } else if (command instanceof PercentType percentCommand) {
+            setPosition(percentCommand.doubleValue());
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
             Double value = getStateDoubleValue(STATE_POSITION);
             Double min = getMin();
             Double max = getMax();
             Double step = getStep();
             if (value != null && max != null && min != null && step != null && min >= 0 && max >= 0 && max > min) {
-                if (incdec == IncreaseDecreaseType.INCREASE) {
+                if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                     value += step;
                     if (value > max) {
                         value = max;

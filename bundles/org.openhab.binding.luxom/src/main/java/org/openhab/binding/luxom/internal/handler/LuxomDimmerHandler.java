@@ -97,10 +97,10 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
                 int level = number.intValue();
                 logger.trace("dimmer at address {} just setting dimmer level", getAddress());
                 dim(level);
-            } else if (command instanceof IncreaseDecreaseType incdec) {
+            } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                 int currentValue = lastLightLevel.get();
                 int newValue;
-                if (IncreaseDecreaseType.INCREASE.equals(incdec)) {
+                if (IncreaseDecreaseType.INCREASE.equals(increaseDecreaseCommand)) {
                     newValue = currentValue + config.stepPercentage;
                     // round down to step multiple
                     newValue = newValue - newValue % config.stepPercentage;

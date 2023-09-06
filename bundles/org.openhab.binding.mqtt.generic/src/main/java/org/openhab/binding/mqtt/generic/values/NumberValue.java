@@ -114,10 +114,10 @@ public class NumberValue extends Value {
 
     private BigDecimal getOldValue() {
         BigDecimal val = BigDecimal.ZERO;
-        if (state instanceof DecimalType type) {
-            val = type.toBigDecimal();
-        } else if (state instanceof QuantityType<?> type) {
-            val = type.toBigDecimal();
+        if (state instanceof DecimalType decimalCommand) {
+            val = decimalCommand.toBigDecimal();
+        } else if (state instanceof QuantityType<?> quantityCommand) {
+            val = quantityCommand.toBigDecimal();
         }
         return val;
     }

@@ -51,8 +51,8 @@ class LxControlPushbutton extends LxControlSwitch {
 
     @Override
     void handleSwitchCommands(Command command) throws IOException {
-        if (command instanceof OnOffType sw) {
-            if (sw == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_PULSE);
             } else {
                 off();

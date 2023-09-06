@@ -113,8 +113,8 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                     this.setPower(hsb == OnOffType.ON, state);
                 } else if (command instanceof PercentType p) {
                     this.setBrightness(p.intValue(), state);
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    this.changeBrightness(incdec == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    this.changeBrightness(increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
                 } else {
                     logger.error(
                             "CHANNEL_COLOR channel only supports OnOffType/IncreaseDecreaseType/HSBType/PercentType");
@@ -133,12 +133,12 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                 break;
             }
             case MilightBindingConstants.CHANNEL_BRIGHTNESS: {
-                if (command instanceof OnOffType sw) {
-                    this.setPower(sw == OnOffType.ON, state);
-                } else if (command instanceof DecimalType d) {
-                    this.setBrightness(d.intValue(), state);
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    this.changeBrightness(incdec == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
+                if (command instanceof OnOffType onOffCommand) {
+                    this.setPower(onOffCommand == OnOffType.ON, state);
+                } else if (command instanceof DecimalType decimalCommand) {
+                    this.setBrightness(decimalCommand.intValue(), state);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    this.changeBrightness(increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
                 } else {
                     logger.error("CHANNEL_BRIGHTNESS channel only supports OnOffType/IncreaseDecreaseType/DecimalType");
                 }
@@ -148,12 +148,12 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                 break;
             }
             case MilightBindingConstants.CHANNEL_SATURATION: {
-                if (command instanceof OnOffType sw) {
-                    this.setSaturation((sw == OnOffType.ON) ? 100 : 0, state);
-                } else if (command instanceof DecimalType d) {
-                    this.setSaturation(d.intValue(), state);
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    this.changeSaturation(incdec == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
+                if (command instanceof OnOffType onOffCommand) {
+                    this.setSaturation((onOffCommand == OnOffType.ON) ? 100 : 0, state);
+                } else if (command instanceof DecimalType decimalCommand) {
+                    this.setSaturation(decimalCommand.intValue(), state);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    this.changeSaturation(increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
                 } else {
                     logger.error("CHANNEL_SATURATION channel only supports OnOffType/IncreaseDecreaseType/DecimalType");
                 }
@@ -163,10 +163,11 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                 break;
             }
             case MilightBindingConstants.CHANNEL_TEMP: {
-                if (command instanceof OnOffType sw) {
-                    this.setColorTemperature((sw == OnOffType.ON) ? 100 : 0, state);
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    this.changeColorTemperature(incdec == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
+                if (command instanceof OnOffType onOffCommand) {
+                    this.setColorTemperature((onOffCommand == OnOffType.ON) ? 100 : 0, state);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    this.changeColorTemperature(increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? 1 : -1,
+                            state);
                 } else if (command instanceof DecimalType d) {
                     this.setColorTemperature(d.intValue(), state);
                 } else {
@@ -175,10 +176,10 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                 break;
             }
             case MilightBindingConstants.CHANNEL_SPEED_REL: {
-                if (command instanceof IncreaseDecreaseType incdec) {
-                    if (incdec == IncreaseDecreaseType.INCREASE) {
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                         this.changeSpeed(1, state);
-                    } else if (incdec == IncreaseDecreaseType.DECREASE) {
+                    } else if (increaseDecreaseCommand == IncreaseDecreaseType.DECREASE) {
                         this.changeSpeed(-1, state);
                     }
                 } else {
@@ -187,18 +188,18 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                 break;
             }
             case MilightBindingConstants.CHANNEL_ANIMATION_MODE: {
-                if (command instanceof DecimalType d) {
-                    this.setLedMode(d.intValue(), state);
+                if (command instanceof DecimalType decimalCommand) {
+                    this.setLedMode(decimalCommand.intValue(), state);
                 } else {
                     logger.error("Animation mode channel only supports DecimalType");
                 }
                 break;
             }
             case MilightBindingConstants.CHANNEL_ANIMATION_MODE_REL: {
-                if (command instanceof IncreaseDecreaseType incdec) {
-                    if (incdec == IncreaseDecreaseType.INCREASE) {
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                         this.nextAnimationMode(state);
-                    } else if (incdec == IncreaseDecreaseType.DECREASE) {
+                    } else if (increaseDecreaseCommand == IncreaseDecreaseType.DECREASE) {
                         this.previousAnimationMode(state);
                     }
                 } else {

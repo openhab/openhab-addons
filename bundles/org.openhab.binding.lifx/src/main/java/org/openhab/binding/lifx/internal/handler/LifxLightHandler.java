@@ -586,12 +586,12 @@ public class LifxLightHandler extends BaseThingHandler {
                     return () -> handleIncreaseDecreaseCommand(increaseDecreaseCommand);
                 }
             case CHANNEL_EFFECT:
-                if (command instanceof StringType type && features.hasFeature(TILE_EFFECT)) {
-                    return () -> handleTileEffectCommand(type);
+                if (command instanceof StringType stringCommand && features.hasFeature(TILE_EFFECT)) {
+                    return () -> handleTileEffectCommand(stringCommand);
                 }
             case CHANNEL_HEV_CYCLE:
-                if (command instanceof OnOffType sw) {
-                    return () -> handleHevCycleCommand(sw);
+                if (command instanceof OnOffType onOffCommand) {
+                    return () -> handleHevCycleCommand(onOffCommand);
                 }
             case CHANNEL_INFRARED:
                 if (command instanceof PercentType percentCommand) {
@@ -613,15 +613,15 @@ public class LifxLightHandler extends BaseThingHandler {
                             return () -> handleHSBCommand(hsb, zoneIndex);
                         } else if (command instanceof PercentType percentCommand) {
                             return () -> handlePercentCommand(percentCommand, zoneIndex);
-                        } else if (command instanceof IncreaseDecreaseType incdec) {
-                            return () -> handleIncreaseDecreaseCommand(incdec, zoneIndex);
+                        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                            return () -> handleIncreaseDecreaseCommand(increaseDecreaseCommand, zoneIndex);
                         }
                     } else if (channelUID.getId().startsWith(CHANNEL_TEMPERATURE_ZONE)) {
                         int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_TEMPERATURE_ZONE, ""));
                         if (command instanceof PercentType percentCommand) {
                             return () -> handleTemperatureCommand(percentCommand, zoneIndex);
-                        } else if (command instanceof IncreaseDecreaseType incdec) {
-                            return () -> handleIncreaseDecreaseTemperatureCommand(incdec, zoneIndex);
+                        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                            return () -> handleIncreaseDecreaseTemperatureCommand(increaseDecreaseCommand, zoneIndex);
                         }
                     }
                 } catch (NumberFormatException e) {

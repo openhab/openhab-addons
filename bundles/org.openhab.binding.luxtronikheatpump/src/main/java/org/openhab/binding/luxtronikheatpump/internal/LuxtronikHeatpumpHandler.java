@@ -122,8 +122,8 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             command = new DecimalType(value.floatValue());
         }
 
-        if (command instanceof OnOffType sw) {
-            command = sw == OnOffType.ON ? new DecimalType(1) : DecimalType.ZERO;
+        if (command instanceof OnOffType onOffCommand) {
+            command = onOffCommand == OnOffType.ON ? new DecimalType(1) : DecimalType.ZERO;
         }
 
         if (!(command instanceof DecimalType)) {

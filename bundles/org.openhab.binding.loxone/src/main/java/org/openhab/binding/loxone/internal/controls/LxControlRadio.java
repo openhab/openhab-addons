@@ -97,8 +97,8 @@ class LxControlRadio extends LxControl {
     }
 
     private void handleCommands(Command command) throws IOException {
-        if (((command instanceof OnOffType sw && sw == OnOffType.OFF) || DecimalType.ZERO.equals(command))
-                && outputsMap.containsKey("0")) {
+        if (((command instanceof OnOffType onOffCommand && onOffCommand == OnOffType.OFF)
+                || DecimalType.ZERO.equals(command)) && outputsMap.containsKey("0")) {
             sendAction(CMD_RESET);
         } else if (command instanceof DecimalType output) {
             if (outputsMap.containsKey(output.toString())) {

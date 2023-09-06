@@ -258,8 +258,8 @@ public class StatusWrapper {
                 } // else no check needed
                 break;
             case HEADING:
-                if (state instanceof QuantityType type) {
-                    qt = type;
+                if (state instanceof QuantityType quantityCommand) {
+                    qt = quantityCommand;
                     assertEquals(Units.DEGREE_ANGLE, qt.getUnit(), "Angle Unit");
                     assertNotNull(vehicle.properties.vehicleLocation);
                     assertEquals(vehicle.properties.vehicleLocation.heading, qt.intValue(), 0.01, "Heading");

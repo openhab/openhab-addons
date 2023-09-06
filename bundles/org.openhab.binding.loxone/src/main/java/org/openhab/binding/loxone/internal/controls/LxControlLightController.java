@@ -105,20 +105,20 @@ class LxControlLightController extends LxControl {
     }
 
     private void handleCommands(Command command) throws IOException {
-        if (command instanceof OnOffType sw) {
-            if (sw == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_ON);
             } else {
                 sendAction(CMD_OFF);
             }
-        } else if (command instanceof UpDownType upDown) {
-            if (upDown == UpDownType.UP) {
+        } else if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 sendAction(CMD_NEXT_SCENE);
             } else {
                 sendAction(CMD_PREVIOUS_SCENE);
             }
-        } else if (command instanceof DecimalType sceneType) {
-            int scene = sceneType.intValue();
+        } else if (command instanceof DecimalType DecimalType) {
+            int scene = DecimalType.intValue();
             if (scene == SCENE_ALL_ON) {
                 sendAction(CMD_ON);
             } else if (scene >= 0 && scene < NUM_OF_SCENES) {

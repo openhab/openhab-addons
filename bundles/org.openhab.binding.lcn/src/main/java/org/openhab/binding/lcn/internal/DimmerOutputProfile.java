@@ -86,10 +86,10 @@ public class DimmerOutputProfile implements StateProfile {
             logger.warn("Unsupported 'ramp' setting. Will be forced to 250ms: {}", rampMs);
         }
         BigDecimal value;
-        if (command instanceof DecimalType type) {
-            value = type.toBigDecimal();
-        } else if (command instanceof OnOffType sw) {
-            value = sw == OnOffType.ON ? BigDecimal.valueOf(100) : BigDecimal.ZERO;
+        if (command instanceof DecimalType decimalCommand) {
+            value = decimalCommand.toBigDecimal();
+        } else if (command instanceof OnOffType onOffCommand) {
+            value = onOffCommand == OnOffType.ON ? BigDecimal.valueOf(100) : BigDecimal.ZERO;
         } else {
             logger.warn("Unsupported type: {}", command.toFullString());
             return;

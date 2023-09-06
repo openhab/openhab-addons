@@ -139,8 +139,8 @@ class LxControlSauna extends LxControl {
     }
 
     private void handleSaunaActivateCommands(Command command) throws IOException {
-        if (command instanceof OnOffType sw) {
-            if (sw == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_ON);
             } else {
                 sendAction(CMD_OFF);
@@ -156,8 +156,8 @@ class LxControlSauna extends LxControl {
     }
 
     private void handleFanCommands(Command command) throws IOException {
-        if (command instanceof OnOffType sw) {
-            if (sw == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_FAN_ON);
             } else {
                 sendAction(CMD_FAN_OFF);
@@ -166,7 +166,7 @@ class LxControlSauna extends LxControl {
     }
 
     private void handleTriggerCommands(Command command, String prefix) throws IOException {
-        if (command instanceof OnOffType type && type == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand && onOffCommand == OnOffType.ON) {
             sendAction(prefix);
         }
     }

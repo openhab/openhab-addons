@@ -52,8 +52,9 @@ public class SwitchHandler extends LutronHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         RS232Handler bridgeHandler = getRS232Handler();
         if (LutronBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())) {
-            if (command instanceof OnOffType sw) {
-                SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), sw, config.system);
+            if (command instanceof OnOffType onOffCommand) {
+                SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), onOffCommand,
+                        config.system);
 
                 if (bridgeHandler != null) {
                     bridgeHandler.sendCommand(cmd);

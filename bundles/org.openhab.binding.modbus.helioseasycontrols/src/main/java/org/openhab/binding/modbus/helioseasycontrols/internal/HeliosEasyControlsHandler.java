@@ -319,9 +319,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
             String value = null;
             if (command instanceof OnOffType) {
                 value = command == OnOffType.ON ? "1" : "0";
-            } else if (command instanceof DateTimeType type) {
+            } else if (command instanceof DateTimeType dateTimeCommand) {
                 try {
-                    ZonedDateTime d = type.getZonedDateTime();
+                    ZonedDateTime d = dateTimeCommand.getZonedDateTime();
                     if (channelId.equals(HeliosEasyControlsBindingConstants.SYS_DATE)) {
                         setSysDateTime(d);
                     } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_FROM)) {
@@ -329,7 +329,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_TO)) {
                         this.setBypass(false, d.getDayOfMonth(), d.getMonthValue());
                     } else {
-                        value = formatDate(channelId, type.getZonedDateTime());
+                        value = formatDate(channelId, dateTimeCommand.getZonedDateTime());
                     }
                 } catch (InterruptedException e) {
                     logger.debug(
