@@ -14,6 +14,7 @@ package org.openhab.binding.senechome.internal;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -27,6 +28,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.senechome.internal.json.SenecHomeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,7 @@ import com.google.gson.stream.MalformedJsonException;
 @NonNullByDefault
 public class SenecHomeApi {
     private static final String HTTP_PROTO_PREFIX = "http://";
+    private static final String HTTPS_PROTO_PREFIX = "https://";
 
     private final Logger logger = LoggerFactory.getLogger(SenecHomeApi.class);
     private final HttpClient httpClient;
@@ -52,11 +55,32 @@ public class SenecHomeApi {
     private String hostname = "";
 
     public SenecHomeApi(HttpClient httpClient) {
-        this.httpClient = httpClient;
+        this.httpClient = configureHttpClient(httpClient);
     }
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+    }
+
+    private HttpClient configureHttpClient(HttpClient httpClient) {
+        // Configure SSL context factory to trust all certificates
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+        sslContextFactory.setTrustAll(true);
+
+        // Apply SSL context factory to the HttpClient builder
+        httpClient = new HttpClient(sslContextFactory);
+
+        // Other configuration settings can be applied here if needed
+        // For example: httpClient.setConnectTimeout(5000);
+
+        // Start the HttpClient
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            // Handle exception
+        }
+
+        return httpClient;
     }
 
     /**
@@ -69,13 +93,17 @@ public class SenecHomeApi {
      * @throws MalformedURLException Configuration/URL is wrong
      * @throws IOException Communication failed
      */
-    public SenecHomeResponse getStatistics()
+    public SenecHomeResponse getStatistics(boolean useHttps)
             throws InterruptedException, TimeoutException, ExecutionException, IOException {
         String location = HTTP_PROTO_PREFIX + hostname;
+        if (useHttps) {
+            location = HTTPS_PROTO_PREFIX + hostname;
+        }
 
         Request request = httpClient.newRequest(location);
         request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
         request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.FORM_ENCODED.asString());
+
         ContentResponse response = null;
         try {
             response = request.method(HttpMethod.POST)
@@ -87,7 +115,7 @@ public class SenecHomeApi {
                 throw new IOException("Got unexpected response code " + response.getStatus());
             }
         } catch (MalformedJsonException | JsonSyntaxException | InterruptedException | TimeoutException
-                | ExecutionException e) {
+                | ExecutionException | UnknownHostException e) {
             String errorMessage = "\nlocation: " + location;
             errorMessage += "\nrequest: " + request.toString();
             errorMessage += "\nrequest.getHeaders: " + request.getHeaders();

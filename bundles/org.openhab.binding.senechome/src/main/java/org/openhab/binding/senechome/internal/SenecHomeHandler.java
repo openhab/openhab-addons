@@ -136,7 +136,7 @@ public class SenecHomeHandler extends BaseThingHandler {
     public @Nullable Boolean refreshState() {
         SenecHomeResponse response = null;
         try {
-            response = senecHomeApi.getStatistics();
+            response = senecHomeApi.getStatistics(true);
             logger.trace("received {}", response);
 
             BigDecimal pvLimitation = new BigDecimal(100).subtract(getSenecValue(response.power.powerLimitation))
