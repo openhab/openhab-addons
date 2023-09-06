@@ -291,8 +291,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DeconzBridgeHandler) {
-            this.handler = (DeconzBridgeHandler) handler;
+        if (handler instanceof DeconzBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
             this.bridgeUID = handler.getThing().getUID();
         }
     }
