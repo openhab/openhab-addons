@@ -82,8 +82,8 @@ public class ChromecastActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ChromecastHandler) {
-            this.handler = (ChromecastHandler) handler;
+        if (handler instanceof ChromecastHandler chromecastHandler) {
+            this.handler = chromecastHandler;
         }
     }
 

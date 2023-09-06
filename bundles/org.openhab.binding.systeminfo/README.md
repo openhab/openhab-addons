@@ -201,8 +201,8 @@ String Network_AdapterName         "Adapter name"        <network>       { chann
 String Network_Name                "Name"                <network>       { channel="systeminfo:computer:work:network#networkName" }
 String Network_IP                  "IP address"          <network>       { channel="systeminfo:computer:work:network#ip" }
 String Network_Mac                 "Mac address"         <network>       { channel="systeminfo:computer:work:network#mac" }
-Number Network_DataSent            "Data sent"           <flowpipe>      { channel="systeminfo:computer:work:network#dataSent" }
-Number Network_DataReceived        "Data received"       <returnpipe>    { channel="systeminfo:computer:work:network#dataReceived" }
+Number:DataAmount Network_DataSent "Data sent"           <flowpipe>      { channel="systeminfo:computer:work:network#dataSent" }
+Number:DataAmount Network_DataReceived "Data received"   <returnpipe>    { channel="systeminfo:computer:work:network#dataReceived" }
 Number Network_PacketsSent         "Packets sent"        <flowpipe>      { channel="systeminfo:computer:work:network#packetsSent" }
 Number Network_PacketsReceived     "Packets received"    <returnpipe>    { channel="systeminfo:computer:work:network#packetsReceived" }
 

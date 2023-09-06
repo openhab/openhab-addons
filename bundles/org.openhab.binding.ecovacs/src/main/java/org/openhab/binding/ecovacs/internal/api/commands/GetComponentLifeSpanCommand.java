@@ -65,8 +65,8 @@ public class GetComponentLifeSpanCommand extends IotDeviceCommand<Integer> {
     @Override
     public Integer convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            JsonElement respPayloadRaw = ((PortalIotCommandJsonResponse) response).getResponsePayload(gson);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            JsonElement respPayloadRaw = jsonResponse.getResponsePayload(gson);
             Type type = new TypeToken<List<ComponentLifeSpanReport>>() {
             }.getType();
             try {

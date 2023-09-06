@@ -39,7 +39,7 @@ public enum StreamCommand {
 
   @Override
   public String toString() {
-    return String.valueOf(value);
+    return value;
   }
 
   public static StreamCommand fromValue(String value) {
