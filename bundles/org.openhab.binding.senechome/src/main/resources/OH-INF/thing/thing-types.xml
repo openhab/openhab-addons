@@ -107,6 +107,11 @@
 				<description>Enter the hostname or ip address of your Senec Home device</description>
 				<context>network-address</context>
 			</parameter>
+			<parameter name="useHttps" type="boolean" required="true">
+				<label>Use https</label>
+				<description>Only enable the usage of https if connection via http doesn't work</description>
+				<default>false</default>
+			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Rate of refreshing details (in s)</description>

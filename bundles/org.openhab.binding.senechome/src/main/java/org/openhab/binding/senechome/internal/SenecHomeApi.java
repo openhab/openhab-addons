@@ -13,6 +13,7 @@
 package org.openhab.binding.senechome.internal;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.Objects;
@@ -87,7 +88,8 @@ public class SenecHomeApi {
      * POST json with empty, but expected fields, to lala.cgi of Senec webinterface
      * the response will contain the same fields, but with the corresponding values
      *
-     * To receive new values, just modify the Json objects and add them to the thing channels
+     * To receive new values, just modify the Json objects and add them to the thing
+     * channels
      *
      * @return Instance of SenecHomeResponse
      * @throws MalformedURLException Configuration/URL is wrong
@@ -101,6 +103,7 @@ public class SenecHomeApi {
         }
 
         Request request = httpClient.newRequest(location);
+        logger.debug("Senec URL: {}", location);
         request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
         request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.FORM_ENCODED.asString());
 
@@ -115,7 +118,7 @@ public class SenecHomeApi {
                 throw new IOException("Got unexpected response code " + response.getStatus());
             }
         } catch (MalformedJsonException | JsonSyntaxException | InterruptedException | TimeoutException
-                | ExecutionException | UnknownHostException e) {
+                | ExecutionException | UnknownHostException | ConnectException e) {
             String errorMessage = "\nlocation: " + location;
             errorMessage += "\nrequest: " + request.toString();
             errorMessage += "\nrequest.getHeaders: " + request.getHeaders();
@@ -130,7 +133,7 @@ public class SenecHomeApi {
                     errorMessage += "\nresponse.getContentAsString: " + response.getContentAsString();
                 }
             }
-            logger.trace("Issue with getting SenecHomeResponse\n{}", errorMessage);
+            logger.error("Issue with getting SenecHomeResponse\n{}", errorMessage);
             throw e;
         }
     }

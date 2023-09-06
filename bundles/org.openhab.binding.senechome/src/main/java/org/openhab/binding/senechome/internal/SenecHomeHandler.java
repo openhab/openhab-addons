@@ -57,7 +57,8 @@ import com.google.gson.JsonParseException;
  * sent to one of the channels.
  *
  * @author Steven Schwarznau - Initial contribution
- * @author Erwin Guib - added more channels, added some convenience methods to reduce code duplication
+ * @author Erwin Guib - added more channels, added some convenience methods to
+ *         reduce code duplication
  */
 @NonNullByDefault
 public class SenecHomeHandler extends BaseThingHandler {
@@ -136,7 +137,7 @@ public class SenecHomeHandler extends BaseThingHandler {
     public @Nullable Boolean refreshState() {
         SenecHomeResponse response = null;
         try {
-            response = senecHomeApi.getStatistics(true);
+            response = senecHomeApi.getStatistics(config.useHttps);
             logger.trace("received {}", response);
 
             BigDecimal pvLimitation = new BigDecimal(100).subtract(getSenecValue(response.power.powerLimitation))
@@ -334,7 +335,12 @@ public class SenecHomeHandler extends BaseThingHandler {
         if (channel == null) {
             return;
         }
-        BigDecimal value = getSenecValue(senecValue);
+        BigDecimal value = BigDecimal.ZERO;
+        if (senecValue == null || senecValue.isEmpty() || !senecValue.contains("_")) {
+            logger.debug("Channel {} has an unknown value [{}]", channelName, senecValue);
+        } else {
+            value = getSenecValue(senecValue);
+        }
         if (divisor != null) {
             value = value.divide(divisor, scale, RoundingMode.HALF_UP);
         } else {
@@ -344,6 +350,10 @@ public class SenecHomeHandler extends BaseThingHandler {
     }
 
     protected BigDecimal getSenecValue(String value) {
+        if (value == null || value.isEmpty() || !value.contains("_")) {
+            logger.debug("Unknown value [{}]", value);
+            return BigDecimal.ZERO;
+        }
         String[] type = value.split("_");
 
         if (type[0] != null) {
