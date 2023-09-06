@@ -33,6 +33,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 public class WebhookEvent extends Event {
     private NAPushType pushType = NAPushType.UNKNOWN;
     private String homeId = "";
+    private String roomId = "";
     private String deviceId = "";
     private @Nullable String snapshotUrl;
     private @Nullable String vignetteUrl;
@@ -50,7 +51,7 @@ public class WebhookEvent extends Event {
 
     @Override
     public EventType getEventType() {
-        return pushType.getEvent();
+        return pushType.event();
     }
 
     @Override
@@ -77,6 +78,7 @@ public class WebhookEvent extends Event {
         result.add(getCameraId());
         addNotBlank(result, homeId);
         addNotBlank(result, deviceId);
+        addNotBlank(result, roomId);
         addNotBlank(result, getCameraId());
         result.addAll(getPersons().keySet());
         return result;

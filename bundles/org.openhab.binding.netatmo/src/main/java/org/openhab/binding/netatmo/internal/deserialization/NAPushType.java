@@ -22,22 +22,6 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class NAPushType {
+public record NAPushType(ModuleType moduleType, EventType event) {
     public static final NAPushType UNKNOWN = new NAPushType(ModuleType.UNKNOWN, EventType.UNKNOWN);
-
-    private final ModuleType moduleType;
-    private final EventType event;
-
-    NAPushType(ModuleType moduleType, EventType event) {
-        this.moduleType = moduleType;
-        this.event = event;
-    }
-
-    public ModuleType getModuleType() {
-        return moduleType;
-    }
-
-    public EventType getEvent() {
-        return event;
-    }
 }
