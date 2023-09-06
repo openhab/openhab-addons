@@ -35,7 +35,11 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.bridge.dto.*;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
 import org.openhab.binding.boschshc.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
@@ -416,8 +420,6 @@ public class BridgeHandler extends BaseBridgeHandler {
                 final Channel channel = this.getThing().getChannel(BoschSHCBindingConstants.CHANNEL_SCENARIO);
                 if (channel != null && isLinked(channel.getUID())) {
                     updateState(channel.getUID(), new StringType(((Scenario) serviceState).name));
-                } else {
-                    logger.info("no channel with id '{}' found or linked", BoschSHCBindingConstants.CHANNEL_SCENARIO);
                 }
             }
         }

@@ -10,7 +10,7 @@
 		<description>The Bosch Smart Home Bridge representing the Bosch Smart Home Controller.</description>
 
 		<channels>
-			<channel id="scenario" typeId="scenario"/>
+			<channel id="triggered-scenario" typeId="triggered-scenario"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
@@ -524,9 +524,9 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="scenario">
+	<channel-type id="triggered-scenario">
 		<item-type>String</item-type>
-		<label>Triggered scenario</label>
+		<label>Triggered Scenario</label>
 		<description>Name of the triggered scenario</description>
 		<state readOnly="true"/>
 	</channel-type>
