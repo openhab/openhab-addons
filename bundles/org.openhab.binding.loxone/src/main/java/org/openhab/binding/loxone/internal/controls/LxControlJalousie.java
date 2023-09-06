@@ -140,14 +140,14 @@ class LxControlJalousie extends LxControl {
             } else {
                 moveToPosition(percentCommand.doubleValue() / 100);
             }
-        } else if (command instanceof UpDownType upDown) {
-            if (upDown == UpDownType.UP) {
+        } else if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 sendAction(CMD_FULL_UP);
             } else {
                 sendAction(CMD_FULL_DOWN);
             }
-        } else if (command instanceof StopMoveType stopMove) {
-            if (stopMove == StopMoveType.STOP) {
+        } else if (command instanceof StopMoveType stopMoveCommand) {
+            if (stopMoveCommand == StopMoveType.STOP) {
                 sendAction(CMD_STOP);
             }
         }

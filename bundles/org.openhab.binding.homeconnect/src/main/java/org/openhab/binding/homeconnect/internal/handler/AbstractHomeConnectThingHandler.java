@@ -453,8 +453,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof HomeConnectBridgeHandler handler) {
-                return Optional.of(handler);
+            if (bridgeHandler instanceof HomeConnectBridgeHandler homeConnectBridgeHandler) {
+                return Optional.of(homeConnectBridgeHandler);
             }
         }
         return Optional.empty();

@@ -301,12 +301,12 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         } else if (childHandler instanceof HeosPlayerHandler) {
             String channelIdentifier = "P" + childThing.getUID().getId();
             updateThingChannels(channelManager.removeSingleChannel(channelIdentifier));
-        } else if (childHandler instanceof HeosGroupHandler handler) {
+        } else if (childHandler instanceof HeosGroupHandler groupHandler) {
             String channelIdentifier = "G" + childThing.getUID().getId();
             updateThingChannels(channelManager.removeSingleChannel(channelIdentifier));
             // removes the handler from the groupMemberMap that handler is no longer called
             // if group is getting online
-            removeGroupHandlerInformation(handler);
+            removeGroupHandlerInformation(groupHandler);
         }
     }
 

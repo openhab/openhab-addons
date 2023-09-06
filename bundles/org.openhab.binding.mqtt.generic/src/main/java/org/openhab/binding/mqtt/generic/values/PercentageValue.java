@@ -109,8 +109,8 @@ public class PercentageValue extends Value {
             return increaseDecreaseCommand == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
         } else//
               // Increase or decrease by "step"
-        if (command instanceof UpDownType upDown) {
-            if (upDown == UpDownType.UP) {
+        if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 final BigDecimal v = oldvalue.toBigDecimal().add(stepPercent);
                 return v.compareTo(HUNDRED) <= 0 ? new PercentType(v) : PercentType.HUNDRED;
             } else {

@@ -125,14 +125,14 @@ class LxControlLightControllerV2 extends LxControl {
     }
 
     private void handleCommands(Command command) throws IOException {
-        if (command instanceof UpDownType upDown) {
-            if (upDown == UpDownType.UP) {
+        if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 sendAction(CMD_NEXT_MOOD);
             } else {
                 sendAction(CMD_PREVIOUS_MOOD);
             }
-        } else if (command instanceof DecimalType moodType) {
-            int moodId = moodType.intValue();
+        } else if (command instanceof DecimalType decimalCommand) {
+            int moodId = decimalCommand.intValue();
             if (isMoodOk(moodId)) {
                 sendAction(CMD_CHANGE_TO_MOOD + "/" + moodId);
             }
