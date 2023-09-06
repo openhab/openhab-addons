@@ -443,7 +443,6 @@
 /itests/org.openhab.binding.mqtt.homeassistant.tests/ @davidgraeff
 /itests/org.openhab.binding.mqtt.homie.tests/ @davidgraeff
 /itests/org.openhab.binding.mqtt.ruuvigateway.tests/ @ssalonen
-/itests/org.openhab.binding.nest.tests/ @wborn
 /itests/org.openhab.binding.ntp.tests/ @marcelrv
 /itests/org.openhab.binding.systeminfo.tests/ @svilenvul
 /itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
