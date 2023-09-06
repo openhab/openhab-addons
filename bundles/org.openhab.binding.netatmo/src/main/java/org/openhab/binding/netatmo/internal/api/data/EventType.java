@@ -145,7 +145,7 @@ public enum EventType {
     @SerializedName("co_detected")
     CO_DETECTED(ModuleType.CO_DETECTOR),
 
-    @SerializedName("alarm_event") // an alarm alarm event arrived on a weather station module
+    @SerializedName("alarm_event") // an alarm event arrived on a weather station module
     ALARM_EVENT(ModuleType.WEATHER_STATION),
 
     @SerializedName("entered") // the alarm was raised
