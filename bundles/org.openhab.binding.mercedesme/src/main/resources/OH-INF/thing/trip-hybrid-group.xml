@@ -9,8 +9,8 @@
 			<channel id="distance" typeId="distance-channel"/>
 			<channel id="driven-time" typeId="driven-time-channel"/>
 			<channel id="avg-speed" typeId="avg-speed-channel"/>
-			<channel id="cconsumption-ev" typeId="cconsumption-ev-channel"/>
-			<channel id="cconsumption-comv" typeId="cconsumption-conv-channel"/>
+			<channel id="consumption-ev" typeId="consumption-ev-channel"/>
+			<channel id="consumption-comv" typeId="consumption-conv-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

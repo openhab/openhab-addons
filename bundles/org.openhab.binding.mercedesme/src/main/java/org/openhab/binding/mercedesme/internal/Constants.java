@@ -18,11 +18,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.measure.Unit;
+import javax.measure.quantity.Energy;
 import javax.measure.quantity.Length;
+import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -56,7 +59,7 @@ public class Constants {
     public static final String GROUP_SERVICE = "service";
     public static final String GROUP_RANGE = "range";
     public static final String GROUP_CHARGE = "charge";
-    public static final String GROUP_CRIP = "trip";
+    public static final String GROUP_TRIP = "trip";
     public static final String GROUP_POSITION = "position";
     public static final String GROUP_TIRES = "tires";
 
@@ -86,6 +89,8 @@ public class Constants {
     public static final String MIME_PREFIX = "image/";
 
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
+    public static final Unit<Power> KILOWATT_UNIT = MetricPrefix.KILO(Units.WATT);
+    public static final Unit<Energy> KILOWATT_HOUR_UNIT = MetricPrefix.KILO(Units.WATT_HOUR);
 
     public static final String LOGIN_APP_ID = "01398c1c-dc45-4b42-882b-9f5ba9f175f1";
     public static final String LOGIN_APP_ID_EU = "01398c1c-dc45-4b42-882b-9f5ba9f175f1";

@@ -7,10 +7,10 @@
 		<label>Detailed Door Status</label>
 		<description>Detailed Status of all Doors and Windows</description>
 		<channels>
-			<channel id="driver-front" typeId="driver-front-channel"/>
-			<channel id="driver-rear" typeId="driver-rear-channel"/>
-			<channel id="passenger-front" typeId="passenger-front-channel"/>
-			<channel id="passenger-rear" typeId="passenger-rear-channel"/>
+			<channel id="front-left" typeId="front-left-channel"/>
+			<channel id="front-right" typeId="front-right-channel"/>
+			<channel id="rear-left" typeId="rear-left-channel"/>
+			<channel id="rear-right" typeId="rear-right-channel"/>
 			<channel id="deck-lid" typeId="deck-lid-channel"/>
 			<channel id="engine-hood" typeId="engine-hood-channel"/>
 			<channel id="rooftop" typeId="rooftop-channel"/>

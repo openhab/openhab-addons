@@ -3,34 +3,24 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="active-hvac-channel">
-		<item-type>Number</item-type>
-		<label>AC Active</label>
-		<state readOnly="true">
-			<options>
-				<option value="0">Inactive</option>
-				<option value="1">Active</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="driver-seat-hvac-channel">
+	<channel-type id="front-left-hvac-channel">
 		<item-type>Switch</item-type>
-		<label>Driver Seat AC</label>
+		<label>AC Seat Front Left</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="passenger-seat-hvac-channel">
+	<channel-type id="front-right-hvac-channel">
 		<item-type>Switch</item-type>
-		<label>Passenger Seat AC</label>
+		<label>AC Seat Front Left</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="driver-rear-seat-hvac-channel">
+	<channel-type id="rear-left-hvac-channel">
 		<item-type>Switch</item-type>
-		<label>Driver Rear Seat AC</label>
+		<label>AC Seat Front Left</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="passenger-rear-seat-hvac-channel">
+	<channel-type id="rear-right-hvac-channel">
 		<item-type>Switch</item-type>
-		<label>Passenger Rear Seat AC</label>
+		<label>AC Seat Front Left</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="zone-hvac-channel">
@@ -40,11 +30,6 @@
 	</channel-type>
 	<channel-type id="temperature-hvac-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>AC Temperature </label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="temperature-control-hvac-channel">
-		<item-type>Number:Temperature</item-type>
 		<label>AC Temperature</label>
 		<category>Temperature</category>
 		<tags>
@@ -53,7 +38,7 @@
 		</tags>
 		<state min="16" max="28" step="0.5" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
-	<channel-type id="active-control-hvac-channel">
+	<channel-type id="active-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Control</label>
 	</channel-type>

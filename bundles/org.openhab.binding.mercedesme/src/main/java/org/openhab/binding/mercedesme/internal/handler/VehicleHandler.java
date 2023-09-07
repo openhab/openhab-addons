@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import javax.measure.quantity.Length;
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,6 +46,10 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.WindowsVent
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ZEVPreconditioningStart;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ZEVPreconditioningStop;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ZEVPreconditioningType;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgramParameters;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgramsValue;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.TemperaturePointsValue;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
@@ -53,6 +58,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -64,6 +71,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,9 +98,13 @@ public class VehicleHandler extends BaseThingHandler {
         logger.info("Received command {} for {}", command, channelUID);
         if (command instanceof RefreshType) {
             // todo
+
         } else if (Constants.GROUP_HVAC.equals(channelUID.getGroupId())) {
+            /**
+             * Commands for HVAC
+             */
             String pin = accountHandler.get().config.get().pin;
-            if ("air-condition-temp".equals(channelUID.getIdWithoutGroup())) {
+            if ("active".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditionConfigure");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Air Conditioning Temperature Setting supported? {}", supported);
@@ -108,7 +120,7 @@ public class VehicleHandler extends BaseThingHandler {
                     ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
                     accountHandler.get().sendCommand(cm);
                 }
-            } else if ("air-condition".equals(channelUID.getIdWithoutGroup())) {
+            } else if ("temperature".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditioningStart");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Air Conditioning supported? {}", supported);
@@ -131,7 +143,12 @@ public class VehicleHandler extends BaseThingHandler {
                         accountHandler.get().sendCommand(cm);
                     }
                 }
-            } else if ("position".equals(channelUID.getIdWithoutGroup())) {
+            }
+        } else if (Constants.GROUP_POSITION.equals(channelUID.getGroupId())) {
+            /**
+             * Commands for Positioning
+             */
+            if ("signal".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandSigposStart");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Signal Position supported? {}", supported);
@@ -160,7 +177,12 @@ public class VehicleHandler extends BaseThingHandler {
                             logger.info("No Positioning known for {}", command);
                     }
                 }
-            } else if ("max-soc".equals(channelUID.getIdWithoutGroup())) {
+            }
+        } else if (Constants.GROUP_CHARGE.equals(channelUID.getGroupId())) {
+            /**
+             * Commands for Charging
+             */
+            if ("max-soc".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandBatteryMaxSocConfigure");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Max SoC configuration supported? {}", supported);
@@ -172,7 +194,13 @@ public class VehicleHandler extends BaseThingHandler {
                     ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
                     accountHandler.get().sendCommand(cm);
                 }
-            } else if ("door-lock".equals(channelUID.getIdWithoutGroup())) {
+            }
+        } else if (Constants.GROUP_LOCK.equals(channelUID.getGroupId())) {
+            /**
+             * Commands for Locks
+             */
+            if ("door-lock".equals(channelUID.getIdWithoutGroup())) {
+                String pin = accountHandler.get().config.get().pin;
                 String supported = thing.getProperties().get("commandDoorsLock");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Door Lock supported? {}", supported);
@@ -195,9 +223,15 @@ public class VehicleHandler extends BaseThingHandler {
                         }
                     }
                 }
-            } else if ("control".equals(channelUID.getIdWithoutGroup())
+            }
+        } else if (Constants.GROUP_WINDOWS.equals(channelUID.getGroupId())) {
+            /**
+             * Commands for Windows
+             */
+            if ("control".equals(channelUID.getIdWithoutGroup())
                     && Constants.GROUP_WINDOWS.equals(channelUID.getGroupId())) {
                 String supported = thing.getProperties().get("commandWindowsOpen");
+                String pin = accountHandler.get().config.get().pin;
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Windows supported? {}", supported);
                 } else {
@@ -237,8 +271,14 @@ public class VehicleHandler extends BaseThingHandler {
                             logger.info("No Windows movement known for {}", command);
                     }
                 }
-            } else if ("sunroof-control".equals(channelUID.getIdWithoutGroup())) {
+            }
+        } else if (Constants.GROUP_WINDOWS.equals(channelUID.getGroupId())) {
+            /**
+             * Commands for Windows
+             */
+            if ("sunroof-control".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandSunroofOpen");
+                String pin = accountHandler.get().config.get().pin;
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Sunroof supported? {}", supported);
                 } else {
@@ -311,12 +351,83 @@ public class VehicleHandler extends BaseThingHandler {
     public void distributeContent(VEPUpdate data) {
         updateStatus(ThingStatus.ONLINE);
         Map<String, VehicleAttributeStatus> atts = data.getAttributesMap();
-        // handle GPS
-        if (atts.containsKey("positionLat") && atts.containsKey("positionLong")) {
-            String gps = atts.get("positionLat").getDoubleValue() + "," + atts.get("positionLong").getDoubleValue();
-            PointType pt = new PointType(gps);
-            updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, pt));
+
+        /**
+         * handle GPS
+         */
+        boolean latitude = atts.containsKey("positionLat");
+        boolean longitude = atts.containsKey("positionLong");
+        if (latitude && longitude) {
+            boolean latitudeNil = Mapper.isNil(atts.get("positionLat"));
+            boolean longitudeNil = Mapper.isNil(atts.get("positionLong"));
+            if (!latitudeNil && !longitudeNil) {
+                String gps = atts.get("positionLat").getDoubleValue() + "," + atts.get("positionLong").getDoubleValue();
+                PointType pt = new PointType(gps);
+                updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, pt));
+            } else {
+                logger.info("Either Latitude {} or Longitude {} attribute nil", latitudeNil, longitudeNil);
+                updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, UnDefType.UNDEF));
+            }
+        } else {
+            logger.info("Either Latitude {} or Longitude {} attribute missing", latitude, longitude);
+            updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, UnDefType.UNDEF));
         }
+
+        /**
+         * handle temperature point
+         */
+        boolean hvacTemperaturePointAvailable = atts.containsKey("temperaturePoints");
+        if (hvacTemperaturePointAvailable) {
+            VehicleAttributeStatus hvacTemperaturePointAttribute = atts.get("temperaturePoints");
+            if (hvacTemperaturePointAttribute.hasTemperaturePointsValue()) {
+                TemperaturePointsValue tpValue = hvacTemperaturePointAttribute.getTemperaturePointsValue();
+                VehicleEvents.TemperaturePoint tp = null;
+                if (tpValue.getTemperaturePointsCount() == 1) {
+                    tp = tpValue.getTemperaturePointsList().get(0);
+                } else if (tpValue.getTemperaturePointsCount() > 1) {
+                    tp = tpValue.getTemperaturePointsList().get(0);
+                    logger.info("{} TemperaturePoints found - take first one");
+                } else {
+                    logger.info("No TemperaturePoint found");
+                }
+                if (tp != null) {
+                    ChannelStateMap zoneMap = new ChannelStateMap("zone", Constants.GROUP_HVAC,
+                            StringType.valueOf(tp.getZone()));
+                    updateChannel(zoneMap);
+                    QuantityType<Temperature> tempState = QuantityType.valueOf(tp.getTemperature(), SIUnits.CELSIUS);
+                    ChannelStateMap tempMap = new ChannelStateMap("temperature", Constants.GROUP_HVAC, tempState);
+                    updateChannel(zoneMap);
+                }
+            } else {
+                logger.info("No TemperaturePoint Value found");
+            }
+
+        } else {
+            logger.info("No TemperaturePoint Attribute found");
+        }
+
+        /**
+         * handle Charge Program
+         */
+        if (Constants.BEV.equals(thing.getUID().getId()) || Constants.HYBRID.equals(thing.getUID().getId())) {
+            boolean selectedProgram = atts.containsKey("selectedChargeProgram");
+            boolean avaialablePrograms = atts.containsKey("chargePrograms");
+            if (selectedProgram && avaialablePrograms) {
+                int selected = (int) atts.get("selectedChargeProgram").getIntValue();
+                ChargeProgramsValue cps = atts.get("chargePrograms").getChargeProgramsValue();
+                ChargeProgramParameters cpp = cps.getChargeProgramParameters(selected);
+                ChannelStateMap programMap = new ChannelStateMap("program", GROUP_CHARGE,
+                        StringType.valueOf(cpp.getChargeProgram().name()));
+                updateChannel(programMap);
+                ChannelStateMap maxSocMap = new ChannelStateMap("max-soc", GROUP_CHARGE,
+                        QuantityType.valueOf((double) cpp.getMaxSoc(), Units.PERCENT));
+                updateChannel(maxSocMap);
+            }
+        }
+
+        /**
+         * handle "simple" values
+         */
         atts.forEach((key, value) -> {
             ChannelStateMap csm = Mapper.getChannelStateMap(key, value);
             if (csm.isValid()) {

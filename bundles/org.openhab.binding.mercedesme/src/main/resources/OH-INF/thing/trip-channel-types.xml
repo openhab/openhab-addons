@@ -16,14 +16,14 @@
 	<channel-type id="avg-speed-channel">
 		<item-type>Number</item-type>
 		<label>Trip Average Speed</label>
-		<state readOnly="true"/>
+		<state pattern="%d km/h" readOnly="true"/>
 	</channel-type>
-	<channel-type id="cconsumption-ev-channel">
+	<channel-type id="consumption-ev-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Trip Average Consumption</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="cconsumption-conv-channel">
+	<channel-type id="consumption-conv-channel">
 		<item-type>Number:Volume</item-type>
 		<label>Trip Average Consumption</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
