@@ -27,7 +27,7 @@
 		<label>Wash Water</label>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="coolant-channel">
+	<channel-type id="coolant-fluid-channel">
 		<item-type>Switch</item-type>
 		<label>Coolant Fluid Low</label>
 		<state readOnly="true"></state>
@@ -43,7 +43,7 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="service-channel">
+	<channel-type id="service-days-channel">
 		<item-type>Number</item-type>
 		<label>Service in Days</label>
 		<state readOnly="true">

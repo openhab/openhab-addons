@@ -3,24 +3,24 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="driver-front-channel">
+	<channel-type id="front-left-channel">
 		<item-type>Contact</item-type>
-		<label>Driver Door</label>
+		<label>Door Front Left</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="driver-rear-channel">
+	<channel-type id="front-right-channel">
 		<item-type>Contact</item-type>
-		<label>Driver Door Rear</label>
+		<label>Door Front Right</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="passenger-front-channel">
+	<channel-type id="rear-left-channel">
 		<item-type>Contact</item-type>
-		<label>Passenger Door</label>
+		<label>Door Rear Left</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="passenger-rear-channel">
+	<channel-type id="rear-right-channel">
 		<item-type>Contact</item-type>
-		<label>Passenger Door Rear</label>
+		<label>Door Rear Right</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="deck-lid-channel">

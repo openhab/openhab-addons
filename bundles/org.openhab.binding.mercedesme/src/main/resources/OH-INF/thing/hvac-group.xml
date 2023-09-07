@@ -6,15 +6,13 @@
 	<channel-group-type id="hvac-values">
 		<label>Vehicle Climate Control</label>
 		<channels>
-			<channel id="active" typeId="active-hvac-channel"/>
-			<channel id="driver-seat" typeId="driver-seat-hvac-channel"/>
-			<channel id="passenger-seat" typeId="passenger-seat-hvac-channel"/>
-			<channel id="driver-rear-seat" typeId="driver-rear-seat-hvac-channel"/>
-			<channel id="passenger-rear-seat" typeId="passenger-rear-seat-hvac-channel"/>
+			<channel id="front-left" typeId="front-left-hvac-channel"/>
+			<channel id="front-right" typeId="front-right-hvac-channel"/>
+			<channel id="rear-left" typeId="rear-left-hvac-channel"/>
+			<channel id="rear-right" typeId="rear-right-hvac-channel"/>
 			<channel id="zone" typeId="zone-hvac-channel"/>
 			<channel id="temperature" typeId="temperature-hvac-channel"/>
-			<channel id="temperature-control" typeId="temperature-control-hvac-channel"/>
-			<channel id="active-control" typeId="active-control-hvac-channel"/>
+			<channel id="active" typeId="active-hvac-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

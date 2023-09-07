@@ -3,6 +3,9 @@ package org.openhab.binding.mercedesme;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +20,13 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.LightType;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.SigposType;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgramParameters;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgramsValue;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdatesByVIN;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -94,7 +100,7 @@ class ProtoTest {
                             .getAttributesMap();
                     m.forEach((key, value) -> {
                         // System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
-                        if (key.contains("endofchargetime")) {
+                        if (key.contains("hargeProgram")) {
                             // System.out.println(Mapper.getChannelStateMap(key, value));
                             System.out.println(key + ":" + value);
                             // System.out.println(
@@ -107,6 +113,59 @@ class ProtoTest {
             } catch (Throwable e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Test
+    void testEndChargeTime() {
+        try {
+            // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
+            FileInputStream fis = new FileInputStream("src/test/resources/proto/proto.blob");
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
+            // System.out.println(pm.getAllFields());
+            VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
+            Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433").getAttributesMap();
+            VehicleAttributeStatus value = m.get("endofchargetime");
+            System.out.println(value);
+            System.out.println(value.getIntValue());
+            System.out.println(value.getDisplayValue());
+            Instant time = Instant.ofEpochMilli(value.getTimestampInMs());
+            System.out.println(time);
+            System.out.println(time.plusSeconds(value.getIntValue()));
+            DateTimeType state = DateTimeType.valueOf(time.toString());
+            System.out.println(state);
+            LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC);
+            state = DateTimeType.valueOf(ldt.toString());
+            System.out.println(state);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testChargePrograms() {
+        try {
+            // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
+            FileInputStream fis = new FileInputStream("src/test/resources/proto/proto.blob");
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
+            // System.out.println(pm.getAllFields());
+            VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
+            Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433").getAttributesMap();
+            VehicleAttributeStatus value = m.get("chargePrograms");
+            System.out.println(value);
+            ChargeProgramsValue cps = value.getChargeProgramsValue();
+            List<ChargeProgramParameters> cppList = cps.getChargeProgramParametersList();
+            System.out.println("All Programs");
+            for (Iterator iterator = cppList.iterator(); iterator.hasNext();) {
+                ChargeProgramParameters chargeProgramParameters = (ChargeProgramParameters) iterator.next();
+                System.out.println(chargeProgramParameters.getChargeProgram().name());
+            }
+            System.out.println("Selected Program");
+            ChargeProgramParameters chargeProgramParameters = cppList
+                    .get((int) m.get("selectedChargeProgram").getIntValue());
+            System.out.println(chargeProgramParameters.getChargeProgram());
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
     }
 

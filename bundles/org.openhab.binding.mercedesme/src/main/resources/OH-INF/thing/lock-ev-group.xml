@@ -7,10 +7,10 @@
 		<label>Lock Status</label>
 		<description>Door Lock Status</description>
 		<channels>
-			<channel id="driver-front" typeId="driver-front-lock-channel"/>
-			<channel id="driver-rear" typeId="driver-rear-lock-channel"/>
-			<channel id="passenger-front" typeId="passenger-front-lock-channel"/>
-			<channel id="passenger-rear" typeId="passenger-rear-lock-channel"/>
+			<channel id="front-left" typeId="front-left-lock-channel"/>
+			<channel id="front-right" typeId="front-right-lock-channel"/>
+			<channel id="rear-left" typeId="rear-left-lock-channel"/>
+			<channel id="rear-right" typeId="rear-right-lock-channel"/>
 			<channel id="deck-lid" typeId="deck-lid-lock-channel"/>
 			<channel id="lock-control" typeId="lock-control-channel"/>
 		</channels>
