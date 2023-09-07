@@ -75,7 +75,6 @@ public class DimmerHandler extends LutronHandler {
             }
 
             if (command instanceof OnOffType onOffCmd) {
-
                 SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), onOffCmd, config.system);
                 bridgeHandler.sendCommand(cmd);
 

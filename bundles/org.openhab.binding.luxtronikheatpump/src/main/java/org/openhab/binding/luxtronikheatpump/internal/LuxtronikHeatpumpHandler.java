@@ -113,7 +113,6 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         }
 
         if (command instanceof QuantityType value) {
-
             Unit<?> unit = channel.getUnit();
             if (unit != null) {
                 value = value.toUnit(unit);

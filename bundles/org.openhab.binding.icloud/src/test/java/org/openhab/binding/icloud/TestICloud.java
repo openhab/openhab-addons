@@ -122,7 +122,6 @@ public class TestICloud {
     @Test
     @EnabledIfSystemProperty(named = "icloud.test.email", matches = ".*", disabledReason = "Only for manual execution.")
     public void testDiscovery() {
-
         String icloudDeviceRespond = """
                          {
                      "userInfo": {

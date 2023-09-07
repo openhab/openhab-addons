@@ -90,7 +90,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
          * Register poll task This is where we set up our regular poller
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
-
             logger.debug("Setting up regular polling");
 
             ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
@@ -325,7 +324,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * Start the periodic polling1
      */
     private void startUp() {
-
         if (comms != null) {
             return;
         }

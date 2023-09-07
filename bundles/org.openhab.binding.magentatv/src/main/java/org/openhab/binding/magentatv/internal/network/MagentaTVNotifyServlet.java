@@ -89,7 +89,6 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     @Override
     protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
             throws ServletException, IOException {
-
         String data = inputStreamToString(request);
         try {
             if ((request == null) || (response == null)) {

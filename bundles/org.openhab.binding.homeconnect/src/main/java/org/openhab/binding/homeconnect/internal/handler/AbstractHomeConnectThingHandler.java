@@ -1207,7 +1207,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             final HomeConnectApiClient apiClient)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         if (command instanceof QuantityType quantityCommand) {
-
             String value;
             String unit;
 

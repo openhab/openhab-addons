@@ -68,7 +68,6 @@ public class VolumeChannel extends MycroftChannel<State> {
 
     @Override
     public void messageReceived(BaseMessage message) {
-
         if (message.type == MessageType.mycroft_volume_get_response) {
             float volumeGet = ((MessageVolumeGetResponse) message).data.percent;
             updateAndSaveMyState(normalizeVolume(volumeGet));

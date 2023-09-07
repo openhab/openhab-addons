@@ -106,7 +106,6 @@ public class StuderHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         // Currently we do not support any commands
     }
 
@@ -132,7 +131,6 @@ public class StuderHandler extends BaseThingHandler {
      * Start the periodic polling
      */
     private void startUp() {
-
         connectEndpoint();
 
         if (comms == null || config == null) {
