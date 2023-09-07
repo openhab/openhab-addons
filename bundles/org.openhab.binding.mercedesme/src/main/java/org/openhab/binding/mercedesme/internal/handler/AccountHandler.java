@@ -346,11 +346,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             ContentResponse commandCapabilitiesResponse = commandCapabilitiesRequest.send();
 
             String commandCapabilitiesJsonString = commandCapabilitiesResponse.getContentAsString();
-            commandCapabilitiesJsonMap.put(vin, commandCapabilitiesJsonString);
             if (!storage.containsKey(vin + COMMAND_APPENDIX)) {
                 storage.put(vin + COMMAND_APPENDIX, commandCapabilitiesJsonString);
             }
-            JSONObject commands = new JSONObject(commandCapabilitiesJsonMap);
+            JSONObject commands = new JSONObject(commandCapabilitiesJsonString);
             logger.info(commands.toString());
             JSONArray commandArray = commands.getJSONArray("commands");
             commandArray.forEach(object -> {

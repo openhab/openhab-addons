@@ -40,7 +40,7 @@
 		"open close command"
 	],
 	"hvac": [
-		"precondActive",
+		"precondNow",
 		"precondSeatFrontRight",
 		"precondSeatFrontLeft",
 		"precondSeatRearRight",

@@ -103,7 +103,6 @@ public class VehicleHandler extends BaseThingHandler {
             /**
              * Commands for HVAC
              */
-            String pin = accountHandler.get().config.get().pin;
             if ("temperature".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditionConfigure");
                 if (Boolean.FALSE.toString().equals(supported)) {

@@ -127,11 +127,22 @@ public class Mapper {
                 case "endofchargetime":
                     if (isNil(value)) {
                         state = UnDefType.UNDEF;
+                    } else if (value.getDisplayValue() != null) {
+                        String dv = value.getDisplayValue();
+                        try {
+                            String[] vals = dv.split(":");
+                            Integer hour = Integer.parseInt(vals[0]);
+                            Integer minute = Integer.parseInt(vals[1]);
+                            Instant time = Instant.ofEpochMilli(value.getTimestampInMs());
+                            LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC).withHour(hour)
+                                    .withMinute(minute);
+                            state = DateTimeType.valueOf(ldt.toString());
+                        } catch (NumberFormatException nfe) {
+                            LOGGER.warn("End Charge Time Number Format failed {} for [}", nfe.getMessage(), dv);
+                            state = UnDefType.UNDEF;
+                        }
                     } else {
-                        // [todo] end time calculation missing
-                        Instant time = Instant.ofEpochMilli(value.getTimestampInMs());
-                        LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC);
-                        state = DateTimeType.valueOf(ldt.toString());
+                        state = UnDefType.UNDEF;
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -232,7 +243,7 @@ public class Mapper {
 
                 // Switches
                 case "parkbrakestatus":
-                case "precondActive":
+                case "precondNow":
                 case "precondSeatFrontRight":
                 case "precondSeatFrontLeft":
                 case "precondSeatRearRight":
@@ -354,7 +365,7 @@ public class Mapper {
         CHANNELS.put("windowStatusRearBlind", new String[] { "rear-blind", GROUP_WINDOWS });
         CHANNELS.put("flipWindowStatus", new String[] { "flip-window", GROUP_WINDOWS });
 
-        CHANNELS.put("precondActive", new String[] { "active", GROUP_HVAC });
+        CHANNELS.put("precondNow", new String[] { "active", GROUP_HVAC });
         CHANNELS.put("precondSeatFrontRight", new String[] { "front-right", GROUP_HVAC });
         CHANNELS.put("precondSeatFrontLeft", new String[] { "front-left", GROUP_HVAC });
         CHANNELS.put("precondSeatRearRight", new String[] { "rear-right", GROUP_HVAC });
