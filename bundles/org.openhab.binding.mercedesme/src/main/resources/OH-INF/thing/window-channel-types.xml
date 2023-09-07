@@ -79,7 +79,7 @@
 		<label>Flip Window</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="control-channel">
+	<channel-type id="window-control-channel">
 		<item-type>Number</item-type>
 		<label>Window Control</label>
 		<state>
@@ -89,5 +89,20 @@
 				<option value="2">Ventilate</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="feature-capabilities-channel">
+		<item-type>String</item-type>
+		<label>Feature Capabilities</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="command-capabilities-channel">
+		<item-type>String</item-type>
+		<label>Command Capabilities</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="proto-update-channel">
+		<item-type>String</item-type>
+		<label>Proto Data Update</label>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

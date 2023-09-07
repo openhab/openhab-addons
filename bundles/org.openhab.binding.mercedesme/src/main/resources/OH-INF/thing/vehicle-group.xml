@@ -11,7 +11,10 @@
 			<channel id="window-status" typeId="window-status-channel"/>
 			<channel id="door-status" typeId="door-status-channel"/>
 			<channel id="ignition" typeId="ignition-channel"/>
-			<channel id="park-break" typeId="park-break-channel"/>
+			<channel id="park-brake" typeId="park-brake-channel"/>
+			<channel id="feature-capabilities" typeId="feature-capabilities-channel"/>
+			<channel id="command-capabilities" typeId="command-capabilities-channel"/>
+			<channel id="proto-update" typeId="proto-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -3,9 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="wservice-ev-values">
-		<label>Warnings</label>
-		<description>Current active warnings</description>
+	<channel-group-type id="service-ev-values">
+		<label>Service and Warnings</label>
 		<channels>
 			<channel id="starter-battery" typeId="starter-battery-channel"/>
 			<channel id="brake-fluid" typeId="brake-fluid-channel"/>

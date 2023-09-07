@@ -62,7 +62,7 @@ public class Mapper {
                 case "rangeliquid":
                 case "distanceStart":
                     if (isNil(value)) {
-                        state = UnDefType.UNDEF;
+                        state = QuantityType.valueOf(-1, KILOMETRE_UNIT);
                     } else {
                         if (value.hasDoubleValue()) {
                             state = QuantityType.valueOf(value.getDoubleValue(), KILOMETRE_UNIT);
@@ -78,14 +78,14 @@ public class Mapper {
                 // KiloWatt values
                 case "chargingPower":
                     if (isNil(value)) {
-                        state = UnDefType.UNDEF;
+                        state = QuantityType.valueOf(0, KILOWATT_UNIT);
                     } else {
                         if (value.hasDoubleValue()) {
                             state = QuantityType.valueOf(value.getDoubleValue(), KILOWATT_UNIT);
                         } else if (value.hasIntValue()) {
                             state = QuantityType.valueOf(value.getIntValue(), KILOWATT_UNIT);
                         } else {
-                            state = UnDefType.UNDEF;
+                            state = QuantityType.valueOf(0, KILOWATT_UNIT);
                             LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
                         }
                     }
@@ -94,14 +94,14 @@ public class Mapper {
                 // KiloWatt/Hour values
                 case "electricconsumptionstart":
                     if (isNil(value)) {
-                        state = UnDefType.UNDEF;
+                        state = QuantityType.valueOf(-1, KILOWATT_HOUR_UNIT);
                     } else {
                         if (value.hasDoubleValue()) {
                             state = QuantityType.valueOf(value.getDoubleValue(), KILOWATT_HOUR_UNIT);
                         } else if (value.hasIntValue()) {
                             state = QuantityType.valueOf(value.getIntValue(), KILOWATT_HOUR_UNIT);
                         } else {
-                            state = UnDefType.UNDEF;
+                            state = QuantityType.valueOf(-1, KILOWATT_HOUR_UNIT);
                             LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
                         }
                     }
@@ -110,14 +110,14 @@ public class Mapper {
                 // Litre values
                 case "gasconsumptionstart":
                     if (isNil(value)) {
-                        state = UnDefType.UNDEF;
+                        state = QuantityType.valueOf(-1, Units.LITRE);
                     } else {
                         if (value.hasDoubleValue()) {
                             state = QuantityType.valueOf(value.getDoubleValue(), Units.LITRE);
                         } else if (value.hasIntValue()) {
                             state = QuantityType.valueOf(value.getIntValue(), Units.LITRE);
                         } else {
-                            state = UnDefType.UNDEF;
+                            state = QuantityType.valueOf(-1, Units.LITRE);
                             LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
                         }
                     }
@@ -141,8 +141,9 @@ public class Mapper {
                         state = UnDefType.UNDEF;
                     } else {
                         // [todo] end time calculation missing
-                        int hoursDriven = (int) value.getIntValue() % 60;
+                        int hoursDriven = (int) value.getIntValue() / 60;
                         int minutesDriven = (int) value.getIntValue() - (hoursDriven * 60);
+                        LOGGER.info("Driven Time {} h {} m", hoursDriven, minutesDriven);
                         Instant time = Instant.ofEpochMilli(value.getTimestampInMs());
                         LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC).withHour(hoursDriven)
                                 .withMinute(minutesDriven);
@@ -165,7 +166,7 @@ public class Mapper {
                 case "soc":
                 case "tanklevelpercent":
                     if (isNil(value)) {
-                        state = UnDefType.UNDEF;
+                        state = QuantityType.valueOf(-1, Units.PERCENT);
                     } else {
                         state = QuantityType.valueOf(value.getIntValue(), Units.PERCENT);
                     }
@@ -187,6 +188,9 @@ public class Mapper {
 
                 // Number Status
                 case "doorLockStatusOverall":
+                case "windowStatusOverall":
+                case "doorStatusOverall":
+                case "ignitionstate":
                 case "sunroofstatus":
                 case "sunroofStatusFrontBlind":
                 case "sunroofStatusRearBlind":
@@ -207,6 +211,7 @@ public class Mapper {
                 case "chargeCouplerACStatus":
                 case "chargeCouplerDCStatus":
                 case "chargeCouplerDCLockStatus":
+                case "averageSpeedStart":
                 case "tireMarkerFrontRight":
                 case "tireMarkerFrontLeft":
                 case "tireMarkerRearRight":
@@ -215,11 +220,18 @@ public class Mapper {
                     if (isNil(value)) {
                         state = UnDefType.UNDEF;
                     } else {
-                        state = new DecimalType(value.getIntValue());
+                        if (value.hasDoubleValue()) {
+                            state = new DecimalType(value.getDoubleValue());
+                        } else if (value.hasIntValue()) {
+                            state = new DecimalType(value.getIntValue());
+                        } else {
+                            state = UnDefType.UNDEF;
+                        }
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 // Switches
+                case "parkbrakestatus":
                 case "precondActive":
                 case "precondSeatFrontRight":
                 case "precondSeatFrontLeft":
@@ -272,7 +284,7 @@ public class Mapper {
                 case "tirepressureRearLeft":
                 case "tirepressureRearRight":
                     if (isNil(value)) {
-                        state = UnDefType.UNDEF;
+                        state = QuantityType.valueOf(-1, Units.BAR);
                     } else {
                         state = QuantityType.valueOf(Double.valueOf(value.getDisplayValue()), Units.BAR);
                     }
@@ -312,7 +324,7 @@ public class Mapper {
         CHANNELS.put("doorLockStatusOverall", new String[] { "lock-status", GROUP_VEHICLE });
         CHANNELS.put("windowStatusOverall", new String[] { "window-status", GROUP_VEHICLE });
         CHANNELS.put("doorStatusOverall", new String[] { "door-status", GROUP_VEHICLE });
-        CHANNELS.put("ignitionstate", new String[] { "ignitions", GROUP_VEHICLE });
+        CHANNELS.put("ignitionstate", new String[] { "ignition", GROUP_VEHICLE });
         CHANNELS.put("parkbrakestatus", new String[] { "park-brake", GROUP_VEHICLE });
 
         CHANNELS.put("doorstatusfrontright", new String[] { "front-right", GROUP_DOORS });
@@ -334,7 +346,7 @@ public class Mapper {
         CHANNELS.put("doorlockstatusgas", new String[] { "gas-flap", GROUP_LOCK });
 
         CHANNELS.put("windowstatusfrontleft", new String[] { "front-left", GROUP_WINDOWS });
-        CHANNELS.put("windowstatusfrontright", new String[] { "front-left", GROUP_WINDOWS });
+        CHANNELS.put("windowstatusfrontright", new String[] { "front-right", GROUP_WINDOWS });
         CHANNELS.put("windowstatusrearleft", new String[] { "rear-left", GROUP_WINDOWS });
         CHANNELS.put("windowstatusrearright", new String[] { "rear-right", GROUP_WINDOWS });
         CHANNELS.put("windowStatusRearRightBlind", new String[] { "rear-right-blind", GROUP_WINDOWS });
@@ -368,7 +380,7 @@ public class Mapper {
         CHANNELS.put("chargeCouplerACStatus", new String[] { "coupler-ac", GROUP_CHARGE });
         CHANNELS.put("chargeCouplerDCStatus", new String[] { "coupler-dc", GROUP_CHARGE });
         CHANNELS.put("chargeCouplerDCLockStatus", new String[] { "coupler-lock", GROUP_CHARGE });
-        CHANNELS.put("chargingactive", new String[] { "coupler-lock", GROUP_CHARGE });
+        CHANNELS.put("chargingactive", new String[] { "active", GROUP_CHARGE });
         CHANNELS.put("chargingPower", new String[] { "power", GROUP_CHARGE });
         CHANNELS.put("endofchargetime", new String[] { "end-time", GROUP_CHARGE });
 

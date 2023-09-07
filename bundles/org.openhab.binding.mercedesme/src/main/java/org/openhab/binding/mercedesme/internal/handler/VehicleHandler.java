@@ -97,14 +97,14 @@ public class VehicleHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.info("Received command {} for {}", command, channelUID);
         if (command instanceof RefreshType) {
-            // todo
-
+            // will trigger a Websocket connect without command to refresh values
+            accountHandler.get().sendCommand(null);
         } else if (Constants.GROUP_HVAC.equals(channelUID.getGroupId())) {
             /**
              * Commands for HVAC
              */
             String pin = accountHandler.get().config.get().pin;
-            if ("active".equals(channelUID.getIdWithoutGroup())) {
+            if ("temperature".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditionConfigure");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Air Conditioning Temperature Setting supported? {}", supported);
@@ -120,7 +120,7 @@ public class VehicleHandler extends BaseThingHandler {
                     ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
                     accountHandler.get().sendCommand(cm);
                 }
-            } else if ("temperature".equals(channelUID.getIdWithoutGroup())) {
+            } else if ("active".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditioningStart");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Air Conditioning supported? {}", supported);
@@ -199,7 +199,7 @@ public class VehicleHandler extends BaseThingHandler {
             /**
              * Commands for Locks
              */
-            if ("door-lock".equals(channelUID.getIdWithoutGroup())) {
+            if ("lock-control".equals(channelUID.getIdWithoutGroup())) {
                 String pin = accountHandler.get().config.get().pin;
                 String supported = thing.getProperties().get("commandDoorsLock");
                 if (Boolean.FALSE.toString().equals(supported)) {
@@ -228,8 +228,7 @@ public class VehicleHandler extends BaseThingHandler {
             /**
              * Commands for Windows
              */
-            if ("control".equals(channelUID.getIdWithoutGroup())
-                    && Constants.GROUP_WINDOWS.equals(channelUID.getGroupId())) {
+            if ("window-control".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandWindowsOpen");
                 String pin = accountHandler.get().config.get().pin;
                 if (Boolean.FALSE.toString().equals(supported)) {
@@ -272,7 +271,7 @@ public class VehicleHandler extends BaseThingHandler {
                     }
                 }
             }
-        } else if (Constants.GROUP_WINDOWS.equals(channelUID.getGroupId())) {
+        } else if (Constants.GROUP_DOORS.equals(channelUID.getGroupId())) {
             /**
              * Commands for Windows
              */
@@ -318,8 +317,6 @@ public class VehicleHandler extends BaseThingHandler {
                             logger.info("No Sunroof movement known for {}", command);
                     }
                 }
-            } else {
-                logger.info("Command {} with value {} not known", channelUID, command);
             }
         }
     }
@@ -351,6 +348,11 @@ public class VehicleHandler extends BaseThingHandler {
     public void distributeContent(VEPUpdate data) {
         updateStatus(ThingStatus.ONLINE);
         Map<String, VehicleAttributeStatus> atts = data.getAttributesMap();
+
+        // Channel for debug
+        StringType st = StringType.valueOf(data.getAllFields().toString());
+        ChannelStateMap dataUpdateMap = new ChannelStateMap("proto-update", GROUP_VEHICLE, st);
+        updateChannel(dataUpdateMap);
 
         /**
          * handle GPS
@@ -396,7 +398,7 @@ public class VehicleHandler extends BaseThingHandler {
                     updateChannel(zoneMap);
                     QuantityType<Temperature> tempState = QuantityType.valueOf(tp.getTemperature(), SIUnits.CELSIUS);
                     ChannelStateMap tempMap = new ChannelStateMap("temperature", Constants.GROUP_HVAC, tempState);
-                    updateChannel(zoneMap);
+                    updateChannel(tempMap);
                 }
             } else {
                 logger.info("No TemperaturePoint Value found");
@@ -409,7 +411,8 @@ public class VehicleHandler extends BaseThingHandler {
         /**
          * handle Charge Program
          */
-        if (Constants.BEV.equals(thing.getUID().getId()) || Constants.HYBRID.equals(thing.getUID().getId())) {
+        if (Constants.BEV.equals(thing.getThingTypeUID().getId())
+                || Constants.HYBRID.equals(thing.getThingTypeUID().getId())) {
             boolean selectedProgram = atts.containsKey("selectedChargeProgram");
             boolean avaialablePrograms = atts.containsKey("chargePrograms");
             if (selectedProgram && avaialablePrograms) {
@@ -423,12 +426,15 @@ public class VehicleHandler extends BaseThingHandler {
                         QuantityType.valueOf((double) cpp.getMaxSoc(), Units.PERCENT));
                 updateChannel(maxSocMap);
             }
+        } else {
+            logger.trace("No Charge Program property available for {}", thing.getThingTypeUID());
         }
 
         /**
          * handle "simple" values
          */
         atts.forEach((key, value) -> {
+            // logger.trace("Distribute {}", key);
             ChannelStateMap csm = Mapper.getChannelStateMap(key, value);
             if (csm.isValid()) {
                 updateChannel(csm);
@@ -736,5 +742,19 @@ public class VehicleHandler extends BaseThingHandler {
     @Override
     public void updateStatus(ThingStatus ts, ThingStatusDetail tsd, @Nullable String details) {
         super.updateStatus(ts, tsd, details);
+    }
+
+    public void setFeatureCapabilities(@Nullable String capa) {
+        if (capa != null) {
+            ChannelStateMap csm = new ChannelStateMap("feature-capabilities", GROUP_VEHICLE, StringType.valueOf(capa));
+            updateChannel(csm);
+        }
+    }
+
+    public void setCommandCapabilities(@Nullable String capa) {
+        if (capa != null) {
+            ChannelStateMap csm = new ChannelStateMap("feature-capabilities", GROUP_VEHICLE, StringType.valueOf(capa));
+            updateChannel(csm);
+        }
     }
 }

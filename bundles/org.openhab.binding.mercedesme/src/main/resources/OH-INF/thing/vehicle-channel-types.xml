@@ -42,7 +42,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="park-break-channel">
+	<channel-type id="park-brake-channel">
 		<item-type>Switch</item-type>
 		<label>Park Brake Active</label>
 		<state readOnly="true"/>

@@ -16,7 +16,7 @@
 	<channel-type id="avg-speed-channel">
 		<item-type>Number</item-type>
 		<label>Trip Average Speed</label>
-		<state pattern="%d km/h" readOnly="true"/>
+		<state pattern="%.1f km/h" readOnly="true"/>
 	</channel-type>
 	<channel-type id="consumption-ev-channel">
 		<item-type>Number:Energy</item-type>

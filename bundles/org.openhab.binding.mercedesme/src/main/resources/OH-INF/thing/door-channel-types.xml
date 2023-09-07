@@ -59,12 +59,12 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="sunroof-front-blind">
+	<channel-type id="sunroof-front-blind-channel">
 		<item-type>Number</item-type>
 		<label>Sun Roof Fornt Blind</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="sunroof-rear-blind">
+	<channel-type id="sunroof-rear-blind-channel">
 		<item-type>Number</item-type>
 		<label>Sun Roof Rear Blind</label>
 		<state readOnly="true"/>
