@@ -20,7 +20,7 @@ package org.openhab.binding.senechome.internal;
  */
 public class SenecHomeConfigurationDTO {
     public String hostname;
-    public Boolean useHttps = false;
+    public Boolean useHttps = true;
     public int refreshInterval = 15;
     public int limitationTresholdValue = 95;
     public int limitationDuration = 120;

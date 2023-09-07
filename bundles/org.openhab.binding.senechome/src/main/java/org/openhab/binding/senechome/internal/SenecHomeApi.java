@@ -71,14 +71,11 @@ public class SenecHomeApi {
         // Apply SSL context factory to the HttpClient builder
         httpClient = new HttpClient(sslContextFactory);
 
-        // Other configuration settings can be applied here if needed
-        // For example: httpClient.setConnectTimeout(5000);
-
         // Start the HttpClient
         try {
             httpClient.start();
         } catch (Exception e) {
-            // Handle exception
+            logger.error("Issue with starting the http client", e);
         }
 
         return httpClient;
@@ -103,10 +100,8 @@ public class SenecHomeApi {
         }
 
         Request request = httpClient.newRequest(location);
-        logger.debug("Senec URL: {}", location);
         request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
         request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.FORM_ENCODED.asString());
-
         ContentResponse response = null;
         try {
             response = request.method(HttpMethod.POST)

@@ -110,7 +110,7 @@
 			<parameter name="useHttps" type="boolean" required="true">
 				<label>Use https</label>
 				<description>Only enable the usage of https if connection via http doesn't work</description>
-				<default>false</default>
+				<default>true</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
