@@ -38,6 +38,11 @@ import org.openhab.binding.mercedesme.internal.utils.Utils;
 class ConfigurationTest {
 
     @Test
+    public void testThingUID() {
+        System.out.println(Constants.THING_TYPE_BEV.getId());
+    }
+
+    @Test
     void testRound() {
         int socValue = 66;
         double batteryCapacity = 66.5;

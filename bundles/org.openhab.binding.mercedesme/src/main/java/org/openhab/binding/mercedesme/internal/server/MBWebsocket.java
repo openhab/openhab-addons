@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 @WebSocket
 public class MBWebsocket {
     private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
-    private final int CONNECT_TIMEOUT_MS = 30 * 1000;
+    private final int CONNECT_TIMEOUT_MS = 2 * 60 * 1000;
     private AccountHandler accountHandler;
     private boolean running = false;
     private @Nullable Future<?> sessionFuture;
@@ -81,8 +81,12 @@ public class MBWebsocket {
             logger.info("Websocket stop");
             client.stop();
             client.destroy();
-        } catch (Exception e) {
-            logger.warn("Websocket handling exception: {}", e.getMessage());
+        } catch (Throwable t) {
+            logger.warn("Websocket handling exception: {}", t.getMessage());
+            StackTraceElement[] ste = t.getStackTrace();
+            for (int i = 0; i < ste.length; i++) {
+                logger.warn("{}", ste[i].toString());
+            }
         }
         synchronized (this) {
             running = false;

@@ -36,7 +36,6 @@
 	<channel-type id="active-channel">
 		<item-type>Switch</item-type>
 		<label>Charge Active</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-channel">
 		<item-type>Number:Power</item-type>

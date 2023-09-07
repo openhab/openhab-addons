@@ -33,7 +33,7 @@
 		<label>Flap Lock</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="door-lock-channel">
+	<channel-type id="lock-control-channel">
 		<item-type>Switch</item-type>
 		<label>Door Lock Control</label>
 	</channel-type>

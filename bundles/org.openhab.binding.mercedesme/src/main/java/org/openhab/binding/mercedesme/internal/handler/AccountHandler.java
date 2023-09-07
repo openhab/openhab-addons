@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -69,7 +70,11 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final MBWebsocket ws;
     private final Map<String, VehicleHandler> vehicleHandlerMap = new HashMap<String, VehicleHandler>();
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<String, Map<String, Object>>();
-    private final int OPEN_TIME_MS = 30000;
+    private final Map<String, String> featureCapabilitiesJsonMap = new HashMap<String, String>();
+    private final Map<String, String> commandCapabilitiesJsonMap = new HashMap<String, String>();
+    private final int OPEN_TIME_MS = 60 * 1000;
+    private final String FEATURE_APPENDIX = "-features";
+    private final String COMMAND_APPENDIX = "-commands";
 
     private Optional<AuthServer> server = Optional.empty();
     private Optional<WebSocketClient> wsClient = Optional.empty();
@@ -237,6 +242,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     public void registerVin(String vin, VehicleHandler handler) {
         vehicleHandlerMap.put(vin, handler);
+        if (storage.containsKey(vin + FEATURE_APPENDIX)) {
+            handler.setFeatureCapabilities(storage.get(vin + FEATURE_APPENDIX));
+        }
+        if (storage.containsKey(vin + COMMAND_APPENDIX)) {
+            handler.setCommandCapabilities(storage.get(vin + COMMAND_APPENDIX));
+        }
         scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
     }
 
@@ -296,7 +307,14 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             capabilitiesRequest.header("Authorization", authService.get().getToken());
 
             ContentResponse capabilitiesResponse = capabilitiesRequest.send();
-            JSONObject jsonResponse = new JSONObject(capabilitiesResponse.getContentAsString());
+
+            String featureCapabilitiesJsonString = capabilitiesResponse.getContentAsString();
+            featureCapabilitiesJsonMap.put(vin, featureCapabilitiesJsonString);
+            if (!storage.containsKey(vin + FEATURE_APPENDIX)) {
+                storage.put(vin + FEATURE_APPENDIX, featureCapabilitiesJsonString);
+            }
+
+            JSONObject jsonResponse = new JSONObject(featureCapabilitiesJsonString);
             logger.info(jsonResponse.toString());
             JSONObject features = jsonResponse.getJSONObject("features");
             features.keySet().forEach(key -> {
@@ -326,7 +344,13 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             commandCapabilitiesRequest.header("X-TrackingId", UUID.randomUUID().toString());
             commandCapabilitiesRequest.header("Authorization", authService.get().getToken());
             ContentResponse commandCapabilitiesResponse = commandCapabilitiesRequest.send();
-            JSONObject commands = new JSONObject(commandCapabilitiesResponse.getContentAsString());
+
+            String commandCapabilitiesJsonString = commandCapabilitiesResponse.getContentAsString();
+            commandCapabilitiesJsonMap.put(vin, commandCapabilitiesJsonString);
+            if (!storage.containsKey(vin + COMMAND_APPENDIX)) {
+                storage.put(vin + COMMAND_APPENDIX, commandCapabilitiesJsonString);
+            }
+            JSONObject commands = new JSONObject(commandCapabilitiesJsonMap);
             logger.info(commands.toString());
             JSONArray commandArray = commands.getJSONArray("commands");
             commandArray.forEach(object -> {
@@ -353,9 +377,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         return featureMap;
     }
 
-    public void sendCommand(ClientMessage cm) {
-        ws.setCommand(cm);
-        // open Websocket to send Command
-        scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
+    public void sendCommand(@Nullable ClientMessage cm) {
+        if (cm != null) {
+            ws.setCommand(cm);
+        }
+        scheduler.schedule(this::update, 2, TimeUnit.SECONDS);
     }
 }

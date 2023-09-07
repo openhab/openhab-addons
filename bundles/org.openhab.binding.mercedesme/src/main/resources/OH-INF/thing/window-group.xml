@@ -15,7 +15,7 @@
 			<channel id="rear-left-blind" typeId="rear-left-blind-channel"/>
 			<channel id="rear-blind" typeId="rear-blind-channel"/>
 			<channel id="flip-window" typeId="flip-window-channel"/>
-			<channel id="control" typeId="window-control-channel"/>
+			<channel id="window-control" typeId="window-control-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
