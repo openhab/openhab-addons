@@ -10,18 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meteoalerte.internal;
+package org.openhab.binding.meteoalerte.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MeteoAlerteConfiguration} is the class used to match the
- * thing configuration.
- *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class MeteoAlerteConfiguration {
-    public String department = "";
-    public int refresh = 1440;
+public enum BlocType {
+    SITUATION("Situation Actuelle"),
+    INCERTITUDE("Prévisibilité et incertitudes"),
+    QUALIFICATION("Qualification"),
+    EVOLUTION("Évolution prévue"),
+    UNKNOWN("Inconnue");
+
+    public final String description;
+
+    BlocType(String description) {
+        this.description = description;
+    }
 }
