@@ -27,6 +27,7 @@ public class RomyApi_v6 implements RomyApi {
     private @NonNull RomyRobotConfiguration config;
     protected HttpRequestSender http;
     private String firmwareVersion = "UNKNOWN";
+    private String name;
     private String mode;
     private String activePumpVolume;
     private String charging;
@@ -76,17 +77,20 @@ public class RomyApi_v6 implements RomyApi {
     public void refresh() throws Exception {
         String returnContent;
         returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_ROBOT_ID, null);
-        firmwareVersion = new ObjectMapper().readTree(returnContent).get("firmware").asText();
+        JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
+        firmwareVersion = jsonNode.get("firmware").asText();
         if (firmwareVersion == null) {
             throw new Exception("There was a problem in the HTTP communication: firmware was empty.");
         }
+        name = jsonNode.get("name").asText();
+
         mapsJson = http.sendHttpGet(getBaseUrl() + CMD_GET_MAPS, null);
         parseMaps(mapsJson);
         returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_POWER_STATUS, null);
         powerStatus = new ObjectMapper().readTree(returnContent).get("power_status").asText();
 
         returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_STATUS, null);
-        JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
+        jsonNode = new ObjectMapper().readTree(returnContent);
         mode = jsonNode.get("mode").asText();
         activePumpVolume = jsonNode.get("active_pump_volume").asText();
         charging = jsonNode.get("charging").asText();
@@ -104,7 +108,7 @@ public class RomyApi_v6 implements RomyApi {
     private void parseMaps(String jsonString) throws JsonMappingException, JsonProcessingException {
         JsonNode node = new ObjectMapper().readTree(jsonString);
         JsonNode maps = node.get("maps");
-        if (maps.isArray()) {
+        if (!maps.textValue().isBlank() && maps.isArray()) {
             availableMaps.clear();
             for (final JsonNode field : maps) {
                 String value = field.get("map_meta_data").textValue();
@@ -114,15 +118,22 @@ public class RomyApi_v6 implements RomyApi {
                     availableMaps.put(key, value);
                 }
             }
-        }
-        if (availableMaps.size() == 1 || selectedMap == null) {
-            selectedMap = availableMaps.values().iterator().next();
+            if (availableMaps.size() == 1 || selectedMap == null) {
+                selectedMap = availableMaps.values().iterator().next();
+            }
+        } else {
+            logger.warn("ROMY has no maps yet, please start a explore to create one!");
         }
     }
 
     @Override
     public String getFirmwareVersion() {
         return firmwareVersion;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override

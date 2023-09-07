@@ -41,6 +41,12 @@ public interface RomyApi {
     String getFirmwareVersion();
 
     /**
+     *
+     * @return Firmware Version of robot
+     */
+    String getName();
+
+    /**
      * 
      * @return Status / Mode robot is currently in
      */

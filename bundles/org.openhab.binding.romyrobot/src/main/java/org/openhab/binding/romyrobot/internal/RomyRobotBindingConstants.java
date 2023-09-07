@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class RomyRobotBindingConstants {
 
-    private static final String BINDING_ID = "romyrobot";
+    private static final String BINDING_ID = "aicu";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID ROMYROBOT_DEVICE = new ThingTypeUID(BINDING_ID, "romyrobot");
