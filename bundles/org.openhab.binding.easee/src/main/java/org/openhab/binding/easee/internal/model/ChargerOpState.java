@@ -1,7 +1,24 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.easee.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * this enum represents the charger operation states as documented by https://developer.easee.cloud/docs/enumerations
+ *
+ * @author Alexander Friese - initial contribution
+ */
 @NonNullByDefault
 public enum ChargerOpState {
     OFFLINE(0),
@@ -26,7 +43,6 @@ public enum ChargerOpState {
             case WAITING:
             case CHARGING:
             case COMPLETED:
-            case ERROR:
             case READY_TO_CHARGE:
                 return true;
             default:
