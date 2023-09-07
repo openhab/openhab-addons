@@ -30,8 +30,11 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.MapEntry;
+import com.google.protobuf.UnknownFieldSet;
+import com.google.protobuf.UnknownFieldSet.Field;
 
 class ProtoTest {
 
@@ -87,13 +90,54 @@ class ProtoTest {
     }
 
     @Test
+    void testPrecondState() {
+        try {
+            // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
+            FileInputStream fis = new FileInputStream("src/test/resources/proto/EQA-Precond-Active.blob");
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
+            VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
+            Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433").getAttributesMap();
+            // System.out.println(m);
+            VehicleAttributeStatus value = m.get("precondNow");
+            System.out.println(value);
+            value = m.get("precondState");
+            System.out.println(value);
+
+            UnknownFieldSet ufs = value.getUnknownFields();
+            Field uf = ufs.getField(44);
+            // System.out.println(uf.);
+            Map<Integer, Field> unknownMap = ufs.asMap();
+            Field f = unknownMap.get(44);
+            System.out.println(unknownMap);
+            System.out.println(f);
+            List<ByteString> bs = f.getLengthDelimitedList();
+            System.out.println(bs.get(0));
+            System.out.println(bs.get(0).isValidUtf8());
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testJson() {
+        try {
+            // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
+            FileInputStream fis = new FileInputStream("src/test/resources/proto/EQA-charging.blob");
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
+            System.out.println(pm.getAllFields().toString());
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     void testMessages() {
         for (int i = 11; i < 12; i++) {
             try {
                 // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
-                FileInputStream fis = new FileInputStream("src/test/resources/proto/proto.blob");
+                FileInputStream fis = new FileInputStream("src/test/resources/proto/EQA-charging.blob");
                 PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
-                // System.out.println(pm.getAllFields());
+                System.out.println(pm.getAllFields().toString());
                 if (pm.hasVepUpdates()) {
                     VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
                     Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433")
@@ -120,7 +164,7 @@ class ProtoTest {
     void testEndChargeTime() {
         try {
             // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
-            FileInputStream fis = new FileInputStream("src/test/resources/proto/proto.blob");
+            FileInputStream fis = new FileInputStream("src/test/resources/proto/EQA-Charging-1740-1915.blob");
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
             // System.out.println(pm.getAllFields());
             VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
