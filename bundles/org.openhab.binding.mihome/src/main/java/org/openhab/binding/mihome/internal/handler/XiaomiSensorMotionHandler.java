@@ -66,7 +66,7 @@ public class XiaomiSensorMotionHandler extends XiaomiSensorBaseHandlerWithTimer 
     @Override
     void execute(ChannelUID channelUID, Command command) {
         if (CHANNEL_MOTION_OFF_TIMER.equals(channelUID.getId())) {
-            if (command != null && command instanceof DecimalType timer) {
+            if (command instanceof DecimalType timer) {
                 setTimerFromDecimalType(timer);
                 return;
             }

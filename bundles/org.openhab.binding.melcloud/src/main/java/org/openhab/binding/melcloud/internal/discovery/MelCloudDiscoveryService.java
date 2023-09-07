@@ -158,7 +158,7 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
         } else if (device.getType() == 1) {
             sb.append("Heatpump Device - ");
         }
-        if (device.getBuildingName() != null && device.getBuildingName() instanceof String) {
+        if (device.getBuildingName() instanceof String) {
             sb.append(device.getBuildingName()).append(" - ");
         }
         sb.append(device.getDeviceName());

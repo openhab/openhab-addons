@@ -85,7 +85,7 @@ public class XmlRpcClient extends RpcClient<String> {
                 reason = ex;
                 // no retries for "init" request or if connection is refused
                 if ("init".equals(request.getMethodName())
-                        || ex.getCause() != null && ex.getCause() instanceof ExecutionException) {
+                        || ex.getCause() instanceof ExecutionException) {
                     break;
                 }
                 logger.debug("XmlRpcMessage failed({}), sending message again {}/{}", ex.getMessage(), rpcRetryCounter,

@@ -159,7 +159,7 @@ public class MeaterRestAPI {
             throw new MeaterException("Failed to fetch from API!");
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException httpResponseException) {
+            if (cause instanceof HttpResponseException httpResponseException) {
                 Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
