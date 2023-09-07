@@ -41,9 +41,8 @@ public class GetMoppingWaterAmountCommand extends IotDeviceCommand<MoppingWaterA
     @Override
     public MoppingWaterAmount convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version,
             Gson gson) throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            WaterInfoReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    WaterInfoReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            WaterInfoReport resp = jsonResponse.getResponsePayloadAs(gson, WaterInfoReport.class);
             return MoppingWaterAmount.fromApiValue(resp.waterAmount);
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();

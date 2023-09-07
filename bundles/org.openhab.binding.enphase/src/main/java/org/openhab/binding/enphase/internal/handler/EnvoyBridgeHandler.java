@@ -22,8 +22,8 @@ import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -132,7 +132,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(EnphaseDevicesDiscoveryService.class);
+        return Set.of(EnphaseDevicesDiscoveryService.class);
     }
 
     @Override
@@ -347,15 +347,14 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(final ThingHandler childHandler, final Thing childThing) {
-        if (childHandler instanceof EnphaseInverterHandler) {
-            updateInverter(getInvertersData(false), (EnphaseInverterHandler) childHandler);
+        if (childHandler instanceof EnphaseInverterHandler handler) {
+            updateInverter(getInvertersData(false), handler);
         }
-        if (childHandler instanceof EnphaseDeviceHandler) {
+        if (childHandler instanceof EnphaseDeviceHandler handler) {
             final Map<String, @Nullable DeviceDTO> devices = getDevices(false);
 
             if (devices != null) {
-                ((EnphaseDeviceHandler) childHandler)
-                        .refreshDeviceState(devices.get(((EnphaseDeviceHandler) childHandler).getSerialNumber()));
+                handler.refreshDeviceState(devices.get(handler.getSerialNumber()));
             }
         }
     }

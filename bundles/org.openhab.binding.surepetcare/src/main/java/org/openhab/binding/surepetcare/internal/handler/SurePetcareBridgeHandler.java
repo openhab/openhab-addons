@@ -172,28 +172,28 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             String tid = th.getUID().getId();
             Map<String, String> properties = null;
             ThingHandler handler = th.getHandler();
-            if (handler instanceof SurePetcarePetHandler) {
-                ((SurePetcarePetHandler) handler).updateThing();
+            if (handler instanceof SurePetcarePetHandler surePetcareHandler) {
+                surePetcareHandler.updateThing();
                 SurePetcarePet pet = petcareAPI.getTopology().getById(petcareAPI.getTopology().pets, tid);
                 if (pet != null) {
                     properties = pet.getThingProperties();
                 }
-            } else if (handler instanceof SurePetcareHouseholdHandler) {
-                ((SurePetcareHouseholdHandler) handler).updateThing();
+            } else if (handler instanceof SurePetcareHouseholdHandler surePetcareHouseholdHandler) {
+                surePetcareHouseholdHandler.updateThing();
                 SurePetcareHousehold household = petcareAPI.getTopology().getById(petcareAPI.getTopology().households,
                         tid);
                 if (household != null) {
                     properties = household.getThingProperties();
                 }
-            } else if (handler instanceof SurePetcareDeviceHandler) {
-                ((SurePetcareDeviceHandler) handler).updateThing();
+            } else if (handler instanceof SurePetcareDeviceHandler surePetcareDevicedHandler) {
+                surePetcareDevicedHandler.updateThing();
                 SurePetcareDevice device = petcareAPI.getTopology().getById(petcareAPI.getTopology().devices, tid);
                 if (device != null) {
                     properties = device.getThingProperties();
                 }
             }
-            if ((properties != null) && (handler instanceof SurePetcareBaseObjectHandler)) {
-                ((SurePetcareBaseObjectHandler) handler).updateProperties(properties);
+            if ((properties != null) && (handler instanceof SurePetcareBaseObjectHandler surePetcareBaseHandler)) {
+                surePetcareBaseHandler.updateProperties(properties);
             }
         }
     }
@@ -203,8 +203,8 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         for (Thing th : getThing().getThings()) {
             if (th.getThingTypeUID().equals(THING_TYPE_PET)) {
                 ThingHandler handler = th.getHandler();
-                if (handler != null) {
-                    ((SurePetcarePetHandler) handler).updateThing();
+                if (handler instanceof SurePetcarePetHandler surePetcarePetHandler) {
+                    surePetcarePetHandler.updateThing();
                 }
             }
         }

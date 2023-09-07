@@ -66,11 +66,13 @@ public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
         return priceSum;
     }
 
+    @Override
     public String toString() {
         return String.format("{%s, %s, %.2f}", formatDate(getStart(), zoneId), formatDate(getEnd(), zoneId),
                 priceSum / length);
     }
 
+    @Override
     public String getHours() {
         return hours;
     }

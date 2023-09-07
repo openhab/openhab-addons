@@ -37,9 +37,9 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     protected class StatusResponse extends Response<Status> {
     }
 
-    private static enum NetworkStatus {
+    private enum NetworkStatus {
         WORKING,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Config(NetworkStatus network, boolean dectEcoMode, String dectPin, int dectRingPattern,
@@ -49,7 +49,7 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     public enum Type {
         FXS,
         DECT,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Status(int id, boolean isRinging, boolean onHook, boolean hardwareDefect, Type type,

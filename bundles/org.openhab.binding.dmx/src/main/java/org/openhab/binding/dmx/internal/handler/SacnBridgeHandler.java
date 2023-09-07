@@ -65,7 +65,7 @@ public class SacnBridgeHandler extends DmxOverEthernetHandler {
         packetTemplate.setUniverse(universe.getUniverseId());
 
         receiverNodes.clear();
-        if ((configuration.mode.equals("unicast"))) {
+        if (("unicast".equals(configuration.mode))) {
             if (configuration.address.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Could not initialize unicast sender (address not set)");
@@ -90,7 +90,7 @@ public class SacnBridgeHandler extends DmxOverEthernetHandler {
         }
         logger.debug("originating address is {} for {}", senderNode, this.thing.getUID());
 
-        refreshAlways = configuration.refreshmode.equals("always");
+        refreshAlways = "always".equals(configuration.refreshmode);
         logger.debug("refresh mode set to always: {}", refreshAlways);
 
         updateStatus(ThingStatus.UNKNOWN);

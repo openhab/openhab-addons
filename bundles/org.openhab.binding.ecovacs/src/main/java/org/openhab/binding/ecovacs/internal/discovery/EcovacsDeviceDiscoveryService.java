@@ -14,9 +14,9 @@ package org.openhab.binding.ecovacs.internal.discovery;
 
 import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,13 +57,13 @@ public class EcovacsDeviceDiscoveryService extends AbstractDiscoveryService impl
             this::scanForDevices);
 
     public EcovacsDeviceDiscoveryService() {
-        super(Collections.singleton(THING_TYPE_VACUUM), DISCOVER_TIMEOUT_SECONDS, true);
+        super(Set.of(THING_TYPE_VACUUM), DISCOVER_TIMEOUT_SECONDS, true);
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof EcovacsApiHandler) {
-            this.apiHandler = (EcovacsApiHandler) handler;
+        if (handler instanceof EcovacsApiHandler ecovacsApiHandler) {
+            this.apiHandler = ecovacsApiHandler;
             this.apiHandler.setDiscoveryService(this);
         }
     }
