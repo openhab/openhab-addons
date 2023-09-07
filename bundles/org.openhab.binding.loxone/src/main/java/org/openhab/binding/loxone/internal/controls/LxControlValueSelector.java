@@ -134,8 +134,8 @@ class LxControlValueSelector extends LxControl {
             logger.debug("Value selector min or max value missing or min>max.");
             return;
         }
-        if (command instanceof DecimalType numberCommand) {
-            Double value = numberCommand.doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            Double value = decimalCommand.doubleValue();
             if (value < minValue || value > maxValue) {
                 logger.debug("Value {} out of {}-{} range", value, minValue, maxValue);
                 return;

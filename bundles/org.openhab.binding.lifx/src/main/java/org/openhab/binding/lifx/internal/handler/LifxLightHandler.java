@@ -561,8 +561,8 @@ public class LifxLightHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_ABS_TEMPERATURE:
             case CHANNEL_TEMPERATURE:
-                if (command instanceof DecimalType || (command instanceof QuantityType temperature
-                        && temperature.toInvertibleUnit(Units.KELVIN) != null)) {
+                if (command instanceof DecimalType || (command instanceof QuantityType quantityCommand
+                        && quantityCommand.toInvertibleUnit(Units.KELVIN) != null)) {
                     return () -> handleTemperatureCommand(command);
                 } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     return () -> handleIncreaseDecreaseTemperatureCommand(increaseDecreaseCommand);
@@ -603,14 +603,14 @@ public class LifxLightHandler extends BaseThingHandler {
                 try {
                     if (channelUID.getId().startsWith(CHANNEL_ABS_TEMPERATURE_ZONE)) {
                         int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_ABS_TEMPERATURE_ZONE, ""));
-                        if (command instanceof DecimalType || (command instanceof QuantityType quantity
-                                && quantity.toInvertibleUnit(Units.KELVIN) != null)) {
+                        if (command instanceof DecimalType || (command instanceof QuantityType quantityCommand
+                                && quantityCommand.toInvertibleUnit(Units.KELVIN) != null)) {
                             return () -> handleTemperatureCommand(command, zoneIndex);
                         }
                     } else if (channelUID.getId().startsWith(CHANNEL_COLOR_ZONE)) {
                         int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_COLOR_ZONE, ""));
-                        if (command instanceof HSBType hsb) {
-                            return () -> handleHSBCommand(hsb, zoneIndex);
+                        if (command instanceof HSBType hsbCommand) {
+                            return () -> handleHSBCommand(hsbCommand, zoneIndex);
                         } else if (command instanceof PercentType percentCommand) {
                             return () -> handlePercentCommand(percentCommand, zoneIndex);
                         } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {

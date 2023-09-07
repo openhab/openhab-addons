@@ -95,8 +95,8 @@ public class TimeclockHandler extends LutronHandler {
         logger.debug("Handling timeclock command {} on channel {}", command, channelID);
 
         if (channelUID.getId().equals(CHANNEL_CLOCKMODE)) {
-            if (command instanceof DecimalType clock) {
-                Integer mode = clock.intValue();
+            if (command instanceof DecimalType decimalCommand) {
+                Integer mode = decimalCommand.intValue();
                 timeclock(TimeclockCommand.ACTION_CLOCKMODE, mode, null);
             } else if (command instanceof RefreshType) {
                 queryTimeclock(TimeclockCommand.ACTION_CLOCKMODE);

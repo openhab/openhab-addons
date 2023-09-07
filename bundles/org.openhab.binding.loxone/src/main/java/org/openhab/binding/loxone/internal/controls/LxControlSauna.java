@@ -149,8 +149,8 @@ class LxControlSauna extends LxControl {
     }
 
     private void handleSetNumberCommands(Command command, String prefix) throws IOException {
-        if (command instanceof DecimalType number) {
-            Double value = number.doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            Double value = decimalCommand.doubleValue();
             sendAction(prefix + value.toString());
         }
     }
@@ -172,8 +172,8 @@ class LxControlSauna extends LxControl {
     }
 
     private void handleModeCommands(Command command) throws IOException {
-        if (command instanceof DecimalType mode) {
-            Double value = mode.doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            Double value = decimalCommand.doubleValue();
             // per API there are 7 evaporator modes selected with number 0-6
             if (value % 1 == 0 && value >= 0.0 && value <= 6.0) {
                 sendAction(CMD_SET_EVAPORATOR_MODE + value.toString());

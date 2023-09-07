@@ -117,8 +117,8 @@ class LxControlLightController extends LxControl {
             } else {
                 sendAction(CMD_PREVIOUS_SCENE);
             }
-        } else if (command instanceof DecimalType DecimalType) {
-            int scene = DecimalType.intValue();
+        } else if (command instanceof DecimalType decimalCommand) {
+            int scene = decimalCommand.intValue();
             if (scene == SCENE_ALL_ON) {
                 sendAction(CMD_ON);
             } else if (scene >= 0 && scene < NUM_OF_SCENES) {
