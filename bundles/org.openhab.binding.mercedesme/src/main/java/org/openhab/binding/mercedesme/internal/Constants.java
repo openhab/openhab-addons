@@ -48,14 +48,17 @@ public class Constants {
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_COMB, THING_TYPE_HYBRID, THING_TYPE_BEV).collect(Collectors.toSet()));
 
-    public static final String GROUP_RANGE = "range";
-    public static final String GROUP_COMMAND = "command";
+    public static final String GROUP_VEHICLE = "vehicle";
     public static final String GROUP_DOORS = "doors";
-    public static final String GROUP_WINDOWS = "windows";
     public static final String GROUP_LOCK = "lock";
-    public static final String GROUP_LOCATION = "location";
+    public static final String GROUP_WINDOWS = "windows";
+    public static final String GROUP_HVAC = "hvac";
+    public static final String GROUP_SERVICE = "service";
+    public static final String GROUP_RANGE = "range";
+    public static final String GROUP_CHARGE = "charge";
+    public static final String GROUP_CRIP = "trip";
+    public static final String GROUP_POSITION = "position";
     public static final String GROUP_TIRES = "tires";
-    public static final String GROUP_WARNINGS = "warnings";
 
     public static final String CALLBACK_ENDPOINT = "/mb-auth";
     // https://developer.mercedes-benz.com/content-page/api_migration_guide

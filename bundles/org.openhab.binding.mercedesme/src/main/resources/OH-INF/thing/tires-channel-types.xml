@@ -23,4 +23,34 @@
 		<label>Tire Pressure Rear Left</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="sensor-available-channel">
+		<item-type>Number</item-type>
+		<label>Tire Marker Sensor</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="marker-front-right-channel">
+		<item-type>Number</item-type>
+		<label>Tire Marker Front Right</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="marker-rear-right-channel">
+		<item-type>Number</item-type>
+		<label>Tire Marker Rear Right</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="marker-front-left-channel">
+		<item-type>Number</item-type>
+		<label>Tire Marker Front Left</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="marker-rear-left-channel">
+		<item-type>Number</item-type>
+		<label>Tire Marker Rear Left</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last-update-channel">
+		<item-type>DateTime</item-type>
+		<label>Tire Update Time</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

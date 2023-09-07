@@ -28,6 +28,11 @@
 		<label>Deck Lid</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="engine-hood-channel">
+		<item-type>Contact</item-type>
+		<label>Engine Hood</label>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="rooftop-channel">
 		<item-type>Number</item-type>
 		<label>Roof top</label>
@@ -54,25 +59,25 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="last-doors-update-channel">
-		<item-type>DateTime</item-type>
-		<label>Last Doors Update</label>
-		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	<channel-type id="sunroof-front-blind">
+		<item-type>Number</item-type>
+		<label>Sun Roof Fornt Blind</label>
+		<state readOnly="true"/>
 	</channel-type>
-	   <channel-type id="door-lock-channel">
-        <item-type>Switch</item-type>
-        <label>Door Lock Control</label>
-    </channel-type>
-    <channel-type id="sunroof-control-channel">
-        <item-type>Number</item-type>
-        <label>Sunroof Control</label>
-        <state>
-            <options>
-                <option value="0">Close</option>
-                <option value="1">Open</option>
-                <option value="2">Lift</option>
-            </options>
-        </state>
-    </channel-type>
-	
+	<channel-type id="sunroof-rear-blind">
+		<item-type>Number</item-type>
+		<label>Sun Roof Rear Blind</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sunroof-control-channel">
+		<item-type>Number</item-type>
+		<label>Sun Roof Control</label>
+		<state>
+			<options>
+				<option value="0">Close</option>
+				<option value="1">Open</option>
+				<option value="2">Lift</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

@@ -3,26 +3,38 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="doors-lock-channel">
-		<item-type>Number</item-type>
-		<label>Door Lock Status</label>
-		<state readOnly="true">
-			<options>
-				<option value="0">Unlocked</option>
-				<option value="1">Locked Internal</option>
-				<option value="2">Locked External</option>
-				<option value="3">Unlocked Selective</option>
-			</options>
-		</state>
+	<channel-type id="driver-front-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Driver Door Locked</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="driver-rear-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Driver Rear Door Locked</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="passenger-front-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Passenger Door Locked</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="passenger-rear-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Passenger Rear Door Locked</label>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="deck-lid-lock-channel">
 		<item-type>Switch</item-type>
 		<label>Deck Lid Lock</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="flap-lock-channel">
+	<channel-type id="gas-flap-lock-channel">
 		<item-type>Switch</item-type>
 		<label>Flap Lock</label>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="door-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Door Lock Control</label>
 	</channel-type>
 </thing:thing-descriptions>

@@ -90,7 +90,7 @@ public class VehicleHandler extends BaseThingHandler {
         logger.info("Received command {} for {}", command, channelUID);
         if (command instanceof RefreshType) {
             // todo
-        } else if (Constants.GROUP_COMMAND.equals(channelUID.getGroupId())) {
+        } else if (Constants.GROUP_HVAC.equals(channelUID.getGroupId())) {
             String pin = accountHandler.get().config.get().pin;
             if ("air-condition-temp".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditionConfigure");
@@ -195,7 +195,8 @@ public class VehicleHandler extends BaseThingHandler {
                         }
                     }
                 }
-            } else if ("window-control".equals(channelUID.getIdWithoutGroup())) {
+            } else if ("control".equals(channelUID.getIdWithoutGroup())
+                    && Constants.GROUP_WINDOWS.equals(channelUID.getGroupId())) {
                 String supported = thing.getProperties().get("commandWindowsOpen");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Windows supported? {}", supported);
@@ -314,7 +315,7 @@ public class VehicleHandler extends BaseThingHandler {
         if (atts.containsKey("positionLat") && atts.containsKey("positionLong")) {
             String gps = atts.get("positionLat").getDoubleValue() + "," + atts.get("positionLong").getDoubleValue();
             PointType pt = new PointType(gps);
-            updateChannel(new ChannelStateMap("gps", "location", pt));
+            updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, pt));
         }
         atts.forEach((key, value) -> {
             ChannelStateMap csm = Mapper.getChannelStateMap(key, value);

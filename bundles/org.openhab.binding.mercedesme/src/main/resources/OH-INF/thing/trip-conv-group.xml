@@ -3,13 +3,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="location-values">
-		<label>Vehicle Location</label>
-		<description>Heading of vehicle</description>
+	<channel-group-type id="trip-conv-values">
+		<label>Last Trip Data</label>
 		<channels>
-			<channel id="heading" typeId="heading-channel"/>
-			<channel id="gps" typeId="gps-channel"/>
-            <channel id="position" typeId="position-channel"/>
+			<channel id="distance" typeId="distance-channel"/>
+			<channel id="driven-time" typeId="driven-time-channel"/>
+			<channel id="avg-speed" typeId="avg-speed-channel"/>
+			<channel id="cconsumption" typeId="cconsumption-conv-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="hvac-values">
+		<label>Vehicle Climate Control</label>
+		<channels>
+			<channel id="active" typeId="active-hvac-channel"/>
+			<channel id="driver-seat" typeId="driver-seat-hvac-channel"/>
+			<channel id="passenger-seat" typeId="passenger-seat-hvac-channel"/>
+			<channel id="driver-rear-seat" typeId="driver-rear-seat-hvac-channel"/>
+			<channel id="passenger-rear-seat" typeId="passenger-rear-seat-hvac-channel"/>
+			<channel id="zone" typeId="zone-hvac-channel"/>
+			<channel id="temperature" typeId="temperature-hvac-channel"/>
+			<channel id="temperature-control" typeId="temperature-control-hvac-channel"/>
+			<channel id="active-control" typeId="active-control-hvac-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

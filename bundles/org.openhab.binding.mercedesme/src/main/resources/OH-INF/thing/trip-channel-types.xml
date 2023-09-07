@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="distance-channel">
+		<item-type>Number:Length</item-type>
+		<label>Trip Distance</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="driven-time-channel">
+		<item-type>DateTime</item-type>
+		<label>Trip Driving Time</label>
+		<state pattern="%1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+	<channel-type id="avg-speed-channel">
+		<item-type>Number</item-type>
+		<label>Trip Average Speed</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="cconsumption-ev-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Trip Average Consumption</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="cconsumption-conv-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Trip Average Consumption</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="lock-status-channel">
+		<item-type>Number</item-type>
+		<label>Lock Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Unlocked</option>
+				<option value="1">Locked Internal</option>
+				<option value="2">Locked External</option>
+				<option value="3">Unlocked Selective</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="window-status-channel">
+		<item-type>Number</item-type>
+		<label>Windows Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Closed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="door-status-channel">
+		<item-type>Number</item-type>
+		<label>Door Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Closed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="ignition-channel">
+		<item-type>Number</item-type>
+		<label>Ignition</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="park-break-channel">
+		<item-type>Switch</item-type>
+		<label>Park Brake Active</label>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
