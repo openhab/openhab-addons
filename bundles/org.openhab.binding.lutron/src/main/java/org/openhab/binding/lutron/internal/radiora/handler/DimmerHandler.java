@@ -65,8 +65,8 @@ public class DimmerHandler extends LutronHandler {
         }
 
         if (LutronBindingConstants.CHANNEL_LIGHTLEVEL.equals(channelUID.getId())) {
-            if (command instanceof PercentType intensityCommand) {
-                int intensity = intensityCommand.intValue();
+            if (command instanceof PercentType percentCommand) {
+                int intensity = percentCommand.intValue();
 
                 SetDimmerLevelCommand cmd = new SetDimmerLevelCommand(config.getZoneNumber(), intensity, config.system);
                 bridgeHandler.sendCommand(cmd);

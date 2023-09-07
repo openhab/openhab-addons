@@ -60,8 +60,8 @@ public class PhantomButtonHandler extends LutronHandler {
 
     @Override
     public void handleFeedback(RadioRAFeedback feedback) {
-        if (feedback instanceof LEDMapFeedback feedbackCommand) {
-            handleLEDMapFeedback(feedbackCommand);
+        if (feedback instanceof LEDMapFeedback ledMapFeedback) {
+            handleLEDMapFeedback(ledMapFeedback);
         }
     }
 
