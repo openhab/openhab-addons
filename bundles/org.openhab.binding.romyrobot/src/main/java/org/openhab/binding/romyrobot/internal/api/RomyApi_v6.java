@@ -112,7 +112,7 @@ public class RomyApi_v6 implements RomyApi {
         powerStatus = new ObjectMapper().readTree(returnContent).get("power_status").asText();
 
         returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_STATUS, null);
-        JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
+        jsonNode = new ObjectMapper().readTree(returnContent);
         mode = jsonNode.get("mode").asText();
         activePumpVolume = jsonNode.get("active_pump_volume").asText();
         charging = jsonNode.get("charging").asText();
