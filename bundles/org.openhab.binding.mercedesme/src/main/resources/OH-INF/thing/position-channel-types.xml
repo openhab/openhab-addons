@@ -5,21 +5,21 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="heading-channel">
 		<item-type>Number:Angle</item-type>
-		<label>Heading Angle</label>
+		<label>Position Heading Angle</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="gps-channel">
 		<item-type>Location</item-type>
-		<label>GPS coordinates</label>
+		<label>Position GPS</label>
 	</channel-type>
-	   <channel-type id="position-channel">
-        <item-type>Number</item-type>
-        <label>Show Vehicle Position</label>
-        <state>
-            <options>
-                <option value="0">Position Lights</option>
-                <option value="1">Position Horn</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="signal-channel">
+		<item-type>Number</item-type>
+		<label>Position Signal</label>
+		<state>
+			<options>
+				<option value="0">Position Lights</option>
+				<option value="1">Position Horn</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

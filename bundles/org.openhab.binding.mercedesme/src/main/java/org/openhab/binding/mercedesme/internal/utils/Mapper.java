@@ -158,15 +158,15 @@ public class Mapper {
         CHANNELS.put("doorlockstatusvehicle", new String[] { "doors", GROUP_LOCK });
         CHANNELS.put("doorlockstatusdecklid", new String[] { "deck-lid", GROUP_LOCK });
         CHANNELS.put("doorlockstatusgas", new String[] { "flap", GROUP_LOCK });
-        CHANNELS.put("positionHeading", new String[] { "heading", GROUP_LOCATION });
+        CHANNELS.put("positionHeading", new String[] { "heading", GROUP_POSITION });
         CHANNELS.put("tirepressureRearRight", new String[] { "pressure-rear-right", GROUP_TIRES });
         CHANNELS.put("tirepressureFrontRight", new String[] { "pressure-front-right", GROUP_TIRES });
         CHANNELS.put("tirepressureRearLeft", new String[] { "pressure-rear-left", GROUP_TIRES });
         CHANNELS.put("tirepressureFrontLeft", new String[] { "pressure-front-left", GROUP_TIRES });
-        CHANNELS.put("warningbrakefluid", new String[] { "brake-fluid", GROUP_WARNINGS });
-        CHANNELS.put("warningbrakeliningwear", new String[] { "brake-lining-wear", GROUP_WARNINGS });
-        CHANNELS.put("warningwashwater", new String[] { "wash-water", GROUP_WARNINGS });
-        CHANNELS.put("warningcoolantlevellow", new String[] { "coolant-fluid", GROUP_WARNINGS });
-        CHANNELS.put("warningenginelight", new String[] { "engine", GROUP_WARNINGS });
+        CHANNELS.put("warningbrakefluid", new String[] { "brake-fluid", GROUP_SERVICE });
+        CHANNELS.put("warningbrakeliningwear", new String[] { "brake-lining-wear", GROUP_SERVICE });
+        CHANNELS.put("warningwashwater", new String[] { "wash-water", GROUP_SERVICE });
+        CHANNELS.put("warningcoolantlevellow", new String[] { "coolant-fluid", GROUP_SERVICE });
+        CHANNELS.put("warningenginelight", new String[] { "engine", GROUP_SERVICE });
     }
 }

@@ -59,20 +59,35 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="last-windows-update-channel">
-		<item-type>DateTime</item-type>
-		<label>Last Window Update</label>
-		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	<channel-type id="rear-right-blind-channel">
+		<item-type>Number</item-type>
+		<label>Rear Right Blind</label>
+		<state readOnly="true"/>
 	</channel-type>
-	   <channel-type id="window-control-channel">
-        <item-type>Number</item-type>
-        <label>Window Control</label>
-        <state>
-            <options>
-                <option value="0">Close</option>
-                <option value="1">Open</option>
-                <option value="2">Ventilate</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="rear-left-blind-channel">
+		<item-type>Number</item-type>
+		<label>Rear Left Blind</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-blind-channel">
+		<item-type>Number</item-type>
+		<label>Rear Blind</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="flip-window-channel">
+		<item-type>Number</item-type>
+		<label>Flip Window</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="control-channel">
+		<item-type>Number</item-type>
+		<label>Window Control</label>
+		<state>
+			<options>
+				<option value="0">Close</option>
+				<option value="1">Open</option>
+				<option value="2">Ventilate</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

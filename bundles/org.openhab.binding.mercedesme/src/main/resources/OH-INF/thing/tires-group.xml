@@ -11,6 +11,12 @@
 			<channel id="pressure-rear-right" typeId="pressure-rear-right-channel"/>
 			<channel id="pressure-front-left" typeId="pressure-front-left-channel"/>
 			<channel id="pressure-rear-left" typeId="pressure-rear-left-channel"/>
+			<channel id="sensor-available" typeId="sensor-available-channel"/>
+			<channel id="marker-front-right" typeId="marker-front-right-channel"/>
+			<channel id="marker-rear-right" typeId="marker-rear-right-channel"/>
+			<channel id="marker-front-left" typeId="marker-front-left-channel"/>
+			<channel id="marker-rear-left" typeId="marker-rear-left-channel"/>
+			<channel id="last-update" typeId="last-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

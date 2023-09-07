@@ -84,7 +84,8 @@ class ProtoTest {
     void testMessages() {
         for (int i = 11; i < 12; i++) {
             try {
-                FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
+                // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
+                FileInputStream fis = new FileInputStream("src/test/resources/proto/proto.blob");
                 PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
                 // System.out.println(pm.getAllFields());
                 if (pm.hasVepUpdates()) {
@@ -93,7 +94,7 @@ class ProtoTest {
                             .getAttributesMap();
                     m.forEach((key, value) -> {
                         // System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
-                        if (key.contains("doorlockstatusgas")) {
+                        if (key.contains("endofchargetime")) {
                             // System.out.println(Mapper.getChannelStateMap(key, value));
                             System.out.println(key + ":" + value);
                             // System.out.println(

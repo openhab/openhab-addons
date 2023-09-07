@@ -3,13 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="warning-ev-values">
-		<label>Warnings</label>
-		<description>Current active warnings</description>
+	<channel-group-type id="trip-hybrid-values">
+		<label>Last Trip Data</label>
 		<channels>
-			<channel id="brake-fluid" typeId="brake-fluid-channel"/>
-			<channel id="brake-lining-wear" typeId="brake-lining-wear-channel"/>
-			<channel id="wash-water" typeId="wash-water-channel"/>
+			<channel id="distance" typeId="distance-channel"/>
+			<channel id="driven-time" typeId="driven-time-channel"/>
+			<channel id="avg-speed" typeId="avg-speed-channel"/>
+			<channel id="cconsumption-ev" typeId="cconsumption-ev-channel"/>
+			<channel id="cconsumption-comv" typeId="cconsumption-conv-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

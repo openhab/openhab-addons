@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="vehicle-values">
+		<label>Vehicle Status</label>
+		<description>General vehicle status data</description>
+		<channels>
+			<channel id="lock-status" typeId="lock-status-channel"/>
+			<channel id="window-status" typeId="window-status-channel"/>
+			<channel id="door-status" typeId="door-status-channel"/>
+			<channel id="ignition" typeId="ignition-channel"/>
+			<channel id="park-break" typeId="park-break-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

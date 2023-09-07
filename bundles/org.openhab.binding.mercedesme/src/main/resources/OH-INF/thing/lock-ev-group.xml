@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="lock-values">
+	<channel-group-type id="lock-ev-values">
 		<label>Lock Status</label>
 		<description>Door Lock Status</description>
 		<channels>
@@ -12,7 +12,6 @@
 			<channel id="passenger-front" typeId="passenger-front-lock-channel"/>
 			<channel id="passenger-rear" typeId="passenger-rear-lock-channel"/>
 			<channel id="deck-lid" typeId="deck-lid-lock-channel"/>
-			<channel id="gas-flap" typeId="egas-flap-lock-channel"/>
 			<channel id="lock-control" typeId="lock-control-channel"/>
 		</channels>
 	</channel-group-type>
