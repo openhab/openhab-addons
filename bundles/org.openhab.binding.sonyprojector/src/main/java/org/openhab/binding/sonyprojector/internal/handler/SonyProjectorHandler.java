@@ -167,8 +167,8 @@ public class SonyProjectorHandler extends BaseThingHandler {
                     case CHANNEL_BRIGHTNESS:
                         if (command instanceof DecimalType decimalCommand) {
                             connector.setBrightness(decimalCommand.intValue());
-                        } else if (command instanceof PercentType percentCommand) {
-                            connector.setBrightness(percentCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand2) {
+                            connector.setBrightness(percentCommand2.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }
@@ -176,8 +176,8 @@ public class SonyProjectorHandler extends BaseThingHandler {
                     case CHANNEL_COLOR:
                         if (command instanceof DecimalType decimalCommand) {
                             connector.setColor(decimalCommand.intValue());
-                        } else if (command instanceof PercentType percentCommand) {
-                            connector.setColor(percentCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand3) {
+                            connector.setColor(percentCommand3.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }
@@ -185,8 +185,8 @@ public class SonyProjectorHandler extends BaseThingHandler {
                     case CHANNEL_HUE:
                         if (command instanceof DecimalType decimalCommand) {
                             connector.setHue(decimalCommand.intValue());
-                        } else if (command instanceof PercentType percentCommand) {
-                            connector.setHue(percentCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand4) {
+                            connector.setHue(percentCommand4.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }
@@ -194,8 +194,8 @@ public class SonyProjectorHandler extends BaseThingHandler {
                     case CHANNEL_SHARPNESS:
                         if (command instanceof DecimalType decimalCommand) {
                             connector.setSharpness(decimalCommand.intValue());
-                        } else if (command instanceof PercentType percentCommand) {
-                            connector.setSharpness(percentCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand5) {
+                            connector.setSharpness(percentCommand5.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }
@@ -210,8 +210,8 @@ public class SonyProjectorHandler extends BaseThingHandler {
                     case CHANNEL_IRIS_MANUAL:
                         if (command instanceof DecimalType decimalCommand) {
                             connector.setIrisManual(decimalCommand.intValue());
-                        } else if (command instanceof PercentType percentCommand) {
-                            connector.setIrisManual(percentCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand6) {
+                            connector.setIrisManual(percentCommand6.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }

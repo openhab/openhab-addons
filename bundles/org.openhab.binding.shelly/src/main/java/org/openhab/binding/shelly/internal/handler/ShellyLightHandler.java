@@ -180,7 +180,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     Integer temp = -1;
                     if (command instanceof PercentType percentCommand) {
                         logger.debug("{}: Set color temp to {}%", thingName, percentCommand.floatValue());
-                        Float percent = type.floatValue() / 100;
+                        Float percent = percentCommand.floatValue() / 100;
                         temp = new DecimalType(col.minTemp + ((col.maxTemp - col.minTemp)) * percent).intValue();
                         logger.debug("{}: Converted color-temp {}% to {}K (from Percent to Integer)", thingName,
                                 percent, temp);
@@ -411,7 +411,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         if (command instanceof PercentType percentCommand) {
             double v = (double) maxValue * percentCommand.doubleValue() / 100.0;
             value = (int) v;
-            logger.debug("{}: Value for {} is in percent: {}%={}", thingName, colorName, percent, value);
+            logger.debug("{}: Value for {} is in percent: {}%={}", thingName, colorName, percentCommand, value);
         } else if (command instanceof DecimalType decimalCommand) {
             value = decimalCommand.intValue();
             logger.debug("Value for {} is a number: {}", colorName, value);

@@ -163,8 +163,8 @@ public abstract class SmartthingsConverter {
                     return UnDefType.UNDEF;
                 }
             case "Number":
-                if (deviceValue instanceof String stringCommand) {
-                    return new DecimalType(Double.parseDouble(stringCommand));
+                if (deviceValue instanceof String stringCommand2) {
+                    return new DecimalType(Double.parseDouble(stringCommand2));
                 } else if (deviceValue instanceof Double) {
                     return new DecimalType((Double) deviceValue);
                 } else if (deviceValue instanceof Long) {
@@ -192,8 +192,8 @@ public abstract class SmartthingsConverter {
                 // But if the result is from sensor change via a subscription to a threeAxis device the results will
                 // be a String of the format "value":"-873,-70,484"
                 // which GSON returns as a LinkedTreeMap
-                if (deviceValue instanceof String stringCommand) {
-                    return new StringType(stringCommand);
+                if (deviceValue instanceof String stringCommand3) {
+                    return new StringType(stringCommand3);
                 } else if (deviceValue instanceof Map<?, ?>) {
                     Map<String, String> map = (Map<String, String>) deviceValue;
                     String s = String.format("%.0f,%.0f,%.0f", map.get("x"), map.get("y"), map.get("z"));

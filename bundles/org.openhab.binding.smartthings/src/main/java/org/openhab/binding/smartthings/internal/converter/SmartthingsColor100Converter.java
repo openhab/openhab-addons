@@ -54,7 +54,7 @@ public class SmartthingsColor100Converter extends SmartthingsConverter {
         // 0-100 percent
         // The easiest way to do this is to create a new HSBType with the hue component changed.
         if (command instanceof HSBType hsbCommand) {
-            double hue = Math.round((hsb.getHue().doubleValue() / 3.60)); // add .5 to round
+            double hue = Math.round((hsbCommand.getHue().doubleValue() / 3.60)); // add .5 to round
             long hueInt = (long) hue;
             HSBType hsb100 = new HSBType(new DecimalType(hueInt), hsbCommand.getSaturation(),
                     hsbCommand.getBrightness());

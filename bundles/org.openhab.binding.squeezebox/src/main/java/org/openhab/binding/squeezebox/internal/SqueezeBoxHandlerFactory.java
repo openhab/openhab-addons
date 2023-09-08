@@ -174,7 +174,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (thingHandler instanceof SqueezeBoxPlayerHandler playerHandler) {
-            SqueezeBoxServerHandler bridge = handler.getSqueezeBoxServerHandler();
+            SqueezeBoxServerHandler bridge = playerHandler.getSqueezeBoxServerHandler();
             if (bridge != null) {
                 // Unregister the player's audio sink
                 logger.trace("Unregistering the audio sync service for player thing {}",

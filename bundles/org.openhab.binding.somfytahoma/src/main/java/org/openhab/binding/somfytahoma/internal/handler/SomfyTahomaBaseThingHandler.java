@@ -483,7 +483,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         if (command instanceof QuantityType<?> quantityCommand) {
             QuantityType<?> convertedQuantity = quantityCommand.toUnit(getTemperatureUnit());
             if (convertedQuantity != null) {
-                quantity = convertedQuantity;
+                quantityCommand = convertedQuantity;
             }
             temperature = quantityCommand.toBigDecimal();
         } else if (command instanceof DecimalType decimalCommand) {
