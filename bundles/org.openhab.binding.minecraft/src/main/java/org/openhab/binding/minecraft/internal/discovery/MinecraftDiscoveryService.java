@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.minecraft.internal.discovery;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.openhab.binding.minecraft.internal.MinecraftBindingConstants;
 import org.openhab.binding.minecraft.internal.MinecraftHandlerFactory;
@@ -53,7 +53,7 @@ public class MinecraftDiscoveryService extends AbstractDiscoveryService {
     private CompositeSubscription subscription;
 
     public MinecraftDiscoveryService() {
-        super(Collections.singleton(MinecraftBindingConstants.THING_TYPE_SERVER), DISCOVER_TIMEOUT_SECONDS, false);
+        super(Set.of(MinecraftBindingConstants.THING_TYPE_SERVER), DISCOVER_TIMEOUT_SECONDS, false);
     }
 
     @Override
@@ -91,10 +91,8 @@ public class MinecraftDiscoveryService extends AbstractDiscoveryService {
      * @return subscription for listening to sign events.
      */
     private Subscription subscribeSignsRx(Observable<ServerConnection> serverRx) {
-        return serverRx
-                .flatMap(connection -> connection.getSocketHandler().getSignsRx().distinct(), (connection, signs) -> {
-                    return new Pair<>(connection, signs);
-                }).subscribe(conectionSignPair -> {
+        return serverRx.flatMap(connection -> connection.getSocketHandler().getSignsRx().distinct(),
+                (connection, signs) -> new Pair<>(connection, signs)).subscribe(conectionSignPair -> {
                     for (SignData sign : conectionSignPair.second) {
                         submitSignDiscoveryResults(conectionSignPair.first.getThingUID(), sign);
                     }

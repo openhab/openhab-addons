@@ -152,8 +152,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
             ThingTypeUID thingTypeUID = getThingTypeUidFromModelId(modelId);
 
             if (getSupportedThingTypes().contains(thingTypeUID)) {
-                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, appliance.getApplianceIdentifier().getId());
-                return thingUID;
+                return new ThingUID(thingTypeUID, bridgeUID, appliance.getApplianceIdentifier().getId());
             } else {
                 return null;
             }

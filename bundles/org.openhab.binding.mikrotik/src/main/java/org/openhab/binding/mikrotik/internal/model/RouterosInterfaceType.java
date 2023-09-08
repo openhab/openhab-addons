@@ -44,6 +44,7 @@ public enum RouterosInterfaceType {
         return typeName.equals(otherType);
     }
 
+    @Override
     public String toString() {
         return this.typeName;
     }

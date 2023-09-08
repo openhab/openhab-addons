@@ -68,8 +68,8 @@ public class HwDimmerHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_LIGHTLEVEL)) {
-            if (command instanceof Number) {
-                int level = ((Number) command).intValue();
+            if (command instanceof Number number) {
+                int level = number.intValue();
                 outputLevel(level);
             } else if (command.equals(OnOffType.ON)) {
                 outputLevel(defaultLevel);

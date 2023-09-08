@@ -248,8 +248,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         }
                         break;
                     case CHANNEL_TYPE_SOURCE:
-                        if (command instanceof DecimalType) {
-                            final int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            final int value = decimalCommand.intValue();
                             if (value >= ONE && value <= amp.getNumSources()) {
                                 logger.debug("Got source command {} zone {}", value, zoneId);
                                 connector.sendCommand(zoneId, amp.getSourceCmd(), value);
@@ -258,9 +258,9 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         }
                         break;
                     case CHANNEL_TYPE_VOLUME:
-                        if (command instanceof PercentType) {
-                            final int value = (int) Math.round(
-                                    ((PercentType) command).doubleValue() / 100.0 * (amp.getMaxVol() - MIN_VOLUME))
+                        if (command instanceof PercentType percentCommand) {
+                            final int value = (int) Math
+                                    .round(percentCommand.doubleValue() / 100.0 * (amp.getMaxVol() - MIN_VOLUME))
                                     + MIN_VOLUME;
                             logger.debug("Got volume command {} zone {}", value, zoneId);
                             connector.sendCommand(zoneId, amp.getVolumeCmd(), value);
@@ -274,8 +274,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         }
                         break;
                     case CHANNEL_TYPE_TREBLE:
-                        if (command instanceof DecimalType) {
-                            final int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            final int value = decimalCommand.intValue();
                             if (value >= amp.getMinTone() && value <= amp.getMaxTone()) {
                                 logger.debug("Got treble command {} zone {}", value, zoneId);
                                 connector.sendCommand(zoneId, amp.getTrebleCmd(), value + amp.getToneOffset());
@@ -284,8 +284,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         }
                         break;
                     case CHANNEL_TYPE_BASS:
-                        if (command instanceof DecimalType) {
-                            final int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            final int value = decimalCommand.intValue();
                             if (value >= amp.getMinTone() && value <= amp.getMaxTone()) {
                                 logger.debug("Got bass command {} zone {}", value, zoneId);
                                 connector.sendCommand(zoneId, amp.getBassCmd(), value + amp.getToneOffset());
@@ -294,8 +294,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         }
                         break;
                     case CHANNEL_TYPE_BALANCE:
-                        if (command instanceof DecimalType) {
-                            final int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            final int value = decimalCommand.intValue();
                             if (value >= amp.getMinBal() && value <= amp.getMaxBal()) {
                                 logger.debug("Got balance command {} zone {}", value, zoneId);
                                 connector.sendCommand(zoneId, amp.getBalanceCmd(), value + amp.getBalOffset());
@@ -334,8 +334,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         }
                         break;
                     case CHANNEL_TYPE_ALLSOURCE:
-                        if (command instanceof DecimalType) {
-                            final int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            final int value = decimalCommand.intValue();
                             if (value >= ONE && value <= amp.getNumSources()) {
                                 zoneStream.forEach((streamZoneId) -> {
                                     if (!ignoreZones.contains(amp.getZoneName(streamZoneId))) {
@@ -355,9 +355,9 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         }
                         break;
                     case CHANNEL_TYPE_ALLVOLUME:
-                        if (command instanceof PercentType) {
-                            allVolume = (int) Math.round(
-                                    ((PercentType) command).doubleValue() / 100.0 * (amp.getMaxVol() - MIN_VOLUME))
+                        if (command instanceof PercentType percentCommand) {
+                            allVolume = (int) Math
+                                    .round(percentCommand.doubleValue() / 100.0 * (amp.getMaxVol() - MIN_VOLUME))
                                     + MIN_VOLUME;
                             zoneStream.forEach((streamZoneId) -> {
                                 if (!ignoreZones.contains(amp.getZoneName(streamZoneId))) {

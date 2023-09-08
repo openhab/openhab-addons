@@ -15,9 +15,9 @@ package org.openhab.binding.juicenet.internal.handler;
 import static org.openhab.binding.juicenet.internal.JuiceNetBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -116,7 +116,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(JuiceNetDiscoveryService.class);
+        return Set.of(JuiceNetDiscoveryService.class);
     }
 
     public void handleApiException(Exception e) {
