@@ -35,8 +35,8 @@ public class DateTimeValue extends Value {
 
     @Override
     public DateTimeType parseCommand(Command command) throws IllegalArgumentException {
-        if (command instanceof DateTimeType dateTime) {
-            return dateTime;
+        if (command instanceof DateTimeType dateTimeCommand) {
+            return dateTimeCommand;
         } else {
             return DateTimeType.valueOf(command.toString());
         }

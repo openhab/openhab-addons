@@ -85,10 +85,10 @@ public class DimmerHandler extends LutronHandler {
 
     @Override
     public void handleFeedback(RadioRAFeedback feedback) {
-        if (feedback instanceof LocalZoneChangeFeedback feedbackCommand) {
-            handleLocalZoneChangeFeedback(feedbackCommand);
-        } else if (feedback instanceof ZoneMapFeedback feedbackCommand) {
-            handleZoneMapFeedback(feedbackCommand);
+        if (feedback instanceof LocalZoneChangeFeedback localZoneChangeFeedback) {
+            handleLocalZoneChangeFeedback(localZoneChangeFeedback);
+        } else if (feedback instanceof ZoneMapFeedback zoneMapFeedback) {
+            handleZoneMapFeedback(zoneMapFeedback);
         }
     }
 

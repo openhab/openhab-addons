@@ -219,8 +219,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
      *         the stiebel eltron modbus documentation)
      */
     private short getScaledInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof QuantityType temperature) {
-            QuantityType<?> c = temperature.toUnit(CELSIUS);
+        if (command instanceof QuantityType quantityCommand) {
+            QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
             if (c != null) {
                 return (short) (c.doubleValue() * 10);
             } else {

@@ -69,26 +69,26 @@ public class AudioPlayerChannel extends MycroftChannel<State> {
 
     @Override
     public void handleCommand(Command command) {
-        if (command instanceof PlayPauseType playCommand) {
-            if (playCommand == PlayPauseType.PAUSE) {
+        if (command instanceof PlayPauseType playPauseCommand) {
+            if (playPauseCommand == PlayPauseType.PAUSE) {
                 if (handler.sendMessage(new MessageAudioPause())) {
                     updateMyState(PlayPauseType.PAUSE);
                 }
             }
-            if (playCommand == PlayPauseType.PLAY) {
+            if (playPauseCommand == PlayPauseType.PLAY) {
                 handler.sendMessage(new MessageAudioPlay());
                 if (handler.sendMessage(new MessageAudioResume())) {
                     updateMyState(PlayPauseType.PLAY);
                 }
             }
         }
-        if (command instanceof NextPreviousType nextCommand) {
-            if (nextCommand == NextPreviousType.NEXT) {
+        if (command instanceof NextPreviousType nextPreviousCommand) {
+            if (nextPreviousCommand == NextPreviousType.NEXT) {
                 if (handler.sendMessage(new MessageAudioNext())) {
                     updateMyState(PlayPauseType.PLAY);
                 }
             }
-            if (nextCommand == NextPreviousType.PREVIOUS) {
+            if (nextPreviousCommand == NextPreviousType.PREVIOUS) {
                 if (handler.sendMessage(new MessageAudioPrev())) {
                     updateMyState(PlayPauseType.PLAY);
                 }

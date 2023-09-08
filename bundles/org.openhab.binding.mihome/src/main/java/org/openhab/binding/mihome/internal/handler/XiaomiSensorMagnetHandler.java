@@ -81,8 +81,8 @@ public class XiaomiSensorMagnetHandler extends XiaomiSensorBaseHandlerWithTimer 
     @Override
     void execute(ChannelUID channelUID, Command command) {
         if (CHANNEL_OPEN_ALARM_TIMER.equals(channelUID.getId())) {
-            if (command instanceof DecimalType timer) {
-                setTimerFromDecimalType(timer);
+            if (command instanceof DecimalType decimalCommand) {
+                setTimerFromDecimalType(decimalCommand);
                 return;
             }
             // Only gets here, if no condition was met

@@ -384,8 +384,8 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof ModbusDataThingHandler handler) {
-            this.childCallbacks.add(handler);
+        if (childHandler instanceof ModbusDataThingHandler modbusDataThingHandler) {
+            this.childCallbacks.add(modbusDataThingHandler);
         }
     }
 

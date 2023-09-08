@@ -182,9 +182,9 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         List<DeviceDTO> localDeviceCaches = devicesCache;
-        if (childHandler instanceof MyQDeviceHandler handler) {
-            localDeviceCaches.stream().filter(d -> handler.getSerialNumber().equalsIgnoreCase(d.serialNumber))
-                    .findFirst().ifPresent(handler::handleDeviceUpdate);
+        if (childHandler instanceof MyQDeviceHandler hdeviceHandlerandler) {
+            localDeviceCaches.stream().filter(d -> deviceHandler.getSerialNumber().equalsIgnoreCase(d.serialNumber))
+                    .findFirst().ifPresent(deviceHandler::handleDeviceUpdate);
         }
     }
 

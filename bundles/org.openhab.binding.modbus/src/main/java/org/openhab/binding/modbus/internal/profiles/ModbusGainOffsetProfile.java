@@ -141,22 +141,22 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
         QuantityType<Dimensionless> pregainOffsetQt = localPregainOffset.get();
         String formula = towardsItem ? String.format("( '%s' + '%s') * '%s'", state, pregainOffsetQt, gain)
                 : String.format("'%s'/'%s' - '%s'", state, gain, pregainOffsetQt);
-        if (state instanceof QuantityType qtStateCommand) {
+        if (state instanceof QuantityType quantityState) {
             try {
                 if (towardsItem) {
                     @SuppressWarnings("unchecked") // xx.toUnit(ONE) returns null or QuantityType<Dimensionless>
                     @Nullable
-                    QuantityType<Dimensionless> qtState = (QuantityType<Dimensionless>) (qtStateCommand
+                    QuantityType<Dimensionless> qtState = (QuantityType<Dimensionless>) (quantityState
                             .toUnit(Units.ONE));
                     if (qtState == null) {
                         logger.warn("Profile can only process plain numbers from handler. Got unit {}. Returning UNDEF",
-                                qtStateCommand.getUnit());
+                                quantityState.getUnit());
                         return UnDefType.UNDEF;
                     }
                     QuantityType<Dimensionless> offsetted = qtState.add(pregainOffsetQt);
                     result = applyGainTowardsItem(offsetted, gain);
                 } else {
-                    result = applyGainTowardsHandler(qtStateCommand, gain).subtract(pregainOffsetQt);
+                    result = applyGainTowardsHandler(quantityState, gain).subtract(pregainOffsetQt);
 
                 }
             } catch (UnconvertibleException | UnsupportedOperationException e) {
