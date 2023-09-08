@@ -154,7 +154,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                             updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM, rpmSpeed.toString());
                         }
 
-                        if (data.get(i).equals("0")) {
+                        if ("0".equals(data.get(i))) {
                             updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "0");
                         } else {
                             updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "1");

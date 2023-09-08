@@ -81,8 +81,8 @@ class LxControlUpDownDigital extends LxControl {
     }
 
     private void handleUpCommands(Command command) throws IOException {
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.ON && upState == OnOffType.OFF) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON && upState == OnOffType.OFF) {
                 setStates(OnOffType.ON, OnOffType.OFF);
                 sendAction(CMD_UP_ON);
             } else if (upState == OnOffType.ON) {
@@ -93,8 +93,8 @@ class LxControlUpDownDigital extends LxControl {
     }
 
     private void handleDownCommands(Command command) throws IOException {
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.ON && downState == OnOffType.OFF) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON && downState == OnOffType.OFF) {
                 setStates(OnOffType.OFF, OnOffType.ON);
                 sendAction(CMD_DOWN_ON);
             } else if (downState == OnOffType.ON) {

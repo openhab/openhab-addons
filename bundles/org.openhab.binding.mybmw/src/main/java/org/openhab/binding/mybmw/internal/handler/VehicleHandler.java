@@ -83,8 +83,8 @@ public class VehicleHandler extends VehicleChannelHandler {
             // Check for Channel Group and corresponding Actions
         } else if (CHANNEL_GROUP_REMOTE.equals(group)) {
             // Executing Remote Services
-            if (command instanceof StringType) {
-                String serviceCommand = ((StringType) command).toFullString();
+            if (command instanceof StringType str) {
+                String serviceCommand = str.toFullString();
                 remote.ifPresent(remot -> {
                     switch (serviceCommand) {
                         case REMOTE_SERVICE_LIGHT_FLASH:
@@ -213,7 +213,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     prox.requestChargeStatistics(config, chargeStatisticsCallback);
                     prox.requestChargeSessions(config, chargeSessionCallback);
                 }
-                if (!imageCache.isPresent() && !imageProperties.failLimitReached()) {
+                if (imageCache.isEmpty() && !imageProperties.failLimitReached()) {
                     prox.requestImage(config, imageProperties, imageCallback);
                 }
             }, () -> {

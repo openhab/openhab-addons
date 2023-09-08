@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author John Cocula - Added variable spoon size, UoM, wind stats, bug fixes
  */
 public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DAVIS);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DAVIS);
 
     private final Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
 

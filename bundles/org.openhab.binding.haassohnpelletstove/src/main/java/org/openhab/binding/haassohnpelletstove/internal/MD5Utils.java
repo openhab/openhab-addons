@@ -38,8 +38,7 @@ public class MD5Utils {
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException(e);
         }
-        byte[] result = md.digest(input);
-        return result;
+        return md.digest(input);
     }
 
     private static String bytesToHex(byte[] bytes) {

@@ -128,7 +128,7 @@ public class MQTTProtocol {
         }
 
         public boolean cycleEnabled(int i) {
-            return cycle[i].equals("start");
+            return "start".equals(cycle[i]);
         }
 
         public void enableCycle(int i, boolean enable) {

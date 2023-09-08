@@ -594,15 +594,14 @@ public class HomematicThingHandler extends BaseThingHandler {
                     if (dp != null) {
                         try {
                             if (newValue != null) {
-                                if (newValue instanceof BigDecimal) {
-                                    final BigDecimal decimal = (BigDecimal) newValue;
+                                if (newValue instanceof BigDecimal decimal) {
                                     if (dp.isIntegerType()) {
                                         newValue = decimal.intValue();
                                     } else if (dp.isFloatType()) {
                                         newValue = decimal.doubleValue();
                                     }
-                                } else if (newValue instanceof String && dp.isEnumType()) {
-                                    newValue = dp.getOptionIndex((String) newValue);
+                                } else if (newValue instanceof String string && dp.isEnumType()) {
+                                    newValue = dp.getOptionIndex(string);
                                 }
                                 if (!Objects.equals(dp.getValue(), newValue)) {
                                     sendDatapoint(dp, new HmDatapointConfig(), newValue);
