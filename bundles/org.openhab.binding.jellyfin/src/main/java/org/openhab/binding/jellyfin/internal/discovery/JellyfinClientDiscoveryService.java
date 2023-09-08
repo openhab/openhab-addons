@@ -105,8 +105,8 @@ public class JellyfinClientDiscoveryService extends AbstractDiscoveryService imp
 
     @Override
     public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof JellyfinServerHandler) {
-            bridgeHandler = (JellyfinServerHandler) thingHandler;
+        if (thingHandler instanceof JellyfinServerHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
         }
     }
 
@@ -115,6 +115,7 @@ public class JellyfinClientDiscoveryService extends AbstractDiscoveryService imp
         return null;
     }
 
+    @Override
     public void activate() {
         activate(new HashMap<>());
     }

@@ -248,8 +248,8 @@ public class StatusWrapper {
                 assertEquals(expected.toString(), dtt.toString(), "Last Update");
                 break;
             case GPS:
-                if (state instanceof PointType) {
-                    pt = (PointType) state;
+                if (state instanceof PointType point) {
+                    pt = point;
                     assertNotNull(vehicle.properties.vehicleLocation);
                     assertEquals(
                             PointType.valueOf(Double.toString(vehicle.properties.vehicleLocation.coordinates.latitude)
@@ -258,8 +258,8 @@ public class StatusWrapper {
                 } // else no check needed
                 break;
             case HEADING:
-                if (state instanceof QuantityType) {
-                    qt = ((QuantityType) state);
+                if (state instanceof QuantityType quantityCommand) {
+                    qt = quantityCommand;
                     assertEquals(Units.DEGREE_ANGLE, qt.getUnit(), "Angle Unit");
                     assertNotNull(vehicle.properties.vehicleLocation);
                     assertEquals(vehicle.properties.vehicleLocation.heading, qt.intValue(), 0.01, "Heading");
@@ -572,15 +572,15 @@ public class StatusWrapper {
                 }
                 break;
             case ADDRESS:
-                if (state instanceof StringType) {
-                    st = (StringType) state;
+                if (state instanceof StringType str) {
+                    st = str;
                     assertEquals(st.toFullString(), vehicle.properties.vehicleLocation.address.formatted,
                             "Location Address");
                 } // else no check needed
                 break;
             case HOME_DISTANCE:
-                if (state instanceof QuantityType) {
-                    qt = (QuantityType) state;
+                if (state instanceof QuantityType quantity) {
+                    qt = quantity;
                     PointType vehicleLocation = PointType
                             .valueOf(Double.toString(vehicle.properties.vehicleLocation.coordinates.latitude) + ","
                                     + Double.toString(vehicle.properties.vehicleLocation.coordinates.longitude));

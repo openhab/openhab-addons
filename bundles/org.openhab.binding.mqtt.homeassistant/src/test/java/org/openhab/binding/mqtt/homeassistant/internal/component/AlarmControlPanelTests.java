@@ -36,31 +36,33 @@ public class AlarmControlPanelTests extends AbstractComponentTests {
     public void testAlarmControlPanel() {
         // @formatter:off
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"availability\": [ " +
-                        "    { " +
-                        "      \"topic\": \"zigbee2mqtt/bridge/state\" " +
-                        "    } " +
-                        "  ], " +
-                        "  \"code\": \"12345\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/alarm/set/state\", " +
-                        "  \"device\": { " +
-                        "    \"identifiers\": [ " +
-                        "      \"zigbee2mqtt_0x0000000000000000\" " +
-                        "    ], " +
-                        "    \"manufacturer\": \"BestAlarmEver\", " +
-                        "    \"model\": \"Heavy duty super duper alarm\", " +
-                        "    \"name\": \"Alarm\", " +
-                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
-                        "  }, " +
-                        "  \"name\": \"alarm\", " +
-                        "  \"payload_arm_away\": \"ARM_AWAY_\", " +
-                        "  \"payload_arm_home\": \"ARM_HOME_\", " +
-                        "  \"payload_arm_night\": \"ARM_NIGHT_\", " +
-                        "  \"payload_arm_custom_bypass\": \"ARM_CUSTOM_BYPASS_\", " +
-                        "  \"payload_disarm\": \"DISARM_\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/alarm/state\" " +
-                        "} ");
+                """
+                { \
+                  "availability": [ \
+                    { \
+                      "topic": "zigbee2mqtt/bridge/state" \
+                    } \
+                  ], \
+                  "code": "12345", \
+                  "command_topic": "zigbee2mqtt/alarm/set/state", \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "BestAlarmEver", \
+                    "model": "Heavy duty super duper alarm", \
+                    "name": "Alarm", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "alarm", \
+                  "payload_arm_away": "ARM_AWAY_", \
+                  "payload_arm_home": "ARM_HOME_", \
+                  "payload_arm_night": "ARM_NIGHT_", \
+                  "payload_arm_custom_bypass": "ARM_CUSTOM_BYPASS_", \
+                  "payload_disarm": "DISARM_", \
+                  "state_topic": "zigbee2mqtt/alarm/state" \
+                } \
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(4));
