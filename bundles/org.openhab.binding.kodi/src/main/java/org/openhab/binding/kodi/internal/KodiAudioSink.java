@@ -75,10 +75,10 @@ public class KodiAudioSink extends AudioSinkSync {
     public @NonNull CompletableFuture<@Nullable Void> processAndComplete(@Nullable AudioStream audioStream) {
         // we override this method to intercept URLAudioStream and handle it asynchronously. We won't wait for it to
         // play through the end as it can be very long
-        if (audioStream instanceof URLAudioStream) {
+        if (audioStream instanceof URLAudioStream stream) {
             // Asynchronous handling for URLAudioStream. Id it is an external URL, the speaker can access it itself and
             // play it. There will be no volume restoration or call to dispose / complete, but there is no need to.
-            String url = ((URLAudioStream) audioStream).getURL();
+            String url = stream.getURL();
             AudioFormat format = audioStream.getFormat();
             logger.trace("Processing audioStream URL {} of format {}.", url, format);
             handler.playURI(new StringType(url));

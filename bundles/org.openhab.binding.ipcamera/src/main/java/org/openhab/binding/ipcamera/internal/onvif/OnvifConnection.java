@@ -72,7 +72,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 @NonNullByDefault
 public class OnvifConnection {
-    public static enum RequestType {
+    public enum RequestType {
         AbsoluteMove,
         AddPTZConfiguration,
         ContinuousMoveLeft,

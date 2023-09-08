@@ -119,8 +119,8 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
     public void handleRadioRAFeedback(RadioRAFeedback feedback) {
         for (Thing thing : getThing().getThings()) {
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof LutronHandler) {
-                ((LutronHandler) handler).handleFeedback(feedback);
+            if (handler instanceof LutronHandler lutronHandler) {
+                lutronHandler.handleFeedback(feedback);
             } else {
                 logger.debug("Unexpected - Thing {} is not a LutronHandler", thing.getClass());
             }
