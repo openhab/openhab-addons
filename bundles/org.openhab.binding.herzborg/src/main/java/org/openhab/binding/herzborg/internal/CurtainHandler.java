@@ -74,8 +74,8 @@ public class CurtainHandler extends BaseThingHandler {
                             (command == UpDownType.UP) ? ControlAddress.OPEN : ControlAddress.CLOSE);
                 } else if (command instanceof StopMoveType) {
                     pkt = buildPacket(Function.CONTROL, ControlAddress.STOP);
-                } else if (command instanceof DecimalType) {
-                    pkt = buildPacket(Function.CONTROL, ControlAddress.PERCENT, ((DecimalType) command).byteValue());
+                } else if (command instanceof DecimalType decimalCommand) {
+                    pkt = buildPacket(Function.CONTROL, ControlAddress.PERCENT, decimalCommand.byteValue());
                 }
                 break;
             case CHANNEL_REVERSE:

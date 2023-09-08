@@ -28,8 +28,8 @@ public class SyncResponse<T> extends SyncCallback<Response<T>> {
             return awaitResult();
         } catch (SyncCallbackError e) {
             var cause = e.getCause();
-            if (cause instanceof ApiClientException) {
-                throw (ApiClientException) cause;
+            if (cause instanceof ApiClientException apiClientException) {
+                throw apiClientException;
             }
             throw e;
         }

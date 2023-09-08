@@ -20,10 +20,10 @@ import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -137,7 +137,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(LivisiDeviceDiscoveryService.class);
+        return Set.of(LivisiDeviceDiscoveryService.class);
     }
 
     @Override
@@ -564,8 +564,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onError(final Throwable cause) {
-        if (cause instanceof Exception) {
-            handleClientException((Exception) cause);
+        if (cause instanceof Exception exception) {
+            handleClientException(exception);
         }
     }
 

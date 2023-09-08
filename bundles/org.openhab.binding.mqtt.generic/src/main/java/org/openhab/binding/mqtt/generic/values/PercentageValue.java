@@ -75,18 +75,18 @@ public class PercentageValue extends Value {
     public PercentType parseCommand(Command command) throws IllegalArgumentException {
         PercentType oldvalue = (state == UnDefType.UNDEF) ? new PercentType() : (PercentType) state;
         // Nothing do to -> We have received a percentage
-        if (command instanceof PercentType) {
-            return (PercentType) command;
+        if (command instanceof PercentType percent) {
+            return percent;
         } else //
                // A decimal type need to be converted according to the current min/max values
-        if (command instanceof DecimalType) {
-            BigDecimal v = ((DecimalType) command).toBigDecimal();
+        if (command instanceof DecimalType decimal) {
+            BigDecimal v = decimal.toBigDecimal();
             v = v.subtract(min).multiply(HUNDRED).divide(max.subtract(min), MathContext.DECIMAL128);
             return new PercentType(v);
         } else //
                // A quantity type need to be converted according to the current min/max values
-        if (command instanceof QuantityType) {
-            QuantityType<?> qty = ((QuantityType<?>) command).toUnit(Units.PERCENT);
+        if (command instanceof QuantityType quantity) {
+            QuantityType<?> qty = quantity.toUnit(Units.PERCENT);
             if (qty != null) {
                 BigDecimal v = qty.toBigDecimal();
                 v = v.subtract(min).multiply(HUNDRED).divide(max.subtract(min), MathContext.DECIMAL128);
@@ -95,8 +95,8 @@ public class PercentageValue extends Value {
             return oldvalue;
         } else //
                // Increase or decrease by "step"
-        if (command instanceof IncreaseDecreaseType) {
-            if (((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE) {
+        if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+            if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                 final BigDecimal v = oldvalue.toBigDecimal().add(stepPercent);
                 return v.compareTo(HUNDRED) <= 0 ? new PercentType(v) : PercentType.HUNDRED;
             } else {
@@ -105,12 +105,12 @@ public class PercentageValue extends Value {
             }
         } else //
                // On/Off equals 100 or 0 percent
-        if (command instanceof OnOffType) {
-            return ((OnOffType) command) == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
+        if (command instanceof OnOffType increaseDecreaseCommand) {
+            return increaseDecreaseCommand == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
         } else//
               // Increase or decrease by "step"
-        if (command instanceof UpDownType) {
-            if (((UpDownType) command) == UpDownType.UP) {
+        if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 final BigDecimal v = oldvalue.toBigDecimal().add(stepPercent);
                 return v.compareTo(HUNDRED) <= 0 ? new PercentType(v) : PercentType.HUNDRED;
             } else {

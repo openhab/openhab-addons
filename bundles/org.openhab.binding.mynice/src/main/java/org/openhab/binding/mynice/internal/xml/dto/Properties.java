@@ -20,7 +20,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("Properties")
 public class Properties {
-    public static enum DoorStatus {
+    public enum DoorStatus {
         OPEN(false),
         CLOSED(false),
         OPENING(true),

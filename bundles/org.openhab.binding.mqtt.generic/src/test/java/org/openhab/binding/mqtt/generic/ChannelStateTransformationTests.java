@@ -112,7 +112,7 @@ public class ChannelStateTransformationTests {
 
         ChannelStateTransformation transformation = channelConfig.transformationsIn.get(0);
 
-        byte payload[] = JSON_PATH_JSON.getBytes();
+        byte[] payload = JSON_PATH_JSON.getBytes();
         assertThat(transformation.pattern, is(JSON_PATH_PATTERN));
         // Test process message
         channelConfig.processMessage(channelConfig.getStateTopic(), payload);

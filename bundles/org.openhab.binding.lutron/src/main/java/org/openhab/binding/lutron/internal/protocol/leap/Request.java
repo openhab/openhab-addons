@@ -25,56 +25,76 @@ public class Request {
     public static final String BUTTON_GROUP_URL = "/buttongroup";
 
     public static String goToLevel(int zone, int value) {
-        String request = "{\"CommuniqueType\": \"CreateRequest\","
-                + "\"Header\": {\"Url\": \"/zone/%d/commandprocessor\"}," + "\"Body\": {" + "\"Command\": {"
-                + "\"CommandType\": \"GoToLevel\"," + "\"Parameter\": [{\"Type\": \"Level\", \"Value\": %d}]}}}";
+        String request = """
+                {"CommuniqueType": "CreateRequest",\
+                "Header": {"Url": "/zone/%d/commandprocessor"},\
+                "Body": {\
+                "Command": {\
+                "CommandType": "GoToLevel",\
+                "Parameter": [{"Type": "Level", "Value": %d}]}}}\
+                """;
         return String.format(request, zone, value);
     }
 
     /** fadeTime must be in the format hh:mm:ss **/
     public static String goToDimmedLevel(int zone, int value, String fadeTime) {
-        String request = "{\"CommuniqueType\": \"CreateRequest\","
-                + "\"Header\": {\"Url\": \"/zone/%d/commandprocessor\"},\"Body\": {\"Command\": {"
-                + "\"CommandType\": \"GoToDimmedLevel\","
-                + "\"DimmedLevelParameters\": {\"Level\": %d, \"FadeTime\": \"%s\"}}}}";
+        String request = """
+                {"CommuniqueType": "CreateRequest",\
+                "Header": {"Url": "/zone/%d/commandprocessor"},"Body": {"Command": {\
+                "CommandType": "GoToDimmedLevel",\
+                "DimmedLevelParameters": {"Level": %d, "FadeTime": "%s"}}}}\
+                """;
         return String.format(request, zone, value, fadeTime);
     }
 
     /** fadeTime and delayTime must be in the format hh:mm:ss **/
     public static String goToDimmedLevel(int zone, int value, String fadeTime, String delayTime) {
-        String request = "{\"CommuniqueType\": \"CreateRequest\","
-                + "\"Header\": {\"Url\": \"/zone/%d/commandprocessor\"},\"Body\": {\"Command\": {"
-                + "\"CommandType\": \"GoToDimmedLevel\","
-                + "\"DimmedLevelParameters\": {\"Level\": %d, \"FadeTime\": \"%s\", \"DelayTime\": \"%s\"}}}}";
+        String request = """
+                {"CommuniqueType": "CreateRequest",\
+                "Header": {"Url": "/zone/%d/commandprocessor"},"Body": {"Command": {\
+                "CommandType": "GoToDimmedLevel",\
+                "DimmedLevelParameters": {"Level": %d, "FadeTime": "%s", "DelayTime": "%s"}}}}\
+                """;
         return String.format(request, zone, value, fadeTime, delayTime);
     }
 
     public static String goToFanSpeed(int zone, FanSpeedType fanSpeed) {
-        String request = "{\"CommuniqueType\": \"CreateRequest\","
-                + "\"Header\": {\"Url\": \"/zone/%d/commandprocessor\"}," + "\"Body\": {"
-                + "\"Command\": {\"CommandType\": \"GoToFanSpeed\","
-                + "\"FanSpeedParameters\": {\"FanSpeed\": \"%s\"}}}}";
+        String request = """
+                {"CommuniqueType": "CreateRequest",\
+                "Header": {"Url": "/zone/%d/commandprocessor"},\
+                "Body": {\
+                "Command": {"CommandType": "GoToFanSpeed",\
+                "FanSpeedParameters": {"FanSpeed": "%s"}}}}\
+                """;
         return String.format(request, zone, fanSpeed.leapValue());
     }
 
     public static String buttonCommand(int button, CommandType command) {
-        String request = "{\"CommuniqueType\": \"CreateRequest\","
-                + "\"Header\": {\"Url\": \"/button/%d/commandprocessor\"},"
-                + "\"Body\": {\"Command\": {\"CommandType\": \"%s\"}}}";
+        String request = """
+                {"CommuniqueType": "CreateRequest",\
+                "Header": {"Url": "/button/%d/commandprocessor"},\
+                "Body": {"Command": {"CommandType": "%s"}}}\
+                """;
         return String.format(request, button, command.toString());
     }
 
     public static String virtualButtonCommand(int virtualbutton, CommandType command) {
-        String request = "{\"CommuniqueType\": \"CreateRequest\","
-                + "\"Header\": {\"Url\": \"/virtualbutton/%d/commandprocessor\"},"
-                + "\"Body\": {\"Command\": {\"CommandType\": \"%s\"}}}";
+        String request = """
+                {"CommuniqueType": "CreateRequest",\
+                "Header": {"Url": "/virtualbutton/%d/commandprocessor"},\
+                "Body": {"Command": {"CommandType": "%s"}}}\
+                """;
         return String.format(request, virtualbutton, command.toString());
     }
 
     public static String zoneCommand(int zone, CommandType commandType) {
-        String request = "{\"CommuniqueType\": \"CreateRequest\","
-                + "\"Header\": {\"Url\": \"/zone/%d/commandprocessor\"}," + "\"Body\": {" + "\"Command\": {"
-                + "\"CommandType\": \"%s\"}}}";
+        String request = """
+                {"CommuniqueType": "CreateRequest",\
+                "Header": {"Url": "/zone/%d/commandprocessor"},\
+                "Body": {\
+                "Command": {\
+                "CommandType": "%s"}}}\
+                """;
         return String.format(request, zone, commandType.toString());
     }
 

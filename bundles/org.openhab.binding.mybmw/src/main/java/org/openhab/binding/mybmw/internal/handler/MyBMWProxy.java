@@ -163,10 +163,10 @@ public class MyBMWProxy {
                     logger.debug("HTTP Error {}", error.toString());
                     callback.onError(error);
                 } else {
-                    if (callback instanceof StringResponseCallback) {
-                        ((StringResponseCallback) callback).onResponse(getContentAsString());
-                    } else if (callback instanceof ByteResponseCallback) {
-                        ((ByteResponseCallback) callback).onResponse(getContent());
+                    if (callback instanceof StringResponseCallback responseCallback) {
+                        responseCallback.onResponse(getContentAsString());
+                    } else if (callback instanceof ByteResponseCallback responseCallback) {
+                        responseCallback.onResponse(getContent());
                     } else {
                         logger.error("unexpected reponse type {}", callback.getClass().getName());
                     }
@@ -425,10 +425,10 @@ public class MyBMWProxy {
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         final StringBuilder codeFound = new StringBuilder();
         tokenMap.forEach((key, value) -> {
-            if (value.size() > 0) {
+            if (!value.isEmpty()) {
                 String val = value.get(0);
                 if (key.endsWith(CODE)) {
-                    codeFound.append(val.toString());
+                    codeFound.append(val);
                 }
             }
         });

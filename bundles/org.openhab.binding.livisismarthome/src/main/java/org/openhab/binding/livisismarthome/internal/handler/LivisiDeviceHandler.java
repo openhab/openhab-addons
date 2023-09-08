@@ -132,8 +132,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void commandSetDimLevel(Command command, LivisiBridgeHandler bridgeHandler) {
-        if (command instanceof DecimalType) {
-            final DecimalType dimLevel = (DecimalType) command;
+        if (command instanceof DecimalType dimLevel) {
             bridgeHandler.commandSetDimLevel(deviceId, dimLevel.intValue());
         } else if (command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
@@ -145,8 +144,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void commandRollerShutter(Command command, LivisiBridgeHandler bridgeHandler) {
-        if (command instanceof DecimalType) {
-            final DecimalType rollerShutterLevel = (DecimalType) command;
+        if (command instanceof DecimalType rollerShutterLevel) {
             bridgeHandler.commandSetRollerShutterLevel(deviceId,
                     invertRollerShutterValueIfConfigured(rollerShutterLevel.intValue()));
         } else if (command instanceof OnOffType) {
@@ -169,13 +167,13 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void commandUpdatePointTemperature(Command command, LivisiBridgeHandler bridgeHandler) {
-        if (command instanceof QuantityType) {
-            final QuantityType<?> pointTemperatureCommand = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+        if (command instanceof QuantityType temperatureCommand) {
+            final QuantityType<?> pointTemperatureCommand = temperatureCommand.toUnit(SIUnits.CELSIUS);
             if (pointTemperatureCommand != null) {
                 commandUpdatePointTemperature(pointTemperatureCommand.doubleValue(), bridgeHandler);
             }
-        } else if (command instanceof DecimalType) {
-            commandUpdatePointTemperature(((DecimalType) command).doubleValue(), bridgeHandler);
+        } else if (command instanceof DecimalType temperatureCommand) {
+            commandUpdatePointTemperature(temperatureCommand.doubleValue(), bridgeHandler);
         }
     }
 
@@ -991,8 +989,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 }
                 @Nullable
                 final ThingHandler handler = bridge.getHandler();
-                if (handler instanceof LivisiBridgeHandler) {
-                    LivisiBridgeHandler bridgeHandler = (LivisiBridgeHandler) handler;
+                if (handler instanceof LivisiBridgeHandler bridgeHandler) {
                     bridgeHandler.registerDeviceStatusListener(deviceId, this);
                     this.bridgeHandler = bridgeHandler;
                 } else {

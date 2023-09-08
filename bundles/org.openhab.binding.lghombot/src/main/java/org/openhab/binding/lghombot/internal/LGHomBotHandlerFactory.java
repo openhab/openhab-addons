@@ -14,7 +14,6 @@ package org.openhab.binding.lghombot.internal;
 
 import static org.openhab.binding.lghombot.internal.LGHomBotBindingConstants.THING_TYPE_LGHOMBOT;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.lghombot", service = ThingHandlerFactory.class)
 public class LGHomBotHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_LGHOMBOT);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LGHOMBOT);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

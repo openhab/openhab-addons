@@ -86,7 +86,7 @@ public class TransitionState {
     }
 
     private Optional<Boolean> hasFinishedFromPreviousState(DeviceState prevState) {
-        if (!prevState.getStateType().isPresent()) {
+        if (prevState.getStateType().isEmpty()) {
             return Optional.empty();
         }
 

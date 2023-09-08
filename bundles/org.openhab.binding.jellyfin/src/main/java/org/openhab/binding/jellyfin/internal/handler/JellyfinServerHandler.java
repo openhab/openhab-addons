@@ -15,9 +15,9 @@ package org.openhab.binding.jellyfin.internal.handler;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -118,7 +118,7 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(JellyfinClientDiscoveryService.class);
+        return Set.of(JellyfinClientDiscoveryService.class);
     }
 
     public String getServerUrl() {
@@ -225,8 +225,8 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
         logger.warn("Api error: {}", e.getMessage());
         var cause = e.getCause();
         boolean unauthenticated = false;
-        if (cause instanceof InvalidStatusException) {
-            var status = ((InvalidStatusException) cause).getStatus();
+        if (cause instanceof InvalidStatusException invalidStatusException) {
+            var status = invalidStatusException.getStatus();
             if (status == 401) {
                 unauthenticated = true;
             }
@@ -398,8 +398,8 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
             if (handler == null) {
                 return;
             }
-            if (handler instanceof JellyfinClientHandler) {
-                updateClientState((JellyfinClientHandler) handler, sessions);
+            if (handler instanceof JellyfinClientHandler clientHandler) {
+                updateClientState(clientHandler, sessions);
             } else {
                 logger.warn("Found unknown thing-handler instance: {}", handler);
             }

@@ -65,8 +65,8 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler thingHandler) {
-        if (thingHandler instanceof JablotronBridgeHandler) {
-            bridgeHandler = (JablotronBridgeHandler) thingHandler;
+        if (thingHandler instanceof JablotronBridgeHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
         }
     }
 

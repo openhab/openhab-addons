@@ -190,7 +190,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
                         bulbSaturation = "100";
                     }
                     // 360 isn't allowed by OpenHAB
-                    if (bulbHue.equals("360")) {
+                    if ("360".equals(bulbHue)) {
                         bulbHue = "0";
                     }
                     var hsb = new HSBType(new DecimalType(Integer.valueOf(bulbHue)),
@@ -368,8 +368,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             }
             sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel.intValue() + "}");
             return;
-        } else if (command instanceof HSBType) {
-            HSBType hsb = (HSBType) command;
+        } else if (command instanceof HSBType hsb) {
             // This feature allows google home or Echo to trigger white mode when asked to turn color to white.
             if (hsb.getHue().intValue() == config.whiteHue && hsb.getSaturation().intValue() == config.whiteSat) {
                 if (hasCCT()) {
@@ -394,8 +393,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             }
             savedLevel = hsb.getBrightness().toBigDecimal();
             return;
-        } else if (command instanceof PercentType) {
-            PercentType percentType = (PercentType) command;
+        } else if (command instanceof PercentType percentType) {
             if (percentType.intValue() == 0) {
                 turnOff();
                 return;
@@ -526,8 +524,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             return;
         }
         ThingHandler handler = localBridge.getHandler();
-        if (handler instanceof AbstractBrokerHandler) {
-            AbstractBrokerHandler abh = (AbstractBrokerHandler) handler;
+        if (handler instanceof AbstractBrokerHandler abh) {
             final MqttBrokerConnection connection;
             try {
                 connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);

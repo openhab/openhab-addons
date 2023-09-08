@@ -324,8 +324,7 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
         try (MilightV6SessionManager session = new MilightV6SessionManager(bridgeID, sessionState, addressOfBridge,
                 MilightBindingConstants.PORT_VER6, MilightV6SessionManager.TIMEOUT_MS, new byte[] { 0, 0 })) {
             session.start();
-            boolean success = s.tryAcquire(1, 1300, TimeUnit.MILLISECONDS);
-            return success;
+            return s.tryAcquire(1, 1300, TimeUnit.MILLISECONDS);
         } catch (IOException e) {
             logger.debug("checkForV6Bridge failed", e);
         }

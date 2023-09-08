@@ -49,12 +49,12 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
             handler.getSocket().getVolume(createResponseListener(channelId, handler));
             return;
         }
-        if (command instanceof PercentType) {
-            percent = (PercentType) command;
-        } else if (command instanceof DecimalType) {
-            percent = new PercentType(((DecimalType) command).toBigDecimal());
-        } else if (command instanceof StringType) {
-            percent = new PercentType(((StringType) command).toString());
+        if (command instanceof PercentType percentCommand) {
+            percent = percentCommand;
+        } else if (command instanceof DecimalType decimalCommand) {
+            percent = new PercentType(decimalCommand.toBigDecimal());
+        } else if (command instanceof StringType stringCommand) {
+            percent = new PercentType(stringCommand.toString());
         } else {
             percent = null;
         }

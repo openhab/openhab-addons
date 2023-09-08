@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.loxone.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openhab.core.thing.Thing;
@@ -31,8 +30,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.loxone")
 public class LxHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(LxBindingConstants.THING_TYPE_MINISERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(LxBindingConstants.THING_TYPE_MINISERVER);
 
     private LxDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
 
@@ -45,8 +43,7 @@ public class LxHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID uid = thing.getThingTypeUID();
         if (uid.equals(LxBindingConstants.THING_TYPE_MINISERVER)) {
-            LxServerHandler handler = new LxServerHandler(thing, dynamicStateDescriptionProvider);
-            return handler;
+            return new LxServerHandler(thing, dynamicStateDescriptionProvider);
         }
         return null;
     }

@@ -135,7 +135,7 @@ public class MagentaTVControl {
         if (result.contains("<X_wakeOnLan>")) {
             String wol = substringBetween(result, "<X_wakeOnLan>", "</X_wakeOnLan>");
             config.setWakeOnLAN(wol);
-            logger.debug("{}: Wake-on-LAN is {}", thingId, wol.equals("0") ? "disabled" : "enabled");
+            logger.debug("{}: Wake-on-LAN is {}", thingId, "0".equals(wol) ? "disabled" : "enabled");
         }
         if (result.contains("<productVersionNumber>")) {
             String version;
@@ -240,7 +240,7 @@ public class MagentaTVControl {
         }
 
         String result = substringBetween(response, "<result>", "</result>");
-        if (!result.equals("0")) {
+        if (!"0".equals(result)) {
             throw new MagentaTVException("Pairing failed, result=" + result);
         }
 
@@ -295,7 +295,7 @@ public class MagentaTVControl {
         }
 
         String result = getXmlValue(response, "pairingResult");
-        if (!result.equals("0")) {
+        if (!"0".equals(result)) {
             logger.debug("{}: Pairing failed or pairing no longer valid, result={}", thingId, result);
             resetPairing();
             // let the caller decide how to proceed

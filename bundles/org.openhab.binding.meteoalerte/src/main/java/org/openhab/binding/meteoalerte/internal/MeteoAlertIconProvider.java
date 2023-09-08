@@ -103,7 +103,6 @@ public class MeteoAlertIconProvider implements IconProvider {
                 AlertLevel alertLevel = ordinal < AlertLevel.values().length ? AlertLevel.values()[ordinal]
                         : AlertLevel.UNKNOWN;
                 icon = icon.replaceAll(AlertLevel.UNKNOWN.color, alertLevel.color);
-
             } catch (NumberFormatException e) {
                 logger.debug("{} is not a valid DecimalType", state);
             }

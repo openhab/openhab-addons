@@ -59,8 +59,7 @@ public class SecondGenerationConfigurationHandler {
 
             sessionId = extractSessionId(getAuthenticateResponseJsonObject);
 
-            JsonObject authenticateJsonObject = JsonParser.parseString(getAuthenticateResponse.toString())
-                    .getAsJsonObject();
+            JsonObject authenticateJsonObject = JsonParser.parseString(getAuthenticateResponse).getAsJsonObject();
             salt = authenticateJsonObject.get("salt").getAsString();
 
             String saltedPassword = new StringBuilder(password).append(salt).toString();
@@ -120,9 +119,7 @@ public class SecondGenerationConfigurationHandler {
         int codeStartPosition = jsonResponse.indexOf("code");
         transformStringBuilder.insert(codeStartPosition + 11, ']');
 
-        String transformJsonObject = transformStringBuilder.toString();
-
-        return transformJsonObject;
+        return transformStringBuilder.toString();
     }
 
     // Method extractSessionId extracts sessionId from JsonObject

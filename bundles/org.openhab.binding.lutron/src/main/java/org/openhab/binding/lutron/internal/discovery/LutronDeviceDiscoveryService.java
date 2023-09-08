@@ -240,10 +240,10 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
         context.push(area.getName());
 
         for (DeviceNode deviceNode : area.getDeviceNodes()) {
-            if (deviceNode instanceof DeviceGroup) {
-                processDeviceGroup(area, (DeviceGroup) deviceNode, context);
-            } else if (deviceNode instanceof Device) {
-                processDevice(area, (Device) deviceNode, context);
+            if (deviceNode instanceof DeviceGroup group) {
+                processDeviceGroup(area, group, context);
+            } else if (deviceNode instanceof Device device) {
+                processDevice(area, device, context);
             }
         }
 

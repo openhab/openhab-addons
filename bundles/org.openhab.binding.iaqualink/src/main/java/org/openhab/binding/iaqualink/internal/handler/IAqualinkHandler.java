@@ -200,13 +200,12 @@ public class IAqualinkHandler extends BaseThingHandler {
                             : "on".equals(command.toString()) ? "1" : command.toString();
                     client.lightCommand(serialNumber, sessionId, auxId, cmd,
                             AuxiliaryType.fromChannelTypeUID(getChannelTypeUID(channelUID)).getSubType());
-                } else if (command instanceof OnOffType) {
+                } else if (command instanceof OnOffType onOffCommand) {
                     // these are toggle commands and require we have the current state to turn on/off
                     Auxiliary[] auxs = client.getAux(serialNumber, sessionId);
                     Optional<Auxiliary> optional = Arrays.stream(auxs).filter(o -> o.getName().equals(channelName))
                             .findFirst();
                     if (optional.isPresent()) {
-                        OnOffType onOffCommand = (OnOffType) command;
                         State currentState = toState(channelName, "Switch", optional.get().getState());
                         if (!currentState.equals(onOffCommand)) {
                             client.auxSetCommand(serialNumber, sessionId, channelName);
@@ -226,8 +225,7 @@ public class IAqualinkHandler extends BaseThingHandler {
                         client.setPoolTemp(serialNumber, sessionId, value.floatValue());
                     }
                 }
-            } else if (command instanceof OnOffType) {
-                OnOffType onOffCommand = (OnOffType) command;
+            } else if (command instanceof OnOffType onOffCommand) {
                 // these are toggle commands and require we have the current state to turn on/off
                 if (channelName.startsWith("onetouch_")) {
                     OneTouch[] ota = client.getOneTouch(serialNumber, sessionId);

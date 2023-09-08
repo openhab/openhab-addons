@@ -48,9 +48,9 @@ public class WakeOnLanUtility {
     static {
         String os = System.getProperty("os.name").toLowerCase();
         LOGGER.debug("os: {}", os);
-        if ((os.indexOf("win") >= 0)) {
+        if ((os.contains("win"))) {
             COMMAND = "arp -a %s";
-        } else if ((os.indexOf("mac") >= 0)) {
+        } else if ((os.contains("mac"))) {
             COMMAND = "arp %s";
         } else { // linux
             if (checkIfLinuxCommandExists("arp")) {

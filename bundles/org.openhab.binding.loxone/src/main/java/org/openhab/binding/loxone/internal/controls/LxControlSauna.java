@@ -139,8 +139,8 @@ class LxControlSauna extends LxControl {
     }
 
     private void handleSaunaActivateCommands(Command command) throws IOException {
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_ON);
             } else {
                 sendAction(CMD_OFF);
@@ -149,15 +149,15 @@ class LxControlSauna extends LxControl {
     }
 
     private void handleSetNumberCommands(Command command, String prefix) throws IOException {
-        if (command instanceof DecimalType) {
-            Double value = ((DecimalType) command).doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            Double value = decimalCommand.doubleValue();
             sendAction(prefix + value.toString());
         }
     }
 
     private void handleFanCommands(Command command) throws IOException {
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_FAN_ON);
             } else {
                 sendAction(CMD_FAN_OFF);
@@ -166,14 +166,14 @@ class LxControlSauna extends LxControl {
     }
 
     private void handleTriggerCommands(Command command, String prefix) throws IOException {
-        if (command instanceof OnOffType && (OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand && onOffCommand == OnOffType.ON) {
             sendAction(prefix);
         }
     }
 
     private void handleModeCommands(Command command) throws IOException {
-        if (command instanceof DecimalType) {
-            Double value = ((DecimalType) command).doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            Double value = decimalCommand.doubleValue();
             // per API there are 7 evaporator modes selected with number 0-6
             if (value % 1 == 0 && value >= 0.0 && value <= 6.0) {
                 sendAction(CMD_SET_EVAPORATOR_MODE + value.toString());

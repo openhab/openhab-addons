@@ -38,8 +38,8 @@ public class MaxDevicesActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof MaxDevicesHandler) {
-            this.handler = (MaxDevicesHandler) handler;
+        if (handler instanceof MaxDevicesHandler devicesHandler) {
+            this.handler = devicesHandler;
         }
     }
 

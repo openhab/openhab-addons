@@ -76,11 +76,11 @@ public abstract class RouterosInterfaceBase extends RouterosBaseData {
     }
 
     public boolean isEnabled() {
-        return getProp("disabled", "").equals("false");
+        return "false".equals(getProp("disabled", ""));
     }
 
     public boolean isConnected() {
-        return getProp("running", "").equals("true");
+        return "true".equals(getProp("running", ""));
     }
 
     public @Nullable Integer getLinkDowns() {

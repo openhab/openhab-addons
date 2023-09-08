@@ -40,25 +40,27 @@ public class SensorTests extends AbstractComponentTests {
     public void test() throws InterruptedException {
         // @formatter:off
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"availability_topic\": \"zigbee2mqtt/bridge/state\", " +
-                        "  \"availability_template\": \"{{value_json.state}}\", " +
-                        "  \"device\": { " +
-                        "    \"identifiers\": [ " +
-                        "      \"zigbee2mqtt_0x0000000000000000\" " +
-                        "    ], " +
-                        "    \"manufacturer\": \"Sensors inc\", " +
-                        "    \"model\": \"Sensor\", " +
-                        "    \"name\": \"Sensor\", " +
-                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
-                        "  }, " +
-                        "  \"name\": \"sensor1\", " +
-                        "  \"expire_after\": \"1\", " +
-                        "  \"force_update\": \"true\", " +
-                        "  \"unit_of_measurement\": \"W\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/sensor/state\", " +
-                        "  \"unique_id\": \"sn1\" " +
-                        "}");
+                """
+                { \
+                  "availability_topic": "zigbee2mqtt/bridge/state", \
+                  "availability_template": "{{value_json.state}}", \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Sensors inc", \
+                    "model": "Sensor", \
+                    "name": "Sensor", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "sensor1", \
+                  "expire_after": "1", \
+                  "force_update": "true", \
+                  "unit_of_measurement": "W", \
+                  "state_topic": "zigbee2mqtt/sensor/state", \
+                  "unique_id": "sn1" \
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));
@@ -87,23 +89,25 @@ public class SensorTests extends AbstractComponentTests {
     public void testMeasurementStateClass() throws InterruptedException {
         // @formatter:off
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"device\": { " +
-                        "    \"identifiers\": [ " +
-                        "      \"zigbee2mqtt_0x0000000000000000\" " +
-                        "    ], " +
-                        "    \"manufacturer\": \"Sensors inc\", " +
-                        "    \"model\": \"Sensor\", " +
-                        "    \"name\": \"Sensor\", " +
-                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
-                        "  }, " +
-                        "  \"name\": \"sensor1\", " +
-                        "  \"expire_after\": \"1\", " +
-                        "  \"force_update\": \"true\", " +
-                        "  \"state_class\": \"measurement\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/sensor/state\", " +
-                        "  \"unique_id\": \"sn1\" " +
-                        "}");
+                """
+                { \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Sensors inc", \
+                    "model": "Sensor", \
+                    "name": "Sensor", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "sensor1", \
+                  "expire_after": "1", \
+                  "force_update": "true", \
+                  "state_class": "measurement", \
+                  "state_topic": "zigbee2mqtt/sensor/state", \
+                  "unique_id": "sn1" \
+                }\
+                """);
         // @formatter:on
 
         assertChannel(component, Sensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "sensor1",
@@ -114,22 +118,24 @@ public class SensorTests extends AbstractComponentTests {
     public void testNonNumericSensor() throws InterruptedException {
         // @formatter:off
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"device\": { " +
-                        "    \"identifiers\": [ " +
-                        "      \"zigbee2mqtt_0x0000000000000000\" " +
-                        "    ], " +
-                        "    \"manufacturer\": \"Sensors inc\", " +
-                        "    \"model\": \"Sensor\", " +
-                        "    \"name\": \"Sensor\", " +
-                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
-                        "  }, " +
-                        "  \"name\": \"sensor1\", " +
-                        "  \"expire_after\": \"1\", " +
-                        "  \"force_update\": \"true\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/sensor/state\", " +
-                        "  \"unique_id\": \"sn1\" " +
-                        "}");
+                """
+                { \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Sensors inc", \
+                    "model": "Sensor", \
+                    "name": "Sensor", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "sensor1", \
+                  "expire_after": "1", \
+                  "force_update": "true", \
+                  "state_topic": "zigbee2mqtt/sensor/state", \
+                  "unique_id": "sn1" \
+                }\
+                """);
         // @formatter:on
 
         assertChannel(component, Sensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "sensor1", TextValue.class);

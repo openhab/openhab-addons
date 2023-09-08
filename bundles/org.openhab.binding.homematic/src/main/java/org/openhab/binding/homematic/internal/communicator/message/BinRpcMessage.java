@@ -47,7 +47,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     }
 
     private Object[] messageData;
-    private byte binRpcData[];
+    private byte[] binRpcData;
     private int offset;
 
     private String methodName;
@@ -74,7 +74,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
      */
     public BinRpcMessage(InputStream is, boolean methodHeader, Charset encoding) throws IOException {
         this.encoding = encoding;
-        byte sig[] = new byte[8];
+        byte[] sig = new byte[8];
         int length = is.read(sig, 0, 4);
         if (length != 4) {
             throw new EOFException("Only " + length + " bytes received reading signature");
@@ -85,7 +85,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
             throw new EOFException("Only " + length + " bytes received reading message length");
         }
         int datasize = (new BigInteger(Arrays.copyOfRange(sig, 4, 8))).intValue();
-        byte payload[] = new byte[datasize];
+        byte[] payload = new byte[datasize];
         int offset = 0;
         int currentLength;
 
@@ -201,14 +201,14 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
 
     // read rpc values
     private int readInt() {
-        byte bi[] = new byte[4];
+        byte[] bi = new byte[4];
         System.arraycopy(binRpcData, offset, bi, 0, 4);
         offset += 4;
         return (new BigInteger(bi)).intValue();
     }
 
     private long readInt64() {
-        byte bi[] = new byte[8];
+        byte[] bi = new byte[8];
         System.arraycopy(binRpcData, offset, bi, 0, 8);
         offset += 8;
         return (new BigInteger(bi)).longValue();
@@ -274,7 +274,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
 
     private void addByte(byte b) {
         if (offset == binRpcData.length) {
-            byte newdata[] = new byte[binRpcData.length * 2];
+            byte[] newdata = new byte[binRpcData.length * 2];
             System.arraycopy(binRpcData, 0, newdata, 0, binRpcData.length);
             binRpcData = newdata;
         }
@@ -311,7 +311,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     }
 
     private void addString(String string) {
-        byte sd[] = string.getBytes(encoding);
+        byte[] sd = string.getBytes(encoding);
         for (byte ch : sd) {
             addByte(ch);
         }
@@ -351,13 +351,11 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         } else if (object.getClass() == Date.class) {
             addInt(5);
             addInt((int) ((Date) object).getTime() / 1000);
-        } else if (object instanceof List<?>) {
-            Collection<?> list = (Collection<?>) object;
+        } else if (object instanceof List<?> list) {
             addInt(0x100);
             addInt(list.size());
             addList(list);
-        } else if (object instanceof Map<?, ?>) {
-            Map<?, ?> map = (Map<?, ?>) object;
+        } else if (object instanceof Map<?, ?> map) {
             addInt(0x101);
             addInt(map.size());
             for (Map.Entry<?, ?> entry : map.entrySet()) {

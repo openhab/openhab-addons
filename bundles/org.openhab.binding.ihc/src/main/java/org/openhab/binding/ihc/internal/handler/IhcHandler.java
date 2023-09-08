@@ -411,8 +411,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private List<IhcEnumValue> getEnumValues(WSResourceValue value) {
-        if (value instanceof WSEnumValue) {
-            return enumDictionary.getEnumValues(((WSEnumValue) value).definitionTypeID);
+        if (value instanceof WSEnumValue enumValue) {
+            return enumDictionary.getEnumValues(enumValue.definitionTypeID);
         }
         return null;
     }
@@ -764,8 +764,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private void checkPotentialButtonPresses(WSResourceValue value) {
-        if (value instanceof WSBooleanValue) {
-            if (((WSBooleanValue) value).value) {
+        if (value instanceof WSBooleanValue booleanValue) {
+            if (booleanValue.value) {
                 // potential button press
                 lastUpdate.put(value.resourceID, LocalDateTime.now());
                 updateTriggers(value.resourceID, Duration.ZERO);

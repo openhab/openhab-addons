@@ -214,9 +214,8 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         Audio audio = clock.getLocalApi().getAudio();
         if (command instanceof RefreshType) {
             updateState(channelUID, new PercentType(audio.getVolume()));
-        } else if (command instanceof PercentType) {
+        } else if (command instanceof PercentType percentTypeCommand) {
             try {
-                PercentType percentTypeCommand = (PercentType) command;
                 int volume = percentTypeCommand.intValue();
                 if (volume >= 0 && volume != audio.getVolume()) {
                     audio.setVolume(volume);
@@ -256,8 +255,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private void updateBluetoothValue(ChannelUID channelUID, Command command, Bluetooth bluetooth) {
         try {
-            if (command instanceof OnOffType && channelUID.getId().equals(CHANNEL_BLUETOOTH_ACTIVE)) {
-                OnOffType onOffCommand = (OnOffType) command;
+            if (command instanceof OnOffType onOffCommand && channelUID.getId().equals(CHANNEL_BLUETOOTH_ACTIVE)) {
                 if (onOffCommand == OnOffType.ON && !bluetooth.isActive()) {
                     bluetooth.setActive(true);
                     clock.getLocalApi().updateBluetooth(bluetooth);
@@ -296,8 +294,8 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
     private void updateDisplayValue(ChannelUID channelUID, Command command) {
         try {
             if (channelUID.getId().equals(CHANNEL_DISPLAY_BRIGHTNESS)) {
-                if (command instanceof PercentType) {
-                    int brightness = ((PercentType) command).intValue();
+                if (command instanceof PercentType percentCommand) {
+                    int brightness = percentCommand.intValue();
                     logger.debug("Set Brightness to {}.", brightness);
                     Display newDisplay = clock.setBrightness(brightness);
                     updateState(CHANNEL_DISPLAY_BRIGHTNESS_MODE, new StringType(newDisplay.getBrightnessMode()));

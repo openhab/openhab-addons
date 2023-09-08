@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.hydrawise.internal.discovery;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,7 +46,7 @@ public class HydrawiseCloudControllerDiscoveryService extends AbstractDiscoveryS
     HydrawiseAccountHandler handler;
 
     public HydrawiseCloudControllerDiscoveryService() {
-        super(Collections.singleton(HydrawiseBindingConstants.THING_TYPE_CONTROLLER), TIMEOUT, true);
+        super(Set.of(HydrawiseBindingConstants.THING_TYPE_CONTROLLER), TIMEOUT, true);
     }
 
     @Override
@@ -103,8 +103,7 @@ public class HydrawiseCloudControllerDiscoveryService extends AbstractDiscoveryS
                     String.valueOf(id));
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(label).withBridge(bridgeUID)
                     .withProperty(HydrawiseBindingConstants.CONFIG_CONTROLLER_ID, id)
-                    .withRepresentationProperty(String.valueOf(HydrawiseBindingConstants.CONFIG_CONTROLLER_ID))
-                    .build());
+                    .withRepresentationProperty(HydrawiseBindingConstants.CONFIG_CONTROLLER_ID).build());
         }
     }
 }

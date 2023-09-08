@@ -100,8 +100,8 @@ public class ShadeHandler extends LutronHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_SHADELEVEL)) {
-            if (command instanceof PercentType) {
-                int level = ((PercentType) command).intValue();
+            if (command instanceof PercentType shadePercent) {
+                int level = shadePercent.intValue();
                 output(TargetType.SHADE, OutputCommand.ACTION_ZONELEVEL, level, null, null);
                 if (leap) {
                     // LEAP may not send back a position update

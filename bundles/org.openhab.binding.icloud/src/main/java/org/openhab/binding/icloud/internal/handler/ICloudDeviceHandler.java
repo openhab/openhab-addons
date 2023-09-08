@@ -160,8 +160,8 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof ICloudAccountBridgeHandler) {
-                ((ICloudAccountBridgeHandler) bridgeHandler).unregisterListener(this);
+            if (bridgeHandler instanceof ICloudAccountBridgeHandler iCloudAccountBridgeHandler) {
+                iCloudAccountBridgeHandler.unregisterListener(this);
             }
         }
         super.dispose();

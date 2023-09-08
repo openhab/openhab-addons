@@ -334,18 +334,22 @@ public class SensorThingHandler extends BaseThingHandler {
                     JsonArray array = deviceInfo.getAsJsonArray("PatientDevices");
                     JsonObject patient = array.get(0).getAsJsonObject();
                     if (patient.has("UuidPerson") && !patient.get("UuidPerson").isJsonNull()) {
-                        return "https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetLatestApiSensorEvents"
-                                + "?UuidPatient=" + patient.get("UuidPerson").getAsString() + "&SerialNumber="
-                                + serialNumber + "&Count=1";
+                        return """
+                                https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetLatestApiSensorEvents\
+                                ?UuidPatient=\
+                                """ + patient.get("UuidPerson").getAsString() + "&SerialNumber=" + serialNumber
+                                + "&Count=1";
                     }
                 } else if (deviceInfo.has("OrganisationUnitDevices")
                         && deviceInfo.getAsJsonArray("OrganisationUnitDevices").size() != 0) {
                     JsonArray array = deviceInfo.getAsJsonArray("OrganisationUnitDevices");
                     JsonObject orgUnit = array.get(0).getAsJsonObject();
                     if (orgUnit.has("UuidOrganisationUnit") && !orgUnit.get("UuidOrganisationUnit").isJsonNull()) {
-                        return "https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetLatestApiSensorEvents"
-                                + "?UuidOrganisationUnit=" + orgUnit.get("UuidOrganisationUnit").getAsString()
-                                + "&SerialNumber=" + serialNumber + "&Count=1";
+                        return """
+                                https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetLatestApiSensorEvents\
+                                ?UuidOrganisationUnit=\
+                                """ + orgUnit.get("UuidOrganisationUnit").getAsString() + "&SerialNumber="
+                                + serialNumber + "&Count=1";
                     }
                 }
             } else {

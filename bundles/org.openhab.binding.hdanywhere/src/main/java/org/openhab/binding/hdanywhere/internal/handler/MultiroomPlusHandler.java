@@ -114,11 +114,11 @@ public class MultiroomPlusHandler extends BaseThingHandler {
                 String httpMethod = "GET";
                 String url = "http://" + host + "/switch.cgi?command=3&data0=";
 
-                url = url + String.valueOf(outputPort) + "&data1=";
+                url = url + outputPort + "&data1=";
                 url = url + command.toString() + "&checksum=";
 
                 int checksum = 3 + outputPort + sourcePort;
-                url = url + String.valueOf(checksum);
+                url = url + checksum;
 
                 try {
                     HttpUtil.executeUrl(httpMethod, url, null, null, null, timeout);

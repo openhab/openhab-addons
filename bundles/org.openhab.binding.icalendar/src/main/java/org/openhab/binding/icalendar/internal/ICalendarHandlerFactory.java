@@ -14,7 +14,6 @@ package org.openhab.binding.icalendar.internal;
 
 import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,8 +51,8 @@ import org.slf4j.LoggerFactory;
 public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(Collections.singleton(THING_TYPE_CALENDAR), Collections.singleton(THING_TYPE_FILTERED_EVENTS))
-            .flatMap(Set::stream).collect(Collectors.toSet());
+            .of(Set.of(THING_TYPE_CALENDAR), Set.of(THING_TYPE_FILTERED_EVENTS)).flatMap(Set::stream)
+            .collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(ICalendarHandlerFactory.class);
 
     private final HttpClient sharedHttpClient;
@@ -81,8 +80,8 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
             return null;
         }
         if (thingTypeUID.equals(THING_TYPE_CALENDAR)) {
-            if (thing instanceof Bridge) {
-                return new ICalendarHandler((Bridge) thing, sharedHttpClient, eventPublisher, tzProvider);
+            if (thing instanceof Bridge bridge) {
+                return new ICalendarHandler(bridge, sharedHttpClient, eventPublisher, tzProvider);
             } else {
                 logger.warn(
                         "The API of iCalendar has changed. You have to recreate the calendar according to the docs.");

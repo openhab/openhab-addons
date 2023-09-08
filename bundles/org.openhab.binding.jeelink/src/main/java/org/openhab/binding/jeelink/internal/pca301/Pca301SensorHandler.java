@@ -83,8 +83,8 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
                 command);
 
         if (channelUid.getIdWithoutGroup().equals(SWITCHING_STATE_CHANNEL)) {
-            if (command instanceof OnOffType) {
-                sendCommandRetry((OnOffType) command);
+            if (command instanceof OnOffType onOffCommand) {
+                sendCommandRetry(onOffCommand);
             } else {
                 sendCommand(command);
             }

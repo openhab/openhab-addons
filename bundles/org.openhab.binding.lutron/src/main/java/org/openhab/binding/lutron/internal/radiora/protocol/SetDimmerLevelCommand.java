@@ -59,7 +59,7 @@ public class SetDimmerLevelCommand extends RadioRACommand {
         }
 
         if (system == 1 || system == 2) {
-            args.add("S" + String.valueOf(system));
+            args.add("S" + system);
         }
 
         return args;

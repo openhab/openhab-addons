@@ -17,8 +17,8 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -229,7 +229,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(HomematicDeviceDiscoveryService.class);
+        return Set.of(HomematicDeviceDiscoveryService.class);
     }
 
     @Override

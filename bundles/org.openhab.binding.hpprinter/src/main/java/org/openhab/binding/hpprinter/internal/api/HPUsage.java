@@ -279,8 +279,7 @@ public class HPUsage {
         int value = 0;
 
         for (Node n = parentNode.getFirstChild(); n != null; n = n.getNextSibling()) {
-            if (n instanceof Element) {
-                Element nodeItem = (Element) n;
+            if (n instanceof Element nodeItem) {
                 if (nodeItem.getElementsByTagName(collateTagName).item(0).getTextContent()
                         .equalsIgnoreCase(collateTagNameValue)) {
                     int nodeValue = Integer

@@ -74,8 +74,8 @@ public class TestICloud {
     @BeforeEach
     public void setUp() {
         final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        if (logger instanceof ch.qos.logback.classic.Logger) {
-            ((ch.qos.logback.classic.Logger) logger).setLevel(ch.qos.logback.classic.Level.DEBUG);
+        if (logger instanceof ch.qos.logback.classic.Logger qLogger) {
+            qLogger.setLevel(ch.qos.logback.classic.Level.DEBUG);
         }
     }
 
@@ -122,7 +122,6 @@ public class TestICloud {
     @Test
     @EnabledIfSystemProperty(named = "icloud.test.email", matches = ".*", disabledReason = "Only for manual execution.")
     public void testDiscovery() {
-
         String icloudDeviceRespond = """
                          {
                      "userInfo": {

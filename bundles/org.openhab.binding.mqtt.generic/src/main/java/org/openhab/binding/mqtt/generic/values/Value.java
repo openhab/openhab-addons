@@ -155,7 +155,7 @@ public abstract class Value {
      * @param data The binary payload to update the internal value.
      * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
-    public void update(byte data[]) throws IllegalArgumentException {
+    public void update(byte[] data) throws IllegalArgumentException {
         String mimeType = null;
 
         // URLConnection.guessContentTypeFromStream(input) is not sufficient to detect all JPEG files

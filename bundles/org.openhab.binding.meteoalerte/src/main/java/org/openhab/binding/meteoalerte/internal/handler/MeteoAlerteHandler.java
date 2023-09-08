@@ -56,9 +56,11 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class MeteoAlerteHandler extends BaseThingHandler {
     private static final int TIMEOUT_MS = 30000;
-    private static final String URL = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=risques-meteorologiques-copy&"
-            + "facet=etat_vent&facet=etat_pluie_inondation&facet=etat_orage&facet=etat_inondation&facet=etat_neige&facet=etat_canicule&"
-            + "facet=etat_grand_froid&facet=etat_avalanches&refine.nom_dept=%s";
+    private static final String URL = """
+            https://public.opendatasoft.com/api/records/1.0/search/?dataset=risques-meteorologiques-copy&\
+            facet=etat_vent&facet=etat_pluie_inondation&facet=etat_orage&facet=etat_inondation&facet=etat_neige&facet=etat_canicule&\
+            facet=etat_grand_froid&facet=etat_avalanches&refine.nom_dept=%s\
+            """;
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
     private final MeteoAlertIconProvider iconProvider;

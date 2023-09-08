@@ -14,7 +14,6 @@ package org.openhab.binding.homematic.internal.discovery;
 
 import static org.openhab.binding.homematic.internal.HomematicBindingConstants.THING_TYPE_BRIDGE;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +40,7 @@ public class HomegearDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_BRIDGE);
+        return Set.of(THING_TYPE_BRIDGE);
     }
 
     @Override

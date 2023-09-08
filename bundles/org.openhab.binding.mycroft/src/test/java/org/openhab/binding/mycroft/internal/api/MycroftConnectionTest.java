@@ -48,7 +48,6 @@ public class MycroftConnectionTest {
 
     @Test
     public void testConnectionOK() throws IOException {
-
         MycroftConnection mycroftConnection = new MycroftConnection(mycroftConnectionListener, new WebSocketClient());
         Mockito.when(sessionMock.getRemoteAddress()).thenReturn(new InetSocketAddress(1234));
         mycroftConnection.onConnect(sessionMock);
@@ -85,7 +84,6 @@ public class MycroftConnectionTest {
 
     @Test
     public void testSpeakListener() throws IOException {
-
         MycroftConnection mycroftConnection = new MycroftConnection(mycroftConnectionListener, new WebSocketClient());
 
         Mockito.when(sessionMock.getRemoteAddress()).thenReturn(new InetSocketAddress(1234));

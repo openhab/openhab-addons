@@ -115,7 +115,7 @@ public class LGWebOSActions implements ThingActions {
     private List<AppInfo> getAppInfos() {
         LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
 
-        if (!this.getConnectedSocket().isPresent()) {
+        if (this.getConnectedSocket().isEmpty()) {
             return Collections.emptyList();
         }
 

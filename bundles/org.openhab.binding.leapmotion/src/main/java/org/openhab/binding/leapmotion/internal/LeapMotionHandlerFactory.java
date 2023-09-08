@@ -14,7 +14,6 @@ package org.openhab.binding.leapmotion.internal;
 
 import static org.openhab.binding.leapmotion.internal.LeapMotionBindingConstants.THING_TYPE_CONTROLLER;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class LeapMotionHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_CONTROLLER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CONTROLLER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

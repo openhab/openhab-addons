@@ -38,8 +38,8 @@ public class MPDActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof MPDHandler) {
-            this.handler = (MPDHandler) handler;
+        if (handler instanceof MPDHandler mpdHandler) {
+            this.handler = mpdHandler;
         }
     }
 

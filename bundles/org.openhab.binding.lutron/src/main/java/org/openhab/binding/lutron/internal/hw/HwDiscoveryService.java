@@ -51,8 +51,8 @@ public class HwDiscoveryService extends AbstractDiscoveryService implements Disc
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HwSerialBridgeHandler) {
-            this.handler = (HwSerialBridgeHandler) handler;
+        if (handler instanceof HwSerialBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
             this.handler.setDiscoveryService(this);
         }
     }
@@ -102,7 +102,7 @@ public class HwDiscoveryService extends AbstractDiscoveryService implements Disc
             logger.info("Discovered HomeWorks dimmer with no address");
             return;
         }
-        String addressUid = address.replaceAll("[\\[\\]]", "").replaceAll(":", "-");
+        String addressUid = address.replaceAll("[\\[\\]]", "").replace(":", "-");
         ThingUID bridgeUID = this.handler.getThing().getUID();
         ThingUID uid = new ThingUID(HwConstants.THING_TYPE_HWDIMMER, bridgeUID, addressUid);
 

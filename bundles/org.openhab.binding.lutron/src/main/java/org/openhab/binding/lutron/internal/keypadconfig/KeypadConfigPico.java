@@ -34,7 +34,7 @@ public final class KeypadConfigPico extends KeypadConfig {
     public static final Map<Integer, Integer> LEAPBUTTONS_4B = Map.of(8, 1, 9, 2, 10, 3, 11, 4);
     public static final Map<Integer, Integer> LEAPBUTTONS_3BRL = Map.of(2, 1, 3, 2, 4, 3, 5, 4, 6, 5);
 
-    private static enum Component implements KeypadComponent {
+    private enum Component implements KeypadComponent {
         // Buttons for 2B, 2BRL, 3B, and 3BRL models
         BUTTON1(2, "button1", "Button 1", ComponentType.BUTTON),
         BUTTON2(3, "button2", "Button 2", ComponentType.BUTTON),

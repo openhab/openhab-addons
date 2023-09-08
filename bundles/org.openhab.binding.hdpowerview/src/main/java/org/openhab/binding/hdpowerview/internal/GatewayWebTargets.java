@@ -422,7 +422,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
      * @throws HubProcessingException if any error occurs.
      */
     public void stopShade(int shadeId) throws HubProcessingException {
-        invoke(HttpMethod.PUT, shadeStop, Query.of(IDS, Integer.valueOf(shadeId).toString()), null);
+        invoke(HttpMethod.PUT, shadeStop, Query.of(IDS, Integer.toString(shadeId)), null);
     }
 
     /**

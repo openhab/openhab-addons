@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.leapmotion.internal.discovery;
 
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,7 +42,7 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
     private @NonNullByDefault({}) Listener listener;
 
     public LeapMotionDiscoveryService() throws IllegalArgumentException {
-        super(Collections.singleton(LeapMotionBindingConstants.THING_TYPE_CONTROLLER), 10, true);
+        super(Set.of(LeapMotionBindingConstants.THING_TYPE_CONTROLLER), 10, true);
     }
 
     @Override

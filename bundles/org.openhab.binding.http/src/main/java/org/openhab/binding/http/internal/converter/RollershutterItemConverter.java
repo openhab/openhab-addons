@@ -51,7 +51,7 @@ public class RollershutterItemConverter extends AbstractTransformingItemConverte
             return string;
         }
 
-        if (command instanceof PercentType) {
+        if (command instanceof PercentType brightnessState) {
             final String downValue = channelConfig.downValue;
             final String upValue = channelConfig.upValue;
             if (command.equals(PercentType.HUNDRED) && downValue != null) {
@@ -59,7 +59,7 @@ public class RollershutterItemConverter extends AbstractTransformingItemConverte
             } else if (command.equals(PercentType.ZERO) && upValue != null) {
                 return upValue;
             } else {
-                return ((PercentType) command).toString();
+                return brightnessState.toString();
             }
         }
 

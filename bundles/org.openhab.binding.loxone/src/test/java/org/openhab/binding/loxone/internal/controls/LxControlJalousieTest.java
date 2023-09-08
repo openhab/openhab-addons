@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,8 +47,8 @@ public class LxControlJalousieTest extends LxControlTest {
 
     @Test
     public void testChannels() {
-        testChannel("Rollershutter", Collections.singleton("Blinds"));
-        Set<String> tags = Collections.singleton("Switchable");
+        testChannel("Rollershutter", Set.of("Blinds"));
+        Set<String> tags = Set.of("Switchable");
         testChannel("Switch", SHADE_CHANNEL, tags);
         testChannel("Switch", AUTO_SHADE_CHANNEL, tags);
     }

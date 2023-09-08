@@ -218,7 +218,7 @@ public class Forecast {
 
     // generic getter
     public Object getDatapoint(String datapointName) {
-        if (datapointName.equals("condition")) {
+        if ("condition".equals(datapointName)) {
             return String.valueOf(pictocode);
         }
 

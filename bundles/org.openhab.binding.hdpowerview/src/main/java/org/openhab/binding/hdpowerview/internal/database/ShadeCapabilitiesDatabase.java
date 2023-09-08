@@ -418,9 +418,9 @@ public class ShadeCapabilitiesDatabase {
      * @param propertyValue
      */
     public void logPropertyMismatch(String propertyKey, int type, int capabilities, boolean propertyValue) {
-        logger.warn(
-                "The '{}:{}' property actually reported by shade 'type:{}' is different "
-                        + "than expected from its 'capabilities:{}' in the database!{}",
-                propertyKey, propertyValue, type, capabilities, REQUEST_DEVELOPERS_TO_UPDATE);
+        logger.warn("""
+                The '{}:{}' property actually reported by shade 'type:{}' is different \
+                than expected from its 'capabilities:{}' in the database!{}\
+                """, propertyKey, propertyValue, type, capabilities, REQUEST_DEVELOPERS_TO_UPDATE);
     }
 }

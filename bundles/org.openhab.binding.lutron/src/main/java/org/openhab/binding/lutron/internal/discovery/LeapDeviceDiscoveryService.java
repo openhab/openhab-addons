@@ -61,8 +61,8 @@ public class LeapDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof LeapBridgeHandler) {
-            bridgeHandler = (LeapBridgeHandler) handler;
+        if (handler instanceof LeapBridgeHandler leapBridgeHandler) {
+            bridgeHandler = leapBridgeHandler;
             bridgeHandler.setDiscoveryService(this);
         }
     }

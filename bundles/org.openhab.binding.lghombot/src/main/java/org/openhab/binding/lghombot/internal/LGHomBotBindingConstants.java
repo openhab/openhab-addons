@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lghombot.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +31,7 @@ public final class LGHomBotBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_LGHOMBOT = new ThingTypeUID(BINDING_ID, "LGHomBot");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_LGHOMBOT);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LGHOMBOT);
 
     // List of all Channel ids
     static final String CHANNEL_STATE = "state";

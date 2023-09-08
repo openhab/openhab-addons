@@ -171,10 +171,13 @@ public final class AccountOverviewServlet extends AbstractShowPageServlet {
 
     private String renderSslWarning(HttpServletRequest request, String skeleton) {
         if (!request.isSecure()) {
-            return skeleton.replace(NO_SSL_WARNING_PLACEHOLDER, "<div class=\"alert alert-danger\" role=\"alert\">\n"
-                    + "                    Warning: We strongly advice to proceed only with SSL enabled for a secure data exchange.\n"
-                    + "                    See <a href=\"https://www.openhab.org/docs/installation/security.html\">Securing access to openHAB</a> for details.\n"
-                    + "                </div>");
+            return skeleton.replace(NO_SSL_WARNING_PLACEHOLDER,
+                    """
+                            <div class="alert alert-danger" role="alert">
+                                                Warning: We strongly advice to proceed only with SSL enabled for a secure data exchange.
+                                                See <a href="https://www.openhab.org/docs/installation/security.html">Securing access to openHAB</a> for details.
+                                            </div>\
+                            """);
         } else {
             return skeleton.replace(NO_SSL_WARNING_PLACEHOLDER, "");
         }

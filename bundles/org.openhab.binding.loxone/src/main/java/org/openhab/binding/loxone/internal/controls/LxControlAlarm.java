@@ -188,9 +188,9 @@ class LxControlAlarm extends LxControl {
         if (STATE_START_TIME.equals(stateName)) {
             startTime = UnDefType.UNDEF;
             Object obj = state.getStateValue();
-            if (obj instanceof String && !((String) obj).isEmpty()) {
+            if (obj instanceof String str && !str.isEmpty()) {
                 try {
-                    LocalDateTime ldt = LocalDateTime.parse((String) obj, dateTimeFormatter);
+                    LocalDateTime ldt = LocalDateTime.parse(str, dateTimeFormatter);
                     ZonedDateTime dt = ldt.atZone(ZoneId.systemDefault());
                     startTime = new DateTimeType(dt);
                 } catch (DateTimeParseException e) {

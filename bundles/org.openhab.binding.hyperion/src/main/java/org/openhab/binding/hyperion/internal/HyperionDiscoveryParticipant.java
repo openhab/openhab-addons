@@ -13,7 +13,6 @@
 package org.openhab.binding.hyperion.internal;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +38,7 @@ public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(HyperionBindingConstants.THING_TYPE_SERVER_NG);
+        return Set.of(HyperionBindingConstants.THING_TYPE_SERVER_NG);
     }
 
     @Override

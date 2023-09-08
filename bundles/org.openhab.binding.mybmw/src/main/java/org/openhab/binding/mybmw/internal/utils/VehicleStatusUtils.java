@@ -55,8 +55,7 @@ public class VehicleStatusUtils {
         if (serviceDate.equals(farFuture)) {
             return UnDefType.UNDEF;
         } else {
-            DateTimeType dt = DateTimeType.valueOf(serviceDate.format(Converter.DATE_INPUT_PATTERN));
-            return dt;
+            return DateTimeType.valueOf(serviceDate.format(Converter.DATE_INPUT_PATTERN));
         }
     }
 

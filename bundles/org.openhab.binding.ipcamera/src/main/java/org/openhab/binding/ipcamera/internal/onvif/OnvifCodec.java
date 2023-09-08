@@ -46,8 +46,7 @@ public class OnvifCodec extends ChannelDuplexHandler {
             return;
         }
         try {
-            if (msg instanceof HttpContent) {
-                HttpContent content = (HttpContent) msg;
+            if (msg instanceof HttpContent content) {
                 incomingMessage += content.content().toString(CharsetUtil.UTF_8);
             }
             if (msg instanceof LastHttpContent) {

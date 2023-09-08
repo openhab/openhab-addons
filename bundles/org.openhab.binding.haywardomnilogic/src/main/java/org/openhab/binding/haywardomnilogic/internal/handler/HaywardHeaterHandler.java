@@ -58,7 +58,7 @@ public class HaywardHeaterHandler extends HaywardThingHandler {
 
                         // Enable
                         data = bridgehandler.evaluateXPath("//Heater/@enable", xmlResponse);
-                        if (data.get(i).equals("0")) {
+                        if ("0".equals(data.get(i))) {
                             updateData(HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "0");
                         } else {
                             updateData(HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "1");

@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class QSIOHandler extends BaseKeypadHandler {
 
-    private static enum Component implements KeypadComponent {
+    private enum Component implements KeypadComponent {
         CCI1(1, "cci1", "CCI 1", ComponentType.CCI),
         CCI2(2, "cci2", "CCI 2", ComponentType.CCI),
         CCI3(3, "cci3", "CCI 3", ComponentType.CCI),

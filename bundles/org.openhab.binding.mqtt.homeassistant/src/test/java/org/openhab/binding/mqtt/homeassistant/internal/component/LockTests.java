@@ -36,27 +36,29 @@ public class LockTests extends AbstractComponentTests {
     public void test() throws InterruptedException {
         // @formatter:off
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"availability\": [ " +
-                        "    { " +
-                        "      \"topic\": \"zigbee2mqtt/bridge/state\" " +
-                        "    } " +
-                        "  ], " +
-                        "  \"device\": { " +
-                        "    \"identifiers\": [ " +
-                        "      \"zigbee2mqtt_0x0000000000000000\" " +
-                        "    ], " +
-                        "    \"manufacturer\": \"Locks inc\", " +
-                        "    \"model\": \"Lock\", " +
-                        "    \"name\": \"LockBlower\", " +
-                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
-                        "  }, " +
-                        "  \"name\": \"lock\", " +
-                        "  \"payload_unlock\": \"UNLOCK_\", " +
-                        "  \"payload_lock\": \"LOCK_\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/lock/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/lock/set/state\" " +
-                        "}");
+                """
+                { \
+                  "availability": [ \
+                    { \
+                      "topic": "zigbee2mqtt/bridge/state" \
+                    } \
+                  ], \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Locks inc", \
+                    "model": "Lock", \
+                    "name": "LockBlower", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "lock", \
+                  "payload_unlock": "UNLOCK_", \
+                  "payload_lock": "LOCK_", \
+                  "state_topic": "zigbee2mqtt/lock/state", \
+                  "command_topic": "zigbee2mqtt/lock/set/state" \
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));
@@ -84,28 +86,30 @@ public class LockTests extends AbstractComponentTests {
     public void forceOptimisticIsNotSupported() {
         // @formatter:off
         publishMessage(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"availability\": [ " +
-                        "    { " +
-                        "      \"topic\": \"zigbee2mqtt/bridge/state\" " +
-                        "    } " +
-                        "  ], " +
-                        "  \"device\": { " +
-                        "    \"identifiers\": [ " +
-                        "      \"zigbee2mqtt_0x0000000000000000\" " +
-                        "    ], " +
-                        "    \"manufacturer\": \"Locks inc\", " +
-                        "    \"model\": \"Lock\", " +
-                        "    \"name\": \"LockBlower\", " +
-                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
-                        "  }, " +
-                        "  \"name\": \"lock\", " +
-                        "  \"payload_unlock\": \"UNLOCK_\", " +
-                        "  \"payload_lock\": \"LOCK_\", " +
-                        "  \"optimistic\": \"true\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/lock/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/lock/set/state\" " +
-                        "}");
+                """
+                { \
+                  "availability": [ \
+                    { \
+                      "topic": "zigbee2mqtt/bridge/state" \
+                    } \
+                  ], \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Locks inc", \
+                    "model": "Lock", \
+                    "name": "LockBlower", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "lock", \
+                  "payload_unlock": "UNLOCK_", \
+                  "payload_lock": "LOCK_", \
+                  "optimistic": "true", \
+                  "state_topic": "zigbee2mqtt/lock/state", \
+                  "command_topic": "zigbee2mqtt/lock/set/state" \
+                }\
+                """);
         // @formatter:on
     }
 

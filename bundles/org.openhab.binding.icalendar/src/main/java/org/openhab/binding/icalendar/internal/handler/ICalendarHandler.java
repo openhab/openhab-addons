@@ -451,10 +451,10 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
      * @param childHandler the handler to be updated
      */
     private void updateChild(@Nullable ThingHandler childHandler) {
-        if (childHandler instanceof CalendarUpdateListener) {
+        if (childHandler instanceof CalendarUpdateListener updateListener) {
             logger.trace("Notifying {} about fresh calendar.", childHandler.getThing().getUID());
             try {
-                ((CalendarUpdateListener) childHandler).onCalendarUpdated();
+                updateListener.onCalendarUpdated();
             } catch (Exception e) {
                 logger.trace("The update of a child handler failed. Ignoring.", e);
             }

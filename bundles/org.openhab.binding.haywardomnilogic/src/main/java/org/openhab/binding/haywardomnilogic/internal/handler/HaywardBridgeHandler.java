@@ -15,9 +15,9 @@ package org.openhab.binding.haywardomnilogic.internal.handler;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -82,7 +82,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(HaywardDiscoveryService.class);
+        return Set.of(HaywardDiscoveryService.class);
     }
 
     public HaywardBridgeHandler(HaywardDynamicStateDescriptionProvider stateDescriptionProvider, Bridge bridge,
@@ -191,10 +191,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String status;
 
         // *****Login to Hayward server
-        String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request>" + "<Name>Login</Name><Parameters>"
-                + "<Parameter name=\"UserName\" dataType=\"String\">" + config.username + "</Parameter>"
-                + "<Parameter name=\"Password\" dataType=\"String\">" + config.password + "</Parameter>"
-                + "</Parameters></Request>";
+        String urlParameters = """
+                <?xml version="1.0" encoding="utf-8"?><Request>\
+                <Name>Login</Name><Parameters>\
+                <Parameter name="UserName" dataType="String">\
+                """ + config.username + "</Parameter>" + "<Parameter name=\"Password\" dataType=\"String\">"
+                + config.password + "</Parameter>" + "</Parameters></Request>";
 
         xmlResponse = httpXmlResponse(urlParameters);
 
@@ -219,9 +221,11 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String xmlResponse;
 
         // *****getApiDef from Hayward server
-        String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetAPIDef</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
-                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + account.mspSystemID + "</Parameter>;"
+        String urlParameters = """
+                <?xml version="1.0" encoding="utf-8"?><Request><Name>GetAPIDef</Name><Parameters>\
+                <Parameter name="Token" dataType="String">\
+                """ + account.token + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
+                + account.mspSystemID + "</Parameter>;"
                 + "<Parameter name=\"Version\" dataType=\"string\">0.4</Parameter >\r\n"
                 + "<Parameter name=\"Language\" dataType=\"string\">en</Parameter >\r\n" + "</Parameters></Request>";
 
@@ -239,9 +243,10 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String status;
 
         // *****Get MSP
-        String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetSiteList</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + account.token
-                + "</Parameter><Parameter name=\"UserID\" dataType=\"String\">" + account.userID
+        String urlParameters = """
+                <?xml version="1.0" encoding="utf-8"?><Request><Name>GetSiteList</Name><Parameters>\
+                <Parameter name="Token" dataType="String">\
+                """ + account.token + "</Parameter><Parameter name=\"UserID\" dataType=\"String\">" + account.userID
                 + "</Parameter></Parameters></Request>";
 
         xmlResponse = httpXmlResponse(urlParameters);
@@ -269,10 +274,11 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
     public synchronized String getMspConfig() throws HaywardException, InterruptedException {
         // *****getMspConfig from Hayward server
-        String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetMspConfigFile</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
-                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + account.mspSystemID
-                + "</Parameter><Parameter name=\"Version\" dataType=\"string\">0</Parameter>\r\n"
+        String urlParameters = """
+                <?xml version="1.0" encoding="utf-8"?><Request><Name>GetMspConfigFile</Name><Parameters>\
+                <Parameter name="Token" dataType="String">\
+                """ + account.token + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
+                + account.mspSystemID + "</Parameter><Parameter name=\"Version\" dataType=\"string\">0</Parameter>\r\n"
                 + "</Parameters></Request>";
 
         String xmlResponse = httpXmlResponse(urlParameters);
@@ -312,10 +318,11 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
     public synchronized boolean getTelemetryData() throws HaywardException, InterruptedException {
         // *****getTelemetry from Hayward server
-        String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetTelemetryData</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
-                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + account.mspSystemID
-                + "</Parameter></Parameters></Request>";
+        String urlParameters = """
+                <?xml version="1.0" encoding="utf-8"?><Request><Name>GetTelemetryData</Name><Parameters>\
+                <Parameter name="Token" dataType="String">\
+                """ + account.token + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
+                + account.mspSystemID + "</Parameter></Parameters></Request>";
 
         String xmlResponse = httpXmlResponse(urlParameters);
 

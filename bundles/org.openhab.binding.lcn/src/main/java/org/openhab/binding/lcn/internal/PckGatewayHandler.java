@@ -13,8 +13,8 @@
 package org.openhab.binding.lcn.internal;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -114,7 +114,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(LcnModuleDiscoveryService.class);
+        return Set.of(LcnModuleDiscoveryService.class);
     }
 
     @Override

@@ -219,8 +219,8 @@ public abstract class XiaomiSocket {
      */
     private void notifyListeners(JsonObject message, InetAddress address) {
         for (XiaomiSocketListener listener : listeners) {
-            if (listener instanceof XiaomiBridgeHandler) {
-                if (((XiaomiBridgeHandler) listener).getHost().equals(address)) {
+            if (listener instanceof XiaomiBridgeHandler handler) {
+                if (handler.getHost().equals(address)) {
                     listener.onDataReceived(message);
                 }
             } else if (listener instanceof XiaomiBridgeDiscoveryService) {

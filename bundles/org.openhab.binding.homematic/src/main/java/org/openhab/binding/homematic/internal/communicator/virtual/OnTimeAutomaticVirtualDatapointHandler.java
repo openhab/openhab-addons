@@ -62,8 +62,8 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
 
     @Override
     public boolean canHandleCommand(HmDatapoint dp, Object value) {
-        boolean isLevel = DATAPOINT_NAME_LEVEL.equals(dp.getName()) && value != null && value instanceof Number
-                && ((Number) value).doubleValue() > 0.0;
+        boolean isLevel = DATAPOINT_NAME_LEVEL.equals(dp.getName()) && value != null
+                && value instanceof Number numberCommand && numberCommand.doubleValue() > 0.0;
         boolean isState = DATAPOINT_NAME_STATE.equals(dp.getName()) && MiscUtils.isTrueValue(value);
 
         return ((isLevel || isState) && getVirtualDatapointValue(dp.getChannel()) > 0.0)

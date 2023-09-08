@@ -83,8 +83,8 @@ class LxControlSwitch extends LxControl {
     }
 
     void handleSwitchCommands(Command command) throws IOException {
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 on();
             } else {
                 off();

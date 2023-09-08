@@ -14,7 +14,6 @@ package org.openhab.binding.hdpowerview.internal.discovery;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -46,7 +45,7 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_HUB);
+        return Set.of(THING_TYPE_HUB);
     }
 
     @Override

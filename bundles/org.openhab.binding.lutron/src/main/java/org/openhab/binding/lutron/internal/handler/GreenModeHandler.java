@@ -141,8 +141,8 @@ public class GreenModeHandler extends LutronHandler {
                 greenMode(ModeCommand.ACTION_STEP, 2);
             } else if (command == OnOffType.OFF) {
                 greenMode(ModeCommand.ACTION_STEP, 1);
-            } else if (command instanceof Number) {
-                Integer step = ((Number) command).intValue();
+            } else if (command instanceof Number number) {
+                Integer step = number.intValue();
                 if (step.intValue() >= GREENSTEP_MIN) {
                     greenMode(ModeCommand.ACTION_STEP, step);
                 }

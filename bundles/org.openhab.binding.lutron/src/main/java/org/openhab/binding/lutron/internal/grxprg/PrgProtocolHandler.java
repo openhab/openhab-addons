@@ -283,7 +283,7 @@ class PrgProtocolHandler {
         session.setCallback(callback);
 
         String response = callback.getResponse();
-        if (response.equals("login")) {
+        if ("login".equals(response)) {
             session.sendCommand(username);
         } else {
             return "Protocol violation - wasn't initially a command failure or login prompt: " + response;
@@ -293,7 +293,7 @@ class PrgProtocolHandler {
         response = callback.getResponse();
 
         // Burn the empty response if we got one (
-        if (response.equals("")) {
+        if ("".equals(response)) {
             response = callback.getResponse();
         }
 
@@ -928,7 +928,7 @@ class PrgProtocolHandler {
             throw new IllegalArgumentException("m (matcher) cannot be null");
         }
         if (m.groupCount() == 5) {
-            if (m.group(1).equals("255")) {
+            if ("255".equals(m.group(1))) {
                 logger.warn("Sunrise/Sunset needs to be enabled via Liason Software");
                 return;
             }
@@ -995,7 +995,7 @@ class PrgProtocolHandler {
                 final int controlUnit = Integer.parseInt(m.group(1));
                 for (int z = 1; z <= 8; z++) {
                     final String zi = m.group(z + 1);
-                    if (zi.equals("*") || zi.equals(Integer.toString(z - 1))) {
+                    if ("*".equals(zi) || zi.equals(Integer.toString(z - 1))) {
                         continue; // not present
                     }
                     final int zid = convertIntensity(controlUnit, z, zi);
@@ -1196,10 +1196,10 @@ class PrgProtocolHandler {
          */
         String getResponse() throws Exception {
             final Object lastResponse = responses.poll(5, TimeUnit.SECONDS);
-            if (lastResponse instanceof String) {
-                return (String) lastResponse;
-            } else if (lastResponse instanceof Exception) {
-                throw (Exception) lastResponse;
+            if (lastResponse instanceof String str) {
+                return str;
+            } else if (lastResponse instanceof Exception exception) {
+                throw exception;
             } else if (lastResponse == null) {
                 throw new Exception("Didn't receive response in time");
             } else {

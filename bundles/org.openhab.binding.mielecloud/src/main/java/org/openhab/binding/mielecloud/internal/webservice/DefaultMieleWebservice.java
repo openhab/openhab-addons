@@ -132,7 +132,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
     @Nullable
     private Request createSseRequest(String endpoint) {
         Optional<String> accessToken = this.accessToken;
-        if (!accessToken.isPresent()) {
+        if (accessToken.isEmpty()) {
             logger.warn("No access token present.");
             return null;
         }
@@ -243,7 +243,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
     @Override
     public void logout() {
         Optional<String> accessToken = this.accessToken;
-        if (!accessToken.isPresent()) {
+        if (accessToken.isEmpty()) {
             logger.debug("No access token present.");
             return;
         }
@@ -301,7 +301,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
      */
     private Actions getActions(String deviceId) {
         Optional<String> accessToken = this.accessToken;
-        if (!accessToken.isPresent()) {
+        if (accessToken.isEmpty()) {
             throw new MieleWebserviceException("Missing access token.", ConnectionError.AUTHORIZATION_FAILED);
         }
 
@@ -337,7 +337,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
     private void putActions(String deviceId, String json) {
         retryStrategy.performRetryableOperation(() -> {
             Optional<String> accessToken = this.accessToken;
-            if (!accessToken.isPresent()) {
+            if (accessToken.isEmpty()) {
                 throw new MieleWebserviceException("Missing access token.", ConnectionError.AUTHORIZATION_FAILED);
             }
 

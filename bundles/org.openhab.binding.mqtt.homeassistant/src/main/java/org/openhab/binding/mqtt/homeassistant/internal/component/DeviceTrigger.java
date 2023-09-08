@@ -47,7 +47,7 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
     public DeviceTrigger(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        if (!channelConfiguration.automationType.equals("trigger")) {
+        if (!"trigger".equals(channelConfiguration.automationType)) {
             throw new ConfigurationException("Component:DeviceTrigger must have automation_type 'trigger'");
         }
         if (channelConfiguration.type.isBlank()) {

@@ -97,8 +97,8 @@ public class SysvarHandler extends LutronHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_VARSTATE)) {
-            if (command instanceof Number) {
-                int state = ((Number) command).intValue();
+            if (command instanceof Number number) {
+                int state = number.intValue();
                 sysvar(SysvarCommand.ACTION_GETSETSYSVAR, state);
             }
         }

@@ -141,8 +141,8 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
         MinecraftServerHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof MinecraftServerHandler) {
-            bridgeHandler = (MinecraftServerHandler) handler;
+        if (handler instanceof MinecraftServerHandler serverHandler) {
+            bridgeHandler = serverHandler;
         } else {
             logger.debug("No available bridge handler found yet. Bridge: {} .", bridge.getUID());
             bridgeHandler = null;

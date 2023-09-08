@@ -136,16 +136,16 @@ public class XmlRpcRequest implements RpcRequest<String> {
                 tag("boolean", ((Boolean) value).booleanValue() ? "1" : "0");
             } else if (clazz == Date.class) {
                 tag("dateTime.iso8601", xmlRpcDateFormat.format(((Date) value)));
-            } else if (value instanceof Calendar) {
-                generateValue(((Calendar) value).getTime());
-            } else if (value instanceof byte[]) {
-                tag("base64", Base64.getEncoder().encodeToString((byte[]) value));
+            } else if (value instanceof Calendar calendar) {
+                generateValue(calendar.getTime());
+            } else if (value instanceof byte[] bytes) {
+                tag("base64", Base64.getEncoder().encodeToString(bytes));
             } else if (clazz.isArray() || value instanceof List) {
                 sb.append("<array><data>");
 
                 Object[] array = null;
-                if (value instanceof List) {
-                    array = ((List<?>) value).toArray();
+                if (value instanceof List list) {
+                    array = list.toArray();
                 } else {
                     array = (Object[]) value;
                 }

@@ -76,7 +76,6 @@ public class IhcConnectionPool {
 
     private void init() throws IhcFatalExecption {
         try {
-
             // Create a local instance of cookie store
             cookieStore = new BasicCookieStore();
 

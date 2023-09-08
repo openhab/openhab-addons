@@ -64,10 +64,10 @@ public class MilightV6SessionManager implements Runnable, Closeable {
     private int sequenceNo = 0;
 
     // Password bytes 1 and 2
-    public byte pw[] = { 0, 0 };
+    public byte[] pw = { 0, 0 };
 
     // Session bytes 1 and 2
-    public byte sid[] = { 0, 0 };
+    public byte[] sid = { 0, 0 };
 
     // Client session bytes 1 and 2. Those are fixed for now.
     public final byte clientSID1 = (byte) 0xab;

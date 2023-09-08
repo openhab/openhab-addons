@@ -38,8 +38,8 @@ public class MaxCubeActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof MaxCubeBridgeHandler) {
-            this.handler = (MaxCubeBridgeHandler) handler;
+        if (handler instanceof MaxCubeBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 

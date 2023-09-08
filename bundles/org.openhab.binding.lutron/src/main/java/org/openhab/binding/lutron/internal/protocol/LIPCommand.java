@@ -61,8 +61,7 @@ public class LIPCommand extends LutronCommandNew {
     }
 
     public int getNumberParameter(int position) {
-        if (parameters.length > position && parameters[position] instanceof Number) {
-            Number num = (Number) parameters[position];
+        if (parameters.length > position && parameters[position] instanceof Number num) {
             return num.intValue();
         } else {
             throw new IllegalArgumentException("Invalid command parameter");

@@ -211,7 +211,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             return;
         }
 
-        if (!transformedCommand.isPresent()) {
+        if (transformedCommand.isEmpty()) {
             // transformation failed, return
             logger.warn("Cannot process command {} (of type {}) with channel {} since transformation was unsuccessful",
                     command, command.getClass().getSimpleName(), channelUID);
@@ -277,7 +277,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         }
         if (writeType.equals(WRITE_TYPE_COIL)) {
             Optional<Boolean> commandAsBoolean = ModbusBitUtilities.translateCommand2Boolean(transformedCommand);
-            if (!commandAsBoolean.isPresent()) {
+            if (commandAsBoolean.isEmpty()) {
                 logger.warn(
                         "Cannot process command {} with channel {} since command is not OnOffType, OpenClosedType or Decimal trying to write to coil. Do not know how to convert to 0/1. Transformed command was '{}'",
                         origCommand, channelUID, transformedCommand);
@@ -417,9 +417,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                         bridge.getLabel());
                 throw new ModbusConfigurationException(errmsg);
             }
-            if (bridgeHandler instanceof ModbusEndpointThingHandler) {
-                // Write-only thing, parent is endpoint
-                ModbusEndpointThingHandler endpointHandler = (ModbusEndpointThingHandler) bridgeHandler;
+            if (bridgeHandler instanceof ModbusEndpointThingHandler endpointHandler) {
                 slaveId = endpointHandler.getSlaveId();
                 comms = endpointHandler.getCommunicationInterface();
                 childOfEndpoint = true;
@@ -691,7 +689,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         @Nullable
         ModbusReadRequestBlueprint readRequest = this.readRequest;
         ValueType readValueType = this.readValueType;
-        if (!readIndex.isPresent() || readRequest == null) {
+        if (readIndex.isEmpty() || readRequest == null) {
             return;
         }
         assert readValueType != null;
@@ -721,7 +719,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             String errmsg = String.format(
                     "readStart=X.Y notation is not allowed to be used with value types larger than 16bit! Use readStart=X instead.");
             throw new ModbusConfigurationException(errmsg);
-        } else if (!bitQuery && valueTypeBitCount < 16 && !readSubIndex.isPresent()) {
+        } else if (!bitQuery && valueTypeBitCount < 16 && readSubIndex.isEmpty()) {
             // User has specified value type which is less than register width (16 bits).
             // readStart=X.Y notation must be used to define which data to extract from the 16 bit register.
             String errmsg = String
@@ -753,7 +751,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private void validateWriteIndex() throws ModbusConfigurationException {
         @Nullable
         ModbusReadRequestBlueprint readRequest = this.readRequest;
-        if (!writeStart.isPresent() || !writeSubIndex.isPresent()) {
+        if (writeStart.isEmpty() || writeSubIndex.isEmpty()) {
             //
             // this validation is really about writeStart=X.Y validation
             //
@@ -786,15 +784,11 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     }
 
     private boolean containsOnOff(List<Class<? extends State>> channelAcceptedDataTypes) {
-        return channelAcceptedDataTypes.stream().anyMatch(clz -> {
-            return clz.equals(OnOffType.class);
-        });
+        return channelAcceptedDataTypes.stream().anyMatch(clz -> clz.equals(OnOffType.class));
     }
 
     private boolean containsOpenClosed(List<Class<? extends State>> acceptedDataTypes) {
-        return acceptedDataTypes.stream().anyMatch(clz -> {
-            return clz.equals(OpenClosedType.class);
-        });
+        return acceptedDataTypes.stream().anyMatch(clz -> clz.equals(OpenClosedType.class));
     }
 
     public synchronized void onReadResult(AsyncModbusReadResult result) {

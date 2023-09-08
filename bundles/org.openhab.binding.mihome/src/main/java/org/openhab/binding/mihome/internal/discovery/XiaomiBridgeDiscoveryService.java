@@ -14,7 +14,6 @@ package org.openhab.binding.mihome.internal.discovery;
 
 import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +42,7 @@ import com.google.gson.JsonObject;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.mihome")
 public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService implements XiaomiSocketListener {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
     private static final int DISCOVERY_TIMEOUT_SEC = 30;
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiBridgeDiscoveryService.class);
@@ -78,7 +77,7 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService imple
     @Override
     public void onDataReceived(JsonObject data) {
         logger.debug("Received message {}", data);
-        if (data.get("cmd").getAsString().equals("iam")) {
+        if ("iam".equals(data.get("cmd").getAsString())) {
             getGatewayInfo(data);
         }
     }

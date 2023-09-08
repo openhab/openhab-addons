@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DeviceFeature {
-    public static enum QueryStatus {
+    public enum QueryStatus {
         NEVER_QUERIED,
         QUERY_PENDING,
         QUERY_ANSWERED
@@ -300,8 +300,7 @@ public class DeviceFeature {
         }
         logger.trace("{} making poll msg for {} using handler {}", getName(), getDevice().getAddress(),
                 pollHandler.getClass().getSimpleName());
-        Msg m = pollHandler.makeMsg(device);
-        return m;
+        return pollHandler.makeMsg(device);
     }
 
     /**

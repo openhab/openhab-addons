@@ -55,8 +55,8 @@ public class DimmerItemConverter extends AbstractTransformingItemConverter {
             return string;
         }
 
-        if (command instanceof PercentType) {
-            return ((PercentType) command).toString();
+        if (command instanceof PercentType percentCommand) {
+            return percentCommand.toString();
         }
 
         throw new IllegalArgumentException("Command type '" + command.toString() + "' not supported");
@@ -70,14 +70,14 @@ public class DimmerItemConverter extends AbstractTransformingItemConverter {
             newState = PercentType.HUNDRED;
         } else if (string.equals(channelConfig.offValue)) {
             newState = PercentType.ZERO;
-        } else if (string.equals(channelConfig.increaseValue) && state instanceof PercentType) {
-            BigDecimal newBrightness = ((PercentType) state).toBigDecimal().add(channelConfig.step);
+        } else if (string.equals(channelConfig.increaseValue) && state instanceof PercentType brightnessState) {
+            BigDecimal newBrightness = brightnessState.toBigDecimal().add(channelConfig.step);
             if (HUNDRED.compareTo(newBrightness) < 0) {
                 newBrightness = HUNDRED;
             }
             newState = new PercentType(newBrightness);
-        } else if (string.equals(channelConfig.decreaseValue) && state instanceof PercentType) {
-            BigDecimal newBrightness = ((PercentType) state).toBigDecimal().subtract(channelConfig.step);
+        } else if (string.equals(channelConfig.decreaseValue) && state instanceof PercentType brightnessState) {
+            BigDecimal newBrightness = brightnessState.toBigDecimal().subtract(channelConfig.step);
             if (BigDecimal.ZERO.compareTo(newBrightness) > 0) {
                 newBrightness = BigDecimal.ZERO;
             }

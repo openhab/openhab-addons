@@ -28,7 +28,7 @@ public class MqttThingID {
      * for creating a ThingUID with that string (tcp_122_123_111_123_1883).
      */
     public static String getThingID(String host, int port) {
-        return host.replace('.', '_').replace("://", "_") + "_" + String.valueOf(port);
+        return host.replace('.', '_').replace("://", "_") + "_" + port;
     }
 
     /**

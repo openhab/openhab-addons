@@ -398,7 +398,6 @@ public class DefaultMieleWebserviceTest {
 
         try (DefaultMieleWebservice webservice = new DefaultMieleWebservice(requestFactory, retryStrategy,
                 new DeviceStateDispatcher(), scheduler)) {
-
             // when:
             assertThrows(IllegalArgumentException.class, () -> {
                 webservice.putProcessAction(DEVICE_IDENTIFIER, ProcessAction.UNKNOWN);

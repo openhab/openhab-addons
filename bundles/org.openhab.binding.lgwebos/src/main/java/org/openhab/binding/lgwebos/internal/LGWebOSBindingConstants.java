@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +30,7 @@ public class LGWebOSBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_WEBOSTV = new ThingTypeUID(BINDING_ID, "WebOSTV");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WEBOSTV);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WEBOSTV);
 
     public static final ServiceType UPNP_SERVICE_TYPE = new ServiceType("lge-com", "webos-second-screen", 1);
 

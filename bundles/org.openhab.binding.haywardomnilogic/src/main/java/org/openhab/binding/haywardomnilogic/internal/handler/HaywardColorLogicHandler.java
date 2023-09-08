@@ -60,7 +60,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                         data = bridgehandler.evaluateXPath("//ColorLogic-Light/@lightState", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_LIGHTSTATE, data.get(i));
 
-                        if (data.get(i).equals("0")) {
+                        if ("0".equals(data.get(i))) {
                             updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "0");
                         } else {
                             updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "1");

@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.discovery;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -55,7 +55,7 @@ public class HDPowerViewDeviceDiscoveryService extends AbstractDiscoveryService 
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
     public HDPowerViewDeviceDiscoveryService(HDPowerViewHubHandler hub) {
-        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE), 60, true);
+        super(Set.of(HDPowerViewBindingConstants.THING_TYPE_SHADE), 60, true);
         this.hub = hub;
         this.scanner = createScanner();
     }

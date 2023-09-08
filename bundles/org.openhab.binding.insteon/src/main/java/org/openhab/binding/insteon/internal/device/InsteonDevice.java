@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class InsteonDevice {
     private final Logger logger = LoggerFactory.getLogger(InsteonDevice.class);
 
-    public static enum DeviceStatus {
+    public enum DeviceStatus {
         INITIALIZED,
         POLLING
     }

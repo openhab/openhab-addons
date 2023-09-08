@@ -342,7 +342,7 @@ public class KeContactHandler extends BaseThingHandler {
                         updateState(CHANNEL_MAX_SYSTEM_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
                             if (maxSystemCurrent < maxPresetCurrent) {
-                                transceiver.send("curr " + String.valueOf(maxSystemCurrent), this);
+                                transceiver.send("curr " + maxSystemCurrent, this);
                                 updateState(CHANNEL_MAX_PRESET_CURRENT,
                                         new QuantityType<ElectricCurrent>(maxSystemCurrent / 1000.0, Units.AMPERE));
                                 updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<Dimensionless>(
@@ -528,12 +528,10 @@ public class KeContactHandler extends BaseThingHandler {
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_MAX_PRESET_CURRENT: {
-                    if (command instanceof QuantityType<?>) {
-                        QuantityType<?> value = ((QuantityType<?>) command).toUnit("mA");
+                    if (command instanceof QuantityType<?> quantityCommand) {
+                        QuantityType<?> value = quantityCommand.toUnit("mA");
 
-                        transceiver.send(
-                                "curr " + String.valueOf(Math.min(Math.max(6000, value.intValue()), maxSystemCurrent)),
-                                this);
+                        transceiver.send("curr " + Math.min(Math.max(6000, value.intValue()), maxSystemCurrent), this);
                     }
                     break;
                 }
@@ -549,13 +547,13 @@ public class KeContactHandler extends BaseThingHandler {
                             newValue = maxSystemCurrent;
                         } else if (command == OnOffType.OFF) {
                             newValue = 6000;
-                        } else if (command instanceof QuantityType<?>) {
-                            QuantityType<?> value = ((QuantityType<?>) command).toUnit("%");
+                        } else if (command instanceof QuantityType<?> quantityCommand) {
+                            QuantityType<?> value = quantityCommand.toUnit("%");
                             newValue = Math.round(6000 + (maxSystemCurrent - 6000) * value.doubleValue() / 100.0);
                         } else {
                             return;
                         }
-                        transceiver.send("curr " + String.valueOf(newValue), this);
+                        transceiver.send("curr " + newValue, this);
                     }
                     break;
                 }
@@ -596,11 +594,10 @@ public class KeContactHandler extends BaseThingHandler {
                     break;
                 }
                 case CHANNEL_SETENERGY: {
-                    if (command instanceof QuantityType<?>) {
-                        QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.WATT_HOUR);
+                    if (command instanceof QuantityType<?> quantityCommand) {
+                        QuantityType<?> value = quantityCommand.toUnit(Units.WATT_HOUR);
                         transceiver.send(
-                                "setenergy " + String.valueOf(
-                                        Math.min(Math.max(0, Math.round(value.doubleValue() * 10.0)), 999999999)),
+                                "setenergy " + Math.min(Math.max(0, Math.round(value.doubleValue() * 10.0)), 999999999),
                                 this);
                     }
                     break;

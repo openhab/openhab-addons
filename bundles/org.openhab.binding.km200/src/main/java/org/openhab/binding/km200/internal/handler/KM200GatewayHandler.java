@@ -73,7 +73,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KM200GatewayHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KMDEVICE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_KMDEVICE);
 
     private final Map<Channel, JsonObject> sendMap = Collections.synchronizedMap(new LinkedHashMap<>());
 

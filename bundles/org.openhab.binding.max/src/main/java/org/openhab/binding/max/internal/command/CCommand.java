@@ -29,8 +29,7 @@ public class CCommand extends CubeCommand {
 
     @Override
     public String getCommandString() {
-        String cmd = "c:" + rfAddress + '\r' + '\n';
-        return cmd;
+        return "c:" + rfAddress + '\r' + '\n';
     }
 
     @Override

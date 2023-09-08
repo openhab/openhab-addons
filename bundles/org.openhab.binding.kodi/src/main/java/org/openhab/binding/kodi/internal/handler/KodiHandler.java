@@ -134,8 +134,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     private int getIntConfigParameter(String key, int defaultValue) {
         Object obj = this.getConfig().get(key);
-        if (obj instanceof Number) {
-            return ((Number) obj).intValue();
+        if (obj instanceof Number numberValue) {
+            return numberValue.intValue();
         } else if (obj instanceof String) {
             return Integer.parseInt(obj.toString());
         }
@@ -160,8 +160,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_VOLUME:
-                if (command instanceof PercentType) {
-                    connection.setVolume(((PercentType) command).intValue());
+                if (command instanceof PercentType percentCommand) {
+                    connection.setVolume(percentCommand.intValue());
                 } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
                     connection.increaseVolume();
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
@@ -213,8 +213,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_PLAYNOTIFICATION:
-                if (command instanceof StringType) {
-                    playNotificationSoundURI((StringType) command, true);
+                if (command instanceof StringType stringCommand) {
+                    playNotificationSoundURI(stringCommand, true);
                     updateState(CHANNEL_PLAYNOTIFICATION, UnDefType.UNDEF);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     updateState(CHANNEL_PLAYNOTIFICATION, UnDefType.UNDEF);
@@ -307,14 +307,14 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_AUDIO_CODEC:
                 break;
             case CHANNEL_AUDIO_INDEX:
-                if (command instanceof DecimalType) {
-                    connection.setAudioStream(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    connection.setAudioStream(decimalCommand.intValue());
                 }
                 break;
             case CHANNEL_VIDEO_CODEC:
             case CHANNEL_VIDEO_INDEX:
-                if (command instanceof DecimalType) {
-                    connection.setVideoStream(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    connection.setVideoStream(decimalCommand.intValue());
                 }
                 break;
             case CHANNEL_SUBTITLE_ENABLED:
@@ -325,13 +325,13 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_SUBTITLE_INDEX:
-                if (command instanceof DecimalType) {
-                    connection.setSubtitle(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    connection.setSubtitle(decimalCommand.intValue());
                 }
                 break;
             case CHANNEL_CURRENTTIME:
-                if (command instanceof QuantityType) {
-                    connection.setTime(((QuantityType<?>) command).intValue());
+                if (command instanceof QuantityType quantityCommand) {
+                    connection.setTime(quantityCommand.intValue());
                 }
                 break;
             case CHANNEL_CURRENTTIMEPERCENTAGE:

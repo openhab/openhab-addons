@@ -99,8 +99,7 @@ public class HydrawiseLocalApiClient {
     public LocalScheduleResponse getLocalSchedule()
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
         String json = doGet(localGetURL);
-        LocalScheduleResponse response = gson.fromJson(json, LocalScheduleResponse.class);
-        return response;
+        return gson.fromJson(json, LocalScheduleResponse.class);
     }
 
     /**
@@ -191,7 +190,7 @@ public class HydrawiseLocalApiClient {
             throws HydrawiseConnectionException, HydrawiseAuthenticationException, HydrawiseCommandException {
         String json = doGet(url);
         SetZoneResponse response = gson.fromJson(json, SetZoneResponse.class);
-        if (response.messageType.equals("error")) {
+        if ("error".equals(response.messageType)) {
             throw new HydrawiseCommandException(response.message);
         }
         return response.message;

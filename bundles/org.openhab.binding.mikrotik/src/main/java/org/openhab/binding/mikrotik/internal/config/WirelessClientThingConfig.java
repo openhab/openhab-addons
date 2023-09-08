@@ -26,6 +26,7 @@ public class WirelessClientThingConfig implements ConfigValidation {
     public String ssid = "";
     public int considerContinuous = 180;
 
+    @Override
     public boolean isValid() {
         return !mac.isBlank() && considerContinuous > 0;
     }

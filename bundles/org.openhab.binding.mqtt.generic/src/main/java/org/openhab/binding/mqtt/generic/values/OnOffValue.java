@@ -73,8 +73,8 @@ public class OnOffValue extends Value {
 
     @Override
     public OnOffType parseCommand(Command command) throws IllegalArgumentException {
-        if (command instanceof OnOffType) {
-            return (OnOffType) command;
+        if (command instanceof OnOffType onOffCommand) {
+            return onOffCommand;
         } else {
             final String updatedValue = command.toString();
             if (onState.equals(updatedValue)) {

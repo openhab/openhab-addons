@@ -95,9 +95,9 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                         updateData(HaywardBindingConstants.CHANNEL_VIRTUALHEATER_CURRENTSETPOINT, data.get(i));
 
                         data = bridgehandler.evaluateXPath("//VirtualHeater/@enable", xmlResponse);
-                        if (data.get(i).equals("yes")) {
+                        if ("yes".equals(data.get(i))) {
                             updateData(HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, "1");
-                        } else if (data.get(i).equals("no")) {
+                        } else if ("no".equals(data.get(i))) {
                             updateData(HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, "0");
                         }
                     }

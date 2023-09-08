@@ -110,7 +110,6 @@ public class MagentaTVHttp {
      * @throws IOException
      */
     public String sendData(String remoteIp, String remotePort, String data) throws MagentaTVException {
-
         String errorMessage = "";
         StringBuffer response = new StringBuffer();
         try (Socket socket = new Socket()) {

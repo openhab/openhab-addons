@@ -47,7 +47,7 @@ public class LxControlAlarmNoPresenceTest extends LxControlTest {
     static final String SENSORS_CHANNEL = " / Sensors";
     static final String QUIT_CHANNEL = " / Acknowledge";
 
-    private static final String NUMBER_CHANNELS[] = { NEXT_LEVEL_CHANNEL, NEXT_LEVEL_DELAY_CHANNEL,
+    private static final String[] NUMBER_CHANNELS = { NEXT_LEVEL_CHANNEL, NEXT_LEVEL_DELAY_CHANNEL,
             NEXT_LEVEL_DELAY_TOTAL_CHANNEL, LEVEL_CHANNEL, ARMED_DELAY_CHANNEL, ARMED_TOTAL_DELAY_CHANNEL };
 
     @BeforeEach

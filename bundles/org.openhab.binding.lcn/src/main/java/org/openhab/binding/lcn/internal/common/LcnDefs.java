@@ -86,14 +86,14 @@ public final class LcnDefs {
         OFF,
         ON,
         BLINK,
-        FLICKER;
+        FLICKER
     }
 
     /** Possible states for LCN logic-operations. */
     public enum LogicOpStatus {
         NOT,
         OR, // Note: Actually not correct since AND won't be OR also
-        AND;
+        AND
     }
 
     /** Time units used for several LCN commands. */
@@ -101,7 +101,7 @@ public final class LcnDefs {
         SECONDS,
         MINUTES,
         HOURS,
-        DAYS;
+        DAYS
     }
 
     /** Relay-state modifiers used in LCN commands. */

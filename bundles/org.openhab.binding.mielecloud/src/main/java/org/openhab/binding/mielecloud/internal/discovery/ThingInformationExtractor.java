@@ -82,10 +82,10 @@ public final class ThingInformationExtractor {
         if (deviceType.isPresent() && techType.isPresent()) {
             return Optional.of(deviceType.get() + " " + techType.get());
         }
-        if (!deviceType.isPresent() && techType.isPresent()) {
+        if (deviceType.isEmpty() && techType.isPresent()) {
             return techType;
         }
-        if (deviceType.isPresent() && !techType.isPresent()) {
+        if (deviceType.isPresent() && techType.isEmpty()) {
             return deviceType;
         }
         return Optional.empty();

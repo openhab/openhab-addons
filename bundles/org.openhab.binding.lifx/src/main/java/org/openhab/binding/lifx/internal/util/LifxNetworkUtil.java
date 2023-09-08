@@ -131,9 +131,7 @@ public final class LifxNetworkUtil {
     }
 
     public static int getNewBroadcastPort() {
-        int offset = BROADCAST_PORT_COUNTER.getAndUpdate((value) -> {
-            return (value + 1) % Integer.MAX_VALUE;
-        });
+        int offset = BROADCAST_PORT_COUNTER.getAndUpdate((value) -> (value + 1) % Integer.MAX_VALUE);
         return BROADCAST_PORT + (offset % (PORT_MAX - BROADCAST_PORT));
     }
 }

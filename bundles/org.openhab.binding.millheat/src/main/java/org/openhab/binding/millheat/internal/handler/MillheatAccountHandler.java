@@ -372,8 +372,8 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         final Optional<Room> optionalRoom = model.findRoomById(roomId);
         if (optionalHome.isPresent() && optionalRoom.isPresent()) {
             final SetRoomTempRequest req = new SetRoomTempRequest(optionalHome.get(), optionalRoom.get());
-            if (command instanceof QuantityType<?>) {
-                final int newTemp = (int) ((QuantityType<?>) command).longValue();
+            if (command instanceof QuantityType<?> quantityCommand) {
+                final int newTemp = (int) quantityCommand.longValue();
                 switch (mode) {
                     case SLEEP:
                         req.sleepTemp = newTemp;
@@ -404,8 +404,8 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
             @Nullable final Command fanCommand) {
         model.findHeaterByMacOrId(macAddress, heaterId).ifPresent(heater -> {
             int setTemp = heater.getTargetTemp();
-            if (temperatureCommand instanceof QuantityType<?>) {
-                setTemp = (int) ((QuantityType<?>) temperatureCommand).longValue();
+            if (temperatureCommand instanceof QuantityType<?> temperature) {
+                setTemp = (int) temperature.longValue();
             }
             boolean masterOnOff = heater.powerStatus();
             if (masterOnOffCommand != null) {

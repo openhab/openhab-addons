@@ -82,8 +82,8 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof PckGatewayHandler) {
-            this.bridgeHandler = (PckGatewayHandler) handler;
+        if (handler instanceof PckGatewayHandler gatewayHandler) {
+            this.bridgeHandler = gatewayHandler;
         }
     }
 

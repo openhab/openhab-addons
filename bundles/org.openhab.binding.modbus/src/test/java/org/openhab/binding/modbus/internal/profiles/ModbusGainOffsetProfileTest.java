@@ -137,8 +137,8 @@ public class ModbusGainOffsetProfileTest {
         final Type actualStateUpdateTowardsItem;
         if (stateUpdateFromHandler) {
             final State updateFromHandler;
-            if (updateFromHandlerObj instanceof String) {
-                updateFromHandler = new QuantityType((String) updateFromHandlerObj);
+            if (updateFromHandlerObj instanceof String str) {
+                updateFromHandler = new QuantityType(str);
             } else {
                 assertTrue(updateFromHandlerObj instanceof State);
                 updateFromHandler = (State) updateFromHandlerObj;
@@ -151,8 +151,8 @@ public class ModbusGainOffsetProfileTest {
             actualStateUpdateTowardsItem = capture.getValue();
         } else {
             final Command updateFromHandler;
-            if (updateFromHandlerObj instanceof String) {
-                updateFromHandler = new QuantityType((String) updateFromHandlerObj);
+            if (updateFromHandlerObj instanceof String str) {
+                updateFromHandler = new QuantityType(str);
             } else {
                 assertTrue(updateFromHandlerObj instanceof State);
                 updateFromHandler = (Command) updateFromHandlerObj;
@@ -165,8 +165,7 @@ public class ModbusGainOffsetProfileTest {
             actualStateUpdateTowardsItem = capture.getValue();
         }
 
-        Type expectedStateUpdateTowardsItem = (expectedUpdateTowardsItemObj instanceof String)
-                ? new QuantityType((String) expectedUpdateTowardsItemObj)
+        Type expectedStateUpdateTowardsItem = (expectedUpdateTowardsItemObj instanceof String s) ? new QuantityType(s)
                 : (Type) expectedUpdateTowardsItemObj;
         assertEquals(expectedStateUpdateTowardsItem, actualStateUpdateTowardsItem);
         verifyNoMoreInteractions(callback);
@@ -218,7 +217,7 @@ public class ModbusGainOffsetProfileTest {
         ProfileCallback callback = mock(ProfileCallback.class);
         ModbusGainOffsetProfile profile = createProfile(callback, gain, preGainOffset);
 
-        Command commandFromItem = (commandFromItemObj instanceof String) ? new QuantityType((String) commandFromItemObj)
+        Command commandFromItem = (commandFromItemObj instanceof String str) ? new QuantityType(str)
                 : (Command) commandFromItemObj;
         profile.onCommandFromItem(commandFromItem);
 
@@ -227,8 +226,8 @@ public class ModbusGainOffsetProfileTest {
             ArgumentCaptor<Command> capture = ArgumentCaptor.forClass(Command.class);
             verify(callback, times(1)).handleCommand(capture.capture());
             Command actualCommandTowardsHandler = capture.getValue();
-            Command expectedCommandTowardsHandler = (expectedCommandTowardsHandlerObj instanceof String)
-                    ? new QuantityType((String) expectedCommandTowardsHandlerObj)
+            Command expectedCommandTowardsHandler = (expectedCommandTowardsHandlerObj instanceof String str)
+                    ? new QuantityType(str)
                     : (Command) expectedCommandTowardsHandlerObj;
             assertEquals(expectedCommandTowardsHandler, actualCommandTowardsHandler);
             verifyNoMoreInteractions(callback);

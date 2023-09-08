@@ -344,7 +344,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
         String scrubbedLine;
 
         for (String line : this.session.readLines()) {
-            if (line.trim().equals("")) {
+            if ("".equals(line.trim())) {
                 // Sometimes we get an empty line (possibly only when prompts are disabled). Ignore them.
                 continue;
             }

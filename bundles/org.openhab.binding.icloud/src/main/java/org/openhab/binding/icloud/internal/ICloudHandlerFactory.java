@@ -89,8 +89,8 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof ICloudAccountBridgeHandler) {
-            unregisterDeviceDiscoveryService((ICloudAccountBridgeHandler) thingHandler);
+        if (thingHandler instanceof ICloudAccountBridgeHandler iCloudAccountBridgeHandler) {
+            unregisterDeviceDiscoveryService(iCloudAccountBridgeHandler);
         }
     }
 
