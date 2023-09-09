@@ -6,22 +6,18 @@
 	<channel-type id="front-left-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Seat Front Left</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="front-right-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Seat Front Right</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-left-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Seat Rear Left</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-right-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Seat Rear Right</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="zone-hvac-channel">
 		<item-type>Number</item-type>
