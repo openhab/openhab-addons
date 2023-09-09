@@ -24,9 +24,8 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="zone-hvac-channel">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>AC Zone</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperature-hvac-channel">
 		<item-type>Number:Temperature</item-type>
@@ -41,5 +40,9 @@
 	<channel-type id="active-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Control</label>
+	</channel-type>
+	<channel-type id="aux-heat-channel">
+		<item-type>Switch</item-type>
+		<label>Auxiliary Heating Control</label>
 	</channel-type>
 </thing:thing-descriptions>

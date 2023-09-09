@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.dto.PINRequest;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
+import org.openhab.core.library.types.OnOffType;
 
 /**
  * The {@link ConfigurationTest} Test configuration settings
@@ -123,5 +124,13 @@ class ConfigurationTest {
         });
         System.out.println(cmds);
         System.out.println(Constants.THING_TYPE_HYBRID.getId());
+    }
+
+    @Test
+    public void testDuration() {
+        System.out.println(Utils.getDurationString(16000));
+        System.out.println(Utils.getDurationString((24 * 60 + 14)));
+        System.out.println(Utils.getDurationString(24 * 60));
+        System.out.println(OnOffType.from(false));
     }
 }

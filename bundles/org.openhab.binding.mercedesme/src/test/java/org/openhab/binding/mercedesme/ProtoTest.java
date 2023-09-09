@@ -12,13 +12,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.BatteryMaxSocConfigure;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ChargeProgramConfigure.ChargeProgram;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.CommandRequest;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.LightType;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.SigPosStart.SigposType;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.TemperatureConfigure.TemperaturePoint.Zone;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgramParameters;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgramsValue;
@@ -124,7 +127,35 @@ class ProtoTest {
             // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
             FileInputStream fis = new FileInputStream("src/test/resources/proto/EQA-charging.blob");
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
-            System.out.println(pm.getAllFields().toString());
+            System.out.println(pm.getVepUpdates().getAllFields().size());
+            System.out.println(pm.getVepUpdates().getAllFields().keySet());
+            VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
+            JSONObject jo = new JSONObject();
+            Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433").getAttributesMap();
+            m.forEach((key, value) -> {
+                // System.out.println("Key: " + key);
+                // System.out.println("Val: " + value);
+                Map attMap = value.getAllFields();
+                JSONObject joa = new JSONObject();
+                attMap.forEach((aKey, aValue) -> {
+                    // System.out.println(aValue.getClass());
+                    if (aValue instanceof ChargeProgramsValue) {
+                        System.out.println("Here! " + aValue);
+                        ChargeProgramsValue cpv = (ChargeProgramsValue) aValue;
+                        // JSONObject jocpc = new JSONObject(cpv.getAllFields());
+                        System.out.println(cpv.getChargeProgramParametersCount());
+                        // cpv.getChargeProgramParametersCount()
+                    }
+                    String[] bKey = aKey.toString().split("\\.");
+                    if (bKey.length > 1) {
+                        joa.put(bKey[bKey.length - 1], aValue);
+                    } else {
+                        joa.put(bKey[0], aValue);
+                    }
+                });
+                jo.put(key, joa);
+            });
+            System.out.println(jo);
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -161,6 +192,36 @@ class ProtoTest {
     }
 
     @Test
+    void testChargeProgram() {
+        for (int i = 11; i < 12; i++) {
+            try {
+                // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
+                FileInputStream fis = new FileInputStream("src/test/resources/proto/EQA-charging.blob");
+                PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
+                if (pm.hasVepUpdates()) {
+                    VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
+                    Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433")
+                            .getAttributesMap();
+                    ChargeProgramsValue cpv = m.get("chargePrograms").getChargeProgramsValue();
+                    if (cpv.getChargeProgramParametersCount() > 0) {
+                        System.out.println(cpv.getAllFields());
+                        System.out.println(cpv.getChargeProgramParametersCount());
+                        List<ChargeProgramParameters> chareProgeamParameters = cpv.getChargeProgramParametersList();
+                        System.out.println(chareProgeamParameters.size());
+                        chareProgeamParameters.forEach(program -> {
+                            String programName = program.getChargeProgram().name();
+                            int number = program.getChargeProgram().getNumber();
+                            System.out.println(programName + " " + number);
+                        });
+                    }
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
     void testEndChargeTime() {
         try {
             // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
@@ -190,7 +251,7 @@ class ProtoTest {
     void testChargePrograms() {
         try {
             // FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
-            FileInputStream fis = new FileInputStream("src/test/resources/proto/proto.blob");
+            FileInputStream fis = new FileInputStream("src/test/resources/proto/EQA-charging.blob");
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
             // System.out.println(pm.getAllFields());
             VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
@@ -208,8 +269,22 @@ class ProtoTest {
             ChargeProgramParameters chargeProgramParameters = cppList
                     .get((int) m.get("selectedChargeProgram").getIntValue());
             System.out.println(chargeProgramParameters.getChargeProgram());
+
         } catch (Throwable e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testZoneValues() {
+        Zone[] zone = Zone.values();
+        System.out.println(zone.length);
+        for (int i = 0; i < zone.length - 1; i++) {
+            System.out.println(zone[i] + " " + zone[i].getNumber());
+        }
+        ChargeProgram[] programs = ChargeProgram.values();
+        for (int i = 0; i < programs.length - 1; i++) {
+            System.out.println(programs[i] + " " + programs[i].getNumber());
         }
     }
 

@@ -1,8 +1,16 @@
-{
-	"W1N2437011J016433"value{
-		"auxheatwarnings"value{timestamp:1659023673status:4nil_value:truetimestamp_in_ms:1659023673000
-	}
-}
+{proto.PushMessage.vepUpdates=updates {
+  key: "W1N2437011J016433"
+  value {
+    vin: "W1N2437011J016433"
+    attributes {
+      key: "auxheatwarnings"
+      value {
+        timestamp: 1659023673
+        status: 4
+        nil_value: true
+        timestamp_in_ms: 1659023673000
+      }
+    }
     attributes {
       key: "averageSpeedReset"
       value {

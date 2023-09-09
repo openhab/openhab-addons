@@ -9,9 +9,9 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="driven-time-channel">
-		<item-type>DateTime</item-type>
-		<label>Trip Driving Time</label>
-		<state pattern="%1$tH:%1$tM" readOnly="true"/>
+		<item-type>String</item-type>
+		<label>Trip String Time</label>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="avg-speed-channel">
 		<item-type>Number</item-type>
@@ -28,4 +28,30 @@
 		<label>Trip Average Consumption</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="distance-reset-channel">
+		<item-type>Number:Length</item-type>
+		<label>Distance Reset</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="driven-time-reset-channel">
+		<item-type>String</item-type>
+		<label>Driving Time Reset</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="avg-speed-reset-channel">
+		<item-type>Number</item-type>
+		<label>Average Speed Reset</label>
+		<state pattern="%.1f km/h" readOnly="true"/>
+	</channel-type>
+	<channel-type id="consumption-ev-reset-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Average Consumption Reset</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="consumption-conv-reset-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Average Consumption Reset</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

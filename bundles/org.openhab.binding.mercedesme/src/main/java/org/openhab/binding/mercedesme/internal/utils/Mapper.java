@@ -28,6 +28,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -61,6 +62,7 @@ public class Mapper {
                 case "rangeelectric":
                 case "rangeliquid":
                 case "distanceStart":
+                case "distanceReset":
                     if (isNil(value)) {
                         state = QuantityType.valueOf(-1, KILOMETRE_UNIT);
                     } else {
@@ -68,6 +70,23 @@ public class Mapper {
                             state = QuantityType.valueOf(value.getDoubleValue(), KILOMETRE_UNIT);
                         } else if (value.hasIntValue()) {
                             state = QuantityType.valueOf(value.getIntValue(), KILOMETRE_UNIT);
+                        } else {
+                            state = UnDefType.UNDEF;
+                            LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
+                        }
+                    }
+                    return new ChannelStateMap(ch[0], ch[1], state);
+
+                // special String Value
+                case "drivenTimeStart":
+                case "drivenTimeReset":
+                    if (isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        if (value.hasDoubleValue()) {
+                            state = StringType.valueOf(Utils.getDurationString(Math.round(value.getDoubleValue())));
+                        } else if (value.hasIntValue()) {
+                            state = StringType.valueOf(Utils.getDurationString(value.getIntValue()));
                         } else {
                             state = UnDefType.UNDEF;
                             LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
@@ -93,6 +112,7 @@ public class Mapper {
 
                 // KiloWatt/Hour values
                 case "electricconsumptionstart":
+                case "electricconsumptionreset":
                     if (isNil(value)) {
                         state = QuantityType.valueOf(-1, KILOWATT_HOUR_UNIT);
                     } else {
@@ -109,6 +129,7 @@ public class Mapper {
 
                 // Litre values
                 case "gasconsumptionstart":
+                case "gasconsumptionreset":
                     if (isNil(value)) {
                         state = QuantityType.valueOf(-1, Units.LITRE);
                     } else {
@@ -143,22 +164,6 @@ public class Mapper {
                         }
                     } else {
                         state = UnDefType.UNDEF;
-                    }
-                    return new ChannelStateMap(ch[0], ch[1], state);
-
-                // Time - Driven Time Trip
-                case "drivenTimeStart":
-                    if (isNil(value)) {
-                        state = UnDefType.UNDEF;
-                    } else {
-                        // [todo] end time calculation missing
-                        int hoursDriven = (int) value.getIntValue() / 60;
-                        int minutesDriven = (int) value.getIntValue() - (hoursDriven * 60);
-                        LOGGER.info("Driven Time {} h {} m", hoursDriven, minutesDriven);
-                        Instant time = Instant.ofEpochMilli(value.getTimestampInMs());
-                        LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC).withHour(hoursDriven)
-                                .withMinute(minutesDriven);
-                        state = DateTimeType.valueOf(ldt.toString());
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -223,6 +228,7 @@ public class Mapper {
                 case "chargeCouplerDCStatus":
                 case "chargeCouplerDCLockStatus":
                 case "averageSpeedStart":
+                case "averageSpeedReset":
                 case "tireMarkerFrontRight":
                 case "tireMarkerFrontLeft":
                 case "tireMarkerRearRight":
@@ -398,10 +404,15 @@ public class Mapper {
         CHANNELS.put("positionHeading", new String[] { "heading", GROUP_POSITION });
 
         CHANNELS.put("distanceStart", new String[] { "distance", GROUP_TRIP });
-        CHANNELS.put("drivenTimeStart", new String[] { "driven-time", GROUP_TRIP });
+        CHANNELS.put("drivenTimeStart", new String[] { "time", GROUP_TRIP });
         CHANNELS.put("averageSpeedStart", new String[] { "avg-speed", GROUP_TRIP });
-        CHANNELS.put("electricconsumptionstart", new String[] { "consumption-ev", GROUP_TRIP });
-        CHANNELS.put("gasconsumptionstart", new String[] { "consumption-conv", GROUP_TRIP });
+        CHANNELS.put("electricconsumptionstart", new String[] { "cons-ev", GROUP_TRIP });
+        CHANNELS.put("gasconsumptionstart", new String[] { "cons-conv", GROUP_TRIP });
+        CHANNELS.put("distanceReset", new String[] { "distance-reset", GROUP_TRIP });
+        CHANNELS.put("drivenTimeReset", new String[] { "time-reset", GROUP_TRIP });
+        CHANNELS.put("averageSpeedReset", new String[] { "avg-speed-reset", GROUP_TRIP });
+        CHANNELS.put("electricconsumptionreset", new String[] { "cons-ev-reset", GROUP_TRIP });
+        CHANNELS.put("gasconsumptionreset", new String[] { "cons-conv-reset", GROUP_TRIP });
 
         CHANNELS.put("tirepressureRearRight", new String[] { "pressure-rear-right", GROUP_TIRES });
         CHANNELS.put("tirepressureFrontRight", new String[] { "pressure-front-right", GROUP_TIRES });

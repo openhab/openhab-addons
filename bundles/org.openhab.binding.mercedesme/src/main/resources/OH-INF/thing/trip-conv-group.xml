@@ -7,9 +7,13 @@
 		<label>Last Trip Data</label>
 		<channels>
 			<channel id="distance" typeId="distance-channel"/>
-			<channel id="driven-time" typeId="driven-time-channel"/>
+			<channel id="time" typeId="driven-time-channel"/>
 			<channel id="avg-speed" typeId="avg-speed-channel"/>
-			<channel id="consumption-conv" typeId="consumption-conv-channel"/>
+			<channel id="cons-conv" typeId="consumption-conv-channel"/>
+			<channel id="distance-reset" typeId="distance-reset-channel"/>
+			<channel id="time-reset" typeId="driven-time-reset-channel"/>
+			<channel id="avg-speed-reset" typeId="avg-speed-reset-channel"/>
+			<channel id="cons-conv-reset" typeId="consumption-conv-resetchannel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
