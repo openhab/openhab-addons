@@ -15,6 +15,7 @@
 			<channel id="end-time" typeId="end-time-channel"/>
 			<channel id="program" typeId="program-channel"/>
 			<channel id="max-soc" typeId="max-soc-channel"/>
+			<channel id="auto-unlock" typeId="auto-unlock-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

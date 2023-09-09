@@ -43,9 +43,8 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="program-channel">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Charge Program</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="end-time-channel">
 		<item-type>DateTime</item-type>
@@ -54,7 +53,7 @@
 	</channel-type>
 	<channel-type id="max-soc-channel">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Maximum Charge SoC</label>
+		<label>Charge SoC Maximum</label>
 		<state>
 			<options>
 				<option value="100">100%</option>
@@ -65,5 +64,9 @@
 				<option value="50">50%</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="auto-unlock-channel">
+		<item-type>Switch</item-type>
+		<label>Charge Coupler Auto Unlock</label>
 	</channel-type>
 </thing:thing-descriptions>

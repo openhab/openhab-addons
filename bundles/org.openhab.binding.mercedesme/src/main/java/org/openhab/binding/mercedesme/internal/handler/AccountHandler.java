@@ -72,7 +72,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<String, Map<String, Object>>();
     private final Map<String, String> featureCapabilitiesJsonMap = new HashMap<String, String>();
     private final Map<String, String> commandCapabilitiesJsonMap = new HashMap<String, String>();
-    private final int OPEN_TIME_MS = 60 * 1000;
     private final String FEATURE_APPENDIX = "-features";
     private final String COMMAND_APPENDIX = "-commands";
 
@@ -125,7 +124,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     public void update() {
         if (authService.isPresent()) {
             if (!authService.get().getToken().equals(Constants.NOT_SET)) {
-                ws.run(OPEN_TIME_MS);
+                ws.run();
             } else {
                 logger.info("No Token available");
             }
@@ -242,17 +241,28 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     public void registerVin(String vin, VehicleHandler handler) {
         vehicleHandlerMap.put(vin, handler);
-        if (storage.containsKey(vin + FEATURE_APPENDIX)) {
-            handler.setFeatureCapabilities(storage.get(vin + FEATURE_APPENDIX));
-        }
-        if (storage.containsKey(vin + COMMAND_APPENDIX)) {
-            handler.setCommandCapabilities(storage.get(vin + COMMAND_APPENDIX));
-        }
         scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
     }
 
     public void unregisterVin(String vin) {
         vehicleHandlerMap.remove(vin);
+    }
+
+    public void getVehicleCapabilities(String vin) {
+        logger.info("Register VIN Features? {} Commands? {}", storage.containsKey(vin + FEATURE_APPENDIX),
+                storage.containsKey(vin + COMMAND_APPENDIX));
+        if (storage.containsKey(vin + FEATURE_APPENDIX)) {
+            logger.info("Register VIN Features? {} Commands? {}", storage.containsKey(vin + FEATURE_APPENDIX),
+                    storage.containsKey(vin + COMMAND_APPENDIX));
+            vehicleHandlerMap.get(vin).setFeatureCapabilities(storage.get(vin + FEATURE_APPENDIX));
+        } else {
+            logger.trace("WHAT?!?");
+        }
+        if (storage.containsKey(vin + COMMAND_APPENDIX)) {
+            vehicleHandlerMap.get(vin).setCommandCapabilities(storage.get(vin + COMMAND_APPENDIX));
+        } else {
+            logger.trace("WHAT?!?");
+        }
     }
 
     public void distributeVepUpdates(Map<String, VEPUpdate> map) {

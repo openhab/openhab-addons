@@ -57,14 +57,20 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final LocaleProvider localeProvider;
     private final StorageService storageService;
     private final MercedesMeDiscoveryService discoveryService;
+    private final MercedesMeCommandOptionProvider mmcop;
+    private final MercedesMeStateOptionProvider mmsop;
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
     @Activate
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
-            final @Reference LocaleProvider lp) {
+            final @Reference LocaleProvider lp, final @Reference MercedesMeCommandOptionProvider cop,
+            final @Reference MercedesMeStateOptionProvider sop) {
         this.storageService = storageService;
 
         localeProvider = lp;
+        mmcop = cop;
+        mmsop = sop;
+
         httpClient = hcf.createHttpClient(Constants.BINDING_ID);
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
         // httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
@@ -90,8 +96,11 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
                         null);
             }
             return new AccountHandler((Bridge) thing, discoveryService, httpClient, localeProvider, storageService);
+        } else if (THING_TYPE_BEV.equals(thingTypeUID) || THING_TYPE_COMB.equals(thingTypeUID)
+                || THING_TYPE_HYBRID.equals(thingTypeUID)) {
+            return new VehicleHandler(thing, mmcop, mmsop);
         }
-        return new VehicleHandler(thing);
+        return null;
     }
 
     @Override

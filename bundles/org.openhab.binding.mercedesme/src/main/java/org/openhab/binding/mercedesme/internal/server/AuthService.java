@@ -209,7 +209,7 @@ public class AuthService {
     }
 
     public String getToken() {
-        logger.info(prefix() + "Investigate token {}", token);
+        // logger.info(prefix() + "Investigate token {}", token);
         if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
             logger.info(prefix() + "Token {} expired", token);
             if (!token.getRefreshToken().equals(Constants.NOT_SET)) {

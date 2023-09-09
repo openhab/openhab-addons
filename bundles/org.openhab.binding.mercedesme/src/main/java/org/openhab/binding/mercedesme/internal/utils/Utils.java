@@ -25,14 +25,25 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ChargeProgramConfigure.ChargeProgram;
+import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.TemperatureConfigure.TemperaturePoint.Zone;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.protobuf.Descriptors.FieldDescriptor;
 
 /**
  * The {@link Utils} class defines an HTTP Server for authentication callbacks
@@ -46,6 +57,8 @@ public class Utils {
     private static int port = 8090;
 
     public static final Gson GSON = new Gson();
+    public static final Map<String, Integer> ZONE_HASHMAP = new HashMap<String, Integer>();
+    public static final Map<String, Integer> PROGRAM_HASHMAP = new HashMap<String, Integer>();
 
     /**
      * Get free port without other Thread interference
@@ -229,5 +242,74 @@ public class Utils {
             LOGGER.warn("Error converting token to string {}", e.getMessage());
         }
         return Constants.NOT_SET;
+    }
+
+    public static String proto2Json(VEPUpdate update) {
+        JSONObject jo = new JSONObject();
+        Map<String, VehicleAttributeStatus> m = update.getAttributesMap();
+        m.forEach((key, value) -> {
+            Map<FieldDescriptor, Object> attMap = value.getAllFields();
+            JSONObject joa = new JSONObject();
+            attMap.forEach((aKey, aValue) -> {
+                String[] bKey = aKey.toString().split("\\.");
+                if (bKey.length > 1) {
+                    joa.put(bKey[bKey.length - 1], aValue);
+                } else {
+                    joa.put(bKey[0], aValue);
+                }
+            });
+            jo.put(key, joa);
+        });
+        return jo.toString();
+    }
+
+    public static int getZoneNumber(String zone) {
+        if (ZONE_HASHMAP.isEmpty()) {
+            Zone[] zones = Zone.values();
+            for (int i = 0; i < zones.length - 1; i++) {
+                ZONE_HASHMAP.put(zones[i].name(), zones[i].getNumber());
+            }
+        }
+        if (ZONE_HASHMAP.containsKey(zone)) {
+            return ZONE_HASHMAP.get(zone);
+        }
+        return -1;
+    }
+
+    public static int getChargeProgramNumber(String program) {
+        if (PROGRAM_HASHMAP.isEmpty()) {
+            ChargeProgram[] programs = ChargeProgram.values();
+            for (int i = 0; i < programs.length - 1; i++) {
+                PROGRAM_HASHMAP.put(programs[i].name(), programs[i].getNumber());
+            }
+        }
+        if (PROGRAM_HASHMAP.containsKey(program)) {
+            return PROGRAM_HASHMAP.get(program);
+        }
+        return -1;
+    }
+
+    public static String getDurationString(long durationMinutes) {
+        long minutesPerDay = 24 * 60;
+        long days = durationMinutes / minutesPerDay;
+        long remain = durationMinutes - (days * minutesPerDay);
+        long hours = remain / 60;
+        remain = remain - (hours * 60);
+        if (days == 0 && hours == 0) {
+            return remain + "m";
+        } else if (days > 0) {
+            return days + "d " + hours + "h " + remain + "m";
+        } else {
+            return hours + "h " + remain + "m";
+        }
+    }
+
+    public static boolean boolFromState(@Nullable State s) {
+        if (s != null) {
+            if (OnOffType.ON.equals(s)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

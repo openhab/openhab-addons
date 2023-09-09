@@ -135,4 +135,7 @@ public class Constants {
     public static final String REGION_CHINA = "CN";
 
     public static final String SCOPE = "openid email phone profile offline_access ciam-uid";
+
+    public static final String MAX_SOC_KEY = "maxsoc";
+    public static final String AUTOUNLOCK_KEY = "autolock";
 }

@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -47,26 +50,39 @@ import org.slf4j.LoggerFactory;
 @WebSocket
 public class MBWebsocket {
     private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
-    private final int CONNECT_TIMEOUT_MS = 2 * 60 * 1000;
+
+    // timeout 14 Minutes - just below scheduling of 15 Minutes by Accounthandler
+    private final int CONNECT_TIMEOUT_MS = 14 * 60 * 1000;
+    // standard runtime of Websocket
+    private final int WS_RUNTIME_MS = 60 * 1000;
+    // addon time of 10 seconds for a new send command
+    private final int ADDON_MESSAGE_TIME_MS = 10 * 1000;
+    // check Socket time elapsed each second
+    private final int CHECK_INTERVAL_MS = 1000;
+
     private AccountHandler accountHandler;
     private boolean running = false;
+    private Instant runTill = Instant.now();
     private @Nullable Future<?> sessionFuture;
     private @Nullable Session session;
-    private @Nullable ClientMessage message;
+    private List<ClientMessage> commandQueue = new ArrayList<ClientMessage>();
 
     public MBWebsocket(AccountHandler ah) {
         accountHandler = ah;
     }
 
     /**
-     * Lifecycle handling
+     * Is called by
+     * - scheduler every 15 minutes
+     * - handler sending a command
+     * - handler requesting refresh
      */
-    public void run(int runtimeMS) {
+    public void run() {
         synchronized (this) {
             if (running) {
-                sendMessage();
                 return;
             } else {
+                runTill = Instant.now().plusMillis(WS_RUNTIME_MS);
                 running = true;
             }
         }
@@ -77,7 +93,14 @@ public class MBWebsocket {
             logger.info("Websocket start");
             client.start();
             sessionFuture = client.connect(this, new URI(accountHandler.getWSUri()), request);
-            Thread.sleep(runtimeMS);
+            while (Instant.now().isBefore(runTill)) {
+                // sends one message per second
+                if (sendMessage()) {
+                    // add additional runtime to execute and finish command
+                    runTill = runTill.plusMillis(ADDON_MESSAGE_TIME_MS);
+                }
+                Thread.sleep(CHECK_INTERVAL_MS);
+            }
             logger.info("Websocket stop");
             client.stop();
             client.destroy();
@@ -94,24 +117,26 @@ public class MBWebsocket {
     }
 
     public void setCommand(@NonNull ClientMessage cm) {
-        message = cm;
+        commandQueue.add(cm);
     }
 
-    private void sendMessage() {
-        if (message != null && this.session != null) {
+    private boolean sendMessage() {
+        if (commandQueue.size() > 0 && this.session != null) {
+            ClientMessage message = commandQueue.remove(0);
             logger.info("Send Message {}", message.getAllFields());
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);
                 session.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                return true;
             } catch (IOException e) {
                 logger.warn("Error sending message {} : {}", message.getAllFields(), e.getMessage());
             }
             logger.info("Send Message {} done", message.getAllFields());
-            message = null;
         } else {
-            logger.info("Message {} or Session {} is null", message, session);
+            // logger.info("Message {} or Session is null", commandQueue.size());
         }
+        return false;
     }
 
     /**
@@ -141,10 +166,14 @@ public class MBWebsocket {
                     accountHandler.discovery(vin);
                 }
             }
-        } catch (
-
-        IOException e) {
-            logger.warn("Error parsing message {}", e.getMessage());
+        } catch (IOException e) {
+            logger.warn("IOEXception {}", e.getMessage());
+        } catch (Error err) {
+            logger.warn("Error caught {}", err.getMessage());
+            StackTraceElement[] stack = err.getStackTrace();
+            for (int i = 0; i < stack.length; i++) {
+                logger.warn("{}", stack[i]);
+            }
         }
     }
 
@@ -164,5 +193,9 @@ public class MBWebsocket {
     @OnWebSocketError
     public void onError(Throwable t) {
         logger.warn("Error {}", t.getMessage());
+        StackTraceElement[] stack = t.getStackTrace();
+        for (int i = 0; i < stack.length; i++) {
+            logger.warn("{}", stack[i]);
+        }
     }
 }
