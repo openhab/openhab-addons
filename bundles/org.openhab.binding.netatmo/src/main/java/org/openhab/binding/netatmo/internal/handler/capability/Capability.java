@@ -98,7 +98,7 @@ public class Capability {
         properties = new HashMap<>(thing.getProperties());
         firstLaunch = properties.isEmpty();
         if (firstLaunch) {
-            properties.put(PROPERTY_THING_TYPE_VERSION, Integer.toString(moduleType.thingTypeVersion));
+            properties.put(PROPERTY_THING_TYPE_VERSION, moduleType.thingTypeVersion);
             if (!moduleType.isLogical()) {
                 String name = moduleType.apiName.isBlank() ? moduleType.name() : moduleType.apiName;
                 properties.put(PROPERTY_MODEL_ID, name);
