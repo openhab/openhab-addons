@@ -255,6 +255,13 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
                     break;
                 }
+                case CHANNEL_OVERRIDE: {
+                    if (command instanceof OnOffType onOffCommand && OnOffType.OFF.equals(onOffCommand)) {
+                        api.setOverride(Objects.requireNonNull(token), 0, ((long) 0), 0);
+                    }
+
+                    break;
+                }
             }
         } catch (JuiceNetApiException | InterruptedException e) {
             handleApiException(e);

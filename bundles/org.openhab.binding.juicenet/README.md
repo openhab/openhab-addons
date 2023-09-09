@@ -33,7 +33,7 @@ A JuiceBox EV Charger requires a unitID which can also be found in the device se
 | chargingState     | String                    | N         | Current charging state (Start Charging, Smart Charging, Stop Charging). |
 | state             | String                    | Y         | This is the current device state (Available, Plugged-In, Charging, Error, Disconnected).  |
 | message           | String                    | Y         | This is a message detailing the state of the EV charger. |
-| override          | Switch                    | Y         | Smart charging is overridden. |
+| override          | Switch                    | N         | Smart charging is overridden. Set to "OFF" to remove override. |
 | chargingTimeLeft  | Number:Time               | Y         | Charging time left (seconds). |
 | plugUnplugTime    | DateTime                  | Y         | Last time of either plug-in or plug-out. |
 | targetTime        | DateTime                  | N         | “Start charging” start time, or time to start when overriding smart charging. |
