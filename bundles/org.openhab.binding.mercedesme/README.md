@@ -1,5 +1,15 @@
 # MercedesMe Binding
 
+**
+ALPHA VERSION!
+Please connect the advanced channels form Vehicle to analyze problems!
+
+- feature-capabilities
+- command-capabilities
+- proto-update
+
+**
+
 This binding provides similar access to your Mercedes Benz vehicle like the Smartphone App _Mercedes Me_.
 For this you need a Mercedes developer account to get data from your vehicles.
 Setup requires some, time so follow [the steps of bridge configuration](#bridge-configuration).
@@ -19,47 +29,25 @@ If you face some problems during setup or runtime please have a look into the [T
 
 Bridge needs configuration in order to connect properly to your Mercedes Me Account.
 
-### Pre-Conditions
-
-- **each bridge shall have its own Mercedes Benz Client ID!**
- Don't create several `account` bridges with the same client id! If this is not the case the tokens won't be stored properly and the authorization is jeopardized!
-- **each bridge shall have its own port.**
- It's absolutely necessary to assign a different port for each `account` bridge. If this is not the case the tokens won't be stored properly and the authorization is jeopardized!
 
 ### Bridge Setup
 
-Perform the following steps to obtain the configuration data and perform the authorization flow.
+Authorization is needed to activate the Bridge which is connected to your MercedesMe Account.
+The Bridge will indicate in the Status headline if Authorization is needed including the URL which needs to be opened in your browser.
+Three steps are needed
 
-1. Go to [Mercedes Developer Page](https://developer.mercedes-benz.com/). Login with your Mercedes Me credentials.
-1. Create a project in the [console tab](https://developer.mercedes-benz.com/console)
-    - _Project Name:_  unique name e.g. **openHAB Mercedes Me binding** plus **Your bridge ID**
-    - _Purpose URL:_  use link towards [this binding description](https://www.openhab.org/addons/bindings/mercedesme/)
-    - _Business Purpose:_  e.g. **Private usage in openHAB Smarthome system**
-1. After project is created subscribe [to these Mercedes Benz APIs](https://developer.mercedes-benz.com/products?vt=cars&vt=vans&vt=smart&p=BYOCAR) with _Add Products_ button
-1. For all Products perform the same steps
-    - Select product
-    - Choose _Get For Free_
-    - Choose _BYOCAR_ (Build Your Own Car)
-    - Button _Confirm_
-1. Select the following products
-    - Vehicle Status
-    - Vehicle Lock Status
-    - Pay as you drive insurance
-    - Electric Vehicle Status
-    - Fuel Status
-1. Optional: Subscribe also to _Vehicle images_. Select the _Basic Trial_ version. The images will be stored so the API is used just a few times.
-1. Press _Subscribe_ button. Your project should have [these product subscriptions](#mb-product-subscriptions)
-1. Generate the [project credentials](#mb-credentials)
-1. Open in new browser tab your openHAB page. Add a new Thing _Mercedes Me Account_
-1. Copy paste _Client ID_ , _Client Secret_ and _API Key_ from the Mercedes tab into the openHAB configuration
-1. Check if the registered Mercedes products _excluding Vehicle Images_ are matching exactly with the openHab configuration switches
-1. Create Thing!
-1. The fresh created [account has one property](#openhab-configuration) `callbackUrl`. Copy it and paste it in a new browser tab
-1. A [simple HTML page is shown including a link towards the Authorization flow](#callback-page) - **don't click yet**. If page isn't shown please adapt IP and port in openHAB configuration with Advanced Options activated
-1. The copied URL needs to be added in your [Mercedes project credentials](#mb-credentials) from 8
-1. Now click onto the link from 14. You'll be asked one time if you [grant access](#mb-access-request) towards the API. Click OK and authorization is done!
+1. Open the mentioned URL like 192.168.x.x:8090/mb-auth 
+Opening this URL will request a PIN to your configured EMail
+Check your Mail Account if you received the PIN.
+Click on Continue with Step 2 
 
-Some supporting screenshots for the setup
+2. Enter your PIN in the shown field
+Leave GUID as identifier as it is
+Click on Submit button
+
+3. Consfirmation shall be shown that Authorization was successful.
+
+In case of non successful Athorization check your log for errors. 
 
 ### MB Credentials
 
@@ -85,19 +73,28 @@ Some supporting screenshots for the setup
 
 | Name            | Type    | Description                           | Default     | Required | Advanced |
 |-----------------|---------|---------------------------------------|-------------|----------|----------|
-| clientId        | text    | Mercedes Benz Developer Client ID     | N/A         | yes      | no       |
-| clientSecret    | text    | Mercedes Benz Developer Client Secret | N/A         | yes      | no       |
-| imageApiKey     | text    | Mercedes Benz Developer Image API Key | N/A         | no       | no       |
-| odoScope        | boolean | PayAsYourDrive Insurance              | true        | yes      | no       |
-| vehicleScope    | boolean | Vehicle Status                        | true        | yes      | no       |
-| lockScope       | boolean | Lock status of doors and trunk        | true        | yes      | no       |
-| fuelScope       | boolean | Fuel Status                           | true        | yes      | no       |
-| evScope         | boolean | Electric Vehicle Status               | true        | yes      | no       |
-| callbackIP      | text    | IP address of your openHAB server     | auto detect | no       | yes      |
-| callbackPort    | integer | **Unique** port number                | auto detect | no       | yes      |
+| email           | text    | Mercedes Benz Developer Client ID     | N/A         | yes      | no       |
+| region          | text    | Mercedes Benz Developer Client Secret | EU          | yes      | no       |
+| pin             | text    | Mercedes Benz Developer Image API Key | N/A         | no       | no       |
 
-The `callbackPort` needs to be unique for all created Mercedes Me account things. Otherwise token exchange will be corrupted.
-Set the advanced options by yourself if you know your IP and Port, otherwise give auto detect a try.
+Set `region` to your location
+
+- `EU` Europe and Rest of World
+- `NA` North America
+- `AP` Aisa Pacific
+- `CN` China 
+
+Set `pin` to your selected PIN of your Apple or Android installed MercedesMe App.
+Parameter is *not required*.
+Note `pin` is needed for some commands which are critical for Car and especially **personal saftey**.
+E.g. closing windows needs to ensure no obstacles are in the way!
+Commands protected by PIN
+
+- Remote Starting Vehicle
+- Unlock Doors
+- Open / Ventilate Windows
+- Open / Lift Sunroof
+
 
 ## Thing Configuration
 
@@ -115,12 +112,6 @@ See also [image channel section](#image) for further advise.
 | Name            | Type    | Description                                         | Default | Required | Advanced |
 |-----------------|---------|-----------------------------------------------------|---------|----------|----------|
 | vin             | text    | Vehicle identification number                       | N/A     | yes      | no       |
-| refreshInterval | integer | Refresh interval in minutes                         | 5       | yes      | no       |
-| background      | boolean | Vehicle images provided with or without background  | false   | no       | yes      |
-| night           | boolean | Vehicle images in night conditions                  | false   | no       | yes      |
-| cropped         | boolean | Vehicle images in 4:3 instead of 16:9               | false   | no       | yes      |
-| roofOpen        | boolean | Vehicle images with open roof (only Cabriolet)      | false   | no       | yes      |
-| format          | text    | Vehicle images format (webp or png)                 | webp    | no       | yes      |
 
 For all vehicles you're free to give the tank / battery capacity.
 Giving these values in configuration the open fuel / charge capacities are reported in the [range](#range) channels.
@@ -136,21 +127,227 @@ Channels are separated in groups:
 
 | Channel Group ID                 | Description                                       |
 |----------------------------------|---------------------------------------------------|
-| [range](#range)                  | Provides mileage, range and charge / fuel levels  |
+| [vehicle](#vehicle)              | Vehicle Information                               |
 | [doors](#doors)                  | Details of all doors                              |
-| [windows](#windows)              | Current position of windows                       |
-| [lights](#lights)                | Interior lights and main light switch             |
-| [lock](#lock)                    | Overall lock state of vehicle                     |
-| [location](#location)            | Heading of the vehicle                            |
-| [image](#image)                  | Images of your vehicle                            |
+| [lock](#lock)                    | Doors lock status                                 |
+| [windows](#windows)              | Window Details                                    |
+| [hvac](#hvac)                    | Climatization                                     |
+| [service](#service)              | Service & Warnings                                |
+| [range](#range)                  | Ranges and Odometer                               |
+| [charge](#charge)                | Charging data and programs                        |
+| [trip](#trip)                    | Trip data                                         |
+| [position](#position)            | Positioning Data                                  |
+| [tires](#tires)                  | Tire Informatios                                  |
+
+### Vehicle
+
+Group name: `vehicle`
+
+| Channel               | Type                 |  Description                 | Read | Write | Advanced |
+|-----------------------|----------------------|------------------------------|------|-------|----------|
+| lock-status           | Number              |  Lock Status                  | X    |       |          |
+| window-status         | Number              |  Window Status                | X    |       |          |
+| door-status           | Number              |  Door Status                  | X    |       |          |
+| ignition              | Number              |  Ignition                     | X    |       |          |
+| feature-capabilities  | String              |  Feature Capabilities         | X    |       |    X     |
+| command-capabilities  | String              |  Command Capabilities         | X    |       |    X     |
+| proto-update          | String              |  Last Vehicle Data Update     | X    |       |    X     |
+
+#### Lock Status Mapping
+
+- 0 : Locked
+- 1 : Unlocked
+
+#### Window Status Mapping
+
+- 0 : Intermediate
+- 1 : Closed
+- 2 : Open
+
+#### Door Status Mapping
+
+- 1 : Closed
+
+#### Ignition Mapping
+
+- 0 : Off
+- 2 : Ready
+- 4 : On
+
+### Doors
+
+Group name: `doors`
+
+State representing if Door or other roofs, hoods or flaps are open.
+States and Controls are depending on your vehicle capabilites.
+
+| Channel             | Type                 |  Description                 | Read | Write |
+|---------------------|----------------------|------------------------------|------|-------|
+| front-left          | Contact              |  Front Left Door             | X    |       |
+| front-right         | Contact              |  Fornt Right Door            | X    |       |
+| rear-left           | Contact              |  Rear Left Door              | X    |       |
+| rear-right          | Contact              |  Rear Right Door             | X    |       |
+| deck-lid            | Contact              |  Deck lid                    | X    |       |
+| engine-hood         | Contact              |  Engine Hood                 | X    |       |
+| sunroof             | Number               |  Sun roof (only Cabriolet)   | X    |       |
+| rooftop             | Number               |  Roof top                    | X    |       |
+| sunroof-front-blind | Number               |  Sunroof Front Blind         | X    |       |
+| sunroof-rear-blind  | Number               |  Sunroof Rear Blind          | X    |       |
+| sunroof-control     | Number               |  Sunroof Control             |      | X     |
+
+#### Sunroof Mapping
+
+- 0 : Closed
+- 1 : Open
+- 2 : Open Lifting
+- 3 : Running
+- 4 : Closing
+- 5 : Opening
+- 6 : Closing
+
+#### Rooftop Mapping
+            
+- 0 : Unlocked
+- 1 : Open and locked
+- 2 : Closed and locked
+
+#### Sunroof Front Blind Mapping
+
+- not available yet!
+
+#### Sunroof Rear Blind Mapping
+
+- not available yet!
+
+#### Sunroof Control Mapping
+
+- 0 : Close
+- 1 : Open
+- 2 : Lift
+
+### Lock
+
+Group name: `lock`
+State representing if Door or other roofs, hoods or flaps are locked.
+States and Controls are depending on your vehicle capabilites and Type.
+
+| Channel             | Type                 |  Description                    | Read | Write |
+|---------------------|----------------------|---------------------------------|------|-------|
+| front-left          | Switch              |  Front Left Door Lock            | X    |       |
+| front-right         | Switch              |  Front Right Door Lock           | X    |       |
+| rear-left           | Switch              |  Rear Left Door Lock             | X    |       |
+| rear-right          | Switch              |  Rear Right Door Lock            | X    |       |
+| deck-lid            | Switch              |  Deck lid                        | X    |       |
+| gas-flap            | Switch              |  Gas Flap (combustion & hybrid)  | X    |       |
+| lock-control        | Switch              |  Lock / Unlock Verhicle          |      | X     |
+
+
+### Windows
+
+Group name: `windows`
+State representing current Window position.
+States and Controls are depending on your vehicle capabilites.
+
+| Channel             | Type                 |  Description                 | Read | Write |
+|---------------------|----------------------|------------------------------|------|-------|
+| front-left          | Number               |  Front Left Window           | X    |       |
+| front-right         | Number               |  Fornt Right Window          | X    |       |
+| rear-left           | Number               |  Rear Left Window            | X    |       |
+| rear-right          | Number               |  Rear Right Window           | X    |       |
+| rear-right-blind    | Number               |  Rear Right Blind            | X    |       |
+| rear-left-blind     | Number               |  Rear Left Blind             | X    |       |
+| rear-blind          | Number               |  Rear  Blind                 | X    |       |
+| window-control      | Number               |  Window Control              |      | X     |
+
+#### Window Channel Mapping
+
+- 0 : Intermediate
+- 1 : Open
+- 2 : Closed
+- 3 : Airing
+- 4 : Intermediate
+- 5 : Running
+
+#### Rear Right Blind Channel Mapping
+
+- not available yet!
+ 
+#### Rear Left Blind Channel Mapping
+
+- not available yet!
+ 
+#### Rear Blind Channel Mapping
+
+- not available yet!
+
+#### Flip Window Channel Mapping
+
+- not available yet!
+
+#### Window Control Channel Mapping
+- 0 : Close
+- 1 : Open
+- 2 : Ventilate
+
+
+### HVAC
+
+Group name: `havc`
+Configuration of vehicle climatization.
+States and Controls are depending on your vehicle capabilites.
+
+| Channel             | Type                 |  Description                    | Read | Write |
+|---------------------|----------------------|---------------------------------|------|-------|
+| front-left          | Switch              |  Front Left Seat Climatization   | X    | X     |
+| front-right         | Switch              |  Front Left Seat Climatization   | X    | X     |
+| rear-left           | Switch              |  Front Left Seat Climatization   | X    | X     |
+| rear-right          | Switch              |  Front Left Seat Climatization   | X    | X     |
+| zone                | Number              |  Selected Climatization Zone     | X    | X     |
+| temperature         | Number:Temperature  |  Desired Temperature             | X    | X     |
+| activate            | Switch              |  Gas Flap (combustion & hybrid)  | X    | X     |
+| aux-heat            | Switch              |  Sunroof Control (Cabriolet)     | X    | X     |
+
+#### Zone Mapping
+
+Automatically calculated based on your vehicle capabilities
+
+#### Temperautre Setting
+
+Preconfigure selected zone with desired temperature
+
+- Minimum : 16
+- Maximum : 28
+
+### Service
+
+Group name: `service`
+All channles read-only.
+Service and Warning Information for vehicle
+States and Controls are depending on your vehicle capabilites.
+
+| Channel             | Type                 |  Description                    | bev | hybrid | combustion |
+|---------------------|----------------------|---------------------------------|-----|--------|------------|
+| starter-battery     | Number               |  Starter Battery Status         | X   | X      | X          |
+| brake-fluid         | Switch               |  Brake Fluid Warning            | X   | X      | X          |
+| brake-lining-wear   | Switch               |  Brake Lining Gear Warning      | X   | X      | X          |
+| wash-water          | Switch               |  Wash Water Low Warning         | X   | X      | X          |
+| coolant-fluid       | Switch               |  Coolant Fluid Low Warning      |     | X      | X          |
+| engine              | Switch               |  Engine Warning                 |     | X      | X          |
+| tires-rdk           | Number               |  Tire Pressure Warnings         | X   | X      | X          |
+| service-days        | Number               |  Next Service in *x* days       | X   | X      | X          |
+
+
+#### Starter Battery Mapping
+
+-0 : Charged
 
 ### Range
 
 Group name: `range`
-All channels `read-only`
+All channles read-only.
 
 | Channel          | Type                 |  Description                 | bev | hybrid | combustion |
-|------------------|----------------------|------------------------------| ----|--------|------------|
+|------------------|----------------------|------------------------------|-----|--------|------------|
 | mileage          | Number:Length        |  Total mileage               | X   | X      | X          |
 | soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
 | charged          | Number:Energy        |  Charged Battery Energy      | X   | X      |            |
@@ -165,126 +362,115 @@ All channels `read-only`
 | radius-fuel      | Number:Length        |  Fuel radius for map         |     | X      | X          |
 | range-hybrid     | Number:Length        |  Hybrid range                |     | X      |            |
 | radius-hybrid    | Number:Length        |  Hybrid radius for map       |     | X      |            |
-| last-update      | DateTime             |  Last range update           | X   | X      | X          |
 
 Channels with `radius` are just giving a _guess_ which radius can be reached in a map display.
 
-### Doors
 
-Group name: `doors`
+### Charge
+
+Group name: `charge`
+Only relevant for battery electric and hybrid vehicles.
+Current charge values and charge program configuration.
+States and Controls are depending on your vehicle capabilites.
+
+| Channel             | Type                 |  Description                    | Read | Write |
+|---------------------|----------------------|---------------------------------|------|-------|
+| charge-flap         | Number               |  Charge Flap Stazus             | X    |       |
+| oupler-ac-channel   | Number               |  Coupler AC Status              | X    |       |
+| oupler-dc-channel   | Number               |  Coupler DC Status              | X    |       |
+| coupler-lock        | Number               |  Coupler Lock Status            | X    |       |
+| active              | Switch               |  Charging Active                | X    |       |
+| power               | Number:Power         |  Current Charging Power         | X    |       |
+| end-time            | DateTime             |  Estimated Charging End         | X    |       |
+| program             | Number               |  Selected Charge Program        | X    | X     |
+| max-soc             | Number:Dimensioless  |  Charge Target SoC              | X    | X     |
+| auto-unlock         | Switch               |  Sunroof Control (Cabriolet)    | X    | X     |
+
+#### Charge Flap Mapping
+
+- 0 : Open
+- 1 : Closed
+
+#### Coupler AC Mapping
+
+- not available yet!
+
+#### Coupler DC Mapping
+
+- not available yet!
+
+#### Coupler Lock Mapping
+
+- 0 : Locked
+- 1 : Unlocked
+
+#### Program Mapping
+
+Calculated automatically based on your vehicle capabilities
+
+#### Max SoC Setting
+
+SoC target for selected rogram can be configured if your vehicle capabilities are supporting it.
+Configuration Limit needs to respect 10% steps with a minimum of 50% and maximum of 100%.
+
+#### Auto Unlock Setting
+
+Charge Program can be configured to release Coupler Lock after target SoC is reached
+
+
+### Trip
+
+Group name: `trip`
 All channels `read-only`
 
-| Channel          | Type                 |  Description                 |
-|------------------|----------------------|------------------------------|
-| driver-front     | Contact              |  Driver door                 |
-| driver-rear      | Contact              |  Driver door reat            |
-| passenger-front  | Contact              |  Passenger door              |
-| passenger-rear   | Contact              |  Passenger door rear         |
-| deck-lid         | Contact              |  Deck lid                    |
-| sunroof          | Number               |  Sun roof (only Cabriolet)   |
-| rooftop          | Number               |  Roof top                    |
-| last-update      | DateTime             |  Last doors update           |
+| Channel          | Type                 |  Description                                                         |
+|------------------|----------------------|----------------------------------------------------------------------|
+| distance         | Number Length        |  Last Trip Distance                                                  |
+| time             | String               |  Last Trip Duration in days, hours and minutes                       |
+| avg-speed        | Number               |  Last Trip Average Speed in km/h                                     |
+| cons-ev          | Number:Energy        |  Last Trip Average Electric Energy Consumption per 100 Kilometre     |
+| cons-conv        | Number:Volume        |  Last Trip Average Gas Consumption per 100 Kilometre                 |
+| distance-reset   | Number Length        |  Since Reset Trip Distance                                           |
+| time-reset       | String               |  Since Reset Duration in days, hours and minutes                     |
+| avg-speed-reset  | Number               |  Since Reset Average Speed in km/h                                   |
+| cons-ev-reset    | Number:Energy        |  Since Reset Average Electric Energy Consumption per 100 Kilometre   |
+| cons-conv-reset  | Number:Volume        |  Since Reset Average Gas Consumption per 100 Kilometre               |
 
-Mapping table `sunroof`
+    <channel-type id="distance-reset-channel">
+        <item-type>Number:Length</item-type>
+        <label>Distance Reset</label>
+        <state pattern="%.1f %unit%" readOnly="true"/>
+    </channel-type>
+    <channel-type id="driven-time-reset-channel">
+        <item-type>String</item-type>
+        <label>Driving Time Reset</label>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="avg-speed-reset-channel">
+        <item-type>Number</item-type>
+        <label>Average Speed Reset</label>
+        <state pattern="%.1f km/h" readOnly="true"/>
+    </channel-type>
+    <channel-type id="consumption-ev-reset-channel">
+        <item-type>Number:Energy</item-type>
+        <label>Average Consumption Reset</label>
+        <state pattern="%.1f %unit%" readOnly="true"/>
+    </channel-type>
+    <channel-type id="consumption-conv-reset-channel">
+        <item-type>Number:Volume</item-type>
+        <label>Average Consumption Reset</label>
+        <state pattern="%.1f %unit%" readOnly="true"/>
+    </channel-type>
+### Position
 
-| Number          | Mapping             |
-|-----------------|---------------------|
-| 0               | Closed              |
-| 1               | Open                |
-| 2               | Open Lifting        |
-| 3               | Running             |
-| 4               | Closing             |
-| 5               | Opening             |
-| 6               | Closing             |
-
-Mapping table `rootop`
-
-| Number          | Mapping             |
-|-----------------|---------------------|
-| 0               | Unlocked            |
-| 1               | Open and locked     |
-| 2               | Closed and locked   |
-
-### Windows
-
-Group name: `windows`
-All channels `readonly`
-
-| Channel          | Type                 |  Description                 |
-|------------------|----------------------|------------------------------|
-| driver-front     | Number               |  Driver window               |
-| driver-rear      | Number               |  Driver window rear          |
-| passenger-front  | Number               |  Passenger window            |
-| passenger-rear   | Number               |  Passenger window rear       |
-| last-update      | DateTime             |  Last windows update         |
-
-Mapping table for all windows
-
-| Number          | Mapping             |
-|-----------------|---------------------|
-| 0               | Intermediate        |
-| 1               | Open                |
-| 2               | Closed              |
-| 3               | Airing              |
-| 4               | Intermediate        |
-| 5               | Running             |
-
-### Lights
-
-Group name: `lights`
-All channels `read-only`
-
-| Channel          | Type                 |  Description                 |
-|------------------|----------------------|------------------------------|
-| interior-front   | Switch               |  Interior light front        |
-| interior-rear    | Switch               |  Interior light rear         |
-| reading-left     | Switch               |  Reading light left          |
-| reading-right    | Switch               |  Reading light right         |
-| light-switch     | Number               |  Main light switch           |
-| last-update      | DateTime             |  Last lights update          |
-
-Mapping table `light-switch`
-
-| Number          | Mapping             |
-|-----------------|---------------------|
-| 0               | Auto                |
-| 1               | Headlight           |
-| 2               | Sidelight Left      |
-| 3               | Sidelight Right     |
-| 4               | Parking Light       |
-
-### Lock
-
-Group name: `lock`
-All channels `read-only`
-
-| Channel          | Type                 |  Description                 |
-|------------------|----------------------|------------------------------|
-| doors            | Number               |  Lock status all doors       |
-| deck-lid         | Switch               |  Deck lid lock               |
-| flap             | Switch               |  Flap lock                   |
-| last-update      | DateTime             |  Last lock update            |
-
-Mapping table `doors`
-
-| Number          | Mapping             |
-|-----------------|---------------------|
-| 0               | Unlocked            |
-| 1               | Locked Internal     |
-| 2               | Locked External     |
-| 3               | Unlocked Selective  |
-
-### Location
-
-Group name: `location`
-All channels `readonly`
+Group name: `position`
 
 | Channel          | Type                 |  Description                 |
 |------------------|----------------------|------------------------------|
 | heading          | Number:Angle         |  Vehicle heading             |
 | last-update      | DateTime             |  Last location update        |
 
-### Image
+### Tires
 
 Provides exterior and interior images for your specific vehicle.
 Group name: `image`
@@ -305,12 +491,6 @@ If you're not satisfied e.g. you want a background you need to
 1. change the [Advanced Image Configuration Properties](#thing-configuration)
 1. Switch `clear-cache` channel item to `ON` to clear all images
 1. request them via `image-view`
-
-### Image View Options
-
-You can access the options either in a rule via `YOUR_IMAGE_VIEW_ITEM.getStateDescription().getOptions()` or in UI in widget configuration as _Action: Command options_ and as _Action Item: YOUR_IMAGE_VIEW_ITEM_
-
-<img src="./doc/ImageView-CommandOptions.png" width="400" height="350"/>
 
 ## Troubleshooting
 
@@ -348,33 +528,6 @@ It seems that the API isn't _filled_ yet.
 - Reduce `refreshInterval` to 1 minute
 - Go to your vehicle, open doors and windows, turn on lights, drive a bit  ...
 - wait until values are providing the right states
-
-### Images
-
-Testing the whole image settings is hard due to the restricted call number towards the Image API.
-
-My personal experience during limited testing
-
-| Test             |Tested | OK  |  Not OK | Comment                                                 |
-|------------------|-------|-----|---------|---------------------------------------------------------|
-| `format` webp    | Yes   |  X  |         |                                                         |
-| `format` png     | Yes   |     |    X    | Internal Server Error 500 on Mercedes Server side       |
-| `format` jpeg    | No    |     |         | Not tested due to missing transparency in jpeg format   |
-| all options off  | Yes   |  X  |         |                                                         |
-| `background`     | Yes   |  X  |         |                                                         |
-| `night`          | No    |     |         | Not support by my vehicle                               |
-| `roofOpen`       | No    |     |         | Not support by my vehicle                               |
-| `cropped`        | No    |     |         | Not desired from my side                                |
-
-## Storage
-
-Data is stored in directory `%USER_DATA%/jsondb` for handling tokens and vehicle images.
-
-- _StorageHandler.For.OAuthClientService.json_ - token is stored with key `clientId` which is provided by `account` [Brige Configuration Parameters](#bridge-configuration-parameters)
-- _mercedesme_%VEHICLE_VIN%.json_ - images are stored per vehicle. File name contains `vin` configured by [vehicle Thing Configuration](#thing-configuration)
-
-With this data the binding is able to operate without new authorization towards Mercedes each startup and reduces the restricted calls towards image API.
-Also these files are properly stored in your [backup](https://community.openhab.org/t/docs-on-how-to-backup-openhab/100182) e.g. if you perform `openhab-cli backup`
 
 ## Full example
 
