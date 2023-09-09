@@ -64,113 +64,104 @@ public class GrowattBindingConstants {
             new AbstractMap.SimpleEntry<String, UoM>("pv-power-out", new UoM(Units.WATT, 10)),
 
             // electric data for strings #1 and #2
-            new AbstractMap.SimpleEntry<String, UoM>("pv1-potential", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv1-voltage", new UoM(Units.VOLT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("pv1-current", new UoM(Units.AMPERE, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("pv1-power", new UoM(Units.WATT, 10)),
 
-            new AbstractMap.SimpleEntry<String, UoM>("pv2-potential", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv2-voltage", new UoM(Units.VOLT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("pv2-current", new UoM(Units.AMPERE, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("pv2-power", new UoM(Units.WATT, 10)),
 
             // grid electric data (1-phase resp. 3-phase)
             new AbstractMap.SimpleEntry<String, UoM>("grid-frequency", new UoM(Units.HERTZ, 100)),
 
-            new AbstractMap.SimpleEntry<String, UoM>("grid-potential", new UoM(Units.VOLT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-potential-s", new UoM(Units.VOLT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-potential-t", new UoM(Units.VOLT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-potential-rs", new UoM(Units.VOLT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-potential-st", new UoM(Units.VOLT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-potential-tr", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-voltage", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-voltage-s", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-voltage-t", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-voltage-rs", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-voltage-st", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-voltage-tr", new UoM(Units.VOLT, 10)),
 
             // solar power to grid
-            new AbstractMap.SimpleEntry<String, UoM>("grid-current", new UoM(Units.AMPERE, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-current-s", new UoM(Units.AMPERE, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-current-t", new UoM(Units.AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("solar-current", new UoM(Units.AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("solar-current-s", new UoM(Units.AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("solar-current-t", new UoM(Units.AMPERE, 10)),
 
-            new AbstractMap.SimpleEntry<String, UoM>("grid-power", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-power-s", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-power-t", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("solar-power", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("solar-power-s", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("solar-power-t", new UoM(Units.WATT, 10)),
 
-            new AbstractMap.SimpleEntry<String, UoM>("grid-va", new UoM(Units.VOLT_AMPERE, 10)),
-
-            // grid power to battery
-            new AbstractMap.SimpleEntry<String, UoM>("grid-charge-current", new UoM(Units.VOLT_AMPERE, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-charge-power", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-charge-va", new UoM(Units.VOLT_AMPERE, 10)),
-
-            // grid power from battery
-            new AbstractMap.SimpleEntry<String, UoM>("grid-discharge-power", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-discharge-va", new UoM(Units.VOLT_AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("solar-va", new UoM(Units.VOLT_AMPERE, 10)),
 
             // battery discharge / charge power
-            new AbstractMap.SimpleEntry<String, UoM>("battery-charge-power", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-power", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-va", new UoM(Units.VOLT_AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("charge-current", new UoM(Units.VOLT_AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("charge-power", new UoM(Units.WATT, 10)),
 
-            // power to grid
-            new AbstractMap.SimpleEntry<String, UoM>("to-grid-power", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-grid-power-r", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-grid-power-s", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-grid-power-t", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("discharge-power", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("discharge-va", new UoM(Units.VOLT_AMPERE, 10)),
+
+            // export power to grid
+            new AbstractMap.SimpleEntry<String, UoM>("export-power", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("export-power-r", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("export-power-s", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("export-power-t", new UoM(Units.WATT, 10)),
 
             // power to user
-            new AbstractMap.SimpleEntry<String, UoM>("to-user-power", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-user-power-r", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-user-power-s", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-user-power-t", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("import-power", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("import-power-r", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("import-power-s", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("import-power-t", new UoM(Units.WATT, 10)),
 
             // power to local
-            new AbstractMap.SimpleEntry<String, UoM>("to-local-power", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-local-power-r", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-local-power-s", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-local-power-t", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("load-power", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("load-power-r", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("load-power-s", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("load-power-t", new UoM(Units.WATT, 10)),
 
-            // pv energy
+            // solar AC energy
+            new AbstractMap.SimpleEntry<String, UoM>("solar-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("solar-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
+
+            // solar DC energy
             new AbstractMap.SimpleEntry<String, UoM>("pv-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv1-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv2-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+
             new AbstractMap.SimpleEntry<String, UoM>("pv-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv1-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv2-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
 
-            // energy taken from solar
-            new AbstractMap.SimpleEntry<String, UoM>("pv-grid-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("pv1-grid-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("pv2-grid-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            // energy exported to grid
+            new AbstractMap.SimpleEntry<String, UoM>("export-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("export-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
 
-            new AbstractMap.SimpleEntry<String, UoM>("pv-grid-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("pv1-grid-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("pv2-grid-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
+            // energy imported from grid
+            new AbstractMap.SimpleEntry<String, UoM>("import-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("import-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
 
-            // energy supplied to grid
-            new AbstractMap.SimpleEntry<String, UoM>("to-grid-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-grid-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
+            // energy supplied to load
+            new AbstractMap.SimpleEntry<String, UoM>("load-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("load-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
 
-            // energy supplied to user
-            new AbstractMap.SimpleEntry<String, UoM>("to-user-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-user-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
+            // energy imported to charge
+            new AbstractMap.SimpleEntry<String, UoM>("import-charge-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("import-charge-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
 
-            // energy supplied to local
-            new AbstractMap.SimpleEntry<String, UoM>("to-local-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("to-local-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
+            // solar energy to charge
+            new AbstractMap.SimpleEntry<String, UoM>("solar-charge-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("solar-charge-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
 
-            // energy taken from grid to charge
-            new AbstractMap.SimpleEntry<String, UoM>("grid-charge-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-charge-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
-
-            // energy supplied to grid from discharge of battery
-            new AbstractMap.SimpleEntry<String, UoM>("grid-discharge-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-discharge-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
-
-            // energy taken from battery
-            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-energy-today",
-                    new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-energy-total",
-                    new UoM(Units.KILOWATT_HOUR, 10)),
+            // energy supplied from discharge
+            new AbstractMap.SimpleEntry<String, UoM>("discharge-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("discharge-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
 
             // inverter up time
             new AbstractMap.SimpleEntry<String, UoM>("total-work-time", new UoM(Units.HOUR, 7200)),
 
             // bus voltages
-            new AbstractMap.SimpleEntry<String, UoM>("p-bus-potential", new UoM(Units.VOLT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("n-bus-potential", new UoM(Units.VOLT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("sp-bus-potential", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("p-bus-voltage", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("n-bus-voltage", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("sp-bus-voltage", new UoM(Units.VOLT, 10)),
 
             // temperatures
             new AbstractMap.SimpleEntry<String, UoM>("pv-temperature", new UoM(SIUnits.CELSIUS, 10)),
@@ -181,7 +172,7 @@ public class GrowattBindingConstants {
 
             // battery data
             new AbstractMap.SimpleEntry<String, UoM>("battery-type", new UoM(Units.ONE, 1)),
-            new AbstractMap.SimpleEntry<String, UoM>("battery-potential", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-voltage", new UoM(Units.VOLT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("battery-temperature", new UoM(SIUnits.CELSIUS, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("battery-display", new UoM(Units.ONE, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("battery-soc", new UoM(Units.PERCENT, 1)),
@@ -200,19 +191,12 @@ public class GrowattBindingConstants {
             new AbstractMap.SimpleEntry<String, UoM>("system-work-mode", new UoM(Units.ONE, 1)),
             new AbstractMap.SimpleEntry<String, UoM>("sp-display-status", new UoM(Units.ONE, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("constant-power-ok", new UoM(Units.ONE, 1)),
+            new AbstractMap.SimpleEntry<String, UoM>("load-percent", new UoM(Units.PERCENT, 10)),
 
             // rac ??
             new AbstractMap.SimpleEntry<String, UoM>("rac", new UoM(Units.ONE, 1)),
             new AbstractMap.SimpleEntry<String, UoM>("erac-today", new UoM(Units.ONE, 1)),
-            new AbstractMap.SimpleEntry<String, UoM>("erac-total", new UoM(Units.ONE, 1)),
-
-            // duplicates ??
-            new AbstractMap.SimpleEntry<String, UoM>("output-potential", new UoM(Units.VOLT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("output-frequency", new UoM(Units.HERTZ, 100)),
-            new AbstractMap.SimpleEntry<String, UoM>("load-percent", new UoM(Units.PERCENT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("inverter-current", new UoM(Units.AMPERE, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-input-power", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-input-va", new UoM(Units.VOLT_AMPERE, 10))
+            new AbstractMap.SimpleEntry<String, UoM>("erac-total", new UoM(Units.ONE, 1))
     //
     );
 }

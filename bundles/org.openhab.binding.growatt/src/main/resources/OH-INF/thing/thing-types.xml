@@ -23,25 +23,25 @@
 		<channels>
 			<channel id="system-status" typeId="system-status-code">
 				<label>Inverter Status</label>
-				<description>Status code of the inverter (0=ready, 1=online, 2=fault).</description>
+				<description>Status code of the inverter.</description>
 			</channel>
 
 			<!-- solar generation -->
 			<channel id="pv-power-in" typeId="system.electric-power">
 				<label>Solar Input Power</label>
-				<description>Total solar input power.</description>
+				<description>Total solar DC input power.</description>
 			</channel>
 			<channel id="pv-power-out" typeId="system.electric-power">
 				<label>Solar Output Power</label>
-				<description>Total solar output power.</description>
+				<description>Total solar AC output power.</description>
 			</channel>
 
 			<!-- electric data for strings #1 and #2 -->
-			<channel id="pv1-potential" typeId="advanced-electric-voltage">
+			<channel id="pv1-voltage" typeId="advanced-electric-voltage">
 				<label>String #1 Voltage</label>
 				<description>Voltage from solar panel string #1.</description>
 			</channel>
-			<channel id="pv2-potential" typeId="advanced-electric-voltage">
+			<channel id="pv2-voltage" typeId="advanced-electric-voltage">
 				<label>String #2 Voltage</label>
 				<description>Voltage from solar panel string #2.</description>
 			</channel>
@@ -69,249 +69,229 @@
 				<label>Grid Frequency</label>
 				<description>Frequency of the grid.</description>
 			</channel>
-			<channel id="grid-potential" typeId="system.electric-voltage">
+			<channel id="grid-voltage" typeId="system.electric-voltage">
 				<label>Grid Voltage</label>
 				<description>Voltage of the grid (phase #R).</description>
 			</channel>
-			<channel id="grid-potential-s" typeId="advanced-electric-voltage">
+			<channel id="grid-voltage-s" typeId="advanced-electric-voltage">
 				<label>Grid Voltage #S</label>
 				<description>Voltage of the grid phase #S.</description>
 			</channel>
-			<channel id="grid-potential-t" typeId="advanced-electric-voltage">
+			<channel id="grid-voltage-t" typeId="advanced-electric-voltage">
 				<label>Grid Voltage #T</label>
 				<description>Voltage of the grid phase #T.</description>
 			</channel>
-			<channel id="grid-potential-rs" typeId="advanced-electric-voltage">
+			<channel id="grid-voltage-rs" typeId="advanced-electric-voltage">
 				<label>Grid Voltage #RS</label>
 				<description>Voltage of the grid phases #RS.</description>
 			</channel>
-			<channel id="grid-potential-st" typeId="advanced-electric-voltage">
+			<channel id="grid-voltage-st" typeId="advanced-electric-voltage">
 				<label>Grid Voltage #ST</label>
 				<description>Voltage of the grid phases #ST.</description>
 			</channel>
-			<channel id="grid-potential-tr" typeId="advanced-electric-voltage">
+			<channel id="grid-voltage-tr" typeId="advanced-electric-voltage">
 				<label>Grid Voltage #TR</label>
 				<description>Voltage of the grid phases #TR.</description>
 			</channel>
 
 			<!-- solar power to grid -->
-			<channel id="grid-current" typeId="system.electric-current">
-				<label>Grid Current</label>
-				<description>Current delivered to the grid (phase #R).</description>
+			<channel id="solar-current" typeId="system.electric-current">
+				<label>Solar Current</label>
+				<description>AC current from solar (phase #R).</description>
 			</channel>
-			<channel id="grid-current-s" typeId="advanced-electric-current">
-				<label>Grid Current #S</label>
-				<description>Current delivered to the grid phase #S.</description>
+			<channel id="solar-current-s" typeId="advanced-electric-current">
+				<label>Solar Current #S</label>
+				<description>AC current from solar phase #S.</description>
 			</channel>
-			<channel id="grid-current-t" typeId="advanced-electric-current">
-				<label>Grid Current #T</label>
-				<description>Current delivered to the grid phase #T.</description>
-			</channel>
-
-			<channel id="grid-power" typeId="system.electric-power">
-				<label>Grid Power</label>
-				<description>Power delivered to the grid (phase #R).</description>
-			</channel>
-			<channel id="grid-power-s" typeId="advanced-electric-power">
-				<label>Grid Power #S</label>
-				<description>Power delivered to the grid phase #S.</description>
-			</channel>
-			<channel id="grid-power-t" typeId="advanced-electric-power">
-				<label>Grid Power #T</label>
-				<description>Power delivered to the grid phase #T.</description>
+			<channel id="solar-current-t" typeId="advanced-electric-current">
+				<label>Solar Current #T</label>
+				<description>AC current from solar phase #T.</description>
 			</channel>
 
-			<channel id="grid-va" typeId="advanced-electric-va">
-				<label>Grid VA</label>
-				<description>VA delivered to the grid.</description>
+			<channel id="solar-power" typeId="system.electric-power">
+				<label>Solar AC Power</label>
+				<description>AC power from solar (phase #R).</description>
+			</channel>
+			<channel id="solar-power-s" typeId="advanced-electric-power">
+				<label>Solar AC Power #S</label>
+				<description>AC power from solar phase #S.</description>
+			</channel>
+			<channel id="solar-power-t" typeId="advanced-electric-power">
+				<label>Solar AC Power #T</label>
+				<description>AC power from solar phase #T.</description>
 			</channel>
 
-			<!-- grid power to battery -->
-			<channel id="grid-charge-current" typeId="system.electric-current">
-				<label>Charge Current</label>
-				<description>Grid current to charge battery.</description>
+			<channel id="solar-va" typeId="advanced-electric-va">
+				<label>Solar VA</label>
+				<description>AC VA from solar.</description>
 			</channel>
-			<channel id="grid-charge-power" typeId="system.electric-power">
+
+			<!-- battery power -->
+			<channel id="charge-power" typeId="system.electric-power">
 				<label>Charge Power </label>
-				<description>Grid power to charge battery.</description>
+				<description>Charge power to battery.</description>
 			</channel>
-			<channel id="grid-charge-va" typeId="advanced-electric-va">
-				<label>Charge VA</label>
-				<description>Grid VA to charge battery.</description>
+			<channel id="charge-current" typeId="system.electric-current">
+				<label>Charge Current</label>
+				<description>Charge current to battery.</description>
 			</channel>
-
-			<!-- grid power from battery -->
-			<channel id="grid-discharge-power" typeId="system.electric-power">
-				<label>Discharge Power </label>
-				<description>Grid power from discharge of battery.</description>
+			<channel id="discharge-power" typeId="system.electric-power">
+				<label>Discharge Power</label>
+				<description>Discharge power from battery.</description>
 			</channel>
-			<channel id="grid-discharge-va" typeId="advanced-electric-va">
+			<channel id="discharge-va" typeId="advanced-electric-va">
 				<label>Discharge VA</label>
-				<description>Grid VA from discharge of battery.</description>
+				<description>Discharge VA from battery.</description>
 			</channel>
 
-			<!-- battery discharge / charge power -->
-			<channel id="battery-charge-power" typeId="system.electric-power">
-				<label>Battery Charge Power</label>
-				<description>Battery charge power.</description>
+			<!-- power export to grid -->
+			<channel id="export-power" typeId="system.electric-power">
+				<label>Export Power</label>
+				<description>Power exported to grid.</description>
 			</channel>
-			<channel id="battery-discharge-power" typeId="system.electric-power">
-				<label>Battery Discharge Power</label>
-				<description>Battery discharge power.</description>
+			<channel id="export-power-r" typeId="advanced-electric-power">
+				<label>Export Power #R</label>
+				<description>Power exported to grid phase #R.</description>
 			</channel>
-			<channel id="battery-discharge-va" typeId="advanced-electric-va">
-				<label>Battery Discharge VA</label>
-				<description>Battery discharge VA.</description>
+			<channel id="export-power-s" typeId="advanced-electric-power">
+				<label>Export Power #S</label>
+				<description>Power exported to grid phase #S.</description>
 			</channel>
-
-			<!-- power to grid -->
-			<channel id="to-grid-power" typeId="system.electric-power">
-				<label>Power to Grid</label>
-				<description>Power supplied to grid.</description>
-			</channel>
-			<channel id="to-grid-power-r" typeId="advanced-electric-power">
-				<label>Power to Grid #R</label>
-				<description>Power supplied to grid phase #R.</description>
-			</channel>
-			<channel id="to-grid-power-s" typeId="advanced-electric-power">
-				<label>Power to Grid #S</label>
-				<description>Power supplied to grid phase #S.</description>
-			</channel>
-			<channel id="to-grid-power-t" typeId="advanced-electric-power">
-				<label>Power to Grid #T</label>
-				<description>Power supplied to grid phase #T.</description>
+			<channel id="export-power-t" typeId="advanced-electric-power">
+				<label>Export Power #T</label>
+				<description>Power exported to grid phase #T.</description>
 			</channel>
 
-			<!-- power to user -->
-			<channel id="to-user-power" typeId="system.electric-power">
-				<label>Power to User</label>
-				<description>Power supplied to user.</description>
+			<!-- power import from grid user -->
+			<channel id="import-power" typeId="system.electric-power">
+				<label>Import Power</label>
+				<description>Power imported.</description>
 			</channel>
-			<channel id="to-user-power-r" typeId="advanced-electric-power">
-				<label>Power to User #R</label>
-				<description>Power supplied to user phase #R.</description>
+			<channel id="import-power-r" typeId="advanced-electric-power">
+				<label>Import Power #R</label>
+				<description>Power imported phase #R.</description>
 			</channel>
-			<channel id="to-user-power-s" typeId="advanced-electric-power">
-				<label>Power to User #S</label>
-				<description>Power supplied to user phase #S.</description>
+			<channel id="import-power-s" typeId="advanced-electric-power">
+				<label>Import Power #S</label>
+				<description>Power imported phase #S.</description>
 			</channel>
-			<channel id="to-user-power-t" typeId="advanced-electric-power">
-				<label>Power to User #T</label>
-				<description>Power supplied to user phase #T.</description>
-			</channel>
-
-			<!-- power to local -->
-			<channel id="to-local-power" typeId="system.electric-power">
-				<label>Power to Local</label>
-				<description>Power supplied to local.</description>
-			</channel>
-			<channel id="to-local-power-r" typeId="advanced-electric-power">
-				<label>Power to Local #R</label>
-				<description>Power supplied to local phase #R.</description>
-			</channel>
-			<channel id="to-local-power-s" typeId="advanced-electric-power">
-				<label>Power to Local #S</label>
-				<description>Power supplied to local phase #S.</description>
-			</channel>
-			<channel id="to-local-power-t" typeId="advanced-electric-power">
-				<label>Power to Local #T</label>
-				<description>Power supplied to local phase #T.</description>
+			<channel id="import-power-t" typeId="advanced-electric-power">
+				<label>Import Power #T</label>
+				<description>Power imported phase #T.</description>
 			</channel>
 
-			<!-- pv energy -->
-			<channel id="pv-energy-today" typeId="system.electric-energy">
+			<!-- power to local load -->
+			<channel id="load-power" typeId="system.electric-power">
+				<label>Load Power</label>
+				<description>Power supplied to load.</description>
+			</channel>
+			<channel id="load-power-r" typeId="advanced-electric-power">
+				<label>Load Power #R</label>
+				<description>Power supplied to load phase #R.</description>
+			</channel>
+			<channel id="load-power-s" typeId="advanced-electric-power">
+				<label>Load Power #S</label>
+				<description>Power supplied to load phase #S.</description>
+			</channel>
+			<channel id="load-power-t" typeId="advanced-electric-power">
+				<label>Load Power #T</label>
+				<description>Power supplied to load phase #T.</description>
+			</channel>
+
+			<!-- solar AC energy -->
+			<channel id="solar-energy-today" typeId="system.electric-energy">
 				<label>Solar Energy Today</label>
 				<description>Solar energy collected today.</description>
 			</channel>
-			<channel id="pv-energy-total" typeId="system.electric-energy">
+			<channel id="solar-energy-total" typeId="system.electric-energy">
 				<label>Solar Energy Total</label>
 				<description>Total solar energy collected.</description>
 			</channel>
 
-			<!-- energy taken from solar -->
-			<channel id="pv-grid-energy-today" typeId="system.electric-energy">
-				<label>Solar Energy to Grid Today</label>
-				<description>Solar energy supplied to grid today.</description>
+			<!-- solar DC energy -->
+			<channel id="pv-energy-today" typeId="system.electric-energy">
+				<label>Solar DC Energy Today</label>
+				<description>Solar DC energy collected.</description>
 			</channel>
-			<channel id="pv1-grid-energy-today" typeId="advanced-electric-energy">
-				<label>Solar Energy #1 to Grid Today</label>
-				<description>Solar energy supplied by string #1 to grid today.</description>
+			<channel id="pv1-energy-today" typeId="advanced-electric-energy">
+				<label>Solar DC Energy #1 Today</label>
+				<description>Solar DC energy collected by string #1 to grid today.</description>
 			</channel>
-			<channel id="pv2-grid-energy-today" typeId="advanced-electric-energy">
+			<channel id="pv2-energy-today" typeId="advanced-electric-energy">
 				<label>Solar Energy #2 to Grid Today</label>
-				<description>Solar energy supplied by string #2 to grid today.</description>
+				<description>Solar DC energy collected by string #2 to grid today.</description>
 			</channel>
 
-			<channel id="pv-grid-energy-total" typeId="system.electric-energy">
-				<label>Total Solar Energy to Grid</label>
+			<channel id="pv-energy-total" typeId="system.electric-energy">
+				<label>Total Solar DC Energy</label>
 				<description>Total solar energy supplied to grid.</description>
 			</channel>
-			<channel id="pv1-grid-energy-total" typeId="advanced-electric-energy">
-				<label>Total Solar Energy #1 to Grid</label>
-				<description>Total solar energy supplied by string #1 to grid .</description>
+			<channel id="pv1-energy-total" typeId="advanced-electric-energy">
+				<label>Total Solar DC Energy #1</label>
+				<description>Total solar DC collected by string #1.</description>
 			</channel>
-			<channel id="pv2-grid-energy-total" typeId="advanced-electric-energy">
-				<label>Total Solar Energy #2 to Grid</label>
-				<description>Total solar energy supplied by string #2 to grid.</description>
-			</channel>
-
-			<!-- energy supplied to grid -->
-			<channel id="to-grid-energy-today" typeId="system.electric-energy">
-				<label>Energy to Grid Today</label>
-				<description>Energy supplied to grid today.</description>
-			</channel>
-			<channel id="to-grid-energy-total" typeId="system.electric-energy">
-				<label>Total Energy to Grid</label>
-				<description>Total energy supplied to grid.</description>
+			<channel id="pv2-energy-total" typeId="advanced-electric-energy">
+				<label>Total Solar DC Energy #2</label>
+				<description>Total solar DC collected by string #2.</description>
 			</channel>
 
-			<!-- energy supplied to user -->
-			<channel id="to-user-energy-today" typeId="system.electric-energy">
-				<label>Energy to User Today</label>
-				<description>Energy supplied to user today.</description>
+			<!-- energy exported to grid -->
+			<channel id="export-energy-today" typeId="system.electric-energy">
+				<label>Export Energy Today</label>
+				<description>Energy exported to grid today.</description>
 			</channel>
-			<channel id="to-user-energy-total" typeId="system.electric-energy">
-				<label>Total Energy to User</label>
-				<description>Total energy supplied to user.</description>
+			<channel id="export-energy-total" typeId="system.electric-energy">
+				<label>Total Export Energy</label>
+				<description>Total energy exported to grid.</description>
+			</channel>
+
+			<!-- energy imported from grid -->
+			<channel id="import-energy-today" typeId="system.electric-energy">
+				<label>Import Energy Today</label>
+				<description>Energy imported from grid today.</description>
+			</channel>
+			<channel id="import-energy-total" typeId="system.electric-energy">
+				<label>Total Import Energy</label>
+				<description>Total energy imported from grid.</description>
 			</channel>
 
 			<!-- energy supplied to local -->
-			<channel id="to-local-energy-today" typeId="system.electric-energy">
-				<label>Energy to Local Today</label>
-				<description>Energy supplied to local today.</description>
+			<channel id="load-energy-today" typeId="system.electric-energy">
+				<label>Energy to Load Today</label>
+				<description>Energy supplied to load today.</description>
 			</channel>
-			<channel id="to-local-energy-total" typeId="system.electric-energy">
-				<label>Total Energy to Local</label>
-				<description>Total energy supplied to local.</description>
-			</channel>
-
-			<!-- energy taken from grid to charge -->
-			<channel id="grid-charge-energy-today" typeId="system.electric-energy">
-				<label>Energy to Charge Battery Today</label>
-				<description>Energy used to charge battery today.</description>
-			</channel>
-			<channel id="grid-charge-energy-total" typeId="system.electric-energy">
-				<label>Total Energy to Charge Battery</label>
-				<description>Total energy used to charge battery.</description>
+			<channel id="load-energy-total" typeId="system.electric-energy">
+				<label>Total Energy to Load</label>
+				<description>Total energy supplied to load.</description>
 			</channel>
 
-			<!-- energy supplied to grid from discharge of battery -->
-			<channel id="grid-discharge-energy-today" typeId="system.electric-energy">
-				<label>Grid Energy from Battery Today</label>
-				<description>Grid energy produced from battery today.</description>
+			<!-- energy imported from grid to charge -->
+			<channel id="import-charge-energy-today" typeId="system.electric-energy">
+				<label>Import Energy to Charge Battery Today</label>
+				<description>Energy imported from grid to charge battery today.</description>
 			</channel>
-			<channel id="grid-discharge-energy-total" typeId="system.electric-energy">
-				<label>Total Grid Energy from Battery</label>
-				<description>Total grid energy produced from battery.</description>
+			<channel id="import-charge-energy-total" typeId="system.electric-energy">
+				<label>Total Import Energy to Charge Battery</label>
+				<description>Total energy imported from grid to charge battery.</description>
 			</channel>
 
-			<!-- energy taken from battery -->
-			<channel id="battery-discharge-energy-today" typeId="system.electric-energy">
-				<label>Battery Discharge Energy Today</label>
-				<description>Energy consumed from battery.</description>
+			<!-- solar energy to charge -->
+			<channel id="solar-charge-energy-today" typeId="system.electric-energy">
+				<label>Solar Energy to Charge Battery Today</label>
+				<description>Energy from solar to charge battery today.</description>
 			</channel>
-			<channel id="battery-discharge-energy-total" typeId="system.electric-energy">
-				<label>Total Battery Discharge Energy</label>
+			<channel id="solar-charge-energy-total" typeId="system.electric-energy">
+				<label>Total Solar Energy to Charge Battery</label>
+				<description>Total energy from solar to charge battery.</description>
+			</channel>
+
+			<!-- energy consumed from battery -->
+			<channel id="discharge-energy-today" typeId="system.electric-energy">
+				<label>Energy from Battery Today</label>
+				<description>Energy consumed from battery today.</description>
+			</channel>
+			<channel id="discharge-energy-total" typeId="system.electric-energy">
+				<label>Total Energy from Battery</label>
 				<description>Total energy consumed from battery.</description>
 			</channel>
 
@@ -322,17 +302,17 @@
 			</channel>
 
 			<!-- bus voltages -->
-			<channel id="p-bus-potential" typeId="advanced-electric-voltage">
+			<channel id="p-bus-voltage" typeId="advanced-electric-voltage">
 				<label>P Bus Voltage</label>
 				<description>P Bus voltage.</description>
 			</channel>
-			<channel id="n-bus-potential" typeId="advanced-electric-voltage">
+			<channel id="n-bus-voltage" typeId="advanced-electric-voltage">
 				<label>N Bus Voltage</label>
 				<description>N Bus voltage.</description>
 			</channel>
-			<channel id="sp-bus-potential" typeId="advanced-electric-voltage">
-				<label>N Bus Voltage</label>
-				<description>N Bus voltage.</description>
+			<channel id="sp-bus-voltage" typeId="advanced-electric-voltage">
+				<label>SP Bus Voltage</label>
+				<description>SP Bus voltage.</description>
 			</channel>
 
 			<!-- temperatures -->
@@ -366,7 +346,7 @@
 				<label>Battery Temperature</label>
 				<description>Battery temperature.</description>
 			</channel>
-			<channel id="battery-potential" typeId="advanced-electric-voltage">
+			<channel id="battery-voltage" typeId="advanced-electric-voltage">
 				<label>Battery Voltage</label>
 				<description>Battery voltage.</description>
 			</channel>
@@ -426,7 +406,10 @@
 				<label>Constant Power OK</label>
 				<description>Constant power OK code.</description>
 			</channel>
-
+			<channel id="load-percent" typeId="advanced-percent">
+				<label>Load Percent</label>
+				<description>Percent of full load.</description>
+			</channel>
 
 			<!-- rac ?? -->
 			<channel id="rac" typeId="advanced-fault-code">
@@ -440,32 +423,6 @@
 			<channel id="erac-total" typeId="advanced-fault-code">
 				<label>ERAC Total</label>
 				<description>Total ERAC count.</description>
-			</channel>
-
-			<!-- duplicates ?? -->
-			<channel id="output-potential" typeId="system.electric-voltage">
-				<label>Output Voltage</label>
-				<description>Output voltage.</description>
-			</channel>
-			<channel id="output-frequency" typeId="advanced-electric-frequency">
-				<label>Output Frequency</label>
-				<description>Output frequency.</description>
-			</channel>
-			<channel id="load-percent" typeId="advanced-percent">
-				<label>Load Percent</label>
-				<description>Percent of full load.</description>
-			</channel>
-			<channel id="inverter-current" typeId="system.electric-current">
-				<label>Inverter Current</label>
-				<description>Inverter current.</description>
-			</channel>
-			<channel id="grid-input-power" typeId="system.electric-power">
-				<label>Grid Input Power</label>
-				<description>Grid input power.</description>
-			</channel>
-			<channel id="grid-input-va" typeId="advanced-electric-va">
-				<label>Grid Input VA</label>
-				<description>Grid input VA.</description>
 			</channel>
 
 		</channels>

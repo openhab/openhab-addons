@@ -81,29 +81,35 @@ public class GrowattTest {
     }
 
     /**
-     * Test that GrottValues implements the same fields as thye GrowattBindingConstants.CHANNEL_ID_UOM_MAP.
-     * Test that all fields can be accessed and that they are either null or an Integer instance.
+     * For the given JSON file, test that GrottValues implements the same fields as the
+     * GrowattBindingConstants.CHANNEL_ID_UOM_MAP. Test that all fields can be accessed and that they are either null or
+     * an Integer instance.
+     *
+     * @param filename the name of the JSON file to be tested.
      */
-    @Test
-    void testGrottValuesAccessibility() {
-        GrottValues grottValues = loadGrottValues("simple");
+    private void testGrottValuesAccessibilityforFile(String filename) {
+        GrottValues grottValues = loadGrottValues(filename);
 
         List<String> fields = Arrays.asList(GrottValues.class.getFields()).stream().map(f -> f.getName())
                 .collect(Collectors.toList());
 
+        // test that the GrottValues DTO has identical field names to the CHANNEL_ID_UOM_MAP channel ids
         for (String channel : GrowattBindingConstants.CHANNEL_ID_UOM_MAP.keySet()) {
             assertTrue(fields.contains(GrottValues.getFieldName(channel)));
         }
 
+        // test that the CHANNEL_ID_UOM_MAP has identical channel ids to the GrottValues DTO field names
         for (String field : fields) {
             assertTrue(GrowattBindingConstants.CHANNEL_ID_UOM_MAP.containsKey(GrottValues.getChannelId(field)));
         }
 
+        // test that the CHANNEL_ID_UOM_MAP and the GrottValues DTO have the same number of fields resp. channel ids
         assertEquals(fields.size(), GrowattBindingConstants.CHANNEL_ID_UOM_MAP.size());
 
         for (Entry<String, UoM> entry : GrowattBindingConstants.CHANNEL_ID_UOM_MAP.entrySet()) {
             String channelId = entry.getKey();
             Field field;
+            // test that the field can be accessed
             try {
                 field = GrottValues.class.getField(GrottValues.getFieldName(channelId));
             } catch (NoSuchFieldException e) {
@@ -113,6 +119,7 @@ public class GrowattTest {
                 fail(e.getMessage());
                 continue;
             }
+            // test that the field value is either null or an Integer
             try {
                 Object value = field.get(grottValues);
                 assertTrue(value == null || (value instanceof Integer));
@@ -124,7 +131,16 @@ public class GrowattTest {
     }
 
     /**
-     * Test that GrottValues is loaded with the correct contents from a JSON file.
+     * Test the cross mapping of JSON fields and channel names for two JSON test files.
+     */
+    @Test
+    void testGrottValuesAccessibility() {
+        testGrottValuesAccessibilityforFile("simple");
+        testGrottValuesAccessibilityforFile("sph");
+    }
+
+    /**
+     * Spot checks to test that GrottValues is loaded with the correct contents from the "simple" JSON file.
      */
     @Test
     void testGrottValuesContents() {
@@ -151,14 +167,17 @@ public class GrowattTest {
         });
 
         assertEquals(QuantityType.ONE, channelStates.get("system-status"));
-        assertEquals(QuantityType.valueOf(235.3, Units.VOLT), channelStates.get("grid-potential"));
-        assertEquals(QuantityType.valueOf(0.7, Units.AMPERE), channelStates.get("grid-current"));
-        assertEquals(QuantityType.valueOf(146, Units.WATT), channelStates.get("grid-power"));
+        assertEquals(QuantityType.valueOf(235.3, Units.VOLT), channelStates.get("grid-voltage"));
         assertEquals(QuantityType.valueOf(49.97, Units.HERTZ), channelStates.get("grid-frequency"));
-        assertEquals(QuantityType.valueOf(27.3, SIUnits.CELSIUS), channelStates.get("pv-temperature"));
-        assertEquals(QuantityType.valueOf(4545.3, Units.KILOWATT_HOUR), channelStates.get("pv-grid-energy-total"));
 
-        assertEquals(QuantityType.valueOf(0, Units.VOLT), channelStates.get("pv2-potential"));
+        assertEquals(QuantityType.valueOf(0.7, Units.AMPERE), channelStates.get("solar-current"));
+        assertEquals(QuantityType.valueOf(146, Units.WATT), channelStates.get("solar-power"));
+
+        assertEquals(QuantityType.valueOf(27.3, SIUnits.CELSIUS), channelStates.get("pv-temperature"));
+
+        assertEquals(QuantityType.valueOf(4545.3, Units.KILOWATT_HOUR), channelStates.get("pv1-energy-total"));
+
+        assertEquals(QuantityType.valueOf(0, Units.VOLT), channelStates.get("pv2-voltage"));
         assertEquals(QuantityType.valueOf(0, Units.AMPERE), channelStates.get("pv2-current"));
         assertEquals(QuantityType.valueOf(0, Units.WATT), channelStates.get("pv2-power"));
 
@@ -169,5 +188,7 @@ public class GrowattTest {
             assertNotNull(seconds);
             assertEquals(QuantityType.valueOf(32751939, Units.SECOND).doubleValue(), seconds.doubleValue(), 0.1);
         }
+
+        assertNull(channelStates.get("aardvark"));
     }
 }
