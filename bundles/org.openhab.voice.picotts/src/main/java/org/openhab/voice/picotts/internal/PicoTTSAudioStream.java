@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -92,7 +93,7 @@ class PicoTTSAudioStream extends FixedLengthAudioStream implements Disposable {
      */
     private String generateOutputFilename() throws AudioException {
         try {
-            File tempFile = File.createTempFile(Integer.toString(text.hashCode()), ".wav");
+            File tempFile = Files.createTempFile(Integer.toString(text.hashCode()), ".wav").toFile();
             tempFile.deleteOnExit();
             return tempFile.getAbsolutePath();
         } catch (IOException e) {
