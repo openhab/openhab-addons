@@ -176,7 +176,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             } else {
                 throw new InfluxException("API not present");
             }
-        } catch (InfluxException | InfluxDBIOException e) {
+        } catch (InfluxException | InfluxDBException e) {
             logger.warn("Failed to execute query '{}': {}", filter, e.getMessage());
             return List.of();
         }
