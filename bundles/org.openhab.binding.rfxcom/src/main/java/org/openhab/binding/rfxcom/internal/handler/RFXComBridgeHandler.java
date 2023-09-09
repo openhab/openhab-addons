@@ -325,7 +325,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                         transmitQueue.sendNext();
                     }
                 } else if (message instanceof RFXComTransmitterMessage resp) {
-
                     logger.debug("Transmitter response received: {}", resp);
 
                     transmitQueue.sendNext();

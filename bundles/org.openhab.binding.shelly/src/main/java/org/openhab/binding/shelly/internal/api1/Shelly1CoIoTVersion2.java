@@ -210,7 +210,6 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 break;
             case "3104": // T, deviceTemp, Celsius -40/300; 999=unknown
                 if ("targetTemp".equalsIgnoreCase(sen.desc)) {
-
                     break; // target temp in F-> ignore
                 }
                 // sensor_0: T, internalTemp, F, 39/88, unknown 999

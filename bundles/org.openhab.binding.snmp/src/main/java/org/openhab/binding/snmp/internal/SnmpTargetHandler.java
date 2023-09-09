@@ -443,7 +443,6 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                                             octets[3] << 24 | octets[4] << 16 | octets[5] << 8 | octets[6]);
                                     state = channelUnit == null ? new DecimalType(floatValue)
                                             : new QuantityType<>(floatValue, channelUnit);
-
                                 } else {
                                     throw new UnsupportedOperationException("Unknown opaque datatype" + value);
                                 }

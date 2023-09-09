@@ -67,7 +67,6 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
 
         if (serialPort == null && config.port != null) {
-
             SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.port);
 
             if (portIdentifier == null) {

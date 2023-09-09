@@ -226,7 +226,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             Command command) throws ShellyApiException {
         boolean updated = false;
         if (command instanceof HSBType hsb) {
-
             logger.debug("HSB-Info={}, Hue={}, getRGB={}, toRGB={}/{}/{}", hsb, hsb.getHue(),
                     String.format("0x%08X", hsb.getRGB()), hsb.toRGB()[0], hsb.toRGB()[1], hsb.toRGB()[2]);
             if (hsb.toString().contains("360,")) {

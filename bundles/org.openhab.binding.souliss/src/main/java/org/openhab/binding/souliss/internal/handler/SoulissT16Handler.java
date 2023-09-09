@@ -127,7 +127,6 @@ public class SoulissT16Handler extends SoulissGenericHandler {
 
                 case SoulissBindingConstants.LED_COLOR_CHANNEL:
                     if (command instanceof HSBType localHsbState) {
-
                         updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
                                 PercentType.valueOf(hsbState.getBrightness().toString()));
                         commandSendRgb(SoulissProtocolConstants.SOULISS_T1N_SET,

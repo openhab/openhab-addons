@@ -239,7 +239,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                         resolEmuEMThingHandler.stop();
                     }
                 });
-
             }
         } catch (IOException ioe) {
             // we don't care about exceptions on disconnect in dispose

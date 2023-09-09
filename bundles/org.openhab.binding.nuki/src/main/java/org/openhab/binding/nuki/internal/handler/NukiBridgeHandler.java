@@ -176,7 +176,6 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
     public void checkBridgeOnline() {
         logger.debug("checkBridgeOnline():bridgeIp[{}] status[{}]", this.config.ip, getThing().getStatus());
         if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-
             withHttpClient(client -> {
                 logger.debug("Requesting BridgeInfo to ensure Bridge[{}] is online.", this.config.ip);
                 BridgeInfoResponse bridgeInfoResponse = client.getBridgeInfo();

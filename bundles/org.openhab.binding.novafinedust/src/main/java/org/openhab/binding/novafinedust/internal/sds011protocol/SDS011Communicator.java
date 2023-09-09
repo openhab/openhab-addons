@@ -80,7 +80,6 @@ public class SDS011Communicator {
      */
     public void initialize(WorkMode mode, Duration interval)
             throws PortInUseException, TooManyListenersException, IOException, UnsupportedCommOperationException {
-
         logger.trace("Initializing with mode={}, interval={}", mode, interval);
 
         SerialPort localSerialPort = portId.open(thingHandler.getThing().getUID().toString(), 2000);
