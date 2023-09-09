@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.InfluxDB;
+import org.influxdb.InfluxDBException;
 import org.influxdb.InfluxDBFactory;
-import org.influxdb.InfluxDBIOException;
 import org.influxdb.dto.BatchPoints;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
@@ -59,14 +59,12 @@ import com.influxdb.exceptions.InfluxException;
 public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     private final Logger logger = LoggerFactory.getLogger(InfluxDB1RepositoryImpl.class);
     private final InfluxDBConfiguration configuration;
-    private final InfluxDBMetadataService influxDBMetadataService;
     private final FilterCriteriaQueryCreator queryCreator;
     private @Nullable InfluxDB client;
 
     public InfluxDB1RepositoryImpl(InfluxDBConfiguration configuration,
             InfluxDBMetadataService influxDBMetadataService) {
         this.configuration = configuration;
-        this.influxDBMetadataService = influxDBMetadataService;
         this.queryCreator = new InfluxDB1FilterCriteriaQueryCreatorImpl(configuration, influxDBMetadataService);
     }
 
@@ -131,7 +129,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             BatchPoints batchPoints = BatchPoints.database(configuration.getDatabaseName())
                     .retentionPolicy(configuration.getRetentionPolicy()).points(points).build();
             currentClient.write(batchPoints);
-        } catch (InfluxException | InfluxDBIOException e) {
+        } catch (InfluxException | InfluxDBException e) {
             logger.debug("Writing to database failed", e);
             return false;
         }
@@ -177,7 +175,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             } else {
                 throw new InfluxException("API not present");
             }
-        } catch (InfluxException | InfluxDBIOException e) {
+        } catch (InfluxException | InfluxDBException e) {
             logger.warn("Failed to execute query '{}': {}", filter, e.getMessage());
             return List.of();
         }
