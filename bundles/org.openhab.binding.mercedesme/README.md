@@ -25,6 +25,14 @@ If you face some problems during setup or runtime please have a look into the [T
 | Thing           | `hybrid`      | Fuel vehicle with supporting electric engine    |
 | Thing           | `bev`         | Battery electric vehicle                        |
 
+## Discovery
+
+The MercedesMe binding is based on the API of the Smartphone App.
+You have an account which connects to one or more vehicles.
+Setup the MercedesMe Account Bridge with your EMail address used in Smartphone App.
+After successful authorization your attached vehicles are found automatically.
+Manual Discovery not necessary!
+
 ## Bridge Configuration
 
 Bridge needs configuration in order to connect properly to your Mercedes Me Account.
@@ -97,17 +105,6 @@ Commands protected by PIN
 
 
 ## Thing Configuration
-
-For vehicle images Mercedes Benz Developer offers only a trial version with limited calls.
-Check in **beforehand** if your vehicle has some restrictions or even if it's supported at all.
-Visit [Vehicle Image Details](https://developer.mercedes-benz.com/products/vehicle_images/details) in order to check your vehicle capabilities.
-Visit [Image Settings](https://developer.mercedes-benz.com/products/vehicle_images/docs#_default_image_settings) to get more information about
-For example the EQA doesn't provide `night` images with `background`.
-If your configuration is set this way the API calls are wasted!
-
-<img src="./doc/ImageRestrictions.png" width="800" height="36"/>
-
-See also [image channel section](#image) for further advise.
 
 | Name            | Type    | Description                                         | Default | Required | Advanced |
 |-----------------|---------|-----------------------------------------------------|---------|----------|----------|
@@ -436,218 +433,46 @@ All channels `read-only`
 | cons-ev-reset    | Number:Energy        |  Since Reset Average Electric Energy Consumption per 100 Kilometre   |
 | cons-conv-reset  | Number:Volume        |  Since Reset Average Gas Consumption per 100 Kilometre               |
 
-    <channel-type id="distance-reset-channel">
-        <item-type>Number:Length</item-type>
-        <label>Distance Reset</label>
-        <state pattern="%.1f %unit%" readOnly="true"/>
-    </channel-type>
-    <channel-type id="driven-time-reset-channel">
-        <item-type>String</item-type>
-        <label>Driving Time Reset</label>
-        <state readOnly="true"/>
-    </channel-type>
-    <channel-type id="avg-speed-reset-channel">
-        <item-type>Number</item-type>
-        <label>Average Speed Reset</label>
-        <state pattern="%.1f km/h" readOnly="true"/>
-    </channel-type>
-    <channel-type id="consumption-ev-reset-channel">
-        <item-type>Number:Energy</item-type>
-        <label>Average Consumption Reset</label>
-        <state pattern="%.1f %unit%" readOnly="true"/>
-    </channel-type>
-    <channel-type id="consumption-conv-reset-channel">
-        <item-type>Number:Volume</item-type>
-        <label>Average Consumption Reset</label>
-        <state pattern="%.1f %unit%" readOnly="true"/>
-    </channel-type>
-### Position
+ ### Position
 
 Group name: `position`
 
-| Channel          | Type                 |  Description                 |
-|------------------|----------------------|------------------------------|
-| heading          | Number:Angle         |  Vehicle heading             |
-| last-update      | DateTime             |  Last location update        |
+| Channel             | Type                 |  Description                                    | Read | Write |
+|---------------------|----------------------|-------------------------------------------------|------|-------|
+| heading             | Number:Angle         |  Heading of Vehicle                             | X    |       |
+| gps                 | Point                |  GPS Location Point of Vehicle                  | X    |       |
+| signal              | Number               |  Request Light or Horn Signal to find Vehicle   |     |  X     |
+
+#### Signal Settings
+
+Depends on the capabilities of your vehicle
 
 ### Tires
 
-Provides exterior and interior images for your specific vehicle.
-Group name: `image`
+Group name: `tires`
+All channels `read-only`
 
-| Channel          | Type                 |  Description                 | Write |
-|------------------|----------------------|------------------------------|-------|
-| image-data       | Raw                  |  Vehicle image               |       |
-| image-view       | text                 |  Vehicle image viewpoint     |   X   |
-| clear-cache      | Switch               |  Remove all stored images    |   X   |
+| Channel                  | Type                 |  Description                    |
+|--------------------------|----------------------|---------------------------------|
+| pressure-front-left      | Number:Pressure      |  Tire Pressure Front Left       |
+| pressure-front-right     | Number:Pressure      |  Tire Pressure Fornt Right      |
+| pressure-rear-left       | Number:Pressure      |  Tire Pressure Rear Left        |
+| pressure-rear-right      | Number:Pressure      |  Tire Pressure Rear Right       |
+| sensor-available         | Number               |  Tire Sensor Availbale          | 
+| marker-front-left        | Number               |  Tire Marker Front Left         |
+| marker-front-right       | Number               |  Tire Marker Fornt Right        | 
+| marker-rear-left         | Number               |  Tire Marker Rear Left          | 
+| marker-rear-right        | Number               |  Tire Marker Rear Right         |
+| last-update              | DateTime             |  Timestamp of last Measurement  |
 
-**If** the `imageApiKey` in [Bridge Configuration Parameters](#bridge-configuration-parameters) is set the vehicle thing will try to get images.
-Pay attention to the [Advanced Image Configuration Properties](#thing-configuration) before requesting new images.
-Sending commands towards the `image-view` channel will change the image.
-The `image-view` is providing options to select the available images for your specific vehicle.
-Images are stored in `jsondb` so if you requested all images the Mercedes Benz Image API will not be called anymore which is good because you have a restricted amount of calls!
-If you're not satisfied e.g. you want a background you need to
+#### Sensor Available Mapping
 
-1. change the [Advanced Image Configuration Properties](#thing-configuration)
-1. Switch `clear-cache` channel item to `ON` to clear all images
-1. request them via `image-view`
+- Not available yet!
+
+#### Tire Marker Mapping
+
+- Not available yet!
 
 ## Troubleshooting
 
-### Authorization fails
 
-The configuration of openHAB account thing and the Mercedes Developer project need an extract match regarding
-
-- MB project credentials vs. `clientId` `clientSecret` and `callbackUrl`
-- MB project subscription of products vs. `scope`
-
-If you follow the [bridge configuration steps](#bridge-configuration) both will match.
-Otherwise you'll receive some error message when clicking the link after opening the `callbackUrl` in your browser
-
-Most common errors:
-
-- redirect URL doesn't match: Double check if `callbackUrl` is really saved correctly in your Mercedes Benz Developer project
-- scope failure: the requested scope doesn't match with the subscribed products.
-  - Check [openHab configuration switches](#openhab-configuration)
-  - apply changes if necessary and don't forget to save
-  - after these steps refresh the `callbackUrl` in [your browser](#callback-page) to apply these changes
-  - try a new authorization clicking the link
-
-### Receive no data
-
-Especially after setting the frist Mercedes Benz Developer Project you'll receive no data.
-It seems that the API isn't _filled_ yet.
-
-#### Pre-Condition
-
-- The Mercedes Me bridge is online = authorization is fine
-- The Mercedes Me thing is online = API calls are fine
-
-#### Solution
-
-- Reduce `refreshInterval` to 1 minute
-- Go to your vehicle, open doors and windows, turn on lights, drive a bit  ...
-- wait until values are providing the right states
-
-## Full example
-
-The example is based on a battery electric vehicle.
-Exchange configuration parameters in the Things section
-
-Bridge
-
-- 4711 - your desired bridge id
-- YOUR_CLIENT_ID - Client ID of the Mercedes Developer project
-- YOUR_CLIENT_SECRET - Client Secret of the Mercedes Developer project
-- YOUR_API_KEY - Image API Key of the Mercedes Developer project
-- YOUR_OPENHAB_SERVER_IP - IP address of your openHAB server
-- 8090 - a **unique** port number - each bridge in your openHAB installation needs to have different port number!
-
-Thing
-
-- eqa - your desired vehicle thing id
-- VEHICLE_VIN - your Vehicle Identification Number
-
-### Things file
-
-```java
-Bridge mercedesme:account:4711   "MercedesMe John Doe" [ clientId="YOUR_CLIENT_ID", clientSecret="YOUR_CLIENT_SECRET", imageApiKey="YOUR_API_KEY", callbackIP="YOUR_OPENHAB_SERVER_IP", callbackPort=8092, odoScope=true, vehicleScope=true, lockScope=true, fuelScope=true, evScope=true] {
-         Thing bev eqa           "Mercedes EQA"        [ vin="VEHICLE_VIN", refreshInterval=5, background=false, night=false, cropped=false, roofOpen=false, format="webp"]
-}
-```
-
-### Items file
-
-```java
-Number:Length           EQA_Mileage                 "Odometer [%d %unit%]"                        {channel="mercedesme:bev:4711:eqa:range#mileage" }                                                                           
-Number:Length           EQA_Range                   "Range [%d %unit%]"                           {channel="mercedesme:bev:4711:eqa:range#range-electric"}
-Number:Length           EQA_RangeRadius             "Range Radius [%d %unit%]"                    {channel="mercedesme:bev:4711:eqa:range#radius-electric"}   
-Number:Dimensionless    EQA_BatterySoc              "Battery Charge [%.1f %%]"                    {channel="mercedesme:bev:4711:eqa:range#soc"}
-
-Contact                 EQA_DriverDoor              "Driver Door [%s]"                            {channel="mercedesme:bev:4711:eqa:doors#driver-front" }
-Contact                 EQA_DriverDoorRear          "Driver Door Rear [%s]"                       {channel="mercedesme:bev:4711:eqa:doors#driver-rear" }
-Contact                 EQA_PassengerDoor           "Passenger Door [%s]"                         {channel="mercedesme:bev:4711:eqa:doors#passenger-front" }
-Contact                 EQA_PassengerDoorRear       "Passenger Door Rear [%s]"                    {channel="mercedesme:bev:4711:eqa:doors#passenger-rear" }
-Number                  EQA_Trunk                   "Trunk [%s]"                                  {channel="mercedesme:bev:4711:eqa:doors#deck-lid" }
-Number                  EQA_Rooftop                 "Rooftop [%s]"                                {channel="mercedesme:bev:4711:eqa:doors#rooftop" }
-Number                  EQA_Sunroof                 "Sunroof [%s]"                                {channel="mercedesme:bev:4711:eqa:doors#sunroof" }
-
-Number                  EQA_DoorLock                "Door Lock [%s]"                              {channel="mercedesme:bev:4711:eqa:lock#doors" }
-Switch                  EQA_TrunkLock               "Trunk Lock [%s]"                             {channel="mercedesme:bev:4711:eqa:lock#deck-lid" }
-Switch                  EQA_FlapLock                "Charge Flap Lock [%s]"                       {channel="mercedesme:bev:4711:eqa:lock#flap" }
-
-Number                  EQA_DriverWindow            "Driver Window [%s]"                          {channel="mercedesme:bev:4711:eqa:windows#driver-front" }
-Number                  EQA_DriverWindowRear        "Driver Window Rear [%s]"                     {channel="mercedesme:bev:4711:eqa:windows#driver-rear" }
-Number                  EQA_PassengerWindow         "Passenger Window [%s]"                       {channel="mercedesme:bev:4711:eqa:windows#passenger-front" }
-Number                  EQA_PassengerWindowRear     "Passenger Window Rear [%s]"                  {channel="mercedesme:bev:4711:eqa:windows#passenger-rear" }
-
-Number:Angle            EQA_Heading                 "Heading [%.1f %unit%]"                       {channel="mercedesme:bev:4711:eqa:location#heading" }  
-
-Image                   EQA_Image                   "Image"                                       {channel="mercedesme:bev:4711:eqa:image#image-data" }  
-String                  EQA_ImageViewport           "Image Viewport [%s]"                         {channel="mercedesme:bev:4711:eqa:image#image-view" }  
-Switch                  EQA_ClearCache              "Clear Cache [%s]"                            {channel="mercedesme:bev:4711:eqa:image#clear-cache" }  
-
-Switch                  EQA_InteriorFront           "Interior Front Light [%s]"                   {channel="mercedesme:bev:4711:eqa:lights#interior-front" }  
-Switch                  EQA_InteriorRear            "Interior Rear Light [%s]"                    {channel="mercedesme:bev:4711:eqa:lights#interior-rear" }  
-Switch                  EQA_ReadingLeft             "Reading Light Left [%s]"                     {channel="mercedesme:bev:4711:eqa:lights#reading-left" }  
-Switch                  EQA_ReadingRight            "Reading Light Right [%s]"                    {channel="mercedesme:bev:4711:eqa:lights#reading-right" }  
-Number                  EQA_LightSwitch             "Main Light Switch [%s]"                      {channel="mercedesme:bev:4711:eqa:lights#light-switch" }  
-```
-
-### Sitemap
-
-```perl
-sitemap MB label="Mercedes Benz EQA" {
-  Frame label="EQA Image" {
-    Image  item=EQA_Image  
-                       
-  } 
-  Frame label="Range" {
-    Text    item=EQA_Mileage           
-    Text    item=EQA_Range             
-    Text    item=EQA_RangeRadius     
-    Text    item=EQA_BatterySoc        
-  }
-
-  Frame label="Door Details" {
-    Text      item=EQA_DriverDoor 
-    Text      item=EQA_DriverDoorRear   
-    Text      item=EQA_PassengerDoor 
-    Text      item=EQA_PassengerDoorRear 
-    Text      item=EQA_Trunk
-    Text      item=EQA_Rooftop
-    Text      item=EQA_Sunroof    
-    Text      item=EQA_DoorLock
-    Text      item=EQA_TrunkLock
-    Text      item=EQA_FlapLock
-  }
-
-  Frame label="Windows" {
-    Text     item=EQA_DriverWindow
-    Text     item=EQA_DriverWindowRear 
-    Text     item=EQA_PassengerWindow
-    Text     item=EQA_PassengerWindowRear
-  }
-  
-  Frame label="Location" {
-    Text    item=EQA_Heading             
-  }
-
-  Frame label="Lights" {
-    Text       item=EQA_InteriorFront
-    Text       item=EQA_InteriorRear
-    Text       item=EQA_ReadingLeft
-    Text       item=EQA_ReadingRight
-    Text       item=EQA_LightSwitch
-  } 
-
-  Frame label="Image Properties" {
-    Selection    item=EQA_ImageViewport
-    Switch       item=EQA_ClearCache
-  } 
-}
-```
-
-## Mercedes Benz Developer
-
-Visit [Mercedes Benz Developer](https://developer.mercedes-benz.com/) to gain more deep information.
