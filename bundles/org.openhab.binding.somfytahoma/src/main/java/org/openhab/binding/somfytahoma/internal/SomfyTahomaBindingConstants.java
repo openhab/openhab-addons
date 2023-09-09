@@ -390,8 +390,10 @@ public class SomfyTahomaBindingConstants {
     public static final String AUTHENTICATION_OAUTH_GRANT_ERROR = "Provided Authorization Grant is invalid.";
     public static final String AUTHENTICATION_OAUTH_INVALID_GRANT = "error.invalid.grant";
     public static final String OPENHAB_TOKEN = "openHAB token";
-    public static final int SUSPEND_TIME = 120;
+    public static final int SUSPEND_TIME = 300;
     public static final int RECONCILIATION_TIME = 600;
+    public static final int LOGIN_LIMIT_TIME = 60;
+    public static final int MAX_ERRORS = 5;
 
     // Commands
     public static final String COMMAND_MY = "my";
