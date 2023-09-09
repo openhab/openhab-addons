@@ -53,7 +53,7 @@ class CustomResponseTransformer {
 
         switch (triggerChannel.getUID().getId()) {
             case CHANNEL_GROUP_CHARGER_STATE + "#" + CHANNEL_CHARGER_OP_MODE:
-                updateChargerStartStop(result, value, rawData);
+                updateChargerStartStop(result, value);
                 break;
             case CHANNEL_GROUP_CHARGER_STATE + "#" + CHANNEL_CHARGER_DYNAMIC_CURRENT:
                 updateChargerPauseResume(result, value);
@@ -78,7 +78,7 @@ class CustomResponseTransformer {
         return result;
     }
 
-    private void updateChargerStartStop(Map<Channel, State> result, String value, JsonObject rawData) {
+    private void updateChargerStartStop(Map<Channel, State> result, String value) {
         Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_START_STOP);
         if (channel != null) {
             ChargerOpState state = ChargerOpState.fromCode(value);

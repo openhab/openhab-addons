@@ -13,6 +13,8 @@
 package org.openhab.binding.easee.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * this enum represents the charger operation states as documented by https://developer.easee.cloud/docs/enumerations
@@ -32,6 +34,7 @@ public enum ChargerOpState {
     DEAUTHENTICATING(8),
     UNKNOWN_STATE(-1);
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChargerOpState.class);
     private final int code;
 
     private ChargerOpState(int code) {
@@ -51,7 +54,13 @@ public enum ChargerOpState {
     }
 
     public static ChargerOpState fromCode(String code) {
-        return ChargerOpState.fromCode(Integer.parseInt(code));
+        try {
+            return ChargerOpState.fromCode(Integer.parseInt(code));
+        } catch (NumberFormatException ex) {
+            LOGGER.warn("caught exception while parsing ChargerOpState code: '{}' - exception: {}", code,
+                    ex.getMessage());
+            return UNKNOWN_STATE;
+        }
     }
 
     public static ChargerOpState fromCode(int code) {
@@ -60,6 +69,7 @@ public enum ChargerOpState {
                 return state;
             }
         }
+        LOGGER.info("unknown ChargerOpState code: '{}'", code);
         return UNKNOWN_STATE;
     }
 }
