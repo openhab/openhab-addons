@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,6 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.voice.KSErrorEvent;
@@ -68,7 +68,7 @@ public class RustpotterKSService implements KSService {
     private static final String RUSTPOTTER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "rustpotter").toString();
     private static final String RUSTPOTTER_RECORDS_FOLDER = Path.of(RUSTPOTTER_FOLDER, "records").toString();
     private final Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = ThreadPoolManager.getPool("OH-voice-rustpotterks");
     private RustpotterKSConfiguration config = new RustpotterKSConfiguration();
     private final List<RustpotterMutex> runningInstances = new ArrayList<>();
     static {
@@ -160,11 +160,13 @@ public class RustpotterKSService implements KSService {
         logger.debug("Wakeword '{}' loaded", wakewordPath);
         AtomicBoolean aborted = new AtomicBoolean(false);
         int bufferSize = (int) rustpotter.getBytesPerFrame();
+        long bytesPerMs = frequency / 1000 * (long) bitDepth;
         RustpotterMutex rustpotterMutex = new RustpotterMutex(rustpotter);
         synchronized (this.runningInstances) {
             this.runningInstances.add(rustpotterMutex);
         }
-        executor.submit(() -> processAudioStream(rustpotterMutex, bufferSize, ksListener, audioStream, aborted));
+        executor.submit(
+                () -> processAudioStream(rustpotterMutex, bufferSize, bytesPerMs, ksListener, audioStream, aborted));
         return () -> {
             logger.debug("Stopping service");
             aborted.set(true);
@@ -207,7 +209,7 @@ public class RustpotterKSService implements KSService {
         rustpotterConfig.setBandPassHighCutoff(bindingConfig.highCutoff);
     }
 
-    private void processAudioStream(RustpotterMutex rustpotter, int bufferSize, KSListener ksListener,
+    private void processAudioStream(RustpotterMutex rustpotter, int bufferSize, long bytesPerMs, KSListener ksListener,
             AudioStream audioStream, AtomicBoolean aborted) {
         int numBytesRead;
         byte[] audioBuffer = new byte[bufferSize];
@@ -221,6 +223,13 @@ public class RustpotterKSService implements KSService {
                 }
                 if (numBytesRead != remaining) {
                     remaining = remaining - numBytesRead;
+                    try {
+                        Thread.sleep(remaining / bytesPerMs);
+                    } catch (InterruptedException ignored) {
+                    }
+                    if (aborted.get()) {
+                        break;
+                    }
                     continue;
                 }
                 remaining = bufferSize;
