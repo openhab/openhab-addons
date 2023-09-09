@@ -68,7 +68,7 @@ public class RustpotterKSService implements KSService {
     private static final String RUSTPOTTER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "rustpotter").toString();
     private static final String RUSTPOTTER_RECORDS_FOLDER = Path.of(RUSTPOTTER_FOLDER, "records").toString();
     private final Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
-    private final ExecutorService executor = ThreadPoolManager.getPool("OH-voice-rustpotterks");
+    private final ExecutorService executor = ThreadPoolManager.getPool("voice-rustpotterks");
     private RustpotterKSConfiguration config = new RustpotterKSConfiguration();
     private final List<RustpotterMutex> runningInstances = new ArrayList<>();
     static {
