@@ -1081,10 +1081,11 @@ public class Clip2Bridge implements Closeable {
      * accessing the session while it is being recreated.
      *
      * @param resource the resource to put.
+     * @return the resource, which may contain errors.
      * @throws ApiException if something fails.
      * @throws InterruptedException
      */
-    public void putResource(Resource resource) throws ApiException, InterruptedException {
+    public Resources putResource(Resource resource) throws ApiException, InterruptedException {
         Stream stream = null;
         try (Throttler throttler = new Throttler(MAX_CONCURRENT_STREAMS);
                 SessionSynchronizer sessionSynchronizer = new SessionSynchronizer(false)) {
@@ -1106,17 +1107,17 @@ public class Clip2Bridge implements Closeable {
             String contentType = contentStreamListener.getContentType();
             int status = contentStreamListener.getStatus();
             LOGGER.trace("HTTP/2 {} (Content-Type: {}) << {}", status, contentType, contentJson);
-            if (status != HttpStatus.OK_200) {
+            if (!HttpStatus.isSuccess(status)) {
                 throw new ApiException(String.format("Unexpected HTTP status '%d'", status));
             }
             if (!MediaType.APPLICATION_JSON.equals(contentType)) {
                 throw new ApiException("Unexpected Content-Type: " + contentType);
             }
+            if (contentJson.isEmpty()) {
+                throw new ApiException("Response payload is empty");
+            }
             try {
-                Resources resources = Objects.requireNonNull(jsonParser.fromJson(contentJson, Resources.class));
-                if (LOGGER.isDebugEnabled()) {
-                    resources.getErrors().forEach(error -> LOGGER.debug("putResource() resources error:{}", error));
-                }
+                return Objects.requireNonNull(jsonParser.fromJson(contentJson, Resources.class));
             } catch (JsonParseException e) {
                 LOGGER.debug("putResource() parsing error json:{}", contentJson, e);
                 throw new ApiException("Parsing error", e);
