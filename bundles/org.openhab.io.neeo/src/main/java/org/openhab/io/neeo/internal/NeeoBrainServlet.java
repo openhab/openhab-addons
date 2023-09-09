@@ -16,9 +16,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Objects;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.io.neeo.internal.models.BrainStatus;
 import org.openhab.io.neeo.internal.servletservices.NeeoBrainSearchService;
 import org.openhab.io.neeo.internal.servletservices.NeeoBrainService;
@@ -46,9 +45,8 @@ public class NeeoBrainServlet extends AbstractServlet {
      * @param servletUrl the non-null, non-empty servlet URL
      * @param api the non-null API
      */
-    private NeeoBrainServlet(ServiceContext context, String servletUrl, NeeoApi api, ClientBuilder clientBuilder) {
-        super(context, servletUrl, new NeeoBrainSearchService(context),
-                new NeeoBrainService(api, context, clientBuilder));
+    private NeeoBrainServlet(ServiceContext context, String servletUrl, NeeoApi api, HttpClient httpClient) {
+        super(context, servletUrl, new NeeoBrainSearchService(context), new NeeoBrainService(api, context, httpClient));
 
         Objects.requireNonNull(context, "context cannot be null");
         NeeoUtil.requireNotEmpty(servletUrl, "servletUrl cannot be empty");
@@ -68,16 +66,16 @@ public class NeeoBrainServlet extends AbstractServlet {
      * @throws IOException when an exception occurs contacting the brain
      */
     public static NeeoBrainServlet create(ServiceContext context, String servletUrl, String brainId,
-            InetAddress ipAddress, ClientBuilder clientBuilder) throws IOException {
+            InetAddress ipAddress, HttpClient httpClient) throws IOException {
         Objects.requireNonNull(context, "context cannot be null");
         NeeoUtil.requireNotEmpty(servletUrl, "servletUrl cannot be empty");
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
         Objects.requireNonNull(ipAddress, "ipAddress cannot be null");
 
-        final NeeoApi api = new NeeoApi(ipAddress.getHostAddress(), brainId, context, clientBuilder);
+        final NeeoApi api = new NeeoApi(ipAddress.getHostAddress(), brainId, context, httpClient);
         api.start();
 
-        return new NeeoBrainServlet(context, servletUrl, api, clientBuilder);
+        return new NeeoBrainServlet(context, servletUrl, api, httpClient);
     }
 
     /**
