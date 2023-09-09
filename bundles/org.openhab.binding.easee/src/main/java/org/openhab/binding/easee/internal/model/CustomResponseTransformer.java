@@ -53,7 +53,7 @@ class CustomResponseTransformer {
 
         switch (triggerChannel.getUID().getId()) {
             case CHANNEL_GROUP_CHARGER_STATE + "#" + CHANNEL_CHARGER_OP_MODE:
-                updateChargerStartStop(result, value, rawData);
+                updateChargerStartStop(result, value);
                 break;
             case CHANNEL_GROUP_CHARGER_STATE + "#" + CHANNEL_CHARGER_DYNAMIC_CURRENT:
                 updateChargerPauseResume(result, value);
@@ -78,28 +78,11 @@ class CustomResponseTransformer {
         return result;
     }
 
-    private void updateChargerStartStop(Map<Channel, State> result, String value, JsonObject rawData) {
+    private void updateChargerStartStop(Map<Channel, State> result, String value) {
         Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_START_STOP);
         if (channel != null) {
-            int val = Integer.parseInt(value);
-            // state >= 3 && state < 7 will mean charging, ready to charge or charging finished
-            boolean charging = val >= CHARGER_OP_STATE_CHARGING && val < CHARGER_OP_STATE_NOT_AUTHENTICATED;
-
-            String rfnc = Utils.getAsString(rawData, CHANNEL_CHARGER_REASON_FOR_NO_CURRENT);
-            int reasonForNoCurrent = Integer.valueOf(rfnc == null ? "-1" : rfnc);
-            boolean paused = false;
-            if (val == CHARGER_OP_STATE_WAITING) {
-                switch (reasonForNoCurrent) {
-                    case CHARGER_REASON_FOR_NO_CURRENT_CHARGER_LIMIT:
-                    case CHARGER_REASON_FOR_NO_CURRENT_CIRCUIT_LIMIT:
-                        paused = true;
-                        break;
-                    default:
-                        paused = false;
-                        break;
-                }
-            }
-            result.put(channel, OnOffType.from(charging || paused));
+            ChargerOpState state = ChargerOpState.fromCode(value);
+            result.put(channel, OnOffType.from(state.isAuthenticatedState()));
         }
     }
 
