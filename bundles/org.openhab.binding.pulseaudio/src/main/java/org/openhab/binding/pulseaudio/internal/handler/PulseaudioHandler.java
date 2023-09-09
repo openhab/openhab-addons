@@ -310,9 +310,9 @@ public class PulseaudioHandler extends BaseThingHandler {
                     savedVolume = volume.intValue();
                 }
             } else if (channelUID.getId().equals(MUTE_CHANNEL)) {
-                if (command instanceof OnOffType type) {
+                if (command instanceof OnOffType onOffCommand) {
                     briHandler.getClient().setMute(device, OnOffType.ON.equals(command));
-                    updateState = type;
+                    updateState = onOffCommand;
                 }
             } else if (channelUID.getId().equals(SLAVES_CHANNEL)) {
                 if (device instanceof Sink sink && sink.isCombinedSink()) {

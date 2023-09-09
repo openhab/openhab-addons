@@ -304,7 +304,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             t.incProtErrors();
         }
         if (updated) {
-
         }
     }
 

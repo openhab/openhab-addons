@@ -29,7 +29,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -235,8 +234,6 @@ public class NeoBaseHandler extends BaseThingHandler {
     protected @Nullable NeoHubHandler getNeoHub() {
         @Nullable
         Bridge b;
-        @Nullable
-        BridgeHandler h;
 
         if ((b = getBridge()) != null && (b.getHandler() instanceof NeoHubHandler neoHubHandler)) {
             return neoHubHandler;
