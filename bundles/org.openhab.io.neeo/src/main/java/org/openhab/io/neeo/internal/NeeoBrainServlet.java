@@ -18,6 +18,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.io.neeo.internal.models.BrainStatus;
 import org.openhab.io.neeo.internal.servletservices.NeeoBrainSearchService;
 import org.openhab.io.neeo.internal.servletservices.NeeoBrainService;
@@ -45,7 +46,8 @@ public class NeeoBrainServlet extends AbstractServlet {
      * @param servletUrl the non-null, non-empty servlet URL
      * @param api the non-null API
      */
-    private NeeoBrainServlet(ServiceContext context, String servletUrl, NeeoApi api, HttpClient httpClient) {
+    private NeeoBrainServlet(ServiceContext context, String servletUrl, NeeoApi api, HttpClient httpClient,
+            HttpClientFactory httpClientFactory) {
         super(context, servletUrl, new NeeoBrainSearchService(context), new NeeoBrainService(api, context, httpClient));
 
         Objects.requireNonNull(context, "context cannot be null");
@@ -66,16 +68,16 @@ public class NeeoBrainServlet extends AbstractServlet {
      * @throws IOException when an exception occurs contacting the brain
      */
     public static NeeoBrainServlet create(ServiceContext context, String servletUrl, String brainId,
-            InetAddress ipAddress, HttpClient httpClient) throws IOException {
+            InetAddress ipAddress, HttpClient httpClient, HttpClientFactory httpClientFactory) throws IOException {
         Objects.requireNonNull(context, "context cannot be null");
         NeeoUtil.requireNotEmpty(servletUrl, "servletUrl cannot be empty");
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
         Objects.requireNonNull(ipAddress, "ipAddress cannot be null");
 
-        final NeeoApi api = new NeeoApi(ipAddress.getHostAddress(), brainId, context, httpClient);
+        final NeeoApi api = new NeeoApi(ipAddress.getHostAddress(), brainId, context, httpClient, httpClientFactory);
         api.start();
 
-        return new NeeoBrainServlet(context, servletUrl, api, httpClient);
+        return new NeeoBrainServlet(context, servletUrl, api, httpClient, httpClientFactory);
     }
 
     /**

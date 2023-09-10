@@ -282,7 +282,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                         servletUrl);
                 try {
                     final NeeoBrainServlet newServlet = NeeoBrainServlet.create(localContext, servletUrl,
-                            sysInfo.getHostname(), ipAddress, httpClient);
+                            sysInfo.getHostname(), ipAddress, httpClient, httpClientFactory);
                     servlets.add(newServlet);
 
                     Hashtable<Object, Object> initParams = new Hashtable<>();

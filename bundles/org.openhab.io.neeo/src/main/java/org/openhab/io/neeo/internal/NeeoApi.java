@@ -20,6 +20,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Stack;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -33,6 +34,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.id.InstanceUUID;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.io.neeo.internal.models.NeeoAdapterRegistration;
 import org.openhab.io.neeo.internal.models.NeeoRecipe;
@@ -69,6 +71,12 @@ public class NeeoApi implements AutoCloseable {
     private final String brainIpAddress;
 
     private final HttpClient httpClient;
+
+    private final HttpClientFactory httpClientFactory;
+
+    private Stack httpClientStack = new Stack<HttpClient>();
+
+    private int httpClientId = 0;
 
     /** The URL of the brain */
     private final String brainUrl;
@@ -121,7 +129,8 @@ public class NeeoApi implements AutoCloseable {
      * @param context the non-null {@link ServiceContext}
      * @throws IOException if an exception occurs connecting to the brain
      */
-    public NeeoApi(String ipAddress, String brainId, ServiceContext context, HttpClient httpClient) throws IOException {
+    public NeeoApi(String ipAddress, String brainId, ServiceContext context, HttpClient httpClient,
+            HttpClientFactory httpClientFactory) throws IOException {
         NeeoUtil.requireNotEmpty(ipAddress, "ipAddress cannot be empty");
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
         Objects.requireNonNull(context, "context cannot be null");
@@ -129,6 +138,7 @@ public class NeeoApi implements AutoCloseable {
         this.brainIpAddress = ipAddress;
         this.brainId = brainId;
         this.httpClient = httpClient;
+        this.httpClientFactory = httpClientFactory;
         this.brainUrl = NeeoConstants.PROTOCOL + (ipAddress.startsWith("/") ? ipAddress.substring(1) : ipAddress) + ":"
                 + NeeoConstants.DEFAULT_BRAIN_PORT;
         deviceKeys = new NeeoDeviceKeys(brainUrl, httpClient);
@@ -459,6 +469,41 @@ public class NeeoApi implements AutoCloseable {
         return deviceKeys;
     }
 
+    private HttpClient getHttpClient() {
+        int stackSize = httpClientStack.size();
+        if (stackSize == 0) {
+            int httpClientId = this.httpClientId + 1;
+            this.httpClientId = httpClientId;
+            String httpClientIdString = "neeo-" + brainId + "-" + httpClientId;
+            logger.debug("getHttpClient created new client {} for brain {}", httpClientIdString, brainId);
+            HttpClient httpClient = httpClientFactory.createHttpClient(httpClientIdString);
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                logger.debug("Exception while starting HttpClient: {}", e.getMessage(), e);
+            }
+            return httpClient;
+        } else {
+            logger.debug("getHttpClient popped a client from the stack for brain {} depth {}", brainId, stackSize);
+            return (HttpClient) httpClientStack.pop();
+        }
+    }
+
+    private void returnHttpClient(HttpClient httpClient) {
+        int stackSize = httpClientStack.size();
+        if (stackSize <= NeeoConstants.HTTPCLIENT_POOL_SIZE) {
+            logger.debug("getHttpClient returned a client for brain {} depth {}", brainId, stackSize);
+            httpClientStack.push(httpClient);
+        } else {
+            try {
+                logger.debug("getHttpClient destroyed a client for brain {}", brainId);
+                httpClient.stop();
+            } catch (Exception e) {
+                logger.debug("Exception while stopping HttpClient: {}", e.getMessage(), e);
+            }
+        }
+    }
+
     /**
      * Send a notification to the brain
      *
@@ -467,7 +512,8 @@ public class NeeoApi implements AutoCloseable {
      */
     public void notify(String msg) throws IOException {
         if (isConnected()) {
-            final HttpRequest rqst = request.get();
+            HttpClient httpClient = getHttpClient();
+            final HttpRequest rqst = new HttpRequest(httpClient);
             logger.debug("Sending Notification to brain ({}): {}", brainId, msg);
             final HttpResponse resp = rqst.sendPostJsonCommand(brainUrl + NeeoConstants.NOTIFICATION, msg);
             if (resp.getHttpCode() != HttpStatus.OK_200) {
@@ -475,6 +521,7 @@ public class NeeoApi implements AutoCloseable {
             } else {
                 logger.debug("Response from brain ({}): {} - {}", brainId, resp.getHttpCode(), resp.getContent());
             }
+            returnHttpClient(httpClient);
         } else {
             logger.debug("Notification ignored - brain not connected");
         }
