@@ -81,7 +81,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `inverterdatadevicestatusstatuscode` | Number                   | Device status code<br />`0` - `6` Startup<br />`7` Running <br />`8` Standby<br />`9` Bootloading<br />`10` Error |
 | `powerflowchannelpgrid`              | Number:Power             | Grid Power (+ from grid, - to grid)                                                                               |
 | `powerflowchannelpload`              | Number:Power             | Load Power (+ generator, - consumer)                                                                              |
-| `powerflowchannelpakku`              | Number:Power             | Battery Power (+ charge, - discharge)                                                                             |
+| `powerflowchannelpakku`              | Number:Power             | Battery Power (+ discharge, - charge)                                                                             |
 | `powerflowchannelppv`                | Number:Power             | Solar Power (+ production)                                                                                        |
 | `powerflowautonomy`                  | Number:Dimensionless     | The current relative autonomy in %                                                                                |
 | `powerflowselfconsumption`           | Number:Dimensionless     | The current relative self consumption in %                                                                        |
