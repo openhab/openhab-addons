@@ -17,7 +17,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
@@ -38,6 +37,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.speedtest.internal.dto.ResultContainer;
 import org.openhab.binding.speedtest.internal.dto.ResultsContainerServerList;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -52,6 +52,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +74,7 @@ public class SpeedtestHandler extends BaseThingHandler {
     private String serverID = "";
     private static final long API_REQUEST_TIMEOUT_SECONDS = 16L;
     private @Nullable HttpClient httpClient;
+    private final TimeZoneProvider timeZoneProvider;
 
     private @Nullable ScheduledFuture<?> pollingJob;
     public volatile boolean isRunning = false;
@@ -84,20 +86,21 @@ public class SpeedtestHandler extends BaseThingHandler {
     private static volatile OS os = OS.NOT_SET;
     private static final Object LOCK = new Object();
 
-    private String pingJitter = "";
-    private String pingLatency = "";
-    private String downloadBandwidth = "";
-    private String downloadBytes = "";
-    private String downloadElapsed = "";
-    private String uploadBandwidth = "";
-    private String uploadBytes = "";
-    private String uploadElapsed = "";
+    private State pingJitter = UnDefType.NULL;
+    private State pingLatency = UnDefType.NULL;
+    private State downloadBandwidth = UnDefType.NULL;
+    private State downloadBytes = UnDefType.NULL;
+    private State downloadElapsed = UnDefType.NULL;
+    private State uploadBandwidth = UnDefType.NULL;
+    private State uploadBytes = UnDefType.NULL;
+    private State uploadElapsed = UnDefType.NULL;
     private String isp = "";
     private String interfaceInternalIp = "";
     private String interfaceExternalIp = "";
     private String resultUrl = "";
+    private State resultImage = UnDefType.NULL;
     private String server = "";
-    private String timestamp = "";
+    private State timestamp = UnDefType.NULL;
 
     /**
      * Contains information about which operating system openHAB is running on.
@@ -111,9 +114,10 @@ public class SpeedtestHandler extends BaseThingHandler {
         NOT_SET
     }
 
-    public SpeedtestHandler(Thing thing, HttpClient httpClient) {
+    public SpeedtestHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.httpClient = httpClient;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -303,19 +307,70 @@ public class SpeedtestHandler extends BaseThingHandler {
                 ResultContainer.class);
         if (tmpCont != null) {
             if ("result".equals(tmpCont.getType())) {
-                timestamp = tmpCont.getTimestamp();
-                pingJitter = tmpCont.getPing().getJitter();
-                pingLatency = tmpCont.getPing().getLatency();
-                downloadBandwidth = tmpCont.getDownload().getBandwidth();
-                downloadBytes = tmpCont.getDownload().getBytes();
-                downloadElapsed = tmpCont.getDownload().getElapsed();
-                uploadBandwidth = tmpCont.getUpload().getBandwidth();
-                uploadBytes = tmpCont.getUpload().getBytes();
-                uploadElapsed = tmpCont.getUpload().getElapsed();
+                try {
+                    // timestamp format: "2023-07-20T19:34:54Z"
+                    ZonedDateTime zonedDateTime = ZonedDateTime.parse(tmpCont.getTimestamp())
+                            .withZoneSameInstant(timeZoneProvider.getTimeZone());
+                    timestamp = new DateTimeType(zonedDateTime);
+                } catch (DateTimeParseException e) {
+                    timestamp = UnDefType.NULL;
+                    logger.debug("Exception: {}", e.getMessage());
+                }
+
+                pingJitter = new QuantityType<>(Double.parseDouble(tmpCont.getPing().getJitter()) / 1000.0,
+                        Units.SECOND);
+                pingLatency = new QuantityType<>(Double.parseDouble(tmpCont.getPing().getLatency()) / 1000.0,
+                        Units.SECOND);
+                downloadBandwidth = new QuantityType<>(
+                        Double.parseDouble(tmpCont.getDownload().getBandwidth()) / 125000.0, Units.MEGABIT_PER_SECOND);
+                downloadBytes = new QuantityType<>(Double.parseDouble(tmpCont.getDownload().getBytes()), Units.BYTE);
+                downloadElapsed = new QuantityType<>(Double.parseDouble(tmpCont.getDownload().getElapsed()) / 1000.0,
+                        Units.SECOND);
+                uploadBandwidth = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getBandwidth()) / 125000.0,
+                        Units.MEGABIT_PER_SECOND);
+                uploadBytes = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getBytes()), Units.BYTE);
+                uploadElapsed = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getElapsed()) / 1000.0,
+                        Units.SECOND);
                 isp = tmpCont.getIsp();
                 interfaceInternalIp = tmpCont.getInterface().getInternalIp();
                 interfaceExternalIp = tmpCont.getInterface().getExternalIp();
                 resultUrl = tmpCont.getResult().getUrl();
+
+                HttpClient client = httpClient;
+                if (client == null) {
+                    logger.debug("Unable to download image because httpClient is not set");
+                } else {
+                    try {
+                        String url = String.valueOf(resultUrl) + ".png";
+                        logger.debug("Downloading result image from: {}", url);
+                        Request request = client.newRequest(url);
+                        request.method(HttpMethod.GET);
+                        request.timeout(API_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+                        ContentResponse contentResponse = request.send();
+                        switch (contentResponse.getStatus()) {
+                            case HttpStatus.OK_200:
+                                resultImage = new RawType(contentResponse.getContent(),
+                                        contentResponse.getHeaders().get(HttpHeader.CONTENT_TYPE));
+                                break;
+                            default:
+                                logger.debug("HTTP GET failed: {}, {}", contentResponse.getStatus(),
+                                        contentResponse.getReason());
+                                break;
+                        }
+                    } catch (TimeoutException e) {
+                        resultImage = UnDefType.NULL;
+                        logger.debug("TimeoutException: Download of result image timed out");
+                    } catch (ExecutionException e) {
+                        resultImage = UnDefType.NULL;
+                        logger.debug("ExecutionException: {}", e.getMessage());
+                    } catch (InterruptedException e) {
+                        resultImage = UnDefType.NULL;
+                        logger.debug("InterruptedException: {}", e.getMessage());
+                        Thread.currentThread().interrupt();
+                    }
+                }
+
                 server = tmpCont.getServer().getName() + " (" + tmpCont.getServer().getId().toString() + ") "
                         + tmpCont.getServer().getLocation();
                 updateChannels();
@@ -349,91 +404,56 @@ public class SpeedtestHandler extends BaseThingHandler {
      */
     private void updateChannels() {
         logger.debug("Updating channels");
-        State newState;
 
-        // timestamp format: "2023-07-20T19:34:54Z"
-        try {
-            ZonedDateTime zonedDateTime = ZonedDateTime.parse(timestamp).withZoneSameInstant(ZoneId.systemDefault());
-            newState = new DateTimeType(zonedDateTime);
-            logger.debug("timestamp: {}", newState);
-            updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.TIMESTAMP), newState);
-        } catch (DateTimeParseException e) {
-            logger.debug("Exception: {}", e.getMessage());
-        }
+        logger.debug("timestamp: {}", timestamp);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.TIMESTAMP), timestamp);
 
-        newState = new QuantityType<>(Double.parseDouble(pingJitter) / 1000.0, Units.SECOND);
-        logger.debug("pingJitter: {}", newState);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_JITTER), newState);
+        logger.debug("pingJitter: {}", pingJitter);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_JITTER), pingJitter);
 
-        newState = new QuantityType<>(Double.parseDouble(pingLatency) / 1000.0, Units.SECOND);
-        logger.debug("pingLatency: {}", newState);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_LATENCY), newState);
+        logger.debug("pingLatency: {}", pingLatency);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_LATENCY), pingLatency);
 
-        newState = new QuantityType<>(Double.parseDouble(downloadBandwidth) / 125000.0, Units.MEGABIT_PER_SECOND);
-        logger.debug("downloadBandwidth: {}", newState);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BANDWIDTH), newState);
+        logger.debug("downloadBandwidth: {}", downloadBandwidth);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BANDWIDTH),
+                downloadBandwidth);
 
-        newState = new QuantityType<>(Double.parseDouble(downloadBytes), Units.BYTE);
-        logger.debug("downloadBytes: {}", newState);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BYTES), newState);
+        logger.debug("downloadBytes: {}", downloadBytes);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BYTES), downloadBytes);
 
-        newState = new QuantityType<>(Double.parseDouble(downloadElapsed) / 1000.0, Units.SECOND);
-        logger.debug("downloadElapsed: {}", newState);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_ELAPSED), newState);
+        logger.debug("downloadElapsed: {}", downloadElapsed);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_ELAPSED), downloadElapsed);
 
-        newState = new QuantityType<>(Double.parseDouble(uploadBandwidth) / 125000.0, Units.MEGABIT_PER_SECOND);
-        logger.debug("uploadBandwidth: {}", newState);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BANDWIDTH), newState);
+        logger.debug("uploadBandwidth: {}", uploadBandwidth);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BANDWIDTH), uploadBandwidth);
 
-        newState = new QuantityType<>(Double.parseDouble(uploadBytes), Units.BYTE);
-        logger.debug("uploadBytes: {}", newState);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BYTES), newState);
+        logger.debug("uploadBytes: {}", uploadBytes);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BYTES), uploadBytes);
 
-        newState = new QuantityType<>(Double.parseDouble(uploadElapsed) / 1000.0, Units.SECOND);
-        logger.debug("uploadElapsed: {}", newState);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_ELAPSED), newState);
+        logger.debug("uploadElapsed: {}", uploadElapsed);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_ELAPSED), uploadElapsed);
 
+        logger.debug("interfaceExternalIp: {}", interfaceExternalIp);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_EXTERNALIP),
                 new StringType(interfaceExternalIp));
+
+        logger.debug("interfaceInternalIp: {}", interfaceInternalIp);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_INTERNALIP),
                 new StringType(interfaceInternalIp));
+
+        logger.debug("isp: {}", isp);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.ISP), new StringType(isp));
+
+        logger.debug("resultUrl: {}", resultUrl);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_URL),
-        HttpClient client = httpClient;
-        if (client == null) {
-            logger.debug("Unable to download image because httpClient is not set");
-        } else {
-            try {
-                String url = String.valueOf(resultUrl) + ".png";
-                logger.debug("Downloading result image from: {}", url);
-                Request request = client.newRequest(url);
-                request.method(HttpMethod.GET);
-                request.timeout(API_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                new StringType(resultUrl));
 
-                ContentResponse contentResponse = request.send();
-                switch (contentResponse.getStatus()) {
-                    case HttpStatus.OK_200:
-                        RawType image = new RawType(contentResponse.getContent(),
-                                contentResponse.getHeaders().get(HttpHeader.CONTENT_TYPE));
+        logger.debug("resultImage: <RawType>");
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_IMAGE), resultImage);
 
-                        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_IMAGE), image);
-                        break;
-                    default:
-                        logger.debug("HTTP GET failed: {}, {}", contentResponse.getStatus(),
-                                contentResponse.getReason());
-                        break;
-                }
-            } catch (TimeoutException e) {
-                logger.debug("TimeoutException: Download of result image timed out");
-            } catch (ExecutionException e) {
-                logger.debug("ExecutionException: {}", e.getMessage());
-            } catch (InterruptedException e) {
-                logger.debug("InterruptedException: {}", e.getMessage());
-                Thread.currentThread().interrupt();
-            }
-        }
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.SERVER),
-                new StringType(String.valueOf(server)));    }
+        logger.debug("server: {}", server);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.SERVER), new StringType(server));
+    }
 
     /**
      * Checks to make sure the executable for speedtest is valid
@@ -595,3 +615,4 @@ public class SpeedtestHandler extends BaseThingHandler {
         return file.canExecute();
     }
 }
+

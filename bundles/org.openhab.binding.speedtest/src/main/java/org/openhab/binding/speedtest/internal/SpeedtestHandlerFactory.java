@@ -20,6 +20,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -42,10 +43,13 @@ public class SpeedtestHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SPEEDTEST);
     private final HttpClient httpClient;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public SpeedtestHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public SpeedtestHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class SpeedtestHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SPEEDTEST.equals(thingTypeUID)) {
-            return new SpeedtestHandler(thing, httpClient);
+            return new SpeedtestHandler(thing, httpClient, timeZoneProvider);
         }
 
         return null;
