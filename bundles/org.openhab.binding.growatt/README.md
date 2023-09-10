@@ -154,12 +154,12 @@ Number:Energy Solar_Output_Energy "Solar Output Energy Total" {channel="growatt:
 
 You can install the Grott application either on the same computer as OpenHAB or on another.
 The following assumes you will be running it on the same computer.
-Grott application acts as a proxy server between your Growatt inverter and the Growatt cloud server.
+The Grott application acts as a proxy server between your Growatt inverter and the Growatt cloud server.
 It intercepts data packets between the inverter and the cloud server, and it sends a copy of the intercepted data also to OpenHAB.
 
 **NOTE**: make sure that the Grott application is **FULLY OPERATIONAL** for your inverter **BEFORE** you create any things in OpenHAB!
 Otherwise the binding might create a wrong (or even empty) list of channels for the inverter thing.
-(Yet if you do make that mistake you can rectify it by deleteing and recreating the thing).
+(Yet if you do make that mistake you can rectify it by deleting and recreating the thing).
 
 You should configure the Grott application via its `grott.ini` file.
 Configure Grott to match your inverter according to the [instructions](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor).
@@ -203,7 +203,7 @@ pvoutput = False // disable pvoutput
 [extension]
 extension = True
 extname = grottext
-extvar = {"url": "http://xxx.xxx.xxx.xxx:8080/growatt"}
+extvar = {"url": "http://xxx.xxx.xxx.xxx:8080/growatt"} // ip address of openhab
 ```
 
 ### Start Grott as a Service
