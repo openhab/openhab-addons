@@ -201,8 +201,8 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService im
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof NikoHomeControlBridgeHandler homeControllerBridgeHandler) {
-            this.handler = homeControllerBridgeHandler;
+        if (handler instanceof NikoHomeControlBridgeHandler homeControlBridgeHandler) {
+            this.handler = homeControlBridgeHandler;
             bridgeUID = handler.getThing().getUID();
         }
     }
