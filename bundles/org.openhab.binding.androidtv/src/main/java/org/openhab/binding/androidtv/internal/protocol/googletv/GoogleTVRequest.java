@@ -66,6 +66,10 @@ public class GoogleTVRequest {
     }
 
     public static String loginRequest(int messageId) {
+        return loginRequest(messageId, "");
+    }
+
+    public static String loginRequest(int messageId, String data) {
         String message = "";
         if (messageId == 1) {
             // Send app and device name
@@ -85,8 +89,8 @@ public class GoogleTVRequest {
             // 080210c801f201 08 0a 04 08031006 1001
             message = "080210c801f201080a04080310061001";
         } else if (messageId == 4) {
-            // 0a41087e123d0a 08 534d2d4739393855 12 07 73616d73756e67 18 01 22 02 3133 2a
-            // ---------------LEN--SM-G998U----------LEN--samsung---------
+            // 0a 41 08 7e 12 3d 0a 08 534d2d4739393855 12 07 73616d73756e67 18 01 22 02 3133 2a
+            // ---LEN---------LEN---LEN--SM-G998U----------LEN--samsung---------
             // 19 636f6d2e676f6f676c652e616e64726f69642e766964656f73 32
             // LEN-com.google.android.videos----------------------------
             // 07 342e33382e3138
@@ -94,8 +98,8 @@ public class GoogleTVRequest {
             // message =
             // "0a41087e123d0a08534d2d4739393855120773616d73756e671801220231332a19636f6d2e676f6f676c652e616e64726f69642e766964656f733207342e33382e3138";
 
-            // 0a5708fe0412520a 08 534d2d4739393855 12 07 73616d73756e67 18 01 22 02 3133 2a
-            // -----------------LEN--SM-G998U----------LEN--samsung---------
+            // 0a 57 08 fe 04 12 52 0a 08 534d2d4739393855 12 07 73616d73756e67 18 01 22 02 3133 2a
+            // ---LEN------------LEN---LEN--SM-G998U----------LEN--samsung---------
             // 19 636f6d2e676f6f676c652e616e64726f69642e766964656f73 32
             // LEN-com.google.android.videos---------------------------
             // 1c 342e33392e3538342e3532393538383538332e372d72656c65617365
@@ -103,13 +107,21 @@ public class GoogleTVRequest {
             // message =
             // "0a5708fe0412520a08534d2d4739393855120773616d73756e671801220231332a19636f6d2e676f6f676c652e616e64726f69642e766964656f73321c342e33392e3538342e3532393538383538332e372d72656c65617365";
 
-            // 0a5708fe0412520a 08 534d2d4739393855 12 07 73616d73756e67 18 01 22 02 3133 2a
-            // -----------------LEN--SM-G998U----------LEN--samsung---------
-            // 19 636f6d2e676f6f676c652e616e64726f69642e766964656f73 32
+            // 0a 3b 08 ee 04 12 36 0a 06 6950686f6e65 12 05 4170706c65 18 02 22 04 31362e36 2a
+            // ---LEN------------LEN---LEN-iPhone---------LEN-Apple--------------LEN-16.6
+            // 11 636f6d2e676f6f676c652e4d6f76696573 32 0a 332e31332e3030303033
+            // LEN-com.google.Movies--------------------LEN-3.13.00003
+
+            // 0a 57 08 fe 04 12 52 0a 08 534d2d4739393855 12 07 73616d73756e67 18 01 22 02 3133 2a
+            // ---LEN------------LEN---LEN--SM-G998U----------LEN--samsung---------
+            // 19 636f6d2e676f-6f676c652e616e64726f69642e766964656f73 32
             // LEN-com.google.android.videos---------------------------
             // 1c 342e33392e3634342e3533343836353739392e332d72656c65617365
             // LEN-4.39.644.534865799.3-release
-            message = "0a5708fe0412520a08534d2d4739393855120773616d73756e671801220231332a19636f6d2e676f6f676c652e616e64726f69642e766964656f73321c342e33392e3634342e3533343836353739392e332d72656c65617365";
+            int dataInt = Integer.parseInt(data, 16) - 1;
+            String updatedData = Integer.toHexString(dataInt);
+            message = "0a5708" + updatedData
+                    + "0412520a08534d2d4739393855120773616d73756e671801220231332a19636f6d2e676f6f676c652e616e64726f69642e766964656f73321c342e33392e3634342e3533343836353739392e332d72656c65617365";
         } else if (messageId == 5) {
             // Unknown. Sent after "1200" received
             message = "1202087e";
