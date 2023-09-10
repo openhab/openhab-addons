@@ -43,6 +43,7 @@
 			<property name="Server List 8"></property>
 			<property name="Server List 9"></property>
 			<property name="Server List 10"></property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<config-description>
 			<parameter-group name="config-info">
