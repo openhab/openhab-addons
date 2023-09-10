@@ -469,7 +469,7 @@ public class NeeoApi implements AutoCloseable {
         return deviceKeys;
     }
 
-    private HttpClient getHttpClient() {
+    private synchronized HttpClient getHttpClient() {
         int stackSize = httpClientStack.size();
         if (stackSize == 0) {
             int httpClientId = this.httpClientId + 1;
@@ -489,7 +489,7 @@ public class NeeoApi implements AutoCloseable {
         }
     }
 
-    private void returnHttpClient(HttpClient httpClient) {
+    private synchronized void returnHttpClient(HttpClient httpClient) {
         int stackSize = httpClientStack.size();
         if (stackSize <= NeeoConstants.HTTPCLIENT_POOL_SIZE) {
             logger.debug("getHttpClient returned a client for brain {} depth {}", brainId, stackSize);
