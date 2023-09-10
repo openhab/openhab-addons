@@ -66,7 +66,10 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
 
     private final Logger logger = LoggerFactory.getLogger(WebSocketManager.class);
     private final Map<MACAddress, ApiConsumerHandler> listeners = new HashMap<>();
+    private final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(FreeboxOsBindingConstants.BINDING_ID);
     private final ApiHandler apiHandler;
+    private final WebSocketClient client;
     private Optional<ScheduledFuture<?>> reconnectJob = Optional.empty();
     private volatile @Nullable Session wsSession;
 
@@ -76,12 +79,13 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     public WebSocketManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(WS_PATH));
         this.apiHandler = session.getApiHandler();
+        this.client = new WebSocketClient(apiHandler.getHttpClient());
     }
 
-    private static enum Action {
+    private enum Action {
         REGISTER,
         NOTIFICATION,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private static record WebSocketResponse(boolean success, Action action, String event, String source,
@@ -93,23 +97,19 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
 
     public void openSession(@Nullable String sessionToken, int reconnectInterval) {
         if (reconnectInterval > 0) {
-            WebSocketClient client = new WebSocketClient(apiHandler.getHttpClient());
             URI uri = getUriBuilder().scheme(getUriBuilder().build().getScheme().contains("s") ? "wss" : "ws").build();
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader(ApiHandler.AUTH_HEADER, sessionToken);
 
             stopReconnect();
-            ScheduledExecutorService scheduler = ThreadPoolManager
-                    .getScheduledPool(FreeboxOsBindingConstants.BINDING_ID);
-            reconnectJob = Optional.of(scheduler.scheduleAtFixedRate(() -> {
+            reconnectJob = Optional.of(scheduler.scheduleWithFixedDelay(() -> {
                 try {
                     closeSession();
                     client.start();
                     client.connect(this, uri, request);
                     // Update listeners in case we would have lost data while disconnecting / reconnecting
-                    listeners.values().forEach(host -> {
-                        host.handleCommand(new ChannelUID(host.getThing().getUID(), REACHABLE), RefreshType.REFRESH);
-                    });
+                    listeners.values().forEach(host -> host
+                            .handleCommand(new ChannelUID(host.getThing().getUID(), REACHABLE), RefreshType.REFRESH));
                     logger.debug("Websocket manager connected to {}", uri);
                 } catch (Exception e) {
                     logger.warn("Error connecting websocket client: {}", e.getMessage());
@@ -125,6 +125,11 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
 
     public void dispose() {
         stopReconnect();
+        try {
+            client.stop();
+        } catch (Exception e) {
+            logger.warn("Error stopping websocket client: {}", e.getMessage());
+        }
         closeSession();
     }
 

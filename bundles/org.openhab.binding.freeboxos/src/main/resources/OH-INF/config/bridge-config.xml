@@ -44,7 +44,7 @@
 		</parameter>
 		<parameter name="wsReconnectInterval" type="integer" min="0" max="1440" required="false" unit="min">
 			<label>Websocket Reconnect Interval</label>
-			<description>Disconnection interval frequency - 0 disables websocket usage</description>
+			<description>Disconnection interval, in minutes- 0 disables websocket usage</description>
 			<advanced>true</advanced>
 			<default>60</default>
 		</parameter>
