@@ -15,9 +15,12 @@ package org.openhab.binding.growatt.internal.handler;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
 import org.openhab.binding.growatt.internal.dto.GrottValues;
@@ -44,13 +47,42 @@ public class GrowattInverterHandler extends BaseThingHandler {
 
     private String deviceId = "unknown";
 
+    private @Nullable ScheduledFuture<?> awaitingDataTimeoutTask;
+
     public GrowattInverterHandler(Thing thing) {
         super(thing);
     }
 
     @Override
+    public void dispose() {
+        ScheduledFuture<?> task = awaitingDataTimeoutTask;
+        if (task != null) {
+            task.cancel(true);
+        }
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // everything is read only so do nothing
+    }
+
+    @Override
+    public void initialize() {
+        GrowattInverterConfiguration config = getConfigAs(GrowattInverterConfiguration.class);
+        deviceId = config.deviceId;
+        thing.setProperty(GrowattInverterConfiguration.DEVICE_ID, deviceId);
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.awaiting-data");
+        scheduleAwaitingDataTimeoutTask();
+        logger.debug("initialize() thing has {} channels", thing.getChannels().size());
+    }
+
+    private void scheduleAwaitingDataTimeoutTask() {
+        ScheduledFuture<?> task = awaitingDataTimeoutTask;
+        if (task != null) {
+            task.cancel(true);
+        }
+        awaitingDataTimeoutTask = scheduler.schedule(() -> updateStatus(ThingStatus.OFFLINE,
+                ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.awaiting-data-timeout"), 5, TimeUnit.MINUTES);
     }
 
     /**
@@ -60,12 +92,13 @@ public class GrowattInverterHandler extends BaseThingHandler {
      *
      * @param inverters collection of GrottDevice objects.
      */
-    public void handleInverters(Collection<GrottDevice> inverters) {
+    public void updateInverters(Collection<GrottDevice> inverters) {
         inverters.stream().filter(inverter -> deviceId.equals(inverter.getDeviceId()))
                 .map(inverter -> inverter.getValues()).filter(values -> values != null).findAny()
                 .ifPresentOrElse(values -> {
                     updateStatus(ThingStatus.ONLINE);
-                    handleInverterValues(values);
+                    scheduleAwaitingDataTimeoutTask();
+                    updateInverterValues(values);
                 }, () -> {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                 });
@@ -77,13 +110,13 @@ public class GrowattInverterHandler extends BaseThingHandler {
      *
      * @param inverter a GrottDevice object containing the new status values.
      */
-    public void handleInverterValues(GrottValues inverterValues) {
+    public void updateInverterValues(GrottValues inverterValues) {
         // get channel states
         Map<String, QuantityType<?>> channelStates;
         try {
             channelStates = inverterValues.getChannelStates();
         } catch (NoSuchFieldException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
-            logger.warn("handleInverterValues() unexpected exception:{}, message:{}", e.getClass().getName(),
+            logger.warn("updateInverterValues() unexpected exception:{}, message:{}", e.getClass().getName(),
                     e.getMessage(), e);
             return;
         }
@@ -96,7 +129,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
         // remove unused channels
         if (!unusedChannels.isEmpty()) {
             updateThing(editThing().withoutChannels(unusedChannels).build());
-            logger.debug("handleInverterValues() channel count {} reduced by {} to {}", actualChannels.size(),
+            logger.debug("updateInverterValues() channel count {} reduced by {} to {}", actualChannels.size(),
                     unusedChannels.size(), thing.getChannels().size());
         }
 
@@ -108,17 +141,8 @@ public class GrowattInverterHandler extends BaseThingHandler {
             if (thingChannelIds.contains(channelId)) {
                 updateState(channelId, state);
             } else {
-                logger.debug("handleInverterValues() channel '{}' not found; try re-creating the thing", channelId);
+                logger.warn("updateInverterValues() channel '{}' not found; try re-creating the thing", channelId);
             }
         });
-    }
-
-    @Override
-    public void initialize() {
-        GrowattInverterConfiguration config = getConfigAs(GrowattInverterConfiguration.class);
-        deviceId = config.deviceId;
-        thing.setProperty(GrowattInverterConfiguration.DEVICE_ID, deviceId);
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.awaiting-data");
-        logger.debug("initialize() thing has {} channels", thing.getChannels().size());
     }
 }

@@ -36,6 +36,8 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link GrowattTest} is a JUnit test suite for the Growatt binding.
@@ -48,7 +50,7 @@ public class GrowattTest {
     private final Gson gson = new Gson();
 
     /**
-     * load a string from a file
+     * Load a (JSON) string from a file
      */
     private String load(String fileName) {
         try (FileReader file = new FileReader(String.format("src/test/resources/%s.json", fileName));
@@ -68,8 +70,8 @@ public class GrowattTest {
     /**
      * Load a GrottValues class from a JSON payload.
      *
-     * @param fileName the file containing the json payload.
-     * @return a GrottValues dto.
+     * @param fileName the file containing the JSON payload.
+     * @return a GrottValues DTO.
      */
     private GrottValues loadGrottValues(String fileName) {
         String json = load(fileName);
@@ -80,15 +82,21 @@ public class GrowattTest {
         return grottValues;
     }
 
+    @Test
+    void testGrottValuesAccessibility() {
+        testGrottValuesAccessibility("simple");
+        testGrottValuesAccessibility("sph");
+    }
+
     /**
      * For the given JSON file, test that GrottValues implements the same fields as the
      * GrowattBindingConstants.CHANNEL_ID_UOM_MAP. Test that all fields can be accessed and that they are either null or
      * an Integer instance.
      *
-     * @param filename the name of the JSON file to be tested.
+     * @param fileName the name of the JSON file to be tested.
      */
-    private void testGrottValuesAccessibilityforFile(String filename) {
-        GrottValues grottValues = loadGrottValues(filename);
+    private void testGrottValuesAccessibility(String fileName) {
+        GrottValues grottValues = loadGrottValues(fileName);
 
         List<String> fields = Arrays.asList(GrottValues.class.getFields()).stream().map(f -> f.getName())
                 .collect(Collectors.toList());
@@ -128,15 +136,6 @@ public class GrowattTest {
                 continue;
             }
         }
-    }
-
-    /**
-     * Test the cross mapping of JSON fields and channel names for two JSON test files.
-     */
-    @Test
-    void testGrottValuesAccessibility() {
-        testGrottValuesAccessibilityforFile("simple");
-        testGrottValuesAccessibilityforFile("sph");
     }
 
     /**
@@ -190,5 +189,41 @@ public class GrowattTest {
         }
 
         assertNull(channelStates.get("aardvark"));
+    }
+
+    @Test
+    void testJsonFieldsMappedToDto() {
+        testJsonFieldsMappedToDto("simple");
+        testJsonFieldsMappedToDto("sph");
+    }
+
+    /**
+     * For the given JSON test file name, check that each field in its JSON is mapped to precisely one field in the
+     * values DTO.
+     *
+     * @param fileName the name of the JSON file to be tested.
+     */
+    private void testJsonFieldsMappedToDto(String fileName) {
+        Field[] fields = GrottValues.class.getFields();
+        String json = load(fileName);
+        JsonParser.parseString(json).getAsJsonObject().get("values").getAsJsonObject().entrySet().forEach(e -> {
+            String key = e.getKey();
+            if (!"datalogserial".equals(key) && !"pvserial".equals(key)) {
+                JsonObject testJsonObject = new JsonObject();
+                testJsonObject.add(key, e.getValue());
+                GrottValues testDto = gson.fromJson(testJsonObject, GrottValues.class);
+                int mappedFieldCount = 0;
+                for (Field field : fields) {
+                    try {
+                        if (field.get(testDto) != null) {
+                            mappedFieldCount++;
+                        }
+                    } catch (IllegalAccessException | IllegalArgumentException ex) {
+                        fail("Exception");
+                    }
+                }
+                assertEquals(1, mappedFieldCount);
+            }
+        });
     }
 }

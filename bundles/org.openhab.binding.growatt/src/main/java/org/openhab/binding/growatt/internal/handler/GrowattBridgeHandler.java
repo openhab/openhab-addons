@@ -96,7 +96,7 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
         }
         getThing().getThings().stream().map(thing -> thing.getHandler())
                 .filter(handler -> (handler instanceof GrowattInverterHandler))
-                .forEach(handler -> ((GrowattInverterHandler) handler).handleInverters(inverters.values()));
+                .forEach(handler -> ((GrowattInverterHandler) handler).updateInverters(inverters.values()));
     }
 
     @Override

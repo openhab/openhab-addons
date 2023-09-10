@@ -134,11 +134,11 @@ public class GrottValues {
 
     // energy supplied to local load
     public @Nullable @SerializedName(value = "elocalload_tod") Integer load_energy_today;
-    public @Nullable @SerializedName(value = "elocalloadr_tot") Integer load_energy_total;
+    public @Nullable @SerializedName(value = "elocalload_tot") Integer load_energy_total;
 
     // charging energy from import
-    public @Nullable @SerializedName(value = "eharge_today") Integer import_charge_energy_today;
-    public @Nullable @SerializedName(value = "eharge_total") Integer import_charge_energy_total;
+    public @Nullable @SerializedName(value = "eharge1_tod") Integer import_charge_energy_today;
+    public @Nullable @SerializedName(value = "eharge1_tot") Integer import_charge_energy_total;
 
     // charging energy from solar
     public @Nullable @SerializedName(value = "eacharge_today", alternate = { "eacCharToday" }) Integer solar_charge_energy_today;
@@ -164,7 +164,7 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "buck2_ntc") Integer pv2_temperature;
 
     // battery data
-    public @Nullable @SerializedName(value = "batteryType") Integer battery_type;
+    public @Nullable @SerializedName(value = "batterytype") Integer battery_type;
     public @Nullable @SerializedName(value = "batttemp") Integer battery_temperature;
     public @Nullable @SerializedName(value = "vbat", alternate = { "uwBatVolt_DSP", "bat_Volt" }) Integer battery_voltage;
     public @Nullable @SerializedName(value = "bat_dsp") Integer battery_display;
