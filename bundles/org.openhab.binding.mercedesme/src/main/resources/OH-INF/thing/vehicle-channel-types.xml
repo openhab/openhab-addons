@@ -29,6 +29,7 @@
 		<label>Door Status</label>
 		<state readOnly="true">
 			<options>
+				<option value="0">Open</option>
 				<option value="1">Closed</option>
 			</options>
 		</state>
@@ -43,6 +44,11 @@
 				<option value="4">On</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="park-brake-channel">
+		<item-type>Switch</item-type>
+		<label>Park Brake Active</label>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="feature-capabilities-channel" advanced="true">
 		<item-type>String</item-type>

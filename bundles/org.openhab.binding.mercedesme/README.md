@@ -1,20 +1,20 @@
 # MercedesMe Binding
 
-**
-ALPHA VERSION!
-Please connect the advanced channels form Vehicle to analyze problems!
+This binding provides similar access to your Mercedes Benz vehicle like the Smartphone App _Mercedes Me_.
+
+
+## ''Alpha Version''
+
+Current Development Status is Alpha.
+Data Mappings are missing and testing of features and regions are necessary.
+
+In order to analyze problems check the binding logs.
+**In addition please connect the advanced channels from vehicle [vehicle](#vehicle) to analyze problems!**
 
 - feature-capabilities
 - command-capabilities
 - proto-update
 
-**
-
-This binding provides similar access to your Mercedes Benz vehicle like the Smartphone App _Mercedes Me_.
-For this you need a Mercedes developer account to get data from your vehicles.
-Setup requires some, time so follow [the steps of bridge configuration](#bridge-configuration).
-
-If you face some problems during setup or runtime please have a look into the [Troubleshooting section](#troubleshooting)
 
 ## Supported Things
 
@@ -36,6 +36,8 @@ Manual Discovery not necessary!
 ## Bridge Configuration
 
 Bridge needs configuration in order to connect properly to your Mercedes Me Account.
+You need to have access to your Mercedes Benz via Smartphone App.
+Otherwise this binding will not work!
 
 
 ### Bridge Setup
@@ -57,33 +59,36 @@ Click on Submit button
 
 In case of non successful Athorization check your log for errors. 
 
-### MB Credentials
+Some Screenshots to follow Authorizatiom
 
-<img src="./doc/MBDeveloper-Credentials.png" width="500" height="280"/>
+### After Bridge Setup
 
-### MB Product Subscriptions
+<img src="./doc/OH-Step0.png" width="500" height="240"/>
 
-<img src="./doc/MBDeveloper-Subscriptions.png" width="500" height="300"/>
+### Authorization Step 1
 
-### openHAB Configuration
+<img src="./doc/OH-Step1.png" width="500" height="200"/>
 
-<img src="./doc/MercedesMeConfiguration.png" width="400" height="500"/>
+### Authorization Step 2
 
-### MB Access Request
+<img src="./doc/OH-Step2.png" width="500" height="200"/>
 
-<img src="./doc/MBAccessRequest.png" width="500" height="220"/>
+### Authorization Step 3
 
-### Callback page
+<img src="./doc/OH-Step3.png" width="400" height="130"/>
 
-<img src="./doc/CallbackUrl_Page.png" width="500" height="350"/>
+### Vehicle Capabilities
+
+<img src="./doc/OH-capabilities.png" width="500" height="280"/>
+
 
 ### Bridge Configuration Parameters
 
 | Name            | Type    | Description                           | Default     | Required | Advanced |
 |-----------------|---------|---------------------------------------|-------------|----------|----------|
-| email           | text    | Mercedes Benz Developer Client ID     | N/A         | yes      | no       |
-| region          | text    | Mercedes Benz Developer Client Secret | EU          | yes      | no       |
-| pin             | text    | Mercedes Benz Developer Image API Key | N/A         | no       | no       |
+| email           | text    | Mercedes Benz registered EMail Address| N/A         | yes      | no       |
+| region          | text    | Your region                           | EU          | yes      | no       |
+| pin             | text    | Mercedes Benz Smartphone App PIN      | N/A         | no       | no       |
 
 Set `region` to your location
 
@@ -163,6 +168,7 @@ Group name: `vehicle`
 
 #### Door Status Mapping
 
+- 0 : Open
 - 1 : Closed
 
 #### Ignition Mapping
@@ -433,7 +439,7 @@ All channels `read-only`
 | cons-ev-reset    | Number:Energy        |  Since Reset Average Electric Energy Consumption per 100 Kilometre   |
 | cons-conv-reset  | Number:Volume        |  Since Reset Average Gas Consumption per 100 Kilometre               |
 
- ### Position
+### Position
 
 Group name: `position`
 
@@ -473,6 +479,5 @@ All channels `read-only`
 
 - Not available yet!
 
-## Troubleshooting
 
 
