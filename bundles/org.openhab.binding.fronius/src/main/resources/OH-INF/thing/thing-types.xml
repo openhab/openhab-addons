@@ -57,6 +57,10 @@
 			</channel>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="deviceId" type="integer">
 				<label>Device ID</label>
@@ -319,16 +323,16 @@
 		<description>Inverter State of Charge</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="inverter1Power">
+	<channel-type id="inverter1Power" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Inverter 1 Power (DEPRECATED)</label>
-		<description>Inverter 1 Power - DEPRECATED. Please use Inverter Power instead.</description>
+		<description>Inverter 1 Power - DEPRECATED. Please use inverterPower channel instead.</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="inverter1Soc">
+	<channel-type id="inverter1Soc" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Inverter 1 State of Charge (DEPRECATED)</label>
-		<description>Inverter 1 State of Charge - DEPRECATED. Please use Inverter State of Charge instead</description>
+		<description>Inverter 1 State of Charge - DEPRECATED. Please use inverterSoc channel instead</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
