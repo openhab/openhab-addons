@@ -186,12 +186,12 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         Point clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime(), WritePrecision.MS);
         @Nullable
         Object value = point.getValue();
-        if (value instanceof String) {
-            clientPoint.addField(FIELD_VALUE_NAME, (String) value);
-        } else if (value instanceof Number) {
-            clientPoint.addField(FIELD_VALUE_NAME, (Number) value);
-        } else if (value instanceof Boolean) {
-            clientPoint.addField(FIELD_VALUE_NAME, (Boolean) value);
+        if (value instanceof String string) {
+            clientPoint.addField(FIELD_VALUE_NAME, string);
+        } else if (value instanceof Number number) {
+            clientPoint.addField(FIELD_VALUE_NAME, number);
+        } else if (value instanceof Boolean boolean1) {
+            clientPoint.addField(FIELD_VALUE_NAME, boolean1);
         } else if (value == null) {
             clientPoint.addField(FIELD_VALUE_NAME, (String) null);
         } else {

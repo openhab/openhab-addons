@@ -70,16 +70,16 @@ public class ThingChannelConstants {
     }
 
     static {
-        THING_CHANNEL_LIST.add(cb("mytext", "TextItemType", textConfiguration(), TEXT_CHANNEL));
-        THING_CHANNEL_LIST.add(cb("onoff", "OnOffType", onoffConfiguration(), ON_OFF_CHANNEL));
-        THING_CHANNEL_LIST.add(cb("num", "NumberType", numberConfiguration(), NUMBER_CHANNEL));
-        THING_CHANNEL_LIST.add(cb("percent", "NumberType", percentageConfiguration(), PERCENTAGE_CHANNEL));
+        THING_CHANNEL_LIST.add(cb("mytext", "String", textConfiguration(), TEXT_CHANNEL));
+        THING_CHANNEL_LIST.add(cb("onoff", "Switch", onoffConfiguration(), ON_OFF_CHANNEL));
+        THING_CHANNEL_LIST.add(cb("num", "Number", numberConfiguration(), NUMBER_CHANNEL));
+        THING_CHANNEL_LIST.add(cb("percent", "Number:Dimensionless", percentageConfiguration(), PERCENTAGE_CHANNEL));
 
+        THING_CHANNEL_LIST_WITH_JSON.add(cb("mytext", "String", textConfigurationWithJson(), TEXT_WITH_JSON_CHANNEL));
+        THING_CHANNEL_LIST_WITH_JSON.add(cb("onoff", "Switch", onoffConfiguration(), ON_OFF_CHANNEL));
+        THING_CHANNEL_LIST_WITH_JSON.add(cb("num", "Number", numberConfiguration(), NUMBER_CHANNEL));
         THING_CHANNEL_LIST_WITH_JSON
-                .add(cb("mytext", "TextItemType", textConfigurationWithJson(), TEXT_WITH_JSON_CHANNEL));
-        THING_CHANNEL_LIST_WITH_JSON.add(cb("onoff", "OnOffType", onoffConfiguration(), ON_OFF_CHANNEL));
-        THING_CHANNEL_LIST_WITH_JSON.add(cb("num", "NumberType", numberConfiguration(), NUMBER_CHANNEL));
-        THING_CHANNEL_LIST_WITH_JSON.add(cb("percent", "NumberType", percentageConfiguration(), PERCENTAGE_CHANNEL));
+                .add(cb("percent", "Number:Dimensionless", percentageConfiguration(), PERCENTAGE_CHANNEL));
     }
 
     static Configuration textConfiguration() {

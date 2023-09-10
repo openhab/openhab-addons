@@ -176,8 +176,7 @@ public class HueLightEntry {
                 product.name = label;
             }
 
-            JsonElement jsonSubscription = context.serialize(product, HueDeviceHelper.class);
-            return jsonSubscription;
+            return context.serialize(product, HueDeviceHelper.class);
         }
     }
 

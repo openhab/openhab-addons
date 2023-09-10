@@ -176,7 +176,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
         List<Option> options = response.getOptions().asSortedList();
         String ip = response.getSourceContext().getPeerAddress().toString();
-        boolean match = ip.contains(config.deviceIp);
+        boolean match = ip.contains("/" + config.deviceIp + ":");
         if (!match) {
             // We can't identify device by IP, so we need to check the CoAP header's Global Device ID
             for (Option opt : options) {

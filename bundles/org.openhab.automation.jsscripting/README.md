@@ -1109,7 +1109,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-    console.log(event);
+  console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
@@ -1225,21 +1225,22 @@ The `event` object provides some information about that trigger.
 
 This table gives an overview over the `event` object:
 
-| Property Name     | Trigger Types                                        | Description                                                                         | Rules DSL Equivalent   |
-|-------------------|------------------------------------------------------|-------------------------------------------------------------------------------------|------------------------|
-| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | Previous state of Item or Group that triggered event                                | `previousState`        |
-| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | New state of Item or Group that triggered event                                     | N/A                    |
-| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger`  | State of Item that triggered event                                                  | `triggeringItem.state` |
-| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`          | Command that triggered event                                                        | `receivedCommand`      |
-| `itemName`        | `Item****Trigger`, `Group****Trigger`                | Name of Item that triggered event                                                   | `triggeringItem.name`  |
-| `receivedEvent`   | `ChannelEventTrigger`                                | Channel event that triggered event                                                  | N/A                    |
-| `channelUID`      | `ChannelEventTrigger`                                | UID of channel that triggered event                                                 | N/A                    |
-| `oldStatus`       | `ThingStatusChangeTrigger`                           | Previous state of Thing that triggered event                                        | N/A                    |
-| `newStatus`       | `ThingStatusChangeTrigger`                           | New state of Thing that triggered event                                             | N/A                    |
-| `status`          | `ThingStatusUpdateTrigger`                           | State of Thing that triggered event                                                 | N/A                    |
-| `thingUID`        | `Thing****Trigger`                                   | UID of Thing that triggered event                                                   | N/A                    |
-| `eventType`       | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of event that triggered event (change, command, triggered, update)             | N/A                    |
-| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of trigger that triggered event                                                | N/A                    |
+| Property Name     | Trigger Types                                        | Description                                                             | Rules DSL Equivalent   |
+|-------------------|------------------------------------------------------|-------------------------------------------------------------------------|------------------------|
+| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | Previous state of Item or Group that triggered event                    | `previousState`        |
+| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | New state of Item or Group that triggered event                         | N/A                    |
+| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger`  | State of Item that triggered event                                      | `triggeringItem.state` |
+| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`          | Command that triggered event                                            | `receivedCommand`      |
+| `itemName`        | `Item****Trigger`, `Group****Trigger`                | Name of Item that triggered event                                       | `triggeringItem.name`  |
+| `groupName`       | `Group****Trigger`                                   | Name of the group whose member triggered event                          | N/A                    |
+| `receivedEvent`   | `ChannelEventTrigger`                                | Channel event that triggered event                                      | N/A                    |
+| `channelUID`      | `ChannelEventTrigger`                                | UID of channel that triggered event                                     | N/A                    |
+| `oldStatus`       | `ThingStatusChangeTrigger`                           | Previous state of Thing that triggered event                            | N/A                    |
+| `newStatus`       | `ThingStatusChangeTrigger`                           | New state of Thing that triggered event                                 | N/A                    |
+| `status`          | `ThingStatusUpdateTrigger`                           | State of Thing that triggered event                                     | N/A                    |
+| `thingUID`        | `Thing****Trigger`                                   | UID of Thing that triggered event                                       | N/A                    |
+| `eventType`       | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of event that triggered event (change, command, triggered, update) | N/A                    |
+| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of trigger that triggered event                                    | N/A                    |
 
 All properties are typeof `string`.
 
@@ -1318,11 +1319,11 @@ var { ON, OFF, QuantityType } = require("@runtime");
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `State`                 | [`org.openhab.core.types.State`](https://www.openhab.org/javadoc/latest/org/openhab/core/types/state)                                                 |
 | `Command`               | [`org.openhab.core.types.Command`](https://www.openhab.org/javadoc/latest/org/openhab/core/types/command)                                             |
-| `URLEncoder`            | [`java.net.URLEncoder`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URLEncoder.html)                                        |
-| `File`                  | [`java.io.File`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html)                                                      |
-| `Files`                 | [`java.nio.file.Files`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Files.html)                                        |
-| `Path`                  | [`java.nio.file.Path`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Path.html)                                          |
-| `Paths`                 | [`java.nio.file.Paths`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Paths.html)                                        |
+| `URLEncoder`            | [`java.net.URLEncoder`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/URLEncoder.html)                                        |
+| `File`                  | [`java.io.File`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/File.html)                                                      |
+| `Files`                 | [`java.nio.file.Files`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Files.html)                                        |
+| `Path`                  | [`java.nio.file.Path`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html)                                          |
+| `Paths`                 | [`java.nio.file.Paths`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Paths.html)                                        |
 | `IncreaseDecreaseType`  | [`org.openhab.core.library.types.IncreaseDecreaseType`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/types/increasedecreasetype)   |
 | `DECREASE`              | `IncreaseDecreaseType` enum item                                                                                                                      |
 | `INCREASE`              | `IncreaseDecreaseType` enum item                                                                                                                      |
@@ -1366,10 +1367,10 @@ var { ON, OFF, QuantityType } = require("@runtime");
 | `MetricPrefix`          | [`org.openhab.core.library.unit.MetricPrefix`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/metricprefix)                     |
 | `Units`                 | [`org.openhab.core.library.unit.Units`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/units)                                   |
 | `BinaryPrefix`          | [`org.openhab.core.library.unit.BinaryPrefix`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/binaryprefix)                     |
-| `ChronoUnit`            | [`java.time.temporal.ChronoUnit`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/temporal/ChronoUnit.html)                    |
-| `Duration`              | [`java.time.Duration`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html)                                          |
-| `ZoneId`                | [`java.time.ZoneId`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html)                                              |
-| `ZonedDateTime`         | [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZonedDateTime.html)                                |
+| `ChronoUnit`            | [`java.time.temporal.ChronoUnit`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/temporal/ChronoUnit.html)                    |
+| `Duration`              | [`java.time.Duration`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html)                                          |
+| `ZoneId`                | [`java.time.ZoneId`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZoneId.html)                                              |
+| `ZonedDateTime`         | [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZonedDateTime.html)                                |
 
 `require("@runtime")` also defines "services" such as `items`, `things`, `rules`, `events`, `actions`, `ir`, `itemRegistry`.
 You can use these services for backwards compatibility purposes or ease migration from JSR223 scripts.

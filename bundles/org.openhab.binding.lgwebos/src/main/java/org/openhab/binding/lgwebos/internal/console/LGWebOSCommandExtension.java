@@ -65,8 +65,8 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension imp
             LGWebOSHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof LGWebOSHandler) {
-                    handler = (LGWebOSHandler) thingHandler;
+                if (thingHandler instanceof LGWebOSHandler webOSHandler) {
+                    handler = webOSHandler;
                 }
             }
             if (thing == null) {

@@ -27,6 +27,6 @@ public class MutationResponse {
     public enum StatusCode {
         OK,
         WARNING,
-        ERROR;
+        ERROR
     }
 }

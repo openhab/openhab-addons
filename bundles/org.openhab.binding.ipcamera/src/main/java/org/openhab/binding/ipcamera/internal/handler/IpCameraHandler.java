@@ -28,10 +28,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -218,8 +218,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 return;
             }
             try {
-                if (msg instanceof HttpResponse) {
-                    HttpResponse response = (HttpResponse) msg;
+                if (msg instanceof HttpResponse response) {
                     if (response.status().code() == 200) {
                         if (!response.headers().isEmpty()) {
                             for (String name : response.headers().names()) {
@@ -264,8 +263,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         return;
                     }
                 }
-                if (msg instanceof HttpContent) {
-                    HttpContent content = (HttpContent) msg;
+                if (msg instanceof HttpContent content) {
                     if (mjpegUri.equals(requestUrl) && !(content instanceof LastHttpContent)) {
                         // multiple MJPEG stream packets come back as this.
                         byte[] chunkedFrame = new byte[content.content().readableBytes()];
@@ -364,13 +362,11 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         @Override
-        @SuppressWarnings("PMD.CompareObjectsWithEquals")
         public void userEventTriggered(@Nullable ChannelHandlerContext ctx, @Nullable Object evt) throws Exception {
             if (ctx == null) {
                 return;
             }
-            if (evt instanceof IdleStateEvent) {
-                IdleStateEvent e = (IdleStateEvent) evt;
+            if (evt instanceof IdleStateEvent e) {
                 // If camera does not use the channel for X amount of time it will close.
                 if (e.state() == IdleState.READER_IDLE) {
                     String urlToKeepOpen = "";
@@ -384,7 +380,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     ChannelTracking channelTracking = channelTrackingMap.get(urlToKeepOpen);
                     if (channelTracking != null) {
-                        if (channelTracking.getChannel() == ctx.channel()) {
+                        if (channelTracking.getChannel().equals(ctx.channel())) {
                             return; // don't auto close this as it is for the alarms.
                         }
                     }
@@ -751,7 +747,6 @@ public class IpCameraHandler extends BaseThingHandler {
      * open large amounts of channels. This may help to keep it under control and WARN the user every 8 seconds this is
      * still occurring.
      */
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private void cleanChannels() {
         for (Channel channel : openChannels) {
             boolean oldChannel = true;
@@ -759,7 +754,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (!channelTracking.getChannel().isOpen() && channelTracking.getReply().isEmpty()) {
                     channelTrackingMap.remove(channelTracking.getRequestUrl());
                 }
-                if (channelTracking.getChannel() == channel) {
+                if (channelTracking.getChannel().equals(channel)) {
                     logger.debug("Open channel to camera is used for URL:{}", channelTracking.getRequestUrl());
                     oldChannel = false;
                 }
@@ -1162,9 +1157,9 @@ public class IpCameraHandler extends BaseThingHandler {
                     } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                         ffmpegMotionAlarmEnabled = false;
                         noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                    } else if (command instanceof PercentType) {
+                    } else if (command instanceof PercentType percentCommand) {
                         ffmpegMotionAlarmEnabled = true;
-                        motionThreshold = ((PercentType) command).toBigDecimal();
+                        motionThreshold = percentCommand.toBigDecimal();
                     }
                     setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                     return;
@@ -1910,6 +1905,6 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(IpCameraActions.class);
+        return Set.of(IpCameraActions.class);
     }
 }

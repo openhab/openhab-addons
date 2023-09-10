@@ -106,8 +106,8 @@ public class GrafikEyeHandler extends BaseThingHandler {
         }
 
         if (id.equals(PrgConstants.CHANNEL_SCENE)) {
-            if (command instanceof DecimalType) {
-                final int scene = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType sceneCommand) {
+                final int scene = sceneCommand.intValue();
                 getProtocolHandler().selectScene(config.getControlUnit(), scene);
             } else {
                 logger.error("Received a SCENE command with a non DecimalType: {}", command);
@@ -143,8 +143,8 @@ public class GrafikEyeHandler extends BaseThingHandler {
                 getProtocolHandler().setZoneRaise(config.getControlUnit(), zone);
             }
         } else if (id.equals(PrgConstants.CHANNEL_ZONEFADE)) {
-            if (command instanceof DecimalType) {
-                setFade(((DecimalType) command).intValue());
+            if (command instanceof DecimalType zoneFade) {
+                setFade(zoneFade.intValue());
             } else {
                 logger.error("Received a ZONEFADE command with a non DecimalType: {}", command);
             }
@@ -152,8 +152,8 @@ public class GrafikEyeHandler extends BaseThingHandler {
             final Integer zone = getTrailingNbr(id, PrgConstants.CHANNEL_ZONEINTENSITY);
 
             if (zone != null) {
-                if (command instanceof PercentType) {
-                    final int intensity = ((PercentType) command).intValue();
+                if (command instanceof PercentType intensityPercent) {
+                    final int intensity = intensityPercent.intValue();
                     getProtocolHandler().setZoneIntensity(config.getControlUnit(), zone, fade, intensity);
                 } else if (command instanceof OnOffType) {
                     getProtocolHandler().setZoneIntensity(config.getControlUnit(), zone, fade,

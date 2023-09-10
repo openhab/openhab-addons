@@ -122,9 +122,11 @@ public class ChatGPTHandler extends BaseThingHandler {
         messages.add(userMessage);
         root.add("messages", messages);
 
+        String queryJson = gson.toJson(root);
         Request request = httpClient.newRequest(OPENAI_API_URL).method(HttpMethod.POST)
                 .header("Content-Type", "application/json").header("Authorization", "Bearer " + apiKey)
-                .content(new StringContentProvider(gson.toJson(root)));
+                .content(new StringContentProvider(queryJson));
+        logger.trace("Query '{}'", queryJson);
         try {
             ContentResponse response = request.send();
             updateStatus(ThingStatus.ONLINE);

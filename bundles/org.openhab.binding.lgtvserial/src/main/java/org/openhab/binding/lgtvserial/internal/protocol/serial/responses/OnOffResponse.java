@@ -36,7 +36,7 @@ public class OnOffResponse implements LGSerialResponse {
         this.success = success;
 
         if (success) {
-            state = data.equals("01") ? OnOffType.ON : OnOffType.OFF;
+            state = "01".equals(data) ? OnOffType.ON : OnOffType.OFF;
         } else {
             state = new StringType(data);
         }

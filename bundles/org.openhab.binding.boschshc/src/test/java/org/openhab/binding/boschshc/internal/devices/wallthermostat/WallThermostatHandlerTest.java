@@ -37,7 +37,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class WallThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<WallThermostatHandler> {
+class WallThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<WallThermostatHandler> {
 
     @Override
     protected WallThermostatHandler createFixture() {
@@ -55,9 +55,13 @@ public class WallThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandl
     }
 
     @Test
-    public void testUpdateChannelsTemperatureLevelService() {
-        JsonElement jsonObject = JsonParser.parseString(
-                "{\n" + "   \"@type\": \"temperatureLevelState\",\n" + "   \"temperature\": 21.5\n" + " }");
+    void testUpdateChannelsTemperatureLevelService() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "temperatureLevelState",
+                   "temperature": 21.5
+                 }\
+                """);
         getFixture().processUpdate("TemperatureLevel", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE),
@@ -65,7 +69,7 @@ public class WallThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandl
     }
 
     @Test
-    public void testUpdateChannelsHumidityLevelService() {
+    void testUpdateChannelsHumidityLevelService() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\n" + "   \"@type\": \"humidityLevelState\",\n" + "   \"humidity\": 42.5\n" + " }");
         getFixture().processUpdate("HumidityLevel", jsonObject);

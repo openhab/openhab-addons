@@ -103,6 +103,9 @@ public enum EventType {
     @SerializedName("alim") // When Camera power supply status changes
     ALIM(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+    @SerializedName("siren_tampered") // When the siren has been tampered
+    SIREN_TAMPERED(ModuleType.WELCOME),
+
     @SerializedName("accepted_call") // When a call is incoming
     ACCEPTED_CALL(ModuleType.DOORBELL),
 
@@ -140,7 +143,25 @@ public enum EventType {
     NEW_DEVICE(ModuleType.HOME),
 
     @SerializedName("co_detected")
-    CO_DETECTED(ModuleType.CO_DETECTOR);
+    CO_DETECTED(ModuleType.CO_DETECTOR),
+
+    @SerializedName("alarm_event") // an alarm event arrived on a weather station module
+    ALARM_EVENT(ModuleType.WEATHER_STATION),
+
+    @SerializedName("entered") // the alarm was raised
+    ALARM_ENTERED(ModuleType.WEATHER_STATION),
+
+    @SerializedName("exited") // the alarm is stopped
+    ALARM_EXITED(ModuleType.WEATHER_STATION),
+
+    @SerializedName("display_change") // a manual action has been done on the thermostat
+    DISPLAY_CHANGE(ModuleType.THERMOSTAT),
+
+    @SerializedName("set_point") // a setpoint has been set
+    SET_POINT(ModuleType.THERMOSTAT),
+
+    @SerializedName("cancel_set_point") // manual setpoint ended
+    CANCEL_SET_POINT(ModuleType.THERMOSTAT);
 
     public static final EnumSet<EventType> AS_SET = EnumSet.allOf(EventType.class);
 
@@ -157,5 +178,9 @@ public enum EventType {
 
     public boolean validFor(ModuleType searched) {
         return appliesTo.contains(searched);
+    }
+
+    public ModuleType getFirstModule() {
+        return appliesTo.iterator().next();
     }
 }

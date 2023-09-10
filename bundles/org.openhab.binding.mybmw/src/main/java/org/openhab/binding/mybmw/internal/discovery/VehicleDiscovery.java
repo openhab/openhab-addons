@@ -161,8 +161,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof MyBMWBridgeHandler) {
-            bridgeHandler = Optional.of((MyBMWBridgeHandler) handler);
+        if (handler instanceof MyBMWBridgeHandler bmwBridgeHandler) {
+            bridgeHandler = Optional.of(bmwBridgeHandler);
             bridgeHandler.get().setDiscoveryService(this);
         }
     }

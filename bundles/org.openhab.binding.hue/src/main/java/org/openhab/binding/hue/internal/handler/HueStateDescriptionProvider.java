@@ -58,6 +58,7 @@ public class HueStateDescriptionProvider extends BaseDynamicStateDescriptionProv
         StateDescriptionFragment oldStateDescriptionFragment = stateDescriptionFragments.get(channelUID);
         if (!stateDescriptionFragment.equals(oldStateDescriptionFragment)) {
             stateDescriptionFragments.put(channelUID, stateDescriptionFragment);
+            ItemChannelLinkRegistry itemChannelLinkRegistry = this.itemChannelLinkRegistry;
             postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUID,
                     itemChannelLinkRegistry != null ? itemChannelLinkRegistry.getLinkedItemNames(channelUID) : Set.of(),
                     stateDescriptionFragment, oldStateDescriptionFragment));

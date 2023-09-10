@@ -159,8 +159,8 @@ public class MeaterRestAPI {
             throw new MeaterException("Failed to fetch from API!");
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException) {
-                Response response = ((HttpResponseException) cause).getResponse();
+            if (cause instanceof HttpResponseException httpResponseException) {
+                Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
                      * When contextId is not valid, the service will respond with HTTP code 401 without

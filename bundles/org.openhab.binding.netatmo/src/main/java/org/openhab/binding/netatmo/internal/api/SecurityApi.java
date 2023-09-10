@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
 import org.openhab.binding.netatmo.internal.api.dto.Home;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent.NAEventsDataResponse;
@@ -123,6 +124,12 @@ public class SecurityApi extends RestManager {
     public void changeFloodLightMode(String homeId, String cameraId, FloodLightMode mode) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(PATH_STATE);
         String payload = PAYLOAD_FLOODLIGHT.formatted(homeId, cameraId, mode.name().toLowerCase());
+        post(uriBuilder, ApiResponse.Ok.class, payload);
+    }
+
+    public void changeSirenStatus(String homeId, String moduleId, SirenStatus status) throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder(PATH_STATE);
+        String payload = PAYLOAD_SIREN_PRESENCE.formatted(homeId, moduleId, status.name().toLowerCase());
         post(uriBuilder, ApiResponse.Ok.class, payload);
     }
 

@@ -14,7 +14,6 @@ package org.openhab.binding.dmx.test;
 
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TestBridgeHandler extends DmxBridgeHandler {
     public static final ThingTypeUID THING_TYPE_TEST_BRIDGE = new ThingTypeUID(BINDING_ID, "test-bridge");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_TEST_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_TEST_BRIDGE);
     public static final int MIN_UNIVERSE_ID = 0;
     public static final int MAX_UNIVERSE_ID = 0;
 

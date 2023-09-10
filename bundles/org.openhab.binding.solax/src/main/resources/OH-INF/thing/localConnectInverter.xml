@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="local-connect-inverter">
+
+		<label>Local Connect Inverter</label>
+		<description>The inverter representation that supports local connections via HTTP</description>
+
+		<channels>
+			<channel id="inverter-output-power" typeId="system.electric-power">
+				<label>Inverter Input/Output Power</label>
+				<description>Power to/from the inverter</description>
+			</channel>
+			<channel id="inverter-current" typeId="system.electric-current">
+				<label>Inverter Input/Output Current</label>
+				<description>Current to/from the inverter</description>
+			</channel>
+			<channel id="inverter-voltage" typeId="system.electric-voltage">
+				<label>Inverter Voltage</label>
+				<description>Voltage of the inverter</description>
+			</channel>
+			<channel id="inverter-frequency" typeId="frequency"/>
+
+			<channel id="pv1-voltage" typeId="system.electric-voltage">
+				<label>PV 1 Voltage</label>
+				<description>Electric voltage of PV String 1</description>
+			</channel>
+			<channel id="pv2-voltage" typeId="system.electric-voltage">
+				<label>PV 2 Voltage</label>
+				<description>Electric voltage of PV String 2</description>
+			</channel>
+			<channel id="pv1-current" typeId="system.electric-current">
+				<label>PV 1 Current</label>
+				<description>Electric current of PV String 1</description>
+			</channel>
+			<channel id="pv2-current" typeId="system.electric-current">
+				<label>PV 2 Current</label>
+				<description>Electric current of PV String 2</description>
+			</channel>
+			<channel id="pv1-power" typeId="system.electric-power">
+				<label>PV 1 Power</label>
+				<description>Electric power of PV String 1</description>
+			</channel>
+			<channel id="pv2-power" typeId="system.electric-power">
+				<label>PV 2 Power</label>
+				<description>Electric power of PV String 2</description>
+			</channel>
+			<channel id="pv-total-power" typeId="system.electric-power">
+				<label>PV Total Power</label>
+				<description>The sum of PV powers from all strings</description>
+			</channel>
+			<channel id="pv-total-current" typeId="system.electric-current">
+				<label>PV Total Current</label>
+				<description>The sum of PV currents from all strings</description>
+			</channel>
+
+			<channel id="battery-power" typeId="system.electric-power">
+				<label>Battery Power</label>
+				<description>Power to/from the battery</description>
+			</channel>
+			<channel id="battery-current" typeId="system.electric-current">
+				<label>Battery Current</label>
+				<description>Electric current to/from the battery</description>
+			</channel>
+			<channel id="battery-voltage" typeId="system.electric-voltage">
+				<label>Battery Voltage</label>
+				<description>Electric voltage of the battery</description>
+			</channel>
+			<channel id="battery-temperature" typeId="battery-temperature">
+				<label>Battery Temperature</label>
+				<description>Temperature of the battery</description>
+			</channel>
+			<channel id="battery-level" typeId="system.battery-level">
+				<label>Battery Level</label>
+				<description>The battery state of charge in percent</description>
+			</channel>
+
+			<channel id="feed-in-power" typeId="system.electric-power">
+				<label>Feed-in Power</label>
+				<description>Power to/from the electricity network.</description>
+			</channel>
+
+			<channel id="last-update-time" typeId="last-retrieve-time-stamp"/>
+
+			<channel id="raw-data" typeId="raw-data-type"/>
+		</channels>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" min="1" max="600">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for accessing the Wi-Fi module (the serial number of the Wi-Fi module)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<label>Network Address</label>
+				<description>IP address or the host name of the Wi-Fi module</description>
+				<context>network-address</context>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
