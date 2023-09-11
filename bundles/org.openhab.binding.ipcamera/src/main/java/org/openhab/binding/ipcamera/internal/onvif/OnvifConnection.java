@@ -592,7 +592,9 @@ public class OnvifConnection {
                         if (isConnected) {
                             disconnect();
                         }
-                    });
+                    }
+                }
+            });
         } else {
             logger.debug("ONVIF message not sent as connection is shutting down");
         }
