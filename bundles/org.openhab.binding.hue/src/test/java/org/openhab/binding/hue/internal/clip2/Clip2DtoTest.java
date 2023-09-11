@@ -323,6 +323,24 @@ class Clip2DtoTest {
         Boolean enabled = item.getEnabled();
         assertNotNull(enabled);
         assertTrue(enabled);
+        assertEquals(QuantityType.valueOf("1.2792921774337476 lx"), item.getLightLevelState());
+        assertEquals(new DateTimeType("2023-09-11T19:20:02.958+0000"),
+                item.getLightLevelLastUpdatedState(ZoneId.of("UTC")));
+    }
+
+    @Test
+    void testLightLevelDeprecated() {
+        String json = load(ResourceType.LIGHT_LEVEL.name().toLowerCase() + "_deprecated");
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.LIGHT_LEVEL, item.getType());
+        Boolean enabled = item.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
         LightLevel lightLevel = item.getLightLevel();
         assertNotNull(lightLevel);
         assertEquals(12725, lightLevel.getLightLevel());

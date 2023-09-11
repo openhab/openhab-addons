@@ -869,6 +869,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case LIGHT_LEVEL:
                 updateState(CHANNEL_2_LIGHT_LEVEL, resource.getLightLevelState(), fullUpdate);
+                updateState(CHANNEL_2_LIGHT_LEVEL_LAST_UPDATED,
+                        resource.getLightLevelLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
                 updateState(CHANNEL_2_LIGHT_LEVEL_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 

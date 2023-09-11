@@ -75,6 +75,7 @@ Device things support some of the following channels:
 | motion-enabled           | Switch             | Supports enabling / disabling the motion sensor. (Advanced)                                                         |
 | motion-last-updated      | DateTime           | The date and time when the motion value was last updated. (Read Only) (Advanced)                                    |
 | light-level              | Number:Illuminance | Shows the current light level measured by the sensor. (Read Only)                                                   |
+| light-level-last-updated | DateTime           | The date and time when the light level was last updated. (Read Only) (Advanced)                                     |
 | light-level-enabled      | Switch             | Supports enabling / disabling the light level sensor. (Advanced)                                                    |
 | temperature              | Number:Temperature | Shows the current temperature measured by the sensor. (Read Only)                                                   |
 | temperature-last-updated | DateTime           | The date and time when the temperature was last updated. (Read Only) (Advanced)                                     |

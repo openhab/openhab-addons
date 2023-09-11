@@ -14,6 +14,10 @@
 				<type>hue:last-updated-v2</type>
 				<label>Temperature Last Updated</label>
 			</add-channel>
+			<add-channel id="light-level-last-updated">
+				<type>hue:last-updated-v2</type>
+				<label>Light Level Last Updated</label>
+			</add-channel>
 		</instruction-set>
 
 	</thing-type>

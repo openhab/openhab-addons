@@ -156,6 +156,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_MOTION_LAST_UPDATED = "motion-last-updated";
     public static final String CHANNEL_2_MOTION_ENABLED = "motion-enabled";
     public static final String CHANNEL_2_LIGHT_LEVEL = "light-level";
+    public static final String CHANNEL_2_LIGHT_LEVEL_LAST_UPDATED = "light-level-last-updated";
     public static final String CHANNEL_2_LIGHT_LEVEL_ENABLED = "light-level-enabled";
     public static final String CHANNEL_2_TEMPERATURE = CHANNEL_TEMPERATURE;
     public static final String CHANNEL_2_TEMPERATURE_LAST_UPDATED = "temperature-last-updated";

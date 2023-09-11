@@ -36,6 +36,10 @@
 			<channel id="light-level" typeId="illuminance">
 				<description>Current light level.</description>
 			</channel>
+			<channel id="light-level-last-updated" typeId="last-updated-v2">
+				<label>Light Level Last Updated</label>
+				<description>The date and time when the light level was last updated.</description>
+			</channel>
 			<channel id="light-level-enabled" typeId="sensor-enabled">
 				<description>Light level sensor enabled.</description>
 			</channel>

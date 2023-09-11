@@ -42,6 +42,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -391,8 +392,31 @@ public class Resource {
     }
 
     public State getLightLevelState() {
-        LightLevel light = this.light;
-        return Objects.nonNull(light) ? light.getLightLevelState() : UnDefType.NULL;
+        LightLevel lightLevel = this.light;
+        if (lightLevel == null) {
+            return UnDefType.NULL;
+        }
+        LightLevelReport lightLevelReport = lightLevel.getLightLevelReport();
+        if (lightLevelReport == null) {
+            return lightLevel.getLightLevelState();
+        }
+        return new QuantityType<>(Math.pow(10f, (double) lightLevelReport.getLightLevel() / 10000f) - 1f, Units.LUX);
+    }
+
+    public State getLightLevelLastUpdatedState(ZoneId zoneId) {
+        LightLevel lightLevel = this.light;
+        if (lightLevel == null) {
+            return UnDefType.NULL;
+        }
+        LightLevelReport lightLevelReport = lightLevel.getLightLevelReport();
+        if (lightLevelReport == null) {
+            return UnDefType.UNDEF;
+        }
+        Instant lastChanged = lightLevelReport.getLastChanged();
+        if (lastChanged == null) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
     }
 
     public @Nullable MetaData getMetaData() {
