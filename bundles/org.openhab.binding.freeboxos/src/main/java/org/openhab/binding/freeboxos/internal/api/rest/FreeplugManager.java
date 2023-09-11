@@ -36,11 +36,11 @@ public class FreeplugManager extends RestManager {
     private static class Networks extends Response<Network> {
     }
 
-    public static enum NetRole {
+    public enum NetRole {
         STA, // Freeplug station
         PCO, // Freeplug proxy coordinator
         CCO, // Central Coordinator
-        UNKNOWN;
+        UNKNOWN
     }
 
     private enum Status {

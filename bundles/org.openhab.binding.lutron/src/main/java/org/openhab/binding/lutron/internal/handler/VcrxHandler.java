@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VcrxHandler extends BaseKeypadHandler {
 
-    private static enum Component implements KeypadComponent {
+    private enum Component implements KeypadComponent {
         BUTTON1(1, "button1", "Button 1", ComponentType.BUTTON),
         BUTTON2(2, "button2", "Button 2", ComponentType.BUTTON),
         BUTTON3(3, "button3", "Button 3", ComponentType.BUTTON),

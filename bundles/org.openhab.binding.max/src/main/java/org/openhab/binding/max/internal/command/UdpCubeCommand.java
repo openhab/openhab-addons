@@ -127,14 +127,14 @@ public class UdpCubeCommand {
 
                 // Check if the message is correct
                 if (message.startsWith("eQ3Max") && !message.equals(MAXCUBE_COMMAND_STRING)) {
-                    commandResponse.put("maxCubeIP", receivePacket.getAddress().getHostAddress().toString());
+                    commandResponse.put("maxCubeIP", receivePacket.getAddress().getHostAddress());
                     commandResponse.put("maxCubeState", message.substring(0, 8));
                     commandResponse.put("serialNumber", message.substring(8, 18));
                     commandResponse.put("msgValidid", message.substring(18, 19));
                     String requestType = message.substring(19, 20);
                     commandResponse.put("requestType", requestType);
 
-                    if (requestType.equals("I")) {
+                    if ("I".equals(requestType)) {
                         commandResponse.put("rfAddress",
                                 Utils.getHex(message.substring(21, 24).getBytes(StandardCharsets.UTF_8))
                                         .replace(" ", "").toLowerCase());

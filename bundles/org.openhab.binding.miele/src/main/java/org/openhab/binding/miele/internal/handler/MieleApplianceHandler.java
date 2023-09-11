@@ -265,8 +265,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     byte[] extendedStateBytes = DeviceUtil.stringToBytes(dp.Value);
                     logger.trace("Extended device state for {}: {}", getThing().getUID(),
                             DeviceUtil.bytesToHex(extendedStateBytes));
-                    if (this instanceof ExtendedDeviceStateListener) {
-                        ((ExtendedDeviceStateListener) this).onApplianceExtendedStateChanged(extendedStateBytes);
+                    if (this instanceof ExtendedDeviceStateListener listener) {
+                        listener.onApplianceExtendedStateChanged(extendedStateBytes);
                     }
                 }
                 return;
@@ -441,8 +441,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof MieleBridgeHandler) {
-                this.bridgeHandler = (MieleBridgeHandler) handler;
+            if (handler instanceof MieleBridgeHandler mieleBridgeHandler) {
+                this.bridgeHandler = mieleBridgeHandler;
             }
         }
         return this.bridgeHandler;

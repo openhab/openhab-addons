@@ -46,6 +46,7 @@ import org.openhab.binding.hue.internal.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.dto.clip2.TimedEffects;
+import org.openhab.binding.hue.internal.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
@@ -510,7 +511,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
         logger.debug("{} -> handleCommand() put resource {}", resourceId, putResource);
 
         try {
-            getBridgeHandler().putResource(putResource);
+            Resources resources = getBridgeHandler().putResource(putResource);
+            if (resources.hasErrors()) {
+                logger.info("Command '{}' for thing '{}', channel '{}' succeeded with errors: {}", command,
+                        thing.getUID(), channelUID, String.join("; ", resources.getErrors()));
+            }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);

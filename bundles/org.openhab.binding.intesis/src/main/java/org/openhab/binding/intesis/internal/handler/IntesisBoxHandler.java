@@ -174,9 +174,8 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 }
                 break;
             case CHANNEL_TYPE_TARGETTEMP:
-                if (command instanceof QuantityType) {
-                    QuantityType<?> celsiusTemperature = (QuantityType<?>) command;
-                    celsiusTemperature = celsiusTemperature.toUnit(SIUnits.CELSIUS);
+                if (command instanceof QuantityType quantityCommand) {
+                    QuantityType<?> celsiusTemperature = quantityCommand.toUnit(SIUnits.CELSIUS);
                     if (celsiusTemperature != null) {
                         double doubleValue = celsiusTemperature.doubleValue();
                         logger.trace("targetTemp double value = {}", doubleValue);

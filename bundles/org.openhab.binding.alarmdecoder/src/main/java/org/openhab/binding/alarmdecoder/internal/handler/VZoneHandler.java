@@ -78,8 +78,8 @@ public class VZoneHandler extends ADThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            if (command instanceof StringType) {
-                String cmd = ((StringType) command).toString();
+            if (command instanceof StringType stringCommand) {
+                String cmd = stringCommand.toString();
                 if (CMD_OPEN.equalsIgnoreCase(cmd)) {
                     sendCommand(ADCommand.setZone(config.address, ADCommand.ZONE_OPEN));
                     setChannelState(OnOffType.OFF);

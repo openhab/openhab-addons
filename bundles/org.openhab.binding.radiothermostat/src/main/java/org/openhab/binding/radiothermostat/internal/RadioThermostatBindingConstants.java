@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.radiothermostat.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import javax.measure.Unit;
@@ -79,7 +78,7 @@ public class RadioThermostatBindingConstants {
     public static final String REMOTE_TEMP = "remote_temp";
     public static final String MESSAGE = "message";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_RTHERM);
 
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE,
             SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, TODAY_HEAT_RUNTIME,

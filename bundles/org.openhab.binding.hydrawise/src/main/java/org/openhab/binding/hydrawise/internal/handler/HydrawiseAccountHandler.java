@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -122,7 +123,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(HydrawiseCloudControllerDiscoveryService.class);
+        return Set.of(HydrawiseCloudControllerDiscoveryService.class);
     }
 
     public void addControllerListeners(HydrawiseControllerListener listener) {
@@ -209,7 +210,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
             if (response == null) {
                 throw new HydrawiseConnectionException("Malformed response");
             }
-            if (response.errors != null && response.errors.size() > 0) {
+            if (response.errors != null && !response.errors.isEmpty()) {
                 throw new HydrawiseConnectionException(response.errors.stream().map(error -> error.message).reduce("",
                         (messages, message) -> messages + message + ". "));
             }

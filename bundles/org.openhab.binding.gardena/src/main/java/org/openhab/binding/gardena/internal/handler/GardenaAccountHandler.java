@@ -21,8 +21,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -262,7 +262,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(GardenaDeviceDiscoveryService.class);
+        return Set.of(GardenaDeviceDiscoveryService.class);
     }
 
     @Override

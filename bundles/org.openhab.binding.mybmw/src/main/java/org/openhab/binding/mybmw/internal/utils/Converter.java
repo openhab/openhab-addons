@@ -254,10 +254,8 @@ public class Converter {
         int rightLimit = 122; // letter 'z'
         Random random = new SecureRandom();
 
-        String generatedString = random.ints(leftLimit, rightLimit + 1).limit(size)
+        return random.ints(leftLimit, rightLimit + 1).limit(size)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
-
-        return generatedString;
     }
 
     public static State getLockState(boolean lock) {
