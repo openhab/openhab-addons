@@ -28,12 +28,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.growatt.internal.handler.GrowattBridgeHandler;
 
 /**
- * The {@link GrottHttpServlet} is an HttpServlet to handle data posted by the Grott application.
+ * The {@link GrowattHttpServlet} is an HttpServlet to handle data posted by the Grott application.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class GrottHttpServlet extends HttpServlet {
+public class GrowattHttpServlet extends HttpServlet {
 
     public static final String PATH = "/growatt";
 

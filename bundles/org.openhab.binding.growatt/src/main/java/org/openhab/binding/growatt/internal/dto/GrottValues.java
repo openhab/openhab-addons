@@ -12,15 +12,13 @@
  */
 package org.openhab.binding.growatt.internal.dto;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.growatt.internal.GrowattBindingConstants;
-import org.openhab.binding.growatt.internal.GrowattBindingConstants.UoM;
+import org.openhab.binding.growatt.internal.GrowattChannels;
+import org.openhab.binding.growatt.internal.GrowattChannels.UoM;
 import org.openhab.core.library.types.QuantityType;
 
 import com.google.gson.annotations.SerializedName;
@@ -53,8 +51,8 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "pvstatus") Integer system_status;
 
     // solar AC and DC generation
-    public @Nullable @SerializedName(value = "pvpowerin") Integer pv_power_in; // from DC solar
-    public @Nullable @SerializedName(value = "pvpowerout") Integer pv_power_out; // to AC mains
+    public @Nullable @SerializedName(value = "pvpowerin") Integer pv_power; // from DC solar
+    public @Nullable @SerializedName(value = "pvpowerout") Integer inverter_power; // to AC mains
 
     // DC electric data for strings #1 and #2
     public @Nullable @SerializedName(value = "pv1voltage", alternate = { "vpv1" }) Integer pv1_voltage;
@@ -67,7 +65,7 @@ public class GrottValues {
 
     // AC mains electric data (1-phase resp. 3-phase)
     public @Nullable @SerializedName(value = "pvfrequentie", alternate = { "line_freq", "outputfreq" }) Integer grid_frequency;
-    public @Nullable @SerializedName(value = "pvgridvoltage", alternate = { "grid_volt", "outputvolt" }) Integer grid_voltage;
+    public @Nullable @SerializedName(value = "pvgridvoltage", alternate = { "grid_volt", "outputvolt" }) Integer grid_voltage_r;
     public @Nullable @SerializedName(value = "pvgridvoltage2") Integer grid_voltage_s;
     public @Nullable @SerializedName(value = "pvgridvoltage3") Integer grid_voltage_t;
     public @Nullable @SerializedName(value = "Vac_RS") Integer grid_voltage_rs;
@@ -75,15 +73,15 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "Vac_TR") Integer grid_voltage_tr;
 
     // solar AC mains power
-    public @Nullable @SerializedName(value = "pvgridcurrent", alternate = { "OP_Curr", "Inv_Curr" }) Integer solar_current;
-    public @Nullable @SerializedName(value = "pvgridcurrent2") Integer solar_current_s;
-    public @Nullable @SerializedName(value = "pvgridcurrent3") Integer solar_current_t;
+    public @Nullable @SerializedName(value = "pvgridcurrent", alternate = { "OP_Curr", "Inv_Curr" }) Integer inverter_current_r;
+    public @Nullable @SerializedName(value = "pvgridcurrent2") Integer inverter_current_s;
+    public @Nullable @SerializedName(value = "pvgridcurrent3") Integer inverter_current_t;
 
-    public @Nullable @SerializedName(value = "pvgridpower", alternate = { "op_watt", "AC_InWatt" }) Integer solar_power;
-    public @Nullable @SerializedName(value = "pvgridpower2") Integer solar_power_s;
-    public @Nullable @SerializedName(value = "pvgridpower3") Integer solar_power_t;
+    public @Nullable @SerializedName(value = "pvgridpower", alternate = { "op_watt", "AC_InWatt" }) Integer inverter_power_r;
+    public @Nullable @SerializedName(value = "pvgridpower2") Integer inverter_power_s;
+    public @Nullable @SerializedName(value = "pvgridpower3") Integer inverter_power_t;
 
-    public @Nullable @SerializedName(value = "op_va", alternate = { "AC_InVA" }) Integer solar_va;
+    public @Nullable @SerializedName(value = "op_va", alternate = { "AC_InVA" }) Integer inverter_va;
 
     // battery discharge / charge power
     public @Nullable @SerializedName(value = "p1charge1", alternate = { "acchr_watt", "BatWatt" }) Integer charge_power;
@@ -112,8 +110,8 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "plocaloadt") Integer load_power_t;
 
     // solar AC grid energy
-    public @Nullable @SerializedName(value = "eactoday", alternate = { "pvenergytoday" }) Integer solar_energy_today;
-    public @Nullable @SerializedName(value = "eactotal", alternate = { "pvenergytotal" }) Integer solar_energy_total;
+    public @Nullable @SerializedName(value = "eactoday", alternate = { "pvenergytoday" }) Integer inverter_energy_today;
+    public @Nullable @SerializedName(value = "eactotal", alternate = { "pvenergytotal" }) Integer inverter_energy_total;
 
     // solar DC pv energy
     public @Nullable @SerializedName(value = "epvtoday") Integer pv_energy_today;
@@ -141,8 +139,8 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "eharge1_tot") Integer import_charge_energy_total;
 
     // charging energy from solar
-    public @Nullable @SerializedName(value = "eacharge_today", alternate = { "eacCharToday" }) Integer solar_charge_energy_today;
-    public @Nullable @SerializedName(value = "eacharge_total", alternate = { "eacCharTotal" }) Integer solar_charge_energy_total;
+    public @Nullable @SerializedName(value = "eacharge_today", alternate = { "eacCharToday" }) Integer inverter_charge_energy_today;
+    public @Nullable @SerializedName(value = "eacharge_total", alternate = { "eacCharTotal" }) Integer inverter_charge_energy_total;
 
     // discharging energy
     public @Nullable @SerializedName(value = "edischarge1_tod", alternate = { "eacDischarToday", "ebatDischarToday" }) Integer discharge_energy_today;
@@ -197,23 +195,25 @@ public class GrottValues {
      * Return the valid values from this DTO in a map between channel id and respective QuantityType states.
      *
      * @return a map of channel ids and respective QuantityType state values.
-     * @throws NoSuchFieldException should not occur since we specifically tested this in JUnit tests.
-     * @throws SecurityException should not occur since all fields are public.
-     * @throws IllegalAccessException should not occur since all fields are public.
-     * @throws IllegalArgumentException should not occur since we are specifically working with this class.
      */
     public Map<String, QuantityType<?>> getChannelStates()
             throws NoSuchFieldException, SecurityException, IllegalAccessException, IllegalArgumentException {
         Map<String, QuantityType<?>> map = new HashMap<>();
-        for (Entry<String, UoM> entry : GrowattBindingConstants.CHANNEL_ID_UOM_MAP.entrySet()) {
+        GrowattChannels.getMap().entrySet().forEach(entry -> {
             String channelId = entry.getKey();
-            UoM uom = entry.getValue();
-            Field field = getClass().getField(getFieldName(channelId));
-            Object obj = field.get(this);
-            if (obj instanceof Integer) {
-                map.put(channelId, QuantityType.valueOf(((Integer) obj).doubleValue() / uom.divisor, uom.units));
+            try {
+                Object field = getClass().getField(getFieldName(channelId)).get(this);
+                if (field instanceof Integer) {
+                    UoM uom = entry.getValue();
+                    map.put(channelId, QuantityType.valueOf(((Integer) field).doubleValue() / uom.divisor, uom.units));
+                }
+            } catch (NoSuchFieldException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
+                // Ignore exceptions because they never actually occur at run time..
+                // - NoSuchFieldException never occurs since we have explicitly tested this in the JUnit tests.
+                // - SecurityException, IllegalAccessException never occur since all fields are public.
+                // - IllegalArgumentException never occurs since we are explicitly working within this same class.
             }
-        }
+        });
         return map;
     }
 }

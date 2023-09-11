@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.growatt.internal.discovery.GrowattDiscoveryService;
 import org.openhab.binding.growatt.internal.handler.GrowattBridgeHandler;
 import org.openhab.binding.growatt.internal.handler.GrowattInverterHandler;
-import org.openhab.binding.growatt.internal.servlet.GrottHttpServlet;
+import org.openhab.binding.growatt.internal.servlet.GrowattHttpServlet;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -66,7 +66,7 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
     private final Set<ThingUID> bridges = Collections.synchronizedSet(new HashSet<>());
-    private final GrottHttpServlet httpServlet = new GrottHttpServlet();
+    private final GrowattHttpServlet httpServlet = new GrowattHttpServlet();
 
     private @Nullable GrowattDiscoveryService discoveryService;
     private @Nullable ServiceRegistration<?> discoveryServiceRegistration;
@@ -78,7 +78,7 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         try {
-            httpService.registerServlet(GrottHttpServlet.PATH, httpServlet, null, null);
+            httpService.registerServlet(GrowattHttpServlet.PATH, httpServlet, null, null);
         } catch (ServletException | NamespaceException e) {
             logger.warn("GrowattHandlerFactory() failed to register servlet", e);
         }
@@ -106,7 +106,7 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
     protected void deactivate(ComponentContext componentContext) {
         bridges.clear();
         discoveryUnregister();
-        httpService.unregister(GrottHttpServlet.PATH);
+        httpService.unregister(GrowattHttpServlet.PATH);
         super.deactivate(componentContext);
     }
 

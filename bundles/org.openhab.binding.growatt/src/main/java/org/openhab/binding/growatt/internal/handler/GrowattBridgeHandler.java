@@ -18,7 +18,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.growatt.internal.discovery.GrowattDiscoveryService;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
-import org.openhab.binding.growatt.internal.servlet.GrottHttpServlet;
+import org.openhab.binding.growatt.internal.servlet.GrowattHttpServlet;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -44,9 +44,10 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
     private final Gson gson = new Gson();
     private final GrowattDiscoveryService discoveryService;
     private final Map<String, GrottDevice> inverters = new HashMap<>();
-    private final GrottHttpServlet httpServlet;
+    private final GrowattHttpServlet httpServlet;
 
-    public GrowattBridgeHandler(Bridge bridge, GrottHttpServlet httpServlet, GrowattDiscoveryService discoveryService) {
+    public GrowattBridgeHandler(Bridge bridge, GrowattHttpServlet httpServlet,
+            GrowattDiscoveryService discoveryService) {
         super(bridge);
         this.httpServlet = httpServlet;
         this.discoveryService = discoveryService;

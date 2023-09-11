@@ -43,32 +43,28 @@ The list of all possible channels is as follows:
 | Channel                       | Type                      | Description                                          | Advanced |
 |-------------------------------|---------------------------|------------------------------------------------------|----------|
 | system-status                 | Number:Dimensionless      | Inverter status code.                                |          |
-| pv-power-in                   | Number:Power              | Total DC solar input power.                          |          |
-| pv-power-out                  | Number:Power              | Total AC solar output power.                         |          |
 | pv1-voltage                   | Number:ElectricPotential  | DC voltage from solar panel string #1.               | yes      |
 | pv2-voltage                   | Number:ElectricPotential  | DC voltage from solar panel string #2.               | yes      |
 | pv1-current                   | Number:ElectricCurrent    | DC current from solar panel string #1.               | yes      |
 | pv2-current                   | Number:ElectricCurrent    | DC current from solar panel string #2.               | yes      |
+| pv-power                      | Number:Power              | Total DC solar input power.                          |          |
 | pv1-power                     | Number:Power              | DC power from solar panel string #1.                 | yes      |
 | pv2-power                     | Number:Power              | DC power from solar panel string #2.                 | yes      |
 | grid-frequency                | Number:Frequency          | Frequency of the grid.                               | yes      |
-| grid-voltage                  | Number:ElectricPotential  | Voltage of the grid (phase #R).                      |          |
+| grid-voltage-r                | Number:ElectricPotential  | Voltage of the grid (phase #R).                      |          |
 | grid-voltage-s                | Number:ElectricPotential  | Voltage of the grid phase #S.                        | yes      |
 | grid-voltage-t                | Number:ElectricPotential  | Voltage of the grid phase #T.                        | yes      |
 | grid-voltage-rs               | Number:ElectricPotential  | Voltage of the grid phases #RS.                      | yes      |
 | grid-voltage-st               | Number:ElectricPotential  | Voltage of the grid phases #ST.                      | yes      |
 | grid-voltage-tr               | Number:ElectricPotential  | Voltage of the grid phases #TR.                      | yes      |
-| solar-current                 | Number:ElectricCurrent    | AC current from solar (phase #R).                    | yes      |
-| solar-current-s               | Number:ElectricCurrent    | AC current from solar phase #S.                      | yes      |
-| solar-current-t               | Number:ElectricCurrent    | AC current from solar phase #T.                      | yes      |
-| solar-power                   | Number:Power              | AC power from solar (phase #R).                      |          |
-| solar-power-s                 | Number:Power              | AC power from solar phase #S.                        | yes      |
-| solar-power-t                 | Number:Power              | AC power from solar phase #T.                        | yes      |
-| solar-va                      | Number:Power              | AC VA from solar.                                    | yes      |
-| charge-power                  | Number:Power              | Battery charge power.                                |          |
-| charge-current                | Number:ElectricCurrent    | Battery charge current.                              | yes      |
-| discharge-power               | Number:Power              | Battery discharge power.                             |          |
-| discharge-va                  | Number:Power              | Battery discharge VA.                                | yes      |
+| inverter-current-r            | Number:ElectricCurrent    | AC current from inverter (phase #R).                 | yes      |
+| inverter-current-s            | Number:ElectricCurrent    | AC current from inverter phase #S.                   | yes      |
+| inverter-current-t            | Number:ElectricCurrent    | AC current from inverter phase #T.                   | yes      |
+| inverter-power                | Number:Power              | Total AC output power from inverter.                 |          |
+| inverter-power-r              | Number:Power              | AC power from inverter (phase #R).                   |          |
+| inverter-power-s              | Number:Power              | AC power from inverter phase #S.                     | yes      |
+| inverter-power-t              | Number:Power              | AC power from inverter phase #T.                     | yes      |
+| inverter-va                   | Number:Power              | AC VA from inverter.                                 | yes      |
 | export-power                  | Number:Power              | Power exported to grid.                              |          |
 | export-power-r                | Number:Power              | Power exported to grid phase #R.                     | yes      |
 | export-power-s                | Number:Power              | Power exported to grid phase #S.                     | yes      |
@@ -81,14 +77,18 @@ The list of all possible channels is as follows:
 | load-power-r                  | Number:Power              | Power supplied to load phase #R.                     | yes      |
 | load-power-s                  | Number:Power              | Power supplied to load phase #S.                     | yes      |
 | load-power-t                  | Number:Power              | Power supplied to load phase #T.                     | yes      |
-| solar-energy-today            | Number:Energy             | Solar AC energy produced today.                      |          |
-| solar-energy-total            | Number:Energy             | Total solar AC energy produced.                      |          |
+| charge-power                  | Number:Power              | Battery charge power.                                |          |
+| charge-current                | Number:ElectricCurrent    | Battery charge current.                              | yes      |
+| discharge-power               | Number:Power              | Battery discharge power.                             |          |
+| discharge-va                  | Number:Power              | Battery discharge VA.                                | yes      |
 | pv-energy-today               | Number:Energy             | DC energy collected by solar panels today.           |          |
 | pv1-energy-today              | Number:Energy             | DC energy collected by solar panels string #1 today. | yes      |
 | pv2-energy-today              | Number:Energy             | DC energy collected by solar panels string #2 today. | yes      |
 | pv-energy-total               | Number:Energy             | Total DC energy collected by solar panels.           |          |
 | pv1-energy-total              | Number:Energy             | Total DC energy collected by solar panels string #1. | yes      |
 | pv2-energy-total              | Number:Energy             | Total DC energy collected by solar panels string #2. | yes      |
+| inverter-energy-today         | Number:Energy             | AC energy produced by inverter today.                |          |
+| inverter-energy-total         | Number:Energy             | Total AC energy produced by inverter.                |          |
 | export-energy-today           | Number:Energy             | Energy exported today.                               |          |
 | export-energy-total           | Number:Energy             | Total energy exported.                               |          |
 | import-energy-today           | Number:Energy             | Energy imported today.                               |          |
@@ -97,8 +97,8 @@ The list of all possible channels is as follows:
 | load-energy-total             | Number:Energy             | Total energy supplied to load.                       |          |
 | import-charge-energy-today    | Number:Energy             | Energy imported to charge battery today.             |          |
 | import-charge-energy-total    | Number:Energy             | Total energy imported to charge battery.             |          |
-| solar-charge-energy-today     | Number:Energy             | Solar energy to charge battery today.                |          |
-| solar-charge-energy-total     | Number:Energy             | Total solar energy to charge battery.                |          |
+| inverter-charge-energy-today  | Number:Energy             | Inverter energy to charge battery today.             |          |
+| inverter-charge-energy-total  | Number:Energy             | Total inverter energy to charge battery.             |          |
 | discharge-energy-today        | Number:Energy             | Energy consumed from battery.                        |          |
 | discharge-energy-total        | Number:Energy             | Total energy consumed from battery.                  |          |
 | total-work-time               | Number:Time               | Total work time of the system.                       | yes      |

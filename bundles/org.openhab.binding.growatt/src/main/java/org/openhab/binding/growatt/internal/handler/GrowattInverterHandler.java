@@ -43,6 +43,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GrowattInverterHandler extends BaseThingHandler {
 
+    // data-logger sends packets each 5 minutes; timeout means 2 packets missed
+    private static final int AWAITING_DATA_TIMEOUT_MINUTES = 11;
+
     private final Logger logger = LoggerFactory.getLogger(GrowattInverterHandler.class);
 
     private String deviceId = "unknown";
@@ -81,8 +84,10 @@ public class GrowattInverterHandler extends BaseThingHandler {
         if (task != null) {
             task.cancel(true);
         }
-        awaitingDataTimeoutTask = scheduler.schedule(() -> updateStatus(ThingStatus.OFFLINE,
-                ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.awaiting-data-timeout"), 5, TimeUnit.MINUTES);
+        awaitingDataTimeoutTask = scheduler.schedule(() -> {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.awaiting-data-timeout");
+        }, AWAITING_DATA_TIMEOUT_MINUTES, TimeUnit.MINUTES);
     }
 
     /**

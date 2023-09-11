@@ -27,13 +27,9 @@
 			</channel>
 
 			<!-- solar generation -->
-			<channel id="pv-power-in" typeId="system.electric-power">
+			<channel id="pv-power" typeId="system.electric-power">
 				<label>Solar Input Power</label>
 				<description>Total solar DC input power.</description>
-			</channel>
-			<channel id="pv-power-out" typeId="system.electric-power">
-				<label>Solar Output Power</label>
-				<description>Total solar AC output power.</description>
 			</channel>
 
 			<!-- electric data for strings #1 and #2 -->
@@ -69,8 +65,8 @@
 				<label>Grid Frequency</label>
 				<description>Frequency of the grid.</description>
 			</channel>
-			<channel id="grid-voltage" typeId="system.electric-voltage">
-				<label>Grid Voltage</label>
+			<channel id="grid-voltage-r" typeId="system.electric-voltage">
+				<label>Grid Voltage (#R)</label>
 				<description>Voltage of the grid (phase #R).</description>
 			</channel>
 			<channel id="grid-voltage-s" typeId="advanced-electric-voltage">
@@ -94,36 +90,40 @@
 				<description>Voltage of the grid phases #TR.</description>
 			</channel>
 
-			<!-- solar power to grid -->
-			<channel id="solar-current" typeId="system.electric-current">
-				<label>Solar Current</label>
-				<description>AC current from solar (phase #R).</description>
+			<!-- inverter power to grid -->
+			<channel id="inverter-current-r" typeId="system.electric-current">
+				<label>Inverter Output Current (#R)</label>
+				<description>AC current from inverter (phase #R).</description>
 			</channel>
-			<channel id="solar-current-s" typeId="advanced-electric-current">
-				<label>Solar Current #S</label>
-				<description>AC current from solar phase #S.</description>
+			<channel id="inverter-current-s" typeId="advanced-electric-current">
+				<label>Inverter Output Current #S</label>
+				<description>AC current from inverter phase #S.</description>
 			</channel>
-			<channel id="solar-current-t" typeId="advanced-electric-current">
-				<label>Solar Current #T</label>
-				<description>AC current from solar phase #T.</description>
-			</channel>
-
-			<channel id="solar-power" typeId="system.electric-power">
-				<label>Solar AC Power</label>
-				<description>AC power from solar (phase #R).</description>
-			</channel>
-			<channel id="solar-power-s" typeId="advanced-electric-power">
-				<label>Solar AC Power #S</label>
-				<description>AC power from solar phase #S.</description>
-			</channel>
-			<channel id="solar-power-t" typeId="advanced-electric-power">
-				<label>Solar AC Power #T</label>
-				<description>AC power from solar phase #T.</description>
+			<channel id="inverter-current-t" typeId="advanced-electric-current">
+				<label>Inverter Output Current #T</label>
+				<description>AC current from inverter phase #T.</description>
 			</channel>
 
-			<channel id="solar-va" typeId="advanced-electric-va">
-				<label>Solar VA</label>
-				<description>AC VA from solar.</description>
+			<channel id="inverter-power" typeId="system.electric-power">
+				<label>Inverter Output Power</label>
+				<description>Total AC output power from the inverter.</description>
+			</channel>
+			<channel id="inverter-power-r" typeId="system.electric-power">
+				<label>Inverter Output Power (#R)</label>
+				<description>AC power from inverter (phase #R).</description>
+			</channel>
+			<channel id="inverter-power-s" typeId="advanced-electric-power">
+				<label>Inverter Output Power #S</label>
+				<description>AC power from inverter phase #S.</description>
+			</channel>
+			<channel id="inverter-power-t" typeId="advanced-electric-power">
+				<label>Inverter Output Power #T</label>
+				<description>AC power from inverter phase #T.</description>
+			</channel>
+
+			<channel id="inverter-va" typeId="advanced-electric-va">
+				<label>Inverter VA</label>
+				<description>AC VA produced by inverter.</description>
 			</channel>
 
 			<!-- battery power -->
@@ -198,14 +198,14 @@
 				<description>Power supplied to load phase #T.</description>
 			</channel>
 
-			<!-- solar AC energy -->
-			<channel id="solar-energy-today" typeId="system.electric-energy">
-				<label>Solar Energy Today</label>
-				<description>Solar energy collected today.</description>
+			<!-- inverter AC output energy -->
+			<channel id="inverter-energy-today" typeId="system.electric-energy">
+				<label>Inverter Output Energy Today</label>
+				<description>Inverter output energy produced today.</description>
 			</channel>
-			<channel id="solar-energy-total" typeId="system.electric-energy">
-				<label>Solar Energy Total</label>
-				<description>Total solar energy collected.</description>
+			<channel id="inverter-energy-total" typeId="system.electric-energy">
+				<label>Inverter Output Energy Total</label>
+				<description>Total inverter output energy produced.</description>
 			</channel>
 
 			<!-- solar DC energy -->
@@ -275,14 +275,14 @@
 				<description>Total energy imported from grid to charge battery.</description>
 			</channel>
 
-			<!-- solar energy to charge -->
-			<channel id="solar-charge-energy-today" typeId="system.electric-energy">
-				<label>Solar Energy to Charge Battery Today</label>
-				<description>Energy from solar to charge battery today.</description>
+			<!-- inverter energy to charge -->
+			<channel id="inverter-charge-energy-today" typeId="system.electric-energy">
+				<label>Inverter Energy to Charge Battery Today</label>
+				<description>Energy from inverter to charge battery today.</description>
 			</channel>
-			<channel id="solar-charge-energy-total" typeId="system.electric-energy">
-				<label>Total Solar Energy to Charge Battery</label>
-				<description>Total energy from solar to charge battery.</description>
+			<channel id="inverter-charge-energy-total" typeId="system.electric-energy">
+				<label>Total Inverter Energy to Charge Battery</label>
+				<description>Total energy from inverter to charge battery.</description>
 			</channel>
 
 			<!-- energy consumed from battery -->
