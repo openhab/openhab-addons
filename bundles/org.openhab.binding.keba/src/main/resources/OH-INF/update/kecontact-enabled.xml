@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="keba:kecontact">
+		<instruction-set targetVersion="1">
+			<remove-channel id="enabled"/>
+			<add-channel id="enabledsystem">
+				<type>keba:enaledsystem</type>
+				<label>Enabled (System)</label>
+			</add-channel>
+			<add-channel id="enableduser">
+				<type>keba:enaleduser</type>
+				<label>Enabled (User)</label>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>
