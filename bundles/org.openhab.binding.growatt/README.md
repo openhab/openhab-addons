@@ -200,10 +200,10 @@ nomqtt = True // disable mqtt
 [PVOutput]
 pvoutput = False // disable pvoutput
 
-[extension]
+[extension] // enable the 'grottext' extension
 extension = True
 extname = grottext
-extvar = {"url": "http://xxx.xxx.xxx.xxx:8080/growatt"} // ip address of openhab
+extvar = {"url": "http://127.0.0.1:8080/growatt"} // or ip address of openhab (if remote)
 ```
 
 ### Start Grott as a Service
