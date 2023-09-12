@@ -465,7 +465,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
 
     private void assertCommunicationError(String acceptedItemType) {
         Configuration configuration = new Configuration();
-        private static final String WRONG_HOSTNAME = "wrong.hostname";
+        final String WRONG_HOSTNAME = "wrong.hostname";
         if (acceptedItemType.equals(ACCEPTED_ITEM_TYPE_DATE_TIME)) {
             initialize(configuration, NtpBindingConstants.CHANNEL_DATE_TIME, ACCEPTED_ITEM_TYPE_DATE_TIME, null,
                     WRONG_HOSTNAME);
