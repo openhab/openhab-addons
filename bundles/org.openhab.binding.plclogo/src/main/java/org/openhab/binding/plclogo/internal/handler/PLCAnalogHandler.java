@@ -256,7 +256,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
 
             String type = config.get().getChannelType();
             for (int i = 0; i < getNumberOfChannels(); i++) {
-                String name = kind + i + 1;
+                String name = kind + String.valueOf(i + 1);
                 ChannelUID uid = new ChannelUID(thing.getUID(), name);
                 ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
                 cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
