@@ -122,11 +122,12 @@ Once the parameter `forecastHours` will be changed, the available channel groups
 
 ### Station
 
-| Channel Group ID | Channel ID | Item Type | Description                                  |
-|------------------|------------|-----------|----------------------------------------------|
-| station          | id         | String    | Id of the weather station or the city.       |
-| station          | name       | String    | Name of the weather station or the city.     |
-| station          | location   | Location  | Location of the weather station or the city. |
+| Channel Group ID | Channel ID | Item Type | Description                                                |
+|------------------|------------|-----------|------------------------------------------------------------|
+| station          | id         | String    | Id of the weather station or the city.                     |
+| station          | name       | String    | Name of the weather station or the city.                   |
+| station          | location   | Location  | Location of the weather station or the city.               |
+| station          | json       | String    | JSON string as returned from the Weather and Forecast API. |
 
 These channels are not supported in the One Call API
 
@@ -135,6 +136,7 @@ These channels are not supported in the One Call API
 | Channel Group ID | Channel ID           | Item Type            | Description                                                             |
 |------------------|----------------------|----------------------|-------------------------------------------------------------------------|
 | current          | time-stamp           | DateTime             | Time of data observation.                                               |
+| current          | json                 | String               | One Call API only! JSON string as returned from the One Call API.       |
 | current          | sunrise              | DateTime             | Sunrise time of current day. Only available in the One Call API         |
 | current          | sunset               | DateTime             | Sunset  time of current day. Only available in the One Call API         |
 | current          | condition            | String               | Current weather condition.                                              |
