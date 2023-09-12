@@ -333,7 +333,7 @@
 	<channel-type id="response-json" advanced="true">
 		<item-type>String</item-type>
 		<label>JSON Response</label>
-		<description>JSON string as returned from the OneCall API</description>
+		<description>JSON string as returned from the OneCall API.</description>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
