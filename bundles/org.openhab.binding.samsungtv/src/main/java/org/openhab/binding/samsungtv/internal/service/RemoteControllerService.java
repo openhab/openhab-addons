@@ -418,8 +418,8 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
 
     private void sendKeyCodePress(KeyCode key) {
         try {
-            if (remoteController instanceof RemoteControllerWebSocket socket) {
-                socket.sendKeyPress(key);
+            if (remoteController instanceof RemoteControllerWebSocket remoteControllerWebSocket) {
+                remoteControllerWebSocket.sendKeyPress(key);
             }
         } catch (RemoteControllerException e) {
             reportError(String.format("Could not send command to device on %s:%d", host, port), e);

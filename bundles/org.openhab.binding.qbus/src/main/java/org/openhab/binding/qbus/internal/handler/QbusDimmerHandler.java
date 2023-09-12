@@ -242,8 +242,8 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
                         qDimmer.execute(sendvalue, snr);
                     }
                 }
-            } else if (command instanceof PercentType percentType) {
-                int percentToInt = percentType.intValue();
+            } else if (command instanceof PercentType percentCommand) {
+                int percentToInt = percentCommand.intValue();
                 if (PercentType.ZERO.equals(command)) {
                     qDimmer.execute(0, snr);
                 } else {

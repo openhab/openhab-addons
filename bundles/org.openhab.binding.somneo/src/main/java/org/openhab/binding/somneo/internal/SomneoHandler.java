@@ -396,8 +396,8 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_ALARM_SOUND:
-                    if (command instanceof StringType string) {
-                        connector.setAlarmSound(alarmPosition, string);
+                    if (command instanceof StringType stringCommand) {
+                        connector.setAlarmSound(alarmPosition, stringCommand);
                     }
                     break;
                 case CHANNEL_ALARM_VOLUME:

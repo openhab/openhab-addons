@@ -134,10 +134,10 @@ public class SagerCasterHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_RAIN_QTTY:
                     logger.debug("Rain status updated, updating forecast");
-                    if (command instanceof QuantityType type) {
-                        updateRain(type);
-                    } else if (command instanceof DecimalType type) {
-                        updateRain(type);
+                    if (command instanceof QuantityType quantityCommand) {
+                        updateRain(quantityCommand);
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        updateRain(decimalCommand);
                     } else {
                         logger.debug("Channel '{}' accepts Number, Number:(Speed|Length) commands.", channelUID);
                     }
