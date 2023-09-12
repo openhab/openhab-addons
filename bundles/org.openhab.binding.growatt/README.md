@@ -150,6 +150,16 @@ Number:Power Solar_String1_Power "Solar String #1 PV Power" {channel="growatt:in
 Number:Energy Solar_Output_Energy "Solar Output Energy Total" {channel="growatt:inverter:home:sph:pv-energy-total"}
 ```
 
+Example using a transform profile to invert an item value:
+
+```java
+// charge item with positive value
+Number:Power Charge_Power "Charge Power [%.0f W]" <energy> {channel="growatt:inverter:home:sph:charge-power"}
+
+// discarge item with negative value
+Number:Power Discharge_Power "Discharge Power [%.0f W]" <energy> {channel="growatt:inverter:home:sph:discharge-power" [ profile="transform:JS", toItemScript="| Quantity(input).multiply(-1).toString();" ] }
+```
+
 ## Grott Application Installation and Setup
 
 You can install the Grott application either on the same computer as OpenHAB or on another.
