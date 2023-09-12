@@ -48,13 +48,15 @@ By default, the injection of the [openhab-js](https://github.com/openhab/openhab
 When configuring the add-on, you should ask you these questions:
 
 1. Do I want to have the openhab-js namespaces automatically globally available (`injectionEnabled`)?
-   - Yes: "Use Built-In Variables"
-   - No: "Do Not Use Built-In Variables"
+   - Yes: "Use Built-In Variables" (default)
+   - No: "Do Not Use Built-In Variables", which will allow you to decide what to import and really speed up script loading, but you need to manually import the library, which actually will slow down script loading again.
 2. Do I want to have a different version injected than the included one (`injectionCachingEnabled`)?
-   - Yes: "Do Not Cache Library Injection" and install your version to the `$OPENHAB_CONF/automation/js/node_modules` folder
-   - No: "Cache Library Injection"
+   - Yes: "Do Not Cache Library Injection" and install your version to the `$OPENHAB_CONF/automation/js/node_modules` folder, which will slow down script loading, because the injection is not cached.
+   - No: "Cache Library Injection" (default), which will speed up the initial loading of a script because the library's injection is cached.
 
 Note that in case you disable caching or your code uses `require()` to import the library and there is no installation of the library found in the node_modules folder, the add-on will fallback to its included version.
+
+In general, the first run of a script will take longer than the subsequent runs, because on the first run, the injection of both the globals (like `console`) and (if enabled) the library needs to be done.
 
 <!-- Paste the copied docs from openhab-js under this comment. Do NOT forget the table of contents. -->
 
