@@ -134,6 +134,12 @@ public class OpenWeatherMapConnection {
                 OpenWeatherMapJsonWeatherData.class);
     }
 
+    public synchronized @Nullable String getWeatherJson(@Nullable PointType location)
+            throws CommunicationException, ConfigurationException {
+        return getResponseFromCache(
+                buildURL(WEATHER_URL, getRequestParams(handler.getOpenWeatherMapAPIConfig(), location)));
+    }
+
     /**
      * Requests the hourly forecast data for the given location (see https://openweathermap.org/forecast5).
      *
@@ -330,7 +336,8 @@ public class OpenWeatherMapConnection {
                 OpenWeatherMapOneCallAPIData.class);
     }
 
-    public synchronized @Nullable String getOneCallAPIJson(@Nullable PointType location) {
+    public synchronized @Nullable String getOneCallAPIJson(@Nullable PointType location)
+            throws CommunicationException, ConfigurationException {
         Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
         return getResponseFromCache(buildURL(buildOneCallURL(), params));
     }

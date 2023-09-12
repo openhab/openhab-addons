@@ -74,6 +74,7 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     private int forecastDays = 6;
 
     private @Nullable OpenWeatherMapJsonWeatherData weatherData;
+    private @Nullable String weatherJson;
     private @Nullable OpenWeatherMapJsonHourlyForecastData hourlyForecastData;
     private @Nullable OpenWeatherMapJsonDailyForecastData dailyForecastData;
 
@@ -166,6 +167,7 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
         logger.debug("Update weather and forecast data of thing '{}'.", getThing().getUID());
         try {
             weatherData = connection.getWeatherData(location);
+            weatherJson = connection.getWeatherJson(location);
             if (forecastHours > 0) {
                 hourlyForecastData = connection.getHourlyForecastData(location, forecastHours / 3);
             }
@@ -238,6 +240,7 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
         OpenWeatherMapJsonWeatherData localWeatherData = weatherData;
+        String localWeatherJson = weatherJson;
         if (localWeatherData != null) {
             State state = UnDefType.UNDEF;
             switch (channelId) {
@@ -253,6 +256,9 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     break;
                 case CHANNEL_TIME_STAMP:
                     state = getDateTimeTypeState(localWeatherData.getDt());
+                    break;
+                case CHANNEL_JSON:
+                    state = getStringTypeState(localWeatherJson);
                     break;
                 case CHANNEL_CONDITION:
                     if (!localWeatherData.getWeather().isEmpty()) {

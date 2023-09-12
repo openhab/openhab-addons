@@ -14,6 +14,7 @@
 			<channel id="location" typeId="system.location">
 				<description>Location of the weather station or the city.</description>
 			</channel>
+			<channel id="json" typeId="response-json"/>
 		</channels>
 	</channel-group-type>
 
