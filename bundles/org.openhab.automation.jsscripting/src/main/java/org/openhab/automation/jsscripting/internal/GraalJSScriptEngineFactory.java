@@ -87,8 +87,8 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         if (!scriptTypes.contains(scriptType)) {
             return null;
         }
-        return new DebuggingGraalScriptEngine<>(new OpenhabGraalJSScriptEngine(injectionEnabled, injectionCachingEnabled,
-                jsScriptServiceUtil, jsDependencyTracker));
+        return new DebuggingGraalScriptEngine<>(new OpenhabGraalJSScriptEngine(injectionEnabled,
+                injectionCachingEnabled, jsScriptServiceUtil, jsDependencyTracker));
     }
 
     @Override
@@ -99,6 +99,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     @Modified
     protected void modified(Map<String, ?> config) {
         this.injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Boolean.class, true);
-        this.injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED), Boolean.class, true);
+        this.injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED),
+                Boolean.class, true);
     }
 }
