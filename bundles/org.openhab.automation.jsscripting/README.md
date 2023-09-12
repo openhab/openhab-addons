@@ -56,8 +56,6 @@ When configuring the add-on, you should ask you these questions:
 
 Note that in case you disable caching or your code uses `require()` to import the library and there is no installation of the library found in the node_modules folder, the add-on will fallback to its included version.
 
-![openHAB Rule Configuration](doc/settings.png)
-
 <!-- Paste the copied docs from openhab-js under this comment. Do NOT forget the table of contents. -->
 
 ### UI Based Rules
