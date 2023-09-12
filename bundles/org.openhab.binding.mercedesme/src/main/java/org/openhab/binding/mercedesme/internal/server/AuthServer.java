@@ -68,9 +68,6 @@ public class AuthServer {
         SERVER_MAP.remove(Integer.valueOf(config.callbackPort));
     }
 
-    public void deleteOAuthServiceAndAccessToken() {
-    }
-
     public boolean start() {
         LOGGER.debug("Start Callback Server for port {}", config.callbackPort);
         if (server.isPresent()) {

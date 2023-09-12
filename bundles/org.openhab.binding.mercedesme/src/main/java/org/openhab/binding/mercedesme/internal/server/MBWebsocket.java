@@ -35,6 +35,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,7 @@ public class MBWebsocket {
 
     private AccountHandler accountHandler;
     private boolean running = false;
+    boolean interrupted = false;
     private Instant runTill = Instant.now();
     private @Nullable Future<?> sessionFuture;
     private @Nullable Session session;
@@ -87,11 +89,12 @@ public class MBWebsocket {
         try {
             WebSocketClient client = new WebSocketClient();
             client.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
+            client.setStopTimeout(CONNECT_TIMEOUT_MS);
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
             logger.info("Websocket start");
             client.start();
             sessionFuture = client.connect(this, new URI(accountHandler.getWSUri()), request);
-            while (Instant.now().isBefore(runTill)) {
+            while (Instant.now().isBefore(runTill) && !interrupted) {
                 // sends one message per second
                 if (sendMessage()) {
                     // add additional runtime to execute and finish command
@@ -111,6 +114,7 @@ public class MBWebsocket {
         }
         synchronized (this) {
             running = false;
+            interrupted = false;
         }
     }
 
@@ -137,6 +141,16 @@ public class MBWebsocket {
         return false;
     }
 
+    public boolean isRunning() {
+        return running;
+    }
+
+    public synchronized void interrupt() {
+        if (running) {
+            interrupted = true;
+        }
+    }
+
     /**
      * endpoints
      */
@@ -145,19 +159,25 @@ public class MBWebsocket {
     public void onBytes(InputStream is) {
         try {
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
-            logger.info("Message {}", pm.getAllFields().keySet());
-            if (pm.hasApptwinCommandStatusUpdatesByVin()) {
-                logger.info("Status Updates {}", pm.getApptwinCommandStatusUpdatesByVin().getAllFields());
-            }
-
-            // data update
             if (pm.hasVepUpdates()) {
                 accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
+                AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
+                        .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
+                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                cm.writeTo(baos);
+                session.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
             } else if (pm.hasAssignedVehicles()) {
                 for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
                     String vin = pm.getAssignedVehicles().getVins(0);
                     accountHandler.discovery(vin);
                 }
+            } else if (pm.hasDebugMessage()) {
+                logger.debug("MB Debug Message: {}" + pm.getDebugMessage().getMessage());
+            } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
+                logger.debug("Status Updates {}", pm.getApptwinCommandStatusUpdatesByVin().getAllFields());
+            } else {
+                logger.debug("Message {} skipped", pm.getAllFields().keySet());
             }
         } catch (IOException e) {
             logger.warn("IOEXception {}", e.getMessage());

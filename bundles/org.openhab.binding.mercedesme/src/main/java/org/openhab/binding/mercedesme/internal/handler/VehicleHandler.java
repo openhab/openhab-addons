@@ -124,8 +124,15 @@ public class VehicleHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.info("Received command {} for {}", command, channelUID);
         if (command instanceof RefreshType) {
-            // will trigger a Websocket connect without command to refresh values
-            accountHandler.get().sendCommand(null);
+            if ("feature-capabilities".equals(channelUID.getIdWithoutGroup())
+                    || "command-capabilities".equals(channelUID.getIdWithoutGroup())) {
+                accountHandler.ifPresent(ah -> {
+                    ah.getVehicleCapabilities(config.get().vin);
+                });
+            } else {
+                // will trigger a Websocket connect without command to refresh values
+                accountHandler.get().sendCommand(null);
+            }
         } else if (Constants.GROUP_VEHICLE.equals(channelUID.getGroupId())) {
             /**
              * Commands for Vehicle

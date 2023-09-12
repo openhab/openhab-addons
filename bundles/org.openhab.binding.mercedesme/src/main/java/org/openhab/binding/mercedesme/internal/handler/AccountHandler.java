@@ -28,7 +28,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -70,13 +69,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final MBWebsocket ws;
     private final Map<String, VehicleHandler> vehicleHandlerMap = new HashMap<String, VehicleHandler>();
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<String, Map<String, Object>>();
-    private final Map<String, String> featureCapabilitiesJsonMap = new HashMap<String, String>();
-    private final Map<String, String> commandCapabilitiesJsonMap = new HashMap<String, String>();
     private final String FEATURE_APPENDIX = "-features";
     private final String COMMAND_APPENDIX = "-commands";
 
     private Optional<AuthServer> server = Optional.empty();
-    private Optional<WebSocketClient> wsClient = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
     private Optional<ScheduledFuture> scheduledFuture = Optional.empty();
 
@@ -118,7 +114,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
             }
         }
-        scheduledFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 0, 15, TimeUnit.MINUTES));
+        scheduledFuture = Optional
+                .of(scheduler.scheduleWithFixedDelay(this::update, 0, config.get().refershInterval, TimeUnit.MINUTES));
     }
 
     public void update() {
@@ -177,18 +174,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             server = Optional.empty();
             Utils.removePort(config.get().callbackPort);
         }
+        ws.interrupt();
         scheduledFuture.ifPresent(schedule -> {
             if (!schedule.isCancelled()) {
                 schedule.cancel(true);
             }
         });
-    }
-
-    @Override
-    public void handleRemoval() {
-        server.ifPresent(s -> s.deleteOAuthServiceAndAccessToken());
-        wsClient.ifPresent(c -> c.destroy());
-        super.handleRemoval();
     }
 
     /**
@@ -254,14 +245,14 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (storage.containsKey(vin + FEATURE_APPENDIX)) {
             logger.info("Register VIN Features? {} Commands? {}", storage.containsKey(vin + FEATURE_APPENDIX),
                     storage.containsKey(vin + COMMAND_APPENDIX));
-            vehicleHandlerMap.get(vin).setFeatureCapabilities(storage.get(vin + FEATURE_APPENDIX));
-        } else {
-            logger.trace("WHAT?!?");
+            if (vehicleHandlerMap.containsKey(vin)) {
+                vehicleHandlerMap.get(vin).setFeatureCapabilities(storage.get(vin + FEATURE_APPENDIX));
+            }
         }
         if (storage.containsKey(vin + COMMAND_APPENDIX)) {
-            vehicleHandlerMap.get(vin).setCommandCapabilities(storage.get(vin + COMMAND_APPENDIX));
-        } else {
-            logger.trace("WHAT?!?");
+            if (vehicleHandlerMap.containsKey(vin)) {
+                vehicleHandlerMap.get(vin).setCommandCapabilities(storage.get(vin + COMMAND_APPENDIX));
+            }
         }
     }
 
@@ -319,7 +310,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             ContentResponse capabilitiesResponse = capabilitiesRequest.send();
 
             String featureCapabilitiesJsonString = capabilitiesResponse.getContentAsString();
-            featureCapabilitiesJsonMap.put(vin, featureCapabilitiesJsonString);
             if (!storage.containsKey(vin + FEATURE_APPENDIX)) {
                 storage.put(vin + FEATURE_APPENDIX, featureCapabilitiesJsonString);
             }
