@@ -85,6 +85,7 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_STATION_NAME = "name";
     public static final String CHANNEL_STATION_LOCATION = "location";
     public static final String CHANNEL_TIME_STAMP = "time-stamp";
+    public static final String CHANNEL_JSON = "json";
     public static final String CHANNEL_SUNRISE = "sunrise";
     public static final String CHANNEL_SUNSET = "sunset";
     public static final String CHANNEL_CONDITION = "condition";

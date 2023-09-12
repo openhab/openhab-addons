@@ -330,6 +330,11 @@ public class OpenWeatherMapConnection {
                 OpenWeatherMapOneCallAPIData.class);
     }
 
+    public synchronized @Nullable String getOneCallAPIJson(@Nullable PointType location) {
+        Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
+        return getResponseFromCache(buildURL(buildOneCallURL(), params));
+    }
+
     /**
      * Get the historical weather data from the One Call API for the given location and the given number of days in the
      * past. As of now, OpenWeatherMap supports this function for up to 5 days in the past. However, this may change in

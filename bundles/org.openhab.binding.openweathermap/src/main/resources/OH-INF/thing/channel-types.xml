@@ -146,7 +146,11 @@
 		<label>One Call API Current Weather</label>
 		<description>Current weather data from the One Call API.</description>
 		<channels>
+			<channel id="location" typeId="system.location">
+				<description>Location of the weather station or the city.</description>
+			</channel>
 			<channel id="time-stamp" typeId="time-stamp"/>
+			<channel id="json" typeId="response-json"/>
 			<channel id="sunrise" typeId="sunrise"/>
 			<channel id="sunset" typeId="sunset"/>
 			<channel id="condition" typeId="condition"/>
@@ -323,6 +327,14 @@
 		<description>Time of data observation.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="response-json" advanced="true">
+		<item-type>String</item-type>
+		<label>JSON Response</label>
+		<description>JSON string as returned from the OneCall API</description>
+		<category>Text</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="sunrise">

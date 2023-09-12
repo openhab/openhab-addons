@@ -74,6 +74,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
             .compile(CHANNEL_GROUP_ALERTS_PREFIX + "([0-9]*)");
 
     private @Nullable OpenWeatherMapOneCallAPIData weatherData;
+    private @Nullable String weatherJson;
 
     private int forecastMinutes = 60;
     private int forecastHours = 24;
@@ -219,6 +220,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         try {
             weatherData = connection.getOneCallAPIData(location, forecastMinutes == 0, forecastHours == 0,
                     forecastDays == 0, numberOfAlerts == 0);
+            weatherJson = connection.getOneCallAPIJson(location);
             return true;
         } catch (JsonSyntaxException e) {
             logger.debug("JsonSyntaxException occurred during execution: {}", e.getMessage(), e);
@@ -279,6 +281,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
         OpenWeatherMapOneCallAPIData localWeatherData = weatherData;
+        String localWeatherJson = weatherJson;
         if (localWeatherData != null) {
             State state = UnDefType.UNDEF;
             switch (channelId) {
@@ -287,6 +290,9 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     break;
                 case CHANNEL_TIME_STAMP:
                     state = getDateTimeTypeState(localWeatherData.getCurrent().getDt());
+                    break;
+                case CHANNEL_JSON:
+                    state = getStringTypeState(localWeatherJson);
                     break;
                 case CHANNEL_SUNRISE:
                     state = getDateTimeTypeState(localWeatherData.getCurrent().getSunrise());
