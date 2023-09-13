@@ -40,7 +40,6 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
     @Override
     public TouchWandUnitDataAlarmSensor deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-
         TouchWandUnitDataAlarmSensor touchWandUnitDataAlarmSensor = new TouchWandUnitDataAlarmSensor();
 
         JsonObject jsonObject = json.getAsJsonObject();
@@ -65,7 +64,6 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
                 JsonObject.class);
 
         if (currentStatusObj != null) {
-
             TouchWandAlarmSensorCurrentStatus touchWandUnitDataAlarmSensorCurrentStatus = touchWandUnitDataAlarmSensor
                     .getCurrStatus();
 

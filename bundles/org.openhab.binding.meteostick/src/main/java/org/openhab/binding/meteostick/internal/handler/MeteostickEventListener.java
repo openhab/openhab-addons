@@ -24,5 +24,5 @@ public interface MeteostickEventListener {
      *
      * @param data a line of data from the meteoStick
      */
-    void onDataReceived(String data[]);
+    void onDataReceived(String[] data);
 }

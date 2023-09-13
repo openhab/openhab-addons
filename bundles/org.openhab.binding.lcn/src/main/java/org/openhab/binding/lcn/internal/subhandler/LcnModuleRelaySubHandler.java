@@ -13,7 +13,7 @@
 package org.openhab.binding.lcn.internal.subhandler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -81,6 +81,6 @@ public class LcnModuleRelaySubHandler extends AbstractLcnModuleSubHandler {
 
     @Override
     public Collection<Pattern> getPckStatusMessagePatterns() {
-        return Collections.singleton(PATTERN);
+        return Set.of(PATTERN);
     }
 }

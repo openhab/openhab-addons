@@ -22,9 +22,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -113,7 +113,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SolarwattDevicesDiscoveryService.class);
+        return Set.of(SolarwattDevicesDiscoveryService.class);
     }
 
     /**

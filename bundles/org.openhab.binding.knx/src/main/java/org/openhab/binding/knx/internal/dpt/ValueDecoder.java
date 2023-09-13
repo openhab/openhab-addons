@@ -215,11 +215,7 @@ public class ValueDecoder {
         try {
             date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
         } catch (ParseException pe) {
-            try {
-                date = new SimpleDateFormat(TIME_FORMAT, Locale.US).parse(value);
-            } catch (ParseException pe2) {
-                throw pe2;
-            }
+            date = new SimpleDateFormat(TIME_FORMAT, Locale.US).parse(value);
         }
         return DateTimeType.valueOf(new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(date));
     }

@@ -143,7 +143,7 @@ class PullJob implements Runnable {
 
         File tmpTargetFile;
         try {
-            tmpTargetFile = File.createTempFile(TMP_FILE_PREFIX, null);
+            tmpTargetFile = Files.createTempFile(TMP_FILE_PREFIX, null).toFile();
         } catch (IOException e) {
             logger.warn("Not able to create temporary file for downloading iCal. Error message is: {}", e.getMessage());
             return;

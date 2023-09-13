@@ -231,7 +231,7 @@ public class SDMCommands {
          */
         public SDMSetFanTimerRequest(SDMFanTimerMode timerMode, Duration duration) {
             super("sdm.devices.commands.Fan.SetTimer", entry("timerMode", timerMode.name()),
-                    entry("duration", String.valueOf(duration.toSeconds()) + "s"));
+                    entry("duration", duration.toSeconds() + "s"));
         }
     }
 

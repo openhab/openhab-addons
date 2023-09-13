@@ -184,9 +184,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private synchronized JsonArray getPlaylistsInternal() {
         String method = "Playlist.GetPlaylists";
         String hash = hostname + '#' + method;
-        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
-            return socket.callMethod(method);
-        });
+        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> socket.callMethod(method));
 
         if (response instanceof JsonArray) {
             return response.getAsJsonArray();

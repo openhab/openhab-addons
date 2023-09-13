@@ -314,14 +314,14 @@ public class NeoHubHandler extends BaseBridgeHandler {
             // check if we also need to discard and update systemData
             NeoHubReadDcbResponse systemData = this.systemData;
             if (systemData != null) {
-                if (deviceData instanceof NeoHubLiveDeviceData) {
+                if (deviceData instanceof NeoHubLiveDeviceData liveDeviceData) {
                     /*
                      * note: time-stamps are measured in seconds from 1970-01-01T00:00:00Z
                      *
                      * new API: discard systemData if its time-stamp is older than the system
                      * time-stamp on the hub
                      */
-                    if (systemData.timeStamp < ((NeoHubLiveDeviceData) deviceData).getTimestampSystem()) {
+                    if (systemData.timeStamp < liveDeviceData.getTimestampSystem()) {
                         this.systemData = null;
                     }
                 } else {
@@ -416,8 +416,8 @@ public class NeoHubHandler extends BaseBridgeHandler {
             List<Thing> children = getThing().getThings();
             for (Thing child : children) {
                 ThingHandler device = child.getHandler();
-                if (device instanceof NeoBaseHandler) {
-                    ((NeoBaseHandler) device).toBaseSendPollResponse(deviceData);
+                if (device instanceof NeoBaseHandler neoBaseHandler) {
+                    neoBaseHandler.toBaseSendPollResponse(deviceData);
                 }
             }
 

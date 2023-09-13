@@ -271,7 +271,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             // The device changes the serial on every update, receiving a message with the same serial is a
             // duplicate, excep for battery devices! Those reset the serial every time when they wake-up
             if ((serial == lastSerial) && payload.equals(lastPayload) && (!profile.hasBattery
-                    || coiot.getLastWakeup().equalsIgnoreCase("ext_power") || ((serial & 0xFF) != 0))) {
+                    || "ext_power".equalsIgnoreCase(coiot.getLastWakeup()) || ((serial & 0xFF) != 0))) {
                 logger.debug("{}: Serial {} was already processed, ignore update", thingName, serial);
                 return;
             }
