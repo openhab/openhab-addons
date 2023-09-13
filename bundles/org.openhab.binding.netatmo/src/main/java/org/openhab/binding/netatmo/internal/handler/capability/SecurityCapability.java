@@ -113,10 +113,9 @@ class SecurityCapability extends RestCapability<SecurityApi> {
 
     private void addEventIfKnownObject(HomeEvent homeEvent, @Nullable String objectId) {
         if (objectId == null) {
-            return;
+            handler.getActiveChildren(FeatureArea.SECURITY).filter(child -> child.getId().equals(objectId))
+                    .forEach(child -> child.setNewData(homeEvent));
         }
-        handler.getActiveChildren(FeatureArea.SECURITY).filter(child -> child.getId().equals(objectId))
-                .forEach(child -> child.setNewData(homeEvent.ignoringForThingUpdate()));
     }
 
     @Override
