@@ -14,7 +14,6 @@ package org.openhab.binding.mqtt.ruuvigateway;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class ThingStatusInfoChangedSubscriber implements EventSubscriber {
 
     @Override
     public Set<@NonNull String> getSubscribedEventTypes() {
-        return Collections.singleton(ThingStatusInfoChangedEvent.TYPE);
+        return Set.of(ThingStatusInfoChangedEvent.TYPE);
     }
 
     @Override

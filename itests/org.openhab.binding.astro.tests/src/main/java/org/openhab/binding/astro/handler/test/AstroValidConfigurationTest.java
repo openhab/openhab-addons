@@ -37,7 +37,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  * <p>
  * This class tests the required configuration for the astro thing.
  *
- * @author Petar Valchev - Initial implementation
+ * @author Petar Valchev - Initial contribution
  * @author Svilen Valkanov - Reworked to plain unit tests, removed irrelevant tests
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */

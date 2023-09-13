@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 /**
  * Contains some test data used across different tests
  *
- * @author Svilen Valkanov - Initial implementation
+ * @author Svilen Valkanov - Initial contribution
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */
 public final class AstroBindingTestsData {
