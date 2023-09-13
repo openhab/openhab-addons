@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.actions.VehicleActions;
 import org.openhab.binding.mercedesme.internal.dto.PINRequest;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.types.OnOffType;
@@ -37,6 +38,12 @@ import org.openhab.core.library.types.OnOffType;
  */
 @NonNullByDefault
 class ConfigurationTest {
+
+    @Test
+    public void testAction() {
+        VehicleActions va = new VehicleActions();
+        va.sendPoi("a", 9.4, 3.2);
+    }
 
     @Test
     public void testThingUID() {
