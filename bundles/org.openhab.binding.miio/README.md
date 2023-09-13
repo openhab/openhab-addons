@@ -380,6 +380,7 @@ Currently the miio binding supports more than 340 different models.
 | Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#roborock-vacuum-a46) | Yes          |            |
 | Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#roborock-vacuum-a52) | Yes          |            |
 | Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-a62) | Yes          |            |
+| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-a75) | Yes          |            |
 | Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes          |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No           |            |
 | Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes          |            |
