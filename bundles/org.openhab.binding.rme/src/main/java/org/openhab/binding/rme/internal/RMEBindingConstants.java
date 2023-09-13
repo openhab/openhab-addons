@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link RMEBinding} class defines common constants, which are used across
+ * The {@link RMEBindingConstants} class defines common constants, which are used across
  * the whole binding.
  *
  * @author Karel Goderis - Initial contribution

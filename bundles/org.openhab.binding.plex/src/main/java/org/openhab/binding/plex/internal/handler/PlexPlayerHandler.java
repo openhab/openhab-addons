@@ -33,9 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PlexBindingConstants} class defines common constants, which are
- * used across the whole binding.
- *
+ * Handler for Plex Player.
+ * 
  * @author Brian Homeyer - Initial contribution
  * @author Aron Beurskens - Binding development
  */

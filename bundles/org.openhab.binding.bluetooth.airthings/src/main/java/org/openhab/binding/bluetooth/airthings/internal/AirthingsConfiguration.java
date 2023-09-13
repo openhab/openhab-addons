@@ -15,7 +15,7 @@ package org.openhab.binding.bluetooth.airthings.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration class for {@link AirthingsBinding} device.
+ * Configuration class for Airthings device.
  *
  * @author Pauli Anttila - Initial contribution
  */

@@ -43,8 +43,8 @@ public class MagentaTVNetwork {
     /**
      * Init local network interface, determine local IP and MAC address
      *
-     * @param networkAddressService
-     * @return
+     * @param localIP
+     * @param localPort
      */
     public void initLocalNet(String localIP, String localPort) throws MagentaTVException {
         try {

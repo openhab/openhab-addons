@@ -307,7 +307,8 @@ public class TiVoHandler extends BaseThingHandler {
     /**
      * {@link updateTivoStatus} populates the items with the status / channel information.
      *
-     * @param tivoStatusData the {@link TivoStatusData}
+     * @param oldStatusData the {@link TivoStatusData}
+     * @param newStatusData the {@link TivoStatusData}
      */
     public void updateTivoStatus(TivoStatusData oldStatusData, TivoStatusData newStatusData) {
         if (newStatusData.getConnectionStatus() != ConnectionStatus.INIT) {

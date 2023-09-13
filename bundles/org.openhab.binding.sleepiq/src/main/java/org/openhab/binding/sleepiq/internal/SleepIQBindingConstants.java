@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SleepIQBinding} class defines common constants, which are
+ * The {@link SleepIQBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Gregory Moyer - Initial contribution

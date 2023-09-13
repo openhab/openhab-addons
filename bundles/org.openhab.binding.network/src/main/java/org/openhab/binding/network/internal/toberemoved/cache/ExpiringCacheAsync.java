@@ -67,7 +67,7 @@ public class ExpiringCacheAsync<V> {
     /**
      * Returns the value - possibly from the cache, if it is still valid.
      *
-     * @return the value
+     * @param callback callback to return the value
      */
     public void getValue(Consumer<V> callback) {
         if (isExpired()) {

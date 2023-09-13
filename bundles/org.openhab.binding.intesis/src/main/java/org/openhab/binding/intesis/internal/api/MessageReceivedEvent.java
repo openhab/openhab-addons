@@ -16,7 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link DataPointChangedEvent} is an event container for data point changes
+ * The {@link org.openhab.binding.ism8.server.DataPointChangedEvent}
+ * is an event container for data point changes
  *
  * @author Hans-Jörg Merk - Initial contribution
  */

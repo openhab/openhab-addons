@@ -157,7 +157,7 @@ public class SilvercrestWifiSocketMediatorImpl implements SilvercrestWifiSocketM
     /**
      * Returns all the {@link Thing} registered.
      *
-     * @returns all the {@link Thing}.
+     * @return all the {@link Thing}.
      */
     @Override
     public Set<Thing> getAllThingsRegistred() {

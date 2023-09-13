@@ -34,8 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link soulissHandlerFactory} is responsible for creating things and thingGeneric
- * handlers.
+ * The {@link org.openhab.binding.souliss.internal.SoulissHandlerFactory} is responsible for creating
+ * things and thingGeneric handlers.
  *
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3

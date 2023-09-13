@@ -58,7 +58,6 @@ public class TapoCipher {
      * 
      * @param handshakeKey Key from Handshake-Request
      * @param credentials TapoCredentials
-     * @throws Exception
      */
     public TapoCipher(String handshakeKey, TapoCredentials credentials) {
         setKey(handshakeKey, credentials);

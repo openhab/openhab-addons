@@ -126,8 +126,8 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @param panelType the panel type to be used when in standard mode
      * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
      * @param autoSyncTime true for automatic sync time
-     * @param serialPortManager
      * @param threadName the prefix name of threads to be created
+     * @param timeZoneProvider
      */
     public PowermaxCommManager(String ip, int port, PowermaxPanelType panelType, boolean forceStandardMode,
             boolean autoSyncTime, String threadName, TimeZoneProvider timeZoneProvider) {
@@ -163,8 +163,6 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
     /**
      * Connect to the Powermax alarm system
-     *
-     * @return true if connected or false if not
      */
     public void open() throws Exception {
         connector.open();
@@ -201,7 +199,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     /**
      * Process and store all the panel settings from the raw buffers
      *
-     * @param PowerlinkMode true if in Powerlink mode or false if in standard mode
+     * @param powerlinkMode true if in Powerlink mode or false if in standard mode
      *
      * @return true if no problem encountered to get all the settings; false if not
      */

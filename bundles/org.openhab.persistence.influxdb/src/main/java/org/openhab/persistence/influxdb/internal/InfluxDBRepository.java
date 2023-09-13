@@ -72,7 +72,7 @@ public interface InfluxDBRepository {
      * Write points to database
      *
      * @param influxPoints {@link List<InfluxPoint>} to write
-     * @returns <code>true</code> if points have been written, <code>false</code> otherwise
+     * @return <code>true</code> if points have been written, <code>false</code> otherwise
      */
     boolean write(List<InfluxPoint> influxPoints);
 

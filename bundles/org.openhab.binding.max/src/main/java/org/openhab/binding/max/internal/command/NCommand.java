@@ -15,7 +15,7 @@ package org.openhab.binding.max.internal.command;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link N_CubeCommand} starts the inclusion mode for new MAX! devices.
+ * The {@link NCommand} starts the inclusion mode for new MAX! devices.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */

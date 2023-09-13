@@ -48,12 +48,11 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
      * Static factory method to create a SmlDevice object with a serial connector member.
      *
      * @param serialPortManagerSupplier
-     *
      * @param deviceId the id of the device as defined in openHAB configuration.
-     * @param pullRequestRequired identicates if SML values have to be actively requested.
      * @param serialPort the port where the device is connected as defined in openHAB configuration.
-     * @param serialParameter
      * @param initMessage
+     * @param baudrate
+     * @param baudrateChangeDelay
      */
     public static SmlMeterReader createInstance(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId,
             String serialPort, byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay) {
