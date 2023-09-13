@@ -502,7 +502,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     public void distributeContent(VEPUpdate data) {
         boolean fullUpdate = data.getFullUpdate();
-        logger.info("Partial Vehicle Update");
+        logger.info("Partial Vehicle Update for {}", vehicleType);
         updateStatus(ThingStatus.ONLINE);
 
         String json = Utils.proto2Json(data);

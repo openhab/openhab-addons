@@ -6,7 +6,7 @@
 	<channel-type id="distance-channel">
 		<item-type>Number:Length</item-type>
 		<label>Trip Distance</label>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f km" readOnly="true"/>
 	</channel-type>
 	<channel-type id="driven-time-channel">
 		<item-type>String</item-type>
@@ -21,17 +21,17 @@
 	<channel-type id="consumption-ev-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Trip Average Consumption</label>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f kWh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="consumption-conv-channel">
 		<item-type>Number:Volume</item-type>
 		<label>Trip Average Consumption</label>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f l" readOnly="true"/>
 	</channel-type>
 	<channel-type id="distance-reset-channel">
 		<item-type>Number:Length</item-type>
 		<label>Distance Reset</label>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f km" readOnly="true"/>
 	</channel-type>
 	<channel-type id="driven-time-reset-channel">
 		<item-type>String</item-type>
@@ -46,12 +46,12 @@
 	<channel-type id="consumption-ev-reset-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Average Consumption Reset</label>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f kWh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="consumption-conv-reset-channel">
 		<item-type>Number:Volume</item-type>
 		<label>Average Consumption Reset</label>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f l" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
