@@ -20,5 +20,5 @@ package org.openhab.binding.qolsysiq.internal.client.dto.action;
 public enum ArmingActionType {
     ARM_AWAY,
     ARM_STAY,
-    DISARM;
+    DISARM
 }

@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.snmp.internal.SnmpBindingConstants.THING_TYPE_TARGET;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -116,7 +116,7 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, channelMode);
 
         PDU responsePDU = new PDU(PDU.RESPONSE,
-                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new OctetString(TEST_STRING))));
+                List.of(new VariableBinding(new OID(TEST_OID), new OctetString(TEST_STRING))));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
 
         thingHandler.onResponse(event);
@@ -132,8 +132,7 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
             String onValue, String offValue, Variable value, boolean refresh) {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, channelMode, datatype, onValue, offValue);
 
-        PDU responsePDU = new PDU(PDU.RESPONSE,
-                Collections.singletonList(new VariableBinding(new OID(TEST_OID), value)));
+        PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), value)));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
 
         thingHandler.onResponse(event);

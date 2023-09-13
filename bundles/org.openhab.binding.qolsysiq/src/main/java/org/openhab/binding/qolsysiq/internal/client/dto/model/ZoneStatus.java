@@ -31,5 +31,5 @@ public enum ZoneStatus {
     @SerializedName("Idle")
     IDlE,
     @SerializedName("Tamper")
-    TAMPER;
+    TAMPER
 }

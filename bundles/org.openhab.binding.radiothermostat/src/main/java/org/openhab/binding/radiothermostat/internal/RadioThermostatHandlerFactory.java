@@ -61,8 +61,7 @@ public class RadioThermostatHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_RTHERM)) {
-            RadioThermostatHandler handler = new RadioThermostatHandler(thing, stateDescriptionProvider, httpClient);
-            return handler;
+            return new RadioThermostatHandler(thing, stateDescriptionProvider, httpClient);
         }
 
         return null;

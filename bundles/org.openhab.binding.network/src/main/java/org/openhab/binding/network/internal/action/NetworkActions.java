@@ -37,8 +37,8 @@ public class NetworkActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof NetworkHandler) {
-            this.handler = (NetworkHandler) handler;
+        if (handler instanceof NetworkHandler networkHandler) {
+            this.handler = networkHandler;
         }
     }
 
