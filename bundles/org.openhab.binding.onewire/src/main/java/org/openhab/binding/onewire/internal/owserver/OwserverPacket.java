@@ -42,7 +42,7 @@ public class OwserverPacket {
     protected int packetSize = 0;
     protected int payloadOffset = 0;
 
-    protected byte payload[] = new byte[0];
+    protected byte[] payload = new byte[0];
 
     /**
      * constructor for new packet

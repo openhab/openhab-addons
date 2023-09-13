@@ -14,7 +14,6 @@ package org.openhab.binding.sleepiq.internal.handler;
 
 import static org.openhab.binding.sleepiq.internal.SleepIQBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +60,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatusListener {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections.singleton(THING_TYPE_DUAL_BED);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_DUAL_BED);
 
     private static final long GET_SLEEP_DATA_DELAY_MINUTES = 5;
 
@@ -146,12 +145,12 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
         switch (channelId) {
             case CHANNEL_LEFT_SLEEP_NUMBER:
             case CHANNEL_RIGHT_SLEEP_NUMBER:
-                if (command instanceof DecimalType) {
+                if (command instanceof DecimalType decimalCommand) {
                     Side side = Side.convertFromGroup(groupId);
                     logger.debug("BedHandler: Set sleepnumber to {} for bedId={}, side={}", command, bedId, side);
                     SleepIQCloudHandler cloudHandler = getCloudHandler();
                     if (cloudHandler != null) {
-                        cloudHandler.setSleepNumber(bedId, side, ((DecimalType) command).intValue());
+                        cloudHandler.setSleepNumber(bedId, side, decimalCommand.intValue());
                     }
                 }
                 break;
@@ -169,10 +168,10 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
             case CHANNEL_LEFT_FOUNDATION_PRESET:
             case CHANNEL_RIGHT_FOUNDATION_PRESET:
                 logger.debug("Received command {} on channel {} to set preset", command, channelUID);
-                if (isFoundationInstalled() && command instanceof DecimalType) {
+                if (isFoundationInstalled() && command instanceof DecimalType decimalCommand) {
                     try {
                         Side side = Side.convertFromGroup(groupId);
-                        FoundationPreset preset = FoundationPreset.forValue(((DecimalType) command).intValue());
+                        FoundationPreset preset = FoundationPreset.forValue(decimalCommand.intValue());
                         logger.debug("BedHandler: Set foundation preset to {} for bedId={}, side={}", command, bedId,
                                 side);
                         SleepIQCloudHandler cloudHandler = getCloudHandler();
