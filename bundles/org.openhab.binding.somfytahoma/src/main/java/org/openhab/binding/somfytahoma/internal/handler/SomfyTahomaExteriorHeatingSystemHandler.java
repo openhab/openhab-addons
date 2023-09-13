@@ -44,8 +44,8 @@ public class SomfyTahomaExteriorHeatingSystemHandler extends SomfyTahomaBaseThin
             Channel chLevel = thing.getChannel(HEATING_LEVEL);
             if (chLevel != null) {
                 State newState = parseTahomaState(state);
-                if (newState != null && newState instanceof PercentType) {
-                    int value = ((PercentType) newState).intValue();
+                if (newState instanceof PercentType percentState) {
+                    int value = percentState.intValue();
                     PercentType inverted = new PercentType(100 - value);
                     updateState(chLevel.getUID(), inverted);
                 }

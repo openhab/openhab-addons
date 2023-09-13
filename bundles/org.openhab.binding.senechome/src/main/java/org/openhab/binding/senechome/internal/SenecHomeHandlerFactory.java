@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.senechome.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,8 +39,8 @@ import org.osgi.service.component.annotations.Reference;
 public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
     public static final String BINDING_ID = "senechome";
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY);
 
     private final HttpClient httpClient;
 
