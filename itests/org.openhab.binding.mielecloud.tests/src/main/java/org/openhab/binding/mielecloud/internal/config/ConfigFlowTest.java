@@ -61,8 +61,8 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
             Thing bridge = getThingRegistry().get(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID);
             assertNotNull(bridge);
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof MieleBridgeHandler) {
-                ((MieleBridgeHandler) handler).onConnectionAlive();
+            if (handler instanceof MieleBridgeHandler mieleBridgeHandler) {
+                mieleBridgeHandler.onConnectionAlive();
             }
             return null;
         }).when(webservice).addConnectionStatusListener(any());
