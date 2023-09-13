@@ -385,9 +385,15 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         } else {
             // test argument is only specifiying the data field in the json payload
             // Fill rest of the fields with some valid values
-            jsonPayload = "{" + "  \"gw_mac\": \"DE:AD:BE:EF:00\"," + "  \"rssi\": -82," + "  \"aoa\": [],"
-                    + "  \"gwts\": \"1659365432\"," + "  \"ts\": \"1659365222\"," + "  \"data\": \"" + val + "\","
-                    + "  \"coords\": \"\" }";
+            jsonPayload = """
+                    {\
+                      "gw_mac": "DE:AD:BE:EF:00",\
+                      "rssi": -82,\
+                      "aoa": [],\
+                      "gwts": "1659365432",\
+                      "ts": "1659365222",\
+                      "data": "\
+                    """ + val + "\"," + "  \"coords\": \"\" }";
         }
 
         Thing ruuviThing = createRuuviThing("mygwid", topic, 100);
@@ -525,7 +531,6 @@ public class RuuviGatewayTest extends MqttOSGiTest {
                         .forEach(channelId -> assertEquals(UnDefType.UNDEF, getItemState.apply(channelId)));
                 statusUpdateIndex.incrementAndGet();
             });
-
         }
 
         // Another mqtt update (("minimum values" test vector from
