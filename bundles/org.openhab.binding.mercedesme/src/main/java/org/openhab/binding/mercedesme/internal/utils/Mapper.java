@@ -75,6 +75,7 @@ public class Mapper {
                             LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
                         }
                     }
+                    LOGGER.info("Distribute {} QuantityType<Length> {}", ch[0], state.toFullString());
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 // special String Value

@@ -41,6 +41,7 @@ class ConfigurationTest {
     @Test
     public void testThingUID() {
         System.out.println(Constants.THING_TYPE_BEV.getId());
+        System.out.println(Constants.KILOMETRE_UNIT);
     }
 
     @Test

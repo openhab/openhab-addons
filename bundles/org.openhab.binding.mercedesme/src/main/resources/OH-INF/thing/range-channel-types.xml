@@ -6,7 +6,7 @@
 	<channel-type id="mileage-channel">
 		<item-type>Number:Length</item-type>
 		<label>Mileage</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d km" readOnly="true"/>
 	</channel-type>
 	<channel-type id="range-electric-channel">
 		<item-type>Number:Length</item-type>
