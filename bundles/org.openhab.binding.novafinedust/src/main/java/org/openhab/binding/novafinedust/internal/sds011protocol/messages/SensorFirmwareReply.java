@@ -40,8 +40,7 @@ public class SensorFirmwareReply extends SensorReply {
      * @return firmware of the sensor formatted as YY-MM-DD
      */
     public String getFirmware() {
-        String firmware = year + "-" + month + "-" + day;
-        return firmware;
+        return year + "-" + month + "-" + day;
     }
 
     @Override

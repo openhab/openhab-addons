@@ -317,7 +317,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (tmpPrf.settings.sleepMode != null && !tmpPrf.isTRV) {
             // Sensor, usually 12h, H&T in USB mode 10min
-            tmpPrf.updatePeriod = getString(tmpPrf.settings.sleepMode.unit).equalsIgnoreCase("m")
+            tmpPrf.updatePeriod = "m".equalsIgnoreCase(getString(tmpPrf.settings.sleepMode.unit))
                     ? tmpPrf.settings.sleepMode.period * 60 // minutes
                     : tmpPrf.settings.sleepMode.period * 3600; // hours
             tmpPrf.updatePeriod += 60; // give 1min extra
@@ -495,14 +495,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private double getNumber(Command command) {
-        if (command instanceof QuantityType) {
-            return ((QuantityType<?>) command).doubleValue();
+        if (command instanceof QuantityType quantityCommand) {
+            return quantityCommand.doubleValue();
         }
-        if (command instanceof DecimalType) {
-            return ((DecimalType) command).doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.doubleValue();
         }
-        if (command instanceof Number) {
-            return ((Number) command).doubleValue();
+        if (command instanceof Number numberCommand) {
+            return numberCommand.doubleValue();
         }
         throw new IllegalArgumentException("Invalid Number type for conversion: " + command);
     }
@@ -609,15 +609,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 profile.hostname, profile.deviceType, profile.hwRev, profile.hwBatchId, profile.fwVersion,
                 profile.fwDate);
         logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.hostname, profile.settingsJson);
-        logger.debug("{}: Device "
-                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{}), ext. Switch Add-On: {}"
-                + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}, BLU Gateway support: {}"
-                + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
-                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
-                profile.settings.extSwitch != null ? "installed" : "n/a", profile.isSensor, profile.isDW,
-                profile.hasBattery, profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "",
-                profile.isSense, profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2,
-                profile.inColor, profile.alwaysOn, profile.updatePeriod, config.enableBluGateway);
+        logger.debug(
+                """
+                        {}: Device \
+                        hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{}), ext. Switch Add-On: {}\
+                        ,isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}, BLU Gateway support: {}\
+                        ,alwaysOn:{}, updatePeriod:{}sec\
+                        """,
+                thingName, profile.hasRelays, profile.numRelays, profile.isRoller, profile.numRollers, profile.isDimmer,
+                profile.numMeters, profile.isEMeter, profile.settings.extSwitch != null ? "installed" : "n/a",
+                profile.isSensor, profile.isDW, profile.hasBattery,
+                profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
+                profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
+                profile.alwaysOn, profile.updatePeriod, config.enableBluGateway);
         if (profile.status.extTemperature != null || profile.status.extHumidity != null
                 || profile.status.extVoltage != null || profile.status.extAnalogInput != null) {
             logger.debug("{}: Shelly Add-On detected with at least 1 external sensor", thingName);
@@ -876,7 +880,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 String payload = "";
                 String parmType = getString(parameters.get("type"));
                 String event = !parmType.isEmpty() ? parmType : type;
-                boolean isButton = profile.inButtonMode(idx - 1) || type.equals("button");
+                boolean isButton = profile.inButtonMode(idx - 1) || "button".equals(type);
                 switch (event) {
                     case SHELLY_EVENT_SHORTPUSH:
                     case SHELLY_EVENT_DOUBLE_SHORTPUSH:
@@ -996,8 +1000,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return;
         }
 
-        config.deviceAddress = config.deviceAddress.toLowerCase().replaceAll(":", ""); // remove : from MAC address and
-                                                                                       // convert to lower case
+        config.deviceAddress = config.deviceAddress.toLowerCase().replace(":", ""); // remove : from MAC address and
+                                                                                    // convert to lower case
         if (!config.deviceIp.isEmpty()) {
             try {
                 InetAddress addr = InetAddress.getByName(config.deviceIp);
@@ -1055,7 +1059,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
             }
             if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
-                    || (prf.fwVersion.equalsIgnoreCase("production_test"))) {
+                    || ("production_test".equalsIgnoreCase(prf.fwVersion))) {
                 if (!config.eventsCoIoT) {
                     logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
                 }
@@ -1296,11 +1300,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public double getChannelDouble(String group, String channel) {
         State value = getChannelValue(group, channel);
         if (value != UnDefType.NULL) {
-            if (value instanceof QuantityType) {
-                return ((QuantityType<?>) value).toBigDecimal().doubleValue();
+            if (value instanceof QuantityType quantityCommand) {
+                return quantityCommand.toBigDecimal().doubleValue();
             }
-            if (value instanceof DecimalType) {
-                return ((DecimalType) value).doubleValue();
+            if (value instanceof DecimalType decimalCommand) {
+                return decimalCommand.doubleValue();
             }
         }
         return -1;
