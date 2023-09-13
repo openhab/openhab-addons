@@ -13,6 +13,7 @@
 package org.openhab.binding.mercedesme.internal.server;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
@@ -34,9 +36,11 @@ import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
+import org.openhab.binding.mercedesme.internal.proto.Protos.AcknowledgeAssignedVehicles;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
+import org.openhab.binding.mercedesme.internal.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +71,8 @@ public class MBWebsocket {
     private @Nullable Session session;
     private List<ClientMessage> commandQueue = new ArrayList<ClientMessage>();
 
+    private static int fileCounter = 1;
+
     public MBWebsocket(AccountHandler ah) {
         accountHandler = ah;
     }
@@ -91,9 +97,10 @@ public class MBWebsocket {
             client.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
             client.setStopTimeout(CONNECT_TIMEOUT_MS);
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
-            logger.info("Websocket start");
+            String websocketURL = accountHandler.getWSUri();
+            logger.info("Websocket start {}", websocketURL);
             client.start();
-            sessionFuture = client.connect(this, new URI(accountHandler.getWSUri()), request);
+            sessionFuture = client.connect(this, new URI(websocketURL), request);
             while (Instant.now().isBefore(runTill) && !interrupted) {
                 // sends one message per second
                 if (sendMessage()) {
@@ -141,6 +148,18 @@ public class MBWebsocket {
         return false;
     }
 
+    private void sendAchnowledgeMessage(ClientMessage message) {
+        if (this.session != null) {
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                message.writeTo(baos);
+                session.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+            } catch (IOException e) {
+                logger.warn("Error sending acknowledge {} : {}", message.getAllFields(), e.getMessage());
+            }
+        }
+    }
+
     public boolean isRunning() {
         return running;
     }
@@ -157,30 +176,64 @@ public class MBWebsocket {
 
     @OnWebSocketMessage
     public void onBytes(InputStream is) {
+        byte[] bytes = null;
         try {
-            PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
+            bytes = IOUtils.toByteArray(is);
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(bytes);
             if (pm.hasVepUpdates()) {
                 accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
+                // acknowledge vehicle update message
                 AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
                         .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
                 ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                cm.writeTo(baos);
-                session.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                sendAchnowledgeMessage(cm);
+                logger.trace("Vehicle update acknowledged {}", cm.getAllFields());
             } else if (pm.hasAssignedVehicles()) {
                 for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
                     String vin = pm.getAssignedVehicles().getVins(0);
                     accountHandler.discovery(vin);
                 }
-            } else if (pm.hasDebugMessage()) {
-                logger.debug("MB Debug Message: {}" + pm.getDebugMessage().getMessage());
+                AcknowledgeAssignedVehicles ack = AcknowledgeAssignedVehicles.newBuilder().build();
+                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeAssignedVehicles(ack).build();
+                sendAchnowledgeMessage(cm);
+                logger.trace("Vehicle assignments acknowledged {}", cm.getAllFields());
             } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
-                logger.debug("Status Updates {}", pm.getApptwinCommandStatusUpdatesByVin().getAllFields());
+                logger.debug("Command Status {}", pm.getApptwinCommandStatusUpdatesByVin().getAllFields());
+                AcknowledgeAppTwinCommandStatusUpdatesByVIN ack = AcknowledgeAppTwinCommandStatusUpdatesByVIN
+                        .newBuilder().setSequenceNumber(pm.getApptwinCommandStatusUpdatesByVin().getSequenceNumber())
+                        .build();
+                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack)
+                        .build();
+                sendAchnowledgeMessage(cm);
+                logger.trace("Command Status acknowledged {}" + cm.getAllFields());
+            } else if (pm.hasApptwinPendingCommandRequest()) {
+                logger.debug("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
+                // pm.getApptwinPendingCommandRequest().
+                // AcknowledgeCommandRequest ack = AcknowledgeCommandRequest.newBuilder().set
+            } else if (pm.hasDebugMessage()) {
+                logger.debug("MB Debug Message: {}", pm.getDebugMessage().getMessage());
             } else {
-                logger.debug("Message {} skipped", pm.getAllFields().keySet());
+                logger.debug("MB Message: {} not handeled", pm.getAllFields());
             }
-        } catch (IOException e) {
+
+        } catch (
+
+        IOException e) {
             logger.warn("IOEXception {}", e.getMessage());
+            String fileName = "/tmp/parse-error-" + fileCounter + ".blob";
+            fileCounter++;
+            try {
+                if (bytes != null) {
+                    FileOutputStream fos = new FileOutputStream(fileName);
+                    fos.write(bytes);
+                }
+            } catch (IOException e1) {
+                logger.warn("Error caught druing writing file {} : {}", fileName, e1.getMessage());
+                StackTraceElement[] stack = e1.getStackTrace();
+                for (int i = 0; i < stack.length; i++) {
+                    logger.warn("{}", stack[i]);
+                }
+            }
         } catch (Error err) {
             logger.warn("Error caught {}", err.getMessage());
             StackTraceElement[] stack = err.getStackTrace();

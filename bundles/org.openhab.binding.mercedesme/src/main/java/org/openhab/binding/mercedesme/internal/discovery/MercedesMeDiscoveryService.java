@@ -13,7 +13,6 @@
 package org.openhab.binding.mercedesme.internal.discovery;
 
 import java.util.Map;
-import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -59,10 +58,29 @@ public class MercedesMeDiscoveryService extends AbstractDiscoveryService {
                 break;
         }
         if (ttuid != null) {
-            thingDiscovered(DiscoveryResultBuilder
-                    .create(new ThingUID(ttuid, ac.getThing().getUID(), UUID.randomUUID().toString()))
+            thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(ttuid, ac.getThing().getUID(), vin))
                     .withBridge(ac.getThing().getUID()).withProperties(properties)
                     .withLabel("Mercedes Benz " + ttuid.getId().toUpperCase()).build());
+        }
+    }
+
+    public void vehicleRemove(AccountHandler ac, String vin, String vehicleType) {
+        ThingTypeUID ttuid = null;
+        switch (vehicleType) {
+            case Constants.BEV:
+                ttuid = Constants.THING_TYPE_BEV;
+                break;
+            case Constants.COMBUSTION:
+                ttuid = Constants.THING_TYPE_COMB;
+                break;
+            case Constants.HYBRID:
+                ttuid = Constants.THING_TYPE_HYBRID;
+                break;
+            default:
+                break;
+        }
+        if (ttuid != null) {
+            thingRemoved(new ThingUID(ttuid, ac.getThing().getUID(), vin));
         }
     }
 

@@ -67,7 +67,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final LocaleProvider localeProvider;
     private final Storage<String> storage;
     private final MBWebsocket ws;
-    private final Map<String, VehicleHandler> vehicleHandlerMap = new HashMap<String, VehicleHandler>();
+    private final Map<String, VehicleHandler> activeVehicleHandlerMap = new HashMap<String, VehicleHandler>();
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<String, Map<String, Object>>();
     private final String FEATURE_APPENDIX = "-features";
     private final String COMMAND_APPENDIX = "-commands";
@@ -231,12 +231,13 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     public void registerVin(String vin, VehicleHandler handler) {
-        vehicleHandlerMap.put(vin, handler);
+        discoveryService.vehicleRemove(this, vin, handler.getThing().getThingTypeUID().getId());
+        activeVehicleHandlerMap.put(vin, handler);
         scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
     }
 
     public void unregisterVin(String vin) {
-        vehicleHandlerMap.remove(vin);
+        activeVehicleHandlerMap.remove(vin);
     }
 
     public void getVehicleCapabilities(String vin) {
@@ -245,20 +246,20 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (storage.containsKey(vin + FEATURE_APPENDIX)) {
             logger.info("Register VIN Features? {} Commands? {}", storage.containsKey(vin + FEATURE_APPENDIX),
                     storage.containsKey(vin + COMMAND_APPENDIX));
-            if (vehicleHandlerMap.containsKey(vin)) {
-                vehicleHandlerMap.get(vin).setFeatureCapabilities(storage.get(vin + FEATURE_APPENDIX));
+            if (activeVehicleHandlerMap.containsKey(vin)) {
+                activeVehicleHandlerMap.get(vin).setFeatureCapabilities(storage.get(vin + FEATURE_APPENDIX));
             }
         }
         if (storage.containsKey(vin + COMMAND_APPENDIX)) {
-            if (vehicleHandlerMap.containsKey(vin)) {
-                vehicleHandlerMap.get(vin).setCommandCapabilities(storage.get(vin + COMMAND_APPENDIX));
+            if (activeVehicleHandlerMap.containsKey(vin)) {
+                activeVehicleHandlerMap.get(vin).setCommandCapabilities(storage.get(vin + COMMAND_APPENDIX));
             }
         }
     }
 
     public void distributeVepUpdates(Map<String, VEPUpdate> map) {
         map.forEach((key, value) -> {
-            VehicleHandler h = vehicleHandlerMap.get(key);
+            VehicleHandler h = activeVehicleHandlerMap.get(key);
             if (h != null) {
                 h.distributeContent(value);
             } else {
@@ -268,8 +269,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     public void discovery(String vin) {
-        if (vehicleHandlerMap.containsKey(vin)) {
-            VehicleHandler vh = vehicleHandlerMap.get(vin);
+        if (activeVehicleHandlerMap.containsKey(vin)) {
+            VehicleHandler vh = activeVehicleHandlerMap.get(vin);
             if (vh.getThing().getProperties().size() == 0) {
                 vh.getThing().setProperties(getStringCapabilities(vin));
             }
