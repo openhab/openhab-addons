@@ -29,7 +29,7 @@
 			<!-- solar generation -->
 			<channel id="pv-power" typeId="system.electric-power">
 				<label>Solar Input Power</label>
-				<description>Total solar DC input power.</description>
+				<description>Power from solar panels.</description>
 			</channel>
 
 			<!-- electric data for strings #1 and #2 -->
@@ -52,11 +52,11 @@
 			</channel>
 
 			<channel id="pv1-power" typeId="advanced-electric-power">
-				<label>String #1 Power</label>
+				<label>Solar String #1 Power</label>
 				<description>Power from solar panel string #1.</description>
 			</channel>
 			<channel id="pv2-power" typeId="advanced-electric-power">
-				<label>String #2 Power</label>
+				<label>Solar String #2 Power</label>
 				<description>Power from solar panel string #2.</description>
 			</channel>
 
@@ -106,7 +106,7 @@
 
 			<channel id="inverter-power" typeId="system.electric-power">
 				<label>Inverter Output Power</label>
-				<description>Total AC output power from the inverter.</description>
+				<description>AC power the inverter (total).</description>
 			</channel>
 			<channel id="inverter-power-r" typeId="system.electric-power">
 				<label>Inverter Output Power (#R)</label>
@@ -218,20 +218,20 @@
 				<description>Solar DC energy collected by string #1 to grid today.</description>
 			</channel>
 			<channel id="pv2-energy-today" typeId="advanced-electric-energy">
-				<label>Solar Energy #2 to Grid Today</label>
+				<label>Solar DC Energy #2 Today</label>
 				<description>Solar DC energy collected by string #2 to grid today.</description>
 			</channel>
 
 			<channel id="pv-energy-total" typeId="system.electric-energy">
-				<label>Total Solar DC Energy</label>
+				<label>Solar DC Energy Total</label>
 				<description>Total solar energy supplied to grid.</description>
 			</channel>
 			<channel id="pv1-energy-total" typeId="advanced-electric-energy">
-				<label>Total Solar DC Energy #1</label>
+				<label>Solar DC Energy #1 Total</label>
 				<description>Total solar DC collected by string #1.</description>
 			</channel>
 			<channel id="pv2-energy-total" typeId="advanced-electric-energy">
-				<label>Total Solar DC Energy #2</label>
+				<label>Solar DC Energy #2 Total</label>
 				<description>Total solar DC collected by string #2.</description>
 			</channel>
 
@@ -241,7 +241,7 @@
 				<description>Energy exported to grid today.</description>
 			</channel>
 			<channel id="export-energy-total" typeId="system.electric-energy">
-				<label>Total Export Energy</label>
+				<label>Export Energy Total</label>
 				<description>Total energy exported to grid.</description>
 			</channel>
 
@@ -251,7 +251,7 @@
 				<description>Energy imported from grid today.</description>
 			</channel>
 			<channel id="import-energy-total" typeId="system.electric-energy">
-				<label>Total Import Energy</label>
+				<label>Import Energy Total</label>
 				<description>Total energy imported from grid.</description>
 			</channel>
 
@@ -261,7 +261,7 @@
 				<description>Energy supplied to load today.</description>
 			</channel>
 			<channel id="load-energy-total" typeId="system.electric-energy">
-				<label>Total Energy to Load</label>
+				<label>Energy to Load Total</label>
 				<description>Total energy supplied to load.</description>
 			</channel>
 
@@ -271,7 +271,7 @@
 				<description>Energy imported from grid to charge battery today.</description>
 			</channel>
 			<channel id="import-charge-energy-total" typeId="system.electric-energy">
-				<label>Total Import Energy to Charge Battery</label>
+				<label>Import Energy to Charge Battery Total</label>
 				<description>Total energy imported from grid to charge battery.</description>
 			</channel>
 
@@ -281,7 +281,7 @@
 				<description>Energy from inverter to charge battery today.</description>
 			</channel>
 			<channel id="inverter-charge-energy-total" typeId="system.electric-energy">
-				<label>Total Inverter Energy to Charge Battery</label>
+				<label>Inverter Energy to Charge Battery Total</label>
 				<description>Total energy from inverter to charge battery.</description>
 			</channel>
 
@@ -291,7 +291,7 @@
 				<description>Energy consumed from battery today.</description>
 			</channel>
 			<channel id="discharge-energy-total" typeId="system.electric-energy">
-				<label>Total Energy from Battery</label>
+				<label>Energy from Battery Total</label>
 				<description>Total energy consumed from battery.</description>
 			</channel>
 
