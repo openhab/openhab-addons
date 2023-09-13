@@ -16,6 +16,8 @@ import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,7 @@ import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.MercedesMeCommandOptionProvider;
 import org.openhab.binding.mercedesme.internal.MercedesMeStateOptionProvider;
+import org.openhab.binding.mercedesme.internal.actions.VehicleActions;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
 import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.AuxheatStart;
@@ -80,6 +83,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
@@ -996,5 +1000,19 @@ public class VehicleHandler extends BaseThingHandler {
             return Instant.now().isBefore(block);
         }
         return false;
+    }
+
+    /**
+     * Vehicle Actions
+     */
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        logger.info("[THING_ACTIONS] getServices()");
+        return Collections.singleton(VehicleActions.class);
+    }
+
+    public void sendPoi(JSONObject poi) {
+        accountHandler.get().sendPoi(config.get().vin, poi);
     }
 }

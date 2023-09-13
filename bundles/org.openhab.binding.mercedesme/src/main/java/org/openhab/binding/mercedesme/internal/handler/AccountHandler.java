@@ -27,6 +27,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -78,6 +80,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     private String capabilitiesEndpoint = "/v1/vehicle/%s/capabilities";
     private String commandCapabilitiesEndpoint = "/v1/vehicle/%s/capabilities/commands";
+    private String poiEndpoint = "/v1/vehicle/%s/route";
 
     Optional<AccountConfiguration> config = Optional.empty();
 
@@ -382,5 +385,30 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             ws.setCommand(cm);
         }
         scheduler.schedule(this::update, 2, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Vehicle Actions
+     *
+     * @param poi
+     */
+
+    public void sendPoi(String vin, JSONObject poi) {
+        String poiUrl = Utils.getRestAPIServer(config.get().region) + String.format(poiEndpoint, vin);
+        Request poiRequest = httpClient.POST(poiUrl);
+        authService.get().addBasicHeaders(poiRequest);
+        poiRequest.header("X-SessionId", UUID.randomUUID().toString());
+        poiRequest.header("X-TrackingId", UUID.randomUUID().toString());
+        poiRequest.header("Authorization", authService.get().getToken());
+        poiRequest.header(HttpHeader.CONTENT_TYPE, "application/json");
+        logger.info("Send POI {}", poi);
+        poiRequest.content(new StringContentProvider(poi.toString(), "utf-8"));
+
+        try {
+            ContentResponse cr = poiRequest.send();
+            logger.debug("Send POI Response {} : {}", cr.getStatus(), cr.getContentAsString());
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.debug("Error Sending POI {}", e.getMessage());
+        }
     }
 }
