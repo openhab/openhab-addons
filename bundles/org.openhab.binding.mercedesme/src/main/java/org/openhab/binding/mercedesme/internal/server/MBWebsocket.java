@@ -65,7 +65,6 @@ public class MBWebsocket {
 
     private AccountHandler accountHandler;
     private boolean running = false;
-    boolean interrupted = false;
     private Instant runTill = Instant.now();
     private @Nullable Future<?> sessionFuture;
     private @Nullable Session session;
@@ -101,13 +100,18 @@ public class MBWebsocket {
             logger.info("Websocket start {}", websocketURL);
             client.start();
             sessionFuture = client.connect(this, new URI(websocketURL), request);
-            while (Instant.now().isBefore(runTill) && !interrupted) {
+            while (Instant.now().isBefore(runTill)) {
                 // sends one message per second
                 if (sendMessage()) {
                     // add additional runtime to execute and finish command
                     runTill = runTill.plusMillis(ADDON_MESSAGE_TIME_MS);
                 }
-                Thread.sleep(CHECK_INTERVAL_MS);
+                try {
+                    Thread.sleep(CHECK_INTERVAL_MS);
+                } catch (InterruptedException ie) {
+                    logger.trace("Websocket interrupted during sleeping - stop executing");
+                    runTill = Instant.MIN;
+                }
             }
             logger.info("Websocket stop");
             client.stop();
@@ -121,7 +125,6 @@ public class MBWebsocket {
         }
         synchronized (this) {
             running = false;
-            interrupted = false;
         }
     }
 
@@ -164,9 +167,9 @@ public class MBWebsocket {
         return running;
     }
 
-    public synchronized void interrupt() {
-        if (running) {
-            interrupted = true;
+    public void interrupt() {
+        synchronized (this) {
+            runTill = Instant.MIN;
         }
     }
 
