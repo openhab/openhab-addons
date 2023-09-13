@@ -51,12 +51,12 @@ public class SoulissT13Handler extends SoulissGenericHandler {
     public void setState(@Nullable PrimitiveType state) {
         super.setLastStatusStored();
         if (state != null) {
-            if (state instanceof OnOffType) {
-                this.updateState(SoulissBindingConstants.STATEONOFF_CHANNEL, (OnOffType) state);
+            if (state instanceof OnOffType onOffCommand) {
+                this.updateState(SoulissBindingConstants.STATEONOFF_CHANNEL, onOffCommand);
             }
 
-            if (state instanceof OpenClosedType) {
-                this.updateState(SoulissBindingConstants.STATEOPENCLOSE_CHANNEL, (OpenClosedType) state);
+            if (state instanceof OpenClosedType openClosedCommand) {
+                this.updateState(SoulissBindingConstants.STATEOPENCLOSE_CHANNEL, openClosedCommand);
             }
         }
     }

@@ -318,8 +318,7 @@ public class SagerWeatherCaster {
                     d1 = "Z";
                 }
         }
-        String forecast = forecaster.getProperty(
-                d1 + String.valueOf(sagerPressure) + String.valueOf(pressureEvolution) + String.valueOf(nubes));
+        String forecast = forecaster.getProperty(d1 + sagerPressure + pressureEvolution + nubes);
         prevision = Optional.ofNullable(forecast != null ? new SagerPrediction(forecast) : null);
     }
 

@@ -93,8 +93,8 @@ public class RFXComRFXSensorMessageTest {
     }
 
     private @Nullable Double getStateAsDouble(State state) {
-        if (state instanceof DecimalType) {
-            return ((DecimalType) state).doubleValue();
+        if (state instanceof DecimalType decimalCommand) {
+            return decimalCommand.doubleValue();
         } else {
             return null;
         }

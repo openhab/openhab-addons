@@ -73,8 +73,7 @@ import org.slf4j.LoggerFactory;
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(SQUEEZEBOXPLAYER_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SQUEEZEBOXPLAYER_THING_TYPE);
 
     /**
      * We need to remember some states to change offsets in volume, time index,
@@ -244,8 +243,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 }
                 break;
             case CHANNEL_VOLUME:
-                if (command instanceof PercentType) {
-                    squeezeBoxServerHandler.setVolume(mac, ((PercentType) command).intValue());
+                if (command instanceof PercentType percentCommand) {
+                    squeezeBoxServerHandler.setVolume(mac, percentCommand.intValue());
                 } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
                     squeezeBoxServerHandler.volumeUp(mac, currentVolume());
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
@@ -317,8 +316,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 }
                 break;
             case CHANNEL_SLEEP:
-                if (command instanceof DecimalType) {
-                    Duration sleepDuration = Duration.ofMinutes(((DecimalType) command).longValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    Duration sleepDuration = Duration.ofMinutes(decimalCommand.longValue());
                     if (sleepDuration.isNegative() || sleepDuration.compareTo(Duration.ofDays(1)) > 0) {
                         logger.debug("Sleep timer of {} minutes must be >= 0 and <= 1 day", sleepDuration.toMinutes());
                         return;
@@ -647,7 +646,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     private int cachedStateAsInt(String key) {
         State state = stateMap.get(key);
-        return state instanceof DecimalType ? ((DecimalType) state).intValue() : 0;
+        return state instanceof DecimalType decimalValue ? decimalValue.intValue() : 0;
     }
 
     /**

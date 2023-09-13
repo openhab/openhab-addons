@@ -233,8 +233,8 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
                     command = (type == UpDownType.UP ? Commands.UP : Commands.DOWN);
                 } else if (type == StopMoveType.STOP) {
                     command = Commands.STOP;
-                } else if (type instanceof PercentType) {
-                    command = ((PercentType) type).as(UpDownType.class) == UpDownType.UP ? Commands.UP : Commands.DOWN;
+                } else if (type instanceof PercentType percentCommand) {
+                    command = percentCommand.as(UpDownType.class) == UpDownType.UP ? Commands.UP : Commands.DOWN;
                 } else {
                     throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }

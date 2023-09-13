@@ -17,7 +17,6 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +41,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
     public DiscoveryParticipantClass1() throws IllegalArgumentException {
-        super(Collections.singleton(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK), 60, true);
+        super(Set.of(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK), 60, true);
 
         logger.trace("PJLinkProjectorDiscoveryParticipant constructor");
     }

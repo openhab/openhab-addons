@@ -41,7 +41,7 @@ public class RevogiDiscoveryServiceTest {
     public void discoverSmartStripSuccesfully() {
         // given
         DiscoveryResponseDTO discoveryResponse = new DiscoveryResponseDTO("1234", "reg", "sak", "Strip", "mac", "5.11");
-        List<UdpResponseDTO> discoveryString = Collections.singletonList(new UdpResponseDTO(
+        List<UdpResponseDTO> discoveryString = List.of(new UdpResponseDTO(
                 "{\"response\":0,\"data\":{\"sn\":\"1234\",\"regid\":\"reg\",\"sak\":\"sak\",\"name\":\"Strip\",\"mac\":\"mac\",\"ver\":\"5.11\"}}",
                 "127.0.0.1"));
         when(udpSenderService.broadcastUdpDatagram("00sw=all,,,;"))
@@ -61,8 +61,7 @@ public class RevogiDiscoveryServiceTest {
     @Test
     public void invalidUdpResponse() throws ExecutionException, InterruptedException {
         // given
-        List<UdpResponseDTO> discoveryString = Collections
-                .singletonList(new UdpResponseDTO("something invalid", "12345"));
+        List<UdpResponseDTO> discoveryString = List.of(new UdpResponseDTO("something invalid", "12345"));
         when(udpSenderService.broadcastUdpDatagram("00sw=all,,,;"))
                 .thenReturn(CompletableFuture.completedFuture(discoveryString));
 

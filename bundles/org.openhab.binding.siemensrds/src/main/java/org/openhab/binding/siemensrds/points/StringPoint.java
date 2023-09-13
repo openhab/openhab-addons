@@ -52,8 +52,8 @@ public class StringPoint extends BasePoint {
     @Override
     public void refreshValueFrom(BasePoint from) {
         super.refreshValueFrom(from);
-        if (from instanceof StringPoint) {
-            this.value = ((StringPoint) from).value;
+        if (from instanceof StringPoint stringPoint) {
+            this.value = stringPoint.value;
         }
     }
 }

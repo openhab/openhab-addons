@@ -303,9 +303,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             logger.debug("{}: Unable to process event", thingName, e);
             t.incProtErrors();
         }
-
         if (updated) {
-
         }
     }
 

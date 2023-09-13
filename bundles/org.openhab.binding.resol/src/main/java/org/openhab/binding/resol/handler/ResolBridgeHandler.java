@@ -15,9 +15,9 @@ package org.openhab.binding.resol.handler;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -102,7 +102,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ResolDeviceDiscoveryService.class);
+        return Set.of(ResolDeviceDiscoveryService.class);
     }
 
     public void registerResolThingListener(ResolEmuEMThingHandler resolEmuEMThingHandler) {
@@ -125,8 +125,8 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
                         getThing().getThings().stream().forEach(thing -> {
                             ThingHandler th = thing.getHandler();
-                            if (th instanceof ResolEmuEMThingHandler) {
-                                ((ResolEmuEMThingHandler) th).stop();
+                            if (th instanceof ResolEmuEMThingHandler resolEmuEMThingHandler) {
+                                resolEmuEMThingHandler.stop();
                             }
                         });
 
@@ -175,8 +175,8 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
                         getThing().getThings().stream().forEach(thing -> {
                             ThingHandler th = thing.getHandler();
-                            if (th instanceof ResolEmuEMThingHandler) {
-                                ((ResolEmuEMThingHandler) th).useConnection(c);
+                            if (th instanceof ResolEmuEMThingHandler resolEmuEMThingHandler) {
+                                resolEmuEMThingHandler.useConnection(c);
                             }
                         });
                     } catch (IOException e) {
@@ -235,11 +235,10 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                 connection.disconnect();
                 getThing().getThings().stream().forEach(thing -> {
                     ThingHandler th = thing.getHandler();
-                    if (th instanceof ResolEmuEMThingHandler) {
-                        ((ResolEmuEMThingHandler) th).stop();
+                    if (th instanceof ResolEmuEMThingHandler resolEmuEMThingHandler) {
+                        resolEmuEMThingHandler.stop();
                     }
                 });
-
             }
         } catch (IOException ioe) {
             // we don't care about exceptions on disconnect in dispose

@@ -90,20 +90,20 @@ public class State {
     }
 
     public void setState(IntegerState value) {
-        if (value instanceof Brightness) {
-            this.setBrightness((Brightness) value);
-        } else if (value instanceof Hue) {
-            this.setHue((Hue) value);
-        } else if (value instanceof Sat) {
-            this.setSaturation((Sat) value);
-        } else if (value instanceof Ct) {
-            this.setColorTemperature((Ct) value);
+        if (value instanceof Brightness brightnessState) {
+            this.setBrightness(brightnessState);
+        } else if (value instanceof Hue hueState) {
+            this.setHue(hueState);
+        } else if (value instanceof Sat satState) {
+            this.setSaturation(satState);
+        } else if (value instanceof Ct ctState) {
+            this.setColorTemperature(ctState);
         }
     }
 
     public void setState(BooleanState value) {
-        if (value instanceof On) {
-            this.setOn((On) value);
+        if (value instanceof On onState) {
+            this.setOn(onState);
         }
     }
 }

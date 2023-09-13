@@ -200,7 +200,6 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                                 }
                             }
                         }
-
                     }
                 } catch (IOException e) {
                     logger.debug("An exception occurred while quering host {}:{} : '{}'", config.ipAddress,

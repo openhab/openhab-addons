@@ -102,9 +102,9 @@ public class SncfDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof SncfBridgeHandler) {
-            this.bridgeHandler = (SncfBridgeHandler) handler;
-            this.locationProvider = ((SncfBridgeHandler) handler).getLocationProvider();
+        if (handler instanceof SncfBridgeHandler sncfBridgeHandler) {
+            this.bridgeHandler = sncfBridgeHandler;
+            this.locationProvider = sncfBridgeHandler.getLocationProvider();
         }
     }
 

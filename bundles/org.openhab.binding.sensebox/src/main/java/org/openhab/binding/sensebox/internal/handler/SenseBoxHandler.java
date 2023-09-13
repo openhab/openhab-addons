@@ -102,9 +102,7 @@ public class SenseBoxHandler extends BaseThingHandler {
         }
 
         if (senseBoxId != null && validConfig) {
-            cache.put(CACHE_KEY_DATA, () -> {
-                return connection.reallyFetchDataFromServer(senseBoxId);
-            });
+            cache.put(CACHE_KEY_DATA, () -> connection.reallyFetchDataFromServer(senseBoxId));
             updateStatus(ThingStatus.UNKNOWN);
             startAutomaticRefresh();
         } else {

@@ -155,7 +155,7 @@ public class PS3Handler extends BaseThingHandler {
 
     private void wakeMethod(DatagramPacket srchPacket, DatagramPacket receivePacket, DatagramPacket wakePacket,
             int triesLeft) {
-        try (DatagramSocket searchSocket = new DatagramSocket(); DatagramSocket wakeSocket = new DatagramSocket();) {
+        try (DatagramSocket searchSocket = new DatagramSocket(); DatagramSocket wakeSocket = new DatagramSocket()) {
             wakeSocket.setBroadcast(true);
             searchSocket.setBroadcast(true);
             searchSocket.setSoTimeout(1000);

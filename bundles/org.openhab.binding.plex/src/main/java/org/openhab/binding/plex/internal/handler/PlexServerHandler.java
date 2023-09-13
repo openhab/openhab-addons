@@ -245,10 +245,10 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
                                                                                               // configured, update
                                                                                               // it
                     tmpMeta.setArt(plexAPIConnector.getURL(tmpMeta.getArt()));
-                    if (tmpMeta.getType().equals("episode")) {
+                    if ("episode".equals(tmpMeta.getType())) {
                         tmpMeta.setThumb(plexAPIConnector.getURL(tmpMeta.getGrandparentThumb()));
                         tmpMeta.setTitle(tmpMeta.getGrandparentTitle() + " : " + tmpMeta.getTitle());
-                    } else if (tmpMeta.getType().equals("track")) {
+                    } else if ("track".equals(tmpMeta.getType())) {
                         tmpMeta.setThumb(plexAPIConnector.getURL(tmpMeta.getThumb()));
                         tmpMeta.setTitle(tmpMeta.getGrandparentTitle() + " - " + tmpMeta.getParentTitle() + " - "
                                 + tmpMeta.getTitle());
@@ -304,8 +304,8 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
             }
             refreshAllPlayers();
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
-                    .format("An exception occurred while polling the PLEX Server: '%s'", e.getMessage()).toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("An exception occurred while polling the PLEX Server: '%s'", e.getMessage()));
         }
     };
 

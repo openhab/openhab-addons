@@ -277,7 +277,6 @@ public class MyRenaultHttpSession {
 
     public void actionPause(boolean mode) throws RenaultForbiddenException, RenaultNotImplementedException,
             RenaultActionException, RenaultAPIGatewayException {
-
         final String apiMode = mode ? "pause" : "resume";
         final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kcm/v1/vehicles/" + config.vin
                 + "/charge/pause-resume?country=" + getCountry(config);

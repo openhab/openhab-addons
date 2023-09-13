@@ -353,11 +353,10 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handling command '{}' for {} ({}) channel '{}'", command, deviceType, macAddress,
                 channelUID.getId());
-        if (CHANNEL_STATE.equals(channelUID.getId()) && (command instanceof OnOffType)) {
+        if (CHANNEL_STATE.equals(channelUID.getId()) && (command instanceof OnOffType onOffCommand)) {
             if (configuration.getPowerStateChanging() == PowerStateChanging.COMMAND_SWITCHING) {
-                OnOffType onOff = (OnOffType) command;
-                pendingPowerStateChange = new PendingPowerStateChange(onOff);
-                handleOnOffCommand(onOff);
+                pendingPowerStateChange = new PendingPowerStateChange(onOffCommand);
+                handleOnOffCommand(onOffCommand);
             } else {
                 OnOffType onOff = configuration.getPowerStateChanging() == PowerStateChanging.ALWAYS_ON ? OnOffType.ON
                         : OnOffType.OFF;

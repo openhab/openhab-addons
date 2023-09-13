@@ -94,7 +94,7 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
      */
     private void parseAndQueue(ByteBuffer readBuffer) {
         String response = new String(readBuffer.array(), 0, readBuffer.limit());
-        response = response.replaceAll("\r", "").replaceAll("\n", "");
+        response = response.replace("\r", "").replace("\n", "");
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
 
@@ -123,10 +123,10 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
                     try {
                         Message message = messageFactory.createMessage(messageType, sequenceNumber, payload);
 
-                        if (message instanceof AcknowledgementMessage
-                                && !((AcknowledgementMessage) message).isExtended()) {
+                        if (message instanceof AcknowledgementMessage acknowledgementMessage
+                                && !acknowledgementMessage.isExtended()) {
                             logger.debug("Adding to acknowledgedQueue: {}", message);
-                            context.getAcknowledgedQueue().put((AcknowledgementMessage) message);
+                            context.getAcknowledgedQueue().put(acknowledgementMessage);
                         } else {
                             logger.debug("Adding to receivedQueue: {}", message);
                             context.getReceivedQueue().put(message);

@@ -278,7 +278,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
             int b;
             // wait first byte (blocking)
             if ((b = in.read()) > -1) {
-                byte d[] = new byte[] { (byte) b };
+                byte[] d = new byte[] { (byte) b };
                 os.write(d);
 
                 // read rest of the available bytes

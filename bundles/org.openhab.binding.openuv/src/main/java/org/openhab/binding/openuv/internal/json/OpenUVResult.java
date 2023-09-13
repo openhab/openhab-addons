@@ -45,7 +45,7 @@ public class OpenUVResult {
         @SerializedName("st5")
         V, // Fitzpatrick Skin Type V
         @SerializedName("st6")
-        VI;// Fitzpatrick Skin Type VI
+        VI// Fitzpatrick Skin Type VI
     }
 
     private double uv;

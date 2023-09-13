@@ -163,8 +163,7 @@ public class EncryptionHandler {
             byteArray[i] = (byte) (keyBytes[i] & 0xFF);
         }
 
-        byte[] expandedArray = ParadoxUtil.extendArray(byteArray, KEY_ARRAY_LENGTH);
-        return expandedArray;
+        return ParadoxUtil.extendArray(byteArray, KEY_ARRAY_LENGTH);
     }
 
     private void expandKey(byte[] input) {

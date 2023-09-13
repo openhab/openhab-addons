@@ -437,30 +437,30 @@ public class NeoHubJsonTests {
 
         jsonElement = JsonParser.parseString(load("dcb_celsius"));
         assertTrue(jsonElement.isJsonObject());
-        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+        assertTrue(!((JsonObject) jsonElement).keySet().isEmpty());
 
         jsonElement = JsonParser.parseString(load("live_data"));
         assertTrue(jsonElement.isJsonObject());
-        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+        assertTrue(!((JsonObject) jsonElement).keySet().isEmpty());
 
         jsonElement = JsonParser.parseString(load("engineers"));
         assertTrue(jsonElement.isJsonObject());
-        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+        assertTrue(!((JsonObject) jsonElement).keySet().isEmpty());
 
         jsonElement = JsonParser.parseString(load("info_new"));
         assertTrue(jsonElement.isJsonObject());
-        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+        assertTrue(!((JsonObject) jsonElement).keySet().isEmpty());
 
         jsonElement = JsonParser.parseString(load("info_old"));
         assertTrue(jsonElement.isJsonObject());
-        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+        assertTrue(!((JsonObject) jsonElement).keySet().isEmpty());
 
         jsonElement = JsonParser.parseString(load("system"));
         assertTrue(jsonElement.isJsonObject());
-        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+        assertTrue(!((JsonObject) jsonElement).keySet().isEmpty());
 
         jsonElement = JsonParser.parseString(load("info_sensors_closed"));
         assertTrue(jsonElement.isJsonObject());
-        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+        assertTrue(!((JsonObject) jsonElement).keySet().isEmpty());
     }
 }

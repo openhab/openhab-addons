@@ -77,9 +77,9 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     private final BlockingQueue<QueueObject> sendQueue = new LinkedBlockingQueue<>();
     private final ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(3);
 
-    private final byte emLedOutputState[] = new byte[32];
-    private final byte amOutputState[] = new byte[32];
-    private final byte dmOutputState[] = new byte[32];
+    private final byte[] emLedOutputState = new byte[32];
+    private final byte[] amOutputState = new byte[32];
+    private final byte[] dmOutputState = new byte[32];
 
     private final List<Byte> modules = new ArrayList<>();
 
@@ -570,7 +570,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
     private void sendDim(byte moduleAddress, byte channel, Command command, short dimTime) {
         byte module = (byte) (moduleAddress | 0xA0);
-        byte[] cmd = new byte[(command instanceof PercentType && !(((PercentType) command).byteValue() == 0)) ? 3 : 1];
+        byte[] cmd = new byte[(command instanceof PercentType percentCommand && percentCommand.byteValue() != 0) ? 3
+                : 1];
 
         cmd[0] = (byte) (channel << 5);
 

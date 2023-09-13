@@ -243,8 +243,8 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if ((handler != null) && (handler instanceof PLCBridgeHandler)) {
-                return (PLCBridgeHandler) handler;
+            if (handler instanceof PLCBridgeHandler bridgeHandler) {
+                return bridgeHandler;
             }
         }
         return null;

@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 public class ShellyBluSensorHandler extends ShellyBaseHandler {
-    private final static Logger logger = LoggerFactory.getLogger(ShellyBluSensorHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ShellyBluSensorHandler.class);
 
     public ShellyBluSensorHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
@@ -54,7 +54,7 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
 
     public static void addBluThing(String gateway, Shelly2NotifyEvent e, ShellyThingTable thingTable) {
         String model = substringBefore(getString(e.data.name), "-").toUpperCase();
-        String mac = e.data.addr.replaceAll(":", "");
+        String mac = e.data.addr.replace(":", "");
         String ttype = "";
         logger.debug("{}: Create thing for new BLU device {}: {} / {}", gateway, e.data.name, model, mac);
         ThingTypeUID tuid;

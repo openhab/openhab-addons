@@ -169,8 +169,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      */
     private void handleBrightnessCommand(Command command) {
         logger.debug("handleBrightnessCommand() command={}", command);
-        if (command instanceof PercentType) {
-            dimLightTo(((PercentType) command).intValue(), command);
+        if (command instanceof PercentType percentCommand) {
+            dimLightTo(percentCommand.intValue(), command);
         } else if (command instanceof IncreaseDecreaseType) {
             if (IncreaseDecreaseType.INCREASE.equals(command)) {
                 dimLightTo(brightness + 10, command);

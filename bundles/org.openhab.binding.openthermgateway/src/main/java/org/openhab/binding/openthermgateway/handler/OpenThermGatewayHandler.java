@@ -89,12 +89,11 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
             GatewayCommand gatewayCommand = null;
 
-            if (command instanceof OnOffType) {
-                OnOffType onOff = (OnOffType) command;
-                gatewayCommand = GatewayCommand.parse(code, onOff == OnOffType.ON ? "1" : "0");
+            if (command instanceof OnOffType onOffCommand) {
+                gatewayCommand = GatewayCommand.parse(code, onOffCommand == OnOffType.ON ? "1" : "0");
             }
-            if (command instanceof QuantityType<?>) {
-                QuantityType<?> quantityType = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+            if (command instanceof QuantityType<?> quantityCommand) {
+                QuantityType<?> quantityType = quantityCommand.toUnit(SIUnits.CELSIUS);
 
                 if (quantityType != null) {
                     double value = quantityType.doubleValue();
@@ -109,19 +108,19 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
             sendCommand(gatewayCommand);
 
             if (GatewayCommandCode.CONTROLSETPOINT.equals(code)) {
-                if (gatewayCommand.getMessage().equals("0.0")) {
+                if ("0.0".equals(gatewayCommand.getMessage())) {
                     updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT,
                             UnDefType.UNDEF);
                 }
                 updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
-                        OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
+                        OnOffType.from(!"0.0".equals(gatewayCommand.getMessage())));
             } else if (GatewayCommandCode.CONTROLSETPOINT2.equals(code)) {
-                if (gatewayCommand.getMessage().equals("0.0")) {
+                if ("0.0".equals(gatewayCommand.getMessage())) {
                     updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT,
                             UnDefType.UNDEF);
                 }
                 updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED,
-                        OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
+                        OnOffType.from(!"0.0".equals(gatewayCommand.getMessage())));
             }
         }
     }

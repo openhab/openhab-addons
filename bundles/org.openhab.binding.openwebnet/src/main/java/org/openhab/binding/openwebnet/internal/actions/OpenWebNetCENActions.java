@@ -84,8 +84,8 @@ public class OpenWebNetCENActions implements ThingActions {
 
     // legacy delegate methods
     public static void virtualPress(@Nullable ThingActions actions, @Nullable String press, int button) {
-        if (actions instanceof OpenWebNetCENActions) {
-            ((OpenWebNetCENActions) actions).virtualPress(press, button);
+        if (actions instanceof OpenWebNetCENActions openWebNetCENActions) {
+            openWebNetCENActions.virtualPress(press, button);
         } else {
             throw new IllegalArgumentException("Instance is not an OpenWebNetCENActions class.");
         }

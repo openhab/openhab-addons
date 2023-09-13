@@ -74,9 +74,7 @@ public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
 
         initializeHandlerMocks();
 
-        Mockito.doAnswer(answer -> {
-            return OwSensorType.DS2438;
-        }).when(secondBridgeHandler).getType(any());
+        Mockito.doAnswer(answer -> OwSensorType.DS2438).when(secondBridgeHandler).getType(any());
 
         Mockito.doAnswer(answer -> {
             OwPageBuffer pageBuffer = new OwPageBuffer(8);

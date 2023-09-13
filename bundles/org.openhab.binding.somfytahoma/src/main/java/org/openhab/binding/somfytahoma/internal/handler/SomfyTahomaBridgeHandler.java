@@ -21,10 +21,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -466,7 +466,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SomfyTahomaItemDiscoveryService.class);
+        return Set.of(SomfyTahomaItemDiscoveryService.class);
     }
 
     @Override
@@ -677,7 +677,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private void unregisterExecution(String execId) {
         if (executions.containsValue(execId)) {
-            executions.values().removeAll(Collections.singleton(execId));
+            executions.values().removeAll(Set.of(execId));
         } else {
             logger.debug("Cannot remove execution id: {}, because it is not registered", execId);
         }

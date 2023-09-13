@@ -153,7 +153,7 @@ public class BAE0910 extends AbstractOwDevice {
             Channel channel = callback.getThing().getChannel(CHANNEL_DIGITAL6);
             if (channel != null) {
                 BAE091xPIOConfiguration channelConfig = channel.getConfiguration().as(BAE091xPIOConfiguration.class);
-                piocRegister.set(PIOC_DD, channelConfig.mode.equals("output"));
+                piocRegister.set(PIOC_DD, "output".equals(channelConfig.mode));
                 switch (channelConfig.pulldevice) {
                     case "pullup" -> {
                         piocRegister.set(PIOC_PE);

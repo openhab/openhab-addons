@@ -102,13 +102,13 @@ public class MessageReader extends Thread {
                 pduString = "00" + pduString;
             }
             Pdu pdu = parser.parsePdu(pduString);
-            if (pdu instanceof SmsDeliveryPdu) {
+            if (pdu instanceof SmsDeliveryPdu deliveryPdu) {
                 logger.debug("PDU = {}", pdu.toString());
                 InboundMessage msg = null;
                 if (pdu.isBinary()) {
-                    msg = new InboundBinaryMessage((SmsDeliveryPdu) pdu, memLocation, memIndex);
+                    msg = new InboundBinaryMessage(deliveryPdu, memLocation, memIndex);
                 } else {
-                    msg = new InboundMessage((SmsDeliveryPdu) pdu, memLocation, memIndex);
+                    msg = new InboundMessage(deliveryPdu, memLocation, memIndex);
                 }
                 msg.setGatewayId(this.modem.getGatewayId());
                 msg.setGatewayId(this.modem.getGatewayId());
@@ -153,9 +153,9 @@ public class MessageReader extends Thread {
                         mpMsgList.add(tmpList);
                     }
                 }
-            } else if (pdu instanceof SmsStatusReportPdu) {
+            } else if (pdu instanceof SmsStatusReportPdu statusReportPdu) {
                 DeliveryReportMessage msg;
-                msg = new DeliveryReportMessage((SmsStatusReportPdu) pdu, memLocation, memIndex);
+                msg = new DeliveryReportMessage(statusReportPdu, memLocation, memIndex);
                 msg.setGatewayId(this.modem.getGatewayId());
                 messageList.add(msg);
             }
@@ -376,8 +376,8 @@ public class MessageReader extends Thread {
         String messageSignature = message.getSignature();
         if (!this.modem.getReadMessagesSet().contains(messageSignature)) {
             this.modem.getDeviceInformation().increaseTotalReceived();
-            if (message instanceof DeliveryReportMessage) {
-                modem.processDeliveryReport((DeliveryReportMessage) message);
+            if (message instanceof DeliveryReportMessage deliveryReportMessage) {
+                modem.processDeliveryReport(deliveryReportMessage);
             } else {
                 modem.processMessage(message);
             }

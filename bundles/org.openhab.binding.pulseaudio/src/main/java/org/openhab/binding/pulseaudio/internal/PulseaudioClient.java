@@ -225,8 +225,8 @@ public class PulseaudioClient {
      */
     public @Nullable Sink getSink(String name) {
         for (AbstractAudioDeviceConfig item : items) {
-            if (item.getPaName().equalsIgnoreCase(name) && item instanceof Sink) {
-                return (Sink) item;
+            if (item.getPaName().equalsIgnoreCase(name) && item instanceof Sink sink) {
+                return sink;
             }
         }
         return null;
@@ -239,8 +239,8 @@ public class PulseaudioClient {
      */
     public @Nullable Sink getSink(int id) {
         for (AbstractAudioDeviceConfig item : items) {
-            if (item.getId() == id && item instanceof Sink) {
-                return (Sink) item;
+            if (item.getId() == id && item instanceof Sink sink) {
+                return sink;
             }
         }
         return null;
@@ -253,8 +253,8 @@ public class PulseaudioClient {
      */
     public @Nullable Source getSource(int id) {
         for (AbstractAudioDeviceConfig item : items) {
-            if (item.getId() == id && item instanceof Source) {
-                return (Source) item;
+            if (item.getId() == id && item instanceof Source source) {
+                return source;
             }
         }
         return null;
@@ -362,8 +362,10 @@ public class PulseaudioClient {
             currentTry++;
         } while (currentTry < 3);
 
-        logger.warn("The pulseaudio binding tried 3 times to load the module-simple-protocol-tcp"
-                + " on random port on the pulseaudio server and give up trying");
+        logger.warn("""
+                The pulseaudio binding tried 3 times to load the module-simple-protocol-tcp\
+                 on random port on the pulseaudio server and give up trying\
+                """);
         return Optional.empty();
     }
 

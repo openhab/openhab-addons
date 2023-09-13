@@ -86,10 +86,8 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
                     MODEL_ID_LIGHTPANELS.equals(modelId) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
         }
 
-        final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
-                .withProperties(properties).withLabel(service.getName()).withRepresentationProperty(CONFIG_ADDRESS)
-                .build();
-        return result;
+        return DiscoveryResultBuilder.create(uid).withThingType(getThingType(service)).withProperties(properties)
+                .withLabel(service.getName()).withRepresentationProperty(CONFIG_ADDRESS).build();
     }
 
     @Override

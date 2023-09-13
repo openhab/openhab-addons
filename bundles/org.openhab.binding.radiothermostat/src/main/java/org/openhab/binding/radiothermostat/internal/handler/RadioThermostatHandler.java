@@ -136,7 +136,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
         // The setpoint mode is controlled by the name of setpoint attribute sent to the thermostat.
         // Temporary mode uses setpoint names prefixed with "t_" while absolute mode uses "a_"
-        if (config.setpointMode.equals("absolute")) {
+        if ("absolute".equals(config.setpointMode)) {
             this.setpointCmdKeyPrefix = "a_";
         }
 
@@ -479,18 +479,18 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             State state = null;
             if (value == null) {
                 state = UnDefType.UNDEF;
-            } else if (value instanceof PointType) {
-                state = (PointType) value;
-            } else if (value instanceof ZonedDateTime) {
-                state = new DateTimeType((ZonedDateTime) value);
-            } else if (value instanceof QuantityType<?>) {
-                state = (QuantityType<?>) value;
-            } else if (value instanceof Number) {
-                state = new DecimalType((Number) value);
+            } else if (value instanceof PointType pointCommand) {
+                state = pointCommand;
+            } else if (value instanceof ZonedDateTime zonedDateTimeCommand) {
+                state = new DateTimeType(zonedDateTimeCommand);
+            } else if (value instanceof QuantityType<?> quantityCommand) {
+                state = quantityCommand;
+            } else if (value instanceof Number numberCommand) {
+                state = new DecimalType(numberCommand);
             } else if (value instanceof String) {
                 state = new StringType(value.toString());
-            } else if (value instanceof OnOffType) {
-                state = (OnOffType) value;
+            } else if (value instanceof OnOffType onOffCommand) {
+                state = onOffCommand;
             } else {
                 logger.warn("Update channel {}: Unsupported value type {}", channelId,
                         value.getClass().getSimpleName());

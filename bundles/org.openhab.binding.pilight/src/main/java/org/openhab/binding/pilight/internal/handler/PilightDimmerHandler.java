@@ -91,8 +91,8 @@ public class PilightDimmerHandler extends PilightBaseHandler {
 
         if (command instanceof OnOffType) {
             code.setState(command.equals(OnOffType.ON) ? Code.STATE_ON : Code.STATE_OFF);
-        } else if (command instanceof PercentType) {
-            setDimmerValue((PercentType) command, code);
+        } else if (command instanceof PercentType percentCommand) {
+            setDimmerValue(percentCommand, code);
         } else {
             logger.warn("Only OnOffType and PercentType are supported by a dimmer.");
             return null;

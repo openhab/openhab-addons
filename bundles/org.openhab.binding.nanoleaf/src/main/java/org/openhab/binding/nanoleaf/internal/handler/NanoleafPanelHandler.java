@@ -137,8 +137,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof NanoleafControllerHandler) {
-                ((NanoleafControllerHandler) handler).getColorInformation().unregisterChangeListener(getPanelID());
+            if (handler instanceof NanoleafControllerHandler controllerHandler) {
+                controllerHandler.getColorInformation().unregisterChangeListener(getPanelID());
             }
         }
 
@@ -174,8 +174,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof NanoleafControllerHandler) {
-                ((NanoleafControllerHandler) handler).getColorInformation().registerChangeListener(getPanelID(), this);
+            if (handler instanceof NanoleafControllerHandler controllerHandler) {
+                controllerHandler.getColorInformation().registerChangeListener(getPanelID(), this);
             }
         }
     }
@@ -185,8 +185,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         logger.debug("currentPanelColor: {}", currentPanelColor);
 
         HSBType newPanelColor = new HSBType();
-        if (command instanceof HSBType) {
-            newPanelColor = (HSBType) command;
+        if (command instanceof HSBType hsbCommand) {
+            newPanelColor = hsbCommand;
         } else if (command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
                 newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(),
@@ -195,9 +195,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
                 newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(),
                         MIN_PANEL_BRIGHTNESS);
             }
-        } else if (command instanceof PercentType) {
-            PercentType brightness = new PercentType(
-                    Math.max(MIN_PANEL_BRIGHTNESS.intValue(), ((PercentType) command).intValue()));
+        } else if (command instanceof PercentType type) {
+            PercentType brightness = new PercentType(Math.max(MIN_PANEL_BRIGHTNESS.intValue(), type.intValue()));
             newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(), brightness);
         } else if (command instanceof IncreaseDecreaseType) {
             int brightness = currentPanelColor.getBrightness().intValue();
@@ -281,8 +280,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         Object panelId = getThing().getConfiguration().get(CONFIG_PANEL_ID);
         if (panelId instanceof Integer) {
             return (Integer) panelId;
-        } else if (panelId instanceof Number) {
-            return ((Number) panelId).intValue();
+        } else if (panelId instanceof Number numberValue) {
+            return numberValue.intValue();
         } else {
             // Fall back to parsing string representation of panel if it is not returning an integer
             String stringPanelId = panelId.toString();
@@ -300,8 +299,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof NanoleafControllerHandler) {
-                ((NanoleafControllerHandler) handler).getColorInformation().setPanelColor(panelId, color);
+            if (handler instanceof NanoleafControllerHandler controllerHandler) {
+                controllerHandler.getColorInformation().setPanelColor(panelId, color);
             } else {
                 logger.debug("Couldn't find handler for panel {}", panelId);
             }

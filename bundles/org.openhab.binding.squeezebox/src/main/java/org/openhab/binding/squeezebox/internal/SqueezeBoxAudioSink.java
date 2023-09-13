@@ -88,8 +88,8 @@ public class SqueezeBoxAudioSink extends AudioSinkSync {
         }
 
         String url;
-        if (audioStream instanceof URLAudioStream) {
-            url = ((URLAudioStream) audioStream).getURL();
+        if (audioStream instanceof URLAudioStream urlAudioStream) {
+            url = urlAudioStream.getURL();
             tryClose(audioStream);
         } else {
             try {

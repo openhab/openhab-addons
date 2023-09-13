@@ -110,7 +110,7 @@ public class NeoHubBindingConstants {
     /*
      * enumerator for results of method calls
      */
-    public static enum NeoHubReturnResult {
+    public enum NeoHubReturnResult {
         SUCCEEDED,
         ERR_COMMUNICATION,
         ERR_INITIALIZATION

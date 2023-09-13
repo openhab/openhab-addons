@@ -58,8 +58,7 @@ public class RokuHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            RokuHandler handler = new RokuHandler(thing, httpClient, stateDescriptionProvider);
-            return handler;
+            return new RokuHandler(thing, httpClient, stateDescriptionProvider);
         }
 
         return null;

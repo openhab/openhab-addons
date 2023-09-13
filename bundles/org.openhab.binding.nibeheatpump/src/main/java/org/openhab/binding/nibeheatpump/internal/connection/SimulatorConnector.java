@@ -195,7 +195,6 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
                         logger.debug("Read queue: {}, Write queue: {}", readQueue.size(), writeQueue.size());
                     }
                     Thread.sleep(800);
-
                 } catch (InterruptedException e) {
                 }
             }

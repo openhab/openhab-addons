@@ -289,8 +289,8 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof PlugwiseStickHandler) {
-            stickHandler = (PlugwiseStickHandler) handler;
+        if (handler instanceof PlugwiseStickHandler plugwiseStickHandler) {
+            stickHandler = plugwiseStickHandler;
             stickHandler.addStickStatusListener(this);
         }
     }

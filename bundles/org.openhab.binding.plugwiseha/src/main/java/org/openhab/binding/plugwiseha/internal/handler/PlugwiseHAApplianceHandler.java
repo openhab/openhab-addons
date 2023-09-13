@@ -119,9 +119,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
     @Override
     protected @Nullable Appliance getEntity(PlugwiseHAController controller) throws PlugwiseHAException {
         PlugwiseHAThingConfig config = getPlugwiseThingConfig();
-        Appliance appliance = controller.getAppliance(config.getId());
-
-        return appliance;
+        return controller.getAppliance(config.getId());
     }
 
     @Override
@@ -140,21 +138,21 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
 
         switch (channelID) {
             case APPLIANCE_LOCK_CHANNEL:
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType onOffCommand) {
                     try {
                         controller.setRelay(entity, (command == OnOffType.ON));
                     } catch (PlugwiseHAException e) {
-                        logger.warn("Unable to switch relay lock {} for appliance '{}'", (State) command,
+                        logger.warn("Unable to switch relay lock {} for appliance '{}'", onOffCommand,
                                 entity.getName());
                     }
                 }
                 break;
             case APPLIANCE_OFFSET_CHANNEL:
-                if (command instanceof QuantityType) {
+                if (command instanceof QuantityType quantityCommand) {
                     Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
-                    QuantityType<?> state = ((QuantityType<?>) command).toUnit(unit);
+                    QuantityType<?> state = quantityCommand.toUnit(unit);
 
                     if (state != null) {
                         try {
@@ -167,19 +165,19 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 }
                 break;
             case APPLIANCE_POWER_CHANNEL:
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType onOffCommand) {
                     try {
                         controller.setRelay(entity, command == OnOffType.ON);
                     } catch (PlugwiseHAException e) {
-                        logger.warn("Unable to switch relay {} for appliance '{}'", (State) command, entity.getName());
+                        logger.warn("Unable to switch relay {} for appliance '{}'", onOffCommand, entity.getName());
                     }
                 }
                 break;
             case APPLIANCE_SETPOINT_CHANNEL:
-                if (command instanceof QuantityType) {
+                if (command instanceof QuantityType quantityCommand) {
                     Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
                             .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
-                    QuantityType<?> state = ((QuantityType<?>) command).toUnit(unit);
+                    QuantityType<?> state = quantityCommand.toUnit(unit);
 
                     if (state != null) {
                         try {

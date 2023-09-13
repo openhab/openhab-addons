@@ -31,7 +31,7 @@ public final class Temperature {
     }
 
     public static Temperature fromY02(String y02) throws NoboDataException {
-        String parts[] = y02.split(" ", 3);
+        String[] parts = y02.split(" ", 3);
         if (parts.length != 3) {
             throw new NoboDataException(
                     String.format("Unexpected number of parts from hub on Y02 call: %d", parts.length));

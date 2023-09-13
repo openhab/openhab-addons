@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.serialbutton.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,8 +36,8 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class SerialButtonHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(SerialButtonBindingConstants.THING_TYPE_BUTTON);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(SerialButtonBindingConstants.THING_TYPE_BUTTON);
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
 

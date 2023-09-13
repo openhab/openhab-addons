@@ -43,7 +43,7 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
     }
 
     protected void handlePlayUri(Command command) {
-        if (command != null && command instanceof StringType) {
+        if (command instanceof StringType) {
             try {
                 playMedia(command.toString());
 

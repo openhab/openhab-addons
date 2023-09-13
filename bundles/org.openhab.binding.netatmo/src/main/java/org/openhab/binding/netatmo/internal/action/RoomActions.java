@@ -57,8 +57,7 @@ public class RoomActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof CommonInterface) {
-            CommonInterface commonHandler = (CommonInterface) handler;
+        if (handler instanceof CommonInterface commonHandler) {
             this.handler = commonHandler;
         }
     }

@@ -85,11 +85,10 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         }
 
         for (DataItem dataItem : dataItems) {
-            if (dataItem instanceof TspFhbSizeDataItem) {
+            if (dataItem instanceof TspFhbSizeDataItem sizeDataItem) {
                 logger.debug("Received TSP or FHB size message {} ({})", message.getID(), dataItem.getSubject());
 
-                verifyTspFhbChannels(((TspFhbSizeDataItem) dataItem).getValueId(),
-                        message.getUInt(dataItem.getByteType()));
+                verifyTspFhbChannels(sizeDataItem.getValueId(), message.getUInt(dataItem.getByteType()));
             } else {
                 String channelId = dataItem.getChannelId(message);
 

@@ -107,8 +107,8 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<ExtendedUnitStatu
         switch (channelUID.getId()) {
             case CHANNEL_UNIT_LEVEL:
             case CHANNEL_UNIT_SWITCH:
-                if (command instanceof OnOffType) {
-                    handleOnOff(channelUID, (OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    handleOnOff(channelUID, onOffCommand);
                 } else {
                     logger.debug("Invalid command: {}, must be OnOffType", command);
                 }
@@ -119,8 +119,8 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<ExtendedUnitStatu
             case CHANNEL_UNIT_OFF_FOR_MINUTES:
             case CHANNEL_UNIT_ON_FOR_HOURS:
             case CHANNEL_UNIT_OFF_FOR_HOURS:
-                if (command instanceof DecimalType) {
-                    handleUnitDuration(channelUID, (DecimalType) command);
+                if (command instanceof DecimalType decimalCommand) {
+                    handleUnitDuration(channelUID, decimalCommand);
                 } else {
                     logger.debug("Invalid command: {}, must be DecimalType", command);
                 }

@@ -208,11 +208,11 @@ public class NetworkUtils {
             return IpPingMethodEnum.JAVA_PING;
         } else {
             os = os.toLowerCase();
-            if (os.indexOf("win") >= 0) {
+            if (os.contains("win")) {
                 method = IpPingMethodEnum.WINDOWS_PING;
-            } else if (os.indexOf("mac") >= 0) {
+            } else if (os.contains("mac")) {
                 method = IpPingMethodEnum.MAC_OS_PING;
-            } else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") >= 0) {
+            } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
                 method = IpPingMethodEnum.IPUTILS_LINUX_PING;
             } else {
                 // We cannot estimate the command line for any other operating system and just return false

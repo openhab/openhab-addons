@@ -101,8 +101,7 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
 
     public static ThingUID createServiceUID(String ip, int tcpPort) {
         // uid must not contains dots
-        return new ThingUID(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK,
-                ip.replace('.', '_') + "_" + String.valueOf(tcpPort));
+        return new ThingUID(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK, ip.replace('.', '_') + "_" + tcpPort);
     }
 
     protected abstract void checkAddress(InetAddress ip, int tcpPort, int timeout);

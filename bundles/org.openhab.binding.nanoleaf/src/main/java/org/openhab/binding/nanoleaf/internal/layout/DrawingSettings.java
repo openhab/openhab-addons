@@ -77,10 +77,8 @@ public class DrawingSettings {
     private static ImagePoint2D toPictureLayout(Point2D original, int imageHeight, ImagePoint2D min,
             double rotationRadians) {
         Point2D rotated = original.rotate(rotationRadians);
-        ImagePoint2D translated = new ImagePoint2D(
-                NanoleafBindingConstants.LAYOUT_BORDER_WIDTH + rotated.getX() - min.getX(),
+        return new ImagePoint2D(NanoleafBindingConstants.LAYOUT_BORDER_WIDTH + rotated.getX() - min.getX(),
                 imageHeight - NanoleafBindingConstants.LAYOUT_BORDER_WIDTH - rotated.getY() + min.getY());
-        return translated;
     }
 
     private static List<ImagePoint2D> toPictureLayout(List<Point2D> originals, int imageHeight, ImagePoint2D min,

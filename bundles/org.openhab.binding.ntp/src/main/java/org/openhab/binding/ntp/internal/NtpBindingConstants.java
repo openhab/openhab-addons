@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.ntp.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,5 +45,5 @@ public class NtpBindingConstants {
     public static final String PROPERTY_DATE_TIME_FORMAT = "DateTimeFormat";
     public static final String PROPERTY_NTP_SERVER_PORT = "serverPort";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_NTP);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_NTP);
 }

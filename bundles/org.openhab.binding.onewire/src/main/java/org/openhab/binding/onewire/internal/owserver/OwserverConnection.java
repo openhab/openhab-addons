@@ -303,7 +303,7 @@ public class OwserverConnection {
                 } else {
                     returnPacket = read(false);
                 }
-            } while (returnPacket.isPingPacket() || !(returnPacket.hasPayload() == payloadExpected));
+            } while (returnPacket.isPingPacket() || returnPacket.hasPayload() != payloadExpected);
 
         } catch (OwException e) {
             logger.debug("failed requesting {}->{} [{}]", requestPacket, returnPacket, e.getMessage());

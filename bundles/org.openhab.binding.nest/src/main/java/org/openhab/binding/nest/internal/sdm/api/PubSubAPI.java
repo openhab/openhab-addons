@@ -214,8 +214,8 @@ public class PubSubAPI {
                 listeners.remove(listener);
                 if (listeners.isEmpty()) {
                     subscriptionListeners.remove(subscriptionId);
-                    scheduler.getQueue().removeIf(runnable -> runnable instanceof Subscriber
-                            && ((Subscriber) runnable).subscriptionId.equals(subscriptionId));
+                    scheduler.getQueue().removeIf(
+                            runnable -> runnable instanceof Subscriber s && s.subscriptionId.equals(subscriptionId));
                 }
             }
         }

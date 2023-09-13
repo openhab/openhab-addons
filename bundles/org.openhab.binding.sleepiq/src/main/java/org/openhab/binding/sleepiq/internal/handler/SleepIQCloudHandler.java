@@ -17,7 +17,6 @@ import static org.openhab.binding.sleepiq.internal.config.SleepIQCloudConfigurat
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +70,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections.singleton(THING_TYPE_CLOUD);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_CLOUD);
 
     private static final int SLEEPER_POLLING_INTERVAL_HOURS = 12;
 

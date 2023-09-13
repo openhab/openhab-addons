@@ -38,7 +38,7 @@ import com.google.gson.stream.JsonWriter;
 public class SDMDataUtil {
 
     public static Reader openDataReader(String fileName) throws FileNotFoundException {
-        String packagePath = (SDMDataUtil.class.getPackage().getName()).replaceAll("\\.", "/");
+        String packagePath = (SDMDataUtil.class.getPackage().getName()).replace(".", "/");
         String filePath = "src/test/resources/" + packagePath + "/" + fileName;
 
         InputStream inputStream = new FileInputStream(filePath);

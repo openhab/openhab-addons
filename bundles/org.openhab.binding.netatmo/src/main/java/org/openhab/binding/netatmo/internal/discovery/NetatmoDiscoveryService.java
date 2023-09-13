@@ -79,8 +79,8 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof ApiBridgeHandler) {
-            this.handler = (ApiBridgeHandler) handler;
+        if (handler instanceof ApiBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 

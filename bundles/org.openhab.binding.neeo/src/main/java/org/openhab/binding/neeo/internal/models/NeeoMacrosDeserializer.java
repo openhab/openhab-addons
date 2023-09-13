@@ -41,9 +41,9 @@ public class NeeoMacrosDeserializer implements JsonDeserializer<@Nullable NeeoMa
         Objects.requireNonNull(jsonElement, "jsonElement cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
 
-        if (jsonElement instanceof JsonObject) {
+        if (jsonElement instanceof JsonObject jsonObject) {
             final List<NeeoMacro> scenarios = new ArrayList<>();
-            for (Map.Entry<String, JsonElement> entry : ((JsonObject) jsonElement).entrySet()) {
+            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 final NeeoMacro macro = context.deserialize(entry.getValue(), NeeoMacro.class);
                 scenarios.add(macro);
             }

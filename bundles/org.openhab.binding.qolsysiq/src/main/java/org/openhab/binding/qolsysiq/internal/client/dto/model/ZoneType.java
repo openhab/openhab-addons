@@ -115,5 +115,5 @@ public enum ZoneType {
     @SerializedName("120")
     ZWAVE_SIREN,
     @SerializedName("121")
-    COUNT;
+    COUNT
 }

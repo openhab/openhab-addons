@@ -231,8 +231,8 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
         if (childHandler == null) {
             throw new IllegalArgumentException("childHandler cannot be null");
         }
-        if (childHandler instanceof RioZoneHandler) {
-            final RioHandlerCallback callback = ((RioZoneHandler) childHandler).getRioHandlerCallback();
+        if (childHandler instanceof RioZoneHandler zoneHandler) {
+            final RioHandlerCallback callback = zoneHandler.getRioHandlerCallback();
             if (callback != null) {
                 if (added) {
                     callback.addListener(RioConstants.CHANNEL_ZONENAME, handlerCallbackListener);

@@ -274,8 +274,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      */
     public ThingStatusDetail getStatusDetails() {
         ThingStatusInfo status = thing.getStatusInfo();
-        ThingStatusDetail detail = status.getStatusDetail();
-        return detail;
+        return status.getStatusDetail();
     }
 
     /**

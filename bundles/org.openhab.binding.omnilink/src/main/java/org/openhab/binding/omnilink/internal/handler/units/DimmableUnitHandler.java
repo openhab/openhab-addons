@@ -61,10 +61,10 @@ public class DimmableUnitHandler extends UnitHandler {
 
     private void handleUnitLevel(ChannelUID channelUID, Command command) {
         logger.debug("handleUnitLevel called for channel: {}, command: {}", channelUID, command);
-        if (command instanceof PercentType) {
-            handlePercent(channelUID, (PercentType) command);
-        } else if (command instanceof IncreaseDecreaseType) {
-            handleIncreaseDecrease(channelUID, (IncreaseDecreaseType) command);
+        if (command instanceof PercentType percentCommand) {
+            handlePercent(channelUID, percentCommand);
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+            handleIncreaseDecrease(channelUID, increaseDecreaseCommand);
         } else {
             // Only handle percent or increase/decrease.
             super.handleCommand(channelUID, command);

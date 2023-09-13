@@ -40,8 +40,8 @@ public class NumberUtils {
     public static double convert(Object o) {
         // ensure value not null
         double value = UNDEF;
-        if (o instanceof Number) {
-            value = ((Number) o).doubleValue();
+        if (o instanceof Number number) {
+            value = number.doubleValue();
         } else if (o instanceof String) {
             value = Double.parseDouble(o.toString());
         }

@@ -64,7 +64,7 @@ public class NanoleafLayout {
             return new byte[] {};
         }
 
-        ImagePoint2D size[] = findSize(positionDatums, rotationRadians);
+        ImagePoint2D[] size = findSize(positionDatums, rotationRadians);
         final ImagePoint2D min = size[0];
         final ImagePoint2D max = size[1];
 

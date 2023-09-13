@@ -15,7 +15,6 @@ package org.openhab.binding.samsungtv.internal.discovery;
 import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.SAMSUNG_TV_THING_TYPE;
 import static org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration.HOST_NAME;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +45,7 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(SAMSUNG_TV_THING_TYPE);
+        return Set.of(SAMSUNG_TV_THING_TYPE);
     }
 
     @Override

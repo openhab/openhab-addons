@@ -468,8 +468,8 @@ class RioSourceProtocol extends AbstractRioProtocol {
 
         infoLock.lock();
         try {
-            infoText.append(infoTextValue.toString());
-            if (attr != null && attr.toString().indexOf("E") >= 0) {
+            infoText.append(infoTextValue);
+            if (attr != null && attr.toString().contains("E")) {
                 final String text = infoText.toString();
 
                 infoText.setLength(0);

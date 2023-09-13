@@ -82,8 +82,8 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof NoboHubBridgeHandler) {
-            this.hubBridgeHandler = (NoboHubBridgeHandler) thingHandler;
+        if (thingHandler instanceof NoboHubBridgeHandler bridgeHandler) {
+            this.hubBridgeHandler = bridgeHandler;
         }
     }
 

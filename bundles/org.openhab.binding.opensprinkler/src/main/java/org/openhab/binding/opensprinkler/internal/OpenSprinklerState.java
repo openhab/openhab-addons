@@ -37,7 +37,7 @@ public class OpenSprinklerState {
     public List<StateOption> stations = new ArrayList<>();
 
     public static class JsResponse {
-        public int sn[] = new int[8];
+        public int[] sn = new int[8];
         public int nstations = 8;
     }
 

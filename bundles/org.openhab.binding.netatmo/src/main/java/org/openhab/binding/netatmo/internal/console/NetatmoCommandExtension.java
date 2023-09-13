@@ -63,9 +63,9 @@ public class NetatmoCommandExtension extends AbstractConsoleCommandExtension imp
             this.console = console;
             for (Thing thing : thingRegistry.getAll()) {
                 ThingHandler thingHandler = thing.getHandler();
-                if (thingHandler instanceof ApiBridgeHandler) {
+                if (thingHandler instanceof ApiBridgeHandler bridgeHandler) {
                     console.println("Account bridge: " + thing.getLabel());
-                    ((ApiBridgeHandler) thingHandler).identifyAllModulesAndApplyAction(this::printThing);
+                    bridgeHandler.identifyAllModulesAndApplyAction(this::printThing);
                 }
             }
         } else {

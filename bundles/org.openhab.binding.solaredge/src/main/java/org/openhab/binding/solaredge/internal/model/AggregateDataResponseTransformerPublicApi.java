@@ -89,7 +89,6 @@ public class AggregateDataResponseTransformerPublicApi extends AbstractDataRespo
      */
     private final void fillAggregateData(AggregatePeriod period, String unit, MeterTelemetries meter, String channelId,
             Map<Channel, State> valueMap) {
-
         String group = convertPeriodToGroup(period);
         List<MeterTelemetry> values = meter.values;
 

@@ -181,7 +181,7 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(RioSourceConfig.SOURCE, s).withBridge(sysHandler.getThing().getUID())
-                        .withLabel((name == null || name.isEmpty() || name.equalsIgnoreCase("null") ? "Source" : name)
+                        .withLabel((name == null || name.isEmpty() || "null".equalsIgnoreCase(name) ? "Source" : name)
                                 + " (" + s + ")")
                         .build();
                 thingDiscovered(discoveryResult);
@@ -214,7 +214,7 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(RioZoneConfig.ZONE, z).withBridge(controllerUID)
-                        .withLabel((name.equalsIgnoreCase("null") ? "Zone" : name) + " (" + z + ")").build();
+                        .withLabel(("null".equalsIgnoreCase(name) ? "Zone" : name) + " (" + z + ")").build();
                 thingDiscovered(discoveryResult);
             }
         }

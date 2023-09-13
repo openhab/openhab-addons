@@ -171,9 +171,6 @@ public class PJLinkDevice {
                     } else {
                         try {
                             authenticate(rawHeader.substring("PJLINK 1 ".length()));
-                        } catch (AuthenticationException e) {
-                            // propagate AuthenticationException
-                            throw e;
                         } catch (ResponseException e) {
                             // maybe only the test command is broken on the device
                             // as long as we don't get an AuthenticationException, we'll just ignore it for now
@@ -236,16 +233,16 @@ public class PJLinkDevice {
         String response = null;
         while ((response = getReader().readLine()) != null && preprocessResponse(response).isEmpty()) {
             logger.debug("Got empty string response for request '{}' from {}, waiting for another line", response,
-                    fullCommand.replaceAll("\r", "\\\\r"));
+                    fullCommand.replace("\r", "\\\\r"));
         }
         if (response == null) {
-            throw new ResponseException(MessageFormat.format("Response to request ''{0}'' was null",
-                    fullCommand.replaceAll("\r", "\\\\r")));
+            throw new ResponseException(
+                    MessageFormat.format("Response to request ''{0}'' was null", fullCommand.replace("\r", "\\\\r")));
         }
 
         if (logger.isDebugEnabled()) {
             logger.debug("Got response '{}' ({}) for request '{}' from {}", response,
-                    Arrays.toString(response.getBytes()), fullCommand.replaceAll("\r", "\\\\r"), ipAddress);
+                    Arrays.toString(response.getBytes()), fullCommand.replace("\r", "\\\\r"), ipAddress);
         }
         return preprocessResponse(response);
     }

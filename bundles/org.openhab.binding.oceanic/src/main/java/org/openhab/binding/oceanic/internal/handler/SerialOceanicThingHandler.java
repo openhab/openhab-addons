@@ -67,7 +67,6 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
 
         if (serialPort == null && config.port != null) {
-
             SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.port);
 
             if (portIdentifier == null) {
@@ -172,7 +171,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             }
 
             long timeStamp = System.currentTimeMillis();
-            while (lastLineReceived.equals("")) {
+            while ("".equals(lastLineReceived)) {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {

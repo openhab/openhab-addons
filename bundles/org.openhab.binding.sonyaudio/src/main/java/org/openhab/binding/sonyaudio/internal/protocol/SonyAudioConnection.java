@@ -118,7 +118,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
             }
         }
 
-        if (json.get("method").getAsString().equalsIgnoreCase("notifyPlayingContentInfo")) {
+        if ("notifyPlayingContentInfo".equalsIgnoreCase(json.get("method").getAsString())) {
             SonyAudioInput input = new SonyAudioInput();
             input.input = param.get("uri").getAsString();
             if (param.has("broadcastFreq")) {
@@ -130,19 +130,19 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
             listener.updateSeekStation("");
         }
 
-        if (json.get("method").getAsString().equalsIgnoreCase("notifyVolumeInformation")) {
+        if ("notifyVolumeInformation".equalsIgnoreCase(json.get("method").getAsString())) {
             SonyAudioVolume volume = new SonyAudioVolume();
 
             int rawVolume = param.get("volume").getAsInt();
             volume.volume = Math.round(100 * (rawVolume - min_volume) / (max_volume - min_volume));
 
-            volume.mute = param.get("mute").getAsString().equalsIgnoreCase("on");
+            volume.mute = "on".equalsIgnoreCase(param.get("mute").getAsString());
             listener.updateVolume(zone, volume);
         }
 
-        if (json.get("method").getAsString().equalsIgnoreCase("notifyPowerStatus")) {
+        if ("notifyPowerStatus".equalsIgnoreCase(json.get("method").getAsString())) {
             String power = param.get("status").getAsString();
-            listener.updatePowerStatus(zone, power.equalsIgnoreCase("active"));
+            listener.updatePowerStatus(zone, "active".equalsIgnoreCase(power));
         }
 
         listener.updateConnectionState(true);
@@ -193,7 +193,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
                 for (Iterator<Notification> iter = notifications.disabled.listIterator(); iter.hasNext();) {
                     Notification a = iter.next();
-                    if (a.name.equalsIgnoreCase("notifyPlayingContentInfo")) {
+                    if ("notifyPlayingContentInfo".equalsIgnoreCase(a.name)) {
                         notifications.enabled.add(a);
                         iter.remove();
                     }
@@ -209,7 +209,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
                 for (Iterator<Notification> iter = notifications.disabled.listIterator(); iter.hasNext();) {
                     Notification a = iter.next();
-                    if (a.name.equalsIgnoreCase("notifyVolumeInformation")) {
+                    if ("notifyVolumeInformation".equalsIgnoreCase(a.name)) {
                         notifications.enabled.add(a);
                         iter.remove();
                     }
@@ -225,7 +225,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
                 for (Iterator<Notification> iter = notifications.disabled.listIterator(); iter.hasNext();) {
                     Notification a = iter.next();
-                    if (a.name.equalsIgnoreCase("notifyPowerStatus")) {
+                    if ("notifyPowerStatus".equalsIgnoreCase(a.name)) {
                         notifications.enabled.add(a);
                         iter.remove();
                     }
@@ -294,7 +294,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
                     JsonObject terminal = terminals.next().getAsJsonObject();
                     String uri = terminal.get("uri").getAsString();
                     if (uri.equalsIgnoreCase("extOutput:zone?zone=" + Integer.toString(zone))) {
-                        return terminal.get("active").getAsString().equalsIgnoreCase("active") ? true : false;
+                        return "active".equalsIgnoreCase(terminal.get("active").getAsString()) ? true : false;
                     }
                 }
             }
@@ -310,7 +310,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
             if (element != null && element.isJsonArray()) {
                 String powerStatus = element.getAsJsonArray().get(0).getAsJsonObject().get("status").getAsString();
-                return powerStatus.equalsIgnoreCase("active") ? true : false;
+                return "active".equalsIgnoreCase(powerStatus) ? true : false;
             }
             throw new IOException("Unexpected responses: Unable to parse GetPowerStatus response message");
         }
@@ -434,7 +434,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
             ret.volume = vol;
 
             String mute = result.get("mute").getAsString();
-            ret.mute = mute.equalsIgnoreCase("on") ? true : false;
+            ret.mute = "on".equalsIgnoreCase(mute) ? true : false;
 
             return ret;
         }

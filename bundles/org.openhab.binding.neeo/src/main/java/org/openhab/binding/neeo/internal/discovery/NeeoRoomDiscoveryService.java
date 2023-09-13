@@ -13,7 +13,6 @@
 package org.openhab.binding.neeo.internal.discovery;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -44,8 +43,7 @@ public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(NeeoRoomDiscoveryService.class);
 
     /** The room bridge type we support */
-    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
-            .singleton(NeeoConstants.BRIDGE_TYPE_ROOM);
+    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(NeeoConstants.BRIDGE_TYPE_ROOM);
 
     /** The timeout (in seconds) for searching the brain */
     private static final int SEARCH_TIME = 10;

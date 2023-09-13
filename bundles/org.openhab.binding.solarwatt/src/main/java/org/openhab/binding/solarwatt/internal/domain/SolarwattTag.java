@@ -27,7 +27,7 @@ public class SolarwattTag {
 
     public SolarwattTag(String tagName) {
         this.tagName = tagName;
-        char chars[] = tagName.toCharArray();
+        char[] chars = tagName.toCharArray();
         chars[0] = Character.toLowerCase(chars[0]);
         this.channelName = new String(chars);
     }

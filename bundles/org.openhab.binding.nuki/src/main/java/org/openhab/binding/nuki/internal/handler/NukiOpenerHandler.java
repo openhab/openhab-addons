@@ -66,8 +66,8 @@ public class NukiOpenerHandler extends AbstractNukiDeviceHandler<NukiDeviceConfi
     protected boolean doHandleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
             case NukiBindingConstants.CHANNEL_OPENER_STATE:
-                if (command instanceof DecimalType) {
-                    OpenerAction action = OpenerAction.fromAction(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    OpenerAction action = OpenerAction.fromAction(decimalCommand.intValue());
                     if (action != null) {
                         return withHttpClient(client -> {
                             BridgeLockActionResponse response = client.getOpenerAction(configuration.nukiId, action);

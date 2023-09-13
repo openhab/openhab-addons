@@ -268,8 +268,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
                         break;
                     case CHANNEL_SOURCE:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             connector.sendCommand(OppoCommand.SET_INPUT_SOURCE, String.valueOf(value));
                         }
                         break;
@@ -297,14 +297,14 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
                         break;
                     case CHANNEL_SUB_SHIFT:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             connector.sendCommand(OppoCommand.SET_SUBTITLE_SHIFT, String.valueOf(value));
                         }
                         break;
                     case CHANNEL_OSD_POSITION:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             connector.sendCommand(OppoCommand.SET_OSD_POSITION, String.valueOf(value));
                         }
                         break;
@@ -843,7 +843,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         if (model == MODEL83 || model == MODEL103 || model == MODEL105) {
             hdmiModeOptions.add(new StateOption("AUTO", "Auto"));
             hdmiModeOptions.add(new StateOption("SRC", "Source Direct"));
-            if (!(model == MODEL83)) {
+            if (model != MODEL83) {
                 hdmiModeOptions.add(new StateOption("4K2K", "4K*2K"));
             }
             hdmiModeOptions.add(new StateOption("1080P", "1080P"));

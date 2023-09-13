@@ -25,9 +25,9 @@ import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -145,7 +145,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SomfyMyLinkDeviceDiscoveryService.class);
+        return Set.of(SomfyMyLinkDeviceDiscoveryService.class);
     }
 
     private boolean validConfiguration(@Nullable SomfyMyLinkConfiguration config) {

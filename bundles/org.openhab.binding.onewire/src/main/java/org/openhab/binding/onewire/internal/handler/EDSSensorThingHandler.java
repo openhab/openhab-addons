@@ -15,7 +15,6 @@ package org.openhab.binding.onewire.internal.handler;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,7 +37,7 @@ public class EDSSensorThingHandler extends OwBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_EDS_ENV);
     public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Set.of(OwSensorType.EDS0064, OwSensorType.EDS0065,
             OwSensorType.EDS0066, OwSensorType.EDS0067, OwSensorType.EDS0068);
-    private static final Set<String> REQUIRED_PROPERTIES = Collections.singleton(PROPERTY_HW_REVISION);
+    private static final Set<String> REQUIRED_PROPERTIES = Set.of(PROPERTY_HW_REVISION);
 
     public EDSSensorThingHandler(Thing thing, OwDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         super(thing, dynamicStateDescriptionProvider, SUPPORTED_SENSOR_TYPES, REQUIRED_PROPERTIES);
@@ -78,7 +77,7 @@ public class EDSSensorThingHandler extends OwBaseThingHandler {
 
         properties.put(PROPERTY_MODELID, sensorType.name());
         properties.put(PROPERTY_VENDOR, "Embedded Data Systems");
-        properties.put(PROPERTY_HW_REVISION, String.valueOf(fwRevision));
+        properties.put(PROPERTY_HW_REVISION, fwRevision);
 
         updateProperties(properties);
     }

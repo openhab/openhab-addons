@@ -157,8 +157,8 @@ public class PHCHandler extends BaseThingHandler {
             }
 
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof PHCBridgeHandler) {
-                bridgeHandler = (PHCBridgeHandler) handler;
+            if (handler instanceof PHCBridgeHandler phcBridgeHandler) {
+                bridgeHandler = phcBridgeHandler;
             } else {
                 logger.debug("No available bridge handler for {}.", bridge.getUID());
 

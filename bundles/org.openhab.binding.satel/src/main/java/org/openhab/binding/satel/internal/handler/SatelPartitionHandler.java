@@ -14,7 +14,6 @@ package org.openhab.binding.satel.internal.handler;
 
 import static org.openhab.binding.satel.internal.SatelBindingConstants.THING_TYPE_PARTITION;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,7 +38,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class SatelPartitionHandler extends SatelStateThingHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PARTITION);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PARTITION);
 
     public SatelPartitionHandler(Thing thing) {
         super(thing);

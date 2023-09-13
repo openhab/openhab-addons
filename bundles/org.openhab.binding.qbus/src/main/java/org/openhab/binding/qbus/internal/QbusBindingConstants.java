@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.qbus.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +30,7 @@ public class QbusBindingConstants {
 
     // bridge
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "bridge");
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE);
     // Bridge config properties
     public static final String CONFIG_HOST_NAME = "addr";
     public static final String CONFIG_PORT = "port";

@@ -57,9 +57,14 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
     private static final int AUTODISCOVERY_SEARCH_TIME_SEC = 5;
     private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC = 60 * 10;
 
-    private static final String SSDP_DISCOVERY_REQUEST_MESSAGE = "M-SEARCH * HTTP/1.1\r\n"
-            + "Host:239.255.255.250:1900\r\n" + "ST:urn:schemas-upnp-org:service:pilight:1\r\n"
-            + "Man:\"ssdp:discover\"\r\n" + "MX:3\r\n\r\n";
+    private static final String SSDP_DISCOVERY_REQUEST_MESSAGE = """
+            M-SEARCH * HTTP/1.1
+            Host:239.255.255.250:1900
+            ST:urn:schemas-upnp-org:service:pilight:1
+            Man:"ssdp:discover"
+            MX:3
+
+            """;
     public static final String SSDP_MULTICAST_ADDRESS = "239.255.255.250";
     public static final int SSDP_PORT = 1900;
     public static final int SSDP_WAIT_TIMEOUT = 2000; // in milliseconds
@@ -73,7 +78,7 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
     }
 
     public static Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(PilightBindingConstants.THING_TYPE_BRIDGE);
+        return Set.of(PilightBindingConstants.THING_TYPE_BRIDGE);
     }
 
     @Override

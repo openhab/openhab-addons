@@ -17,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,7 +80,7 @@ public class DiscoveryTest {
         // TCP device
         when(value.isPingReachable()).thenReturn(false);
         when(value.isTCPServiceReachable()).thenReturn(true);
-        when(value.getReachableTCPports()).thenReturn(Collections.singletonList(1010));
+        when(value.getReachableTCPports()).thenReturn(List.of(1010));
         d.partialDetectionResult(value);
         verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();

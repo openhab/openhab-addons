@@ -113,7 +113,7 @@ public class InformationResponseMessage extends Message {
             month = Integer.parseInt(matcher.group(3), 16);
             minutes = Integer.parseInt(matcher.group(4), 16);
             logAddress = (Integer.parseInt(matcher.group(5), 16) - 278528) / 32;
-            powerState = (matcher.group(6).equals("01"));
+            powerState = ("01".equals(matcher.group(6)));
             hertz = Integer.parseInt(matcher.group(7), 16);
             hardwareVersion = matcher.group(8).substring(0, 4) + "-" + matcher.group(8).substring(4, 8) + "-"
                     + matcher.group(8).substring(8, 12);

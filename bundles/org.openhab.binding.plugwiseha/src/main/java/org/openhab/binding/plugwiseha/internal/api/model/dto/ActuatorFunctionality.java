@@ -77,6 +77,7 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
         return upperBound;
     }
 
+    @Override
     public ZonedDateTime getUpdatedDate() {
         return updatedDate;
     }

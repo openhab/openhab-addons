@@ -139,12 +139,12 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                     }
                 } else {
                     Command rawValue = command;
-                    if (command instanceof QuantityType) {
+                    if (command instanceof QuantityType quantityCommand) {
                         Unit<?> channelUnit = channel.unit;
                         if (channelUnit == null) {
-                            rawValue = new DecimalType(((QuantityType<?>) command).toBigDecimal());
+                            rawValue = new DecimalType(quantityCommand.toBigDecimal());
                         } else {
-                            QuantityType<?> convertedValue = ((QuantityType<?>) command).toUnit(channelUnit);
+                            QuantityType<?> convertedValue = quantityCommand.toUnit(channelUnit);
                             if (convertedValue == null) {
                                 logger.warn("Cannot convert '{}' to configured unit '{}'", command, channelUnit);
                                 return;
@@ -443,7 +443,6 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                                             octets[3] << 24 | octets[4] << 16 | octets[5] << 8 | octets[6]);
                                     state = channelUnit == null ? new DecimalType(floatValue)
                                             : new QuantityType<>(floatValue, channelUnit);
-
                                 } else {
                                     throw new UnsupportedOperationException("Unknown opaque datatype" + value);
                                 }
@@ -491,36 +490,36 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
     private Variable convertDatatype(Command command, SnmpDatatype datatype) {
         switch (datatype) {
             case INT32 -> {
-                if (command instanceof DecimalType) {
-                    return new Integer32(((DecimalType) command).intValue());
-                } else if (command instanceof StringType) {
-                    return new Integer32((new DecimalType(((StringType) command).toString())).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    return new Integer32(decimalCommand.intValue());
+                } else if (command instanceof StringType stringCommand) {
+                    return new Integer32((new DecimalType(stringCommand.toString())).intValue());
                 }
             }
             case UINT32 -> {
-                if (command instanceof DecimalType) {
-                    return new UnsignedInteger32(((DecimalType) command).intValue());
-                } else if (command instanceof StringType) {
-                    return new UnsignedInteger32((new DecimalType(((StringType) command).toString())).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    return new UnsignedInteger32(decimalCommand.intValue());
+                } else if (command instanceof StringType stringCommand) {
+                    return new UnsignedInteger32((new DecimalType(stringCommand.toString())).intValue());
                 }
             }
             case COUNTER64 -> {
-                if (command instanceof DecimalType) {
-                    return new Counter64(((DecimalType) command).longValue());
-                } else if (command instanceof StringType) {
-                    return new Counter64((new DecimalType(((StringType) command).toString())).longValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    return new Counter64(decimalCommand.longValue());
+                } else if (command instanceof StringType stringCommand) {
+                    return new Counter64((new DecimalType(stringCommand.toString())).longValue());
                 }
             }
             case FLOAT, STRING -> {
-                if (command instanceof DecimalType) {
-                    return new OctetString(((DecimalType) command).toString());
-                } else if (command instanceof StringType) {
-                    return new OctetString(((StringType) command).toString());
+                if (command instanceof DecimalType decimalCommand) {
+                    return new OctetString(decimalCommand.toString());
+                } else if (command instanceof StringType stringCommand) {
+                    return new OctetString(stringCommand.toString());
                 }
             }
             case HEXSTRING -> {
-                if (command instanceof StringType) {
-                    String commandString = ((StringType) command).toString().toLowerCase();
+                if (command instanceof StringType stringCommand) {
+                    String commandString = stringCommand.toString().toLowerCase();
                     Matcher commandMatcher = HEXSTRING_VALIDITY.matcher(commandString);
                     if (commandMatcher.matches()) {
                         commandString = HEXSTRING_EXTRACTOR.matcher(commandString).replaceAll("");
@@ -529,8 +528,8 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                 }
             }
             case IPADDRESS -> {
-                if (command instanceof StringType) {
-                    return new IpAddress(((StringType) command).toString());
+                if (command instanceof StringType stringCommand) {
+                    return new IpAddress(stringCommand.toString());
                 }
             }
             default -> {

@@ -41,9 +41,9 @@ public class NeoStatHandler extends NeoBaseHandler {
     protected String toNeoHubBuildCommandString(String channelId, Command command) {
         NeoBaseConfiguration config = this.config;
         if (config != null) {
-            if (command instanceof QuantityType<?> && channelId.equals(CHAN_TARGET_TEMP)) {
+            if (command instanceof QuantityType<?> quantityCommand && channelId.equals(CHAN_TARGET_TEMP)) {
                 Command doCommand = command;
-                QuantityType<?> temp = ((QuantityType<?>) command).toUnit(getTemperatureUnit());
+                QuantityType<?> temp = quantityCommand.toUnit(getTemperatureUnit());
                 if (temp != null) {
                     doCommand = temp;
                 }
@@ -51,8 +51,8 @@ public class NeoStatHandler extends NeoBaseHandler {
                         config.deviceNameInHub);
             }
 
-            if (command instanceof OnOffType && channelId.equals(CHAN_OCC_MODE_PRESENT)) {
-                return String.format(CMD_CODE_AWAY, invert((OnOffType) command).toString(), config.deviceNameInHub);
+            if (command instanceof OnOffType onOffCommand && channelId.equals(CHAN_OCC_MODE_PRESENT)) {
+                return String.format(CMD_CODE_AWAY, invert(onOffCommand).toString(), config.deviceNameInHub);
             }
         }
         return "";

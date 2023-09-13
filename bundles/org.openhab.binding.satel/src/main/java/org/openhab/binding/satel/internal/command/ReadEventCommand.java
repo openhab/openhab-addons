@@ -106,9 +106,7 @@ public class ReadEventCommand extends SatelCommandBase {
         if (year > currentYear) {
             year -= 4;
         }
-        LocalDateTime result = LocalDateTime.of(year, (payload[2] >> 4) & 0x0f, payload[1] & 0x1f, minutes / 60,
-                minutes % 60);
-        return result;
+        return LocalDateTime.of(year, (payload[2] >> 4) & 0x0f, payload[1] & 0x1f, minutes / 60, minutes % 60);
     }
 
     /**

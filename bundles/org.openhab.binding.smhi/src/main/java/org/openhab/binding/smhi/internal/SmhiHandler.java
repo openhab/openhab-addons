@@ -425,9 +425,7 @@ public class SmhiHandler extends BaseThingHandler {
                 break;
 
         }
-        Channel channel = ChannelBuilder.create(channelUID, itemType)
-                .withType(new ChannelTypeUID(BINDING_ID, channelID)).build();
-        return channel;
+        return ChannelBuilder.create(channelUID, itemType).withType(new ChannelTypeUID(BINDING_ID, channelID)).build();
     }
 
     /**

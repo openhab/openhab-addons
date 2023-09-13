@@ -116,8 +116,8 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
     public void channelUnlinked(ChannelUID channelUID) {
         // Remove any state when unlinking (that way if it is relinked - we get it)
         final RioHandlerCallback callback = getProtocolHandler().getCallback();
-        if (callback instanceof StatefulHandlerCallback) {
-            ((StatefulHandlerCallback) callback).removeState(channelUID.getId());
+        if (callback instanceof StatefulHandlerCallback handlerCallback) {
+            handlerCallback.removeState(channelUID.getId());
         }
         super.channelUnlinked(channelUID);
     }

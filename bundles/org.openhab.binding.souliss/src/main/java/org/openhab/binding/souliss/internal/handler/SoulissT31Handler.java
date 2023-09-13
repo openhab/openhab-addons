@@ -119,8 +119,8 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                     }
                     break;
                 case SoulissBindingConstants.T31_SETPOINT_CHANNEL:
-                    if (command instanceof QuantityType<?>) {
-                        int uu = HalfFloatUtils.fromFloat(((QuantityType<?>) command).floatValue());
+                    if (command instanceof QuantityType<?> quantityCommand) {
+                        int uu = HalfFloatUtils.fromFloat(quantityCommand.floatValue());
                         byte b2 = (byte) (uu >> 8);
                         byte b1 = (byte) uu;
                         // setpoint command
@@ -151,7 +151,7 @@ public class SoulissT31Handler extends SoulissGenericHandler {
         this.updateState(SoulissBindingConstants.T31_BUTTON_CHANNEL, OnOffType.OFF);
 
         super.setLastStatusStored();
-        if (state instanceof StringType) {
+        if (state instanceof StringType stringState) {
             switch (state.toString()) {
                 case SoulissBindingConstants.T31_FANLOW_MESSAGE_FAN_CHANNEL:
                 case SoulissBindingConstants.T31_FANMEDIUM_MESSAGE_FAN_CHANNEL:
@@ -159,48 +159,48 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.T31_FANAUTO_MESSAGE_FAN_CHANNEL:
                 case SoulissBindingConstants.T31_FANOFF_MESSAGE_FAN_CHANNEL:
                     if (!fanStateValue.equals(state)) {
-                        this.updateState(SoulissBindingConstants.T31_FAN_CHANNEL, (StringType) state);
-                        fanStateValue = (StringType) state;
+                        this.updateState(SoulissBindingConstants.T31_FAN_CHANNEL, stringState);
+                        fanStateValue = stringState;
                     }
                     break;
 
                 case SoulissBindingConstants.T31_HEATINGMODE_MESSAGE_MODE_CHANNEL:
                     if (!modeStateValue.equals(state)) {
-                        this.updateState(SoulissBindingConstants.T31_MODE_CHANNEL, (StringType) state);
-                        modeStateValue = (StringType) state;
+                        this.updateState(SoulissBindingConstants.T31_MODE_CHANNEL, stringState);
+                        modeStateValue = stringState;
                     }
                     break;
 
                 case SoulissBindingConstants.T31_COOLINGMODE_MESSAGE_MODE_CHANNEL:
                     if (!modeStateValue.equals(state)) {
-                        this.updateState(SoulissBindingConstants.T31_MODE_CHANNEL, (StringType) state);
-                        modeStateValue = (StringType) state;
+                        this.updateState(SoulissBindingConstants.T31_MODE_CHANNEL, stringState);
+                        modeStateValue = stringState;
                     }
                     break;
 
                 case SoulissBindingConstants.T31_OFF_MESSAGE_SYSTEM_CHANNEL:
                     if (!powerState.equals(state)) {
                         this.updateState(SoulissBindingConstants.T31_SYSTEM_CHANNEL, OnOffType.OFF);
-                        powerState = (StringType) state;
+                        powerState = stringState;
                     }
                     break;
                 case SoulissBindingConstants.T31_ON_MESSAGE_SYSTEM_CHANNEL:
                     if (!powerState.equals(state)) {
                         this.updateState(SoulissBindingConstants.T31_SYSTEM_CHANNEL, OnOffType.ON);
-                        powerState = (StringType) state;
+                        powerState = stringState;
                     }
                     break;
 
                 case SoulissBindingConstants.T31_ON_MESSAGE_FIRE_CHANNEL:
                     if (!fireState.equals(state)) {
                         this.updateState(SoulissBindingConstants.T31_FIRE_CHANNEL, OnOffType.ON);
-                        fireState = (StringType) state;
+                        fireState = stringState;
                     }
                     break;
                 case SoulissBindingConstants.T31_OFF_MESSAGE_FIRE_CHANNEL:
                     if (!fireState.equals(state)) {
                         this.updateState(SoulissBindingConstants.T31_FIRE_CHANNEL, OnOffType.OFF);
-                        fireState = (StringType) state;
+                        fireState = stringState;
                     }
                     break;
 

@@ -121,8 +121,8 @@ public abstract class PilightBaseHandler extends BaseThingHandler {
         if (bridge != null) {
             @Nullable
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof PilightBridgeHandler) {
-                return (PilightBridgeHandler) handler;
+            if (handler instanceof PilightBridgeHandler bridgeHandler) {
+                return bridgeHandler;
             }
         }
         return null;

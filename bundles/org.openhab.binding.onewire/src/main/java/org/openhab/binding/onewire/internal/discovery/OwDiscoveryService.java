@@ -142,8 +142,8 @@ public class OwDiscoveryService extends AbstractDiscoveryService implements Thin
 
     @Override
     public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof OwserverBridgeHandler) {
-            this.bridgeHandler = (OwserverBridgeHandler) thingHandler;
+        if (thingHandler instanceof OwserverBridgeHandler serverBridgeHandler) {
+            this.bridgeHandler = serverBridgeHandler;
         }
     }
 

@@ -339,8 +339,8 @@ public class NeeoDeviceHandler extends BaseThingHandler {
         final Bridge parent = getBridge();
         if (parent != null) {
             final BridgeHandler handler = parent.getHandler();
-            if (handler instanceof NeeoRoomHandler) {
-                return ((NeeoRoomHandler) handler);
+            if (handler instanceof NeeoRoomHandler roomHandler) {
+                return roomHandler;
             }
         }
         return null;

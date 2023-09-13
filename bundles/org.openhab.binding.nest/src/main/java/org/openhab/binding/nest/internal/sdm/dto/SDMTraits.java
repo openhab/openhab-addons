@@ -211,7 +211,7 @@ public class SDMTraits {
 
     public enum SDMTemperatureScale {
         CELSIUS,
-        FAHRENHEIT;
+        FAHRENHEIT
     }
 
     /**

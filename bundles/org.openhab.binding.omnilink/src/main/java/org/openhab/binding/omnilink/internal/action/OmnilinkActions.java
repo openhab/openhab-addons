@@ -42,8 +42,8 @@ public class OmnilinkActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof OmnilinkBridgeHandler) {
-            this.handler = (OmnilinkBridgeHandler) handler;
+        if (handler instanceof OmnilinkBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 

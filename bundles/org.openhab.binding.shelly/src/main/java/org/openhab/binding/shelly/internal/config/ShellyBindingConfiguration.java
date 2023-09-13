@@ -55,9 +55,9 @@ public class ShellyBindingConfiguration {
                     break;
                 case CONFIG_AUTOCOIOT:
                     Object value = e.getValue();
-                    if (value instanceof String) {
+                    if (value instanceof String stringValue) {
                         // support config through shelly.cfg
-                        autoCoIoT = ((String) value).equalsIgnoreCase("true");
+                        autoCoIoT = "true".equalsIgnoreCase(stringValue);
                     } else {
                         autoCoIoT = (boolean) value;
                     }

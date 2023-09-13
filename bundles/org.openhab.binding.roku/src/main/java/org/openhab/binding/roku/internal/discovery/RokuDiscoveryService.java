@@ -59,8 +59,13 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.roku")
 public class RokuDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(RokuDiscoveryService.class);
-    private static final String ROKU_DISCOVERY_MESSAGE = "M-SEARCH * HTTP/1.1\r\n" + "Host: 239.255.255.250:1900\r\n"
-            + "Man: \"ssdp:discover\"\r\n" + "ST: roku:ecp\r\n" + "\r\n";
+    private static final String ROKU_DISCOVERY_MESSAGE = """
+            M-SEARCH * HTTP/1.1\r
+            Host: 239.255.255.250:1900\r
+            Man: "ssdp:discover"\r
+            ST: roku:ecp\r
+            \r
+            """;
 
     private static final Pattern USN_PATTERN = Pattern.compile("^(uuid:roku:)?ecp:([0-9a-zA-Z]{1,16})");
 

@@ -45,8 +45,8 @@ public class DataConverters {
                 value = Math.min(max, currentValue + 1);
             } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
                 value = Math.max(min, currentValue - 1);
-            } else if (command instanceof DecimalType) {
-                value = ((DecimalType) command).intValue();
+            } else if (command instanceof DecimalType decimalCommand) {
+                value = decimalCommand.intValue();
             } else {
                 throw new NumberFormatException("Command '" + command + "' not supported");
             }

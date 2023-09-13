@@ -41,9 +41,9 @@ public class NeeoRecipesDeserializer implements JsonDeserializer<@Nullable NeeoR
         Objects.requireNonNull(jsonElement, "jsonElement cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
 
-        if (jsonElement instanceof JsonObject) {
+        if (jsonElement instanceof JsonObject jsonObject) {
             final List<NeeoRecipe> recipes = new ArrayList<>();
-            for (Map.Entry<String, JsonElement> entry : ((JsonObject) jsonElement).entrySet()) {
+            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 final NeeoRecipe recipe = context.deserialize(entry.getValue(), NeeoRecipe.class);
                 recipes.add(recipe);
             }

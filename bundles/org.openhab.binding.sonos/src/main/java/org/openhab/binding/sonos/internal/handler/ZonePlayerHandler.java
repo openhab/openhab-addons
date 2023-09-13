@@ -1823,8 +1823,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 newValue = "100";
             } else if (command == OnOffType.OFF) {
                 newValue = "0";
-            } else if (command instanceof DecimalType) {
-                newValue = String.valueOf(((DecimalType) command).intValue());
+            } else if (command instanceof DecimalType decimalCommand) {
+                newValue = String.valueOf(decimalCommand.intValue());
             } else {
                 return;
             }
@@ -1880,8 +1880,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             } else if (command == IncreaseDecreaseType.DECREASE && currentValue != null) {
                 int i = Integer.valueOf(currentValue);
                 newValue = String.valueOf(Math.max(minValue, i - 1));
-            } else if (command instanceof DecimalType) {
-                newValue = String.valueOf(((DecimalType) command).intValue());
+            } else if (command instanceof DecimalType decimalCommand) {
+                newValue = String.valueOf(decimalCommand.intValue());
             }
         }
         return newValue;
@@ -2317,8 +2317,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             Thing thing = localThingRegistry.get(new ThingUID(supportedThingType, remotePlayerName));
             if (thing != null) {
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof ZonePlayerHandler) {
-                    return (ZonePlayerHandler) handler;
+                if (handler instanceof ZonePlayerHandler zonePlayerHandler) {
+                    return zonePlayerHandler;
                 }
             }
         }
@@ -2326,8 +2326,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             if (SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(aThing.getThingTypeUID())
                     && aThing.getConfiguration().get(ZonePlayerConfiguration.UDN).equals(remotePlayerName)) {
                 ThingHandler handler = aThing.getHandler();
-                if (handler instanceof ZonePlayerHandler) {
-                    return (ZonePlayerHandler) handler;
+                if (handler instanceof ZonePlayerHandler zonePlayerHandler) {
+                    return zonePlayerHandler;
                 }
             }
         }
@@ -2462,8 +2462,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void snoozeAlarm(Command command) {
-        if (isAlarmRunning() && command instanceof DecimalType) {
-            int minutes = ((DecimalType) command).intValue();
+        if (isAlarmRunning() && command instanceof DecimalType decimalCommand) {
+            int minutes = decimalCommand.intValue();
 
             Map<String, String> inputs = new HashMap<>();
 
@@ -3164,11 +3164,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void playTrack(Command command) {
-        if (command instanceof DecimalType) {
+        if (command instanceof DecimalType decimalCommand) {
             try {
                 ZonePlayerHandler coordinator = getCoordinatorHandler();
 
-                String trackNumber = String.valueOf(((DecimalType) command).intValue());
+                String trackNumber = String.valueOf(decimalCommand.intValue());
 
                 coordinator.setCurrentURI(QUEUE_URI + coordinator.getUDN() + "#0", "");
 
@@ -3315,9 +3315,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * Use empty String "" to switch the sleep timer off
      */
     public void setSleepTimer(Command command) {
-        if (command instanceof DecimalType) {
+        if (command instanceof DecimalType decimalCommand) {
             this.service.invokeAction(this, SERVICE_AV_TRANSPORT, ACTION_CONFIGURE_SLEEP_TIMER, Map.of("InstanceID",
-                    "0", "NewSleepTimerDuration", sleepSecondsToTimeStr(((DecimalType) command).longValue())));
+                    "0", "NewSleepTimerDuration", sleepSecondsToTimeStr(decimalCommand.longValue())));
         }
     }
 

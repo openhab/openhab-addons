@@ -43,8 +43,8 @@ public class SatelEventLogActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SatelEventLogHandler) {
-            this.handler = (SatelEventLogHandler) handler;
+        if (handler instanceof SatelEventLogHandler logHandler) {
+            this.handler = logHandler;
         }
     }
 

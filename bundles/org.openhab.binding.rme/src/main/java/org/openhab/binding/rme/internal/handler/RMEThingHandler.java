@@ -102,9 +102,9 @@ public class RMEThingHandler extends SerialThingHandler {
                         }
                         case MODE: {
                             StringType stringType = null;
-                            if (matcher.group(i).equals("0")) {
+                            if ("0".equals(matcher.group(i))) {
                                 stringType = MANUAL;
-                            } else if (matcher.group(i).equals("1")) {
+                            } else if ("1".equals(matcher.group(i))) {
                                 stringType = AUTOMATIC;
                             }
                             if (stringType != null) {
@@ -115,9 +115,9 @@ public class RMEThingHandler extends SerialThingHandler {
                         }
                         case SOURCE: {
                             StringType stringType = null;
-                            if (matcher.group(i).equals("0")) {
+                            if ("0".equals(matcher.group(i))) {
                                 stringType = RAIN;
-                            } else if (matcher.group(i).equals("1")) {
+                            } else if ("1".equals(matcher.group(i))) {
                                 stringType = CITY;
                             }
                             if (stringType != null) {
@@ -127,10 +127,10 @@ public class RMEThingHandler extends SerialThingHandler {
                             break;
                         }
                         default:
-                            if (matcher.group(i).equals("0")) {
+                            if ("0".equals(matcher.group(i))) {
                                 updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()),
                                         OnOffType.OFF);
-                            } else if (matcher.group(i).equals("1")) {
+                            } else if ("1".equals(matcher.group(i))) {
                                 updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()),
                                         OnOffType.ON);
                             }

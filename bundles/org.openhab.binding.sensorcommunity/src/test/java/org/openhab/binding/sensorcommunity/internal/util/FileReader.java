@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class FileReader {
 
     public static @Nullable String readFileInString(String filename) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "CP1252"));) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "CP1252"))) {
             StringBuffer buf = new StringBuffer();
             String sCurrentLine;
 

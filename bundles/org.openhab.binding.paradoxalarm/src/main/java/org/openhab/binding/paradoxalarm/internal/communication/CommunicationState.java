@@ -225,7 +225,7 @@ public enum CommunicationState implements IResponseReceiver {
         }
 
         private byte[] generateInitializationRequest(byte[] initializationMessage, byte[] pcPassword) {
-            byte[] message7 = new byte[] {
+            return new byte[] {
                     // Initialization command
                     0x00,
 
@@ -282,7 +282,6 @@ public enum CommunicationState implements IResponseReceiver {
 
                     // Checksum
                     0x00 };
-            return message7;
         }
 
         @Override
@@ -290,11 +289,10 @@ public enum CommunicationState implements IResponseReceiver {
             // UGLY - this is the handling of ghost packet which appears after the logon sequence
             // Read ghost packet affter 300ms then continue with normal flow
             communicator.getScheduler().schedule(() -> {
-                if (communicator instanceof GenericCommunicator) {
+                if (communicator instanceof GenericCommunicator genericCommunicator) {
                     try {
-                        GenericCommunicator genCommunicator = (GenericCommunicator) communicator;
                         byte[] value = new byte[256];
-                        int packetLength = genCommunicator.getRx().read(value);
+                        int packetLength = genericCommunicator.getRx().read(value);
                         logger.debug("Reading ghost packet with length={}", packetLength);
                         ParadoxUtil.printPacket("Reading ghost packet", value);
                     } catch (IOException e) {
@@ -315,8 +313,7 @@ public enum CommunicationState implements IResponseReceiver {
 
         @Override
         protected void runPhase(IParadoxInitialLoginCommunicator communicator, Object... args) {
-            if (communicator instanceof IParadoxCommunicator) {
-                IParadoxCommunicator comm = (IParadoxCommunicator) communicator;
+            if (communicator instanceof IParadoxCommunicator comm) {
                 comm.initializeData();
             }
             nextState().runPhase(communicator);

@@ -40,11 +40,10 @@ public class AtomicStringTypeAdapter extends TypeAdapter<AtomicReference<String>
 
         JsonElement je = JsonParser.parseReader(in);
 
-        if (je instanceof JsonPrimitive) {
+        if (je instanceof JsonPrimitive jsonPrimitive) {
             value = new AtomicReference<>();
-            value.set(((JsonPrimitive) je).getAsString());
-        } else if (je instanceof JsonObject) {
-            JsonObject jsonObject = (JsonObject) je;
+            value.set(jsonPrimitive.getAsString());
+        } else if (je instanceof JsonObject jsonObject) {
             value = new AtomicReference<>();
             value.set(jsonObject.get("value").getAsString());
         }

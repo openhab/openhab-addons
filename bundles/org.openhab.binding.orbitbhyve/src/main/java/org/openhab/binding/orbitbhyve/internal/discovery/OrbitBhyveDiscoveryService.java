@@ -14,7 +14,6 @@ package org.openhab.binding.orbitbhyve.internal.discovery;
 
 import static org.openhab.binding.orbitbhyve.internal.OrbitBhyveBindingConstants.THING_TYPE_SPRINKLER;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,8 +78,8 @@ public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler thingHandler) {
-        if (thingHandler instanceof OrbitBhyveBridgeHandler) {
-            bridgeHandler = (OrbitBhyveBridgeHandler) thingHandler;
+        if (thingHandler instanceof OrbitBhyveBridgeHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
         }
     }
 
@@ -145,6 +144,6 @@ public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return Collections.singleton(THING_TYPE_SPRINKLER);
+        return Set.of(THING_TYPE_SPRINKLER);
     }
 }

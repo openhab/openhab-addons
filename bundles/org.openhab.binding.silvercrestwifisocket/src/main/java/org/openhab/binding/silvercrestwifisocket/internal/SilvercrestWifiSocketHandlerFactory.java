@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.silvercrestwifisocket.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openhab.binding.silvercrestwifisocket.internal.exceptions.MacAddressNotValidException;
@@ -37,8 +36,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.silvercrestwifisocket")
 public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(SilvercrestWifiSocketBindingConstants.THING_TYPE_WIFI_SOCKET);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(SilvercrestWifiSocketBindingConstants.THING_TYPE_WIFI_SOCKET);
 
     private final Logger logger = LoggerFactory.getLogger(SilvercrestWifiSocketHandlerFactory.class);
 

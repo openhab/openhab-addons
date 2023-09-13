@@ -180,8 +180,8 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         }
 
         if (id.equals(RioConstants.CHANNEL_SYSLANG)) {
-            if (command instanceof StringType) {
-                getProtocolHandler().setSystemLanguage(((StringType) command).toString());
+            if (command instanceof StringType stringCommand) {
+                getProtocolHandler().setSystemLanguage(stringCommand.toString());
             } else {
                 logger.debug("Received a SYSTEM LANGUAGE channel command with a non StringType: {}", command);
             }
@@ -489,8 +489,8 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         if (childHandler == null) {
             throw new IllegalArgumentException("childHandler cannot be null");
         }
-        if (childHandler instanceof RioSourceHandler) {
-            final RioHandlerCallback callback = ((RioSourceHandler) childHandler).getRioHandlerCallback();
+        if (childHandler instanceof RioSourceHandler sourceHandler) {
+            final RioHandlerCallback callback = sourceHandler.getRioHandlerCallback();
             if (callback != null) {
                 if (added) {
                     callback.addListener(RioConstants.CHANNEL_SOURCENAME, handlerCallbackListener);

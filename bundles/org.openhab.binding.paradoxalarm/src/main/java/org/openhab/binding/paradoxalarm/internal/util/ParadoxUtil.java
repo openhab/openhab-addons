@@ -129,8 +129,7 @@ public class ParadoxUtil {
             for (byte[] array : arrays) {
                 outputStream.write(array);
             }
-            byte[] byteArray = outputStream.toByteArray();
-            return byteArray;
+            return outputStream.toByteArray();
         } catch (IOException e) {
             LOGGER.warn("Exception merging arrays:", e);
             return new byte[0];

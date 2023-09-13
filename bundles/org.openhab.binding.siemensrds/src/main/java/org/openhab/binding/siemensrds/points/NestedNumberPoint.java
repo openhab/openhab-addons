@@ -72,8 +72,8 @@ public class NestedNumberPoint extends BasePoint {
     @Override
     public void refreshValueFrom(BasePoint from) {
         super.refreshValueFrom(from);
-        if (from instanceof NestedNumberPoint) {
-            NestedNumberValue fromInner = ((NestedNumberPoint) from).inner;
+        if (from instanceof NestedNumberPoint point) {
+            NestedNumberValue fromInner = point.inner;
             NestedNumberValue thisInner = this.inner;
             if (thisInner != null && fromInner != null) {
                 thisInner.value = fromInner.value;

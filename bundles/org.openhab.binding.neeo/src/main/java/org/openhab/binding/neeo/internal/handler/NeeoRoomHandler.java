@@ -317,8 +317,8 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
         final Bridge parent = getBridge();
         if (parent != null) {
             final BridgeHandler handler = parent.getHandler();
-            if (handler instanceof NeeoBrainHandler) {
-                return ((NeeoBrainHandler) handler);
+            if (handler instanceof NeeoBrainHandler brainHandler) {
+                return brainHandler;
             }
         }
         return null;

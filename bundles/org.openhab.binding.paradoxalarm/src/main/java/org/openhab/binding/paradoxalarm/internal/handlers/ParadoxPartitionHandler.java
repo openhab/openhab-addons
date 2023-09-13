@@ -121,7 +121,6 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
             return null;
         }
 
-        Partition partition = partitions.get(index);
-        return partition;
+        return partitions.get(index);
     }
 }

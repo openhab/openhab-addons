@@ -75,8 +75,8 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof OmnilinkBridgeHandler) {
-            bridgeHandler = (OmnilinkBridgeHandler) handler;
+        if (handler instanceof OmnilinkBridgeHandler omnilinkBridgeHandler) {
+            bridgeHandler = omnilinkBridgeHandler;
         }
     }
 

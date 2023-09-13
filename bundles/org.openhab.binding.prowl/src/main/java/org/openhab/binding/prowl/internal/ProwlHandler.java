@@ -15,7 +15,7 @@ package org.openhab.binding.prowl.internal;
 import static org.openhab.binding.prowl.internal.ProwlBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -113,7 +113,7 @@ public class ProwlHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(ProwlActions.class);
+        return List.of(ProwlActions.class);
     }
 
     public void pushNotification(@Nullable String event, @Nullable String description) {

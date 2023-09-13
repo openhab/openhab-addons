@@ -259,7 +259,7 @@ public class Shelly2RpcSocket {
                         } else {
                             for (Shelly2NotifyEvent e : events.params.events) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                                    String address = getString(e.data.addr).replaceAll(":", "");
+                                    String address = getString(e.data.addr).replace(":", "");
                                     if (thingTable != null && thingTable.findThing(address) != null) {
                                         if (thingTable != null) { // known device
                                             ShellyThingInterface thing = thingTable.getThing(address);
