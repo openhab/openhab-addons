@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,15 +30,16 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class WeatherCapability extends RestCapability<WeatherApi> {
+public class WeatherCapability extends BufferedWeatherCapability {
+    private final static int MIN_DATA_VALIDITY_S = 3;
     private final Logger logger = LoggerFactory.getLogger(WeatherCapability.class);
 
     public WeatherCapability(CommonInterface handler) {
-        super(handler, WeatherApi.class);
+        super(handler, MIN_DATA_VALIDITY_S, ChronoUnit.SECONDS);
     }
 
     @Override
-    protected List<NAObject> updateReadings(WeatherApi api) {
+    protected List<NAObject> getFreshData(WeatherApi api) {
         try {
             return List.of(owned ? api.getOwnedStationData(handler.getId()) : api.getStationData(handler.getId()));
         } catch (NetatmoException e) {
