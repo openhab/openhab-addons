@@ -32,6 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.MercedesMeCommandOptionProvider;
+import org.openhab.binding.mercedesme.internal.MercedesMeDynamicStateDescriptionProvider;
 import org.openhab.binding.mercedesme.internal.MercedesMeStateOptionProvider;
 import org.openhab.binding.mercedesme.internal.actions.VehicleActions;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
@@ -107,6 +108,7 @@ public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
+    MercedesMeDynamicStateDescriptionProvider mmdsdp;
     private Optional<AccountHandler> accountHandler = Optional.empty();
     private Optional<QuantityType<?>> rangeElectric = Optional.empty();
     private Optional<VehicleConfiguration> config = Optional.empty();
@@ -119,11 +121,14 @@ public class VehicleHandler extends BaseThingHandler {
     private Map<String, State> hvacGroupValueStorage = new HashMap<String, State>();
     private String vehicleType = NOT_SET;
 
-    public VehicleHandler(Thing thing, MercedesMeCommandOptionProvider cop, MercedesMeStateOptionProvider sop) {
+    public VehicleHandler(Thing thing, MercedesMeCommandOptionProvider cop, MercedesMeStateOptionProvider sop,
+            MercedesMeDynamicStateDescriptionProvider dsdp) {
         super(thing);
         vehicleType = thing.getThingTypeUID().getAsString();
         mmcop = cop;
         mmsop = sop;
+        mmdsdp = dsdp;
+
     }
 
     @Override
@@ -954,6 +959,12 @@ public class VehicleHandler extends BaseThingHandler {
             if (GROUP_HVAC.equals(csm.getGroup())) {
                 hvacGroupValueStorage.put(csm.getChannel(), csm.getState());
             }
+            if ("mileage".equals(csm.getChannel())) {
+                ChannelUID cuid = new ChannelUID(thing.getUID(), csm.getGroup(), csm.getChannel());
+                logger.info("Set new pattern for mileage");
+                mmdsdp.setStatePattern(cuid, "%.0f mi");
+            }
+
             updateState(new ChannelUID(thing.getUID(), csm.getGroup(), csm.getChannel()), csm.getState());
         } else {
             logger.trace("Update for {} temporarely blocked", csm.getGroup());

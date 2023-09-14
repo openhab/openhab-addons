@@ -13,6 +13,7 @@
 package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.openhab.binding.mercedesme.internal.Constants.KILOMETRE_UNIT;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -20,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
@@ -30,6 +33,7 @@ import org.openhab.binding.mercedesme.internal.actions.VehicleActions;
 import org.openhab.binding.mercedesme.internal.dto.PINRequest;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 
 /**
  * The {@link ConfigurationTest} Test configuration settings
@@ -49,6 +53,8 @@ class ConfigurationTest {
     public void testThingUID() {
         System.out.println(Constants.THING_TYPE_BEV.getId());
         System.out.println(Constants.KILOMETRE_UNIT);
+        QuantityType<Length> state = QuantityType.valueOf(12345, KILOMETRE_UNIT);
+        System.out.println(state);
     }
 
     @Test

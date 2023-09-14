@@ -59,17 +59,21 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final MercedesMeDiscoveryService discoveryService;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
+    private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
     @Activate
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
             final @Reference LocaleProvider lp, final @Reference MercedesMeCommandOptionProvider cop,
-            final @Reference MercedesMeStateOptionProvider sop) {
+            final @Reference MercedesMeStateOptionProvider sop,
+            final @Reference MercedesMeDynamicStateDescriptionProvider dsdp) {
         this.storageService = storageService;
 
         localeProvider = lp;
         mmcop = cop;
         mmsop = sop;
+        mmdsdp = dsdp;
+        logger.info("DSDP {} received", dsdp);
 
         httpClient = hcf.createHttpClient(Constants.BINDING_ID);
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
@@ -98,7 +102,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             return new AccountHandler((Bridge) thing, discoveryService, httpClient, localeProvider, storageService);
         } else if (THING_TYPE_BEV.equals(thingTypeUID) || THING_TYPE_COMB.equals(thingTypeUID)
                 || THING_TYPE_HYBRID.equals(thingTypeUID)) {
-            return new VehicleHandler(thing, mmcop, mmsop);
+            return new VehicleHandler(thing, mmcop, mmsop, mmdsdp);
         }
         return null;
     }
