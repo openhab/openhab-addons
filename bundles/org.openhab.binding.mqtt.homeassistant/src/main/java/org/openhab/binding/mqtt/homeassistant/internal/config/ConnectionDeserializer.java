@@ -43,9 +43,11 @@ public class ConnectionDeserializer implements JsonDeserializer<Connection> {
         try {
             list = json.getAsJsonArray();
         } catch (IllegalStateException e) {
-            throw new JsonParseException("Cannot parse JSON array. Each connection must be defined as array with two "
-                    + "elements: connection_type, connection identifier. For example: \"connections\": [[\"mac\", "
-                    + "\"02:5b:26:a8:dc:12\"]]", e);
+            throw new JsonParseException("""
+                    Cannot parse JSON array. Each connection must be defined as array with two \
+                    elements: connection_type, connection identifier. For example: "connections": [["mac", \
+                    "02:5b:26:a8:dc:12"]]\
+                    """, e);
         }
         if (list.size() != 2) {
             throw new JsonParseException("Connection information must be a tuple, but has " + list.size()

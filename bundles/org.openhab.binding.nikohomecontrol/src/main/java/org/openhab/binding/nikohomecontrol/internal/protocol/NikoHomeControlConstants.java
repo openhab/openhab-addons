@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NikoHomeControlConstants {
 
     // Action types abstracted from NhcI and NhcII action types
-    public static enum ActionType {
+    public enum ActionType {
         TRIGGER,
         RELAY,
         DIMMER,

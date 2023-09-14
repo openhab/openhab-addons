@@ -267,8 +267,8 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
                 break;
 
             case CHANNEL_COMMAND_ID:
-                if (type instanceof DecimalType) {
-                    commandId = (byte) ((DecimalType) type).intValue();
+                if (type instanceof DecimalType decimalCommand) {
+                    commandId = (byte) decimalCommand.intValue();
                 } else {
                     throw new RFXComInvalidStateException(channelId, type.toString(),
                             "Channel only supports DecimalType");

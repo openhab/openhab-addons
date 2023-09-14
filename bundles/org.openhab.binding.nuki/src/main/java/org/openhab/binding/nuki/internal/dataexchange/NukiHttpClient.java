@@ -73,8 +73,7 @@ public class NukiHttpClient {
     private NukiBaseResponse handleException(Exception e) {
         if (e instanceof ExecutionException) {
             Throwable cause = e.getCause();
-            if (cause instanceof HttpResponseException) {
-                HttpResponseException causeException = (HttpResponseException) cause;
+            if (cause instanceof HttpResponseException causeException) {
                 int status = causeException.getResponse().getStatus();
                 String reason = causeException.getResponse().getReason();
                 logger.debug("HTTP Response Exception! Status[{}] - Reason[{}]! Check your API Token!", status, reason);

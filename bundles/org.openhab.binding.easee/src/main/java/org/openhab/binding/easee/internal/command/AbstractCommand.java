@@ -52,14 +52,14 @@ import com.google.gson.ToNumberPolicy;
 @NonNullByDefault
 public abstract class AbstractCommand extends BufferingResponseListener implements EaseeCommand {
 
-    public static enum RetryOnFailure {
+    public enum RetryOnFailure {
         YES,
-        NO;
+        NO
     }
 
-    public static enum ProcessFailureResponse {
+    public enum ProcessFailureResponse {
         YES,
-        NO;
+        NO
     }
 
     /**

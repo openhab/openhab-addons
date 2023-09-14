@@ -62,7 +62,7 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
      * @author Michael Ochel - Initial contribution
      * @author Matthias Siegele - Initial contribution
      */
-    public static enum SupportedThingTypes {
+    public enum SupportedThingTypes {
         // ThingType, responsible ThingHanlder, Device config-description with power-sensors
         GE(DeviceHandler.class.getSimpleName(), true),
         GR(DeviceHandler.class.getSimpleName(), false),
