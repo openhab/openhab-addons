@@ -28,16 +28,16 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Button {
     private @Nullable @SerializedName("last_event") String lastEvent;
+    private @Nullable @SerializedName("button_report") ButtonReport buttonReport;
 
     /**
      * @return the last button event as an enum.
      * @throws IllegalArgumentException if lastEvent is null or bad.
      */
     public ButtonEventType getLastEvent() throws IllegalArgumentException {
+        ButtonReport buttonReport = this.buttonReport;
         String lastEvent = this.lastEvent;
-        if (Objects.nonNull(lastEvent)) {
-            return ButtonEventType.valueOf(lastEvent.toUpperCase());
-        }
-        throw new IllegalArgumentException("lastEvent field is null");
+        return ButtonEventType.valueOf((Objects.nonNull(buttonReport) ? buttonReport.getEvent()
+                : Objects.nonNull(lastEvent) ? lastEvent : "missing field").toUpperCase());
     }
 }

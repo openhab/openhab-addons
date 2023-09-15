@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class RelativeRotary {
-    private @Nullable @SerializedName("last_event") RotationEvent lastEvent;
+    private @Nullable @SerializedName(value = "last_event", alternate = { "rotary_report" }) RotationEvent lastEvent;
 
     public State getActionState() {
         RotationEvent lastEvent = getLastEvent();

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2;
 
+import java.time.Instant;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +29,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class RotationEvent {
+    private @Nullable Instant updated;
     private @Nullable String action;
     private @Nullable Rotation rotation;
 
@@ -39,6 +41,10 @@ public class RotationEvent {
     public State getActionState() {
         RotationEventType action = getAction();
         return Objects.nonNull(action) ? new StringType(action.name()) : UnDefType.NULL;
+    }
+
+    public @Nullable Instant getLastChanged() {
+        return updated;
     }
 
     public @Nullable Rotation getRotation() {
