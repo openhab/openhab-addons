@@ -53,6 +53,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -154,6 +155,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Clip2StateDescriptionProvider stateDescriptionProvider;
+    private @NonNullByDefault({}) TimeZoneProvider timeZoneProvider; // TODO FIX THIS FROM PR #15552 !!!
 
     private String resourceId = "?";
     private Resource thisResource;
@@ -844,6 +846,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case MOTION:
+            case CAMERA_MOTION:
                 updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
@@ -867,6 +870,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case SCENE:
                 updateState(CHANNEL_2_SCENE, resource.getSceneState(), fullUpdate);
+                break;
+
+            case CONTACT:
+                updateState(CHANNEL_2_SECURITY_CONTACT, resource.getContactState(), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED,
+                        resource.getContactLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                break;
+
+            case TAMPER:
+                updateState(CHANNEL_2_SECURITY_TAMPER, resource.getTamperState(), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_TAMPER_LAST_UPDATED,
+                        resource.getTamperLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
                 break;
 
             default:

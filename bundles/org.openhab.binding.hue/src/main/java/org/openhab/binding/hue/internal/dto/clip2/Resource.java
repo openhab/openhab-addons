@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,13 +27,17 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.ContactStateType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.TamperStateType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -93,6 +100,8 @@ public class Resource {
     private @Nullable List<ResourceReference> children;
     private @Nullable JsonElement status;
     private @Nullable @SuppressWarnings("unused") Dynamics dynamics;
+    private @Nullable @SerializedName("contact-report") ContactReport contactReport;
+    private @Nullable @SerializedName("tamper-reports") List<TamperReport> tamperReports;
 
     /**
      * Constructor
@@ -291,6 +300,21 @@ public class Resource {
             }
         }
         return UnDefType.NULL;
+    }
+
+    public State getContactLastUpdatedState(ZoneId zoneId) {
+        ContactReport contactReport = this.contactReport;
+        return Objects.nonNull(contactReport)
+                ? new DateTimeType(ZonedDateTime.ofInstant(contactReport.getLastChanged(), zoneId))
+                : UnDefType.NULL;
+    }
+
+    public State getContactState() {
+        ContactReport contactReport = this.contactReport;
+        return Objects.nonNull(contactReport) ? ContactStateType.CONTACT == contactReport.getContactState()
+                // TODO check opened/closed vs contact/no_contact polarity
+                ? OpenClosedType.CLOSED
+                : OpenClosedType.OPEN : UnDefType.NULL;
     }
 
     public int getControlId() {
@@ -501,6 +525,26 @@ public class Resource {
             return status.getAsJsonObject();
         }
         return new JsonObject();
+    }
+
+    public State getTamperLastUpdatedState(ZoneId zoneId) {
+        List<TamperReport> tamperReports = this.tamperReports;
+        if (Objects.nonNull(tamperReports)) {
+            List<Instant> changes = tamperReports.stream().map(t -> t.getLastChanged()).sorted().toList();
+            return changes.isEmpty() ? UnDefType.UNDEF
+                    : new DateTimeType(ZonedDateTime.ofInstant(changes.get(changes.size() - 1), zoneId));
+        }
+        return UnDefType.NULL;
+    }
+
+    public State getTamperState() {
+        List<TamperReport> tamperReports = this.tamperReports;
+        return Objects.nonNull(tamperReports)
+                ? tamperReports.stream().anyMatch(t -> TamperStateType.TAMPERED == t.getTamperState())
+                        // TODO check opened/closed vs. tamper/no-tamper polarity
+                        ? OpenClosedType.OPEN
+                        : OpenClosedType.CLOSED
+                : UnDefType.NULL;
     }
 
     public @Nullable Temperature getTemperature() {

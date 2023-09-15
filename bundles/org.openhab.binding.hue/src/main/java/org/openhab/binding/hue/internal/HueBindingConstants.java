@@ -164,6 +164,10 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_COLOR_XY_ONLY = "color-xy-only";
     public static final String CHANNEL_2_DIMMING_ONLY = "dimming-only";
     public static final String CHANNEL_2_ON_OFF_ONLY = "on-off-only";
+    public static final String CHANNEL_2_SECURITY_CONTACT = "security-contact";
+    public static final String CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED = "security-contact-last-updated";
+    public static final String CHANNEL_2_SECURITY_TAMPER = "security-tamper";
+    public static final String CHANNEL_2_SECURITY_TAMPER_LAST_UPDATED = "security-tamper-last-updated";
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
