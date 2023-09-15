@@ -125,9 +125,8 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
             return;
         }
 
-        if (command instanceof OnOffType) {
-            OnOffType s = (OnOffType) command;
-            if (OnOffType.OFF.equals(s)) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (OnOffType.OFF.equals(onOffCommand)) {
                 nhcAction.execute(NHCOFF);
             } else {
                 nhcAction.execute(NHCON);
@@ -142,18 +141,16 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
             return;
         }
 
-        if (command instanceof OnOffType) {
-            OnOffType s = (OnOffType) command;
-            if (OnOffType.OFF.equals(s)) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (OnOffType.OFF.equals(onOffCommand)) {
                 nhcAction.execute(NHCOFF);
             } else {
                 nhcAction.execute(NHCON);
             }
-        } else if (command instanceof IncreaseDecreaseType) {
-            IncreaseDecreaseType s = (IncreaseDecreaseType) command;
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
             int currentValue = nhcAction.getState();
             int newValue;
-            if (IncreaseDecreaseType.INCREASE.equals(s)) {
+            if (IncreaseDecreaseType.INCREASE.equals(increaseDecreaseCommand)) {
                 newValue = currentValue + stepValue;
                 // round down to step multiple
                 newValue = newValue - newValue % stepValue;
@@ -168,12 +165,11 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                     nhcAction.execute(Integer.toString(newValue));
                 }
             }
-        } else if (command instanceof PercentType) {
-            PercentType p = (PercentType) command;
-            if (PercentType.ZERO.equals(p)) {
+        } else if (command instanceof PercentType percentCommand) {
+            if (PercentType.ZERO.equals(percentCommand)) {
                 nhcAction.execute(NHCOFF);
             } else {
-                nhcAction.execute(Integer.toString(p.intValue()));
+                nhcAction.execute(Integer.toString(percentCommand.intValue()));
             }
         }
     }
@@ -185,18 +181,17 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
             return;
         }
 
-        if (command instanceof UpDownType) {
-            UpDownType s = (UpDownType) command;
-            if (UpDownType.UP.equals(s)) {
+        if (command instanceof UpDownType upDownCommand) {
+            if (UpDownType.UP.equals(upDownCommand)) {
                 nhcAction.execute(!invert ? NHCUP : NHCDOWN);
             } else {
                 nhcAction.execute(!invert ? NHCDOWN : NHCUP);
             }
         } else if (command instanceof StopMoveType) {
             nhcAction.execute(NHCSTOP);
-        } else if (command instanceof PercentType) {
-            PercentType p = (PercentType) command;
-            nhcAction.execute(!invert ? Integer.toString(100 - p.intValue()) : Integer.toString(p.intValue()));
+        } else if (command instanceof PercentType percentCommand) {
+            nhcAction.execute(!invert ? Integer.toString(100 - percentCommand.intValue())
+                    : Integer.toString(percentCommand.intValue()));
         }
     }
 
@@ -300,8 +295,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
             properties.put("timeToClose", String.valueOf(nhcAction.getCloseTime()));
         }
 
-        if (nhcAction instanceof NhcAction2) {
-            NhcAction2 action = (NhcAction2) nhcAction;
+        if (nhcAction instanceof NhcAction2 action) {
             properties.put(PROPERTY_DEVICE_TYPE, action.getDeviceType());
             properties.put(PROPERTY_DEVICE_TECHNOLOGY, action.getDeviceTechnology());
             properties.put(PROPERTY_DEVICE_MODEL, action.getDeviceModel());

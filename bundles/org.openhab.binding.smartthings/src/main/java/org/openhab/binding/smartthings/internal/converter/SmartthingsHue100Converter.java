@@ -47,11 +47,10 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
     public String convertToSmartthings(ChannelUID channelUid, Command command) {
         String jsonMsg;
 
-        if (command instanceof HSBType) {
-            HSBType hsb = (HSBType) command;
-            double hue = hsb.getHue().doubleValue() / 3.60;
-            String value = String.format("[%.0f, %d, %d ]", hue, hsb.getSaturation().intValue(),
-                    hsb.getBrightness().intValue());
+        if (command instanceof HSBType hsbCommand) {
+            double hue = hsbCommand.getHue().doubleValue() / 3.60;
+            String value = String.format("[%.0f, %d, %d ]", hue, hsbCommand.getSaturation().intValue(),
+                    hsbCommand.getBrightness().intValue());
             jsonMsg = String.format(
                     "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"value\": %s}",
                     thingTypeId, smartthingsName, channelUid.getId(), value);
@@ -74,20 +73,20 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
         }
 
         if (acceptedChannelType != null && "Number".contentEquals(acceptedChannelType)) {
-            if (deviceValue instanceof String) {
-                double d = Double.parseDouble((String) deviceValue);
+            if (deviceValue instanceof String stringCommand) {
+                double d = Double.parseDouble(stringCommand);
                 d *= 3.6;
                 return new DecimalType(d);
             } else if (deviceValue instanceof Long) {
                 double d = ((Long) deviceValue).longValue();
                 d *= 3.6;
                 return new DecimalType(d);
-            } else if (deviceValue instanceof BigDecimal) {
-                double d = ((BigDecimal) deviceValue).doubleValue();
+            } else if (deviceValue instanceof BigDecimal decimalValue) {
+                double d = decimalValue.doubleValue();
                 d *= 3.6;
                 return new DecimalType(d);
-            } else if (deviceValue instanceof Number) {
-                double d = ((Number) deviceValue).doubleValue();
+            } else if (deviceValue instanceof Number numberValue) {
+                double d = numberValue.doubleValue();
                 d *= 3.6;
                 return new DecimalType(d);
             } else {

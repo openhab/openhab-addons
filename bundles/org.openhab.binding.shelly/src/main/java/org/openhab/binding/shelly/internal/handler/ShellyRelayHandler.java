@@ -113,8 +113,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 break;
 
             case CHANNEL_ROL_CONTROL_FAV:
-                if (command instanceof Number) {
-                    int id = ((Number) command).intValue() - 1;
+                if (command instanceof Number numberCommand) {
+                    int id = numberCommand.intValue() - 1;
                     int pos = profile.getRollerFav(id);
                     if (pos > 0) {
                         logger.debug("{}: Selecting favorite {}, position = {}", thingName, id, pos);
@@ -156,13 +156,13 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      */
     private void handleBrightness(Command command, Integer index) throws ShellyApiException {
         Integer value = -1;
-        if (command instanceof PercentType) { // Dimmer
-            value = ((PercentType) command).intValue();
-        } else if (command instanceof DecimalType) { // Number
-            value = ((DecimalType) command).intValue();
-        } else if (command instanceof OnOffType) { // Switch
+        if (command instanceof PercentType percentCommand) { // Dimmer
+            value = percentCommand.intValue();
+        } else if (command instanceof DecimalType decimalCommand) { // Number
+            value = decimalCommand.intValue();
+        } else if (command instanceof OnOffType onOffCommand) { // Switch
             logger.debug("{}: Switch output {}", thingName, command);
-            updateBrightnessChannel(index, (OnOffType) command, value);
+            updateBrightnessChannel(index, onOffCommand, value);
             return;
         } else if (command instanceof IncreaseDecreaseType) {
             ShellyShortLightStatus light = api.getLightStatus(index);
@@ -236,7 +236,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             }
 
             if (command == UpDownType.UP || command == OnOffType.ON
-                    || ((command instanceof DecimalType) && (((DecimalType) command).intValue() == 100))) {
+                    || ((command instanceof DecimalType decimalCommand) && (decimalCommand.intValue() == 100))) {
                 logger.debug("{}: Open roller", thingName);
                 int shpos = profile.getRollerFav(config.favoriteUP - 1);
                 if (shpos > 0) {
@@ -248,7 +248,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_OPEN);
                 }
             } else if (command == UpDownType.DOWN || command == OnOffType.OFF
-                    || ((command instanceof DecimalType) && (((DecimalType) command).intValue() == 0))) {
+                    || ((command instanceof DecimalType decimalCommand) && (decimalCommand.intValue() == 0))) {
                 logger.debug("{}: Closing roller", thingName);
                 int shpos = profile.getRollerFav(config.favoriteDOWN - 1);
                 if (shpos > 0) {
@@ -266,12 +266,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_STOP);
         } else {
             logger.debug("{}: Set roller to position {}", thingName, command);
-            if (command instanceof PercentType) {
-                PercentType p = (PercentType) command;
-                position = p.intValue();
-            } else if (command instanceof DecimalType) {
-                DecimalType d = (DecimalType) command;
-                position = d.intValue();
+            if (command instanceof PercentType percentCommand) {
+                position = percentCommand.intValue();
+            } else if (command instanceof DecimalType decimalCommand) {
+                position = decimalCommand.intValue();
             } else {
                 throw new IllegalArgumentException(
                         "Invalid value type for roller control/position" + command.getClass().toString());

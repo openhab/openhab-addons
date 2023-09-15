@@ -240,14 +240,14 @@ public abstract class StreamAvrConnection implements AvrConnection {
                 commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_DOWN, zone);
             } else if (command == IncreaseDecreaseType.INCREASE) {
                 commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_UP, zone);
-            } else if (command instanceof PercentType) {
+            } else if (command instanceof PercentType percentCommand) {
                 String ipControlVolume = VolumeConverter
-                        .convertFromPercentToIpControlVolume(((PercentType) command).doubleValue(), zone);
+                        .convertFromPercentToIpControlVolume(percentCommand.doubleValue(), zone);
                 commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET, zone)
                         .setParameter(ipControlVolume);
-            } else if (command instanceof DecimalType) {
-                String ipControlVolume = VolumeConverter
-                        .convertFromDbToIpControlVolume(((DecimalType) command).doubleValue(), zone);
+            } else if (command instanceof DecimalType decimalCommand) {
+                String ipControlVolume = VolumeConverter.convertFromDbToIpControlVolume(decimalCommand.doubleValue(),
+                        zone);
                 commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET, zone)
                         .setParameter(ipControlVolume);
             } else {
@@ -267,8 +267,8 @@ public abstract class StreamAvrConnection implements AvrConnection {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_CYCLIC, zone);
         } else if (command == IncreaseDecreaseType.DECREASE) {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_REVERSE, zone);
-        } else if (command instanceof StringType) {
-            String inputSourceValue = ((StringType) command).toString();
+        } else if (command instanceof StringType stringCommand) {
+            String inputSourceValue = stringCommand.toString();
             commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.INPUT_CHANNEL_SET, zone)
                     .setParameter(inputSourceValue);
         } else {
@@ -285,8 +285,8 @@ public abstract class StreamAvrConnection implements AvrConnection {
         if (command == IncreaseDecreaseType.INCREASE) {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.LISTENING_MODE_CHANGE_CYCLIC,
                     zone);
-        } else if (command instanceof StringType) {
-            String listeningModeValue = ((StringType) command).toString();
+        } else if (command instanceof StringType stringCommand) {
+            String listeningModeValue = stringCommand.toString();
             commandToSend = RequestResponseFactory
                     .getIpControlCommand(ParameterizedCommandType.LISTENING_MODE_SET, zone)
                     .setParameter(listeningModeValue);
@@ -318,8 +318,8 @@ public abstract class StreamAvrConnection implements AvrConnection {
 
         if (command == IncreaseDecreaseType.INCREASE) {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MCACC_MEMORY_CHANGE_CYCLIC);
-        } else if (command instanceof StringType) {
-            String MCACCMemoryValue = ((StringType) command).toString();
+        } else if (command instanceof StringType stringCommand) {
+            String MCACCMemoryValue = stringCommand.toString();
             commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.MCACC_MEMORY_SET)
                     .setParameter(MCACCMemoryValue);
         } else {

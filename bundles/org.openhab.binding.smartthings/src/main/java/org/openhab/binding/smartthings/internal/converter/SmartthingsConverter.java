@@ -76,13 +76,11 @@ public abstract class SmartthingsConverter {
     protected String defaultConvertToSmartthings(ChannelUID channelUid, Command command) {
         String value;
 
-        if (command instanceof DateTimeType) {
-            DateTimeType dt = (DateTimeType) command;
-            value = dt.format("%m/%d/%Y %H.%M.%S");
-        } else if (command instanceof HSBType) {
-            HSBType hsb = (HSBType) command;
-            value = String.format("[%d, %d, %d ]", hsb.getHue().intValue(), hsb.getSaturation().intValue(),
-                    hsb.getBrightness().intValue());
+        if (command instanceof DateTimeType dateTimeCommand) {
+            value = dateTimeCommand.format("%m/%d/%Y %H.%M.%S");
+        } else if (command instanceof HSBType hsbCommand) {
+            value = String.format("[%d, %d, %d ]", hsbCommand.getHue().intValue(),
+                    hsbCommand.getSaturation().intValue(), hsbCommand.getBrightness().intValue());
         } else if (command instanceof DecimalType) {
             value = command.toString();
         } else if (command instanceof IncreaseDecreaseType) { // Need to surround with double quotes
@@ -121,11 +119,9 @@ public abstract class SmartthingsConverter {
             value = command.toString().toLowerCase();
         }
 
-        String jsonMsg = String.format(
+        return String.format(
                 "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"value\": %s}",
                 thingTypeId, smartthingsName, channelUid.getId(), value);
-
-        return jsonMsg;
     }
 
     protected String surroundWithQuotes(String param) {
@@ -159,16 +155,16 @@ public abstract class SmartthingsConverter {
                 return UnDefType.UNDEF;
             case "Dimmer":
                 // The value coming in should be a number
-                if (deviceValue instanceof String) {
-                    return new PercentType((String) deviceValue);
+                if (deviceValue instanceof String stringCommand) {
+                    return new PercentType(stringCommand);
                 } else {
                     logger.warn("Failed to convert {} with a value of {} from class {} to an appropriate type.",
                             deviceType, deviceValue, deviceValue.getClass().getName());
                     return UnDefType.UNDEF;
                 }
             case "Number":
-                if (deviceValue instanceof String) {
-                    return new DecimalType(Double.parseDouble((String) deviceValue));
+                if (deviceValue instanceof String stringCommand2) {
+                    return new DecimalType(Double.parseDouble(stringCommand2));
                 } else if (deviceValue instanceof Double) {
                     return new DecimalType((Double) deviceValue);
                 } else if (deviceValue instanceof Long) {
@@ -196,8 +192,8 @@ public abstract class SmartthingsConverter {
                 // But if the result is from sensor change via a subscription to a threeAxis device the results will
                 // be a String of the format "value":"-873,-70,484"
                 // which GSON returns as a LinkedTreeMap
-                if (deviceValue instanceof String) {
-                    return new StringType((String) deviceValue);
+                if (deviceValue instanceof String stringCommand3) {
+                    return new StringType(stringCommand3);
                 } else if (deviceValue instanceof Map<?, ?>) {
                     Map<String, String> map = (Map<String, String>) deviceValue;
                     String s = String.format("%.0f,%.0f,%.0f", map.get("x"), map.get("y"), map.get("z"));

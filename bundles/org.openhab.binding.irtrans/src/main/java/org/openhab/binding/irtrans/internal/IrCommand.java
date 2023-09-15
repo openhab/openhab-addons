@@ -315,7 +315,7 @@ public class IrCommand {
      * @return the byte buffer in Hex format
      */
     public ByteBuffer toHEXByteBuffer() {
-        byte hexDigit[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+        byte[] hexDigit = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
         ByteBuffer byteBuffer = toByteBuffer();
         byte[] toConvert = new byte[byteBuffer.limit()];

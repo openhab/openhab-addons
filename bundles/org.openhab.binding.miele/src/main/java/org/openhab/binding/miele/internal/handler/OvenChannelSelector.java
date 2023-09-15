@@ -195,6 +195,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
         }
     }
 
+    @Override
     public State getState(String s) {
         try {
             Method valueOf = typeClass.getMethod("valueOf", String.class);

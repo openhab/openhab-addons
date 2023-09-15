@@ -73,8 +73,8 @@ public class SDMDiscoveryService extends AbstractDiscoveryService implements Thi
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof SDMAccountHandler) {
-            accountHandler = (SDMAccountHandler) handler;
+        if (handler instanceof SDMAccountHandler sdmAccountHandler) {
+            accountHandler = sdmAccountHandler;
         }
     }
 

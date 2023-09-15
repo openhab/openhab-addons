@@ -6,7 +6,7 @@
 
 # Add-on maintainers:
 /bundles/org.openhab.automation.groovyscripting/ @wborn
-/bundles/org.openhab.automation.jrubyscripting/ @boc-tothefuture @ccutrer @jimtng
+/bundles/org.openhab.automation.jrubyscripting/ @ccutrer @jimtng
 /bundles/org.openhab.automation.jsscripting/ @jpg0 @florian-h05
 /bundles/org.openhab.automation.jsscriptingnashorn/ @wborn
 /bundles/org.openhab.automation.jythonscripting/ @openhab/add-ons-maintainers
@@ -443,7 +443,6 @@
 /itests/org.openhab.binding.mqtt.homeassistant.tests/ @davidgraeff
 /itests/org.openhab.binding.mqtt.homie.tests/ @davidgraeff
 /itests/org.openhab.binding.mqtt.ruuvigateway.tests/ @ssalonen
-/itests/org.openhab.binding.nest.tests/ @wborn
 /itests/org.openhab.binding.ntp.tests/ @marcelrv
 /itests/org.openhab.binding.systeminfo.tests/ @svilenvul
 /itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer

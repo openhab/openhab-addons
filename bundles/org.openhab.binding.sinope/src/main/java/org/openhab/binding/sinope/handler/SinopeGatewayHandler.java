@@ -173,9 +173,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         InputStream inputStream = clientSocket.getInputStream();
         outToServer.write(command.getPayload());
         outToServer.flush();
-        SinopeAnswer answ = command.getReplyAnswer(inputStream);
-
-        return answ;
+        return command.getReplyAnswer(inputStream);
     }
 
     synchronized SinopeAnswer execute(SinopeDataRequest command) throws UnknownHostException, IOException {

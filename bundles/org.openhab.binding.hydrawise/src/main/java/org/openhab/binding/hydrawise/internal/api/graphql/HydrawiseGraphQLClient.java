@@ -264,8 +264,8 @@ public class HydrawiseGraphQLClient {
     private void sendGraphQLMutation(String content)
             throws HydrawiseConnectionException, HydrawiseAuthenticationException, HydrawiseCommandException {
         Mutation mutation = new Mutation(content);
-        logger.debug("Sending Mutation {}", gson.toJson(mutation).toString());
-        String response = sendGraphQLRequest(gson.toJson(mutation).toString());
+        logger.debug("Sending Mutation {}", gson.toJson(mutation));
+        String response = sendGraphQLRequest(gson.toJson(mutation));
         logger.debug("Mutation response {}", response);
         try {
             MutationResponse mResponse = gson.fromJson(response, MutationResponse.class);
@@ -273,7 +273,7 @@ public class HydrawiseGraphQLClient {
                 throw new HydrawiseCommandException("Malformed response: " + response);
             }
             Optional<MutationResponseStatus> status = mResponse.data.values().stream().findFirst();
-            if (!status.isPresent()) {
+            if (status.isEmpty()) {
                 throw new HydrawiseCommandException("Unknown response: " + response);
             }
             if (status.get().status != StatusCode.OK) {

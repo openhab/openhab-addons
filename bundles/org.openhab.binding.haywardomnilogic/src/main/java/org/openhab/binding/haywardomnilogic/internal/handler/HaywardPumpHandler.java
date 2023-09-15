@@ -150,7 +150,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                             updateData(HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM, rpmSpeed.toString());
                         }
 
-                        if (data.get(i).equals("0")) {
+                        if ("0".equals(data.get(i))) {
                             updateData(HaywardBindingConstants.CHANNEL_PUMP_ENABLE, "0");
                         } else {
                             updateData(HaywardBindingConstants.CHANNEL_PUMP_ENABLE, "1");

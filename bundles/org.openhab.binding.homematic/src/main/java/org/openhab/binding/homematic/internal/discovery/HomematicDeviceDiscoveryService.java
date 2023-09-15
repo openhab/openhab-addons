@@ -14,7 +14,7 @@ package org.openhab.binding.homematic.internal.discovery;
 
 import static org.openhab.binding.homematic.internal.HomematicBindingConstants.BINDING_ID;
 
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -54,13 +54,13 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
     private volatile Object installModeSync = new Object();
 
     public HomematicDeviceDiscoveryService() {
-        super(Collections.singleton(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, false);
+        super(Set.of(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, false);
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HomematicBridgeHandler) {
-            this.bridgeHandler = (HomematicBridgeHandler) handler;
+        if (handler instanceof HomematicBridgeHandler homematicBridgeHandler) {
+            this.bridgeHandler = homematicBridgeHandler;
             this.bridgeHandler.setDiscoveryService(this);
         }
     }

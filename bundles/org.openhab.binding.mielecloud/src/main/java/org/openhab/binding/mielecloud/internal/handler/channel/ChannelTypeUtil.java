@@ -46,7 +46,7 @@ public final class ChannelTypeUtil {
      * Converts an {@link Optional} of {@link String} to {@link State}.
      */
     public static State stringToState(Optional<String> value) {
-        return value.filter(v -> !v.isEmpty()).filter(v -> !v.equals("null")).map(v -> (State) new StringType(v))
+        return value.filter(v -> !v.isEmpty()).filter(v -> !"null".equals(v)).map(v -> (State) new StringType(v))
                 .orElse(UnDefType.UNDEF);
     }
 

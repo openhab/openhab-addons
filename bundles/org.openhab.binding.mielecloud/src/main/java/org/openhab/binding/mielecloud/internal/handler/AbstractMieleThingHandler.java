@@ -80,7 +80,7 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
         }
 
         BridgeHandler handler = bridge.getHandler();
-        if (handler == null || !(handler instanceof MieleBridgeHandler)) {
+        if (!(handler instanceof MieleBridgeHandler)) {
             return Optional.empty();
         }
 
