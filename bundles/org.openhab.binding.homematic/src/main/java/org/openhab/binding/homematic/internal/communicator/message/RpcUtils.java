@@ -42,10 +42,10 @@ public class RpcUtils {
             sb.append("[\n");
         }
         for (Object o : c) {
-            if (o instanceof Map oAsMap) {
-                dumpMap(oAsMap, sb, indent + 1);
-            } else if (o instanceof Object[] oAsObjectArray) {
-                dumpCollection(oAsObjectArray, sb, indent + 1);
+            if (o instanceof Map map) {
+                dumpMap(map, sb, indent + 1);
+            } else if (o instanceof Object[] objects) {
+                dumpCollection(objects, sb, indent + 1);
             } else {
                 for (int in = 0; in < indent; in++) {
                     sb.append('\t');
@@ -76,12 +76,12 @@ public class RpcUtils {
             }
             sb.append(me.getKey());
             sb.append('=');
-            if (o instanceof Map<?, ?> oAsMap) {
+            if (o instanceof Map<?, ?> map) {
                 sb.append("\n");
-                dumpMap(oAsMap, sb, indent + 1);
-            } else if (o instanceof Object[] oAsObjectArray) {
+                dumpMap(map, sb, indent + 1);
+            } else if (o instanceof Object[] objects) {
                 sb.append("\n");
-                dumpCollection(oAsObjectArray, sb, indent + 1);
+                dumpCollection(objects, sb, indent + 1);
             } else {
                 sb.append(o);
                 sb.append('\n');

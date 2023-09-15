@@ -237,11 +237,11 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
                 String name = msg.substring(0, idx);
 
                 if ("JSON_NICKNAME".equalsIgnoreCase(name)) {
-                    nickName = msg.substring(idx + 1).trim().replaceAll("\"", "");
+                    nickName = msg.substring(idx + 1).trim().replace("\"", "");
                 } else if ("JSON_VERSION".equalsIgnoreCase(name)) {
-                    fwVersion = msg.substring(idx + 1).trim().replaceAll("\"", "");
+                    fwVersion = msg.substring(idx + 1).trim().replace("\"", "");
                 } else if ("LGSRV_VERSION".equalsIgnoreCase(name)) {
-                    srvVersion = msg.substring(idx + 1).trim().replaceAll("\"", "");
+                    srvVersion = msg.substring(idx + 1).trim().replace("\"", "");
                 }
             }
 
