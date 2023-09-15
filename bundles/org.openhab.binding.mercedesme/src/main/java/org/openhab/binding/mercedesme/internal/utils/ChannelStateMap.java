@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.mercedesme.internal.utils;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.State;
 
 /**
@@ -25,11 +28,21 @@ public class ChannelStateMap {
     private String channel;
     private String group;
     private State state;
+    private Optional<UOMObserver> uomObserver = Optional.empty();
 
     public ChannelStateMap(String ch, String grp, State st) {
         channel = ch;
         group = grp;
         state = st;
+    }
+
+    public ChannelStateMap(String ch, String grp, State st, @Nullable UOMObserver uom) {
+        channel = ch;
+        group = grp;
+        state = st;
+        if (uom != null) {
+            uomObserver = Optional.of(uom);
+        }
     }
 
     public String getChannel() {
@@ -42,6 +55,14 @@ public class ChannelStateMap {
 
     public State getState() {
         return state;
+    }
+
+    public boolean hasUomObersever() {
+        return !uomObserver.isEmpty();
+    }
+
+    public UOMObserver getUomObersever() {
+        return uomObserver.get();
     }
 
     @Override

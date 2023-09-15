@@ -1,0 +1,4 @@
+- mvn clean install not working
+- full proto to json
+- doku poi
+- Unit testing of proto updates

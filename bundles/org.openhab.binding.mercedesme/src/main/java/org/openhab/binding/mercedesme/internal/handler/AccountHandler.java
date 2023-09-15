@@ -387,6 +387,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         scheduler.schedule(this::update, 2, TimeUnit.SECONDS);
     }
 
+    public void keepAlive(boolean b) {
+        ws.keepAlive(b);
+    }
+
     /**
      * Vehicle Actions
      *

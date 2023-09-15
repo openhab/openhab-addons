@@ -71,6 +71,7 @@ public class MBWebsocket {
     private List<ClientMessage> commandQueue = new ArrayList<ClientMessage>();
 
     private static int fileCounter = 1;
+    private boolean keepAlive = false;
 
     public MBWebsocket(AccountHandler ah) {
         accountHandler = ah;
@@ -100,7 +101,7 @@ public class MBWebsocket {
             logger.info("Websocket start {}", websocketURL);
             client.start();
             sessionFuture = client.connect(this, new URI(websocketURL), request);
-            while (Instant.now().isBefore(runTill)) {
+            while (keepAlive || Instant.now().isBefore(runTill)) {
                 // sends one message per second
                 if (sendMessage()) {
                     // add additional runtime to execute and finish command
@@ -173,6 +174,19 @@ public class MBWebsocket {
         }
     }
 
+    public void keepAlive(boolean b) {
+        if (!keepAlive) {
+            if (b) {
+                logger.info("WebSocket - keep alive start");
+            }
+        } else {
+            if (!b) {
+                logger.info("Wbesocket - keep alive end");
+            }
+        }
+        keepAlive = b;
+    }
+
     /**
      * endpoints
      */
@@ -210,7 +224,7 @@ public class MBWebsocket {
                 sendAchnowledgeMessage(cm);
                 logger.trace("Command Status acknowledged {}" + cm.getAllFields());
             } else if (pm.hasApptwinPendingCommandRequest()) {
-                logger.debug("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
+                logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
             } else if (pm.hasDebugMessage()) {
                 logger.debug("MB Debug Message: {}", pm.getDebugMessage().getMessage());
             } else {
