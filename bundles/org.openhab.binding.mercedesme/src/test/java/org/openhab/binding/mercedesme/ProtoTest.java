@@ -174,6 +174,10 @@ class ProtoTest {
                     Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433")
                             .getAttributesMap();
                     m.forEach((key, value) -> {
+                        if (value.hasPressureUnit()) {
+                            System.out.println("Pressure Unit " + value.getPressureUnit());
+                            System.out.println("Pressure Val " + value.getPressureUnitValue());
+                        }
                         // System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
                         if (key.contains("hargeProgram")) {
                             // System.out.println(Mapper.getChannelStateMap(key, value));

@@ -21,6 +21,7 @@ import javax.measure.Unit;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Power;
+import javax.measure.quantity.Pressure;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -91,6 +92,7 @@ public class Constants {
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
     public static final Unit<Power> KILOWATT_UNIT = MetricPrefix.KILO(Units.WATT);
     public static final Unit<Energy> KILOWATT_HOUR_UNIT = MetricPrefix.KILO(Units.WATT_HOUR);
+    public static final Unit<Pressure> KPA_UNIT = MetricPrefix.KILO(SIUnits.PASCAL);
 
     public static final String LOGIN_APP_ID = "01398c1c-dc45-4b42-882b-9f5ba9f175f1";
     public static final String LOGIN_APP_ID_EU = "01398c1c-dc45-4b42-882b-9f5ba9f175f1";
@@ -138,4 +140,7 @@ public class Constants {
 
     public static final String MAX_SOC_KEY = "maxsoc";
     public static final String AUTOUNLOCK_KEY = "autolock";
+
+    public static final String CHANNEL_MILEAGE = "mileage";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
 }

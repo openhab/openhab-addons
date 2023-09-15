@@ -16,15 +16,21 @@ import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.util.Set;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
+import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -66,14 +72,26 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
             final @Reference LocaleProvider lp, final @Reference MercedesMeCommandOptionProvider cop,
             final @Reference MercedesMeStateOptionProvider sop,
-            final @Reference MercedesMeDynamicStateDescriptionProvider dsdp) {
+            final @Reference MercedesMeDynamicStateDescriptionProvider dsdp, final @Reference UnitProvider up) {
         this.storageService = storageService;
 
         localeProvider = lp;
         mmcop = cop;
         mmsop = sop;
         mmdsdp = dsdp;
-        logger.info("DSDP {} received", dsdp);
+
+        logger.info("UnitProvider {} received", up);
+        // Configure Mapper default values
+        Unit<Length> lengthUnit = up.getUnit(Length.class);
+        if (lengthUnit.equals(ImperialUnits.FOOT)) {
+            logger.debug("Switch to ImperialUnits as default");
+            // switch to imperial as default
+            Mapper.defaultLengthUnit = ImperialUnits.MILE;
+            Mapper.defaultPressureUnit = ImperialUnits.POUND_FORCE_SQUARE_INCH;
+            Mapper.defaultTemperatureUnit = ImperialUnits.FAHRENHEIT;
+            Mapper.defaultVolumeUnit = ImperialUnits.GALLON_LIQUID_US;
+            Mapper.defaultSpeedUnit = ImperialUnits.MILES_PER_HOUR;
+        }
 
         httpClient = hcf.createHttpClient(Constants.BINDING_ID);
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
