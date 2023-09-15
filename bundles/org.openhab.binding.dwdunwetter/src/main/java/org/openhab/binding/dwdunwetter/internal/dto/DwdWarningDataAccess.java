@@ -55,7 +55,7 @@ public class DwdWarningDataAccess {
             logger.trace("Raw request: {}", stringBuilder);
             logger.trace("Raw response: {}", rawData);
 
-            if (rawData == null || !rawData.startsWith("<?xml")) {
+            if (rawData == null || !rawData.startsWith("<?xml") || !rawData.contains("FeatureCollection")) {
                 logger.warn("Communication error occurred while getting data, response is not in expected XML-format");
                 return "";
             }
