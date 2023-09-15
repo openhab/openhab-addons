@@ -22,7 +22,7 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.time.Duration;
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +59,7 @@ public class LinuxInputDiscoveryService extends AbstractDiscoveryService {
     private @NonNullByDefault({}) Future<?> discoveryJob;
 
     public LinuxInputDiscoveryService() {
-        super(Collections.singleton(THING_TYPE_DEVICE), (int) TIMEOUT.getSeconds(), true);
+        super(Set.of(THING_TYPE_DEVICE), (int) TIMEOUT.getSeconds(), true);
     }
 
     @Override

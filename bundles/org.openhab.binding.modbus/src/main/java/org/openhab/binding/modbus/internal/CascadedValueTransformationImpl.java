@@ -13,7 +13,6 @@
 package org.openhab.binding.modbus.internal;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +37,7 @@ public class CascadedValueTransformationImpl implements ValueTransformation {
                 .filter(s -> !s.isEmpty()).map(transformation -> new SingleValueTransformation(transformation))
                 .collect(Collectors.toList());
         if (localTransformations.isEmpty()) {
-            localTransformations = Collections.singletonList(new SingleValueTransformation(transformationString));
+            localTransformations = List.of(new SingleValueTransformation(transformationString));
         }
         transformations = localTransformations;
     }

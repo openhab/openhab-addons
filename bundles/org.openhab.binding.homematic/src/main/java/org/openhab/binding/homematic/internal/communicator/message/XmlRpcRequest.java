@@ -138,16 +138,16 @@ public class XmlRpcRequest implements RpcRequest<String> {
                 synchronized (XML_RPC_DATEFORMAT) {
                     tag("dateTime.iso8601", XML_RPC_DATEFORMAT.format(((Date) value)));
                 }
-            } else if (value instanceof Calendar vluaeAsCalendar) {
-                generateValue(vluaeAsCalendar.getTime());
-            } else if (value instanceof byte[] valueAsByteArray) {
-                tag("base64", Base64.getEncoder().encodeToString(valueAsByteArray));
+            } else if (value instanceof Calendar calendar) {
+                generateValue(calendar.getTime());
+            } else if (value instanceof byte[] bytes) {
+                tag("base64", Base64.getEncoder().encodeToString(bytes));
             } else if (clazz.isArray() || value instanceof List) {
                 sb.append("<array><data>");
 
                 Object[] array = null;
-                if (value instanceof List valueAsList) {
-                    array = valueAsList.toArray();
+                if (value instanceof List list) {
+                    array = list.toArray();
                 } else {
                     array = (Object[]) value;
                 }

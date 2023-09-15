@@ -121,7 +121,7 @@ public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State> exte
         if (value == null) {
             return Collections.emptyList();
         } else {
-            return Collections.singletonList(value.value());
+            return List.of(value.value());
         }
     }
 
@@ -129,7 +129,7 @@ public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State> exte
      * Returns a list containing only the given value or empty list if value is <code>null</code>.
      */
     private static List<String> singletonList(@Nullable String value) {
-        return value == null ? Collections.emptyList() : Collections.singletonList(value);
+        return value == null ? Collections.emptyList() : List.of(value);
     }
 
     /**

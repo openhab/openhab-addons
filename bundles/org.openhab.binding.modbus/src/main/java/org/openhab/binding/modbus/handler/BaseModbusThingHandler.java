@@ -185,8 +185,8 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
 
             BridgeHandler handler = bridge.getHandler();
 
-            if (handler instanceof ModbusEndpointThingHandler) {
-                return (ModbusEndpointThingHandler) handler;
+            if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+                return thingHandler;
             } else {
                 throw new IllegalStateException("Not a Modbus Bridge: " + handler);
             }

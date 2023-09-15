@@ -174,11 +174,13 @@ public class HaywardBindingConstants {
     // Hayward Command html
     public static final String COMMAND_PARAMETERS = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request>";
 
-    public static final String COMMAND_SCHEDULE = "<Parameter name=\"IsCountDownTimer\" dataType=\"bool\">false</Parameter>"
-            + "<Parameter name=\"StartTimeHours\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"StartTimeMinutes\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"EndTimeHours\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"EndTimeMinutes\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"DaysActive\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"Recurring\" dataType=\"bool\">false</Parameter>";
+    public static final String COMMAND_SCHEDULE = """
+            <Parameter name="IsCountDownTimer" dataType="bool">false</Parameter>\
+            <Parameter name="StartTimeHours" dataType="int">0</Parameter>\
+            <Parameter name="StartTimeMinutes" dataType="int">0</Parameter>\
+            <Parameter name="EndTimeHours" dataType="int">0</Parameter>\
+            <Parameter name="EndTimeMinutes" dataType="int">0</Parameter>\
+            <Parameter name="DaysActive" dataType="int">0</Parameter>\
+            <Parameter name="Recurring" dataType="bool">false</Parameter>\
+            """;
 }

@@ -206,8 +206,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
     private TriggerHandlerCallback getCallback() {
         ModuleHandlerCallback localCallback = callback;
-        if (localCallback != null && localCallback instanceof TriggerHandlerCallback) {
-            return (TriggerHandlerCallback) localCallback;
+        if (localCallback != null && localCallback instanceof TriggerHandlerCallback handlerCallback) {
+            return handlerCallback;
         }
 
         throw new IllegalStateException("The module callback is not set");
@@ -236,8 +236,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     private double getItemValueAsNumber(Item item) throws PIDException {
         State setpointState = item.getState();
 
-        if (setpointState instanceof Number) {
-            double doubleValue = ((Number) setpointState).doubleValue();
+        if (setpointState instanceof Number number) {
+            double doubleValue = number.doubleValue();
 
             if (Double.isFinite(doubleValue) && !Double.isNaN(doubleValue)) {
                 return doubleValue;
@@ -254,9 +254,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
     @Override
     public void receive(Event event) {
-        if (event instanceof ItemStateChangedEvent) {
+        if (event instanceof ItemStateChangedEvent changedEvent) {
             if (commandTopic.isPresent() && event.getTopic().equals(commandTopic.get())) {
-                ItemStateChangedEvent changedEvent = (ItemStateChangedEvent) event;
                 if ("RESET".equals(changedEvent.getItemState().toString())) {
                     controller.setIntegralResult(0);
                     controller.setDerivativeResult(0);

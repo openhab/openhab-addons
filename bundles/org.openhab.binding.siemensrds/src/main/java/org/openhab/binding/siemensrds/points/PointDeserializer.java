@@ -33,7 +33,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class PointDeserializer implements JsonDeserializer<BasePoint> {
 
-    private static enum PointType {
+    private enum PointType {
         UNDEFINED,
         STRING,
         NESTED_NUMBER,

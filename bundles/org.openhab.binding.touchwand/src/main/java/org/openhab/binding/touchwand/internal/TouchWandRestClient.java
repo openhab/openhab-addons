@@ -109,7 +109,7 @@ public class TouchWandRestClient {
         String command = buildUrl(CMD_LOGIN) + "user=" + encodedUser + "&" + "psw=" + encodedPass;
         response = sendCommand(command, METHOD_GET, "");
 
-        return !response.equals("Unauthorized");
+        return !"Unauthorized".equals(response);
     }
 
     public String cmdListUnits() {

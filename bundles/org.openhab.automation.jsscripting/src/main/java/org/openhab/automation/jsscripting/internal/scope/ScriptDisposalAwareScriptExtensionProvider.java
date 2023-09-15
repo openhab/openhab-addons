@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -57,7 +58,7 @@ public abstract class ScriptDisposalAwareScriptExtensionProvider
 
     @Override
     public Collection<String> getPresets() {
-        return Collections.singleton(getPresetName());
+        return Set.of(getPresetName());
     }
 
     @Override
@@ -92,8 +93,8 @@ public abstract class ScriptDisposalAwareScriptExtensionProvider
 
         if (forScript != null) {
             for (Object o : forScript.values()) {
-                if (o instanceof ScriptDisposalAware) {
-                    ((ScriptDisposalAware) o).unload(scriptIdentifier);
+                if (o instanceof ScriptDisposalAware script) {
+                    script.unload(scriptIdentifier);
                 }
             }
         }

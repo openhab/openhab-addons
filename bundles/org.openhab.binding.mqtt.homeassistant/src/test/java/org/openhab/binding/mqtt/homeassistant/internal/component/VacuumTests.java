@@ -40,26 +40,28 @@ public class VacuumTests extends AbstractComponentTests {
     @Test
     public void testRoborockValetudo() {
         // @formatter:off
-        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), "{" +
-                "\"name\":\"Rockrobo\"," +
-                "\"unique_id\":\"rockrobo_vacuum\"," +
-                "\"schema\":\"state\"," +
-                "\"device\":{" +
-                "   \"manufacturer\":\"Roborock\"," +
-                "   \"model\":\"v1\"," +
-                "   \"name\":\"rockrobo\"," +
-                "   \"identifiers\":[\"rockrobo\"]," +
-                "   \"sw_version\":\"0.9.9\"" +
-                "}," +
-                "\"supported_features\":[\"start\",\"pause\",\"stop\",\"return_home\",\"battery\",\"status\"," +
-                "   \"locate\",\"clean_spot\",\"fan_speed\",\"send_command\"]," +
-                "\"command_topic\":\"valetudo/rockrobo/command\"," +
-                "\"state_topic\":\"valetudo/rockrobo/state\"," +
-                "\"set_fan_speed_topic\":\"valetudo/rockrobo/set_fan_speed\"," +
-                "\"fan_speed_list\":[\"min\",\"medium\",\"high\",\"max\",\"mop\"]," +
-                "\"send_command_topic\":\"valetudo/rockrobo/custom_command\"," +
-                "\"json_attributes_topic\":\"valetudo/rockrobo/attributes\"" +
-                "}");
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {\
+                "name":"Rockrobo",\
+                "unique_id":"rockrobo_vacuum",\
+                "schema":"state",\
+                "device":{\
+                   "manufacturer":"Roborock",\
+                   "model":"v1",\
+                   "name":"rockrobo",\
+                   "identifiers":["rockrobo"],\
+                   "sw_version":"0.9.9"\
+                },\
+                "supported_features":["start","pause","stop","return_home","battery","status",\
+                   "locate","clean_spot","fan_speed","send_command"],\
+                "command_topic":"valetudo/rockrobo/command",\
+                "state_topic":"valetudo/rockrobo/state",\
+                "set_fan_speed_topic":"valetudo/rockrobo/set_fan_speed",\
+                "fan_speed_list":["min","medium","high","max","mop"],\
+                "send_command_topic":"valetudo/rockrobo/custom_command",\
+                "json_attributes_topic":"valetudo/rockrobo/attributes"\
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(6)); // command, state, fan speed, send command, battery, json attrs
@@ -82,41 +84,45 @@ public class VacuumTests extends AbstractComponentTests {
 
         // @formatter:off
         String jsonValue;
-        publishMessage("valetudo/rockrobo/attributes", jsonValue = "{" +
-                "\"mainBrush\":\"245.1\"," +
-                "\"sideBrush\":\"145.1\"," +
-                "\"filter\":\"95.1\"," +
-                "\"sensor\":\"0.0\"," +
-                "\"currentCleanTime\":\"52.0\"," +
-                "\"currentCleanArea\":\"46.7\"," +
-                "\"cleanTime\":\"54.9\"," +
-                "\"cleanArea\":\"3280.9\"," +
-                "\"cleanCount\":84," +
-                "\"last_run_stats\":{" +
-                "   \"startTime\":1633257319000," +
-                "   \"endTime\":1633260439000," +
-                "   \"duration\":3120," +
-                "   \"area\":\"46.7\"," +
-                "   \"errorCode\":0," +
-                "   \"errorDescription\":\"No error\"," +
-                "   \"finishedFlag\":true" +
-                "}," +
-                "\"last_bin_out\":2147483647000," +
-                "\"state\":\"docked\"," +
-                "\"valetudo_state\":{" +
-                "   \"id\":8," +
-                "   \"name\":\"Charging\"" +
-                "}," +
-                "\"last_bin_full\":0" +
-                "}");
+        publishMessage("valetudo/rockrobo/attributes", jsonValue = """
+                {\
+                "mainBrush":"245.1",\
+                "sideBrush":"145.1",\
+                "filter":"95.1",\
+                "sensor":"0.0",\
+                "currentCleanTime":"52.0",\
+                "currentCleanArea":"46.7",\
+                "cleanTime":"54.9",\
+                "cleanArea":"3280.9",\
+                "cleanCount":84,\
+                "last_run_stats":{\
+                   "startTime":1633257319000,\
+                   "endTime":1633260439000,\
+                   "duration":3120,\
+                   "area":"46.7",\
+                   "errorCode":0,\
+                   "errorDescription":"No error",\
+                   "finishedFlag":true\
+                },\
+                "last_bin_out":2147483647000,\
+                "state":"docked",\
+                "valetudo_state":{\
+                   "id":8,\
+                   "name":"Charging"\
+                },\
+                "last_bin_full":0\
+                }\
+                """);
         // @formatter:on
 
         // @formatter:off
-        publishMessage("valetudo/rockrobo/state", "{" +
-                "\"state\":\"docked\"," +
-                "\"battery_level\":100," +
-                "\"fan_speed\":\"max\"" +
-                "}");
+        publishMessage("valetudo/rockrobo/state", """
+                {\
+                "state":"docked",\
+                "battery_level":100,\
+                "fan_speed":"max"\
+                }\
+                """);
         // @formatter:on
 
         assertState(component, Vacuum.STATE_CH_ID, new StringType(Vacuum.STATE_DOCKED));
@@ -128,11 +134,13 @@ public class VacuumTests extends AbstractComponentTests {
         assertPublished("valetudo/rockrobo/command", "start");
 
         // @formatter:off
-        publishMessage("valetudo/rockrobo/state", "{" +
-                "\"state\":\"cleaning\"," +
-                "\"battery_level\":99," +
-                "\"fan_speed\":\"max\"" +
-                "}");
+        publishMessage("valetudo/rockrobo/state", """
+                {\
+                "state":"cleaning",\
+                "battery_level":99,\
+                "fan_speed":"max"\
+                }\
+                """);
         // @formatter:on
 
         assertState(component, Vacuum.STATE_CH_ID, new StringType(Vacuum.STATE_CLEANING));
@@ -144,11 +152,13 @@ public class VacuumTests extends AbstractComponentTests {
         assertPublished("valetudo/rockrobo/set_fan_speed", "medium");
 
         // @formatter:off
-        publishMessage("valetudo/rockrobo/state", "{" +
-                "\"state\":\"returning\"," +
-                "\"battery_level\":80," +
-                "\"fan_speed\":\"medium\"" +
-                "}");
+        publishMessage("valetudo/rockrobo/state", """
+                {\
+                "state":"returning",\
+                "battery_level":80,\
+                "fan_speed":"medium"\
+                }\
+                """);
         // @formatter:on
 
         assertState(component, Vacuum.STATE_CH_ID, new StringType(Vacuum.STATE_RETURNING));
@@ -161,35 +171,37 @@ public class VacuumTests extends AbstractComponentTests {
     @Test
     public void testLegacySchema() {
         // @formatter:off
-        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), "{" +
-                "\"name\":\"Rockrobo\"," +
-                "\"unique_id\":\"rockrobo_vacuum\"," +
-                "\"device\":{" +
-                "   \"manufacturer\":\"Roborock\"," +
-                "   \"model\":\"v1\"," +
-                "   \"name\":\"rockrobo\"," +
-                "   \"identifiers\":[\"rockrobo\"]," +
-                "   \"sw_version\":\"0.9.9\"" +
-                "}," +
-                "\"supported_features\":[\"turn_on\", \"turn_off\",\"pause\",\"stop\",\"return_home\",\"battery\",\"status\"," +
-                "   \"locate\",\"clean_spot\",\"fan_speed\",\"send_command\"]," +
-                "\"command_topic\":\"vacuum/command\"," +
-                "\"battery_level_topic\":\"vacuum/state\"," +
-                "\"battery_level_template\":\"{{ value_json.battery_level }}\"," +
-                "\"charging_topic\":\"vacuum/state\"," +
-                "\"charging_template\":\"{{ value_json.charging }}\"," +
-                "\"cleaning_topic\":\"vacuum/state\"," +
-                "\"cleaning_template\":\"{{ value_json.cleaning }}\"," +
-                "\"docked_topic\":\"vacuum/state\"," +
-                "\"docked_template\":\"{{ value_json.docked }}\"," +
-                "\"error_topic\":\"vacuum/state\"," +
-                "\"error_template\":\"{{ value_json.error }}\"," +
-                "\"fan_speed_topic\":\"vacuum/state\"," +
-                "\"set_fan_speed_topic\":\"vacuum/set_fan_speed\"," +
-                "\"fan_speed_template\":\"{{ value_json.fan_speed }}\"," +
-                "\"fan_speed_list\":[\"min\",\"medium\",\"high\",\"max\"]," +
-                "\"send_command_topic\":\"vacuum/send_command\"" +
-                "}");
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {\
+                "name":"Rockrobo",\
+                "unique_id":"rockrobo_vacuum",\
+                "device":{\
+                   "manufacturer":"Roborock",\
+                   "model":"v1",\
+                   "name":"rockrobo",\
+                   "identifiers":["rockrobo"],\
+                   "sw_version":"0.9.9"\
+                },\
+                "supported_features":["turn_on", "turn_off","pause","stop","return_home","battery","status",\
+                   "locate","clean_spot","fan_speed","send_command"],\
+                "command_topic":"vacuum/command",\
+                "battery_level_topic":"vacuum/state",\
+                "battery_level_template":"{{ value_json.battery_level }}",\
+                "charging_topic":"vacuum/state",\
+                "charging_template":"{{ value_json.charging }}",\
+                "cleaning_topic":"vacuum/state",\
+                "cleaning_template":"{{ value_json.cleaning }}",\
+                "docked_topic":"vacuum/state",\
+                "docked_template":"{{ value_json.docked }}",\
+                "error_topic":"vacuum/state",\
+                "error_template":"{{ value_json.error }}",\
+                "fan_speed_topic":"vacuum/state",\
+                "set_fan_speed_topic":"vacuum/set_fan_speed",\
+                "fan_speed_template":"{{ value_json.fan_speed }}",\
+                "fan_speed_list":["min","medium","high","max"],\
+                "send_command_topic":"vacuum/send_command"\
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(8)); // command, battery, charging, cleaning, docked, error,
@@ -206,14 +218,16 @@ public class VacuumTests extends AbstractComponentTests {
         assertChannel(component, Vacuum.CUSTOM_COMMAND_CH_ID, "", "vacuum/send_command", "Rockrobo", TextValue.class);
 
         // @formatter:off
-        publishMessage("vacuum/state", "{" +
-                "\"battery_level\": 61," +
-                "\"docked\": true," +
-                "\"cleaning\": false," +
-                "\"charging\": true," +
-                "\"fan_speed\": \"off\"," +
-                "\"error\": \"Error message\"" +
-                "}");
+        publishMessage("vacuum/state", """
+                {\
+                "battery_level": 61,\
+                "docked": true,\
+                "cleaning": false,\
+                "charging": true,\
+                "fan_speed": "off",\
+                "error": "Error message"\
+                }\
+                """);
         // @formatter:on
 
         assertState(component, Vacuum.BATTERY_LEVEL_CH_ID, new PercentType(61));
@@ -227,14 +241,16 @@ public class VacuumTests extends AbstractComponentTests {
         assertPublished("vacuum/command", "turn_on");
 
         // @formatter:off
-        publishMessage("vacuum/state", "{" +
-                "\"battery_level\": 55," +
-                "\"docked\": false," +
-                "\"cleaning\": true," +
-                "\"charging\": false," +
-                "\"fan_speed\": \"medium\"," +
-                "\"error\": \"\"" +
-                "}");
+        publishMessage("vacuum/state", """
+                {\
+                "battery_level": 55,\
+                "docked": false,\
+                "cleaning": true,\
+                "charging": false,\
+                "fan_speed": "medium",\
+                "error": ""\
+                }\
+                """);
         // @formatter:on
 
         assertState(component, Vacuum.BATTERY_LEVEL_CH_ID, new PercentType(55));

@@ -51,6 +51,7 @@ public class RouterosPPPCliInterface extends RouterosInterfaceBase {
         return true;
     }
 
+    @Override
     public @Nullable String getMacAddress() {
         return null;
     }

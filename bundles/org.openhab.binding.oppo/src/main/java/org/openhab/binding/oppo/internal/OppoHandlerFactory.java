@@ -14,7 +14,6 @@ package org.openhab.binding.oppo.internal;
 
 import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.oppo", service = ThingHandlerFactory.class)
 public class OppoHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLAYER);
 
     private final SerialPortManager serialPortManager;
 
@@ -62,9 +61,7 @@ public class OppoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            OppoHandler handler = new OppoHandler(thing, stateDescriptionProvider, serialPortManager);
-
-            return handler;
+            return new OppoHandler(thing, stateDescriptionProvider, serialPortManager);
         }
         return null;
     }

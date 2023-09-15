@@ -105,8 +105,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Converts the object to a string array.
      */
     protected String[] toOptionList(Object optionList) {
-        if (optionList != null && optionList instanceof Object[]) {
-            Object[] vl = (Object[]) optionList;
+        if (optionList != null && optionList instanceof Object[] vl) {
             String[] stringArray = new String[vl.length];
             for (int i = 0; i < vl.length; i++) {
                 stringArray[i] = vl[i].toString();

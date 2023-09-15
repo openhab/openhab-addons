@@ -171,7 +171,7 @@ public class MessageProcessor {
                         }
                 }
             } else {
-                if ((!counter.equals(this.numberOfRequiredLines)) || (!(index == this.receivedLines.size()))) {
+                if (!counter.equals(this.numberOfRequiredLines) || index != this.receivedLines.size()) {
                     throw new IncorrectMultilineIndexException();
                 }
 
