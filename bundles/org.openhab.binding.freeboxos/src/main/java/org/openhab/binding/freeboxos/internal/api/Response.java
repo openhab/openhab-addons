@@ -24,7 +24,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.LoginManager;
  */
 @NonNullByDefault
 public class Response<ResultType> {
-    public static enum ErrorCode {
+    public enum ErrorCode {
         AUTH_REQUIRED,
         BAD_LOGIN,
         TOO_SHORT,
@@ -91,7 +91,7 @@ public class Response<ResultType> {
         ERR_030,
         ERR_031,
         NONE,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private ErrorCode errorCode = ErrorCode.NONE;

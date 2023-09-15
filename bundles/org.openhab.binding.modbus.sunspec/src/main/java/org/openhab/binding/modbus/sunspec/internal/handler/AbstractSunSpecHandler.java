@@ -257,9 +257,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
+        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+            return thingHandler;
         } else {
             logger.debug("Unexpected bridge handler: {}", handler);
             return null;
@@ -433,7 +432,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * @return the scaled value as a DecimalType
      */
     protected State getScaled(Optional<? extends Number> value, Optional<Short> scaleFactor, Unit<?> unit) {
-        if (!value.isPresent() || !scaleFactor.isPresent()) {
+        if (value.isEmpty() || scaleFactor.isEmpty()) {
             return UnDefType.UNDEF;
         }
         return getScaled(value.get().longValue(), scaleFactor.get(), unit);

@@ -48,20 +48,19 @@ public abstract class ChannelHelper {
         State result = null;
         if (channelGroups.isEmpty() || (groupId != null && channelGroups.contains(groupId))) {
             NAObject localData = data;
-            if (localData instanceof HomeEvent) {
-                result = internalGetHomeEvent(channelId, groupId, (HomeEvent) localData);
+            if (localData instanceof HomeEvent homeEvent) {
+                result = internalGetHomeEvent(channelId, groupId, homeEvent);
                 if (result != null) {
                     return result;
                 }
             }
-            if (localData instanceof Event) {
-                result = internalGetEvent(channelId, (Event) localData);
+            if (localData instanceof Event event) {
+                result = internalGetEvent(channelId, event);
                 if (result != null) {
                     return result;
                 }
             }
-            if (localData instanceof NAThing) {
-                NAThing naThing = (NAThing) localData;
+            if (localData instanceof NAThing naThing) {
                 result = internalGetProperty(channelId, naThing, config);
                 if (result != null) {
                     return result;

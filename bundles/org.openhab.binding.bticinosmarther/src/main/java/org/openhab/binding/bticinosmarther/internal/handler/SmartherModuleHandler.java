@@ -34,6 +34,7 @@ import org.openhab.binding.bticinosmarther.internal.config.SmartherModuleConfigu
 import org.openhab.binding.bticinosmarther.internal.model.ModuleSettings;
 import org.openhab.binding.bticinosmarther.internal.util.StringUtil;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -74,6 +75,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
     private final SmartherDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
     private final ChannelUID programChannelUID;
     private final ChannelUID endDateChannelUID;
+    private final TimeZoneProvider timeZoneProvider;
 
     // Module configuration
     private SmartherModuleConfiguration config;
@@ -98,11 +100,12 @@ public class SmartherModuleHandler extends BaseThingHandler {
      * @param provider
      *            the {@link SmartherDynamicStateDescriptionProvider} dynamic state description provider to be used
      */
-    public SmartherModuleHandler(Thing thing, CronScheduler scheduler,
-            SmartherDynamicStateDescriptionProvider provider) {
+    public SmartherModuleHandler(Thing thing, CronScheduler scheduler, SmartherDynamicStateDescriptionProvider provider,
+            final TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.cronScheduler = scheduler;
         this.dynamicStateDescriptionProvider = provider;
+        this.timeZoneProvider = timeZoneProvider;
         this.programChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_PROGRAM);
         this.endDateChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_ENDDATE);
         this.config = new SmartherModuleConfiguration();
@@ -219,14 +222,14 @@ public class SmartherModuleHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_SETTINGS_PROGRAM:
-                if (command instanceof DecimalType) {
-                    localModuleSettings.setProgram(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    localModuleSettings.setProgram(decimalCommand.intValue());
                     return;
                 }
                 break;
             case CHANNEL_SETTINGS_BOOSTTIME:
-                if (command instanceof DecimalType) {
-                    localModuleSettings.setBoostTime(BoostTime.fromValue(((DecimalType) command).intValue()));
+                if (command instanceof DecimalType decimalCommand) {
+                    localModuleSettings.setBoostTime(BoostTime.fromValue(decimalCommand.intValue()));
                     return;
                 }
                 break;
@@ -321,8 +324,8 @@ public class SmartherModuleHandler extends BaseThingHandler {
      * @return {@code true} if the change succeeded, {@code false} otherwise
      */
     private boolean changeTimeHour(Command command, final ModuleSettings settings) {
-        if (command instanceof DecimalType) {
-            int endHour = ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            int endHour = decimalCommand.intValue();
             if (endHour >= 0 && endHour <= 23) {
                 settings.setEndHour(endHour);
                 return true;
@@ -341,8 +344,8 @@ public class SmartherModuleHandler extends BaseThingHandler {
      * @return {@code true} if the change succeeded, {@code false} otherwise
      */
     private boolean changeTimeMinute(Command command, final ModuleSettings settings) {
-        if (command instanceof DecimalType) {
-            int endMinute = ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            int endMinute = decimalCommand.intValue();
             if (endMinute >= 0 && endMinute <= 59) {
                 // Only 15 min increments are allowed
                 endMinute = Math.round(endMinute / 15) * 15;
@@ -710,7 +713,8 @@ public class SmartherModuleHandler extends BaseThingHandler {
             updateChannelState(CHANNEL_STATUS_MODE,
                     new StringType(StringUtil.capitalize(localChrono.getMode().toLowerCase())));
             updateChannelState(CHANNEL_STATUS_TEMPERATURE, localChrono.getSetPointTemperature().toState());
-            updateChannelState(CHANNEL_STATUS_ENDTIME, new StringType(localChrono.getActivationTimeLabel()));
+            updateChannelState(CHANNEL_STATUS_ENDTIME,
+                    new StringType(localChrono.getActivationTimeLabel(timeZoneProvider)));
             updateChannelState(CHANNEL_STATUS_TEMP_FORMAT, new StringType(localChrono.getTemperatureFormat()));
             final Program localProgram = localChrono.getProgram();
             if (localProgram != null) {

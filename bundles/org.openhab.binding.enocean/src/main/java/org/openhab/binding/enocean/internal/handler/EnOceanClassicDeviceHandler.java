@@ -180,8 +180,8 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     }
 
     private @Nullable StringType convertToPressedCommand(Command command, SwitchMode switchMode) {
-        if (command instanceof StringType) {
-            return (StringType) command;
+        if (command instanceof StringType stringCommand) {
+            return stringCommand;
         } else if (command instanceof OnOffType) {
             switch (switchMode) {
                 case RockerSwitch:

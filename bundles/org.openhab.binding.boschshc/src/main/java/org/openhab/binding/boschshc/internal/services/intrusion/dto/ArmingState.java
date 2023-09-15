@@ -24,5 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum ArmingState {
     SYSTEM_ARMED,
     SYSTEM_ARMING,
-    SYSTEM_DISARMED;
+    SYSTEM_DISARMED
 }

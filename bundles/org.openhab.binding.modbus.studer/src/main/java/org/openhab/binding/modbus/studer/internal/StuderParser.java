@@ -207,7 +207,7 @@ public class StuderParser {
      * @return the converted float
      */
     public @Nullable Float hexToFloat(String hex) {
-        String t = hex.replaceAll(" ", "");
+        String t = hex.replace(" ", "");
         float f = Float.intBitsToFloat((int) Long.parseLong(t, 16));
         if (Float.isNaN(f)) {
             return null;

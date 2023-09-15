@@ -82,7 +82,7 @@ public class MeasureCapability extends RestCapability<WeatherApi> {
                         MeasureClass.AS_SET.stream().filter(mc -> mc.apiDescriptor.equals(descriptor))
                                 .reduce((first, second) -> second)
                                 .ifPresent(mc -> measures.put(channel.getUID().getIdWithoutGroup(),
-                                        result instanceof ZonedDateTime ? toDateTimeType((ZonedDateTime) result)
+                                        result instanceof ZonedDateTime zonedDateTime ? toDateTimeType(zonedDateTime)
                                                 : result instanceof Double ? toQuantityType((Double) result, mc)
                                                         : UnDefType.UNDEF));
                     } catch (NetatmoException e) {

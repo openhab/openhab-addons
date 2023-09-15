@@ -114,13 +114,16 @@ public class GatewayPayloadParserTests {
     public void testUnexpectedTypes3() {
         assertThrows(JsonSyntaxException.class, () -> {
             GatewayPayloadParser.parse(bytes(//
-                    "{\"gw_mac\": \"DE:AD:BE:EF:00:00\","//
-                            + "  \"rssi\": \"foobar\","// should be number
-                            + "  \"aoa\": [],"//
-                            + "  \"gwts\": \"1659365438\","//
-                            + "  \"ts\": \"1659365438\","//
-                            + "  \"data\": \"0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
-                            + "  \"coords\": \"\"" + "}"));
+                    """
+                            {"gw_mac": "DE:AD:BE:EF:00:00",\
+                              "rssi": "foobar",\
+                              "aoa": [],\
+                              "gwts": "1659365438",\
+                              "ts": "1659365438",\
+                              "data": "0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F",\
+                              "coords": ""\
+                            }\
+                            """));
         });
     }
 
@@ -141,14 +144,16 @@ public class GatewayPayloadParserTests {
     public void testUnexpectedManufacturer() {
         assertThrows(IllegalArgumentException.class, () -> {
             GatewayPayloadParser.parse(bytes(//
-                    "{\"gw_mac\": \"DE:AD:BE:EF:00:00\","//
-                            + "  \"rssi\": -83,"//
-                            + "  \"aoa\": [],"//
-                            + "  \"gwts\": \"1659365438\","//
-                            + "  \"ts\": \"1659365438\","//
-            // manufacturer is not 99 04 (Ruuvi) but 99 99
-                            + "  \"data\": \"0201061BFF99990512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
-                            + "  \"coords\": \"\"" + "}"));
+                    """
+                            {"gw_mac": "DE:AD:BE:EF:00:00",\
+                              "rssi": -83,\
+                              "aoa": [],\
+                              "gwts": "1659365438",\
+                              "ts": "1659365438",\
+                              "data": "0201061BFF99990512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F",\
+                              "coords": ""\
+                            }\
+                            """));
         });
     }
 
@@ -156,14 +161,16 @@ public class GatewayPayloadParserTests {
     public void testDataNotBluetoothAdvertisement() {
         assertThrows(IllegalArgumentException.class, () -> {
             GatewayPayloadParser.parse(bytes(//
-                    "{\"gw_mac\": \"DE:AD:BE:EF:00:00\","//
-                            + "  \"rssi\": -83,"//
-                            + "  \"aoa\": [],"//
-                            + "  \"gwts\": \"1659365438\","//
-                            + "  \"ts\": \"1659365438\","//
-            // not advertisement (FF) but AA
-                            + "  \"data\": \"0201061BAA99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
-                            + "  \"coords\": \"\"" + "}"));
+                    """
+                            {"gw_mac": "DE:AD:BE:EF:00:00",\
+                              "rssi": -83,\
+                              "aoa": [],\
+                              "gwts": "1659365438",\
+                              "ts": "1659365438",\
+                              "data": "0201061BAA99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F",\
+                              "coords": ""\
+                            }\
+                            """));
         });
     }
 }

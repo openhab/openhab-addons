@@ -97,10 +97,10 @@ public class XmlRpcResponse implements RpcResponse {
         public void startElement(String uri, String localName, String qName, Attributes attributes)
                 throws SAXException {
             String tag = qName.toLowerCase();
-            if (tag.equals("array") || tag.equals("struct")) {
+            if ("array".equals(tag) || "struct".equals(tag)) {
                 currentDataObject.addLast(new ArrayList<>());
             }
-            isValueTag = tag.equals("value");
+            isValueTag = "value".equals(tag);
             tagValue = new StringBuilder();
         }
 

@@ -70,7 +70,7 @@ public class LeapMessageParser {
      * @param msg String containing the LEAP message
      */
     public void handleMessage(String msg) {
-        if (msg.trim().equals("")) {
+        if ("".equals(msg.trim())) {
             return; // Ignore empty lines
         }
         logger.trace("Received message: {}", msg);
