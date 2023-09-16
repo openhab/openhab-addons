@@ -14,6 +14,7 @@
 			<channel id="time-reset" typeId="driven-time-reset-channel"/>
 			<channel id="avg-speed-reset" typeId="avg-speed-reset-channel"/>
 			<channel id="cons-ev-reset" typeId="consumption-ev-reset-channel"/>
+			<channel id="cons-ev-unit" typeId="consumption-ev-unit-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

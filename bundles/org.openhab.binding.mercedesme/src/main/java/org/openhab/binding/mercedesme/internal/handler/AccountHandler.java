@@ -13,7 +13,9 @@
 package org.openhab.binding.mercedesme.internal.handler;
 
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -119,7 +121,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
         }
         scheduledFuture = Optional
-                .of(scheduler.scheduleWithFixedDelay(this::update, 0, config.get().refershInterval, TimeUnit.MINUTES));
+                .of(scheduler.scheduleWithFixedDelay(this::update, 0, config.get().refreshInterval, TimeUnit.MINUTES));
     }
 
     public void update() {
@@ -261,15 +263,20 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         }
     }
 
-    public void distributeVepUpdates(Map<String, VEPUpdate> map) {
+    public boolean distributeVepUpdates(Map<String, VEPUpdate> map) {
+        List<String> notFoundList = new ArrayList<String>();
         map.forEach((key, value) -> {
             VehicleHandler h = activeVehicleHandlerMap.get(key);
             if (h != null) {
                 h.distributeContent(value);
             } else {
-                logger.info("No VehicleHandler available for VIN {}", key);
+                notFoundList.add(key);
             }
         });
+        notFoundList.forEach(vin -> {
+            logger.debug("No VehicleHandler available for VIN {}", vin);
+        });
+        return notFoundList.isEmpty();
     }
 
     public void commandStatusUpdate(Map<String, AppTwinCommandStatusUpdatesByPID> updatesByVinMap) {

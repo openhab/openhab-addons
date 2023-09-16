@@ -22,7 +22,9 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Enumeration;
@@ -39,6 +41,7 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.Temperature
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -68,6 +71,12 @@ public class Utils {
             return ZoneId.systemDefault();
         }
     };
+
+    public static DateTimeType getDateTimeType(long ms) {
+        Instant timestamp = Instant.ofEpochMilli(ms);
+        ZonedDateTime zdt = timestamp.atZone(timeZoneProvider.getTimeZone());
+        return DateTimeType.valueOf(zdt.toLocalDateTime().toString());
+    }
 
     /**
      * Get free port without other Thread interference
@@ -317,6 +326,51 @@ public class Utils {
         if (s != null) {
             if (OnOffType.ON.equals(s)) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    public static int getInt(VehicleAttributeStatus value) {
+        return Double.valueOf(getDouble(value)).intValue();
+    }
+
+    /**
+     * Priority:
+     * 1) get display value with converted values
+     * 2) get double if available
+     * 3) get in if available
+     *
+     * @param value
+     * @return
+     */
+    public static double getDouble(VehicleAttributeStatus value) {
+        double ret = -1;
+        if (!isNil(value)) {
+            if (value.getDisplayValue() != null) {
+                if (value.getDisplayValue().strip().length() > 0) {
+                    try {
+                        ret = Double.valueOf(value.getDisplayValue());
+                        return ret;
+                    } catch (NumberFormatException nfe) {
+                        LOGGER.info("Cannot transform {} / {} Display Value {} into Double", value.getStringValue(),
+                                value.toString(), value.getDisplayValue());
+                    }
+                }
+            }
+            if (value.hasDoubleValue()) {
+                return value.getDoubleValue();
+            } else if (value.hasIntValue()) {
+                return value.getIntValue();
+            }
+        }
+        return ret;
+    }
+
+    public static boolean isNil(@Nullable VehicleAttributeStatus value) {
+        if (value != null) {
+            if (value.hasNilValue()) {
+                return value.getNilValue();
             }
         }
         return false;

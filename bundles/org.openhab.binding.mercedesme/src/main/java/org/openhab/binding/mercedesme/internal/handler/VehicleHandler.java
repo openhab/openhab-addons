@@ -15,8 +15,6 @@ package org.openhab.binding.mercedesme.internal.handler;
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -114,7 +112,8 @@ public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
-    MercedesMeDynamicStateDescriptionProvider mmdsdp;
+    private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
+    // private List<CommandOption> maxSocCommandOptions;
     private Optional<AccountHandler> accountHandler = Optional.empty();
     private Optional<VehicleConfiguration> config = Optional.empty();
     private Map<String, Instant> blockerMap = new HashMap<String, Instant>();
@@ -131,15 +130,23 @@ public class VehicleHandler extends BaseThingHandler {
     public VehicleHandler(Thing thing, MercedesMeCommandOptionProvider cop, MercedesMeStateOptionProvider sop,
             MercedesMeDynamicStateDescriptionProvider dsdp) {
         super(thing);
-        vehicleType = thing.getThingTypeUID().getAsString();
+        vehicleType = thing.getThingTypeUID().getId();
         mmcop = cop;
         mmsop = sop;
         mmdsdp = dsdp;
+
+        // maxSocCommandOptions = new ArrayList<CommandOption>();
+        // maxSocCommandOptions.add(new CommandOption("50 %", "50 %"));
+        // maxSocCommandOptions.add(new CommandOption("60 %", "60 %"));
+        // maxSocCommandOptions.add(new CommandOption("70 %", "70 %"));
+        // maxSocCommandOptions.add(new CommandOption("80 %", "80 %"));
+        // maxSocCommandOptions.add(new CommandOption("90 %", "90 %"));
+        // maxSocCommandOptions.add(new CommandOption("100 %", "100 %"));
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("Received command {} for {}", command, channelUID);
+        logger.info("Received command {} {} for {}", command.getClass(), command, channelUID);
         if (command instanceof RefreshType) {
             if ("feature-capabilities".equals(channelUID.getIdWithoutGroup())
                     || "command-capabilities".equals(channelUID.getIdWithoutGroup())) {
@@ -527,9 +534,7 @@ public class VehicleHandler extends BaseThingHandler {
             ChannelStateMap csmState = new ChannelStateMap("cmd-state", GROUP_COMMAND, state);
             updateChannel(csmState);
             // Command Time
-            Instant time = Instant.ofEpochMilli(value.getTimestampInMs());
-            LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC);
-            DateTimeType dtt = DateTimeType.valueOf(ldt.toString());
+            DateTimeType dtt = Utils.getDateTimeType(value.getTimestampInMs());
             ChannelStateMap csmUpdated = new ChannelStateMap("cmd-last-update", GROUP_COMMAND, dtt);
             updateChannel(csmUpdated);
         });
@@ -552,8 +557,8 @@ public class VehicleHandler extends BaseThingHandler {
         boolean latitude = atts.containsKey("positionLat");
         boolean longitude = atts.containsKey("positionLong");
         if (latitude && longitude) {
-            boolean latitudeNil = Mapper.isNil(atts.get("positionLat"));
-            boolean longitudeNil = Mapper.isNil(atts.get("positionLong"));
+            boolean latitudeNil = Utils.isNil(atts.get("positionLat"));
+            boolean longitudeNil = Utils.isNil(atts.get("positionLong"));
             if (!latitudeNil && !longitudeNil) {
                 String gps = atts.get("positionLat").getDoubleValue() + "," + atts.get("positionLong").getDoubleValue();
                 PointType pt = new PointType(gps);
@@ -979,13 +984,13 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     protected void updateChannel(ChannelStateMap csm) {
+        String channel = csm.getChannel();
+        ChannelUID cuid = new ChannelUID(thing.getUID(), csm.getGroup(), channel);
         /**
          * Check correct channel patterns
          */
         if (csm.hasUomObersever()) {
-            String channel = csm.getChannel();
             UOMObserver deliveredObserver = csm.getUomObersever();
-            ChannelUID cuid = new ChannelUID(thing.getUID(), csm.getGroup(), channel);
             // Channel adaptions for items with configurable units
             if (uomStorage.containsKey(channel)) {
                 UOMObserver o = uomStorage.get(channel);
@@ -1011,17 +1016,25 @@ public class VehicleHandler extends BaseThingHandler {
         /**
          * Check if Websocket shall be kept alive during charging or driving
          */
-        if (GROUP_VEHICLE.equals(csm.getGroup()) && "ignition".equals(csm.getChannel())) {
-            ignitionState = ((DecimalType) csm.getState()).intValue();
-        } else if (GROUP_CHARGE.equals(csm.getGroup()) && "active".equals(csm.getChannel())) {
-            chargingState = ((OnOffType) csm.getState()).equals(OnOffType.ON);
+        if (!UnDefType.UNDEF.equals(csm.getState())) {
+            if (GROUP_VEHICLE.equals(csm.getGroup()) && "ignition".equals(csm.getChannel())) {
+                ignitionState = ((DecimalType) csm.getState()).intValue();
+            } else if (GROUP_CHARGE.equals(csm.getGroup()) && "active".equals(csm.getChannel())) {
+                chargingState = ((OnOffType) csm.getState()).equals(OnOffType.ON);
+            }
         }
 
+        /**
+         * Set command options for max-soc channel
+         */
+        // if ("max-soc".equals(csm.getChannel())) {
+        // mmcop.setCommandOptions(cuid, maxSocCommandOptions);
+        // }
         /**
          * Check if group is blocked due to running command
          */
         if (!isBlocked(csm.getGroup())) {
-            updateState(new ChannelUID(thing.getUID(), csm.getGroup(), csm.getChannel()), csm.getState());
+            updateState(cuid, csm.getState());
         } else {
             logger.trace("Update for {} temporarely blocked", csm.getGroup());
         }

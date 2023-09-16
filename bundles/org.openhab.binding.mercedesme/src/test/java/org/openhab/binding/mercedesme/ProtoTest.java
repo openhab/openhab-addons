@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.BatteryMaxSocConfigure;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ChargeProgramConfigure.ChargeProgram;
@@ -29,6 +30,7 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdatesByVIN;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
+import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -40,6 +42,19 @@ import com.google.protobuf.UnknownFieldSet;
 import com.google.protobuf.UnknownFieldSet.Field;
 
 class ProtoTest {
+
+    @Test
+    public void testPattern() {
+        UOMObserver obersver = new UOMObserver(UOMObserver.LENGTH_KM_UNIT);
+        System.out.println(obersver.getPattern(Constants.GROUP_RANGE));
+        System.out.println(obersver.getPattern(Constants.GROUP_TRIP));
+        if (obersver.getPattern(Constants.GROUP_RANGE).startsWith("%")) {
+            System.out.println("True");
+        } else {
+            System.out.println("False");
+        }
+        System.out.println("50 %");
+    }
 
     @Test
     void test() {

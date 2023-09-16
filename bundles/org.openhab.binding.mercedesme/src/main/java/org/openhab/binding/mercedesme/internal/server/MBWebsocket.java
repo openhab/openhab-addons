@@ -13,7 +13,6 @@
 package org.openhab.binding.mercedesme.internal.server;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -63,6 +62,8 @@ public class MBWebsocket {
     private final int ADDON_MESSAGE_TIME_MS = 10 * 1000;
     // check Socket time elapsed each second
     private final int CHECK_INTERVAL_MS = 1000;
+    // additional 5 minutes after keep alive
+    private final int KEEP_ALIVE_ADDON = 5 * 60 * 1000;
 
     private AccountHandler accountHandler;
     private boolean running = false;
@@ -173,6 +174,7 @@ public class MBWebsocket {
         synchronized (this) {
             runTill = Instant.MIN;
         }
+        logger.info("Kill Websocket!");
     }
 
     public void keepAlive(boolean b) {
@@ -183,6 +185,8 @@ public class MBWebsocket {
         } else {
             if (!b) {
                 logger.info("Wbesocket - keep alive end");
+                // after keep alive is finished add 5 minutes to cover e.g. door events after trip is finished
+                runTill = Instant.now().plusSeconds(KEEP_ALIVE_ADDON);
             }
         }
         keepAlive = b;
@@ -199,13 +203,14 @@ public class MBWebsocket {
             bytes = IOUtils.toByteArray(is);
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(bytes);
             if (pm.hasVepUpdates()) {
-                accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
-                // acknowledge vehicle update message
-                AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
-                        .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
-                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
-                sendAchnowledgeMessage(cm);
-                logger.trace("Vehicle update acknowledged {}", cm.getAllFields());
+                boolean distributed = accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
+                if (distributed) {
+                    AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
+                            .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
+                    ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
+                    sendAchnowledgeMessage(cm);
+                    logger.trace("Vehicle update acknowledged {}", cm.getAllFields());
+                }
             } else if (pm.hasAssignedVehicles()) {
                 for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
                     String vin = pm.getAssignedVehicles().getVins(0);
@@ -237,20 +242,6 @@ public class MBWebsocket {
 
         IOException e) {
             logger.warn("IOEXception {}", e.getMessage());
-            String fileName = "/tmp/parse-error-" + fileCounter + ".blob";
-            fileCounter++;
-            try {
-                if (bytes != null) {
-                    FileOutputStream fos = new FileOutputStream(fileName);
-                    fos.write(bytes);
-                }
-            } catch (IOException e1) {
-                logger.warn("Error caught druing writing file {} : {}", fileName, e1.getMessage());
-                StackTraceElement[] stack = e1.getStackTrace();
-                for (int i = 0; i < stack.length; i++) {
-                    logger.warn("{}", stack[i]);
-                }
-            }
         } catch (Error err) {
             logger.warn("Error caught {}", err.getMessage());
             StackTraceElement[] stack = err.getStackTrace();

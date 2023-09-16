@@ -141,6 +141,11 @@ Channels are separated in groups:
 | [position](#position)            | Positioning Data                                  |
 | [tires](#tires)                  | Tire Informatios                                  |
 
+## Actions
+
+See [Vehicle Actions](#vehicle-actions) which can be used in rules.
+
+
 ### Vehicle
 
 Group name: `vehicle`
@@ -478,6 +483,47 @@ All channels `read-only`
 #### Tire Marker Mapping
 
 - Not available yet!
+
+## Vehicle Actions
+
+You've the possibility to perform the below action in your rules. 
+
+### Send POI
+
+````java
+    /**
+     * Send Point of Interest (POI) to your vehicle.
+     * This POI is shown in your vehicle messages and can be instantly used to start a navigation route to this point.
+     * A "catchy" title plus latitude / longitude are mandatory.
+     * Parameters args is optional. If you use it respect the following order
+     * 1) City
+     * 2) Street
+     * 3) Postal Code
+     * If you miss any of them provide an empty String
+     *
+     * @param title - the title will be shown in your vehicle message inbox
+     * @param latitude - latitude of POI location
+     * @param longitude - longitude of POI location
+     * @param args - optional but respect order city, street, postal code
+     */
+    public void sendPoi(String title, double latitude, double longitude, String... args) 
+````
+
+### Example
+
+If you have 2 items `Poi_Location` and `Poi_Location_Name`
+
+````
+rule "Send POI"
+    when
+        Item Poi_Location changed
+    then
+        val mercedesmeActions = getActions("mercedesme","mercedesme:bev:abc:xyz")
+        val double lat = Poi_Location.state.getLatitude
+        val double lon = Poi_Location.state.getLongitude
+        mercedesmeActions.sendPoi(Poi_Location_Name.state.toString,lat,lon)
+end
+````
 
 
 
