@@ -23,6 +23,7 @@
 			<channel-group id="trip" typeId="trip-values"/>
 			<channel-group id="position" typeId="position-values"/>
 			<channel-group id="tires" typeId="tires-values"/>
+			<channel-group id="command" typeId="command-values"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:mercedesme:conv"/>

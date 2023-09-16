@@ -37,6 +37,7 @@ import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
+import org.openhab.binding.mercedesme.internal.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
 import org.openhab.binding.mercedesme.internal.server.AuthServer;
 import org.openhab.binding.mercedesme.internal.server.AuthService;
 import org.openhab.binding.mercedesme.internal.server.MBWebsocket;
@@ -265,6 +266,17 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             VehicleHandler h = activeVehicleHandlerMap.get(key);
             if (h != null) {
                 h.distributeContent(value);
+            } else {
+                logger.info("No VehicleHandler available for VIN {}", key);
+            }
+        });
+    }
+
+    public void commandStatusUpdate(Map<String, AppTwinCommandStatusUpdatesByPID> updatesByVinMap) {
+        updatesByVinMap.forEach((key, value) -> {
+            VehicleHandler h = activeVehicleHandlerMap.get(key);
+            if (h != null) {
+                h.distributeCommandStatus(value);
             } else {
                 logger.info("No VehicleHandler available for VIN {}", key);
             }

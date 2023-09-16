@@ -46,7 +46,7 @@
 	<channel-type id="fuel-level-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fuel Level</label>
-		<state pattern="%d %" readOnly="true"/>
+		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fuel-remain-channel">
 		<item-type>Number:Volume</item-type>
