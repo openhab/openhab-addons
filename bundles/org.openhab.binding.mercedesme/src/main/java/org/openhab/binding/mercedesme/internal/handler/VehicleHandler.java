@@ -15,6 +15,8 @@ package org.openhab.binding.mercedesme.internal.handler;
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -68,10 +70,13 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgram
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.TemperaturePointsValue;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
+import org.openhab.binding.mercedesme.internal.proto.Vehicleapi.AppTwinCommandStatus;
+import org.openhab.binding.mercedesme.internal.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
@@ -508,6 +513,26 @@ public class VehicleHandler extends BaseThingHandler {
     public void dispose() {
         accountHandler.get().unregisterVin(config.get().vin);
         super.dispose();
+    }
+
+    public void distributeCommandStatus(AppTwinCommandStatusUpdatesByPID cmdUpadtes) {
+        Map<Long, AppTwinCommandStatus> updates = cmdUpadtes.getUpdatesByPidMap();
+        updates.forEach((key, value) -> {
+            // Command name
+            StringType command = StringType.valueOf(value.getType().toString());
+            ChannelStateMap csmCommand = new ChannelStateMap("cmd-name", GROUP_COMMAND, command);
+            updateChannel(csmCommand);
+            // Command State
+            StringType state = StringType.valueOf(value.getState().toString());
+            ChannelStateMap csmState = new ChannelStateMap("cmd-state", GROUP_COMMAND, state);
+            updateChannel(csmState);
+            // Command Time
+            Instant time = Instant.ofEpochMilli(value.getTimestampInMs());
+            LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC);
+            DateTimeType dtt = DateTimeType.valueOf(ldt.toString());
+            ChannelStateMap csmUpdated = new ChannelStateMap("cmd-last-update", GROUP_COMMAND, dtt);
+            updateChannel(csmUpdated);
+        });
     }
 
     public void distributeContent(VEPUpdate data) {

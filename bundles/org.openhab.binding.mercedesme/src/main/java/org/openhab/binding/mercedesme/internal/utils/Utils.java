@@ -22,6 +22,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Enumeration;
@@ -37,6 +38,7 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ChargeProgr
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.TemperatureConfigure.TemperaturePoint.Zone;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -59,6 +61,13 @@ public class Utils {
     public static final Gson GSON = new Gson();
     public static final Map<String, Integer> ZONE_HASHMAP = new HashMap<String, Integer>();
     public static final Map<String, Integer> PROGRAM_HASHMAP = new HashMap<String, Integer>();
+    public static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+
+        @Override
+        public ZoneId getTimeZone() {
+            return ZoneId.systemDefault();
+        }
+    };
 
     /**
      * Get free port without other Thread interference

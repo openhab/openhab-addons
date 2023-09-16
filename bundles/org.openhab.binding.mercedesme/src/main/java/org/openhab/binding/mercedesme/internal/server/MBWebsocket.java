@@ -41,6 +41,7 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
 import org.openhab.binding.mercedesme.internal.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
+import org.openhab.binding.mercedesme.internal.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -216,9 +217,10 @@ public class MBWebsocket {
                 logger.trace("Vehicle assignments acknowledged {}", cm.getAllFields());
             } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
                 logger.debug("Command Status {}", pm.getApptwinCommandStatusUpdatesByVin().getAllFields());
+                AppTwinCommandStatusUpdatesByVIN csubv = pm.getApptwinCommandStatusUpdatesByVin();
+                accountHandler.commandStatusUpdate(csubv.getUpdatesByVinMap());
                 AcknowledgeAppTwinCommandStatusUpdatesByVIN ack = AcknowledgeAppTwinCommandStatusUpdatesByVIN
-                        .newBuilder().setSequenceNumber(pm.getApptwinCommandStatusUpdatesByVin().getSequenceNumber())
-                        .build();
+                        .newBuilder().setSequenceNumber(csubv.getSequenceNumber()).build();
                 ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack)
                         .build();
                 sendAchnowledgeMessage(cm);

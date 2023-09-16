@@ -26,8 +26,10 @@ import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryServ
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
+import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -70,8 +72,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
-            final @Reference LocaleProvider lp, final @Reference MercedesMeCommandOptionProvider cop,
-            final @Reference MercedesMeStateOptionProvider sop,
+            final @Reference LocaleProvider lp, final @Reference TimeZoneProvider tzp,
+            final @Reference MercedesMeCommandOptionProvider cop, final @Reference MercedesMeStateOptionProvider sop,
             final @Reference MercedesMeDynamicStateDescriptionProvider dsdp, final @Reference UnitProvider up) {
         this.storageService = storageService;
 
@@ -80,7 +82,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         mmsop = sop;
         mmdsdp = dsdp;
 
-        logger.info("UnitProvider {} received", up);
+        Utils.timeZoneProvider = tzp;
+
         // Configure Mapper default values
         Unit<Length> lengthUnit = up.getUnit(Length.class);
         if (lengthUnit.equals(ImperialUnits.FOOT)) {
