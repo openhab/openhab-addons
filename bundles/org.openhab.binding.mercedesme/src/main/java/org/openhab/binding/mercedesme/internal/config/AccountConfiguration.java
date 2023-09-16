@@ -27,7 +27,7 @@ public class AccountConfiguration {
     public String email = NOT_SET;
     public String region = NOT_SET;
     public String pin = NOT_SET;
-    public int refershInterval = 15;
+    public int refreshInterval = 15;
 
     public String callbackIP = NOT_SET;
     public int callbackPort = -1;

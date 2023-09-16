@@ -38,6 +38,21 @@ public class VehicleActions implements ThingActions {
     private String[] argumentKey = new String[] { "city", "street", "postcode" };
 
     @RuleAction(label = "@text/actionPoiLabel", description = "@text/actionPoiDescription")
+    /**
+     * Send Point of Interest (POI) to your vehicle.
+     * This POI is shown in your vehicle messages and can be instantly used to start a navigation route to this point.
+     * A "catchy" title plus latitude / longitude are mandatory.
+     * Parameters args is optional. If you use it respect the following order
+     * 1) City
+     * 2) Street
+     * 3) Postal Code
+     * If you miss any of them provide an empty String
+     *
+     * @param title - the title will be shown in your vehicle message inbox
+     * @param latitude - latitude of POI location
+     * @param longitude - longitude of POI location
+     * @param args - optional but respect order city, street, postal code
+     */
     public void sendPoi(
             @ActionInput(name = "title", label = "@text/poiTitle", description = "@text/poiTitleDescription") String title,
             @ActionInput(name = "latitude", label = "@text/latitudeLabel", description = "@text/latitudeDescription") double latitude,

@@ -54,10 +54,17 @@
 	<channel-type id="max-soc-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Charge SoC Maximum</label>
-		<tags>
-			<tag>Setpoint</tag>
-		</tags>
-		<state min="50" max="100" step="10" pattern="%d %%" readOnly="false"/>
+		<state pattern="%d %%" readOnly="false"/>
+		<command>
+			<options>
+				<option value="50 %">50 %</option>
+				<option value="60 %">60 %</option>
+				<option value="70 %">70 %</option>
+				<option value="80 %">80 %</option>
+				<option value="90 %">90 %</option>
+				<option value="100 %">100 %</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="auto-unlock-channel">
 		<item-type>Switch</item-type>

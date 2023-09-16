@@ -28,7 +28,6 @@ import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -88,53 +87,25 @@ public class Mapper {
                             lengthUnit = observer.getUnit().get();
                         }
                     }
-                    if (isNil(value)) {
-                        state = QuantityType.valueOf(-1, lengthUnit);
-                    } else {
-                        if (value.getDisplayValue() != null) {
-                            state = QuantityType.valueOf(Double.valueOf(value.getDisplayValue()), lengthUnit);
-                        } else if (value.hasDoubleValue()) {
-                            state = QuantityType.valueOf(value.getDoubleValue(), lengthUnit);
-                        } else if (value.hasIntValue()) {
-                            state = QuantityType.valueOf(value.getIntValue(), lengthUnit);
-                        } else {
-                            state = UnDefType.UNDEF;
-                            LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
-                        }
-                    }
+                    double d = Utils.getDouble(value);
+                    state = QuantityType.valueOf(Utils.getDouble(value), lengthUnit);
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // special String Value
                 case "drivenTimeStart":
                 case "drivenTimeReset":
-                    if (isNil(value)) {
+                    int duration = Utils.getInt(value);
+                    if (duration < 0) {
                         state = UnDefType.UNDEF;
                     } else {
-                        if (value.hasDoubleValue()) {
-                            state = StringType.valueOf(Utils.getDurationString(Math.round(value.getDoubleValue())));
-                        } else if (value.hasIntValue()) {
-                            state = StringType.valueOf(Utils.getDurationString(value.getIntValue()));
-                        } else {
-                            state = UnDefType.UNDEF;
-                            LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
-                        }
+                        state = StringType.valueOf(Utils.getDurationString(duration));
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 // KiloWatt values
                 case "chargingPower":
-                    if (isNil(value)) {
-                        state = QuantityType.valueOf(0, KILOWATT_UNIT);
-                    } else {
-                        if (value.hasDoubleValue()) {
-                            state = QuantityType.valueOf(value.getDoubleValue(), KILOWATT_UNIT);
-                        } else if (value.hasIntValue()) {
-                            state = QuantityType.valueOf(value.getIntValue(), KILOWATT_UNIT);
-                        } else {
-                            state = QuantityType.valueOf(0, KILOWATT_UNIT);
-                            LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
-                        }
-                    }
+                    double power = Utils.getDouble(value);
+                    state = QuantityType.valueOf(Math.max(0, power), KILOWATT_UNIT);
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 case "averageSpeedStart":
@@ -148,38 +119,15 @@ public class Mapper {
                             lengthUnit = observer.getUnit().get();
                         }
                     }
-                    if (isNil(value)) {
-                        state = QuantityType.valueOf(-1, speedUnit);
-                    } else {
-                        if (value.getDisplayValue() != null) {
-                            state = QuantityType.valueOf(Double.valueOf(value.getDisplayValue()), speedUnit);
-                        } else if (value.hasDoubleValue()) {
-                            state = QuantityType.valueOf(value.getDoubleValue(), speedUnit);
-                        } else if (value.hasIntValue()) {
-                            state = QuantityType.valueOf(value.getIntValue(), speedUnit);
-                        } else {
-                            state = UnDefType.UNDEF;
-                            LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
-                        }
-                    }
-                    LOGGER.info("Distribute {} QuantityType<Length> {}", ch[0], state.toFullString());
+                    double speed = Utils.getDouble(value);
+                    state = QuantityType.valueOf(Math.max(0, speed), speedUnit);
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // KiloWatt/Hour values
                 case "electricconsumptionstart":
                 case "electricconsumptionreset":
-                    if (isNil(value)) {
-                        state = QuantityType.valueOf(-1, KILOWATT_HOUR_UNIT);
-                    } else {
-                        if (value.hasDoubleValue()) {
-                            state = QuantityType.valueOf(value.getDoubleValue(), KILOWATT_HOUR_UNIT);
-                        } else if (value.hasIntValue()) {
-                            state = QuantityType.valueOf(value.getIntValue(), KILOWATT_HOUR_UNIT);
-                        } else {
-                            state = QuantityType.valueOf(-1, KILOWATT_HOUR_UNIT);
-                            LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
-                        }
-                    }
+                    double consumption = Utils.getDouble(value);
+                    state = QuantityType.valueOf(Math.max(0, consumption), KILOWATT_HOUR_UNIT);
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 // Litre values
@@ -194,25 +142,13 @@ public class Mapper {
                             volumeUnit = observer.getUnit().get();
                         }
                     }
-                    if (isNil(value)) {
-                        state = QuantityType.valueOf(-1, volumeUnit);
-                    } else {
-                        if (value.getDisplayValue() != null) {
-                            state = QuantityType.valueOf(Double.valueOf(value.getDisplayValue()), volumeUnit);
-                        } else if (value.hasDoubleValue()) {
-                            state = QuantityType.valueOf(value.getDoubleValue(), volumeUnit);
-                        } else if (value.hasIntValue()) {
-                            state = QuantityType.valueOf(value.getIntValue(), volumeUnit);
-                        } else {
-                            state = QuantityType.valueOf(-1, volumeUnit);
-                            LOGGER.info("Neither Double nor Integer value available for Kilometer {}", key);
-                        }
-                    }
+                    double volume = Utils.getDouble(value);
+                    state = QuantityType.valueOf(Math.max(0, volume), volumeUnit);
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // Time - end of charging
                 case "endofchargetime":
-                    if (isNil(value)) {
+                    if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
                     } else if (value.getDisplayValue() != null) {
                         String dv = value.getDisplayValue();
@@ -235,23 +171,18 @@ public class Mapper {
 
                 // DateTime - last Update
                 case "tirePressMeasTimestamp":
-                    if (isNil(value)) {
+                    if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
                     } else {
-                        Instant time = Instant.ofEpochMilli(value.getTimestampInMs());
-                        LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC);
-                        state = DateTimeType.valueOf(ldt.toString());
+                        state = Utils.getDateTimeType(value.getTimestampInMs());
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 // Percentages
                 case "soc":
                 case "tanklevelpercent":
-                    if (isNil(value)) {
-                        state = QuantityType.valueOf(-1, Units.PERCENT);
-                    } else {
-                        state = QuantityType.valueOf(value.getIntValue(), Units.PERCENT);
-                    }
+                    double level = Utils.getDouble(value);
+                    state = QuantityType.valueOf(level, Units.PERCENT);
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 // Contacts
@@ -261,7 +192,7 @@ public class Mapper {
                 case "doorstatusrearleft":
                 case "decklidstatus":
                 case "engineHoodStatus":
-                    if (isNil(value)) {
+                    if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
                     } else {
                         state = getContact(value.getBoolValue());
@@ -293,21 +224,24 @@ public class Mapper {
                 case "chargeCouplerACStatus":
                 case "chargeCouplerDCStatus":
                 case "chargeCouplerDCLockStatus":
+                case "tireSensorAvailable":
+                    int stateNumberInteger = Utils.getInt(value);
+                    if (stateNumberInteger < 0) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        state = new DecimalType(stateNumberInteger);
+                    }
+                    return new ChannelStateMap(ch[0], ch[1], state);
+
                 case "tireMarkerFrontRight":
                 case "tireMarkerFrontLeft":
                 case "tireMarkerRearRight":
                 case "tireMarkerRearLeft":
-                case "tireSensorAvailable":
-                    if (isNil(value)) {
+                    double stateNumberDouble = Utils.getDouble(value);
+                    if (stateNumberDouble < 0) {
                         state = UnDefType.UNDEF;
                     } else {
-                        if (value.hasDoubleValue()) {
-                            state = new DecimalType(value.getDoubleValue());
-                        } else if (value.hasIntValue()) {
-                            state = new DecimalType(value.getIntValue());
-                        } else {
-                            state = UnDefType.UNDEF;
-                        }
+                        state = new DecimalType(stateNumberDouble);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -324,7 +258,7 @@ public class Mapper {
                 case "warningcoolantlevellow":
                 case "warningenginelight":
                 case "chargingactive":
-                    if (isNil(value)) {
+                    if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
                     } else {
                         if (value.hasBoolValue()) {
@@ -342,7 +276,7 @@ public class Mapper {
                 case "doorlockstatusrearleft":
                 case "doorlockstatusdecklid":
                 case "doorlockstatusgas":
-                    if (isNil(value)) {
+                    if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
                     } else {
                         // sad but true - false means locked
@@ -352,10 +286,11 @@ public class Mapper {
 
                 // Angle
                 case "positionHeading":
-                    if (isNil(value)) {
+                    double heading = Utils.getDouble(value);
+                    if (heading < 0) {
                         state = UnDefType.UNDEF;
                     } else {
-                        state = QuantityType.valueOf(Double.valueOf(value.getDoubleValue()), Units.DEGREE_ANGLE);
+                        state = QuantityType.valueOf(heading, Units.DEGREE_ANGLE);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -373,20 +308,8 @@ public class Mapper {
                             pressureUnit = observer.getUnit().get();
                         }
                     }
-                    if (isNil(value)) {
-                        state = QuantityType.valueOf(-1, pressureUnit);
-                    } else {
-                        if (value.getDisplayValue() != null) {
-                            state = QuantityType.valueOf(Double.parseDouble(value.getDisplayValue()), pressureUnit);
-                        } else if (value.hasIntValue()) {
-                            state = QuantityType.valueOf(value.getIntValue(), pressureUnit);
-                        } else if (value.hasDoubleValue()) {
-                            state = QuantityType.valueOf(value.getDoubleValue(), pressureUnit);
-                        } else {
-                            state = QuantityType.valueOf(0, pressureUnit);
-                            LOGGER.info("Neither Double nor Integer value available for Pressure {}", key);
-                        }
-                    }
+                    double pressure = Utils.getDouble(value);
+                    state = QuantityType.valueOf(pressure, pressureUnit);
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
                 default:
                     // LOGGER.trace("No mapping available for {}", key);
@@ -405,15 +328,6 @@ public class Mapper {
         } else {
             return OpenClosedType.OPEN;
         }
-    }
-
-    public static boolean isNil(@Nullable VehicleAttributeStatus value) {
-        if (value != null) {
-            if (value.hasNilValue()) {
-                return value.getNilValue();
-            }
-        }
-        return false;
     }
 
     /**
