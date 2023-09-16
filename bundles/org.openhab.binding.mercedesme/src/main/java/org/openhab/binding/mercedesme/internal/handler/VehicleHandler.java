@@ -619,7 +619,6 @@ public class VehicleHandler extends BaseThingHandler {
                 || Constants.HYBRID.equals(thing.getThingTypeUID().getId())) {
             if (atts.containsKey("chargePrograms")) {
                 ChargeProgramsValue cpv = atts.get("chargePrograms").getChargeProgramsValue();
-                logger.info("CHARGEPROGRM found {} entries", cpv.getChargeProgramParametersCount());
                 if (cpv.getChargeProgramParametersCount() > 0) {
                     List<ChargeProgramParameters> chareProgeamParameters = cpv.getChargeProgramParametersList();
                     List<CommandOption> commandOptions = new ArrayList<CommandOption>();
@@ -629,7 +628,6 @@ public class VehicleHandler extends BaseThingHandler {
                         chareProgeamParameters.forEach(program -> {
                             String programName = program.getChargeProgram().name();
                             int number = Utils.getChargeProgramNumber(programName);
-                            logger.info("CHARGEPROGRM store {} with number {}", programName, number);
                             if (number >= 0) {
                                 JSONObject programValuesJson = new JSONObject();
                                 programValuesJson.put(Constants.MAX_SOC_KEY, program.getMaxSoc());
@@ -638,8 +636,6 @@ public class VehicleHandler extends BaseThingHandler {
                                 commandOptions.add(new CommandOption(Integer.toString(number), programName));
                                 stateOptions.add(new StateOption(Integer.toString(number), programName));
 
-                            } else {
-                                logger.info("No Integer mappong found for Charge Program {}", programName);
                             }
                         });
                     }

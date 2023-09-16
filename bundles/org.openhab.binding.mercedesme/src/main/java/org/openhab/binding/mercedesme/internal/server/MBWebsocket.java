@@ -224,7 +224,7 @@ public class MBWebsocket {
                 sendAchnowledgeMessage(cm);
                 logger.trace("Command Status acknowledged {}" + cm.getAllFields());
             } else if (pm.hasApptwinPendingCommandRequest()) {
-                logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
+                // logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
             } else if (pm.hasDebugMessage()) {
                 logger.debug("MB Debug Message: {}", pm.getDebugMessage().getMessage());
             } else {
