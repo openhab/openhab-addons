@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:mqtt:awtrixclock">
+		<parameter name="basetopic" type="text" required="true">
+			<label>Base topic</label>
+			<description>Base topic as configured for the Awtrix clock</description>
+			<default>awtrix</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:mqtt:awtrixapp">
+		<parameter name="appname" type="text" required="true">
+			<label>App name</label>
+			<description>Name of the app</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
