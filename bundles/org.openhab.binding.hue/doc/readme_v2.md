@@ -71,7 +71,7 @@ Device things support some of the following channels:
 | effect                | String             | Allows setting an effect on a light e.g. 'candle' effect. (Advanced)                                                |
 | button-last-event     | (String)           | Informs which button was last pressed in the device. (Trigger Channel)                                              |
 | rotary-steps          | (String)           | Informs about the number of rotary steps of the last rotary dial movement. (Trigger Channel)                        |
-| motion                | Switch             | Shows if motion has been detected by the sensor. (Read Only)                                                        |
+| motion                | Switch             | Shows if motion has been detected by the PIR or security camera sensor. (Read Only)                                 |
 | motion-enabled        | Switch             | Supports enabling / disabling the motion sensor. (Advanced)                                                         |
 | light-level           | Number:Illuminance | Shows the current light level measured by the sensor. (Read Only)                                                   |
 | light-level-enabled   | Switch             | Supports enabling / disabling the light level sensor. (Advanced)                                                    |
@@ -83,6 +83,10 @@ Device things support some of the following channels:
 | color-xy-only         | Color              | Allows access to the `color-xy` parameter of the light(s) only. Has no impact on `dimming` or `on-off` parameters.  |
 | dimming-only          | Dimmer             | Allows access to the `dimming` parameter of the light(s) only. Has no impact on `color-xy` or `on-off` parameters.  |
 | on-off-only           | Switch             | Allows access to the `on-off` parameter of the light(s) only. Has no impact on `color-xy` or `dimming` parameters.  |
+| security-contact      | Contact            | Indicates whether a security contact has been triggered. (Read Only)                                                |
+| security-contact-last-updated | DateTime   | Indicates the last time when the security contact was triggered. (Read Only)                                        |
+| security-tamper       | Contact            | Indicates whether a security tamper switch has been triggered. (Read Only)                                          |
+| security-tamper-last-updated  | DateTime   | Indicates the last time when the security tamper switc was triggered. (Read Only)                                   |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.

@@ -530,6 +530,7 @@ public class Resource {
     public State getTamperLastUpdatedState(ZoneId zoneId) {
         List<TamperReport> tamperReports = this.tamperReports;
         if (Objects.nonNull(tamperReports)) {
+            // TODO check sorted() sort order; most recent event will be either the first or the last entry
             List<Instant> changes = tamperReports.stream().map(t -> t.getLastChanged()).sorted().toList();
             return changes.isEmpty() ? UnDefType.UNDEF
                     : new DateTimeType(ZonedDateTime.ofInstant(changes.get(changes.size() - 1), zoneId));
