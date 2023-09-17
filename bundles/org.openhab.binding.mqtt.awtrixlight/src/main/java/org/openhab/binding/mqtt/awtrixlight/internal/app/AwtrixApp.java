@@ -45,8 +45,8 @@ public class AwtrixApp {
     public static final boolean DEFAULT_RAINBOW = false;
     public static final String DEFAULT_ICON = "None";
     public static final boolean DEFAULT_PUSHICON = false;
-    public static final BigDecimal DEFAULT_REPEAT = new BigDecimal(1);
-    public static final BigDecimal DEFAULT_DURATION = new BigDecimal(5);
+    // public static final BigDecimal DEFAULT_REPEAT = new BigDecimal(-1);
+    public static final BigDecimal DEFAULT_DURATION = new BigDecimal(7);
     public static final BigDecimal[] DEFAULT_LINE = {};
     public static final BigDecimal[] DEFAULT_BAR = {};
     public static final boolean DEFAULT_AUTOSCALE = true;
@@ -72,7 +72,7 @@ public class AwtrixApp {
     private boolean rainbow = DEFAULT_RAINBOW;
     private String icon = DEFAULT_ICON;
     private boolean pushIcon = DEFAULT_PUSHICON;
-    private BigDecimal repeat = DEFAULT_REPEAT;
+    // private BigDecimal repeat = DEFAULT_REPEAT;
     private BigDecimal duration = DEFAULT_DURATION;
     private BigDecimal[] line = DEFAULT_LINE;
     private BigDecimal[] bar = DEFAULT_BAR;
@@ -102,7 +102,7 @@ public class AwtrixApp {
         this.rainbow = getBoolValue(params, "rainbow", false);
         this.icon = getStringValue(params, "icon", "None");
         this.pushIcon = getBoolValue(params, "pushIcon", false);
-        this.repeat = getNumberValue(params, "repeat", new BigDecimal(1));
+        // this.repeat = getNumberValue(params, "repeat", new BigDecimal(1));
         this.duration = getNumberValue(params, "duration", new BigDecimal(5));
         this.line = getNumberArrayValue(params, "line", new BigDecimal[0]);
         this.bar = getNumberArrayValue(params, "bar", new BigDecimal[0]);
@@ -215,7 +215,7 @@ public class AwtrixApp {
         fields.putAll(getTextEffectConfig());
         fields.putAll(getBackgroundConfig());
         fields.putAll(getIconConfig());
-        fields.put("repeat", this.repeat);
+        // fields.put("repeat", this.repeat);
         fields.put("duration", this.duration);
         fields.putAll(getGraphConfig());
         fields.putAll(getProgressConfig());
@@ -448,20 +448,20 @@ public class AwtrixApp {
         this.pushIcon = pushIcon;
     }
 
-    public BigDecimal getRepeat() {
-        return this.repeat;
-    }
+    // public BigDecimal getRepeat() {
+    // return this.repeat;
+    // }
 
-    public void setRepeat(BigDecimal repeat) {
-        this.repeat = repeat;
-    }
+    // public void setRepeat(BigDecimal repeat) {
+    // this.repeat = repeat;
+    // }
 
     public BigDecimal getDuration() {
         return this.duration;
     }
 
-    public void setDuration(BigDecimal fadeText) {
-        this.fadeText = fadeText;
+    public void setDuration(BigDecimal duration) {
+        this.duration = duration;
     }
 
     public BigDecimal[] getLine() {
@@ -502,15 +502,24 @@ public class AwtrixApp {
 
     @Override
     public String toString() {
+        // return "AwtrixApp [text=" + text + ", textCase=" + textCase + ", topText=" + topText + ", textOffset="
+        // + textOffset + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient="
+        // + Arrays.toString(gradient) + ", blinkText=" + blinkText + ", fadeText=" + fadeText + ", background="
+        // + Arrays.toString(background) + ", rainbow=" + rainbow + ", icon=" + icon + ", pushIcon=" + pushIcon
+        // + ", repeat=" + repeat + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", bar="
+        // + Arrays.toString(bar) + ", autoscale=" + autoscale + ", progress=" + progress + ", progressC="
+        // + Arrays.toString(progressC) + ", progressBC=" + Arrays.toString(progressBC) + ", scrollSpeed="
+        // + scrollSpeed + ", effect=" + effect + ", effectSpeed=" + effectSpeed + ", effectPalette="
+        // + effectPalette + ", effectBlend=" + effectBlend + "]";
         return "AwtrixApp [text=" + text + ", textCase=" + textCase + ", topText=" + topText + ", textOffset="
                 + textOffset + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient="
                 + Arrays.toString(gradient) + ", blinkText=" + blinkText + ", fadeText=" + fadeText + ", background="
                 + Arrays.toString(background) + ", rainbow=" + rainbow + ", icon=" + icon + ", pushIcon=" + pushIcon
-                + ", repeat=" + repeat + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", bar="
-                + Arrays.toString(bar) + ", autoscale=" + autoscale + ", progress=" + progress + ", progressC="
-                + Arrays.toString(progressC) + ", progressBC=" + Arrays.toString(progressBC) + ", scrollSpeed="
-                + scrollSpeed + ", effect=" + effect + ", effectSpeed=" + effectSpeed + ", effectPalette="
-                + effectPalette + ", effectBlend=" + effectBlend + "]";
+                + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", bar=" + Arrays.toString(bar)
+                + ", autoscale=" + autoscale + ", progress=" + progress + ", progressC=" + Arrays.toString(progressC)
+                + ", progressBC=" + Arrays.toString(progressBC) + ", scrollSpeed=" + scrollSpeed + ", effect=" + effect
+                + ", effectSpeed=" + effectSpeed + ", effectPalette=" + effectPalette + ", effectBlend=" + effectBlend
+                + "]";
     }
 
     public BigDecimal[] setProgressC() {

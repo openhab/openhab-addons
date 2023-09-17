@@ -37,7 +37,6 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_PROGRESSC;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_PUSH_ICON;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_RAINBOW;
-import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_REPEAT;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_RESET;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_SCROLLSPEED;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_TEXT;
@@ -158,10 +157,10 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             if (command instanceof QuantityType) {
                 this.app.setScrollSpeed(((QuantityType<?>) command).toBigDecimal());
             }
-        } else if (channelUID.getId().equals(CHANNEL_REPEAT)) {
-            if (command instanceof QuantityType) {
-                this.app.setRepeat(((QuantityType<?>) command).toBigDecimal());
-            }
+            // } else if (channelUID.getId().equals(CHANNEL_REPEAT)) {
+            // if (command instanceof QuantityType) {
+            // this.app.setRepeat(((QuantityType<?>) command).toBigDecimal());
+            // }
         } else if (channelUID.getId().equals(CHANNEL_DURATION)) {
             if (command instanceof QuantityType) {
                 this.app.setDuration(((QuantityType<?>) command).toBigDecimal());
@@ -302,8 +301,8 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             this.app.setGradient(AwtrixApp.DEFAULT_GRADIENT);
         } else if (channelUID.getId().equals(CHANNEL_SCROLLSPEED)) {
             this.app.setScrollSpeed(AwtrixApp.DEFAULT_SCROLLSPEED);
-        } else if (channelUID.getId().equals(CHANNEL_REPEAT)) {
-            this.app.setRepeat(AwtrixApp.DEFAULT_REPEAT);
+            // } else if (channelUID.getId().equals(CHANNEL_REPEAT)) {
+            // this.app.setRepeat(AwtrixApp.DEFAULT_REPEAT);
         } else if (channelUID.getId().equals(CHANNEL_DURATION)) {
             this.app.setDuration(AwtrixApp.DEFAULT_DURATION);
         } else if (channelUID.getId().equals(CHANNEL_EFFECT)) {
@@ -358,6 +357,89 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         initStates();
     }
 
+    @Override
+    public void initialize() {
+        AppConfigOptions config = getConfigAs(AppConfigOptions.class);
+        this.appName = config.appname;
+        this.buttonControlled = config.useButtons;
+        this.channelPrefix = getThing().getUID() + ":";
+        thing.setProperty(PROP_APPID, this.appName);
+        logger.trace("Configured handler for app {} with channelPrefix {}", this.appName, this.channelPrefix);
+        bridgeStatusChanged(getBridgeStatus());
+    }
+
+    public ThingStatusInfo getBridgeStatus() {
+        Bridge b = getBridge();
+        if (b != null) {
+            return b.getStatusInfo();
+        } else {
+            return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+
+        Bridge localBridge = this.getBridge();
+        if (localBridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge is missing or offline.");
+            return;
+        }
+        ThingHandler handler = localBridge.getHandler();
+        if (handler instanceof AwtrixLightBridgeHandler) {
+            AwtrixLightBridgeHandler albh = (AwtrixLightBridgeHandler) handler;
+            Map<String, String> bridgeProperties = albh.getThing().getProperties();
+            String bridgeHardwareId = bridgeProperties.get(PROP_UNIQUEID);
+            if (bridgeHardwareId != null) {
+                thing.setProperty(PROP_APPID, bridgeHardwareId + "-" + this.appName);
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY, "Synchronizing...");
+            this.finishInitJob = scheduler.schedule(this::finishInit, 5, TimeUnit.SECONDS);
+        }
+        return;
+    }
+
+    @Override
+    public void processMessage(String topic, byte[] payload) {
+        synchronized (this.synchronizationRequired) {
+            if (this.synchronizationRequired) {
+                String payloadString = new String(payload, StandardCharsets.UTF_8);
+                HashMap<String, Object> decodedJson = Helper.decodeJson(payloadString);
+                this.app.updateFields(decodedJson);
+                initStates();
+                this.synchronizationRequired = false;
+            }
+        }
+    }
+
+    public String getAppName() {
+        return this.appName;
+    }
+
+    public boolean isButtonControlled() {
+        return this.buttonControlled;
+    }
+
+    void handleLeftButton(String event) {
+        triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTLEFT), event);
+    }
+
+    void handleRightButton(String event) {
+        triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTRIGHT), event);
+    }
+
+    void handleSelectButton(String event) {
+        triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTSELECT), event);
+    }
+
     private BigDecimal[] convertRgbArray(int[] rgbIn) {
         if (rgbIn.length == 3) {
             BigDecimal[] rgb = new BigDecimal[3];
@@ -392,17 +474,6 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         }
     }
 
-    @Override
-    public void initialize() {
-        AppConfigOptions config = getConfigAs(AppConfigOptions.class);
-        this.appName = config.appname;
-        this.buttonControlled = config.useButtons;
-        this.channelPrefix = getThing().getUID() + ":";
-        thing.setProperty(PROP_APPID, this.appName);
-        logger.trace("Configured handler for app {} with channelPrefix {}", this.appName, this.channelPrefix);
-        bridgeStatusChanged(getBridgeStatus());
-    }
-
     private void initStates() {
         updateState(new ChannelUID(channelPrefix + CHANNEL_ACTIVE), this.active ? OnOffType.ON : OnOffType.OFF);
         if (this.app.getColor().length == 3) {
@@ -421,8 +492,8 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         }
         updateState(new ChannelUID(channelPrefix + CHANNEL_SCROLLSPEED),
                 new QuantityType<>(this.app.getScrollSpeed(), Units.PERCENT));
-        updateState(new ChannelUID(channelPrefix + CHANNEL_REPEAT),
-                new QuantityType<>(this.app.getRepeat(), Units.ONE));
+        // updateState(new ChannelUID(channelPrefix + CHANNEL_REPEAT),
+        // new QuantityType<>(this.app.getRepeat(), Units.ONE));
         updateState(new ChannelUID(channelPrefix + CHANNEL_DURATION),
                 new QuantityType<>(this.app.getDuration(), Units.SECOND));
         updateState(new ChannelUID(channelPrefix + CHANNEL_EFFECT), new StringType(this.app.getEffect()));
@@ -505,57 +576,6 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         }
     }
 
-    public ThingStatusInfo getBridgeStatus() {
-        Bridge b = getBridge();
-        if (b != null) {
-            return b.getStatusInfo();
-        } else {
-            return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
-        }
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
-        }
-        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            return;
-        }
-
-        Bridge localBridge = this.getBridge();
-        if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge is missing or offline.");
-            return;
-        }
-        ThingHandler handler = localBridge.getHandler();
-        if (handler instanceof AwtrixLightBridgeHandler) {
-            AwtrixLightBridgeHandler albh = (AwtrixLightBridgeHandler) handler;
-            Map<String, String> bridgeProperties = albh.getThing().getProperties();
-            String bridgeHardwareId = bridgeProperties.get(PROP_UNIQUEID);
-            if (bridgeHardwareId != null) {
-                thing.setProperty(PROP_APPID, bridgeHardwareId + "-" + this.appName);
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY, "Synchronizing...");
-            this.finishInitJob = scheduler.schedule(this::finishInit, 5, TimeUnit.SECONDS);
-        }
-        return;
-    }
-
-    void handleLeftButton(String event) {
-        triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTLEFT), event);
-    }
-
-    void handleRightButton(String event) {
-        triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTRIGHT), event);
-    }
-
-    void handleSelectButton(String event) {
-        triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTSELECT), event);
-    }
-
     private void finishInit() {
         synchronized (this.synchronizationRequired) {
             if (this.synchronizationRequired) {
@@ -566,26 +586,5 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             this.finishInitJob = null;
         }
-    }
-
-    @Override
-    public void processMessage(String topic, byte[] payload) {
-        synchronized (this.synchronizationRequired) {
-            if (this.synchronizationRequired) {
-                String payloadString = new String(payload, StandardCharsets.UTF_8);
-                HashMap<String, Object> decodedJson = Helper.decodeJson(payloadString);
-                this.app.updateFields(decodedJson);
-                initStates();
-                this.synchronizationRequired = false;
-            }
-        }
-    }
-
-    public String getAppName() {
-        return this.appName;
-    }
-
-    public boolean isButtonControlled() {
-        return this.buttonControlled;
     }
 }

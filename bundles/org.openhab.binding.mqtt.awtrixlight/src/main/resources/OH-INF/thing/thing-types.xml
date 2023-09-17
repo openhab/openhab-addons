@@ -62,7 +62,7 @@
 			<channel id="rainbow" typeId="rainbow"/>
 			<channel id="icon" typeId="icon"/>
 			<channel id="pushIcon" typeId="pushIcon"/>
-			<channel id="repeat" typeId="repeat"/>
+			<!--<channel id="repeat" typeId="repeat"/> -->
 			<channel id="duration" typeId="duration"/>
 			<channel id="line" typeId="line"/>
 			<channel id="bar" typeId="bar"/>
@@ -215,11 +215,11 @@
 		<description>Color text as gradient from Color to Gradient Color</description>
 	</channel-type>
 
-	<channel-type id="repeat">
+	<!-- <channel-type id="repeat">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Repeat information</label>
 		<description>Number of times the text scrolls through the display</description>
-	</channel-type>
+		</channel-type> -->
 
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>

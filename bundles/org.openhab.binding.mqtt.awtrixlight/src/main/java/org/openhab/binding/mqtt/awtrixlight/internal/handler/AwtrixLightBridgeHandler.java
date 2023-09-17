@@ -89,6 +89,10 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     private @Nullable ScheduledFuture<?> scheduledAppLockTimeout;
     private @Nullable ScheduledFuture<?> scheduledFadeBeforeTimeout;
 
+    // ATRANS Workaround
+    // private @Nullable BigDecimal repeat;
+    // private @Nullable BigDecimal duration;
+
     public AwtrixLightBridgeHandler(Bridge bridge) {
         super(bridge);
     }
@@ -207,6 +211,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
 
     @Override
     public void dispose() {
+        leaveAppControlMode();
         MqttBrokerConnection localConnection = connection;
         if (localConnection != null) {
             localConnection.unsubscribe(basetopic + STATS_TOPIC + "/#", this);
@@ -371,22 +376,19 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     private void handleSelectButton(String event) {
         triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTSELECT), event);
         AwtrixLightAppHandler alah = this.appHandlers.get(this.currentApp);
-        logger.debug("STEP 1");
         if (alah != null) {
-            logger.debug("STEP 1.1");
             if (!this.appLock) {
-                logger.debug("STEP 1.1.1");
                 if (alah.isButtonControlled()) {
-                    logger.debug("STEP 1.1.1.1");
                     if ("RELEASED".equals(event)) {
-                        logger.debug("STEP 1.1.1.1");
+                        // ATRANS Workaround -> Send commands to reset repeat (and duration?)
+                        // repeat = alah.getRepeat();
+                        // sendMQTT(this.basetopic + "/custom/" + this.currentApp, "{\"repeat\":-1}", false);
                         sendMQTT(this.basetopic + TOPIC_SETTINGS, "{\"ATRANS\":false,\"BLOCKN\":true}", false);
                         this.appLock = true;
                         scheduleAppLockTimeout();
                     }
                 }
             } else {
-                logger.debug("STEP 1.2");
                 scheduleAppLockTimeout();
                 alah.handleSelectButton(event);
             }
@@ -415,8 +417,21 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
 
     private void leaveAppControlMode() {
         this.appLock = false;
+        Future<?> localSignalSchedule = this.scheduledFadeBeforeTimeout;
+        if (localSignalSchedule != null && !localSignalSchedule.isCancelled() && !localSignalSchedule.isDone()) {
+            localSignalSchedule.cancel(true);
+        }
+        Future<?> localSchedule = this.scheduledAppLockTimeout;
+        if (localSchedule != null && !localSchedule.isCancelled() && !localSchedule.isDone()) {
+            localSchedule.cancel(true);
+        }
         deactivateIndicator(INDICATOR3_TOPIC);
         sendMQTT(this.basetopic + TOPIC_SETTINGS, "{\"ATRANS\":true,\"BLOCKN\":false}", false);
+        // ATRANS Workaround
+        // if (this.repeat != null) {
+        // sendMQTT(this.basetopic + "/custom/" + this.currentApp, "{\"repeat\":" + this.repeat.intValue() + "}",
+        // false);
+        // }
     }
 
     private void signalLeaveAppControlMode() {
