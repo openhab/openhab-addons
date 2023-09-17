@@ -27,6 +27,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.ButtonEventType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.SceneRecallAction;
@@ -195,15 +196,36 @@ public class Resource {
      */
     public State getButtonEventState(Map<String, Integer> controlIds) {
         Button button = this.button;
-        if (Objects.nonNull(button)) {
-            try {
-                return new DecimalType(
-                        (controlIds.getOrDefault(getId(), 0).intValue() * 1000) + button.getLastEvent().ordinal());
-            } catch (IllegalArgumentException e) {
-                // fall through
-            }
+        if (button == null) {
+            return UnDefType.NULL;
         }
-        return UnDefType.NULL;
+        ButtonEventType event;
+        ButtonReport buttonReport = button.getButtonReport();
+        if (buttonReport == null) {
+            event = button.getLastEvent();
+        } else {
+            event = buttonReport.getLastEvent();
+        }
+        if (event == null) {
+            return UnDefType.NULL;
+        }
+        return new DecimalType((controlIds.getOrDefault(getId(), 0).intValue() * 1000) + event.ordinal());
+    }
+
+    public State getButtonLastUpdatedState(ZoneId zoneId) {
+        Button button = this.button;
+        if (button == null) {
+            return UnDefType.NULL;
+        }
+        ButtonReport buttonReport = button.getButtonReport();
+        if (buttonReport == null) {
+            return UnDefType.UNDEF;
+        }
+        Instant lastChanged = buttonReport.getLastChanged();
+        if (lastChanged == null || Instant.EPOCH.equals(lastChanged)) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
     }
 
     public List<ResourceReference> getChildren() {
@@ -551,7 +573,7 @@ public class Resource {
             return UnDefType.UNDEF;
         }
         Instant lastChanged = rotaryReport.getLastChanged();
-        if (lastChanged == null) {
+        if (lastChanged == null || Instant.EPOCH.equals(lastChanged)) {
             return UnDefType.UNDEF;
         }
         return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));

@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -109,6 +110,24 @@ class Clip2DtoTest {
     @Test
     void testButton() {
         String json = load(ResourceType.BUTTON.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.BUTTON, item.getType());
+        Button button = item.getButton();
+        assertNotNull(button);
+        assertEquals(new DecimalType(2003),
+                item.getButtonEventState(Map.of("00000000-0000-0000-0000-000000000001", 2)));
+        assertEquals(new DateTimeType("2023-09-17T18:51:36.959+0000"),
+                item.getButtonLastUpdatedState(ZoneId.of("UTC")));
+    }
+
+    @Test
+    void testButtonDeprecated() {
+        String json = load(ResourceType.BUTTON.name().toLowerCase() + "_deprecated");
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
         List<Resource> list = resources.getResources();

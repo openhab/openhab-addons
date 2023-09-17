@@ -24,6 +24,10 @@
 				<description>Activate the effect for the light.</description>
 			</channel>
 			<channel id="button-last-event" typeId="button-last-event"/>
+			<channel id="button-last-updated" typeId="last-updated-v2">
+				<label>Button Last Updated</label>
+				<description>The date and time when a button was last pressed.</description>
+			</channel>
 			<channel id="rotary-steps" typeId="rotary-steps"/>
 			<channel id="rotary-steps-last-updated" typeId="last-updated-v2">
 				<label>Rotary Steps Last Updated</label>

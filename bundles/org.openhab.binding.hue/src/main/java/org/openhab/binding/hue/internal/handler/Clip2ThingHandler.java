@@ -167,6 +167,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private Resource thisResource;
     private Duration dynamicsDuration = Duration.ZERO;
     private Instant dynamicsExpireTime = Instant.MIN;
+    private Instant lastUpdated = Instant.MIN;
 
     private boolean disposing;
     private boolean hasConnectivityIssue;
@@ -833,10 +834,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case BUTTON:
                 if (fullUpdate) {
                     addSupportedChannel(CHANNEL_2_BUTTON_LAST_EVENT);
+                    addSupportedChannel(CHANNEL_2_BUTTON_LAST_UPDATED);
                     controlIds.put(resource.getId(), resource.getControlId());
                 } else {
                     State buttonState = resource.getButtonEventState(controlIds);
                     updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
+                }
+                // Update channel from timestamp if last button pressed.
+                State buttonLastUpdatedState = resource.getButtonLastUpdatedState(timeZoneProvider.getTimeZone());
+                if (buttonLastUpdatedState instanceof DateTimeType) {
+                    Instant buttonLastUpdatedInstant = ((DateTimeType) buttonLastUpdatedState).getInstant();
+                    if (buttonLastUpdatedInstant.isAfter(lastUpdated)) {
+                        updateState(CHANNEL_2_BUTTON_LAST_UPDATED, buttonLastUpdatedState, fullUpdate);
+                        lastUpdated = buttonLastUpdatedInstant;
+                    }
+                } else if (Instant.MIN.equals(lastUpdated)) {
+                    updateState(CHANNEL_2_BUTTON_LAST_UPDATED, buttonLastUpdatedState, fullUpdate);
                 }
                 break;
 
@@ -884,6 +897,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case RELATIVE_ROTARY:
                 if (fullUpdate) {
                     addSupportedChannel(CHANNEL_2_ROTARY_STEPS);
+                    addSupportedChannel(CHANNEL_2_ROTARY_STEPS_LAST_UPDATED);
                 } else {
                     updateState(CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 }

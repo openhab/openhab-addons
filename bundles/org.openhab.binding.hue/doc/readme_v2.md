@@ -70,6 +70,7 @@ Device things support some of the following channels:
 | alert                     | String             | Allows setting an alert on a light e.g. flashing them. (Advanced)                                                   |
 | effect                    | String             | Allows setting an effect on a light e.g. 'candle' effect. (Advanced)                                                |
 | button-last-event         | (String)           | Informs which button was last pressed in the device. (Trigger Channel)                                              |
+| button-last-updated       | DateTime           | The date and time when a button was last pressed. (Read Only) (Advanced)                                            |
 | rotary-steps              | (String)           | Informs about the number of rotary steps of the last rotary dial movement. (Trigger Channel)                        |
 | rotary-steps-last-updated | DateTime           | The date and time when the rotary steps were last updated. (Read Only) (Advanced)                                   |
 | motion                    | Switch             | Shows if motion has been detected by the sensor. (Read Only)                                                        |
