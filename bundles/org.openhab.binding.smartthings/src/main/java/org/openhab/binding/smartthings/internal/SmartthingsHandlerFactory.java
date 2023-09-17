@@ -32,6 +32,7 @@ import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler
 import org.openhab.binding.smartthings.internal.handler.SmartthingsCloudBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsHubBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
+import org.openhab.binding.smartthings.internal.network.networkConnector;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -71,8 +72,8 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     private Gson gson;
     private List<SmartthingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
     private @NonNullByDefault({}) HttpService httpService;
-
     private @NonNullByDefault({}) HttpClient httpClient;
+    private final networkConnector networkConnector;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -81,10 +82,12 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     }
 
     @Activate
-    public SmartthingsHandlerFactory(final @Reference HttpService httpService) {
+    public SmartthingsHandlerFactory(final @Reference HttpService httpService,
+            final @Reference networkConnector networkConnector) {
         // Get a Gson instance
         gson = new Gson();
         this.httpService = httpService;
+        this.networkConnector = networkConnector;
     }
 
     @Override

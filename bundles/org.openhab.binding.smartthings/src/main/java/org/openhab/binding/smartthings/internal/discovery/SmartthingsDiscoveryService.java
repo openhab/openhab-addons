@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHubCommand;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDeviceData;
+import org.openhab.binding.smartthings.internal.network.networkConnector;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -41,6 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * Smartthings Discovery service
@@ -65,6 +69,8 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     private @Nullable ScheduledFuture<?> scanningJob;
 
+    private @Nullable networkConnector networkConnector;
+
     /*
      * default constructor
      */
@@ -76,6 +82,15 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     @Reference
     protected void setSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
         smartthingsHubCommand = hubCommand;
+    }
+
+    @Reference
+    public void setNetworkConnector(@Nullable networkConnector networkConnector) {
+        this.networkConnector = networkConnector;
+    }
+
+    public void unsetNetworkConnector(networkConnector networkConnector) {
+        this.networkConnector = null;
     }
 
     protected void unsetSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
@@ -90,7 +105,29 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      */
     @Override
     public void startScan() {
-        sendSmartthingsDiscoveryRequest();
+        // sendSmartthingsDiscoveryRequest();
+
+        JsonObject res = networkConnector.DoRequest("https://api.smartthings.com/v1/devices", null);
+
+        JsonElement res1 = res.get("items");
+        JsonArray devices = res1.getAsJsonArray();
+
+        for (JsonElement dev : devices) {
+            JsonObject devObj = (JsonObject) dev;
+
+            String name = devObj.get("name").getAsString();
+            logger.debug("Device");
+
+            SmartthingsDeviceData deviceData = new SmartthingsDeviceData();
+            deviceData.name = name;
+            deviceData.id = name;
+            deviceData.capability = "battery";
+            createDevice(Objects.requireNonNull(deviceData));
+
+        }
+
+        // JsonArray arr = (JsonArray) res[0].value;
+        logger.debug("End Discovery");
     }
 
     /**
