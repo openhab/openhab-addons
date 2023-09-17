@@ -31,6 +31,7 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdatesByVIN;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
 import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
+import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -131,6 +132,21 @@ class ProtoTest {
             List<ByteString> bs = f.getLengthDelimitedList();
             System.out.println(bs.get(0));
             System.out.println(bs.get(0).isValidUtf8());
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testJsonOutput() {
+        try {
+            FileInputStream fis = new FileInputStream("src/test/resources/proto/EQA-charging.blob");
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
+            Map<String, VEPUpdate> m = pm.getVepUpdates().getUpdatesMap();
+            m.forEach((key, value) -> {
+                System.out.println(Utils.proto2Json(value));
+            });
+            // Utils.proto2Json(pm.getVepUpdates().getUpdatesMap());
         } catch (Throwable e) {
             e.printStackTrace();
         }

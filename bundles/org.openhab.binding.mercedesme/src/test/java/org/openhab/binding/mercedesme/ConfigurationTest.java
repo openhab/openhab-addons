@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -43,6 +44,11 @@ class ConfigurationTest {
     public void testAction() {
         VehicleActions va = new VehicleActions();
         va.sendPoi("a", 9.4, 3.2);
+    }
+
+    @Test
+    public void testRunTill() {
+        System.out.println(Instant.now());
     }
 
     @Test

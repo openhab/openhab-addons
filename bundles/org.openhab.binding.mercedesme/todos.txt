@@ -1,16 +1,13 @@
 Open
 - mvn clean install not working
-- full proto to json
 - Unit testing of proto updates
 - doku command group
-- trip avg consumption handling 
-
-Done
-- TimeStamps nicht korrekt
-- doku poi
 
 Alpha 2.1 release
 - Imperial Units
 - sendPoi Action
 - command channel group
 - intelligent socket handling - keep alive if charging or driving to get live updates
+- trip avg consumption handling 
+- timestamps corrected
+- full proto to json

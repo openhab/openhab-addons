@@ -126,24 +126,23 @@ public class Mapper {
                 // KiloWatt/Hour values
                 case "electricconsumptionstart":
                 case "electricconsumptionreset":
-                    double consumption = Utils.getDouble(value);
-                    state = QuantityType.valueOf(Math.max(0, consumption), KILOWATT_HOUR_UNIT);
-                    return new ChannelStateMap(ch[0], ch[1], state);
+                    double consumptionEv = Utils.getDouble(value);
+                    state = new DecimalType(consumptionEv);
+                    if (value.hasElectricityConsumptionUnit()) {
+                        observer = new UOMObserver(value.getElectricityConsumptionUnit().toString());
+                    } else {
+                        LOGGER.info("Don't have electric consumption unit for {}", key);
+                    }
+                    return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // Litre values
                 case "liquidconsumptionstart":
                 case "liquidconsumptionreset":
-                    Unit volumeUnit = defaultVolumeUnit;
-                    if (value.hasPressureUnit()) {
-                        observer = new UOMObserver(value.getPressureUnit().toString());
-                        if (observer.getUnit().isEmpty()) {
-                            LOGGER.warn("No Unit found for {} - take default ", key);
-                        } else {
-                            volumeUnit = observer.getUnit().get();
-                        }
+                    double consumptionComb = Utils.getDouble(value);
+                    state = new DecimalType(consumptionComb);
+                    if (value.hasCombustionConsumptionUnit()) {
+                        observer = new UOMObserver(value.getCombustionConsumptionUnit().toString());
                     }
-                    double volume = Utils.getDouble(value);
-                    state = QuantityType.valueOf(Math.max(0, volume), volumeUnit);
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // Time - end of charging
@@ -212,7 +211,6 @@ public class Mapper {
                 case "windowstatusfrontright":
                 case "windowstatusrearleft":
                 case "windowstatusrearright":
-                case "doorlockstatusvehicle":
                 case "windowStatusRearRightBlind":
                 case "windowStatusRearLeftBlind":
                 case "windowStatusRearBlind":

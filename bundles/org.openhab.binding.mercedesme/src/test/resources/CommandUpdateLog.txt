@@ -1,0 +1,84 @@
+023-09-17 13:24:06.822 [INFO ] [rcedesme.internal.server.MBWebsocket] - Send Message {proto.ClientMessage.commandRequest=vin: "W1N2437011J016433"
+request_id: "d54b8626-acc9-4ae4-9521-9d4a7c6144f3"
+charge_program_configure {
+  charge_program: HOME_CHARGE_PROGRAM
+  max_soc {
+    value: 80
+  }
+  auto_unlock {
+    value: true
+  }
+}
+}
+2023-09-17 13:24:07.047 [DEBUG] [rcedesme.internal.server.MBWebsocket] - Command Status {proto.AppTwinCommandStatusUpdatesByVIN.updates_by_vin=[key: "W1N2437011J016433"
+value {
+  vin: "W1N2437011J016433"
+  updates_by_pid {
+    key: 308620040
+    value {
+      process_id: 308620040
+      request_id: "d54b8626-acc9-4ae4-9521-9d4a7c6144f3"
+      timestamp_in_ms: -1
+      type: CHARGEPROGRAMCONFIGURE
+      state: INITIATION
+    }
+  }
+}
+]}
+2023-09-17 13:24:07.073 [TRACE] [rcedesme.internal.server.MBWebsocket] - Command Status acknowledged {}{proto.ClientMessage.acknowledge_apptwin_command_status_update_by_vin=}
+2023-09-17 13:24:07.248 [DEBUG] [rcedesme.internal.server.MBWebsocket] - Command Status {proto.AppTwinCommandStatusUpdatesByVIN.sequence_number=1, proto.AppTwinCommandStatusUpdatesByVIN.updates_by_vin=[key: "W1N2437011J016433"
+value {
+  vin: "W1N2437011J016433"
+  updates_by_pid {
+    key: 308620040
+    value {
+      process_id: 308620040
+      request_id: "d54b8626-acc9-4ae4-9521-9d4a7c6144f3"
+      timestamp_in_ms: 1694949846000
+      type: CHARGEPROGRAMCONFIGURE
+      state: ENQUEUED
+    }
+  }
+}
+]}
+2023-09-17 13:24:07.251 [TRACE] [rcedesme.internal.server.MBWebsocket] - Command Status acknowledged {}{proto.ClientMessage.acknowledge_apptwin_command_status_update_by_vin=sequence_number: 1
+}
+==> /var/log/openhab/events.log <==
+2023-09-17 13:24:07.060 [INFO ] [openhab.event.ItemStateChangedEvent ] - Item 'Mercedes_Benz_BEV_Command_Name' changed from NULL to CHARGEPROGRAMCONFIGURE
+2023-09-17 13:24:07.064 [INFO ] [openhab.event.ItemStateChangedEvent ] - Item 'Mercedes_Benz_BEV_Command_State' changed from NULL to INITIATION
+2023-09-17 13:24:07.069 [INFO ] [openhab.event.ItemStateChangedEvent ] - Item 'Mercedes_Benz_BEV_Command_Updated' changed from NULL to 1970-01-01T00:59:59.999+0100
+2023-09-17 13:24:07.255 [INFO ] [openhab.event.ItemStateChangedEvent ] - Item 'Mercedes_Benz_BEV_Command_State' changed from INITIATION to ENQUEUED
+2023-09-17 13:24:07.257 [INFO ] [openhab.event.ItemStateChangedEvent ] - Item 'Mercedes_Benz_BEV_Command_Updated' changed from 1970-01-01T00:59:59.999+0100 to 2023-09-17T13:24:06.000+0200
+==> /var/log/openhab/openhab.log <==
+2023-09-17 13:24:15.018 [INFO ] [esme.internal.handler.VehicleHandler] - Partial Vehicle Update for bev
+2023-09-17 13:24:15.020 [INFO ] [esme.internal.handler.VehicleHandler] - No TemperaturePoint Attribute found
+2023-09-17 13:24:15.022 [TRACE] [esme.internal.handler.VehicleHandler] - No Charge Programs found
+2023-09-17 13:24:15.027 [TRACE] [rcedesme.internal.server.MBWebsocket] - Vehicle update acknowledged {proto.ClientMessage.acknowledge_vep_updates_by_vin=sequence_number: 1
+}
+2023-09-17 13:24:15.358 [INFO ] [esme.internal.handler.VehicleHandler] - Partial Vehicle Update for bev
+2023-09-17 13:24:15.362 [INFO ] [esme.internal.handler.VehicleHandler] - No TemperaturePoint Attribute found
+2023-09-17 13:24:15.363 [TRACE] [esme.internal.handler.VehicleHandler] - No Charge Programs found
+2023-09-17 13:24:15.368 [TRACE] [rcedesme.internal.server.MBWebsocket] - Vehicle update acknowledged {proto.ClientMessage.acknowledge_vep_updates_by_vin=sequence_number: 2
+}
+2023-09-17 13:24:16.374 [INFO ] [esme.internal.handler.VehicleHandler] - Partial Vehicle Update for bev
+2023-09-17 13:24:16.376 [INFO ] [esme.internal.handler.VehicleHandler] - No TemperaturePoint Attribute found
+2023-09-17 13:24:16.377 [TRACE] [esme.internal.handler.VehicleHandler] - No Charge Programs found
+2023-09-17 13:24:16.380 [TRACE] [rcedesme.internal.server.MBWebsocket] - Vehicle update acknowledged {proto.ClientMessage.acknowledge_vep_updates_by_vin=sequence_number: 3
+}
+2023-09-17 13:24:20.350 [DEBUG] [rcedesme.internal.server.MBWebsocket] - Command Status {proto.AppTwinCommandStatusUpdatesByVIN.sequence_number=2, proto.AppTwinCommandStatusUpdatesByVIN.updates_by_vin=[key: "W1N2437011J016433"
+value {
+  vin: "W1N2437011J016433"
+  updates_by_pid {
+    key: 308620040
+    value {
+      process_id: 308620040
+      request_id: "d54b8626-acc9-4ae4-9521-9d4a7c6144f3"
+      timestamp_in_ms: 1694949859000
+      type: CHARGEPROGRAMCONFIGURE
+      state: FINISHED
+    }
+  }
+}
+]}
+2023-09-17 13:24:20.361 [TRACE] [rcedesme.internal.server.MBWebsocket] - Command Status acknowledged {}{proto.ClientMessage.acknowledge_apptwin_command_status_update_by_vin=sequence_number: 2
+}

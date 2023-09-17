@@ -150,8 +150,8 @@ See [Vehicle Actions](#vehicle-actions) which can be used in rules.
 
 Group name: `vehicle`
 
-| Channel               | Type                 |  Description                 | Read | Write | Advanced |
-|-----------------------|----------------------|------------------------------|------|-------|----------|
+| Channel               | Type                |  Description                  | Read | Write | Advanced |
+|-----------------------|---------------------|-------------------------------|------|-------|----------|
 | lock-status           | Number              |  Lock Status                  | X    |       |          |
 | window-status         | Number              |  Window Status                | X    |       |          |
 | door-status           | Number              |  Door Status                  | X    |       |          |
@@ -401,7 +401,8 @@ States and Controls are depending on your vehicle capabilites.
 
 #### Coupler AC Mapping
 
-- not available yet!
+- 0 : Plugged
+- 2 : Unplugged
 
 #### Coupler DC Mapping
 
@@ -409,8 +410,9 @@ States and Controls are depending on your vehicle capabilites.
 
 #### Coupler Lock Mapping
 
-- 0 : Locked
-- 1 : Unlocked
+- 0 : Plugged
+- 2 : Unplugged
+
 
 #### Program Mapping
 
@@ -484,6 +486,33 @@ All channels `read-only`
 
 - Not available yet!
 
+### Commands
+
+Group name: `command`
+All channels `read-only`
+
+| Channel              | Type        |  Description                       |
+|----------------------|-------------|------------------------------------|
+| cmd-name             | String      |  Command Name which is handleded   |
+| cmd-state            | String      |  Current Command State             |
+| cmd-last-update      | String      |  DateTime stamp og last update     |
+
+Following 
+
+CHARGEPROGRAMCONFIGURE
+
+DOORSLOCK
+DOORSUNLOCK
+
+WINDOWOPEN
+WINDOWVENTILATE
+WINDOWCLOSE
+
+INITIATION
+ENQUEUED
+PROCESSING
+FINISHED
+
 ## Vehicle Actions
 
 You've the possibility to perform the below action in your rules. 
@@ -511,7 +540,8 @@ You've the possibility to perform the below action in your rules.
 
 ### Example
 
-If you have 2 items `Poi_Location` and `Poi_Location_Name`
+If you have 2 items `Poi_Location` (PointType) and `Poi_Location_Name` (StringType).
+Set first the name and then change the location and the rule will trigger.
 
 ````
 rule "Send POI"

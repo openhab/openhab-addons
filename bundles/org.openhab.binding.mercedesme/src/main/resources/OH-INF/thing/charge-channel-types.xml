@@ -16,12 +16,22 @@
 	<channel-type id="coupler-ac-channel">
 		<item-type>Number</item-type>
 		<label>Charge Coupler AC</label>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="0">Plugged</option>
+		        <option value="2">Unlugged</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="coupler-dc-channel">
 		<item-type>Number</item-type>
 		<label>Charge Coupler DC</label>
-		<state readOnly="true"/>
+		<state readOnly="true">
+            <options>
+                <option value="0">Plugged</option>
+                <option value="2">Unlugged</option>
+            </options>
+        </state>
 	</channel-type>
 	<channel-type id="coupler-lock-channel">
 		<item-type>Number</item-type>

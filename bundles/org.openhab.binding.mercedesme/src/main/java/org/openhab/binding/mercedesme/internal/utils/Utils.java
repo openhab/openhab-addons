@@ -34,12 +34,18 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.ChargeProgramConfigure.ChargeProgram;
 import org.openhab.binding.mercedesme.internal.proto.VehicleCommands.TemperatureConfigure.TemperaturePoint.Zone;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgramParameters;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgramsValue;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.TemperaturePointsValue;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.WeeklyProfileValue;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -263,22 +269,52 @@ public class Utils {
     }
 
     public static String proto2Json(VEPUpdate update) {
-        JSONObject jo = new JSONObject();
+        JSONObject protoJson = new JSONObject();
         Map<String, VehicleAttributeStatus> m = update.getAttributesMap();
         m.forEach((key, value) -> {
             Map<FieldDescriptor, Object> attMap = value.getAllFields();
-            JSONObject joa = new JSONObject();
-            attMap.forEach((aKey, aValue) -> {
-                String[] bKey = aKey.toString().split("\\.");
-                if (bKey.length > 1) {
-                    joa.put(bKey[bKey.length - 1], aValue);
-                } else {
-                    joa.put(bKey[0], aValue);
-                }
-            });
-            jo.put(key, joa);
+            JSONObject attributesJson = getJsonObject(attMap);
+            protoJson.put(key, attributesJson);
+
+            if (value.hasTemperaturePointsValue()) {
+                TemperaturePointsValue tpv = value.getTemperaturePointsValue();
+                JSONArray tmpPoints = new JSONArray();
+                List<VehicleEvents.TemperaturePoint> temperaturePointsList = tpv.getTemperaturePointsList();
+                temperaturePointsList.forEach(point -> {
+                    JSONObject tmpPoint = getJsonObject(point.getAllFields());
+                    tmpPoints.put(tmpPoint);
+                });
+                JSONObject points = new JSONObject();
+                points.put("emperature_points", tmpPoints);
+                attributesJson.put("temperature_points_value", points);
+            } else if (value.hasChargeProgramsValue()) {
+                ChargeProgramsValue cpv = value.getChargeProgramsValue();
+                JSONArray chargeProgramArray = new JSONArray();
+                List<ChargeProgramParameters> l = cpv.getChargeProgramParametersList();
+                l.forEach(cpp -> {
+                    chargeProgramArray.put(getJsonObject(cpp.getAllFields()));
+                });
+                attributesJson.put("charge_programs_value", chargeProgramArray);
+            } else if (value.hasWeeklyProfileValue()) {
+                WeeklyProfileValue wpv = value.getWeeklyProfileValue();
+                JSONObject weeklyProfiles = getJsonObject(wpv.getAllFields());
+                attributesJson.put("weekly_profile_value", weeklyProfiles);
+            }
         });
-        return jo.toString();
+        return protoJson.toString();
+    }
+
+    public static JSONObject getJsonObject(Map<FieldDescriptor, Object> attMap) {
+        JSONObject joa = new JSONObject();
+        attMap.forEach((aKey, aValue) -> {
+            String[] bKey = aKey.toString().split("\\.");
+            if (bKey.length > 1) {
+                joa.put(bKey[bKey.length - 1], aValue);
+            } else {
+                joa.put(bKey[0], aValue);
+            }
+        });
+        return joa;
     }
 
     public static int getZoneNumber(String zone) {

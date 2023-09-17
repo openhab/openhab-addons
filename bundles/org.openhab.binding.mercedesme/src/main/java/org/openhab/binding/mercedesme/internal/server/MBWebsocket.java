@@ -90,8 +90,8 @@ public class MBWebsocket {
             if (running) {
                 return;
             } else {
-                runTill = Instant.now().plusMillis(WS_RUNTIME_MS);
                 running = true;
+                runTill = Instant.now().plusMillis(WS_RUNTIME_MS);
             }
         }
         try {
@@ -100,7 +100,7 @@ public class MBWebsocket {
             client.setStopTimeout(CONNECT_TIMEOUT_MS);
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
             String websocketURL = accountHandler.getWSUri();
-            logger.info("Websocket start {}", websocketURL);
+            logger.debug("Websocket start {}", websocketURL);
             client.start();
             sessionFuture = client.connect(this, new URI(websocketURL), request);
             while (keepAlive || Instant.now().isBefore(runTill)) {
@@ -116,7 +116,7 @@ public class MBWebsocket {
                     runTill = Instant.MIN;
                 }
             }
-            logger.info("Websocket stop");
+            logger.debug("Websocket stop");
             client.stop();
             client.destroy();
         } catch (Throwable t) {
@@ -184,9 +184,9 @@ public class MBWebsocket {
             }
         } else {
             if (!b) {
-                logger.info("Wbesocket - keep alive end");
                 // after keep alive is finished add 5 minutes to cover e.g. door events after trip is finished
-                runTill = Instant.now().plusSeconds(KEEP_ALIVE_ADDON);
+                runTill = Instant.now().plusMillis(KEEP_ALIVE_ADDON);
+                logger.info("Wbesocket - keep alive stop - run till {}", runTill.toString());
             }
         }
         keepAlive = b;
@@ -233,7 +233,7 @@ public class MBWebsocket {
             } else if (pm.hasApptwinPendingCommandRequest()) {
                 // logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
             } else if (pm.hasDebugMessage()) {
-                logger.debug("MB Debug Message: {}", pm.getDebugMessage().getMessage());
+                logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
             } else {
                 logger.debug("MB Message: {} not handeled", pm.getAllFields());
             }
@@ -253,13 +253,13 @@ public class MBWebsocket {
 
     @OnWebSocketClose
     public void onDisconnect(Session session, int statusCode, String reason) {
-        logger.info("Disonnected from server. Status {} Reason {}", statusCode, reason);
+        logger.debug("Disonnected from server. Status {} Reason {}", statusCode, reason);
         this.session = null;
     }
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        logger.info("Connected to server");
+        logger.debug("Connected to server");
         this.session = session;
         sendMessage();
     }
