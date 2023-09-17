@@ -615,4 +615,3 @@ public class SpeedtestHandler extends BaseThingHandler {
         return file.canExecute();
     }
 }
-
