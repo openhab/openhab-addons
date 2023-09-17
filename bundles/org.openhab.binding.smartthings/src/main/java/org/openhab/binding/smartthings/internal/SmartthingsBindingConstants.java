@@ -33,6 +33,8 @@ public class SmartthingsBindingConstants {
 
     // List of Bridge Type UIDs
     public static final ThingTypeUID THING_TYPE_SMARTTHINGS = new ThingTypeUID(BINDING_ID, "smartthings");
+    
+    public static final ThingTypeUID THING_TYPE_SMARTTHINGSCLOUD = new ThingTypeUID(BINDING_ID, "smartthingscloud");
 
     // List of all Thing Type UIDs
     // I tried to replace this with a dynamic processing of the thing-types.xml file using the ThingTypeRegistry

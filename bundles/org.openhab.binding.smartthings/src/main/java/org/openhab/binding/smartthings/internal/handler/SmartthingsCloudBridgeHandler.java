@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,14 +16,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
-import org.openhab.binding.smartthings.internal.SmartthingsServlet;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
@@ -37,23 +35,12 @@ import org.slf4j.LoggerFactory;
  * @author Bob Raker - Initial contribution
  */
 @NonNullByDefault
-public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(SmartthingsBridgeHandler.class);
+public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsCloudBridgeHandler.class);
 
-    protected SmartthingsBridgeConfig config;
-
-    protected SmartthingsHandlerFactory smartthingsHandlerFactory;
-    protected BundleContext bundleContext;
-    private @NonNullByDefault({}) HttpService httpService;
-    private @Nullable SmartthingsServlet servlet;
-
-    public SmartthingsBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
+    public SmartthingsCloudBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
             BundleContext bundleContext, HttpService httpService) {
-        super(bridge);
-        this.smartthingsHandlerFactory = smartthingsHandlerFactory;
-        this.bundleContext = bundleContext;
-        this.httpService = httpService;
-        config = getThing().getConfiguration().as(SmartthingsBridgeConfig.class);
+        super(bridge, smartthingsHandlerFactory, bundleContext, httpService);
     }
 
     @Override
@@ -63,15 +50,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
     @Override
     public void initialize() {
-        // Validate the config
-        if (!validateConfig(this.config)) {
-            return;
-        }
-
-        if (servlet == null) {
-            servlet = new SmartthingsServlet(httpService);
-            servlet.activate();
-        }
+        super.initialize();
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -81,22 +60,34 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
         super.dispose();
     }
 
+    @Override
     protected boolean validateConfig(SmartthingsBridgeConfig config) {
+        if (!super.validateConfig(config)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknow");
+            return false;
+        }
+
+        if (config.accessToken.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Smartthings acces token is not specified");
+            return false;
+        }
 
         return true;
     }
 
+    @Override
     public SmartthingsHandlerFactory getSmartthingsHandlerFactory() {
         return smartthingsHandlerFactory;
     }
 
-    public BundleContext getBundleContext() {
-        return bundleContext;
+    public String getAccessToken() {
+        return config.accessToken;
     }
 
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
-        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<>();
+        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<ConfigStatusMessage>();
 
         return configStatusMessages;
     }

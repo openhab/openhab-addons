@@ -22,6 +22,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -50,7 +53,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @SuppressWarnings("serial")
-@Component(service = HttpServlet.class)
 public class SmartthingsServlet extends HttpServlet {
     private static final String PATH = "/smartthings";
     private final Logger logger = LoggerFactory.getLogger(SmartthingsServlet.class);
@@ -58,21 +60,28 @@ public class SmartthingsServlet extends HttpServlet {
     private @Nullable EventAdmin eventAdmin;
     private Gson gson = new Gson();
 
-    @Activate
-    protected void activate(Map<String, Object> config) {
+    public SmartthingsServlet(HttpService httpService) {
+        this.httpService = httpService;
+    }
+
+	@Activate
+    public void activate() {
         if (httpService == null) {
-            logger.warn("SmartthingsServlet.activate: httpService is unexpectedly null");
+            logger.info("SmartthingsServlet.activate: httpService is unexpectedly null");
             return;
         }
         try {
-            Dictionary<String, String> servletParams = new Hashtable<>();
+            Dictionary<String, String> servletParams = new Hashtable<String, String>();
+            logger.info("registerServlet:" + PATH);
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
+            httpService.registerResources(PATH + "/img", "web", null);
+
+            //
         } catch (ServletException | NamespaceException e) {
             logger.warn("Could not start Smartthings servlet service: {}", e.getMessage());
         }
     }
 
-    @Deactivate
     protected void deactivate(ComponentContext componentContext) {
         if (httpService != null) {
             try {
@@ -80,6 +89,15 @@ public class SmartthingsServlet extends HttpServlet {
             } catch (IllegalArgumentException ignored) {
             }
         }
+    }
+
+    @Override
+    public void init(@Nullable ServletConfig servletConfig) throws ServletException {
+
+        logger.info("SmartthingsServlet:init");
+        ServletContext context = servletConfig.getServletContext();
+        BundleContext bundleContext = (BundleContext) context.getAttribute("osgi-bundlecontext");
+
     }
 
     @Reference
@@ -101,8 +119,17 @@ public class SmartthingsServlet extends HttpServlet {
     }
 
     @Override
+    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
+        logger.info("SmartthingsServlet:doGet");
+    }
+
+    @Override
     protected void service(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
+
+        logger.info("SmartthingsServlet:service");
+
         if (req == null) {
             logger.debug("SmartthingsServlet.service unexpectedly received a null request. Request not processed");
             return;
@@ -133,7 +160,7 @@ public class SmartthingsServlet extends HttpServlet {
                 break;
             case "error":
                 // This is an error message from smartthings
-                Map<String, String> map = new HashMap<>();
+                Map<String, String> map = new HashMap<String, String>();
                 map = gson.fromJson(s, map.getClass());
                 logger.warn("Error message from Smartthings: {}", map.get("message"));
                 break;
@@ -162,7 +189,7 @@ public class SmartthingsServlet extends HttpServlet {
     }
 
     private void publishEvent(String topic, String name, String data) {
-        Dictionary<String, String> props = new Hashtable<>();
+        Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(name, data);
         Event event = new Event(topic, props);
         if (eventAdmin != null) {
