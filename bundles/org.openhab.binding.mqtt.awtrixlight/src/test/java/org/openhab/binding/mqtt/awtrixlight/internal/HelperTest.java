@@ -97,16 +97,13 @@ public class HelperTest {
     public void mappingRoundTrip() {
         AwtrixApp app = new AwtrixApp();
         String appConfig = app.getAppConfig();
-        System.out.println(appConfig);
 
         HashMap<String, Object> convertJson = Helper.decodeJson(appConfig);
         String appConfig2 = Helper.encodeJson(convertJson);
-        System.out.println(appConfig2);
         assertEquals(appConfig, appConfig2);
 
         app.updateFields(convertJson);
         String appConfig3 = app.getAppConfig();
-        System.out.println(appConfig3);
         assertEquals(appConfig, appConfig3);
 
         app.setText("Test");
@@ -116,19 +113,16 @@ public class HelperTest {
         app.setEffect("Radar");
         app.setEffectSpeed(new BigDecimal(80));
         String appConfig4 = app.getAppConfig();
-        System.out.println(appConfig4);
         assertNotEquals(appConfig, appConfig4);
 
         AwtrixApp app2 = new AwtrixApp();
         HashMap<String, Object> convertJson4 = Helper.decodeJson(appConfig4);
         app2.updateFields(convertJson4);
         String appConfig5 = app2.getAppConfig();
-        System.out.println(appConfig5);
         assertEquals(appConfig4, appConfig5);
 
         app.updateFields(convertJson);
         String appConfig6 = app.getAppConfig();
-        System.out.println(appConfig6);
         assertEquals(appConfig, appConfig6);
     }
 }

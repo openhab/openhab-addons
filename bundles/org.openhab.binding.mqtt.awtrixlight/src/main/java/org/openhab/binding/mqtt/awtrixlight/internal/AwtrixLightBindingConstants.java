@@ -30,6 +30,11 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class AwtrixLightBindingConstants {
 
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "awtrixclock");
+    public static final ThingTypeUID THING_TYPE_APP = new ThingTypeUID(BINDING_ID, "awtrixapp");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_APP);
+
     // Thing Type IDs
     public static final String AWTRIX_CLOCK = "awtrixclock";
     public static final String AWTRIX_APP = "awtrixapp";
@@ -45,11 +50,14 @@ public class AwtrixLightBindingConstants {
     public static final String PROP_UNIQUEID = "uniqueId";
     public static final String PROP_APPNAME = "appname";
     public static final String PROP_APPID = "appid";
+    public static final String PROP_APPLOCKTIMEOUT = "appLockTimeout";
+    public static final String PROP_DISCOVERDEFAULT = "discoverDefaultApps";
 
+    // TODO: Rename to make them all start with TOPIC
     // Clock Topics
     public static final String BASE_TOPIC = "awtrix";
     public static final String STATS_TOPIC = "/stats";
-    public static final String SETTINGS_TOPIC = "/settings";
+    public static final String TOPIC_SETTINGS = "/settings";
     public static final String STATS_LOOP_TOPIC = "/stats/loop";
     public static final String STATS_CURRENT_APP_TOPIC = "/stats/currentApp";
     public static final String INDICATOR1_TOPIC = "/indicator1";
@@ -59,9 +67,15 @@ public class AwtrixLightBindingConstants {
     public static final String TOPIC_SOUND = "/sound";
     public static final String TOPIC_POWER = "/power";
     public static final String TOPIC_SCREEN = "/screen";
+    public static final String TOPIC_SWITCH = "/switch";
+    // TODO: Add channel to trigger manual screen updates
     public static final String TOPIC_SEND_SCREEN = "/sendscreen";
+    // TODO: Implement notifications
     public static final String TOPIC_NOTIFY = "/notify";
     public static final String TOPIC_UPGRADE = "/doupdate";
+    public static final String TOPIC_BUTLEFT = "/stats/buttonLeft";
+    public static final String TOPIC_BUTRIGHT = "/stats/buttonRight";
+    public static final String TOPIC_BUTSELECT = "/stats/buttonSelect";
 
     // Stats fields
     public static final String FIELD_BRIDGE_BATTERY = "bat";
@@ -96,26 +110,14 @@ public class AwtrixLightBindingConstants {
     public static final String FIELD_BRIDGE_SET_SCROLL_SPEED = "SSPEED";
     public static final String FIELD_BRIDGE_SET_MUTE = "SOUND";
 
-    // Stats Effects Fields
-
-    // Stats Transitions Fields
-
-    // Stats Loop Fields
-
     // Apps
     public static final String BASE_APP_TOPIC = "/custom";
-    public static final String[] DEFAULT_APPS = { "time", "temp", "hum", "bat" };
-    public static final String APP_TYPE_TEXT = "TEXT";
-    public static final String APP_TYPE_CHART = "CHART";
-    public static final String APP_TYPE_PROGRESS = "PROGRESS";
-
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "awtrixclock");
-    public static final ThingTypeUID THING_TYPE_APP = new ThingTypeUID(BINDING_ID, "awtrixapp");
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_APP);
+    public static final String[] DEFAULT_APPS = { "Time", "Date", "Temperature", "Humidity", "Battery" };
 
     // Common Channels
+    public static final String CHANNEL_BUTLEFT = "buttonLeft";
+    public static final String CHANNEL_BUTRIGHT = "buttonRight";
+    public static final String CHANNEL_BUTSELECT = "buttonSelect";
 
     // Clock Channels
     public static final String CHANNEL_BATTERY = "batterylevel";
@@ -165,7 +167,10 @@ public class AwtrixLightBindingConstants {
     public static final String CHANNEL_EFFECTPALETTE = "effectPalette";
     public static final String CHANNEL_EFFECTBLEND = "effectBlend";
 
+    // Threshold for low battery
     public static final BigDecimal LOW_BAT = new BigDecimal(25);
+
+    // Just some little helpers...
     public static final BigDecimal MINUSONE = new BigDecimal(-1);
     public static final BigDecimal ONEHUNDRED = new BigDecimal(100);
     public static final BigDecimal THOUSAND = new BigDecimal(1000);

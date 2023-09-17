@@ -18,6 +18,9 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BACKGROUND;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BAR;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BLINK_TEXT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BUTLEFT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BUTRIGHT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BUTSELECT;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_CENTER;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_COLOR;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_DURATION;
@@ -101,6 +104,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     private String appName = "";
 
     private Boolean synchronizationRequired = true;
+    private Boolean buttonControlled = false;
     private Boolean active = true;
 
     private AwtrixApp app = new AwtrixApp();
@@ -113,7 +117,8 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Received command {} on channel {}", command.toString(), channelUID.getAsString());
+        logger.trace("Received command {} of type {} on channel {}", command.toString(), command.getClass(),
+                channelUID.getAsString());
         if (command instanceof RefreshType) {
             updateApp();
             return;
@@ -201,7 +206,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             if (command instanceof QuantityType) {
                 QuantityType<?> blinkInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
                 if (blinkInS != null) {
-                    BigDecimal blinkInMs = blinkInS.toBigDecimal().divide(THOUSAND);
+                    BigDecimal blinkInMs = blinkInS.toBigDecimal().multiply(THOUSAND);
                     if (blinkInMs != null) {
                         this.app.setBlinkText(blinkInMs);
                     }
@@ -211,7 +216,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             if (command instanceof QuantityType) {
                 QuantityType<?> fadeInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
                 if (fadeInS != null) {
-                    BigDecimal fadeInMs = fadeInS.toBigDecimal().divide(THOUSAND);
+                    BigDecimal fadeInMs = fadeInS.toBigDecimal().multiply(THOUSAND);
                     if (fadeInMs != null) {
                         this.app.setFadeText(fadeInMs);
                     }
@@ -283,6 +288,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 this.app.setProgressBC(convertRgbArray(hsbToRgb));
             }
         }
+        logger.debug("Current app configuration: {}", this.app.toString());
         if (this.active) {
             updateApp();
         }
@@ -343,7 +349,13 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         } else if (channelUID.getId().equals(CHANNEL_PROGRESSBC)) {
             this.app.setProgressBC(AwtrixApp.DEFAULT_PROGRESSBC);
         }
+        logger.debug("Current app configuration: {}", this.app.toString());
         updateApp();
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        initStates();
     }
 
     private BigDecimal[] convertRgbArray(int[] rgbIn) {
@@ -384,6 +396,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     public void initialize() {
         AppConfigOptions config = getConfigAs(AppConfigOptions.class);
         this.appName = config.appname;
+        this.buttonControlled = config.useButtons;
         this.channelPrefix = getThing().getUID() + ":";
         thing.setProperty(PROP_APPID, this.appName);
         logger.trace("Configured handler for app {} with channelPrefix {}", this.appName, this.channelPrefix);
@@ -531,6 +544,18 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         return;
     }
 
+    void handleLeftButton(String event) {
+        triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTLEFT), event);
+    }
+
+    void handleRightButton(String event) {
+        triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTRIGHT), event);
+    }
+
+    void handleSelectButton(String event) {
+        triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTSELECT), event);
+    }
+
     private void finishInit() {
         synchronized (this.synchronizationRequired) {
             if (this.synchronizationRequired) {
@@ -558,5 +583,9 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
 
     public String getAppName() {
         return this.appName;
+    }
+
+    public boolean isButtonControlled() {
+        return this.buttonControlled;
     }
 }
