@@ -152,6 +152,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_EFFECT = CHANNEL_EFFECT;
     public static final String CHANNEL_2_BUTTON_LAST_EVENT = "button-last-event";
     public static final String CHANNEL_2_ROTARY_STEPS = "rotary-steps";
+    public static final String CHANNEL_2_ROTARY_STEPS_LAST_UPDATED = "rotary-steps-last-updated";
     public static final String CHANNEL_2_MOTION = "motion";
     public static final String CHANNEL_2_MOTION_LAST_UPDATED = "motion-last-updated";
     public static final String CHANNEL_2_MOTION_ENABLED = "motion-enabled";

@@ -525,14 +525,36 @@ public class Resource {
         return relativeRotary;
     }
 
-    public State getRelativeRotaryActionState() {
-        RelativeRotary relativeRotary = this.relativeRotary;
-        return Objects.nonNull(relativeRotary) ? relativeRotary.getActionState() : UnDefType.NULL;
-    }
-
     public State getRotaryStepsState() {
         RelativeRotary relativeRotary = this.relativeRotary;
-        return Objects.nonNull(relativeRotary) ? relativeRotary.getStepsState() : UnDefType.NULL;
+        if (relativeRotary == null) {
+            return UnDefType.NULL;
+        }
+        RotaryReport rotaryReport = relativeRotary.getRotaryReport();
+        if (rotaryReport == null) {
+            return relativeRotary.getStepsState();
+        }
+        Rotation rotation = rotaryReport.getRotation();
+        if (rotation == null) {
+            return UnDefType.NULL;
+        }
+        return rotation.getStepsState();
+    }
+
+    public State getRotaryStepsLastUpdatedState(ZoneId zoneId) {
+        RelativeRotary relativeRotary = this.relativeRotary;
+        if (relativeRotary == null) {
+            return UnDefType.NULL;
+        }
+        RotaryReport rotaryReport = relativeRotary.getRotaryReport();
+        if (rotaryReport == null) {
+            return UnDefType.UNDEF;
+        }
+        Instant lastChanged = rotaryReport.getLastChanged();
+        if (lastChanged == null) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
     }
 
     /**

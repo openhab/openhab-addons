@@ -18,6 +18,10 @@
 				<type>hue:last-updated-v2</type>
 				<label>Light Level Last Updated</label>
 			</add-channel>
+			<add-channel id="rotary-steps-last-updated">
+				<type>hue:last-updated-v2</type>
+				<label>Rotary Steps Last Updated</label>
+			</add-channel>
 		</instruction-set>
 
 	</thing-type>

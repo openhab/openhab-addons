@@ -887,6 +887,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 } else {
                     updateState(CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 }
+                updateState(CHANNEL_2_ROTARY_STEPS_LAST_UPDATED,
+                        resource.getRotaryStepsLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
                 break;
 
             case TEMPERATURE:

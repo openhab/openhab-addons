@@ -348,8 +348,8 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testRelativeRotary() {
-        String json = load(ResourceType.RELATIVE_ROTARY.name().toLowerCase());
+    void testRelativeRotaryDeprecated() {
+        String json = load(ResourceType.RELATIVE_ROTARY.name().toLowerCase() + "_deprecated");
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
         List<Resource> list = resources.getResources();

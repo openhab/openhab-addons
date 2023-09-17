@@ -25,6 +25,10 @@
 			</channel>
 			<channel id="button-last-event" typeId="button-last-event"/>
 			<channel id="rotary-steps" typeId="rotary-steps"/>
+			<channel id="rotary-steps-last-updated" typeId="last-updated-v2">
+				<label>Rotary Steps Last Updated</label>
+				<description>The date and time when the rotary steps were last updated.</description>
+			</channel>
 			<channel id="motion" typeId="system.motion"/>
 			<channel id="motion-last-updated" typeId="last-updated-v2">
 				<label>Motion Last Updated</label>
