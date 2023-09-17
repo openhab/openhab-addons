@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SmartthingsBridgeConfig {
 
+    public String accessToken = "";
+    
     /**
      * IP address of smartthings hub
      */
@@ -35,7 +37,8 @@ public class SmartthingsBridgeConfig {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("smartthingsIp = ").append(smartthingsIp);
+        sb.append("accesToken = ").append(accessToken);
+        sb.append(",smartthingsIp = ").append(smartthingsIp);
         sb.append(", smartthingsPort = ").append(smartthingsPort);
         return sb.toString();
     }
