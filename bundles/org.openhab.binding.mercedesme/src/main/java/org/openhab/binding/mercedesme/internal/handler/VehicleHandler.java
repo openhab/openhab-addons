@@ -113,10 +113,11 @@ public class VehicleHandler extends BaseThingHandler {
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
-    // private List<CommandOption> maxSocCommandOptions;
     private Optional<AccountHandler> accountHandler = Optional.empty();
     private Optional<VehicleConfiguration> config = Optional.empty();
     private Map<String, Instant> blockerMap = new HashMap<String, Instant>();
+    private Map<String, UOMObserver> unitStorage = new HashMap<String, UOMObserver>();
+    private Map<String, ChannelStateMap> eventStorage = new HashMap<String, ChannelStateMap>();
 
     private int ignitionState = -1;
     private boolean chargingState = false;
@@ -124,7 +125,6 @@ public class VehicleHandler extends BaseThingHandler {
     private int activeTemperaturePoint = -1;
     private JSONObject chargeGroupValueStorage = new JSONObject();
     private Map<String, State> hvacGroupValueStorage = new HashMap<String, State>();
-    private Map<String, UOMObserver> uomStorage = new HashMap<String, UOMObserver>();
     private String vehicleType = NOT_SET;
 
     public VehicleHandler(Thing thing, MercedesMeCommandOptionProvider cop, MercedesMeStateOptionProvider sop,
@@ -134,14 +134,6 @@ public class VehicleHandler extends BaseThingHandler {
         mmcop = cop;
         mmsop = sop;
         mmdsdp = dsdp;
-
-        // maxSocCommandOptions = new ArrayList<CommandOption>();
-        // maxSocCommandOptions.add(new CommandOption("50 %", "50 %"));
-        // maxSocCommandOptions.add(new CommandOption("60 %", "60 %"));
-        // maxSocCommandOptions.add(new CommandOption("70 %", "70 %"));
-        // maxSocCommandOptions.add(new CommandOption("80 %", "80 %"));
-        // maxSocCommandOptions.add(new CommandOption("90 %", "90 %"));
-        // maxSocCommandOptions.add(new CommandOption("100 %", "100 %"));
     }
 
     @Override
@@ -154,9 +146,14 @@ public class VehicleHandler extends BaseThingHandler {
                     ah.getVehicleCapabilities(config.get().vin);
                 });
             } else {
-                // will trigger a Websocket connect without command to refresh values
-                accountHandler.get().sendCommand(null);
+                // deliver from event storage
+                ChannelStateMap csm = eventStorage.get(channelUID.getAsString());
+                if (csm != null) {
+                    updateChannel(csm);
+                }
             }
+            // ensure unit update
+            unitStorage.remove(channelUID.getIdWithoutGroup());
         } else if (Constants.GROUP_VEHICLE.equals(channelUID.getGroupId())) {
             /**
              * Commands for Vehicle
@@ -541,8 +538,6 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public void distributeContent(VEPUpdate data) {
-        boolean fullUpdate = data.getFullUpdate();
-        logger.info("Partial Vehicle Update for {}", vehicleType);
         updateStatus(ThingStatus.ONLINE);
 
         String json = Utils.proto2Json(data);
@@ -551,12 +546,11 @@ public class VehicleHandler extends BaseThingHandler {
         updateChannel(dataUpdateMap);
 
         Map<String, VehicleAttributeStatus> atts = data.getAttributesMap();
+
         /**
          * handle GPS
          */
-        boolean latitude = atts.containsKey("positionLat");
-        boolean longitude = atts.containsKey("positionLong");
-        if (latitude && longitude) {
+        if (atts.containsKey("positionLat") && atts.containsKey("positionLong")) {
             boolean latitudeNil = Utils.isNil(atts.get("positionLat"));
             boolean longitudeNil = Utils.isNil(atts.get("positionLong"));
             if (!latitudeNil && !longitudeNil) {
@@ -565,11 +559,6 @@ public class VehicleHandler extends BaseThingHandler {
                 updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, pt));
             } else {
                 logger.info("Either Latitude {} or Longitude {} attribute nil", latitudeNil, longitudeNil);
-                updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, UnDefType.UNDEF));
-            }
-        } else {
-            if (fullUpdate) {
-                logger.info("Either Latitude {} or Longitude {} attribute missing", latitude, longitude);
                 updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, UnDefType.UNDEF));
             }
         }
@@ -593,7 +582,7 @@ public class VehicleHandler extends BaseThingHandler {
                                 commandOptions.add(new CommandOption(Integer.toString(number), zoneName));
                                 stateOptions.add(new StateOption(Integer.toString(number), zoneName));
                             } else {
-                                logger.info("No Integer mappong found for Temperature Zone {}", zoneName);
+                                logger.info("No Integer mapping found for Temperature Zone {}", zoneName);
                             }
                         });
                         ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "zone");
@@ -986,31 +975,27 @@ public class VehicleHandler extends BaseThingHandler {
     protected void updateChannel(ChannelStateMap csm) {
         String channel = csm.getChannel();
         ChannelUID cuid = new ChannelUID(thing.getUID(), csm.getGroup(), channel);
+        eventStorage.put(cuid.getAsString(), csm);
+
         /**
          * Check correct channel patterns
          */
         if (csm.hasUomObersever()) {
             UOMObserver deliveredObserver = csm.getUomObersever();
-            // Channel adaptions for items with configurable units
-            if (uomStorage.containsKey(channel)) {
-                UOMObserver o = uomStorage.get(channel);
-                if (o != null) {
-                    if (!deliveredObserver.equals(o)) {
-                        String pattern = deliveredObserver.getPattern(csm.getGroup());
-                        logger.debug("Set Pattern for {} to {} - Unit chaged!", channel, pattern);
-                        if (pattern.startsWith("%")) {
-                            mmdsdp.setStatePattern(cuid, pattern);
-                        }
-                    }
-                }
-            } else {
-                String pattern = deliveredObserver.getPattern(csm.getGroup());
-                logger.debug("Set Pattern for {} to {}", channel, pattern);
-                if (pattern.startsWith("%")) {
-                    mmdsdp.setStatePattern(cuid, pattern);
-                }
+            UOMObserver storedObserver = unitStorage.get(channel);
+            boolean change = true;
+            if (storedObserver != null) {
+                change = !storedObserver.equals(deliveredObserver);
             }
-            uomStorage.put(channel, deliveredObserver);
+            unitStorage.put(channel, deliveredObserver);
+            // Channel adaptions for items with configurable units
+            String pattern = deliveredObserver.getPattern(csm.getGroup());
+            if (pattern.startsWith("%") && change) {
+                logger.trace("Set Pattern for {} to {}", channel, pattern);
+                mmdsdp.setStatePattern(cuid, pattern);
+            } else {
+                handleComplexTripPattern(channel, pattern);
+            }
         }
 
         /**
@@ -1025,18 +1010,32 @@ public class VehicleHandler extends BaseThingHandler {
         }
 
         /**
-         * Set command options for max-soc channel
-         */
-        // if ("max-soc".equals(csm.getChannel())) {
-        // mmcop.setCommandOptions(cuid, maxSocCommandOptions);
-        // }
-        /**
          * Check if group is blocked due to running command
          */
         if (!isBlocked(csm.getGroup())) {
             updateState(cuid, csm.getState());
         } else {
             logger.trace("Update for {} temporarely blocked", csm.getGroup());
+        }
+    }
+
+    private void handleComplexTripPattern(String channel, String pattern) {
+        // logger.info("Handle pattern {} for {}", pattern, channel);
+        switch (channel) {
+            case "cons-ev":
+            case "cons-ev-reset":
+                StringType consumptionUnitEv = StringType.valueOf(pattern);
+                ChannelStateMap csmEv = new ChannelStateMap("cons-ev-unit", GROUP_TRIP, consumptionUnitEv);
+                updateChannel(csmEv);
+                break;
+            case "cons-conv":
+            case "cons-conv-reset":
+                StringType consumptionUnitFuel = StringType.valueOf(pattern);
+                ChannelStateMap csmFuel = new ChannelStateMap("cons-conv-unit", GROUP_TRIP, consumptionUnitFuel);
+                updateChannel(csmFuel);
+                break;
+            default:
+                // logger.info("No handling found: pattern {} for {}", pattern, channel);
         }
     }
 
