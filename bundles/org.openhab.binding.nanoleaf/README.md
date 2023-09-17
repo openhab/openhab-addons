@@ -126,6 +126,27 @@ The controller thing has the following parameters:
 | refreshInterval | Interval in seconds to refresh the state of the light panels settings. Default is 60. |
 | deviceType      | Defines the type `lightpanels` (triangle) or `canvas` (square or hexagon)             |
 
+**Important note on the topic of IPV6 ip addresses:**
+
+Since at least firmware 8.5.2 panels may start to go offline and online. 
+After some investigation it turned down that the devices are discovered as IPV6 devices which then cannot be used correctly within the binding to run the API requests to the devices.
+For the time being it is therefore recommended, if this is an option for you, to disable IPV6 on the openhab server. 
+
+For example this can be achieved on openhabian with the following
+
+```text
+sudo nano /etc/sysctl.conf`
+
+Add the following at the bottom of the file:
+
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+
+```
+
+then reboot.
+
 The lightpanel thing has the following parameters:
 
 | Config          | Description                                                                           |
