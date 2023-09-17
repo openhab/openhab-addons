@@ -155,7 +155,7 @@ Group name: `vehicle`
 | lock-status           | Number              |  Lock Status                  | X    |       |          |
 | window-status         | Number              |  Window Status                | X    |       |          |
 | door-status           | Number              |  Door Status                  | X    |       |          |
-| ignition              | Number              |  Ignition                     | X    |       |          |
+| ignition              | Number              |  Ignition                     | X    | X     |          |
 | feature-capabilities  | String              |  Feature Capabilities         | X    |       |    X     |
 | command-capabilities  | String              |  Command Capabilities         | X    |       |    X     |
 | proto-update          | String              |  Last Vehicle Data Update     | X    |       |    X     |
@@ -437,14 +437,26 @@ All channels `read-only`
 |------------------|----------------------|----------------------------------------------------------------------|
 | distance         | Number Length        |  Last Trip Distance                                                  |
 | time             | String               |  Last Trip Duration in days, hours and minutes                       |
-| avg-speed        | Number               |  Last Trip Average Speed in km/h                                     |
-| cons-ev          | Number:Energy        |  Last Trip Average Electric Energy Consumption per 100 Kilometre     |
-| cons-conv        | Number:Volume        |  Last Trip Average Gas Consumption per 100 Kilometre                 |
+| avg-speed        | Number:Speed         |  Last Trip Average Speed in km/h                                     |
+| cons-ev          | Number               |  Last Trip Average Electric Energy Consumption                       |
+| cons-conv        | Number               |  Last Trip Average Fuel Consumption                                  |
 | distance-reset   | Number Length        |  Since Reset Trip Distance                                           |
 | time-reset       | String               |  Since Reset Duration in days, hours and minutes                     |
-| avg-speed-reset  | Number               |  Since Reset Average Speed in km/h                                   |
-| cons-ev-reset    | Number:Energy        |  Since Reset Average Electric Energy Consumption per 100 Kilometre   |
-| cons-conv-reset  | Number:Volume        |  Since Reset Average Gas Consumption per 100 Kilometre               |
+| avg-speed-reset  | Number:Speed         |  Since Reset Average Speed in km/h                                   |
+| cons-ev-reset    | Number               |  Since Reset Average Electric Energy Consumption                     |
+| cons-conv-reset  | Number:Volume        |  Since Reset Average Fuel Consumption                                |
+| cons-ev-unit     | String               |  Unit of Average Electric Consumption                                |
+| cons-conv-unit   | String               |  Unit of Average Fuel Consumption                                    |
+
+In your MercedesMe App Front Page 
+
+- Burger Menu top left 
+- last Entry `Settings`
+- First Entry `Units`
+
+you can configure different average consumption units like kWh per 100 kilometer or km per kWh.
+
+<img src="./doc/ElectricConsumptionUints.png" width="300" height="300"/>
 
 ### Position
 
@@ -454,7 +466,7 @@ Group name: `position`
 |---------------------|----------------------|-------------------------------------------------|------|-------|
 | heading             | Number:Angle         |  Heading of Vehicle                             | X    |       |
 | gps                 | Point                |  GPS Location Point of Vehicle                  | X    |       |
-| signal              | Number               |  Request Light or Horn Signal to find Vehicle   |     |  X     |
+| signal              | Number               |  Request Light or Horn Signal to find Vehicle   |      |  X    |
 
 #### Signal Settings
 
@@ -497,21 +509,26 @@ All channels `read-only`
 | cmd-state            | String      |  Current Command State             |
 | cmd-last-update      | String      |  DateTime stamp og last update     |
 
-Following 
+Show state of the send command sent by above channels which are able to write values.
 
-CHARGEPROGRAMCONFIGURE
+Command Names:
 
-DOORSLOCK
-DOORSUNLOCK
+-  [ignition | vehicle](#vehicle) : ENGINESTART, ENGINESTOP
+-  [sunroof-control | doors](#doors) : SUNROOFOPEN, SUNROOFLIFT, SUNROOFCLOSE  
+-  [lock-control | lock](#lock) : DOORSLOCK, DOORSUNLOCK
+-  [window-control | windows](#windows) : WINDOWOPEN, WINDOWVENTILATE, WINDOWCLOSE
+-  [activate | hvac](#hvac) : PRECONDSTART, PRECONDSTOP
+-  [other-channels | hvac](#hvac) : TEMPERATURECONFIGURE
+-  [program, mox-soc, auto-unlock | charge](#charge) : CHARGEPROGRAMCONFIGURE
+-  [signal | position](#position) : SIGPOSSTART
 
-WINDOWOPEN
-WINDOWVENTILATE
-WINDOWCLOSE
 
-INITIATION
-ENQUEUED
-PROCESSING
-FINISHED
+Command State:
+
+- INITIATION
+- ENQUEUED
+- PROCESSING
+- FINISHED
 
 ## Vehicle Actions
 

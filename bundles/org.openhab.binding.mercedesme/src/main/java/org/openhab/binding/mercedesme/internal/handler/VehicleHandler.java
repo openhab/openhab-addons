@@ -267,6 +267,10 @@ public class VehicleHandler extends BaseThingHandler {
                         accountHandler.get().sendCommand(cm);
                     }
                 }
+            } else if ("zone".equals(channelUID.getIdWithoutGroup())) {
+                ChannelStateMap temperatureMap = new ChannelStateMap("zone", GROUP_HVAC,
+                        new DecimalType(((DecimalType) command).intValue()));
+                updateChannel(temperatureMap);
             }
         } else if (Constants.GROUP_POSITION.equals(channelUID.getGroupId())) {
             /**
@@ -570,51 +574,57 @@ public class VehicleHandler extends BaseThingHandler {
             VehicleAttributeStatus hvacTemperaturePointAttribute = atts.get("temperaturePoints");
             if (hvacTemperaturePointAttribute.hasTemperaturePointsValue()) {
                 TemperaturePointsValue tpValue = hvacTemperaturePointAttribute.getTemperaturePointsValue();
+                List<VehicleEvents.TemperaturePoint> tpList = new ArrayList<VehicleEvents.TemperaturePoint>();
                 if (tpValue.getTemperaturePointsCount() > 0) {
                     List<VehicleEvents.TemperaturePoint> tPointList = tpValue.getTemperaturePointsList();
-                    if (activeTemperaturePoint < 0) {
-                        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
-                        List<StateOption> stateOptions = new ArrayList<StateOption>();
-                        tPointList.forEach(point -> {
-                            String zoneName = point.getZone();
-                            int number = Utils.getZoneNumber(zoneName);
-                            if (number > 0) {
-                                commandOptions.add(new CommandOption(Integer.toString(number), zoneName));
-                                stateOptions.add(new StateOption(Integer.toString(number), zoneName));
-                            } else {
-                                logger.info("No Integer mapping found for Temperature Zone {}", zoneName);
+                    List<CommandOption> commandOptions = new ArrayList<CommandOption>();
+                    List<StateOption> stateOptions = new ArrayList<StateOption>();
+                    tPointList.forEach(point -> {
+                        String zoneName = point.getZone();
+                        int number = Utils.getZoneNumber(zoneName);
+                        if (number > 0) {
+                            if (activeTemperaturePoint == -1) {
+                                activeTemperaturePoint = number;
+                                tpList.add(point);
+                            } else if (activeTemperaturePoint == number) {
+
+                                tpList.add(point);
                             }
-                        });
-                        ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "zone");
-                        mmcop.setCommandOptions(cuid, commandOptions);
-                        mmsop.setStateOptions(cuid, stateOptions);
-                        activeTemperaturePoint = 0;
-                    }
+                            commandOptions.add(new CommandOption(Integer.toString(number), zoneName));
+                            stateOptions.add(new StateOption(Integer.toString(number), zoneName));
+                        } else {
+                            logger.info("No Integer mapping found for Temperature Zone {}", zoneName);
+                        }
+                    });
+                    ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "zone");
+                    mmcop.setCommandOptions(cuid, commandOptions);
+                    mmsop.setStateOptions(cuid, stateOptions);
+
                     ChannelStateMap zoneMap = new ChannelStateMap("zone", Constants.GROUP_HVAC,
-                            DecimalType.valueOf(Integer.toString(activeTemperaturePoint)));
+                            new DecimalType(activeTemperaturePoint));
                     updateChannel(zoneMap);
 
-                    QuantityType<Temperature> tempState = null;
                     Unit<Temperature> temperatureUnit = Mapper.defaultTemperatureUnit;
+                    UOMObserver observer = null;
                     if (hvacTemperaturePointAttribute.hasTemperatureUnit()) {
-                        UOMObserver o = new UOMObserver(hvacTemperaturePointAttribute.getTemperatureUnit().toString());
-                        if (o.getUnit().isEmpty()) {
+                        observer = new UOMObserver(hvacTemperaturePointAttribute.getTemperatureUnit().toString());
+                        if (observer.getUnit().isEmpty()) {
                             logger.warn("No Unit found for temperature - take default ");
                         } else {
-                            temperatureUnit = o.getUnit().get();
+                            temperatureUnit = observer.getUnit().get();
                         }
+                    }
 
+                    double temp = 0;
+                    if (!tpList.isEmpty()) {
+                        try {
+                            temp = Double.parseDouble(tpList.get(0).getTemperatureDisplayValueBytes().toString());
+                        } catch (NumberFormatException nfe) {
+                            temp = tpList.get(0).getTemperature();
+                        }
                     }
-                    VehicleEvents.TemperaturePoint tp = tPointList.get(activeTemperaturePoint);
-                    if (tp.getTemperatureDisplayValue() != null) {
-                        tempState = QuantityType.valueOf(Double.valueOf(tp.getTemperatureDisplayValue()),
-                                temperatureUnit);
-                    } else {
-                        tempState = QuantityType.valueOf(tp.getTemperature(), temperatureUnit);
-                    }
-                    logger.info("Set Temperature to {}", tempState.toFullString());
-                    ChannelStateMap tempMap = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC, tempState,
-                            new UOMObserver(hvacTemperaturePointAttribute.getTemperatureUnit().toString()));
+                    ChannelStateMap tempMap = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC,
+                            QuantityType.valueOf(temp, temperatureUnit), observer);
                     updateChannel(tempMap);
 
                 } else {
@@ -1007,6 +1017,10 @@ public class VehicleHandler extends BaseThingHandler {
             } else if (GROUP_CHARGE.equals(csm.getGroup()) && "active".equals(csm.getChannel())) {
                 chargingState = ((OnOffType) csm.getState()).equals(OnOffType.ON);
             }
+        }
+
+        if ("zone".equals(channel) && !UnDefType.UNDEF.equals(csm.getState())) {
+            activeTemperaturePoint = ((DecimalType) csm.getState()).intValue();
         }
 
         /**

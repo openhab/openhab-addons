@@ -44,6 +44,12 @@
 				<option value="4">On</option>
 			</options>
 		</state>
+		<command>
+			<options>
+				<option value="0">Off</option>
+				<option value="4">On</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="park-brake-channel">
 		<item-type>Switch</item-type>

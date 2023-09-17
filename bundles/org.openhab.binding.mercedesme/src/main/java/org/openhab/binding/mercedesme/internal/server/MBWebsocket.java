@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
@@ -198,10 +197,8 @@ public class MBWebsocket {
 
     @OnWebSocketMessage
     public void onBytes(InputStream is) {
-        byte[] bytes = null;
         try {
-            bytes = IOUtils.toByteArray(is);
-            PushMessage pm = VehicleEvents.PushMessage.parseFrom(bytes);
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
             if (pm.hasVepUpdates()) {
                 boolean distributed = accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
                 if (distributed) {
