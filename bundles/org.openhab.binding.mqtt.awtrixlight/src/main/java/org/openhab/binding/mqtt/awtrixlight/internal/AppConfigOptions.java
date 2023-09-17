@@ -22,4 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AppConfigOptions {
     public String appname = "";
+    public boolean useButtons = false;
 }

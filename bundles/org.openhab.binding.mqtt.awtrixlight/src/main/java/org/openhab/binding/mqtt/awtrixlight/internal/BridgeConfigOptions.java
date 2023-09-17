@@ -22,4 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BridgeConfigOptions {
     public String basetopic = "awtrix";
+    public int appLockTimeout = 10;
+    public boolean discoverDefaultApps = true;
 }

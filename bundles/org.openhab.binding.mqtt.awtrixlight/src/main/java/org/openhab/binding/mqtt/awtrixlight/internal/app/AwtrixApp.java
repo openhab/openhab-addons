@@ -16,6 +16,7 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.ONEHUNDRED;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -268,7 +269,7 @@ public class AwtrixApp {
 
     private Map<String, Object> getIconConfig() {
         Map<String, Object> fields = new HashMap<String, Object>();
-        if (!this.icon.equals("None")) {
+        if (!"None".equals(this.icon)) {
             fields.put("icon", this.icon);
             fields.put("pushIcon", this.pushIcon);
         }
@@ -281,14 +282,14 @@ public class AwtrixApp {
         BigDecimal[] data = null;
         if (this.bar.length > 0) {
             graphType = "bar";
-            if (this.icon.equals("None")) {
+            if ("None".equals(this.icon)) {
                 data = leftTrim(this.bar, 16);
             } else {
                 data = leftTrim(this.bar, 11);
             }
         } else if (this.line.length > 0) {
             graphType = "line";
-            if (this.icon.equals("None")) {
+            if ("None".equals(this.icon)) {
                 data = leftTrim(this.line, 16);
             } else {
                 data = leftTrim(this.line, 11);
@@ -330,11 +331,11 @@ public class AwtrixApp {
         Map<String, Object> fields = new HashMap<String, Object>();
         Map<String, Object> effectSettings = new HashMap<String, Object>();
         fields.put("effect", this.effect);
-        if (!this.effect.equals("None")) {
+        if (!"None".equals(this.effect)) {
             if (this.effectSpeed.compareTo(MINUSONE) > 0) {
                 effectSettings.put("speed", this.effectSpeed);
             }
-            if (!this.effectPalette.equals("None")) {
+            if (!"None".equals(this.effectPalette)) {
                 effectSettings.put("palette", this.effectPalette);
             }
             effectSettings.put("blend", this.effectBlend);
@@ -497,6 +498,19 @@ public class AwtrixApp {
 
     public BigDecimal[] getProgressC() {
         return this.progressC;
+    }
+
+    @Override
+    public String toString() {
+        return "AwtrixApp [text=" + text + ", textCase=" + textCase + ", topText=" + topText + ", textOffset="
+                + textOffset + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient="
+                + Arrays.toString(gradient) + ", blinkText=" + blinkText + ", fadeText=" + fadeText + ", background="
+                + Arrays.toString(background) + ", rainbow=" + rainbow + ", icon=" + icon + ", pushIcon=" + pushIcon
+                + ", repeat=" + repeat + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", bar="
+                + Arrays.toString(bar) + ", autoscale=" + autoscale + ", progress=" + progress + ", progressC="
+                + Arrays.toString(progressC) + ", progressBC=" + Arrays.toString(progressBC) + ", scrollSpeed="
+                + scrollSpeed + ", effect=" + effect + ", effectSpeed=" + effectSpeed + ", effectPalette="
+                + effectPalette + ", effectBlend=" + effectBlend + "]";
     }
 
     public BigDecimal[] setProgressC() {

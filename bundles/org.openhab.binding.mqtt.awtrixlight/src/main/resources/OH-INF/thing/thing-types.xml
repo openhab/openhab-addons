@@ -25,8 +25,9 @@
 			<channel id="indicator3-color" typeId="indicator-color"/>
 			<channel id="app" typeId="app"/>
 			<channel id="screen" typeId="screen"/>
-			<!--<channel id="buttonmode" typeId="buttonmode"/>
-				<channel id="autobrightness" typeId="autobrightness"/> -->
+			<channel id="buttonleft" typeId="system.rawbutton"/>
+			<channel id="buttonright" typeId="system.rawbutton"/>
+			<channel id="buttonselect" typeId="system.rawbutton"/>
 		</channels>
 		<properties>
 			<property name="vendor"></property>
@@ -47,6 +48,7 @@
 		<channels>
 			<channel id="active" typeId="system.power"/>
 			<channel id="reset" typeId="reset"/>
+			<channel id="buttonControl" typeId="buttonControl"/>
 			<channel id="text" typeId="text"/>
 			<channel id="textCase" typeId="textCase"/>
 			<channel id="topText" typeId="topText"/>
@@ -73,6 +75,9 @@
 			<channel id="effectSpeed" typeId="effectSpeed"/>
 			<channel id="effectPalette" typeId="effectPalette"/>
 			<channel id="effectBlend" typeId="effectBlend"/>
+			<channel id="buttonleft" typeId="system.rawbutton"/>
+			<channel id="buttonright" typeId="system.rawbutton"/>
+			<channel id="buttonselect" typeId="system.rawbutton"/>
 		</channels>
 		<properties>
 			<property name="appid"></property>
@@ -183,6 +188,13 @@
 		<item-type>Switch</item-type>
 		<label>Synchronize</label>
 		<description>Synchronizes the states of connected items with the current clock configuration</description>
+	</channel-type>
+
+	<channel-type id="buttonControl">
+		<item-type>Switch</item-type>
+		<label>Use buttons</label>
+		<description>Middle button locks on the current app. Subsequent button presses can be used to control the app. Long
+			press on middle buttons continues app flow.</description>
 	</channel-type>
 
 	<channel-type id="reset">
@@ -307,15 +319,17 @@
 	</channel-type>
 
 	<channel-type id="blinkText">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Blink Text</label>
 		<description>Blink text in specified interval</description>
+		<state min="0" max="5" step="0.1" pattern="%.1f s" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="fadeText">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Fade Text</label>
 		<description>Fade text in specified interval</description>
+		<state min="0" max="5" step="0.1" pattern="%.1f s" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="rainbow">

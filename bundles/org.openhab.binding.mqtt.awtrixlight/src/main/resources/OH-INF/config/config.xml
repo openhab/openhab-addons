@@ -10,12 +10,28 @@
 			<description>Base topic as configured for the Awtrix clock</description>
 			<default>awtrix</default>
 		</parameter>
+		<parameter name="appLockTimeout" type="integer" required="true">
+			<label>Timeout for app selection</label>
+			<description>Timeout before app rotation starts again</description>
+			<default>10</default>
+		</parameter>
+		<parameter name="discoverDefaultApps" type="boolean" required="true">
+			<label>Enable discovery for built-in default apps</label>
+			<description>Currently changing settings for default apps is not implemented. Its recommended to ignore them for
+				discovery</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:mqtt:awtrixapp">
 		<parameter name="appname" type="text" required="true">
 			<label>App name</label>
 			<description>Name of the app</description>
+		</parameter>
+		<parameter name="useButtons" type="boolean" required="true">
+			<label>Button controlled</label>
+			<description>Select button locks on app and app will emit subsequent button events</description>
+			<default>false</default>
 		</parameter>
 	</config-description>
 
