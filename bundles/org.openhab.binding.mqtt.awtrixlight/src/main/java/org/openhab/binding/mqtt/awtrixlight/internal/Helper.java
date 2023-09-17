@@ -127,7 +127,7 @@ public class Helper {
 
     public static String encodeJson(Map<String, Object> params) {
         String json = new Gson().toJson(params);
-        
+
         return json == null ? "" : json;
     }
 

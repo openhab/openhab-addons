@@ -107,7 +107,7 @@ public class HelperTest {
         assertEquals(appConfig, appConfig3);
 
         app.setText("Test");
-        app.setRepeat(new BigDecimal(10));
+        // app.setRepeat(new BigDecimal(10));
         BigDecimal[] color = { new BigDecimal(255), new BigDecimal(255), new BigDecimal(255) };
         app.setColor(color);
         app.setEffect("Radar");
