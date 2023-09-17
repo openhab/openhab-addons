@@ -19,7 +19,7 @@
 		<state readOnly="true">
 			<options>
 				<option value="0">Plugged</option>
-		        <option value="2">Unlugged</option>
+				<option value="2">Unlugged</option>
 			</options>
 		</state>
 	</channel-type>
@@ -27,11 +27,11 @@
 		<item-type>Number</item-type>
 		<label>Charge Coupler DC</label>
 		<state readOnly="true">
-            <options>
-                <option value="0">Plugged</option>
-                <option value="2">Unlugged</option>
-            </options>
-        </state>
+			<options>
+				<option value="0">Plugged</option>
+				<option value="2">Unlugged</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="coupler-lock-channel">
 		<item-type>Number</item-type>
