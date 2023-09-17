@@ -59,8 +59,8 @@ public class RemoteopenhabDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof RemoteopenhabBridgeHandler) {
-            this.bridgeHandler = (RemoteopenhabBridgeHandler) handler;
+        if (handler instanceof RemoteopenhabBridgeHandler remoteopenhabBridgeHandler) {
+            this.bridgeHandler = remoteopenhabBridgeHandler;
             this.restClient = bridgeHandler.gestRestClient();
         }
     }

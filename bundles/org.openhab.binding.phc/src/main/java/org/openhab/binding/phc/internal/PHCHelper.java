@@ -38,9 +38,7 @@ public class PHCHelper {
         String thingID = StringUtils.padLeft(Integer.toBinaryString(moduleAddr & 0xFF).trim(), 5, "0");
         thingID = new StringBuilder(thingID).reverse().toString();
 
-        ThingUID thingUID = new ThingUID(thingTypeUID, thingID);
-
-        return thingUID;
+        return new ThingUID(thingTypeUID, thingID);
     }
 
     /**

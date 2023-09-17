@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.oppo")
 public class OppoDiscoveryService extends AbstractDiscoveryService {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLAYER);
 
     private final Logger logger = LoggerFactory.getLogger(OppoDiscoveryService.class);
 

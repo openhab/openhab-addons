@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.hue.internal.dto;
 
-import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,7 +76,7 @@ public class ApiVersion {
     }
 
     /**
-     * compare API versions according to {@link Comparator#compare(Object, Object)}
+     * compare API versions according to {@link java.util.Comparator#compare(Object, Object)}
      *
      * @param other
      * @return

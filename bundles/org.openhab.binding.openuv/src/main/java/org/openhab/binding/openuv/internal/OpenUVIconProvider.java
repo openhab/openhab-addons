@@ -115,10 +115,14 @@ public class OpenUVIconProvider implements IconProvider {
         String result = "";
 
         URL iconResource = context.getBundle().getEntry("icon/%s.svg".formatted(iconName));
-        try (InputStream stream = iconResource.openStream()) {
-            result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            logger.warn("Unable to load ressource '{}' : {}", iconResource.getPath(), e.getMessage());
+        if (iconResource != null) {
+            try (InputStream stream = iconResource.openStream()) {
+                result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
+            }
+        } else {
+            logger.warn("Unable to load icon named '{}'", iconName);
         }
         return result;
     }

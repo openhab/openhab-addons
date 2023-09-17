@@ -349,8 +349,8 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HaywardBridgeHandler) {
-            this.discoveryBridgehandler = (HaywardBridgeHandler) handler;
+        if (handler instanceof HaywardBridgeHandler bridgeHandler) {
+            this.discoveryBridgehandler = bridgeHandler;
         }
     }
 

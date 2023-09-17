@@ -15,6 +15,7 @@ package org.openhab.binding.easee.internal.command.charger;
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
@@ -28,8 +29,9 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class SendCommandStartStop extends SendCommand {
 
-    public SendCommandStartStop(EaseeThingHandler handler, String chargerId, Channel channel, Command command) {
-        super(handler, channel, command);
+    public SendCommandStartStop(EaseeThingHandler handler, String chargerId, Channel channel, Command command,
+            JsonResultProcessor resultProcessor) {
+        super(handler, channel, command, resultProcessor);
         String value;
         if (command.equals(OnOffType.ON)) {
             value = CMD_VAL_START_CHARGING;

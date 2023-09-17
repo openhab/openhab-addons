@@ -163,8 +163,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     private void updateProperties(NhcEnergyMeter nhcEnergyMeter) {
         Map<String, String> properties = new HashMap<>();
 
-        if (nhcEnergyMeter instanceof NhcEnergyMeter2) {
-            NhcEnergyMeter2 energyMeter = (NhcEnergyMeter2) nhcEnergyMeter;
+        if (nhcEnergyMeter instanceof NhcEnergyMeter2 energyMeter) {
             properties.put(PROPERTY_DEVICE_TYPE, energyMeter.getDeviceType());
             properties.put(PROPERTY_DEVICE_TECHNOLOGY, energyMeter.getDeviceTechnology());
             properties.put(PROPERTY_DEVICE_MODEL, energyMeter.getDeviceModel());

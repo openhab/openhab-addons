@@ -14,8 +14,8 @@
 package org.openhab.binding.pilight.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -185,8 +185,8 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
         if (!DeviceType.SERVER.equals(type)) {
             for (Thing thing : getThing().getThings()) {
                 final @Nullable ThingHandler handler = thing.getHandler();
-                if (handler instanceof PilightBaseHandler) {
-                    ((PilightBaseHandler) handler).updateFromStatusIfMatches(status);
+                if (handler instanceof PilightBaseHandler baseHandler) {
+                    baseHandler.updateFromStatusIfMatches(status);
                 }
             }
         }
@@ -194,7 +194,7 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(PilightDeviceDiscoveryService.class);
+        return Set.of(PilightDeviceDiscoveryService.class);
     }
 
     /**
@@ -228,8 +228,8 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
     private void processConfig(Config config) {
         for (Thing thing : getThing().getThings()) {
             final @Nullable ThingHandler handler = thing.getHandler();
-            if (handler instanceof PilightBaseHandler) {
-                ((PilightBaseHandler) handler).updateFromConfigIfMatches(config);
+            if (handler instanceof PilightBaseHandler baseHandler) {
+                baseHandler.updateFromConfigIfMatches(config);
             }
         }
 

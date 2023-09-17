@@ -166,8 +166,7 @@ public class ZoneHandler extends BaseThingHandler {
         if (CHANNEL_ZONE_COMFORT_TEMPERATURE.equals(channelUID.getId())) {
             Zone zone = getZone();
             if (zone != null) {
-                if (command instanceof DecimalType) {
-                    DecimalType comfortTemp = (DecimalType) command;
+                if (command instanceof DecimalType comfortTemp) {
                     logger.debug("Set comfort temp for zone {} to {}", zone.getName(), comfortTemp.doubleValue());
                     zone.setComfortTemperature(comfortTemp.intValue());
                     sendCommand(zone.generateCommandString("U00"));
@@ -180,8 +179,7 @@ public class ZoneHandler extends BaseThingHandler {
         if (CHANNEL_ZONE_ECO_TEMPERATURE.equals(channelUID.getId())) {
             Zone zone = getZone();
             if (zone != null) {
-                if (command instanceof DecimalType) {
-                    DecimalType ecoTemp = (DecimalType) command;
+                if (command instanceof DecimalType ecoTemp) {
                     logger.debug("Set eco temp for zone {} to {}", zone.getName(), ecoTemp.doubleValue());
                     zone.setEcoTemperature(ecoTemp.intValue());
                     sendCommand(zone.generateCommandString("U00"));
@@ -193,8 +191,7 @@ public class ZoneHandler extends BaseThingHandler {
         if (CHANNEL_ZONE_ACTIVE_WEEK_PROFILE.equals(channelUID.getId())) {
             Zone zone = getZone();
             if (zone != null) {
-                if (command instanceof DecimalType) {
-                    DecimalType weekProfileId = (DecimalType) command;
+                if (command instanceof DecimalType weekProfileId) {
                     logger.debug("Set week profile for zone {} to {}", zone.getName(), weekProfileId);
                     zone.setWeekProfile(weekProfileId.intValue());
                     sendCommand(zone.generateCommandString("U00"));

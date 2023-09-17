@@ -197,17 +197,17 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
                 String name = msg.substring(0, idx);
 
                 if ("Host".equalsIgnoreCase(name)) {
-                    host = msg.substring(idx + 1).trim().replaceAll("\"", "");
+                    host = msg.substring(idx + 1).trim().replace("\"", "");
                     int sep = host.indexOf('_');
                     if (sep >= 0) {
                         host = host.substring(sep + 1);
                     }
                 } else if ("Model".equalsIgnoreCase(name)) {
-                    model = msg.substring(idx + 1).trim().replaceAll("\"", "");
+                    model = msg.substring(idx + 1).trim().replace("\"", "");
                 } else if ("Manufacturer".equalsIgnoreCase(name)) {
-                    manufacturer = msg.substring(idx + 1).trim().replaceAll("\"", "");
+                    manufacturer = msg.substring(idx + 1).trim().replace("\"", "");
                 } else if ("From".equalsIgnoreCase(name)) {
-                    from = msg.substring(idx + 1).trim().replaceAll("\"", "");
+                    from = msg.substring(idx + 1).trim().replace("\"", "");
                     int sep = from.indexOf(':');
                     if (sep >= 0) {
                         from = from.substring(0, sep);

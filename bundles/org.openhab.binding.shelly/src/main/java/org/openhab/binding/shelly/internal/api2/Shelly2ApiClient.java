@@ -157,7 +157,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         addRelaySettings(relays, dc.switch2);
         addRelaySettings(relays, dc.switch3);
         addRelaySettings(relays, dc.switch100);
-        return relays.size() > 0 ? relays : null;
+        return !relays.isEmpty() ? relays : null;
     }
 
     private void addRelaySettings(ArrayList<@Nullable ShellySettingsRelay> relays,
@@ -496,7 +496,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
                 fav.name = fav.pos + "%";
                 profile.settings.favorites.add(fav);
             }
-            profile.settings.favoritesEnabled = profile.settings.favorites.size() > 0;
+            profile.settings.favoritesEnabled = !profile.settings.favorites.isEmpty();
             logger.debug("{}: Roller Favorites loaded: {}", thingName,
                     profile.settings.favoritesEnabled ? profile.settings.favorites.size() : "none");
         }

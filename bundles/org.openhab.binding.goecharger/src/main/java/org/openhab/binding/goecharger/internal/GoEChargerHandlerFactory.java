@@ -14,7 +14,6 @@ package org.openhab.binding.goecharger.internal;
 
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.goecharger", service = ThingHandlerFactory.class)
 public class GoEChargerHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GOE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GOE);
     private final HttpClient httpClient;
 
     @Activate
