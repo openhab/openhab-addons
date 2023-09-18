@@ -12,6 +12,11 @@
  */
 package org.openhab.persistence.mongodb.internal;
 
+import static org.openhab.persistence.mongodb.internal.MongoDBConvertUtils.FIELD_ITEM;
+import static org.openhab.persistence.mongodb.internal.MongoDBConvertUtils.FIELD_TIMESTAMP;
+import static org.openhab.persistence.mongodb.internal.MongoDBConvertUtils.FIELD_VALUE;
+import static org.openhab.persistence.mongodb.internal.MongoDBConvertUtils.itemToDBObject;
+
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -22,24 +27,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.bson.types.ObjectId;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.library.items.ContactItem;
-import org.openhab.core.library.items.DateTimeItem;
-import org.openhab.core.library.items.DimmerItem;
-import org.openhab.core.library.items.NumberItem;
-import org.openhab.core.library.items.RollershutterItem;
-import org.openhab.core.library.items.SwitchItem;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Operator;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
@@ -76,12 +68,6 @@ import com.mongodb.MongoClientURI;
 @Component(service = { PersistenceService.class,
         QueryablePersistenceService.class }, configurationPid = "org.openhab.mongodb", configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class MongoDBPersistenceService implements QueryablePersistenceService {
-
-    private static final String FIELD_ID = "_id";
-    private static final String FIELD_ITEM = "item";
-    private static final String FIELD_REALNAME = "realName";
-    private static final String FIELD_TIMESTAMP = "timestamp";
-    private static final String FIELD_VALUE = "value";
 
     private final Logger logger = LoggerFactory.getLogger(MongoDBPersistenceService.class);
 
@@ -172,8 +158,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             return;
         }
 
-        String realItemName = item.getName();
-        String collectionName = collectionPerItem ? realItemName : this.collection;
+        String collectionName = collectionPerItem ? item.getName() : this.collection;
 
         @Nullable
         DBCollection collection = connectToCollection(collectionName);
@@ -183,32 +168,10 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             return;
         }
 
-        String name = (alias != null) ? alias : realItemName;
-        Object value = this.convertValue(item.getState());
-
-        DBObject obj = new BasicDBObject();
-        obj.put(FIELD_ID, new ObjectId());
-        obj.put(FIELD_ITEM, name);
-        obj.put(FIELD_REALNAME, realItemName);
-        obj.put(FIELD_TIMESTAMP, new Date());
-        obj.put(FIELD_VALUE, value);
+        DBObject obj = itemToDBObject(item, alias);
         collection.save(obj);
 
-        logger.debug("MongoDB save {}={}", name, value);
-    }
-
-    private Object convertValue(State state) {
-        Object value;
-        if (state instanceof PercentType type) {
-            value = type.toBigDecimal().doubleValue();
-        } else if (state instanceof DateTimeType type) {
-            value = Date.from(type.getZonedDateTime().toInstant());
-        } else if (state instanceof DecimalType type) {
-            value = type.toBigDecimal().doubleValue();
-        } else {
-            value = state.toString();
-        }
-        return value;
+        logger.debug("MongoDB save {}={}", item.getName(), item.getState());
     }
 
     @Override
@@ -369,7 +332,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
                 return Collections.emptyList();
             }
 
-            Object value = convertValue(filterState);
+            Object value = MongoDBConvertUtils.stateToObject(filterState);
             query.put(FIELD_VALUE, new BasicDBObject(op, value));
         }
 
@@ -393,25 +356,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         while (cursor.hasNext()) {
             BasicDBObject obj = (BasicDBObject) cursor.next();
 
-            final State state;
-            if (item instanceof NumberItem) {
-                state = new DecimalType(obj.getDouble(FIELD_VALUE));
-            } else if (item instanceof DimmerItem) {
-                state = new PercentType(obj.getInt(FIELD_VALUE));
-            } else if (item instanceof SwitchItem) {
-                state = OnOffType.valueOf(obj.getString(FIELD_VALUE));
-            } else if (item instanceof ContactItem) {
-                state = OpenClosedType.valueOf(obj.getString(FIELD_VALUE));
-            } else if (item instanceof RollershutterItem) {
-                state = new PercentType(obj.getInt(FIELD_VALUE));
-            } else if (item instanceof DateTimeItem) {
-                state = new DateTimeType(
-                        ZonedDateTime.ofInstant(obj.getDate(FIELD_VALUE).toInstant(), ZoneId.systemDefault()));
-            } else {
-                state = new StringType(obj.getString(FIELD_VALUE));
-            }
-
-            items.add(new MongoDBItem(realItemName, state,
+            items.add(new MongoDBItem(realItemName, MongoDBConvertUtils.objectToState(obj, item),
                     ZonedDateTime.ofInstant(obj.getDate(FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
         }
 
