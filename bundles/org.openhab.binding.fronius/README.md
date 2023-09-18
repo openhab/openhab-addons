@@ -141,7 +141,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 demo.things:
 
 ```java
-Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
+Bridge fronius:bridge:mybridge [hostname="192.168.178.182", refreshInterval=5] {
     Thing powerinverter myinverter [deviceId=1]
     Thing meter mymeter [deviceId=0]
     Thing ohmpilot myohmpilot [deviceId=0]    
