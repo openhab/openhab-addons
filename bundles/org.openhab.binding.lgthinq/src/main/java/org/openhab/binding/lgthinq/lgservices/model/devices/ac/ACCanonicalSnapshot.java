@@ -31,6 +31,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ACCanonicalSnapshot extends AbstractSnapshotDefinition {
 
+    // ============ FOR HEAT PUMP ONLY ===============
+    private double hpWaterTempCoolMin;
+    private double hpWaterTempCoolMax;
+    private double hpWaterTempHeatMin;
+    private double hpWaterTempHeatMax;
+    private double hpAirTempCoolMin;
+    private double hpAirTempCoolMax;
+    private double hpAirTempHeatMin;
+    private double hpAirTempHeatMax;
+    private double hpAirWaterTempSwitch = -1;
+    // ===============================================
+
     private int airWindStrength;
 
     private double targetTemperature;
@@ -175,6 +187,89 @@ public class ACCanonicalSnapshot extends AbstractSnapshotDefinition {
     public void setOnline(boolean online) {
         this.online = online;
     }
+
+    // ==================== For HP only
+    @JsonProperty("airState.tempState.waterTempCoolMin")
+    public double getHpWaterTempCoolMin() {
+        return hpWaterTempCoolMin;
+    }
+
+    public void setHpWaterTempCoolMin(double hpWaterTempCoolMin) {
+        this.hpWaterTempCoolMin = hpWaterTempCoolMin;
+    }
+
+    @JsonProperty("airState.tempState.waterTempCoolMax")
+    public double getHpWaterTempCoolMax() {
+        return hpWaterTempCoolMax;
+    }
+
+    public void setHpWaterTempCoolMax(double hpWaterTempCoolMax) {
+        this.hpWaterTempCoolMax = hpWaterTempCoolMax;
+    }
+
+    @JsonProperty("airState.tempState.waterTempHeatMin")
+    public double getHpWaterTempHeatMin() {
+        return hpWaterTempHeatMin;
+    }
+
+    public void setHpWaterTempHeatMin(double hpWaterTempHeatMin) {
+        this.hpWaterTempHeatMin = hpWaterTempHeatMin;
+    }
+
+    @JsonProperty("airState.tempState.waterTempHeatMax")
+    public double getHpWaterTempHeatMax() {
+        return hpWaterTempHeatMax;
+    }
+
+    public void setHpWaterTempHeatMax(double hpWaterTempHeatMax) {
+        this.hpWaterTempHeatMax = hpWaterTempHeatMax;
+    }
+
+    @JsonProperty("airState.tempState.airTempCoolMin")
+    public double getHpAirTempCoolMin() {
+        return hpAirTempCoolMin;
+    }
+
+    public void setHpAirTempCoolMin(double hpAirTempCoolMin) {
+        this.hpAirTempCoolMin = hpAirTempCoolMin;
+    }
+
+    @JsonProperty("airState.tempState.airTempCoolMax")
+    public double getHpAirTempCoolMax() {
+        return hpAirTempCoolMax;
+    }
+
+    public void setHpAirTempCoolMax(double hpAirTempCoolMax) {
+        this.hpAirTempCoolMax = hpAirTempCoolMax;
+    }
+
+    @JsonProperty("airState.tempState.airTempHeatMin")
+    public double getHpAirTempHeatMin() {
+        return hpAirTempHeatMin;
+    }
+
+    public void setHpAirTempHeatMin(double hpAirTempHeatMin) {
+        this.hpAirTempHeatMin = hpAirTempHeatMin;
+    }
+
+    @JsonProperty("airState.tempState.airTempHeatMax")
+    public double getHpAirTempHeatMax() {
+        return hpAirTempHeatMax;
+    }
+
+    public void setHpAirTempHeatMax(double hpAirTempHeatMax) {
+        this.hpAirTempHeatMax = hpAirTempHeatMax;
+    }
+
+    @JsonProperty("airState.miscFuncState.awhpTempSwitch")
+    public double getHpAirWaterTempSwitch() {
+        return hpAirWaterTempSwitch;
+    }
+
+    public void setHpAirWaterTempSwitch(double hpAirWaterTempSwitch) {
+        this.hpAirWaterTempSwitch = hpAirWaterTempSwitch;
+    }
+    // ===================================
 
     @Override
     public String toString() {

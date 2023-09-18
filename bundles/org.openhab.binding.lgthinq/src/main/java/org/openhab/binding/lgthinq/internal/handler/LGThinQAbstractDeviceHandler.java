@@ -14,6 +14,9 @@ package org.openhab.binding.lgthinq.internal.handler;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.util.*;
@@ -47,8 +50,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinition, S extends SnapshotDefinition>
         extends BaseThingWithExtraInfoHandler {
-	private final Logger logger = LoggerFactory.getLogger(LGThinQAbstractDeviceHandler.class);
-	protected @Nullable LGThinQBridgeHandler account;
+    private final Logger logger = LoggerFactory.getLogger(LGThinQAbstractDeviceHandler.class);
+    protected @Nullable LGThinQBridgeHandler account;
     protected final String lgPlatformType;
     @Nullable
     private S lastShot;
@@ -211,7 +214,17 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
                 commandBlockQueue.add(params);
             } catch (IllegalStateException ex) {
                 getLogger().error(
-                        "Device's command queue reached the size limit. Probably the device is busy ou stuck. Ignoring command.");
+                        "Device's command queue reached the size limit. Probably the device is busy ou stuck. Ignoring command. Above the ThreadDump to analise the stuck");
+                getLogger().error("Status of the commandQueue: consumer: {}, size: {}",
+                        commandExecutorQueueJob == null || commandExecutorQueueJob.isDone() ? "OFF" : "ON",
+                        commandBlockQueue.size());
+                ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+                ThreadInfo[] infos = bean.dumpAllThreads(true, true);
+                String message = "";
+                for (ThreadInfo i : infos) {
+                    message = String.format("%s\n%s", message, i.toString());
+                }
+                logger.error("{}", message);
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Device Command Queue is Busy");
             }
@@ -295,7 +308,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
 
         initializeThing(bridge.getStatus());
     }
-    
+
     protected void initializeThing(@Nullable ThingStatus bridgeStatus) {
         getLogger().debug("initializeThing LQ Thinq {}. Bridge status {}", getThing().getUID(), bridgeStatus);
         String thingId = getThing().getUID().getId();
@@ -315,7 +328,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             if (account == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account not set");
             } else {
-            	account.registryListenerThing(this);
+                account.registryListenerThing(this);
                 switch (bridgeStatus) {
                     case ONLINE:
                         updateStatus(ThingStatus.ONLINE);
@@ -358,7 +371,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             startThingStatePolling();
         }
     }
-    
+
     public void refreshStatus() {
         if (thing.getStatus() == ThingStatus.OFFLINE) {
             initialize();
@@ -497,20 +510,20 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             // no changes needed
             return;
         }
-        
+
         // change from OFF to ON / OFF to ON
         boolean isEnableToStartCollector = isExtraInfoCollectorEnabled() && isExtraInfoCollectorSupported();
-        
+
         if (current == DevicePowerState.DV_POWER_ON) {
             currentPeriodSeconds = pollingPeriodOnSeconds;
-            
+
             // if extendedInfo collector is enabled, then force do start to prevent previous stop
             if (isEnableToStartCollector) {
                 startExtraInfoCollectorPolling();
             }
         } else {
             currentPeriodSeconds = pollingPeriodOffSeconds;
-            
+
             // if it's configured to stop extra-info collection on PowerOff, then stop the job
             if (!pollExtraInfoOnPowerOff) {
                 stopExtraInfoCollectorPolling();
@@ -518,12 +531,12 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
                 startExtraInfoCollectorPolling();
             }
         }
-        
+
         // restart thing state polling for the new poolingPeriod configuration
         if (pollingPeriodOffSeconds != pollingPeriodOnSeconds) {
             stopThingStatePolling();
         }
-        
+
         startThingStatePolling();
     }
 
@@ -729,6 +742,9 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
                 getLogger().error("Error executing Command {} to the channel {}. Thing goes offline until retry",
                         params.command, params.channelUID, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (Exception e) {
+                getLogger().error("System error executing Command {} to the channel {}. Ignoring command",
+                        params.command, params.channelUID, e);
             }
         }
     };
@@ -736,11 +752,11 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     @Override
     public void dispose() {
         logger.debug("Disposing Thinq Thing {}", getDeviceId());
-        
+
         if (account != null) {
             account.unRegistryListenerThing(this);
         }
-        
+
         stopThingStatePolling();
         stopExtraInfoCollectorPolling();
         stopCommandExecutorQueueJob();

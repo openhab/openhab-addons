@@ -13,6 +13,7 @@
 package org.openhab.binding.lgthinq.internal.errors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
 
 /**
  * The {@link LGThinqApiException}
@@ -21,11 +22,27 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LGThinqApiException extends LGThinqException {
+    protected ResultCodes apiReasonCode = ResultCodes.UNKNOWN;
+
     public LGThinqApiException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    public LGThinqApiException(String message, Throwable cause, ResultCodes reasonCode) {
+        super(message, cause);
+        this.apiReasonCode = reasonCode;
+    }
+
+    public ResultCodes getApiReasonCode() {
+        return apiReasonCode;
+    }
+
     public LGThinqApiException(String message) {
         super(message);
+    }
+
+    public LGThinqApiException(String message, ResultCodes resultCode) {
+        super(message);
+        this.apiReasonCode = resultCode;
     }
 }

@@ -48,11 +48,12 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
         extends LGThinQAbstractApiClientService<C, S> {
     private static final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiV2ClientService.class);
 
-    protected LGThinQAbstractApiV2ClientService(Class<C> capabilityClass, Class<S> snapshotClass, HttpClient httpClient) {
+    protected LGThinQAbstractApiV2ClientService(Class<C> capabilityClass, Class<S> snapshotClass,
+            HttpClient httpClient) {
         super(capabilityClass, snapshotClass, httpClient);
     }
 
-    @Override	
+    @Override
     protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
             String command, String keyName, String value) throws Exception {
         return sendCommand(bridgeName, deviceId, controlPath, controlKey, command, keyName, value, null);
@@ -67,7 +68,8 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         RestResult resp = RestUtils.postCall(httpClient, builder.build().toURL().toString(), headers, payload);
         if (resp == null) {
-            logger.warn("Null result returned sending command to LG API V2: {}, {}, {}", deviceId, controlPath, payload);
+            logger.warn("Null result returned sending command to LG API V2: {}, {}, {}", deviceId, controlPath,
+                    payload);
             throw new LGThinqApiException("Null result returned sending command to LG API V2");
         }
         return resp;
@@ -98,12 +100,15 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
         }
         if (resp.getStatusCode() != 200) {
             if (resp.getStatusCode() == 400) {
-                logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
+                logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(),
+                        resp.getJsonResponse());
                 return Collections.emptyMap();
             } else {
-                logger.error("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
+                logger.error("Error returned by LG Server API. HTTP Status: {}. The reason is: {}",
+                        resp.getStatusCode(), resp.getJsonResponse());
                 throw new LGThinqApiException(
-                        String.format("Error returned by LG Server API. HTTP Status: %s. The reason is: %s", resp.getStatusCode(), resp.getJsonResponse()));
+                        String.format("Error returned by LG Server API. HTTP Status: %s. The reason is: %s",
+                                resp.getStatusCode(), resp.getJsonResponse()));
             }
         } else {
             try {

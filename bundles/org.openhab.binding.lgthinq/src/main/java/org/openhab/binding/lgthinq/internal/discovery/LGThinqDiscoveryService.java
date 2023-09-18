@@ -65,7 +65,8 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
         if (handler instanceof LGThinQBridgeHandler) {
             bridgeHandler = (LGThinQBridgeHandler) handler;
             bridgeHandlerUID = handler.getThing().getUID();
-            lgApiClientService = LGThinQApiClientServiceFactory.newGeneralApiClientService(bridgeHandler.getHttpClientFactory());
+            lgApiClientService = LGThinQApiClientServiceFactory
+                    .newGeneralApiClientService(bridgeHandler.getHttpClientFactory());
         }
     }
 

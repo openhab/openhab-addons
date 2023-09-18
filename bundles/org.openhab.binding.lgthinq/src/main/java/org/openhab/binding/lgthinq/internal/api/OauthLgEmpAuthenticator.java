@@ -42,11 +42,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class OauthLgEmpAuthenticator {
-    
-	private static final Logger logger = LoggerFactory.getLogger(OauthLgEmpAuthenticator.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(OauthLgEmpAuthenticator.class);
     private static final Map<String, String> oauthSearchKeyQueryParams = new LinkedHashMap<>();
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    
+
     static {
         oauthSearchKeyQueryParams.put("key_name", "OAUTH_SECRETKEY");
         oauthSearchKeyQueryParams.put("sever_type", "OP");
@@ -55,7 +55,7 @@ public class OauthLgEmpAuthenticator {
     private HttpClient httpClient;
 
     public OauthLgEmpAuthenticator(HttpClient httpClient) {
-		this.httpClient = httpClient;
+        this.httpClient = httpClient;
     }
 
     static class PreLoginResult {

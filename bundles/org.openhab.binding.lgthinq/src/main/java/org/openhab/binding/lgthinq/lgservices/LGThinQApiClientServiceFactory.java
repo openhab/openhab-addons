@@ -40,48 +40,57 @@ public class LGThinQApiClientServiceFactory {
         return new LGThinQGeneralApiClientService(httpClientFactory.getCommonHttpClient());
     }
 
-    public static LGThinQACApiClientService newACApiClientService(String lgPlatformType, HttpClientFactory httpClientFactory) {
+    public static LGThinQACApiClientService newACApiClientService(String lgPlatformType,
+            HttpClientFactory httpClientFactory) {
         return lgPlatformType.equals(PLATFORM_TYPE_V1)
                 ? new LGThinQACApiV1ClientServiceImpl(httpClientFactory.getCommonHttpClient())
                 : new LGThinQACApiV2ClientServiceImpl(httpClientFactory.getCommonHttpClient());
     }
 
-    public static LGThinQFridgeApiClientService newFridgeApiClientService(String lgPlatformType, HttpClientFactory httpClientFactory) {
+    public static LGThinQFridgeApiClientService newFridgeApiClientService(String lgPlatformType,
+            HttpClientFactory httpClientFactory) {
         return lgPlatformType.equals(PLATFORM_TYPE_V1)
                 ? new LGThinQFridgeApiV1ClientServiceImpl(httpClientFactory.getCommonHttpClient())
                 : new LGThinQFridgeApiV2ClientServiceImpl(httpClientFactory.getCommonHttpClient());
     }
 
-    public static LGThinQWMApiClientService newWMApiClientService(String lgPlatformType, HttpClientFactory httpClientFactory) {
+    public static LGThinQWMApiClientService newWMApiClientService(String lgPlatformType,
+            HttpClientFactory httpClientFactory) {
         return lgPlatformType.equals(PLATFORM_TYPE_V1)
                 ? new LGThinQWMApiV1ClientServiceImpl(httpClientFactory.getCommonHttpClient())
                 : new LGThinQWMApiV2ClientServiceImpl(httpClientFactory.getCommonHttpClient());
     }
 
     @NonNullByDefault
-    public static final class LGThinQGeneralApiClientService extends LGThinQAbstractApiClientService<GenericCapability, AbstractSnapshotDefinition> {
+    public static final class LGThinQGeneralApiClientService
+            extends LGThinQAbstractApiClientService<GenericCapability, AbstractSnapshotDefinition> {
 
         private LGThinQGeneralApiClientService(HttpClient httpClient) {
             super(GenericCapability.class, AbstractSnapshotDefinition.class, httpClient);
         }
 
         @Override
-        public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) throws LGThinqApiException {
+        public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
+                throws LGThinqApiException {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) throws LGThinqApiException {
+        protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId)
+                throws LGThinqApiException {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey, String command, String keyName, String value) throws Exception {
+        protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
+                String command, String keyName, String value) throws Exception {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey, String command, @Nullable String keyName, @Nullable String value, @Nullable ObjectNode extraNode) throws Exception {
+        protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
+                String command, @Nullable String keyName, @Nullable String value, @Nullable ObjectNode extraNode)
+                throws Exception {
             throw new UnsupportedOperationException();
         }
 

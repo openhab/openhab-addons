@@ -28,9 +28,9 @@ public enum ResultCodes {
     OK("Success", "0000", "0001"),
     DEVICE_NOT_RESPONSE("Device Not Response", "0111", "0103", "0104", "0106"),
     PORTAL_INTERWORKING_ERROR("Portal Internal Error", "0007"),
-    LOGIN_FAILED(
-            "Login/Session Failed, Duplicated or Terms Not Agreed. Try to login and correct issues direct on LG Account Portal",
-            "0004", "0102", "0110", "0114"),
+    LOGIN_DUPLICATED("Login Duplicated", "0004"),
+    UPDATE_TERMS_NEEDED("Update Agreement Terms in LG App", "0110"),
+    LOGIN_FAILED("Login/Session Failed. Try to login and correct issues direct on LG Account Portal", "0102", "0114"),
     BASE64_CODING_ERROR("Base64 Decoding/Encoding error", "9002", "9001"),
     NOT_SUPPORTED_CONTROL("Command/Control/Service is not supported", "0005", "0012", "8001"),
     CONTROL_ERROR("Error in device control", "0105"),
@@ -91,10 +91,12 @@ public enum ResultCodes {
                 return INVALID_PAYLOAD;
             case "0003":
                 return INVALID_HEAD;
-            case "0004":
-            case "0102":
-            case "0110": // Email duplicated
-            case "0114":
+            case "0110": // Update Terms
+                return UPDATE_TERMS_NEEDED;
+            case "0004": // Duplicated Login
+                return LOGIN_DUPLICATED;
+            case "0102": // Not Logged in
+            case "0114": // Mismatch Login Session
                 return LOGIN_FAILED;
             case "0100":
                 return GENERAL_FAILURE;

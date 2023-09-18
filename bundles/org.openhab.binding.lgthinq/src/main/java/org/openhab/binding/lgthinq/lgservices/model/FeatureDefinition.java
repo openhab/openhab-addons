@@ -18,7 +18,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
 
 /**
  * The {@link FeatureDefinition} defines the feature definitions extracted from the capability files in

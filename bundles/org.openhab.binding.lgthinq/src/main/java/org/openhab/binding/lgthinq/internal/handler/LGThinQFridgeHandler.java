@@ -17,12 +17,10 @@ import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
@@ -66,12 +64,12 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     private final Logger logger = LoggerFactory.getLogger(LGThinQFridgeHandler.class);
     @NonNullByDefault
     private final LGThinQFridgeApiClientService lgThinqFridgeApiClientService;
-    private @Nullable ScheduledFuture<?> thingStatePollingJob;
 
     public LGThinQFridgeHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry, HttpClientFactory httpClientFactory) {
         super(thing, stateDescriptionProvider, itemChannelLinkRegistry);
-        lgThinqFridgeApiClientService = LGThinQApiClientServiceFactory.newFridgeApiClientService(lgPlatformType, httpClientFactory);
+        lgThinqFridgeApiClientService = LGThinQApiClientServiceFactory.newFridgeApiClientService(lgPlatformType,
+                httpClientFactory);
         channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
         channelGroupExtendedInfoUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_EXTENDED_INFO_GRP_ID);
         fridgeTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_FRIDGE_TEMP_ID);
@@ -140,13 +138,6 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     @Override
     protected Logger getLogger() {
         return logger;
-    }
-
-    protected void stopThingStatePolling() {
-        if (thingStatePollingJob != null && !thingStatePollingJob.isDone()) {
-            logger.debug("Stopping LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            thingStatePollingJob.cancel(true);
-        }
     }
 
     protected DeviceTypes getDeviceType() {

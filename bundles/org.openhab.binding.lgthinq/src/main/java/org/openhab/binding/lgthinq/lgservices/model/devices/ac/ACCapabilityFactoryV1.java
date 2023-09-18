@@ -125,4 +125,9 @@ public class ACCapabilityFactoryV1 extends AbstractACCapabilityFactory {
     protected String getValuesNodeName() {
         return "Value";
     }
+
+    @Override
+    protected String getHpAirWaterSwitchNodeName() {
+        throw new UnsupportedOperationException("Heat Pump Thinq V1 not implemented yet! Ignoring node");
+    }
 }

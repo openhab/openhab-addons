@@ -140,24 +140,28 @@ public class LGThinQBindingConstants {
     // ====================== AIR CONDITIONER DEVICE CONSTANTS =============================
     // CHANNEL IDS
     public static final String CHANNEL_MOD_OP_ID = "op_mode";
+    public static final String CHANNEL_AIR_WATER_SWITCH_ID = "hp_air_water_switch";
     public static final String CHANNEL_FAN_SPEED_ID = "fan_speed";
     public static final String CHANNEL_POWER_ID = "power";
     public static final String CHANNEL_EXTENDED_INFO_COLLECTOR_ID = "extended_info_collector";
     public static final String CHANNEL_CURRENT_POWER_ID = "current_power";
     public static final String CHANNEL_REMAINING_FILTER_ID = "remaining_filter";
     public static final String CHANNEL_TARGET_TEMP_ID = "target_temperature";
+    public static final String CHANNEL_MIN_TEMP_ID = "min_temperature";
+    public static final String CHANNEL_MAX_TEMP_ID = "max_temperature";
     public static final String CHANNEL_CURRENT_TEMP_ID = "current_temperature";
     public static final String CHANNEL_COOL_JET_ID = "cool_jet";
     public static final String CHANNEL_AIR_CLEAN_ID = "air_clean";
     public static final String CHANNEL_AUTO_DRY_ID = "auto_dry";
     public static final String CHANNEL_ENERGY_SAVING_ID = "energy_saving";
 
-    public static final Map<String, String> CAP_AC_OP_MODE = Map.of("@AC_MAIN_OPERATION_MODE_COOL_W", "Cool",
-            "@AC_MAIN_OPERATION_MODE_DRY_W", "Dry", "@AC_MAIN_OPERATION_MODE_FAN_W", "Fan",
-            "@AC_MAIN_OPERATION_MODE_HEAT_W", "Heat", "@AC_MAIN_OPERATION_MODE_AIRCLEAN_W", "Air Clean",
-            "@AC_MAIN_OPERATION_MODE_ACO_W", "Auto", "@AC_MAIN_OPERATION_MODE_AI_W", "AI",
-            "@AC_MAIN_OPERATION_MODE_ENERGY_SAVING_W", "Eco", "@AC_MAIN_OPERATION_MODE_AROMA_W", "Aroma",
-            "@AC_MAIN_OPERATION_MODE_ANTIBUGS_W", "Anti Bugs");
+    public static final String CAP_ACHP_OP_MODE_COOL_KEY = "@AC_MAIN_OPERATION_MODE_COOL_W";
+    public static final String CAP_ACHP_OP_MODE_HEAT_KEY = "@AC_MAIN_OPERATION_MODE_HEAT_W";
+    public static final Map<String, String> CAP_AC_OP_MODE = Map.of(CAP_ACHP_OP_MODE_COOL_KEY, "Cool",
+            "@AC_MAIN_OPERATION_MODE_DRY_W", "Dry", "@AC_MAIN_OPERATION_MODE_FAN_W", "Fan", CAP_ACHP_OP_MODE_HEAT_KEY,
+            "Heat", "@AC_MAIN_OPERATION_MODE_AIRCLEAN_W", "Air Clean", "@AC_MAIN_OPERATION_MODE_ACO_W", "Auto",
+            "@AC_MAIN_OPERATION_MODE_AI_W", "AI", "@AC_MAIN_OPERATION_MODE_ENERGY_SAVING_W", "Eco",
+            "@AC_MAIN_OPERATION_MODE_AROMA_W", "Aroma", "@AC_MAIN_OPERATION_MODE_ANTIBUGS_W", "Anti Bugs");
 
     public static final Map<String, String> CAP_AC_FAN_SPEED = Map.ofEntries(
             Map.entry("@AC_MAIN_WIND_STRENGTH_SLOW_W", "Slow"),
@@ -174,6 +178,8 @@ public class LGThinQBindingConstants {
             Map.entry("@AC_MAIN_WIND_STRENGTH_HIGH_LEFT_W", "Left High"));
 
     public static final Map<String, String> CAP_AC_COOL_JET = Map.of("@COOL_JET", "Cool Jet");
+    public static final Double CAP_HP_AIR_SWITCH = 0.0;
+    public static final Double CAP_HP_WATER_SWITCH = 1.0;
     // ======= RAC MODES
     public static final String CAP_AC_AUTODRY = "@AUTODRY";
     public static final String CAP_AC_AUTODRY_NODE = "AutoDry";

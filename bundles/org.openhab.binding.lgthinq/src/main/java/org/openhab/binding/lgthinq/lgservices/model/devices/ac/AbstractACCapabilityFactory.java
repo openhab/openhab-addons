@@ -21,10 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractCapabilityFactory;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
+import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,7 +171,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
                                 valuesNode.path(getAutoDryStateNodeName()).path(getOptionsMapNodeName()));
                         if (!dryStates.isEmpty()) { // sanity check
                             acCap.setAutoDryModeAvailable(true);
-                            dryStates.forEach((cmdValue, cmdKey) -> {
+                            dryStates.forEach((cmdKey, cmdValue) -> {
                                 switch (cmdKey) {
                                     case CAP_AC_COMMAND_OFF:
                                         acCap.setAutoDryModeCommandOff(cmdValue);
@@ -207,7 +207,18 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
                 }
             });
         }
+        if (HEAT_PUMP.equals(acCap.getDeviceType())) {
+            JsonNode supHpAirSwitchNode = valuesNode.path(getHpAirWaterSwitchNodeName()).path(getOptionsMapNodeName());
+            if (!supHpAirSwitchNode.isMissingNode()) {
+                supHpAirSwitchNode.fields().forEachRemaining(r -> {
+                    String racOpValue = r.getValue().asText();
+                });
+            }
+        }
 
+        if (!supRACModeOps.isMissingNode()) {
+
+        }
         JsonNode infoNode = rootNode.get("Info");
         if (infoNode.isMissingNode()) {
             logger.warn("No info session defined in the cap data.");
@@ -247,4 +258,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
     }
 
     protected abstract String getValuesNodeName();
+
+    // ===== For HP only ====
+    protected abstract String getHpAirWaterSwitchNodeName();
 }

@@ -83,6 +83,10 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
                 }
             }
             for (MonitoringBinaryProtocol protField : prot) {
+                if (protField.startByte + protField.length > data.length) {
+                    // end of data. If have more fields in the protocol, will be ignored
+                    break;
+                }
                 String fName = protField.fieldName;
                 int value = 0;
                 for (int i = protField.startByte; i < protField.startByte + protField.length; i++) {

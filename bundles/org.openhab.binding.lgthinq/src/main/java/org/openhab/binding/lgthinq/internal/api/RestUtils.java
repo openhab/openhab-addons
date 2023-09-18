@@ -123,8 +123,8 @@ public class RestUtils {
     }
 
     @Nullable
-    public static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers, String jsonData)
-            throws IOException {
+    public static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
+            String jsonData) throws IOException {
         try {
             return postCall(httpClient, encodedUrl, headers, new StringContentProvider(jsonData));
         } catch (UnsupportedEncodingException e) {
@@ -137,8 +137,8 @@ public class RestUtils {
     }
 
     @Nullable
-    public static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers, Map<String, String> formParams)
-            throws IOException {
+    public static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
+            Map<String, String> formParams) throws IOException {
         Fields fields = new Fields();
         formParams.forEach(fields::put);
         try {
@@ -154,14 +154,12 @@ public class RestUtils {
     }
 
     @Nullable
-    private static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers, ContentProvider contentProvider)
-            throws IOException {
+    private static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
+            ContentProvider contentProvider) throws IOException {
 
         try {
-            Request request = httpClient.newRequest(encodedUrl)
-                    .method("POST")
-                    .content(contentProvider)
-                    .timeout(10, TimeUnit.SECONDS);
+            Request request = httpClient.newRequest(encodedUrl).method("POST").content(contentProvider).timeout(10,
+                    TimeUnit.SECONDS);
             if (headers != null) {
                 headers.forEach(request::header);
             }
@@ -169,9 +167,7 @@ public class RestUtils {
                 logger.trace("POST request: {}", request.getURI());
             }
 
-            ContentResponse response = request.content(contentProvider)
-                    .timeout(10, TimeUnit.SECONDS)
-                    .send();
+            ContentResponse response = request.content(contentProvider).timeout(10, TimeUnit.SECONDS).send();
 
             logger.trace("POST response: {}", response.getContentAsString());
 
@@ -194,5 +190,4 @@ public class RestUtils {
             throw new CommunicationException(e);
         }
     }
-
 }
