@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="romyrobot">
+	<thing-type id="aicu">
 		<label>RomyRobot</label>
 		<description>A RomyRobot vacuum robot</description>
 		<category>CleaningRobot</category>
@@ -34,8 +34,7 @@
 				<context>password</context>
 				<label>Password</label>
 				<description>Please take note that the local http interface is locked per default you have to unlock it with the
-					code
-					you find under the dustbin.</description>
+					code you find under the dustbin.</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="true">
 				<label>Port</label>

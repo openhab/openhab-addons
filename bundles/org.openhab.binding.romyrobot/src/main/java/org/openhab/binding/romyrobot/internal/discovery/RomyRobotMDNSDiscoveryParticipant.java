@@ -22,6 +22,8 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.romyrobot.internal.RomyRobotConfiguration;
+import org.openhab.binding.romyrobot.internal.api.RomyApi;
 import org.openhab.binding.romyrobot.internal.api.RomyApiFactory;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -86,37 +88,46 @@ public class RomyRobotMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
         // get IP address
         String address = "";
-        String robotname = "";
+        String robotName = "";
+        String robotLabel = "";
+        String robotUniqeId = "";
         String[] hostAddresses = service.getHostAddresses();
+        logger.debug("hostAddresses: {}", hostAddresses);
 
-        logger.info("hostAddresses: {}", hostAddresses);
-
-        if ((hostAddresses != null) && (hostAddresses.length > 0)) {
-            address = hostAddresses[0];
+        if ((hostAddresses == null) || (hostAddresses.length == 0)) {
+            logger.error("hostAddresses is null!");
+            return null;
         }
 
-        /*
-         * if (address.isEmpty()) {
-         * logger.error("ROMY discovered empty IP via MDNS!");
-         * return null;
-         * }
-         * 
-         * try {
-         * RomyRobotConfiguration config = new RomyRobotConfiguration();
-         * config.hostname = address;
-         * RomyApi romyDevice = apiFactory.getHttpApi(config);
-         * romyDevice.refresh();
-         * robotname = romyDevice.getName();
-         * logger.error("new ROMY discovered: {}", robotname);
-         * } catch (Exception e) {
-         * e.printStackTrace();
-         * logger.error("Error setting up ROMY api: {}", e.getMessage());
-         * return null;
-         * }
-         */
+        robotUniqeId = service.getName();
+        if ((hostAddresses == null) || (hostAddresses.length == 0)) {
+            logger.error("hostAddresses is null!");
+            return null;
+        }
 
-        logger.error("blub123");
-        return DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_SERIAL_NUMBER, service.getName())
-                .withLabel("robotname").withRepresentationProperty(PROPERTY_SERIAL_NUMBER).build();
+        address = hostAddresses[0];
+        logger.debug("address: {}", address);
+
+        try {
+            RomyRobotConfiguration config = new RomyRobotConfiguration();
+            config.hostname = address;
+            RomyApi romyDevice = apiFactory.getHttpApi(config);
+            romyDevice.refresh();
+            robotName = romyDevice.getName();
+            logger.debug("New ROMY with the name:{} discovered: {}", robotName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Error setting up ROMY api: {}", e.getMessage());
+            return null;
+        }
+
+        robotLabel = String.format("%s (%s)", robotName, address);
+
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_SERIAL_NUMBER, robotUniqeId)
+                .withLabel(robotLabel).withRepresentationProperty(PROPERTY_SERIAL_NUMBER).build();
+
+        logger.debug("DiscoveryResult: {}", result);
+
+        return result;
     }
 }

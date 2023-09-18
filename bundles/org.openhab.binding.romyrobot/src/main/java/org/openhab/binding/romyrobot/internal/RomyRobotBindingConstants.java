@@ -24,13 +24,12 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class RomyRobotBindingConstants {
 
-    private static final String BINDING_ID = "aicu";
+    private static final String BINDING_ID = "romyrobot";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID ROMYROBOT_DEVICE = new ThingTypeUID(BINDING_ID, "romyrobot");
+    public static final ThingTypeUID ROMYROBOT_DEVICE = new ThingTypeUID(BINDING_ID, "aicu");
 
     // List of all Channel ids
-
     public static final String CHANNEL_FW_VERSION = "fwversion";
     public static final String CHANNEL_COMMAND = "command";
     public static final String CHANNEL_MODE = "mode";

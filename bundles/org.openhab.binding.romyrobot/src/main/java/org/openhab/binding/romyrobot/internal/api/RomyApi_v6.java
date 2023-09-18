@@ -108,7 +108,7 @@ public class RomyApi_v6 implements RomyApi {
     private void parseMaps(String jsonString) throws JsonMappingException, JsonProcessingException {
         JsonNode node = new ObjectMapper().readTree(jsonString);
         JsonNode maps = node.get("maps");
-        if (!maps.textValue().isBlank() && maps.isArray()) {
+        if (maps != null && maps.textValue() != null && !maps.textValue().isBlank() && maps.isArray()) {
             availableMaps.clear();
             for (final JsonNode field : maps) {
                 String value = field.get("map_meta_data").textValue();
