@@ -44,9 +44,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.StateOption;
-import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,9 +64,12 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     public final ChannelGroupUID channelGroupDashboardUID;
     private final ChannelUID powerChannelUID;
     private final ChannelUID opModeChannelUID;
+    private final ChannelUID hpAirWaterSwitchChannelUID;
     private final ChannelUID fanSpeedChannelUID;
     private final ChannelUID targetTempChannelUID;
     private final ChannelUID currTempChannelUID;
+    private final ChannelUID minTempChannelUID;
+    private final ChannelUID maxTempChannelUID;
     private final ChannelUID jetModeChannelUID;
     private final ChannelUID airCleanChannelUID;
     private final ChannelUID autoDryChannelUID;
@@ -77,6 +78,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     private final ChannelUID currentPowerEnergyChannelUID;
     private final ChannelUID remainingFilterChannelUID;
 
+    private double minTempConstraint = 16, maxTempConstraint = 30;
     private final ObjectMapper mapper = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(LGThinQAirConditionerHandler.class);
     @NonNullByDefault
@@ -85,12 +87,16 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     public LGThinQAirConditionerHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry, HttpClientFactory httpClientFactory) {
         super(thing, stateDescriptionProvider, itemChannelLinkRegistry);
-        lgThinqACApiClientService = LGThinQApiClientServiceFactory.newACApiClientService(lgPlatformType, httpClientFactory);
+        lgThinqACApiClientService = LGThinQApiClientServiceFactory.newACApiClientService(lgPlatformType,
+                httpClientFactory);
         channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
         channelGroupExtendedInfoUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_EXTENDED_INFO_GRP_ID);
 
         opModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_MOD_OP_ID);
+        hpAirWaterSwitchChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AIR_WATER_SWITCH_ID);
         targetTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_TARGET_TEMP_ID);
+        minTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_MIN_TEMP_ID);
+        maxTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_MAX_TEMP_ID);
         currTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_CURRENT_TEMP_ID);
         fanSpeedChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_FAN_SPEED_ID);
         jetModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_COOL_JET_ID);
@@ -121,16 +127,19 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 updateThing(builder.build());
             }
         } catch (LGThinqApiException e) {
-			logger.warn("Error getting capability of the device: {}", getDeviceId());
+            logger.warn("Error getting capability of the device: {}", getDeviceId());
         }
     }
 
     @Override
     protected void updateDeviceChannels(ACCanonicalSnapshot shot) {
-		logger.debug("Calling updateDeviceChannel for device: {}", getDeviceId());
         updateState(powerChannelUID,
                 DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus()) ? OnOffType.ON : OnOffType.OFF);
         updateState(opModeChannelUID, new DecimalType(BigDecimal.valueOf(shot.getOperationMode())));
+        if (DeviceTypes.HEAT_PUMP.equals(getDeviceType())) {
+            updateState(hpAirWaterSwitchChannelUID,
+                    new DecimalType(BigDecimal.valueOf(shot.getHpAirWaterTempSwitch())));
+        }
         updateState(fanSpeedChannelUID, new DecimalType(BigDecimal.valueOf(shot.getAirWindStrength())));
         updateState(currTempChannelUID, new DecimalType(BigDecimal.valueOf(shot.getCurrentTemperature())));
         updateState(targetTempChannelUID, new DecimalType(BigDecimal.valueOf(shot.getTargetTemperature())));
@@ -155,9 +164,37 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 Double autoDryOn = Double.valueOf(acCap.getCoolJetModeCommandOn());
                 updateState(autoDryChannelUID, autoDryOn.equals(shot.getAutoDryMode()) ? OnOffType.ON : OnOffType.OFF);
             }
+            if (DeviceTypes.HEAT_PUMP.equals(getDeviceType())) {
+                // HP has different combination of min and max target temperature depending on the switch mode and
+                // operation
+                // mode
+                String opModeValue = acCap.getOpMode().get(getLastShot().getOperationMode().toString());
+                if (CAP_HP_AIR_SWITCH.equals(shot.getHpAirWaterTempSwitch())) {
+                    if (opModeValue.equals(CAP_ACHP_OP_MODE_COOL_KEY)) {
+                        minTempConstraint = shot.getHpAirTempCoolMin();
+                        maxTempConstraint = shot.getHpAirTempCoolMax();
+                    } else if (opModeValue.equals(CAP_ACHP_OP_MODE_HEAT_KEY)) {
+                        minTempConstraint = shot.getHpAirTempHeatMin();
+                        maxTempConstraint = shot.getHpAirTempHeatMax();
+                    }
+                } else if (CAP_HP_WATER_SWITCH.equals(shot.getHpAirWaterTempSwitch())) {
+                    if (opModeValue.equals(CAP_ACHP_OP_MODE_COOL_KEY)) {
+                        minTempConstraint = shot.getHpWaterTempCoolMin();
+                        maxTempConstraint = shot.getHpWaterTempCoolMax();
+                    } else if (opModeValue.equals(CAP_ACHP_OP_MODE_HEAT_KEY)) {
+                        minTempConstraint = shot.getHpWaterTempHeatMin();
+                        maxTempConstraint = shot.getHpWaterTempHeatMax();
+                    }
+                } else {
+                    logger.error("Invalid value received by HP snapshot fo the air/water switch property: {}",
+                            shot.getHpAirWaterTempSwitch());
+                }
+                updateState(minTempChannelUID, new DecimalType(BigDecimal.valueOf(minTempConstraint)));
+                updateState(maxTempChannelUID, new DecimalType(BigDecimal.valueOf(maxTempConstraint)));
+            }
 
         } catch (LGThinqApiException e) {
-            logger.error("Unexpected Error gettinf ACCapability Capabilities", e);
+            logger.error("Unexpected Error getting ACCapability Capabilities", e);
         } catch (NumberFormatException e) {
             logger.warn("command value for capability is not numeric.", e);
         }
@@ -239,10 +276,10 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
 
     protected void resetExtraInfoChannels() {
         updateState(currentPowerEnergyChannelUID, UnDefType.UNDEF);
-		if (!isExtraInfoCollectorEnabled()) { // if collector is enabled we can keep the current value
-		    updateState(remainingFilterChannelUID, UnDefType.UNDEF);
-		}
-	}
+        if (!isExtraInfoCollectorEnabled()) { // if collector is enabled we can keep the current value
+            updateState(remainingFilterChannelUID, UnDefType.UNDEF);
+        }
+    }
 
     protected void processCommand(AsyncCommandParams params) throws LGThinqApiException {
         Command command = params.command;
@@ -324,6 +361,13 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                     logger.warn("Received command different of Numeric in TargetTemp Channel. Ignoring");
                     break;
                 }
+                // analise temperature constraints
+                if (targetTemp > maxTempConstraint || targetTemp < minTempConstraint) {
+                    // values out of range
+                    logger.error("Target Temperature: {} is out of range: {} - {}. Ignoring command", targetTemp,
+                            minTempConstraint, maxTempConstraint);
+                    break;
+                }
                 lgThinqACApiClientService.changeTargetTemperature(getBridgeId(), getDeviceId(),
                         ACTargetTmp.statusOf(targetTemp));
                 break;
@@ -343,7 +387,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         try {
             return getCapabilities().isEnergyMonitorAvailable() || getCapabilities().isFilterMonitorAvailable();
         } catch (LGThinqApiException e) {
-			logger.warn("Can't get capabilities of the device: {}", getDeviceId());
+            logger.warn("Can't get capabilities of the device: {}", getDeviceId());
         }
         return false;
     }
@@ -362,7 +406,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
 
     @Override
     protected void updateExtraInfoStateChannels(Map<String, Object> energyStateAttributes) throws LGThinqException {
-		logger.debug("Calling updateExtraInfoStateChannels for device: {}", getDeviceId());
+        logger.debug("Calling updateExtraInfoStateChannels for device: {}", getDeviceId());
         String instantPowerConsumption = (String) energyStateAttributes.get(EXTENDED_ATTR_INSTANT_POWER);
         String filterUsed = (String) energyStateAttributes.get(EXTENDED_ATTR_FILTER_USED_TIME);
         String filterTimelife = (String) energyStateAttributes.get(EXTENDED_ATTR_FILTER_MAX_TIME_TO_USE);

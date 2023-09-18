@@ -48,9 +48,9 @@ import org.slf4j.LoggerFactory;
 public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(LGThinQHandlerFactory.class);
-    
-	private HttpClientFactory httpClientFactory;
-	
+
+    private HttpClientFactory httpClientFactory;
+
     private final LGThinQStateDescriptionProvider stateDescriptionProvider;
 
     @Nullable
@@ -63,12 +63,12 @@ public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
     @Reference
     protected ItemChannelLinkRegistry itemChannelLinkRegistry;
 
-	@Activate
-	public LGThinQHandlerFactory(final @Reference LGThinQStateDescriptionProvider stateDescriptionProvider,
-			@Reference final HttpClientFactory httpClientFactory) {
-		this.stateDescriptionProvider = stateDescriptionProvider;
-		this.httpClientFactory = httpClientFactory;
-	}
+    @Activate
+    public LGThinQHandlerFactory(final @Reference LGThinQStateDescriptionProvider stateDescriptionProvider,
+            @Reference final HttpClientFactory httpClientFactory) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.httpClientFactory = httpClientFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -115,5 +115,4 @@ public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
-
 }

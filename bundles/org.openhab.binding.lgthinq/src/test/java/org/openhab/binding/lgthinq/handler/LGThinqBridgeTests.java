@@ -87,8 +87,10 @@ class LGThinqBridgeTests {
     @Test
     public void testDiscoveryACThings() {
         setupAuthenticationMock();
-        LGThinQApiClientService service1 = LGThinQApiClientServiceFactory.newACApiClientService(PLATFORM_TYPE_V1, mock(HttpClientFactory.class));
-        LGThinQApiClientService service2 = LGThinQApiClientServiceFactory.newACApiClientService(PLATFORM_TYPE_V2, mock(HttpClientFactory.class));
+        LGThinQApiClientService service1 = LGThinQApiClientServiceFactory.newACApiClientService(PLATFORM_TYPE_V1,
+                mock(HttpClientFactory.class));
+        LGThinQApiClientService service2 = LGThinQApiClientServiceFactory.newACApiClientService(PLATFORM_TYPE_V2,
+                mock(HttpClientFactory.class));
         try {
             List<LGDevice> devices = service2.listAccountDevices("bridgeTest");
             assertEquals(devices.size(), 2);
@@ -191,7 +193,8 @@ class LGThinqBridgeTests {
         LGThinQBindingConstants.BASE_CAP_CONFIG_DATA_FILE = tempDir + File.separator + "thinq-cap.json";
         LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing, mock(HttpClientFactory.class));
 
-        final LGThinQWMApiClientService service2 = LGThinQApiClientServiceFactory.newWMApiClientService(PLATFORM_TYPE_V1, mock(HttpClientFactory.class));
+        final LGThinQWMApiClientService service2 = LGThinQApiClientServiceFactory
+                .newWMApiClientService(PLATFORM_TYPE_V1, mock(HttpClientFactory.class));
         TokenManager tokenManager = new TokenManager(mock(HttpClient.class));
         try {
             if (!tokenManager.isOauthTokenRegistered(fakeBridgeName)) {

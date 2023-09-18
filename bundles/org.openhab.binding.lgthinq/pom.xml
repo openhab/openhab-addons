@@ -14,7 +14,7 @@
   <name>openHAB Add-ons :: Bundles :: LG Thinq Binding</name>
 
   <dependencies>
-  	<dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <version>${jackson.version}</version>

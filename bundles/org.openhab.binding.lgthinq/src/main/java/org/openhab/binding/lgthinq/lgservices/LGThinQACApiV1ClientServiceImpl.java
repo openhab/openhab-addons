@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class LGThinQACApiV1ClientServiceImpl extends
         LGThinQAbstractApiV1ClientService<ACCapability, ACCanonicalSnapshot> implements LGThinQACApiClientService {
 
-	private static final Logger logger = LoggerFactory.getLogger(LGThinQACApiV1ClientServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(LGThinQACApiV1ClientServiceImpl.class);
 
     protected LGThinQACApiV1ClientServiceImpl(HttpClient httpClient) {
         super(ACCapability.class, ACCanonicalSnapshot.class, httpClient);

@@ -82,7 +82,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         lgApiClient = LGThinQApiClientServiceFactory.newGeneralApiClientService(httpClientFactory);
         lgDevicePollingRunnable = new LGDevicePollingRunnable(bridge.getUID().getId());
     }
-    
+
     public HttpClientFactory getHttpClientFactory() {
         return httpClientFactory;
     }
@@ -148,7 +148,8 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                 try {
                     doConnectedRun();
                 } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.lgapi-getting-devices");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/error.lgapi-getting-devices");
                 }
 
             } finally {
@@ -176,7 +177,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(LGThinqDiscoveryService.class);
     }
-    
+
     @Override
     public void registryListenerThing(LGThinQAbstractDeviceHandler thing) {
         if (lGDeviceRegister.get(thing.getDeviceId()) == null) {
@@ -240,7 +241,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                     discoveryService.removeLgDeviceDiscovery(device);
                 }
             });
-            
+
             lGDeviceRegister.values().forEach(LGThinQAbstractDeviceHandler::refreshStatus);
         }
     };
@@ -340,9 +341,9 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, 2, poolingInterval,
                 TimeUnit.SECONDS);
     }
-    
+
     public void runDiscovery() {
-        scheduler.submit(lgDevicePollingRunnable);        
+        scheduler.submit(lgDevicePollingRunnable);
     }
 
     @Override

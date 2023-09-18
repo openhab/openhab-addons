@@ -4,18 +4,17 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- LG Device Type relative to Heat Pump -->
-	<thing-type id="401HP">
+	<!-- LG Device Type for DishWasher -->
+	<thing-type id="204">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>LG ThinQ Heat Pump</label>
-		<description>LG ThinQ Heat Pump</description>
-
+		<label>LG ThinQ Dish Washer</label>
+		<description>LG ThinQ Dish Washer</description>
 		<channel-groups>
-			<channel-group id="dashboard" typeId="hp-dashboard"/>
-			<channel-group id="extended-information" typeId="hp-extended-information"/>
+			<channel-group id="dashboard" typeId="dw-dashboard"/>
+			<channel-group id="extended-information" typeId="dw-extended-information"/>
 		</channel-groups>
 		<config-description>
 			<parameter-group name="Settings">
@@ -41,45 +40,35 @@
 				</description>
 				<default>10</default>
 			</parameter>
-			<parameter name="polling-extra-info-period-seconds" type="integer" min="10" required="true"
-				groupName="Settings">
-				<label>Polling period in seconds for Extra Info</label>
-				<description>Seconds to wait to the next polling for Device's Extra Info (energy consumption,
-					remaining filter, etc)
-				</description>
-				<default>60</default>
-			</parameter>
-			<parameter name="poll-extra-info-on-power-off" type="boolean" required="true" groupName="Settings">
-				<label>Enable Extra Info Polling on powered off device</label>
-				<description>If enables, extra info will be fetched even when the device is powered off.
-					It's not so common, since
-					extra info are normally changed only when the device is running.
-				</description>
-				<default>false</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 
-	<channel-group-type id="hp-dashboard">
+	<channel-group-type id="dw-dashboard">
 		<label>Dashboard</label>
 		<description>This is the Displayed Information.</description>
 		<channels>
-			<channel id="target_temperature" typeId="target-temperature"/>
-			<channel id="min_temperature" typeId="min-temperature"/>
-			<channel id="max_temperature" typeId="max-temperature"/>
-			<channel id="current_temperature" typeId="current-temperature"/>
-			<channel id="op_mode" typeId="operation-mode"/>
-			<channel id="hp_air_water_switch" typeId="hp-air-water-switch"/>
 			<channel id="power" typeId="system.power"/>
+			<channel id="state" typeId="washer-state"/>
+			<channel id="process-state" typeId="washerdryer-process-state"/>
+			<channel id="course" typeId="washerdryer-course"/>
+			<channel id="temperature-level" typeId="washerdryer-temp-level"/>
+			<channel id="door-lock" typeId="washerdryer-door-lock"/>
+			<channel id="remain-time" typeId="washerdryer-remain-time"/>
+			<channel id="rinse" typeId="washer-rinse"/>
+			<channel id="spin" typeId="washer-spin"/>
+			<channel id="delay-time" typeId="washerdryer-delay-time"/>
+			<channel id="stand-by" typeId="washerdryer-stand-by"/>
+			<channel id="remote-start-flag" typeId="washerdryer-remote-start"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="hp-extended-information">
+	<channel-group-type id="ac-extended-information">
 		<label>More Information</label>
 		<description>Show more information about the device.</description>
 		<channels>
 			<channel id="extended_info_collector" typeId="extended_info_collector"/>
-			<channel id="current_power" typeId="current_watts_power"/>
+			<channel id="current_power" typeId="current_power"/>
+			<channel id="remaining_filter" typeId="remaining_filter"/>
 		</channels>
 	</channel-group-type>
 

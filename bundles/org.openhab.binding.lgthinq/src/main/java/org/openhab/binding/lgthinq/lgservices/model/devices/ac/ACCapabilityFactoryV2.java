@@ -133,6 +133,11 @@ public class ACCapabilityFactoryV2 extends AbstractACCapabilityFactory {
     }
 
     @Override
+    protected String getHpAirWaterSwitchNodeName() {
+        return "airState.miscFuncState.awhpTempSwitch";
+    }
+
+    @Override
     public ACCapability create(JsonNode rootNode) throws LGThinqException {
         ACCapability cap = super.create(rootNode);
         Map<String, CommandDefinition> cmd = getCommandsDefinition(rootNode);

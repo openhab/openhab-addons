@@ -101,12 +101,11 @@ public class FridgeCanonicalSnapshot extends AbstractFridgeSnapshot {
 
     @Override
     public DevicePowerState getPowerStatus() {
-        throw new IllegalStateException("Fridge has no Power state.");
+        return isOnline() ? DevicePowerState.DV_POWER_ON : DevicePowerState.DV_POWER_OFF;
     }
 
     @Override
     public void setPowerStatus(DevicePowerState value) {
-        throw new IllegalStateException("Fridge has no Power state.");
     }
 
     @Override

@@ -49,7 +49,8 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
         extends LGThinQAbstractApiClientService<C, S> {
     private static final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiV1ClientService.class);
 
-    protected LGThinQAbstractApiV1ClientService(Class<C> capabilityClass, Class<S> snapshotClass, HttpClient httpClient) {
+    protected LGThinQAbstractApiV1ClientService(Class<C> capabilityClass, Class<S> snapshotClass,
+            HttpClient httpClient) {
         super(capabilityClass, snapshotClass, httpClient);
     }
 
@@ -117,11 +118,14 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
         }
         if (resp.getStatusCode() != 200) {
             if (resp.getStatusCode() == 400) {
-                logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
+                logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(),
+                        resp.getJsonResponse());
             } else {
-                logger.error("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
+                logger.error("Error returned by LG Server API. HTTP Status: {}. The reason is: {}",
+                        resp.getStatusCode(), resp.getJsonResponse());
                 throw new LGThinqApiException(
-                        String.format("Error returned by LG Server API. HTTP Status: %s. The reason is: %s", resp.getStatusCode(), resp.getJsonResponse()));
+                        String.format("Error returned by LG Server API. HTTP Status: %s. The reason is: %s",
+                                resp.getStatusCode(), resp.getJsonResponse()));
             }
         } else {
             try {

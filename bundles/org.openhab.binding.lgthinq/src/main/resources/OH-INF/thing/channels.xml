@@ -20,6 +20,18 @@
 		<state readOnly="true" pattern="%.2f %%"/>
 	</channel-type>
 
+	<channel-type id="hp-air-water-switch">
+		<item-type>Number</item-type>
+		<label>Air/Water Switch</label>
+		<description>Define the Temperature Selector based on Water/Air.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0.0">Air Temperature</option>
+				<option value="1.0">Leaving Water Temperature</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="water_filter">
 		<item-type>String</item-type>
 		<label>Water Filter</label>
@@ -39,7 +51,7 @@
 				<option value="10">10 Months Passed (Replace)</option>
 				<option value="11">11 Months Passed (Replace)</option>
 				<option value="12">12 Months Passed (Replace)</option>
-			    <option value="255">Not Available</option>
+				<option value="255">Not Available</option>
 			</options>
 		</state>
 	</channel-type>
@@ -84,13 +96,37 @@
 		<label>Target Temperature</label>
 		<description>Target temperature.</description>
 		<category>Temperature</category>
-		<state min="17" max="30" step="1" readOnly="false" pattern="%.1f %unit%"/>
+		<state min="5" max="80" step="1" readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="min-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Minimum Temperature</label>
+		<description>Minimum temperature for this mode.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="max-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Maximum Temperature</label>
+		<description>Maximum Temperature for this mode.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="current_power">
 		<item-type>Number:Energy</item-type>
 		<label>Current Power</label>
-		<description>Current Power Consumption</description>
+		<description>Current Power Consumption (kWh)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="current_watts_power">
+		<item-type>Number:Power</item-type>
+		<label>Current Power</label>
+		<description>Current Power Consumption (W)</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
