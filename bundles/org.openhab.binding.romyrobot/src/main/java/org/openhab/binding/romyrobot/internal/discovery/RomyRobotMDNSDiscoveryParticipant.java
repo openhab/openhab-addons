@@ -22,6 +22,8 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.romyrobot.internal.RomyRobotConfiguration;
+import org.openhab.binding.romyrobot.internal.api.RomyApi;
 import org.openhab.binding.romyrobot.internal.api.RomyApiFactory;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
