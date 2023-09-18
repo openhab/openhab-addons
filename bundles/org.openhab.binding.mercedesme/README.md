@@ -55,11 +55,11 @@ Click on Continue with Step 2
 Leave GUID as identifier as it is
 Click on Submit button
 
-3. Consfirmation shall be shown that Authorization was successful.
+3. Confirmation shall be shown that Authorization was successful.
 
-In case of non successful Athorization check your log for errors. 
+In case of non successful Authorization check your log for errors. 
 
-Some Screenshots to follow Authorizatiom
+Some Screenshots to follow Authorization:
 
 ### After Bridge Setup
 
@@ -84,11 +84,12 @@ Some Screenshots to follow Authorizatiom
 
 ### Bridge Configuration Parameters
 
-| Name            | Type    | Description                           | Default     | Required | Advanced |
-|-----------------|---------|---------------------------------------|-------------|----------|----------|
-| email           | text    | Mercedes Benz registered EMail Address| N/A         | yes      | no       |
-| region          | text    | Your region                           | EU          | yes      | no       |
-| pin             | text    | Mercedes Benz Smartphone App PIN      | N/A         | no       | no       |
+| Name            | Type    | Description                             | Default     | Required | Advanced |
+|-----------------|---------|-----------------------------------------|-------------|----------|----------|
+| email           | text    | Mercedes Benz registered EMail Address  | N/A         | yes      | no       |
+| pin             | text    | Mercedes Benz Smartphone App PIN        | N/A         | no       | no       |
+| region          | text    | Your region                             | EU          | yes      | no       |
+| refreshInterval | integer | API Polling Interval                    | 15          | yes      | no       |
 
 Set `region` to your location
 
@@ -99,7 +100,7 @@ Set `region` to your location
 
 Set `pin` to your selected PIN of your Apple or Android installed MercedesMe App.
 Parameter is *not required*.
-Note `pin` is needed for some commands which are critical for Car and especially **personal saftey**.
+Note `pin` is needed for some commands which are critical for Car and especially **personal safety**.
 E.g. closing windows needs to ensure no obstacles are in the way!
 Commands protected by PIN
 
@@ -139,7 +140,7 @@ Channels are separated in groups:
 | [charge](#charge)                | Charging data and programs                        |
 | [trip](#trip)                    | Trip data                                         |
 | [position](#position)            | Positioning Data                                  |
-| [tires](#tires)                  | Tire Informatios                                  |
+| [tires](#tires)                  | Tire Informations                                  |
 
 ## Actions
 
@@ -187,7 +188,7 @@ Group name: `vehicle`
 Group name: `doors`
 
 State representing if Door or other roofs, hoods or flaps are open.
-States and Controls are depending on your vehicle capabilites.
+States and Controls are depending on your vehicle capabilities.
 
 | Channel             | Type                 |  Description                 | Read | Write |
 |---------------------|----------------------|------------------------------|------|-------|
@@ -237,7 +238,7 @@ States and Controls are depending on your vehicle capabilites.
 
 Group name: `lock`
 State representing if Door or other roofs, hoods or flaps are locked.
-States and Controls are depending on your vehicle capabilites and Type.
+States and Controls are depending on your vehicle capabilities and Type.
 
 | Channel             | Type                 |  Description                    | Read | Write |
 |---------------------|----------------------|---------------------------------|------|-------|
@@ -254,7 +255,7 @@ States and Controls are depending on your vehicle capabilites and Type.
 
 Group name: `windows`
 State representing current Window position.
-States and Controls are depending on your vehicle capabilites.
+States and Controls are depending on your vehicle capabilities.
 
 | Channel             | Type                 |  Description                 | Read | Write |
 |---------------------|----------------------|------------------------------|------|-------|
@@ -302,7 +303,7 @@ States and Controls are depending on your vehicle capabilites.
 
 Group name: `havc`
 Configuration of vehicle climatization.
-States and Controls are depending on your vehicle capabilites.
+States and Controls are depending on your vehicle capabilities.
 
 | Channel             | Type                 |  Description                    | Read | Write |
 |---------------------|----------------------|---------------------------------|------|-------|
@@ -319,7 +320,7 @@ States and Controls are depending on your vehicle capabilites.
 
 Automatically calculated based on your vehicle capabilities
 
-#### Temperautre Setting
+#### Temperature Setting
 
 Preconfigure selected zone with desired temperature
 
@@ -329,9 +330,9 @@ Preconfigure selected zone with desired temperature
 ### Service
 
 Group name: `service`
-All channles read-only.
+All channels read-only.
 Service and Warning Information for vehicle
-States and Controls are depending on your vehicle capabilites.
+States and Controls are depending on your vehicle capabilities.
 
 | Channel             | Type                 |  Description                    | bev | hybrid | combustion |
 |---------------------|----------------------|---------------------------------|-----|--------|------------|
@@ -352,7 +353,7 @@ States and Controls are depending on your vehicle capabilites.
 ### Range
 
 Group name: `range`
-All channles read-only.
+All channels read-only.
 
 | Channel          | Type                 |  Description                 | bev | hybrid | combustion |
 |------------------|----------------------|------------------------------|-----|--------|------------|
@@ -360,11 +361,10 @@ All channles read-only.
 | soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
 | charged          | Number:Energy        |  Charged Battery Energy      | X   | X      |            |
 | uncharged        | Number:Energy        |  Uncharged Battery Energy    | X   | X      |            |
-| soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
 | range-electric   | Number:Length        |  Electric range              | X   | X      |            |
 | radius-electric  | Number:Length        |  Electric radius for map     | X   | X      |            |
 | fuel-level       | Number:Dimensionless |  Fuel level in percent       |     | X      | X          |
-| fuel-remain      | Number:Volume        |  Reamaining Fuel             |     | X      | X          |
+| fuel-remain      | Number:Volume        |  Remaining Fuel              |     | X      | X          |
 | fuel-open        | Number:Volume        |  Open Fuel Capacity          |     | X      | X          |
 | range-fuel       | Number:Length        |  Fuel range                  |     | X      | X          |
 | radius-fuel      | Number:Length        |  Fuel radius for map         |     | X      | X          |
@@ -379,20 +379,20 @@ Channels with `radius` are just giving a _guess_ which radius can be reached in 
 Group name: `charge`
 Only relevant for battery electric and hybrid vehicles.
 Current charge values and charge program configuration.
-States and Controls are depending on your vehicle capabilites.
+States and Controls are depending on your vehicle capabilities.
 
-| Channel             | Type                 |  Description                    | Read | Write |
-|---------------------|----------------------|---------------------------------|------|-------|
-| charge-flap         | Number               |  Charge Flap Stazus             | X    |       |
-| oupler-ac-channel   | Number               |  Coupler AC Status              | X    |       |
-| oupler-dc-channel   | Number               |  Coupler DC Status              | X    |       |
-| coupler-lock        | Number               |  Coupler Lock Status            | X    |       |
-| active              | Switch               |  Charging Active                | X    |       |
-| power               | Number:Power         |  Current Charging Power         | X    |       |
-| end-time            | DateTime             |  Estimated Charging End         | X    |       |
-| program             | Number               |  Selected Charge Program        | X    | X     |
-| max-soc             | Number:Dimensioless  |  Charge Target SoC              | X    | X     |
-| auto-unlock         | Switch               |  Sunroof Control (Cabriolet)    | X    | X     |
+| Channel             | Type                 |  Description                           | Read | Write |
+|---------------------|----------------------|----------------------------------------|------|-------|
+| charge-flap         | Number               |  Charge Flap Status                    | X    |       |
+| coupler-ac          | Number               |  Coupler AC Status                     | X    |       |
+| coupler-dc          | Number               |  Coupler DC Status                     | X    |       |
+| coupler-lock        | Number               |  Coupler Lock Status                   | X    |       |
+| active              | Switch               |  Charging Active                       | X    |       |
+| power               | Number:Power         |  Current Charging Power                | X    |       |
+| end-time            | DateTime             |  Estimated Charging End                | X    |       |
+| program             | Number               |  Selected Charge Program               | X    | X     |
+| max-soc             | Number:Dimensionless |  Charge Target SoC                     | X    | X     |
+| auto-unlock         | Switch               |  Auto Unlock Coupler after charging    | X    | X     |
 
 #### Charge Flap Mapping
 
@@ -406,12 +406,13 @@ States and Controls are depending on your vehicle capabilites.
 
 #### Coupler DC Mapping
 
-- not available yet!
+- 0 : Plugged
+- 2 : Unplugged
 
 #### Coupler Lock Mapping
 
-- 0 : Plugged
-- 2 : Unplugged
+- 0 : Locked
+- 1 : Unlocked
 
 
 #### Program Mapping
@@ -420,7 +421,7 @@ Calculated automatically based on your vehicle capabilities
 
 #### Max SoC Setting
 
-SoC target for selected rogram can be configured if your vehicle capabilities are supporting it.
+SoC target for selected program can be configured if your vehicle capabilities are supporting it.
 Configuration Limit needs to respect 10% steps with a minimum of 50% and maximum of 100%.
 
 #### Auto Unlock Setting
@@ -480,12 +481,12 @@ All channels `read-only`
 | Channel                  | Type                 |  Description                    |
 |--------------------------|----------------------|---------------------------------|
 | pressure-front-left      | Number:Pressure      |  Tire Pressure Front Left       |
-| pressure-front-right     | Number:Pressure      |  Tire Pressure Fornt Right      |
+| pressure-front-right     | Number:Pressure      |  Tire Pressure Front Right      |
 | pressure-rear-left       | Number:Pressure      |  Tire Pressure Rear Left        |
 | pressure-rear-right      | Number:Pressure      |  Tire Pressure Rear Right       |
-| sensor-available         | Number               |  Tire Sensor Availbale          | 
+| sensor-available         | Number               |  Tire Sensor Available          | 
 | marker-front-left        | Number               |  Tire Marker Front Left         |
-| marker-front-right       | Number               |  Tire Marker Fornt Right        | 
+| marker-front-right       | Number               |  Tire Marker Front Right        | 
 | marker-rear-left         | Number               |  Tire Marker Rear Left          | 
 | marker-rear-right        | Number               |  Tire Marker Rear Right         |
 | last-update              | DateTime             |  Timestamp of last Measurement  |
@@ -505,9 +506,9 @@ All channels `read-only`
 
 | Channel              | Type        |  Description                       |
 |----------------------|-------------|------------------------------------|
-| cmd-name             | String      |  Command Name which is handleded   |
+| cmd-name             | String      |  Command Name which is handled     |
 | cmd-state            | String      |  Current Command State             |
-| cmd-last-update      | String      |  DateTime stamp og last update     |
+| cmd-last-update      | String      |  Timestamp of last update          |
 
 Show state of the send command sent by above channels which are able to write values.
 
@@ -529,6 +530,7 @@ Command State:
 - ENQUEUED
 - PROCESSING
 - FINISHED
+- FAILED
 
 ## Vehicle Actions
 

@@ -30,7 +30,9 @@ import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,8 +46,12 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgram
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.ChargeProgramsValue;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.TemperaturePointsValue;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VVRTimeProfile;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.WeeklyProfileValue;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.WeeklySetting;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.WeeklySettingsHeadUnitValue;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -75,6 +81,13 @@ public class Utils {
         @Override
         public ZoneId getTimeZone() {
             return ZoneId.systemDefault();
+        }
+    };
+    public static LocaleProvider localeProvider = new LocaleProvider() {
+
+        @Override
+        public Locale getLocale() {
+            return Locale.getDefault();
         }
     };
 
@@ -268,13 +281,24 @@ public class Utils {
         return Constants.NOT_SET;
     }
 
+    public static Map combineMaps(Map oldData, Map newData) {
+        final Map combined = new TreeMap();
+        oldData.forEach((key, value) -> {
+            combined.put(key, value);
+        });
+        newData.forEach((key, value) -> {
+            combined.put(key, value);
+        });
+        return combined;
+    }
+
     public static String proto2Json(VEPUpdate update) {
         JSONObject protoJson = new JSONObject();
         Map<String, VehicleAttributeStatus> m = update.getAttributesMap();
+        // System.out.println("Total size " + m.size());
         m.forEach((key, value) -> {
             Map<FieldDescriptor, Object> attMap = value.getAllFields();
             JSONObject attributesJson = getJsonObject(attMap);
-            protoJson.put(key, attributesJson);
 
             if (value.hasTemperaturePointsValue()) {
                 TemperaturePointsValue tpv = value.getTemperaturePointsValue();
@@ -297,9 +321,45 @@ public class Utils {
                 attributesJson.put("charge_programs_value", chargeProgramArray);
             } else if (value.hasWeeklyProfileValue()) {
                 WeeklyProfileValue wpv = value.getWeeklyProfileValue();
-                JSONObject weeklyProfiles = getJsonObject(wpv.getAllFields());
+                JSONObject weeklyProfiles = new JSONObject();
+                List<VVRTimeProfile> timeProfilesList = wpv.getTimeProfilesList();
+                timeProfilesList.forEach(timeProfileProto -> {
+                    JSONObject timeProfileJson = new JSONObject();
+                    JSONArray days = new JSONArray(timeProfileProto.getDaysList());
+                    timeProfileJson.put("days", days);
+                    timeProfileJson.put("hour", timeProfileProto.getHour());
+                    timeProfileJson.put("minute", timeProfileProto.getMinute());
+                    timeProfileJson.put("active", timeProfileProto.getActive());
+                    timeProfileJson.put("applicationIdentifier", timeProfileProto.getApplicationIdentifier());
+                    weeklyProfiles.put(Integer.toString(timeProfileProto.getIdentifier()), timeProfileJson);
+                });
                 attributesJson.put("weekly_profile_value", weeklyProfiles);
+            } else if (value.hasWeeklySettingsHeadUnitValue()) {
+                WeeklySettingsHeadUnitValue wshuv = value.getWeeklySettingsHeadUnitValue();
+                List<WeeklySetting> valList = wshuv.getWeeklySettingsList();
+                JSONArray settingsJsonArray = new JSONArray();
+                valList.forEach(weekySettingProto -> {
+                    JSONObject settings = new JSONObject();
+                    settings.put("day", weekySettingProto.getDay());
+                    settings.put("minutes_since_midnight", weekySettingProto.getMinutesSinceMidnight());
+                    settingsJsonArray.put(settings);
+                });
+                attributesJson.put("weekly_settings_head_unit_value", settingsJsonArray);
             }
+            // check for errors
+            if (attributesJson.toString() == null) {
+                LOGGER.trace("JSON conversion failed for Proto {}", key);
+                attributesJson = new JSONObject();
+                attributesJson.put(key, attMap.toString());
+            }
+            if (attributesJson.toString() == null) {
+                LOGGER.trace("JSON conversion failed for Map {}", key);
+                attributesJson = new JSONObject();
+                attributesJson.put(key, "Not supported by binding");
+            }
+            protoJson.put(key, attributesJson);
+
+            // System.out.println("New size " + protoJson.length());
         });
         return protoJson.toString();
     }

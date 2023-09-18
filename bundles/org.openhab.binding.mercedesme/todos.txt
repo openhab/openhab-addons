@@ -1,7 +1,5 @@
 Open
-- mvn clean install not working
 - Unit testing of proto updates
-- doku command group
 
 Alpha 2.1 release
 - Imperial Units

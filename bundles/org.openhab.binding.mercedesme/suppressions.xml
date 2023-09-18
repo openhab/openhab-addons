@@ -5,3 +5,4 @@
     <Package name="org.openhab.binding.mercedesme.internal.proto"/>
   </Match>
 </FindBugsFilter>
+

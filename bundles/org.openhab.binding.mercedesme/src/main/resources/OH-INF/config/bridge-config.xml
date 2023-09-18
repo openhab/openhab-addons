@@ -24,7 +24,7 @@
 			<description>PIN for commands</description>
 			<context>password</context>
 		</parameter>
-		<parameter name="refreshInterval" type="decimal" required="true">
+		<parameter name="refreshInterval" type="integer" min="5" unit="min" required="true">
 			<label>Refresh Interval</label>
 			<description>Refresh Interval in Minutes</description>
 			<default>15</default>

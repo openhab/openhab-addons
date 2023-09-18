@@ -57,8 +57,8 @@ public class MBWebsocket {
     private final int CONNECT_TIMEOUT_MS = 14 * 60 * 1000;
     // standard runtime of Websocket
     private final int WS_RUNTIME_MS = 60 * 1000;
-    // addon time of 10 seconds for a new send command
-    private final int ADDON_MESSAGE_TIME_MS = 10 * 1000;
+    // addon time of 1 minute for a new send command
+    private final int ADDON_MESSAGE_TIME_MS = 60 * 10 * 1000;
     // check Socket time elapsed each second
     private final int CHECK_INTERVAL_MS = 1000;
     // additional 5 minutes after keep alive
