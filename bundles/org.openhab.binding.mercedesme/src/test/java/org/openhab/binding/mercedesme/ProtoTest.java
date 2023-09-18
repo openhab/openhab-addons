@@ -139,14 +139,29 @@ class ProtoTest {
 
     @Test
     void testJsonOutput() {
+        // String test = Utils.proto2Json(null);
+        // System.out.println(test);
+        // System.out.println(test.toString());
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/proto/EQA-charging.blob");
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
             Map<String, VEPUpdate> m = pm.getVepUpdates().getUpdatesMap();
             m.forEach((key, value) -> {
-                System.out.println(Utils.proto2Json(value));
+                JSONObject jo1 = new JSONObject(Utils.proto2Json(value));
+                System.out.println(jo1.length());
+                JSONObject jo2 = new JSONObject(
+                        FileReader.readFileInString("src/test/resources/EQA-Proto-Ladefehler.json"));
+                System.out.println(jo2.length());
+                Map combined = Utils.combineMaps(jo1.toMap(), jo2.toMap());
+                System.out.println(combined.size());
+                JSONObject jo3 = new JSONObject(combined);
+                System.out.println(jo2);
+                System.out.println(jo3);
+                System.out.println(jo3.equals(jo2));
             });
             // Utils.proto2Json(pm.getVepUpdates().getUpdatesMap());
+            // JSONObject jo;
+            // jo.
         } catch (Throwable e) {
             e.printStackTrace();
         }

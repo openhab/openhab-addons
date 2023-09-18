@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -536,21 +537,51 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(csmState);
             // Command Time
             DateTimeType dtt = Utils.getDateTimeType(value.getTimestampInMs());
-            ChannelStateMap csmUpdated = new ChannelStateMap("cmd-last-update", GROUP_COMMAND, dtt);
+            UOMObserver observer = null;
+            if (Locale.US.getCountry().equals(Utils.localeProvider.getLocale().getCountry())) {
+                observer = new UOMObserver(UOMObserver.TIME_US);
+            } else {
+                observer = new UOMObserver(UOMObserver.TIME_ROW);
+            }
+            ChannelStateMap csmUpdated = new ChannelStateMap("cmd-last-update", GROUP_COMMAND, dtt, observer);
             updateChannel(csmUpdated);
         });
     }
 
     public void distributeContent(VEPUpdate data) {
         updateStatus(ThingStatus.ONLINE);
-
-        String json = Utils.proto2Json(data);
-        StringType st = StringType.valueOf(json);
-        ChannelStateMap dataUpdateMap = new ChannelStateMap("proto-update", GROUP_VEHICLE, st);
-        updateChannel(dataUpdateMap);
+        try {
+            // logger.info("Received new proto data vep {}", data);
+            String newProto = Utils.proto2Json(data);
+            String combinedProto = newProto;
+            ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
+            ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getAsString());
+            if (oldProtoMap != null) {
+                try {
+                    String oldProto = ((StringType) oldProtoMap.getState()).toFullString();
+                    Map combinedMap = Utils.combineMaps(new JSONObject(oldProto).toMap(),
+                            new JSONObject(newProto).toMap());
+                    combinedProto = (new JSONObject(combinedMap)).toString();
+                } catch (Throwable t) {
+                    logger.trace("Exception when decoding old Proto: {}", t.getMessage());
+                    StackTraceElement[] ste = t.getStackTrace();
+                    for (int i = 0; i < ste.length; i++) {
+                        logger.trace("{}", ste[i].toString());
+                    }
+                }
+            }
+            ChannelStateMap dataUpdateMap = new ChannelStateMap("proto-update", GROUP_VEHICLE,
+                    StringType.valueOf(combinedProto));
+            updateChannel(dataUpdateMap);
+        } catch (Throwable t) {
+            logger.trace("Exception when combining Protos: {}", t.getMessage());
+            StackTraceElement[] ste = t.getStackTrace();
+            for (int i = 0; i < ste.length; i++) {
+                logger.trace("{}", ste[i].toString());
+            }
+        }
 
         Map<String, VehicleAttributeStatus> atts = data.getAttributesMap();
-
         /**
          * handle GPS
          */
@@ -997,15 +1028,15 @@ public class VehicleHandler extends BaseThingHandler {
             if (storedObserver != null) {
                 change = !storedObserver.equals(deliveredObserver);
             }
-            unitStorage.put(channel, deliveredObserver);
             // Channel adaptions for items with configurable units
             String pattern = deliveredObserver.getPattern(csm.getGroup());
             if (pattern.startsWith("%") && change) {
-                logger.trace("Set Pattern for {} to {}", channel, pattern);
+                logger.trace("Set Pattern for {}#{} to {}", channel, csm.getGroup(), pattern);
                 mmdsdp.setStatePattern(cuid, pattern);
             } else {
                 handleComplexTripPattern(channel, pattern);
             }
+            unitStorage.put(channel, deliveredObserver);
         }
 
         /**

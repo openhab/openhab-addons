@@ -52,6 +52,8 @@ public class UOMObserver {
     public static final String CONSUMPTION_LIQUID_100KM = "LITER_PER_100KM";
     public static final String CONSUMPTION_LIQUID_MI = "MPGE";
     public static final String CONSUMPTION_GAS_100KM = "KG_PER_100KM";
+    public static final String TIME_US = "TIME_US";
+    public static final String TIME_ROW = "TIME_ROW";
 
     private static final Map<String, String> patternMap = new HashMap<String, String>();
     private static final Map<String, Unit> unitMap = new HashMap<String, Unit>();
@@ -77,6 +79,8 @@ public class UOMObserver {
             patternMap.put(CONSUMPTION_ELECTRIC_100MI, "kWh/100mi");
             patternMap.put(CONSUMPTION_LIQUID_100KM, "l/100km");
             patternMap.put(CONSUMPTION_LIQUID_MI, "mpge");
+            patternMap.put(TIME_US, "%1$tA, %1$td.%1$tm. %1$tI:%1$tM %1$Tp");
+            patternMap.put(TIME_ROW, "%1$tA, %1$td.%1$tm. %1$tH:%1$tM");
 
             unitMap.put(LENGTH_KM_UNIT, Constants.KILOMETRE_UNIT);
             unitMap.put(LENGTH_MILES_UNIT, ImperialUnits.MILE);

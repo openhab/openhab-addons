@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.measure.Unit;
@@ -159,6 +160,11 @@ public class Mapper {
                             LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC).withHour(hour)
                                     .withMinute(minute);
                             state = DateTimeType.valueOf(ldt.toString());
+                            if (Locale.US.getCountry().equals(Utils.localeProvider.getLocale().getCountry())) {
+                                observer = new UOMObserver(UOMObserver.TIME_US);
+                            } else {
+                                observer = new UOMObserver(UOMObserver.TIME_ROW);
+                            }
                         } catch (NumberFormatException nfe) {
                             LOGGER.warn("End Charge Time Number Format failed {} for [}", nfe.getMessage(), dv);
                             state = UnDefType.UNDEF;
@@ -166,7 +172,7 @@ public class Mapper {
                     } else {
                         state = UnDefType.UNDEF;
                     }
-                    return new ChannelStateMap(ch[0], ch[1], state);
+                    return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // DateTime - last Update
                 case "tirePressMeasTimestamp":
@@ -175,7 +181,12 @@ public class Mapper {
                     } else {
                         state = Utils.getDateTimeType(value.getTimestampInMs());
                     }
-                    return new ChannelStateMap(ch[0], ch[1], state);
+                    if (Locale.US.getCountry().equals(Utils.localeProvider.getLocale().getCountry())) {
+                        observer = new UOMObserver(UOMObserver.TIME_US);
+                    } else {
+                        observer = new UOMObserver(UOMObserver.TIME_ROW);
+                    }
+                    return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // Percentages
                 case "soc":

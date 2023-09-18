@@ -83,6 +83,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         mmdsdp = dsdp;
 
         Utils.timeZoneProvider = tzp;
+        Utils.localeProvider = lp;
 
         // Configure Mapper default values
         Unit<Length> lengthUnit = up.getUnit(Length.class);
