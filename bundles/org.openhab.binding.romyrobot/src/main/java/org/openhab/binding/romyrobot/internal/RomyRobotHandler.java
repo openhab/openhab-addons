@@ -143,6 +143,10 @@ public class RomyRobotHandler extends BaseThingHandler {
     private RomyApi setupAPI(RomyApiFactory apiFactory) throws Exception {
         logger.debug("Initializing RomyRobot with config (Hostname: {}, Port: {}, Refresh: {}, Timeout {}).",
                 config.hostname, config.port, config.refreshInterval, config.timeout);
+        // hack:
+        logger.error("Initializing RomyRobot with config (Hostname: {}, Port: {}, Refresh: {}, Timeout {}).",
+                config.hostname, config.port, config.refreshInterval, config.timeout);
+
         return apiFactory.getHttpApi(config);
     }
 
