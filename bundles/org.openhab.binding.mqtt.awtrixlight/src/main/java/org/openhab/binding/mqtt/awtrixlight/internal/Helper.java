@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.mqtt.awtrixlight.internal;
 
-import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.SCREEN_HEIGHT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.SCREEN_WIDTH;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -61,16 +62,12 @@ public class Helper {
                         JsonPrimitive jsonPrimitive = jsonElement.getAsJsonPrimitive();
                         if (jsonPrimitive.isString()) {
                             String s = jsonPrimitive.getAsString();
-                            if (s != null) {
-                                results.put(keyString, s);
-                            }
+                            results.put(keyString, s);
                         } else if (jsonPrimitive.isBoolean()) {
                             results.put(keyString, jsonPrimitive.getAsBoolean());
                         } else if (jsonPrimitive.isNumber()) {
                             BigDecimal bd = jsonPrimitive.getAsBigDecimal();
-                            if (bd != null) {
-                                results.put(keyString, bd);
-                            }
+                            results.put(keyString, bd);
                         }
                     } else if (jsonElement.isJsonArray()) {
                         JsonArray jsonArray = jsonElement.getAsJsonArray();
@@ -95,10 +92,7 @@ public class Helper {
 
                         }
                     } else if (jsonElement.isJsonObject()) {
-                        String jsonString = jsonElement.toString();
-                        if (jsonString != null) {
-                            results.put(keyString, decodeJson(jsonString));
-                        }
+                        results.put(keyString, decodeJson(jsonElement.toString()));
                     }
                 }
             }
@@ -107,20 +101,13 @@ public class Helper {
     }
 
     public static String encodeJson(Map<String, Object> params) {
-        String json = new Gson().toJson(params);
-        return json == null ? "" : json;
+        return new Gson().toJson(params);
     }
 
     public static byte[] decodeImage(String messageJSON) {
+        String cutBrackets = messageJSON.substring(1, messageJSON.length() - 1);
 
-        if (messageJSON != null) {
-            String cutBrackets = messageJSON.substring(1, messageJSON.length() - 1);
-            if (cutBrackets != null) {
-                messageJSON = cutBrackets;
-            }
-        }
-
-        String[] pixelStrings = messageJSON.split(",");
+        String[] pixelStrings = cutBrackets.split(",");
         int[] values = Arrays.stream(pixelStrings).mapToInt(Integer::parseInt).toArray();
         int[][] pixels = new int[SCREEN_HEIGHT][SCREEN_WIDTH];
         for (int i = 0; i < 256; i++) {

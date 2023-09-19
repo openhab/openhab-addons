@@ -14,7 +14,19 @@
 package org.openhab.binding.mqtt.awtrixlight.internal.discovery;
 
 import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
-import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.AWTRIX_CLOCK;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_FIRMWARE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_TYPE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_UID;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_APPLOCKTIMEOUT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_BASETOPIC;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_DISCOVERDEFAULT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_FIRMWARE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_UNIQUEID;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_VENDOR;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_BASE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_STATS;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -62,26 +74,24 @@ public class AwtrixLightDiscoveryService extends AbstractMQTTDiscovery {
         String message = new String(payload, StandardCharsets.UTF_8);
         if (topic.endsWith(TOPIC_STATS)) {
             String baseTopic = topic.replace(TOPIC_STATS, "");
-            if (baseTopic != null) {
-                HashMap<String, Object> messageParams = Helper.decodeJson(message);
-                String vendorString = "Unknown";
-                Object vendor = messageParams.get(FIELD_BRIDGE_TYPE);
-                if (vendor != null && vendor instanceof Integer) {
-                    vendorString = vendor.equals(0) ? "Ulanzi" : "Generic";
-                }
-                String firmwareString = "Unknown";
-                Object firmware = messageParams.get(FIELD_BRIDGE_FIRMWARE);
-                if (firmware != null && firmware instanceof String) {
-                    firmwareString = (String) firmware;
-                }
-                String hardwareUidString = "Unknown";
-                Object hardwareUid = messageParams.get(FIELD_BRIDGE_UID);
-                if (hardwareUid != null && hardwareUid instanceof String) {
-                    hardwareUidString = (String) hardwareUid;
-                }
-                logger.trace("Publishing an Awtrix Clock with ID :{}", hardwareUidString);
-                publishClock(connectionBridge, baseTopic, vendorString, firmwareString, hardwareUidString);
+            HashMap<String, Object> messageParams = Helper.decodeJson(message);
+            String vendorString = "Unknown";
+            Object vendor = messageParams.get(FIELD_BRIDGE_TYPE);
+            if (vendor != null && vendor instanceof Integer) {
+                vendorString = vendor.equals(0) ? "Ulanzi" : "Generic";
             }
+            String firmwareString = "Unknown";
+            Object firmware = messageParams.get(FIELD_BRIDGE_FIRMWARE);
+            if (firmware != null && firmware instanceof String) {
+                firmwareString = (String) firmware;
+            }
+            String hardwareUidString = "Unknown";
+            Object hardwareUid = messageParams.get(FIELD_BRIDGE_UID);
+            if (hardwareUid != null && hardwareUid instanceof String) {
+                hardwareUidString = (String) hardwareUid;
+            }
+            logger.trace("Publishing an Awtrix Clock with ID :{}", hardwareUidString);
+            publishClock(connectionBridge, baseTopic, vendorString, firmwareString, hardwareUidString);
         }
     }
 

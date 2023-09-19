@@ -39,11 +39,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class)
 @NonNullByDefault
 public class AwtrixLightHandlerFactory extends BaseThingHandlerFactory {
-    private final ThingRegistry thingRegistry;
 
     @Activate
     public AwtrixLightHandlerFactory(final @Reference ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
     }
 
     @Override

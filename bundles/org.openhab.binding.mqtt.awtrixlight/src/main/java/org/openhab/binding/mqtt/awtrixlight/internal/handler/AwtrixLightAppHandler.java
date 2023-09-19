@@ -219,9 +219,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                     QuantityType<?> blinkInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
                     if (blinkInS != null) {
                         BigDecimal blinkInMs = blinkInS.toBigDecimal().multiply(THOUSAND);
-                        if (blinkInMs != null) {
-                            this.app.setBlinkText(blinkInMs);
-                        }
+                        this.app.setBlinkText(blinkInMs);
                     }
                 }
                 break;
@@ -230,9 +228,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                     QuantityType<?> fadeInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
                     if (fadeInS != null) {
                         BigDecimal fadeInMs = fadeInS.toBigDecimal().multiply(THOUSAND);
-                        if (fadeInMs != null) {
-                            this.app.setFadeText(fadeInMs);
-                        }
+                        this.app.setFadeText(fadeInMs);
                     }
                 }
                 break;

@@ -14,8 +14,25 @@ package org.openhab.binding.mqtt.awtrixlight.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_APP;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_BATTERY;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_BATTERY_RAW;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_BRIGHTNESS;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_FIRMWARE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_HUMIDITY;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_INDICATOR1;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_INDICATOR2;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_INDICATOR3;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_LDR_RAW;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_LUX;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_MESSAGES;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_RAM;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_TEMPERATURE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_TYPE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_UPTIME;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_WIFI_SIGNAL;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -57,11 +74,17 @@ public class HelperTest {
             String[] stringProperties = { FIELD_BRIDGE_APP, FIELD_BRIDGE_FIRMWARE };
             String[] booleanProperties = { FIELD_BRIDGE_INDICATOR1, FIELD_BRIDGE_INDICATOR2, FIELD_BRIDGE_INDICATOR3 };
             if (Arrays.stream(stringProperties).anyMatch(s::equals)) {
-                assertEquals(String.class, convertedJson.get(s).getClass());
+                Object prop = convertedJson.get(s);
+                assertNotNull(prop);
+                assertEquals(String.class, prop.getClass());
             } else if (Arrays.stream(booleanProperties).anyMatch(s::equals)) {
-                assertEquals(Boolean.class, convertedJson.get(s).getClass());
+                Object prop = convertedJson.get(s);
+                assertNotNull(prop);
+                assertEquals(Boolean.class, prop.getClass());
             } else {
-                assertEquals(BigDecimal.class, convertedJson.get(s).getClass());
+                Object prop = convertedJson.get(s);
+                assertNotNull(prop);
+                assertEquals(BigDecimal.class, prop.getClass());
             }
         }
     }
