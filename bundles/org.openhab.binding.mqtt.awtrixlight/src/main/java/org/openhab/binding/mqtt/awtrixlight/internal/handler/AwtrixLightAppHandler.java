@@ -124,170 +124,191 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             updateApp();
             return;
         }
-
-        // WARNING: Inactive Apps wont survive an OH reboot
-        if (channelUID.getId().equals(CHANNEL_ACTIVE)) {
-            if (command instanceof OnOffType) {
-                if (OnOffType.OFF.equals(command)) {
-                    this.active = false;
-                    deleteApp();
-                } else if (OnOffType.ON.equals(command)) {
-                    this.active = true;
-                }
-            }
-        } else if (channelUID.getId().equals(CHANNEL_RESET)) {
-            if (command instanceof OnOffType) {
-                if (OnOffType.ON.equals((OnOffType) command)) {
-                    deleteApp();
-                    this.app = new AwtrixApp();
-                    updateApp();
-                    initStates();
-                    return;
-                }
-            }
-        } else if (channelUID.getId().equals(CHANNEL_COLOR)) {
-            if (command instanceof HSBType) {
-                int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                this.app.setColor(convertRgbArray(hsbToRgb));
-            }
-        } else if (channelUID.getId().equals(CHANNEL_GRADIENT_COLOR)) {
-            if (command instanceof HSBType) {
-                int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                this.app.setGradient(convertRgbArray(hsbToRgb));
-            }
-        } else if (channelUID.getId().equals(CHANNEL_SCROLLSPEED)) {
-            if (command instanceof QuantityType) {
-                this.app.setScrollSpeed(((QuantityType<?>) command).toBigDecimal());
-            }
-            // } else if (channelUID.getId().equals(CHANNEL_REPEAT)) {
-            // if (command instanceof QuantityType) {
-            // this.app.setRepeat(((QuantityType<?>) command).toBigDecimal());
-            // }
-        } else if (channelUID.getId().equals(CHANNEL_DURATION)) {
-            if (command instanceof QuantityType) {
-                this.app.setDuration(((QuantityType<?>) command).toBigDecimal());
-            }
-        } else if (channelUID.getId().equals(CHANNEL_EFFECT)) {
-            if (command instanceof StringType) {
-                this.app.setEffect(((StringType) command).toString());
-            }
-        } else if (channelUID.getId().equals(CHANNEL_EFFECT_SPEED)) {
-            if (command instanceof QuantityType) {
-                this.app.setEffectSpeed(((QuantityType<?>) command).toBigDecimal());
-            }
-        } else if (channelUID.getId().equals(CHANNEL_EFFECT_PALETTE)) {
-            if (command instanceof StringType) {
-                this.app.setEffectPalette(((StringType) command).toString());
-            }
-        } else if (channelUID.getId().equals(CHANNEL_EFFECT_BLEND)) {
-            if (command instanceof OnOffType) {
-                this.app.setEffectBlend(command.equals(OnOffType.ON));
-            }
-        } else if (channelUID.getId().equals(CHANNEL_TEXT)) {
-            if (command instanceof StringType) {
-                this.app.setText(((StringType) command).toString());
-            }
-        } else if (channelUID.getId().equals(CHANNEL_TEXT_OFFSET)) {
-            if (command instanceof QuantityType) {
-                this.app.setTextOffset(((QuantityType<?>) command).toBigDecimal());
-            }
-        } else if (channelUID.getId().equals(CHANNEL_TOP_TEXT)) {
-            if (command instanceof OnOffType) {
-                this.app.setTopText(command.equals(OnOffType.ON));
-            }
-        } else if (channelUID.getId().equals(CHANNEL_TEXTCASE)) {
-            if (command instanceof QuantityType) {
-                this.app.setTextCase(((QuantityType<?>) command).toBigDecimal());
-            }
-        } else if (channelUID.getId().equals(CHANNEL_CENTER)) {
-            if (command instanceof OnOffType) {
-                this.app.setCenter(command.equals(OnOffType.ON));
-            }
-        } else if (channelUID.getId().equals(CHANNEL_BLINK_TEXT)) {
-            if (command instanceof QuantityType) {
-                QuantityType<?> blinkInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
-                if (blinkInS != null) {
-                    BigDecimal blinkInMs = blinkInS.toBigDecimal().multiply(THOUSAND);
-                    if (blinkInMs != null) {
-                        this.app.setBlinkText(blinkInMs);
+        switch (channelUID.getId()) {
+            case CHANNEL_ACTIVE:
+                // WARNING: Inactive Apps wont survive an OH reboot
+                if (command instanceof OnOffType) {
+                    if (OnOffType.OFF.equals(command)) {
+                        this.active = false;
+                        deleteApp();
+                    } else if (OnOffType.ON.equals(command)) {
+                        this.active = true;
                     }
                 }
-            }
-        } else if (channelUID.getId().equals(CHANNEL_FADE_TEXT)) {
-            if (command instanceof QuantityType) {
-                QuantityType<?> fadeInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
-                if (fadeInS != null) {
-                    BigDecimal fadeInMs = fadeInS.toBigDecimal().multiply(THOUSAND);
-                    if (fadeInMs != null) {
-                        this.app.setFadeText(fadeInMs);
+                break;
+            case CHANNEL_RESET:
+                if (command instanceof OnOffType) {
+                    if (OnOffType.ON.equals((OnOffType) command)) {
+                        deleteApp();
+                        this.app = new AwtrixApp();
+                        updateApp();
+                        initStates();
+                        return;
                     }
                 }
-            }
-        } else if (channelUID.getId().equals(CHANNEL_RAINBOW)) {
-            if (command instanceof OnOffType) {
-                this.app.setRainbow(command.equals(OnOffType.ON));
-            }
-        } else if (channelUID.getId().equals(CHANNEL_ICON)) {
-            if (command instanceof StringType) {
-                this.app.setIcon(((StringType) command).toString());
-            }
-        } else if (channelUID.getId().equals(CHANNEL_PUSH_ICON)) {
-            if (command instanceof OnOffType) {
-                this.app.setPushIcon(command.equals(OnOffType.ON));
-            }
-        } else if (channelUID.getId().equals(CHANNEL_BACKGROUND)) {
-            if (command instanceof HSBType) {
-                int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                this.app.setBackground(convertRgbArray(hsbToRgb));
-            }
-        } else if (channelUID.getId().equals(CHANNEL_LINE)) {
-            if (command instanceof StringType) {
-                try {
-                    String[] points = command.toString().split(",");
-                    BigDecimal[] pointsAsNumber = new BigDecimal[points.length];
-                    for (int i = 0; i < points.length; i++) {
-                        pointsAsNumber[i] = new BigDecimal(points[i]);
-                    }
-                    this.app.setLine(pointsAsNumber);
-                } catch (Exception e) {
-                    logger.warn("Command {} cannot be parsed as line graph. Format should be: 1,2,3,4,5",
-                            command.toString());
+                break;
+            case CHANNEL_COLOR:
+                if (command instanceof HSBType) {
+                    int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
+                    this.app.setColor(convertRgbArray(hsbToRgb));
                 }
-            }
-        } else if (channelUID.getId().equals(CHANNEL_BAR)) {
-            if (command instanceof StringType) {
-                try {
-                    String[] points = command.toString().split(",");
-                    BigDecimal[] pointsAsNumber = new BigDecimal[points.length];
-                    for (int i = 0; i < points.length; i++) {
-                        pointsAsNumber[i] = new BigDecimal(points[i]);
-                    }
-                    this.app.setBar(pointsAsNumber);
-                } catch (Exception e) {
-                    logger.warn("Command {} cannot be parsed as bar graph. Format should be: 1,2,3,4,5",
-                            command.toString());
+                break;
+            case CHANNEL_GRADIENT_COLOR:
+                if (command instanceof HSBType) {
+                    int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
+                    this.app.setGradient(convertRgbArray(hsbToRgb));
                 }
-            }
-        } else if (channelUID.getId().equals(CHANNEL_AUTOSCALE)) {
-            if (command instanceof OnOffType) {
-                this.app.setAutoscale(command.equals(OnOffType.ON));
-            }
-        } else if (channelUID.getId().equals(CHANNEL_PROGRESS)) {
-            if (command instanceof QuantityType) {
-                this.app.setProgress(((QuantityType<?>) command).toBigDecimal());
-            }
-        } else if (channelUID.getId().equals(CHANNEL_PROGRESSC)) {
-            logger.warn("RECEIVED 1 {}", command.toFullString());
-            if (command instanceof HSBType) {
-                int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                logger.warn("RECEIVED 2 {}", hsbToRgb);
-                this.app.setProgressC(convertRgbArray(hsbToRgb));
-            }
-        } else if (channelUID.getId().equals(CHANNEL_PROGRESSBC)) {
-            if (command instanceof HSBType) {
-                int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                this.app.setProgressBC(convertRgbArray(hsbToRgb));
-            }
+                break;
+            case CHANNEL_SCROLLSPEED:
+                if (command instanceof QuantityType) {
+                    this.app.setScrollSpeed(((QuantityType<?>) command).toBigDecimal());
+                }
+                break;
+            case CHANNEL_DURATION:
+                if (command instanceof QuantityType) {
+                    this.app.setDuration(((QuantityType<?>) command).toBigDecimal());
+                }
+                break;
+            case CHANNEL_EFFECT:
+                if (command instanceof StringType) {
+                    this.app.setEffect(((StringType) command).toString());
+                }
+                break;
+            case CHANNEL_EFFECT_SPEED:
+                if (command instanceof QuantityType) {
+                    this.app.setEffectSpeed(((QuantityType<?>) command).toBigDecimal());
+                }
+                break;
+            case CHANNEL_EFFECT_PALETTE:
+                if (command instanceof StringType) {
+                    this.app.setEffectPalette(((StringType) command).toString());
+                }
+                break;
+            case CHANNEL_EFFECT_BLEND:
+                if (command instanceof OnOffType) {
+                    this.app.setEffectBlend(command.equals(OnOffType.ON));
+                }
+                break;
+            case CHANNEL_TEXT:
+                if (command instanceof StringType) {
+                    this.app.setText(((StringType) command).toString());
+                }
+                break;
+            case CHANNEL_TEXT_OFFSET:
+                if (command instanceof QuantityType) {
+                    this.app.setTextOffset(((QuantityType<?>) command).toBigDecimal());
+                }
+                break;
+            case CHANNEL_TOP_TEXT:
+                if (command instanceof OnOffType) {
+                    this.app.setTopText(command.equals(OnOffType.ON));
+                }
+                break;
+            case CHANNEL_TEXTCASE:
+                if (command instanceof QuantityType) {
+                    this.app.setTextCase(((QuantityType<?>) command).toBigDecimal());
+                }
+                break;
+            case CHANNEL_CENTER:
+                if (command instanceof OnOffType) {
+                    this.app.setCenter(command.equals(OnOffType.ON));
+                }
+                break;
+            case CHANNEL_BLINK_TEXT:
+                if (command instanceof QuantityType) {
+                    QuantityType<?> blinkInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
+                    if (blinkInS != null) {
+                        BigDecimal blinkInMs = blinkInS.toBigDecimal().multiply(THOUSAND);
+                        if (blinkInMs != null) {
+                            this.app.setBlinkText(blinkInMs);
+                        }
+                    }
+                }
+                break;
+            case CHANNEL_FADE_TEXT:
+                if (command instanceof QuantityType) {
+                    QuantityType<?> fadeInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
+                    if (fadeInS != null) {
+                        BigDecimal fadeInMs = fadeInS.toBigDecimal().multiply(THOUSAND);
+                        if (fadeInMs != null) {
+                            this.app.setFadeText(fadeInMs);
+                        }
+                    }
+                }
+                break;
+            case CHANNEL_RAINBOW:
+                if (command instanceof OnOffType) {
+                    this.app.setRainbow(command.equals(OnOffType.ON));
+                }
+                break;
+            case CHANNEL_ICON:
+                if (command instanceof StringType) {
+                    this.app.setIcon(((StringType) command).toString());
+                }
+                break;
+            case CHANNEL_PUSH_ICON:
+                if (command instanceof OnOffType) {
+                    this.app.setPushIcon(command.equals(OnOffType.ON));
+                }
+                break;
+            case CHANNEL_BACKGROUND:
+                if (command instanceof HSBType) {
+                    int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
+                    this.app.setBackground(convertRgbArray(hsbToRgb));
+                }
+                break;
+            case CHANNEL_LINE:
+                if (command instanceof StringType) {
+                    try {
+                        String[] points = command.toString().split(",");
+                        BigDecimal[] pointsAsNumber = new BigDecimal[points.length];
+                        for (int i = 0; i < points.length; i++) {
+                            pointsAsNumber[i] = new BigDecimal(points[i]);
+                        }
+                        this.app.setLine(pointsAsNumber);
+                    } catch (Exception e) {
+                        logger.warn("Command {} cannot be parsed as line graph. Format should be: 1,2,3,4,5",
+                                command.toString());
+                    }
+                }
+                break;
+            case CHANNEL_BAR:
+                if (command instanceof StringType) {
+                    try {
+                        String[] points = command.toString().split(",");
+                        BigDecimal[] pointsAsNumber = new BigDecimal[points.length];
+                        for (int i = 0; i < points.length; i++) {
+                            pointsAsNumber[i] = new BigDecimal(points[i]);
+                        }
+                        this.app.setBar(pointsAsNumber);
+                    } catch (Exception e) {
+                        logger.warn("Command {} cannot be parsed as bar graph. Format should be: 1,2,3,4,5",
+                                command.toString());
+                    }
+                }
+                break;
+            case CHANNEL_AUTOSCALE:
+                if (command instanceof OnOffType) {
+                    this.app.setAutoscale(command.equals(OnOffType.ON));
+                }
+                break;
+            case CHANNEL_PROGRESS:
+                if (command instanceof QuantityType) {
+                    this.app.setProgress(((QuantityType<?>) command).toBigDecimal());
+                }
+                break;
+            case CHANNEL_PROGRESSC:
+                if (command instanceof HSBType) {
+                    int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
+                    this.app.setProgressC(convertRgbArray(hsbToRgb));
+                }
+                break;
+            case CHANNEL_PROGRESSBC:
+                if (command instanceof HSBType) {
+                    int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
+                    this.app.setProgressBC(convertRgbArray(hsbToRgb));
+                }
+                break;
         }
         logger.debug("Current app configuration: {}", this.app.toString());
         if (this.active) {
@@ -297,58 +318,82 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
-        if (channelUID.getId().equals(CHANNEL_COLOR)) {
-            this.app.setColor(AwtrixApp.DEFAULT_COLOR);
-        } else if (channelUID.getId().equals(CHANNEL_GRADIENT_COLOR)) {
-            this.app.setGradient(AwtrixApp.DEFAULT_GRADIENT);
-        } else if (channelUID.getId().equals(CHANNEL_SCROLLSPEED)) {
-            this.app.setScrollSpeed(AwtrixApp.DEFAULT_SCROLLSPEED);
-            // } else if (channelUID.getId().equals(CHANNEL_REPEAT)) {
-            // this.app.setRepeat(AwtrixApp.DEFAULT_REPEAT);
-        } else if (channelUID.getId().equals(CHANNEL_DURATION)) {
-            this.app.setDuration(AwtrixApp.DEFAULT_DURATION);
-        } else if (channelUID.getId().equals(CHANNEL_EFFECT)) {
-            this.app.setEffect(AwtrixApp.DEFAULT_EFFECT);
-        } else if (channelUID.getId().equals(CHANNEL_EFFECT_SPEED)) {
-            this.app.setEffectSpeed(AwtrixApp.DEFAULT_EFFECTSPEED);
-        } else if (channelUID.getId().equals(CHANNEL_EFFECT_PALETTE)) {
-            this.app.setEffectPalette(AwtrixApp.DEFAULT_EFFECTPALETTE);
-        } else if (channelUID.getId().equals(CHANNEL_EFFECT_BLEND)) {
-            this.app.setEffectBlend(AwtrixApp.DEFAULT_EFFECTBLEND);
-        } else if (channelUID.getId().equals(CHANNEL_TEXT)) {
-            this.app.setText(AwtrixApp.DEFAULT_TEXT);
-        } else if (channelUID.getId().equals(CHANNEL_TEXT_OFFSET)) {
-            this.app.setTextOffset(AwtrixApp.DEFAULT_TEXTOFFSET);
-        } else if (channelUID.getId().equals(CHANNEL_TOP_TEXT)) {
-            this.app.setTopText(AwtrixApp.DEFAULT_TOPTEXT);
-        } else if (channelUID.getId().equals(CHANNEL_TEXTCASE)) {
-            this.app.setTextCase(AwtrixApp.DEFAULT_TEXTCASE);
-        } else if (channelUID.getId().equals(CHANNEL_CENTER)) {
-            this.app.setCenter(AwtrixApp.DEFAULT_CENTER);
-        } else if (channelUID.getId().equals(CHANNEL_BLINK_TEXT)) {
-            this.app.setBlinkText(AwtrixApp.DEFAULT_BLINKTEXT);
-        } else if (channelUID.getId().equals(CHANNEL_FADE_TEXT)) {
-            this.app.setFadeText(AwtrixApp.DEFAULT_FADETEXT);
-        } else if (channelUID.getId().equals(CHANNEL_RAINBOW)) {
-            this.app.setRainbow(AwtrixApp.DEFAULT_RAINBOW);
-        } else if (channelUID.getId().equals(CHANNEL_ICON)) {
-            this.app.setIcon(AwtrixApp.DEFAULT_ICON);
-        } else if (channelUID.getId().equals(CHANNEL_PUSH_ICON)) {
-            this.app.setPushIcon(AwtrixApp.DEFAULT_PUSHICON);
-        } else if (channelUID.getId().equals(CHANNEL_BACKGROUND)) {
-            this.app.setBackground(AwtrixApp.DEFAULT_BACKGROUND);
-        } else if (channelUID.getId().equals(CHANNEL_LINE)) {
-            this.app.setLine(AwtrixApp.DEFAULT_LINE);
-        } else if (channelUID.getId().equals(CHANNEL_BAR)) {
-            this.app.setBar(AwtrixApp.DEFAULT_BAR);
-        } else if (channelUID.getId().equals(CHANNEL_AUTOSCALE)) {
-            this.app.setAutoscale(AwtrixApp.DEFAULT_AUTOSCALE);
-        } else if (channelUID.getId().equals(CHANNEL_PROGRESS)) {
-            this.app.setProgress(AwtrixApp.DEFAULT_PROGRESS);
-        } else if (channelUID.getId().equals(CHANNEL_PROGRESSC)) {
-            this.app.setProgressC(AwtrixApp.DEFAULT_PROGRESSC);
-        } else if (channelUID.getId().equals(CHANNEL_PROGRESSBC)) {
-            this.app.setProgressBC(AwtrixApp.DEFAULT_PROGRESSBC);
+        switch (channelUID.getId()) {
+            case CHANNEL_COLOR:
+                this.app.setColor(AwtrixApp.DEFAULT_COLOR);
+                break;
+            case CHANNEL_GRADIENT_COLOR:
+                this.app.setGradient(AwtrixApp.DEFAULT_GRADIENT);
+                break;
+            case CHANNEL_SCROLLSPEED:
+                this.app.setScrollSpeed(AwtrixApp.DEFAULT_SCROLLSPEED);
+                break;
+            case CHANNEL_DURATION:
+                this.app.setDuration(AwtrixApp.DEFAULT_DURATION);
+                break;
+            case CHANNEL_EFFECT:
+                this.app.setEffect(AwtrixApp.DEFAULT_EFFECT);
+                break;
+            case CHANNEL_EFFECT_SPEED:
+                this.app.setEffectSpeed(AwtrixApp.DEFAULT_EFFECTSPEED);
+                break;
+            case CHANNEL_EFFECT_PALETTE:
+                this.app.setEffectPalette(AwtrixApp.DEFAULT_EFFECTPALETTE);
+                break;
+            case CHANNEL_EFFECT_BLEND:
+                this.app.setEffectBlend(AwtrixApp.DEFAULT_EFFECTBLEND);
+                break;
+            case CHANNEL_TEXT:
+                this.app.setText(AwtrixApp.DEFAULT_TEXT);
+                break;
+            case CHANNEL_TEXT_OFFSET:
+                this.app.setTextOffset(AwtrixApp.DEFAULT_TEXTOFFSET);
+                break;
+            case CHANNEL_TOP_TEXT:
+                this.app.setTopText(AwtrixApp.DEFAULT_TOPTEXT);
+                break;
+            case CHANNEL_TEXTCASE:
+                this.app.setTextCase(AwtrixApp.DEFAULT_TEXTCASE);
+                break;
+            case CHANNEL_CENTER:
+                this.app.setCenter(AwtrixApp.DEFAULT_CENTER);
+                break;
+            case CHANNEL_BLINK_TEXT:
+                this.app.setBlinkText(AwtrixApp.DEFAULT_BLINKTEXT);
+                break;
+            case CHANNEL_FADE_TEXT:
+                this.app.setFadeText(AwtrixApp.DEFAULT_FADETEXT);
+                break;
+            case CHANNEL_RAINBOW:
+                this.app.setRainbow(AwtrixApp.DEFAULT_RAINBOW);
+                break;
+            case CHANNEL_ICON:
+                this.app.setIcon(AwtrixApp.DEFAULT_ICON);
+                break;
+            case CHANNEL_PUSH_ICON:
+                this.app.setPushIcon(AwtrixApp.DEFAULT_PUSHICON);
+                break;
+            case CHANNEL_BACKGROUND:
+                this.app.setBackground(AwtrixApp.DEFAULT_BACKGROUND);
+                break;
+            case CHANNEL_LINE:
+                this.app.setLine(AwtrixApp.DEFAULT_LINE);
+                break;
+            case CHANNEL_BAR:
+                this.app.setBar(AwtrixApp.DEFAULT_BAR);
+                break;
+            case CHANNEL_AUTOSCALE:
+                this.app.setAutoscale(AwtrixApp.DEFAULT_AUTOSCALE);
+                break;
+            case CHANNEL_PROGRESS:
+                this.app.setProgress(AwtrixApp.DEFAULT_PROGRESS);
+                break;
+            case CHANNEL_PROGRESSC:
+                this.app.setProgressC(AwtrixApp.DEFAULT_PROGRESSC);
+                break;
+            case CHANNEL_PROGRESSBC:
+                this.app.setProgressBC(AwtrixApp.DEFAULT_PROGRESSBC);
+                break;
         }
         logger.debug("Current app configuration: {}", this.app.toString());
         updateApp();
