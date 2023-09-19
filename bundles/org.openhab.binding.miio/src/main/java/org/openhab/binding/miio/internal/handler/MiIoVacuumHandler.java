@@ -213,13 +213,13 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
         }
         if (channelUID.getId().equals(CHANNEL_CONTROL)) {
-            if (command.toString().equals("vacuum")) {
+            if ("vacuum".equals(command.toString())) {
                 sendCommand(MiIoCommand.START_VACUUM);
-            } else if (command.toString().equals("spot")) {
+            } else if ("spot".equals(command.toString())) {
                 sendCommand(MiIoCommand.START_SPOT);
-            } else if (command.toString().equals("pause")) {
+            } else if ("pause".equals(command.toString())) {
                 sendCommand(MiIoCommand.PAUSE);
-            } else if (command.toString().equals("dock")) {
+            } else if ("dock".equals(command.toString())) {
                 sendCommand(MiIoCommand.STOP_VACUUM);
                 miIoScheduler.schedule(() -> {
                     sendCommand(MiIoCommand.CHARGE);

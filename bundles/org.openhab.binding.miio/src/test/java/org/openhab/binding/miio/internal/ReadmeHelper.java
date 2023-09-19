@@ -140,7 +140,7 @@ public class ReadmeHelper {
                 "|------------------------------------|------------------|------------------------|--------------|------------|\n");
 
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
-            if (!device.getModel().equals("unknown")) {
+            if (!"unknown".equals(device.getModel())) {
                 String link = device.getModel().replace(".", "-");
                 boolean isSupported = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED);
                 Boolean experimental = false;
