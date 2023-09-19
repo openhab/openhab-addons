@@ -74,23 +74,45 @@ public class RomyApi_v6 implements RomyApi {
     }
 
     @Override
-    public void refresh() throws Exception {
-        String returnContent;
-        returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_ROBOT_ID, null);
+    public void refresh_id() throws Exception {
+        String returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_ROBOT_ID, null);
         JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
         firmwareVersion = jsonNode.get("firmware").asText();
         if (firmwareVersion == null) {
             throw new Exception("There was a problem in the HTTP communication: firmware was empty.");
         }
         name = jsonNode.get("name").asText();
+    }
 
-        mapsJson = http.sendHttpGet(getBaseUrl() + CMD_GET_MAPS, null);
-        parseMaps(mapsJson);
-        returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_POWER_STATUS, null);
+    @Override
+    public void refresh_protocol_version() throws Exception {
+        String returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_ROBOT_ID, null);
+        JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
+        firmwareVersion = jsonNode.get("firmware").asText();
+        if (firmwareVersion == null) {
+            throw new Exception("There was a problem in the HTTP communication: firmware was empty.");
+        }
+        name = jsonNode.get("name").asText();
+    }
+
+    @Override
+    public void refresh() throws Exception {
+        /*
+         * String returnContent;
+         * returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_ROBOT_ID, null);
+         * JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
+         * firmwareVersion = jsonNode.get("firmware").asText();
+         * if (firmwareVersion == null) {
+         * throw new Exception("There was a problem in the HTTP communication: firmware was empty.");
+         * }
+         * name = jsonNode.get("name").asText();
+         */
+
+        String returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_POWER_STATUS, null);
         powerStatus = new ObjectMapper().readTree(returnContent).get("power_status").asText();
 
         returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_STATUS, null);
-        jsonNode = new ObjectMapper().readTree(returnContent);
+        JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
         mode = jsonNode.get("mode").asText();
         activePumpVolume = jsonNode.get("active_pump_volume").asText();
         charging = jsonNode.get("charging").asText();
@@ -100,9 +122,14 @@ public class RomyApi_v6 implements RomyApi {
         jsonNode = new ObjectMapper().readTree(returnContent);
         rssi = jsonNode.get("rssi").asInt();
 
-        returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_PROTOCOL_VERSION, null);
-        protocolVersionMajor = new ObjectMapper().readTree(returnContent).get("version_major").intValue();
-        protocolVersionMinor = new ObjectMapper().readTree(returnContent).get("version_minor").intValue();
+        mapsJson = http.sendHttpGet(getBaseUrl() + CMD_GET_MAPS, null);
+        parseMaps(mapsJson);
+
+        /*
+         * returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_PROTOCOL_VERSION, null);
+         * protocolVersionMajor = new ObjectMapper().readTree(returnContent).get("version_major").intValue();
+         * protocolVersionMinor = new ObjectMapper().readTree(returnContent).get("version_minor").intValue();
+         */
     }
 
     private void parseMaps(String jsonString) throws JsonMappingException, JsonProcessingException {

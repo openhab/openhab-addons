@@ -112,7 +112,9 @@ public class RomyRobotMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
             RomyRobotConfiguration config = new RomyRobotConfiguration();
             config.hostname = address;
             RomyApi romyDevice = apiFactory.getHttpApi(config);
-            romyDevice.refresh();
+            // romyDevice.refresh();
+            romyDevice.refresh_id();
+            romyDevice.refresh_protocol_version();
             robotName = romyDevice.getName();
             logger.debug("New ROMY with the name:{} discovered: {}", robotName);
         } catch (Exception e) {
@@ -124,7 +126,8 @@ public class RomyRobotMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
         robotLabel = String.format("%s (%s)", robotName, address);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_SERIAL_NUMBER, robotUniqeId)
-                .withLabel(robotLabel).withRepresentationProperty(PROPERTY_SERIAL_NUMBER).build();
+                .withProperty("hostname", address).withLabel(robotLabel)
+                .withRepresentationProperty(PROPERTY_SERIAL_NUMBER).build();
 
         logger.debug("DiscoveryResult: {}", result);
 

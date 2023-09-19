@@ -23,6 +23,29 @@ import java.util.HashMap;
  */
 
 public interface RomyApi {
+
+    /**
+     * get robots firmwware version and name
+     * is available when robots http interface is locked
+     * 
+     * @throws Exception
+     *
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
+     */
+    void refresh_id() throws Exception;
+
+    /**
+     * get robots api protocol version
+     * is available when robots http interface is locked
+     * 
+     * @throws Exception
+     *
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
+     */
+    void refresh_protocol_version() throws Exception;
+
     /**
      * Sends all the GET requests and stores/cache the responses for use by the API to prevent the need for multiple
      * requests.
