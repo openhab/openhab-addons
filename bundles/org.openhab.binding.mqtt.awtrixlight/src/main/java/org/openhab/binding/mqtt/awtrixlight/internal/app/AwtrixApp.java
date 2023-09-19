@@ -548,9 +548,7 @@ public class AwtrixApp {
             if (this.effectSpeed.compareTo(MINUSONE) > 0) {
                 effectSettings.put("speed", this.effectSpeed);
             }
-            if (!"None".equals(this.effectPalette)) {
-                effectSettings.put("palette", this.effectPalette);
-            }
+            effectSettings.put("palette", this.effectPalette);
             effectSettings.put("blend", this.effectBlend);
             fields.put("effectSettings", effectSettings);
         }
