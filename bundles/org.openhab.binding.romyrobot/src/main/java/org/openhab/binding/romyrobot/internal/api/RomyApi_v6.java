@@ -12,6 +12,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.romyrobot.internal.RomyRobotConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,17 +98,6 @@ public class RomyApi_v6 implements RomyApi {
 
     @Override
     public void refresh() throws Exception {
-        /*
-         * String returnContent;
-         * returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_ROBOT_ID, null);
-         * JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
-         * firmwareVersion = jsonNode.get("firmware").asText();
-         * if (firmwareVersion == null) {
-         * throw new Exception("There was a problem in the HTTP communication: firmware was empty.");
-         * }
-         * name = jsonNode.get("name").asText();
-         */
-
         String returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_POWER_STATUS, null);
         powerStatus = new ObjectMapper().readTree(returnContent).get("power_status").asText();
 
@@ -124,12 +114,6 @@ public class RomyApi_v6 implements RomyApi {
 
         mapsJson = http.sendHttpGet(getBaseUrl() + CMD_GET_MAPS, null);
         parseMaps(mapsJson);
-
-        /*
-         * returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_PROTOCOL_VERSION, null);
-         * protocolVersionMajor = new ObjectMapper().readTree(returnContent).get("version_major").intValue();
-         * protocolVersionMinor = new ObjectMapper().readTree(returnContent).get("version_minor").intValue();
-         */
     }
 
     private void parseMaps(String jsonString) throws JsonMappingException, JsonProcessingException {
@@ -231,8 +215,7 @@ public class RomyApi_v6 implements RomyApi {
      * @author Florian Schmidt - Reduce visibility of Http communication to Api
      */
     protected class HttpRequestSender {
-        private static final int HTTP_OK_CODE = 200;
-        private static final String USER_AGENT = "Mozilla/5.0";
+        //private static final String USER_AGENT = "Mozilla/5.0";
 
         private final HttpClient httpClient;
 
@@ -264,14 +247,20 @@ public class RomyApi_v6 implements RomyApi {
             } catch (Exception e) {
                 throw new Exception("Request to RomyRobot device failed: " + e.getMessage());
             }
-            if (response.getStatus() != HTTP_OK_CODE) {
+            if (response.getStatus() == HttpStatus.FORBIDDEN_403 {
+                throw new Exception(
+                        "Error sending HTTP GET request to " + url + ". Unauthorized, check your robot is unlocked or provide proper password!");
+            }
+            if (response.getStatus() != HttpStatus.OK_200) {
                 throw new Exception(
                         "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
             }
-            String content = response.getContentAsString();
+            /*String content = response.getContentAsString();
             if ("{\"result\":2}".equals(content)) {
-                throw new Exception("Unauthorized, check your robot was unlocked");
-            }
+                throw new Exception(
+                        "Unauthorized, check your robot is unlocked or provide proper password, http content:"
+                                + content);
+            }*/
             return content;
         }
 
@@ -306,7 +295,7 @@ public class RomyApi_v6 implements RomyApi {
             } catch (Exception e) {
                 throw new Exception("Request to RomyRobot device failed: " + e.getMessage());
             }
-            if (response.getStatus() != HTTP_OK_CODE) {
+            if (response.getStatus() != HttpStatus.OK_200) {
                 throw new Exception(
                         "Error sending HTTP POST request to " + url + ". Got response code: " + response.getStatus());
             }
