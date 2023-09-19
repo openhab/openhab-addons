@@ -15,7 +15,7 @@ package org.openhab.binding.mqtt.awtrixlight.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AppConfigOptions} Holds the config for the settings.
+ * The {@link AppConfigOptions} Holds the config for the app settings.
  *
  * @author Thomas Lauterbach - Initial contribution
  */

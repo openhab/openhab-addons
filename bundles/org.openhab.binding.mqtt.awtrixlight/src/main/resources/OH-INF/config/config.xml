@@ -7,19 +7,24 @@
 	<config-description uri="thing-type:mqtt:awtrixclock">
 		<parameter name="basetopic" type="text" required="true">
 			<label>Base topic</label>
-			<description>Base topic as configured for the Awtrix clock</description>
+			<description>Base topic as configured in the Awtrix Light device.</description>
 			<default>awtrix</default>
 		</parameter>
 		<parameter name="appLockTimeout" type="integer" required="true">
-			<label>Timeout for app selection</label>
-			<description>Timeout before app rotation starts again</description>
+			<label>App selection timeout</label>
+			<description>Timeout in seconds until selected apps return control and the app rotation continues.</description>
 			<default>10</default>
 		</parameter>
 		<parameter name="discoverDefaultApps" type="boolean" required="true">
-			<label>Enable discovery for built-in default apps</label>
-			<description>Currently changing settings for default apps is not implemented. Its recommended to ignore them for
-				discovery</description>
+			<label>Discover built-in apps</label>
+			<description>Currently changing settings for the built-in default apps is not implemented. It is therefore
+				recommended to ignore them during app discovery.</description>
 			<default>false</default>
+		</parameter>
+		<parameter name="lowBatteryThreshold" type="integer" required="true">
+			<label>Low battery threshold</label>
+			<description>Threshold for issuing a low battery warning.</description>
+			<default>25</default>
 		</parameter>
 	</config-description>
 
@@ -30,7 +35,11 @@
 		</parameter>
 		<parameter name="useButtons" type="boolean" required="true">
 			<label>Button controlled</label>
-			<description>Select button locks on app and app will emit subsequent button events</description>
+			<description><![CDATA[
+				Activate if the app can be controlled by the user.
+				The select button locks on current app and the app will emit subsequent button events until the appLockTimeout is reached. Every button press before the timeout will reset timeout.
+				]]>
+			</description>
 			<default>false</default>
 		</parameter>
 	</config-description>

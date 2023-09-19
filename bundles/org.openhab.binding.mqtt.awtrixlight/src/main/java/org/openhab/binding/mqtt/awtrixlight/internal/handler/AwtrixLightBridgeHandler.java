@@ -38,7 +38,6 @@ import org.openhab.binding.mqtt.awtrixlight.internal.discovery.AwtrixLightBridge
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
-import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
@@ -58,12 +57,13 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AwtrixLightHandler} is responsible for ...
+ * The {@link AwtrixLightBridgeHandler} is responsible for handling commands for an awtrix clock device. It is also
+ * responsible for pushing discovery events to the discovery service. It also delegates trigger events to apps when they
+ * have been locked onto the clock.
  *
  * @author Thomas Lauterbach - Initial contribution
  */
@@ -75,23 +75,19 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private @Nullable MqttBrokerConnection connection;
 
+    private boolean appLock = false;
+    private int appLockTimeout = 10;
     private String basetopic = "";
     private String channelPrefix = "";
     private String currentApp = "";
-    private boolean appLock = false;
-    private boolean discoverDefaultApps;
-    private int appLockTimeout = 10;
+    private boolean discoverDefaultApps = false;
+    private BigDecimal lowBatteryThreshold = new BigDecimal(25);
 
     private Map<String, AwtrixLightAppHandler> appHandlers = new HashMap<String, AwtrixLightAppHandler>();
 
     private @Nullable AwtrixLightBridgeDiscoveryService discoveryCallback;
-
     private @Nullable ScheduledFuture<?> scheduledAppLockTimeout;
     private @Nullable ScheduledFuture<?> scheduledFadeBeforeTimeout;
-
-    // ATRANS Workaround
-    // private @Nullable BigDecimal repeat;
-    // private @Nullable BigDecimal duration;
 
     public AwtrixLightBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -107,12 +103,30 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         }
         if (channelUID.getId() == this.channelPrefix + CHANNEL_DISPLAY) {
             handleDisplay(command);
-        } else if (channelUID.getId() == this.channelPrefix + CHANNEL_INDICATOR1_COLOR) {
-            handleIndicator(command, 1);
-        } else if (channelUID.getId() == this.channelPrefix + CHANNEL_INDICATOR2_COLOR) {
-            handleIndicator(command, 2);
-        } else if (channelUID.getId() == this.channelPrefix + CHANNEL_INDICATOR3_COLOR) {
-            handleIndicator(command, 3);
+        } else if (channelUID.getId() == this.channelPrefix + CHANNEL_INDICATOR1) {
+            if (command instanceof OnOffType) {
+                if (OnOffType.ON.equals(command)) {
+                    activateIndicator(1, new int[] { 0, 255, 0 });
+                } else {
+                    deactivateIndicator(1);
+                }
+            }
+        } else if (channelUID.getId() == this.channelPrefix + CHANNEL_INDICATOR2) {
+            if (command instanceof OnOffType) {
+                if (OnOffType.ON.equals(command)) {
+                    activateIndicator(2, new int[] { 0, 255, 0 });
+                } else {
+                    deactivateIndicator(2);
+                }
+            }
+        } else if (channelUID.getId() == this.channelPrefix + CHANNEL_INDICATOR3) {
+            if (command instanceof OnOffType) {
+                if (OnOffType.ON.equals(command)) {
+                    activateIndicator(3, new int[] { 0, 255, 0 });
+                } else {
+                    deactivateIndicator(3);
+                }
+            }
         }
     }
 
@@ -120,12 +134,15 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         return this.basetopic;
     }
 
+    // TODO: When changing the config of an existing bridge this method is called twice!? The second time with the old
+    // parameters but only if basetopic or appLockTimeout is changed.
     @Override
     public void initialize() {
         BridgeConfigOptions config = getConfigAs(BridgeConfigOptions.class);
         this.basetopic = config.basetopic;
         this.appLockTimeout = config.appLockTimeout;
         this.discoverDefaultApps = config.discoverDefaultApps;
+        this.lowBatteryThreshold = new BigDecimal(config.lowBatteryThreshold);
         this.channelPrefix = thing.getUID() + ":";
         logger.debug(
                 "Configured handler with baseTopic {}, channelPrefix {}, appLockTimeout {}, discoverDefaultApps {}",
@@ -136,12 +153,12 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     @Override
     public void processMessage(String topic, byte[] payload) {
         String payloadString = new String(payload, StandardCharsets.UTF_8);
-        if (topic.endsWith(STATS_TOPIC)) {
+        if (topic.endsWith(TOPIC_STATS)) {
             if (thing.getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
             handleStatsMessage(payloadString);
-        } else if (topic.endsWith(STATS_CURRENT_APP_TOPIC)) {
+        } else if (topic.endsWith(TOPIC_STATS_CURRENT_APP)) {
             handleCurrentAppMessage(payloadString);
         } else if (topic.endsWith(TOPIC_SCREEN)) {
             handleScreenMessage(payloadString);
@@ -198,9 +215,9 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             this.connection = connection;
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Waiting for first MQTT message to be received.");
-            connection.subscribe(basetopic + STATS_TOPIC + "/#", this);
-            connection.subscribe(basetopic + STATS_CURRENT_APP_TOPIC + "/#", this);
-            connection.subscribe(basetopic + TOPIC_SCREEN + "/#", this);
+            connection.subscribe(this.basetopic + TOPIC_STATS + "/#", this);
+            connection.subscribe(this.basetopic + TOPIC_STATS_CURRENT_APP + "/#", this);
+            connection.subscribe(this.basetopic + TOPIC_SCREEN + "/#", this);
         }
         return;
     }
@@ -214,9 +231,9 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         leaveAppControlMode();
         MqttBrokerConnection localConnection = connection;
         if (localConnection != null) {
-            localConnection.unsubscribe(basetopic + STATS_TOPIC + "/#", this);
-            localConnection.unsubscribe(basetopic + STATS_CURRENT_APP_TOPIC + "/#", this);
-            localConnection.unsubscribe(basetopic + TOPIC_SCREEN + "/#", this);
+            localConnection.unsubscribe(this.basetopic + TOPIC_STATS + "/#", this);
+            localConnection.unsubscribe(this.basetopic + TOPIC_STATS_CURRENT_APP + "/#", this);
+            localConnection.unsubscribe(this.basetopic + TOPIC_SCREEN + "/#", this);
         }
     }
 
@@ -281,53 +298,46 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         sendMQTT(this.basetopic + "/custom/" + appName, "", true);
     }
 
-    private void blinkIndicator(String topic, int[] rgb, int blinkInMs) {
-        if (rgb.length == 3) {
-            sendMQTT(this.basetopic + topic,
+    private String getIndicatorTopic(int indicatorId) {
+        String indicatorTopic = "";
+        if (indicatorId == 1) {
+            indicatorTopic = TOPIC_INDICATOR1;
+        } else if (indicatorId == 2) {
+            indicatorTopic = TOPIC_INDICATOR2;
+        } else if (indicatorId == 3) {
+            indicatorTopic = TOPIC_INDICATOR3;
+        }
+        return indicatorTopic;
+    }
+
+    public void blinkIndicator(int id, int[] rgb, int blinkInMs) {
+        String indicatorTopic = getIndicatorTopic(id);
+        if (!"".equals(indicatorTopic) && rgb.length == 3) {
+            sendMQTT(this.basetopic + indicatorTopic,
                     "{\"color\":[" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "],\"fade\":" + blinkInMs + "}", false);
         }
     }
 
-    private void fadeIndicator(String topic, int[] rgb, int fadeInMs) {
-        if (rgb.length == 3) {
-            sendMQTT(this.basetopic + topic,
+    public void fadeIndicator(int id, int[] rgb, int fadeInMs) {
+        String indicatorTopic = getIndicatorTopic(id);
+        if (!"".equals(indicatorTopic) && rgb.length == 3) {
+            sendMQTT(this.basetopic + indicatorTopic,
                     "{\"color\":[" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "],\"fade\":" + fadeInMs + "}", false);
         }
     }
 
-    private void activateIndicator(String topic, int[] rgb) {
-        if (rgb.length == 3) {
-            sendMQTT(this.basetopic + topic, "{\"color\":[" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "]}", false);
+    public void activateIndicator(int id, int[] rgb) {
+        String indicatorTopic = getIndicatorTopic(id);
+        if (!"".equals(indicatorTopic) && rgb.length == 3) {
+            sendMQTT(this.basetopic + indicatorTopic, "{\"color\":[" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "]}",
+                    false);
         }
     }
 
-    private void deactivateIndicator(String topic) {
-        sendMQTT(this.basetopic + topic, "{\"color\":\"0\"}", false);
-    }
-
-    // TODO: Incomplete and not yet tested
-    private void handleIndicator(Command command, int indicator) {
-        // OnOff, IncreaseDecrease, Percent, HSB, Refresh
-        String topic = null;
-        if (indicator == 1) {
-            topic = INDICATOR1_TOPIC;
-        } else if (indicator == 2) {
-            topic = INDICATOR2_TOPIC;
-        } else if (indicator == 3) {
-            topic = INDICATOR3_TOPIC;
-        }
-        if (topic != null) {
-            if (command instanceof HSBType) {
-                int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                sendMQTT(this.basetopic + INDICATOR1_TOPIC,
-                        "{\"color\":[" + hsbToRgb[0] + "," + hsbToRgb[1] + "," + hsbToRgb[2] + "]}", false);
-            } else if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.OFF)) {
-                    sendMQTT(this.basetopic + INDICATOR1_TOPIC, "{\"color\":\"0\"}", false);
-                } else {
-                    // ???
-                }
-            }
+    public void deactivateIndicator(int id) {
+        String indicatorTopic = getIndicatorTopic(id);
+        if (!"".equals(indicatorTopic)) {
+            sendMQTT(this.basetopic + indicatorTopic, "{\"color\":\"0\"}", false);
         }
     }
 
@@ -380,10 +390,8 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             if (!this.appLock) {
                 if (alah.isButtonControlled()) {
                     if ("RELEASED".equals(event)) {
-                        // ATRANS Workaround -> Send commands to reset repeat (and duration?)
-                        // repeat = alah.getRepeat();
-                        // sendMQTT(this.basetopic + "/custom/" + this.currentApp, "{\"repeat\":-1}", false);
-                        sendMQTT(this.basetopic + TOPIC_SETTINGS, "{\"ATRANS\":false,\"BLOCKN\":true}", false);
+                        sendMQTT(this.basetopic + TOPIC_SETTINGS, "{\"" + FIELD_BRIDGE_SET_AUTO_TRANSITION
+                                + "\":false,\"" + FIELD_BRIDGE_SET_BLOCK_KEYS + "\":true}", false);
                         this.appLock = true;
                         scheduleAppLockTimeout();
                     }
@@ -396,7 +404,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     }
 
     private void scheduleAppLockTimeout() {
-        activateIndicator(INDICATOR3_TOPIC, new int[] { 255, 0, 0 });
+        activateIndicator(3, new int[] { 255, 0, 0 });
         Future<?> localSignalSchedule = this.scheduledFadeBeforeTimeout;
         if (localSignalSchedule != null && !localSignalSchedule.isCancelled() && !localSignalSchedule.isDone()) {
             localSignalSchedule.cancel(true);
@@ -425,17 +433,14 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         if (localSchedule != null && !localSchedule.isCancelled() && !localSchedule.isDone()) {
             localSchedule.cancel(true);
         }
-        deactivateIndicator(INDICATOR3_TOPIC);
-        sendMQTT(this.basetopic + TOPIC_SETTINGS, "{\"ATRANS\":true,\"BLOCKN\":false}", false);
-        // ATRANS Workaround
-        // if (this.repeat != null) {
-        // sendMQTT(this.basetopic + "/custom/" + this.currentApp, "{\"repeat\":" + this.repeat.intValue() + "}",
-        // false);
-        // }
+        deactivateIndicator(3);
+        sendMQTT(this.basetopic + TOPIC_SETTINGS,
+                "{\"" + FIELD_BRIDGE_SET_AUTO_TRANSITION + "\":true,\"" + FIELD_BRIDGE_SET_BLOCK_KEYS + "\":false}",
+                false);
     }
 
     private void signalLeaveAppControlMode() {
-        fadeIndicator(INDICATOR3_TOPIC, new int[] { 255, 0, 0 }, 500);
+        fadeIndicator(3, new int[] { 255, 0, 0 }, 500);
     }
 
     private void handleScreenMessage(String screenMessage) {
@@ -479,7 +484,8 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     if (value instanceof BigDecimal) {
                         updateState(new ChannelUID(channelPrefix + CHANNEL_BATTERY),
                                 new QuantityType<>((BigDecimal) value, Units.PERCENT));
-                        OnOffType lowBattery = ((BigDecimal) value).compareTo(LOW_BAT) <= 0 ? OnOffType.ON
+                        OnOffType lowBattery = ((BigDecimal) value).compareTo(this.lowBatteryThreshold) <= 0
+                                ? OnOffType.ON
                                 : OnOffType.OFF;
                         updateState(new ChannelUID(channelPrefix + CHANNEL_LOW_BATTERY), lowBattery);
                     }
@@ -536,15 +542,15 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     break;
                 case FIELD_BRIDGE_INDICATOR1:
                     OnOffType indicator1 = (Boolean) value ? OnOffType.ON : OnOffType.OFF;
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR1_COLOR), indicator1);
+                    updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR1), indicator1);
                     break;
                 case FIELD_BRIDGE_INDICATOR2:
                     OnOffType indicator2 = (Boolean) value ? OnOffType.ON : OnOffType.OFF;
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR2_COLOR), indicator2);
+                    updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR2), indicator2);
                     break;
                 case FIELD_BRIDGE_INDICATOR3:
                     OnOffType indicator3 = (Boolean) value ? OnOffType.ON : OnOffType.OFF;
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR3_COLOR), indicator3);
+                    updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR3), indicator3);
                     break;
                 case FIELD_BRIDGE_APP:
                     updateState(new ChannelUID(channelPrefix + CHANNEL_APP), new StringType((String) value));

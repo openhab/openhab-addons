@@ -15,7 +15,7 @@ package org.openhab.binding.mqtt.awtrixlight.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link BridgeConfigOptions} Holds the config for the settings.
+ * The {@link BridgeConfigOptions} Holds the config for the bridge settings.
  *
  * @author Thomas Lauterbach - Initial contribution
  */
@@ -23,5 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class BridgeConfigOptions {
     public String basetopic = "awtrix";
     public int appLockTimeout = 10;
-    public boolean discoverDefaultApps = true;
+    public boolean discoverDefaultApps = false;
+    public int lowBatteryThreshold = 25;
 }

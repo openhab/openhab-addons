@@ -54,6 +54,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -87,8 +88,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AwtrixLightAppHandler} is responsible for handling commands of the globes, which are then
- * sent to one of the bridges to be sent out by MQTT.
+ * The {@link AwtrixLightAppHandler} is responsible for handling commands for an app and will send mqtt messages to
+ * update the app configuration on the awtrix clock. It will also emit trigger events as long as the app is locked on
+ * the clock.
  *
  * @author Thomas Lauterbach - Initial contribution
  */
@@ -355,6 +357,14 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     @Override
     public void channelLinked(ChannelUID channelUID) {
         initStates();
+    }
+
+    @Override
+    public void dispose() {
+        Future<?> localFinishJob = this.finishInitJob;
+        if (localFinishJob != null && !localFinishJob.isCancelled() && !localFinishJob.isDone()) {
+            localFinishJob.cancel(true);
+        }
     }
 
     @Override

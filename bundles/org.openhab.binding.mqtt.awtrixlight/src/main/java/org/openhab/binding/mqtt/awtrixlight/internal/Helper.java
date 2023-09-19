@@ -38,7 +38,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 /**
- * The {@link Helper} Removes the need for any external JSON libs
+ * The {@link Helper} Various helper methods used througout the binding
  *
  * @author Thomas Lauterbach - Initial contribution
  */
@@ -47,10 +47,6 @@ public class Helper {
 
     private static final Logger logger = LoggerFactory.getLogger(Helper.class);
 
-    /**
-     * convertJson will return a map with key value pairs retrieved from a simple json message.
-     *
-     */
     public static HashMap<String, Object> decodeJson(String messageJSON) {
         HashMap<String, Object> results = new HashMap<String, Object>();
         JsonElement parsed = JsonParser.parseString(messageJSON);
@@ -110,24 +106,8 @@ public class Helper {
         return results;
     }
 
-    private static BigDecimal[] decodeJsonPrimitiveArray(JsonArray jsonArray) {
-        BigDecimal[] array = new BigDecimal[jsonArray.size()];
-        Iterator<?> iterator = jsonArray.iterator();
-        int i = 0;
-        while (iterator.hasNext()) {
-            JsonElement arrayElement = (JsonElement) iterator.next();
-            if (arrayElement != null && arrayElement.isJsonPrimitive()) {
-                JsonPrimitive jsonPrimitive = arrayElement.getAsJsonPrimitive();
-                array[i] = jsonPrimitive.getAsBigDecimal();
-            }
-            i += 1;
-        }
-        return array;
-    }
-
     public static String encodeJson(Map<String, Object> params) {
         String json = new Gson().toJson(params);
-
         return json == null ? "" : json;
     }
 
@@ -181,5 +161,20 @@ public class Helper {
             logger.error("Failed to decode image", e);
         }
         return bytes == null ? new byte[0] : bytes;
+    }
+
+    private static BigDecimal[] decodeJsonPrimitiveArray(JsonArray jsonArray) {
+        BigDecimal[] array = new BigDecimal[jsonArray.size()];
+        Iterator<?> iterator = jsonArray.iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+            JsonElement arrayElement = (JsonElement) iterator.next();
+            if (arrayElement != null && arrayElement.isJsonPrimitive()) {
+                JsonPrimitive jsonPrimitive = arrayElement.getAsJsonPrimitive();
+                array[i] = jsonPrimitive.getAsBigDecimal();
+            }
+            i += 1;
+        }
+        return array;
     }
 }

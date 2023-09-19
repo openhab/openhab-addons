@@ -28,19 +28,15 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AwtrixLightDiscoveryService} is responsible for finding awtrix
- * clocks and setting them up for the handlers.
+ * The {@link AwtrixLightBridgeDiscoveryService} is responsible for finding awtrix
+ * apps and setting them up for the handlers.
  *
  * @author Thomas Lauterbach - Initial contribution
  */
 @NonNullByDefault
 public class AwtrixLightBridgeDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Nullable
     AwtrixLightBridgeHandler bridgeHandler = null;
@@ -57,16 +53,6 @@ public class AwtrixLightBridgeDiscoveryService extends AbstractDiscoveryService 
             if (bridgeHardwareId != null) {
                 publishApp(localHandler.getThing().getUID(), bridgeHardwareId, baseTopic, appName);
             }
-        }
-    }
-
-    void publishApp(ThingUID connectionBridgeUid, String bridgeHardwareId, String basetopic, String appName) {
-        if (bridgeHardwareId != null && appName != null) {
-            String appId = bridgeHardwareId + "-" + appName;
-            thingDiscovered(DiscoveryResultBuilder
-                    .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_APP), connectionBridgeUid, appName))
-                    .withBridge(connectionBridgeUid).withProperty(PROP_APPID, appId).withProperty(PROP_APPNAME, appName)
-                    .withRepresentationProperty(PROP_APPID).withLabel("Awtrix App " + appName).build());
         }
     }
 
@@ -95,5 +81,15 @@ public class AwtrixLightBridgeDiscoveryService extends AbstractDiscoveryService 
     @Override
     protected void startScan() {
         // Do nothing. We get results pushed in from the bridge as they come
+    }
+
+    void publishApp(ThingUID connectionBridgeUid, String bridgeHardwareId, String basetopic, String appName) {
+        if (bridgeHardwareId != null && appName != null) {
+            String appId = bridgeHardwareId + "-" + appName;
+            thingDiscovered(DiscoveryResultBuilder
+                    .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_APP), connectionBridgeUid, appName))
+                    .withBridge(connectionBridgeUid).withProperty(PROP_APPID, appId).withProperty(PROP_APPNAME, appName)
+                    .withRepresentationProperty(PROP_APPID).withLabel("Awtrix App " + appName).build());
+        }
     }
 }
