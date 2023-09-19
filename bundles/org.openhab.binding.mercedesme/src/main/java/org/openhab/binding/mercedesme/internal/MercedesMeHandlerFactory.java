@@ -97,14 +97,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             Mapper.defaultSpeedUnit = ImperialUnits.MILES_PER_HOUR;
         }
 
-        httpClient = hcf.createHttpClient(Constants.BINDING_ID);
-        // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
-        // httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.warn("HTTP client not started: {} - no web access possible!", e.getLocalizedMessage());
-        }
+        httpClient = hcf.getCommonHttpClient();
         discoveryService = new MercedesMeDiscoveryService();
     }
 
@@ -134,11 +127,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         super.deactivate(componentContext);
         if (discoveryServiceReg != null) {
             discoveryServiceReg.unregister();
-        }
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            logger.debug("HTTP client not stopped: {}", e.getLocalizedMessage());
         }
     }
 }
