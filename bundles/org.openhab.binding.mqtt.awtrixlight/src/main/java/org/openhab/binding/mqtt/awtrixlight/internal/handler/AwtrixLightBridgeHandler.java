@@ -13,7 +13,62 @@
 
 package org.openhab.binding.mqtt.awtrixlight.internal.handler;
 
-import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_APP;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BATTERY;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BRIGHTNESS;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BUTLEFT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BUTRIGHT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BUTSELECT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_DISPLAY;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_HUMIDITY;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_INDICATOR1;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_INDICATOR2;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_INDICATOR3;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_LOW_BATTERY;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_LUX;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_RSSI;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_SCREEN;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.DEFAULT_APPS;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_APP;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_BATTERY;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_BATTERY_RAW;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_BRIGHTNESS;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_FIRMWARE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_HUMIDITY;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_INDICATOR1;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_INDICATOR2;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_INDICATOR3;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_LDR_RAW;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_LUX;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_MESSAGES;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_RAM;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_SET_AUTO_TRANSITION;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_SET_BLOCK_KEYS;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_TEMPERATURE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_TYPE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_UID;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_UPTIME;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_WIFI_SIGNAL;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_FIRMWARE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_UNIQUEID;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_VENDOR;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_BUTLEFT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_BUTRIGHT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_BUTSELECT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_INDICATOR1;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_INDICATOR2;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_INDICATOR3;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_POWER;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_REBOOT;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_SCREEN;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_SEND_SCREEN;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_SETTINGS;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_SOUND;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_STATS;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_STATS_CURRENT_APP;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_UPGRADE;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -98,37 +153,42 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         logger.debug("Received command {} of type {} via channel {}", command, command.getClass(),
                 channelUID.getAsString());
         if (command instanceof RefreshType) {
-            if ((this.channelPrefix + CHANNEL_SCREEN).equals(channelUID.getAsString())) {
+            if (CHANNEL_SCREEN.equals(channelUID.getId())) {
                 sendMQTT(this.basetopic + TOPIC_SEND_SCREEN, "", false);
             }
             return;
         }
-        if ((this.channelPrefix + CHANNEL_DISPLAY).equals(channelUID.getId())) {
-            handleDisplay(command);
-        } else if ((this.channelPrefix + CHANNEL_INDICATOR1).equals(channelUID.getAsString())) {
-            if (command instanceof OnOffType) {
-                if (OnOffType.ON.equals(command)) {
-                    activateIndicator(1, new int[] { 0, 255, 0 });
-                } else {
-                    deactivateIndicator(1);
+        switch (channelUID.getId()) {
+            case CHANNEL_DISPLAY:
+                handleDisplay(command);
+                break;
+            case CHANNEL_INDICATOR1:
+                if (command instanceof OnOffType) {
+                    if (OnOffType.ON.equals(command)) {
+                        activateIndicator(1, new int[] { 0, 255, 0 });
+                    } else {
+                        deactivateIndicator(1);
+                    }
                 }
-            }
-        } else if ((this.channelPrefix + CHANNEL_INDICATOR2).equals(channelUID.getAsString())) {
-            if (command instanceof OnOffType) {
-                if (OnOffType.ON.equals(command)) {
-                    activateIndicator(2, new int[] { 0, 255, 0 });
-                } else {
-                    deactivateIndicator(2);
+                break;
+            case CHANNEL_INDICATOR2:
+                if (command instanceof OnOffType) {
+                    if (OnOffType.ON.equals(command)) {
+                        activateIndicator(2, new int[] { 0, 255, 0 });
+                    } else {
+                        deactivateIndicator(2);
+                    }
                 }
-            }
-        } else if ((this.channelPrefix + CHANNEL_INDICATOR3).equals(channelUID.getAsString())) {
-            if (command instanceof OnOffType) {
-                if (OnOffType.ON.equals(command)) {
-                    activateIndicator(3, new int[] { 0, 255, 0 });
-                } else {
-                    deactivateIndicator(3);
+                break;
+            case CHANNEL_INDICATOR3:
+                if (command instanceof OnOffType) {
+                    if (OnOffType.ON.equals(command)) {
+                        activateIndicator(3, new int[] { 0, 255, 0 });
+                    } else {
+                        deactivateIndicator(3);
+                    }
                 }
-            }
+                break;
         }
     }
 
@@ -283,7 +343,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         this.sendMQTT(TOPIC_UPGRADE, "", false);
     }
 
-    public void addAppDiscoveryCallback(AwtrixLightBridgeDiscoveryService awtrixLightBridgeDiscoveryService) {
+    public void setAppDiscoveryCallback(AwtrixLightBridgeDiscoveryService awtrixLightBridgeDiscoveryService) {
         this.discoveryCallback = awtrixLightBridgeDiscoveryService;
     }
 
@@ -316,7 +376,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         String indicatorTopic = getIndicatorTopic(id);
         if (!"".equals(indicatorTopic) && rgb.length == 3) {
             sendMQTT(this.basetopic + indicatorTopic,
-                    "{\"color\":[" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "],\"fade\":" + blinkInMs + "}", false);
+                    "{\"color\":[" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "],\"blink\":" + blinkInMs + "}", false);
         }
     }
 
