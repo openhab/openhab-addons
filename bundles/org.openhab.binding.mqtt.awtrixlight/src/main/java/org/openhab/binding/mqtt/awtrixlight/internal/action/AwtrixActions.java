@@ -42,17 +42,59 @@ public class AwtrixActions implements ThingActions {
         return handler;
     }
 
+    @RuleAction(label = "Blink Indicator", description = "Blink indicator with indicatorId")
+    public void blinkIndicator(int indicatorId, int[] rgb, int blinkTimeInMs) {
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.blinkIndicator(indicatorId, rgb, blinkTimeInMs);
+        }
+    }
+
+    @RuleAction(label = "Fade Indicator", description = "Fade indicator with indicatorId")
+    public void fadeIndicator(int indicatorId, int[] rgb, int fadeTimeInMs) {
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.fadeIndicator(indicatorId, rgb, fadeTimeInMs);
+        }
+    }
+
+    @RuleAction(label = "Activate Indicator", description = "Turn on indicator with indicatorId")
+    public void activateIndicator(int indicatorId, int[] rgb) {
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.activateIndicator(indicatorId, rgb);
+        }
+    }
+
+    @RuleAction(label = "Deactivate Indicator", description = "Turn off indicator with indicatorId")
+    public void deactivateIndicator(int indicatorId) {
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.deactivateIndicator(indicatorId);
+        }
+    }
+
     @RuleAction(label = "Reboot", description = "Reboots the device")
     public void reboot() {
-        if (this.handler != null) {
-            this.handler.reboot();
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.reboot();
         }
     }
 
     @RuleAction(label = "Upgrade", description = "Performs firmware upgrade")
     public void upgrade() {
-        if (this.handler != null) {
-            this.handler.upgrade();
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.upgrade();
+        }
+    }
+
+    @RuleAction(label = "Play Sound", description = "Plays the sound file with given name (without extension) if it exists")
+    public void playSound(String melody) {
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.playSound(melody);
         }
     }
 }

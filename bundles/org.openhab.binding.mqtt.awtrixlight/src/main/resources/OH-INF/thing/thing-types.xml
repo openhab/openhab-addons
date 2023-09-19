@@ -8,26 +8,28 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
 		</supported-bridge-type-refs>
-		<label>Awtrix Light device</label>
+		<label>Awtrix Light Device</label>
 		<description>Device with Awtrix Light firmware</description>
 		<category>screen</category>
 		<channels>
 			<channel id="batterylevel" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
-			<channel id="display" typeId="system.power"/>
+			<channel id="display" typeId="system.power">
+				<autoUpdatePolicy>recommend</autoUpdatePolicy>
+			</channel>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
 			<channel id="lux" typeId="lux"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="temperature" typeId="system.indoor-temperature"/>
 			<channel id="rssi" typeId="rssi"/>
-			<channel id="indicator1-color" typeId="indicator-color"/>
-			<channel id="indicator2-color" typeId="indicator-color"/>
-			<channel id="indicator3-color" typeId="indicator-color"/>
 			<channel id="app" typeId="app"/>
 			<channel id="screen" typeId="screen"/>
 			<channel id="buttonleft" typeId="system.rawbutton"/>
 			<channel id="buttonright" typeId="system.rawbutton"/>
 			<channel id="buttonselect" typeId="system.rawbutton"/>
+			<channel id="indicator1" typeId="indicator"/>
+			<channel id="indicator2" typeId="indicator"/>
+			<channel id="indicator3" typeId="indicator"/>
 		</channels>
 		<properties>
 			<property name="vendor"></property>
@@ -42,12 +44,16 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="awtrixclock"/>
 		</supported-bridge-type-refs>
-		<label>Awtrix clock app</label>
+		<label>Awtrix App</label>
 		<description>An app for an Awtrix Light device</description>
 		<category>screen</category>
 		<channels>
-			<channel id="active" typeId="system.power"/>
-			<channel id="reset" typeId="reset"/>
+			<channel id="active" typeId="system.power">
+				<autoUpdatePolicy>recommend</autoUpdatePolicy>
+			</channel>
+			<channel id="reset" typeId="reset">
+				<autoUpdatePolicy>recommend</autoUpdatePolicy>
+			</channel>
 			<channel id="buttonControl" typeId="buttonControl"/>
 			<channel id="text" typeId="text"/>
 			<channel id="textCase" typeId="textCase"/>
@@ -62,7 +68,6 @@
 			<channel id="rainbow" typeId="rainbow"/>
 			<channel id="icon" typeId="icon"/>
 			<channel id="pushIcon" typeId="pushIcon"/>
-			<!--<channel id="repeat" typeId="repeat"/> -->
 			<channel id="duration" typeId="duration"/>
 			<channel id="line" typeId="line"/>
 			<channel id="bar" typeId="bar"/>
@@ -101,7 +106,7 @@
 	<channel-type id="brightness">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Display Brightness</label>
-		<description>Brightness in Percent</description>
+		<description>Screen brightness in percent</description>
 		<category>screen</category>
 		<tags>
 			<tag>Control</tag>
@@ -123,23 +128,12 @@
 
 	<channel-type id="indicator">
 		<item-type>Switch</item-type>
-		<label>Indicator light</label>
-		<description>Multi purpose indicator on screen</description>
-		<category>siren</category>
+		<label>Indicator</label>
+		<description>Indicator state</description>
+		<category>switch</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
-	</channel-type>
-
-	<channel-type id="indicator-color">
-		<item-type>Color</item-type>
-		<label>Display color</label>
-		<description>Color of the indicator light</description>
-		<category>colorlight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -157,80 +151,104 @@
 	<channel-type id="screen">
 		<item-type>Image</item-type>
 		<label>Screen Mirror</label>
-		<description>Mirrored screen image from the clock</description>
+		<description><![CDATA[
+			Mirror screen image from the clock.
+			By default only refreshed on app change. Refresh can be also triggered with a RefreshType command.
+			]]>
+		</description>
 		<category>screen</category>
 		<tags>
 			<tag>Status</tag>
 		</tags>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="appType">
-		<item-type>String</item-type>
-		<label>App Type</label>
-		<description>Choose depending on the type of information you want to display</description>
-		<state>
-			<options>
-				<option value="TEXT">Displays text</option>
-				<option value="CHART">Displays a bar or line chart</option>
-				<option value="PROGRESS">Displays a progress bar</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<description>Color to display text and charts on the screen</description>
+		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
 
-	<channel-type id="sync">
+	<channel-type id="sync" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Synchronize</label>
 		<description>Synchronizes the states of connected items with the current clock configuration</description>
+		<category>switch</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="buttonControl">
 		<item-type>Switch</item-type>
 		<label>Use buttons</label>
-		<description>Middle button locks on the current app. Subsequent button presses can be used to control the app. Long
-			press on middle buttons continues app flow.</description>
+		<description><![CDATA[
+			Middle button locks on the current app.
+			Subsequent button presses can be used to control the app. App flow continues after app lock timeout
+			has been reached as configured for the clock.
+			]]>
+		</description>
+		<category>switch</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
-	<channel-type id="reset">
+	<channel-type id="reset" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Reset</label>
-		<description>Resets the app to the default settings</description>
+		<description>Resets the app and the linked items to the default settings</description>
+		<category>switch</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="background">
 		<item-type>Color</item-type>
 		<label>Background Color</label>
 		<description>Color for display background</description>
+		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="gradientColor">
 		<item-type>Color</item-type>
 		<label>Gradient Color</label>
 		<description>Color text as gradient from Color to Gradient Color</description>
+		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
-
-	<!-- <channel-type id="repeat">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Repeat information</label>
-		<description>Number of times the text scrolls through the display</description>
-		</channel-type> -->
 
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>How long the app should be displayed</description>
+		<category>time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="effect">
 		<item-type>String</item-type>
 		<label>Background effect</label>
 		<description>Effect shown in the background of the app</description>
+		<category>screen</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="None">None</option>
@@ -260,6 +278,11 @@
 		<item-type>String</item-type>
 		<label>Effect Color Palette</label>
 		<description>Changes the color scheme of the effect settings</description>
+		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="None">None</option>
@@ -275,28 +298,45 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="effectBlend">
+	<channel-type id="effectBlend" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Smooth Effects</label>
 		<description>Smoother effect animations</description>
+		<category>switch</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
-	<channel-type id="effectSpeed">
+	<channel-type id="effectSpeed" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Background effect speed</label>
 		<description>Playback speed of background animations</description>
+		<category>time</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="text">
 		<item-type>String</item-type>
 		<label>Display Text</label>
 		<description>Text displayed in the app</description>
+		<category>text</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 
-	<channel-type id="textCase">
+	<channel-type id="textCase" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Text Case</label>
 		<description>Change case of displayed text. Default uses the global preset.</description>
+		<category>text</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Default</option>
@@ -306,78 +346,129 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="textOffset">
+	<channel-type id="textOffset" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Text Offset</label>
 		<description>Offset on x-axis in pixel for displayed text</description>
+		<category>text</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
-	<channel-type id="topText">
+	<channel-type id="topText" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Show text on top</label>
 		<description>Draws the text on the top of the display</description>
+		<category>text</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="blinkText">
 		<item-type>Number:Time</item-type>
 		<label>Blink Text</label>
-		<description>Blink text in specified interval</description>
-		<state min="0" max="5" step="0.1" pattern="%.1f s" readOnly="false"/>
+		<description>Blink text in specified time interval</description>
+		<category>text</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state step="0.1" pattern="%.1f s" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="fadeText">
 		<item-type>Number:Time</item-type>
 		<label>Fade Text</label>
 		<description>Fade text in specified interval</description>
-		<state min="0" max="5" step="0.1" pattern="%.1f s" readOnly="false"/>
+		<category>text</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state step="0.1" pattern="%.1f s" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="rainbow">
 		<item-type>Switch</item-type>
 		<label>Rainbow Color</label>
 		<description>Fades the text color in rainbow colors</description>
+		<category>text</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
-	<channel-type id="center">
+	<channel-type id="center" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Center short texts</label>
 		<description>Short texts will be centered instead of scrolling</description>
+		<category>text</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="icon">
 		<item-type>String</item-type>
 		<label>Icon</label>
 		<description>Icon ID or filename without extension</description>
+		<category>screen</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="pushIcon">
 		<item-type>Switch</item-type>
 		<label>Scroll Icon</label>
 		<description>Make the icon scroll along with the text</description>
+		<category>screen</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="line">
 		<item-type>String</item-type>
 		<label>Line Graph</label>
 		<description>Draw a line graph (format: "value1,value2,value3", last 16 entries will be displayed, last 11 with icon)</description>
+		<category>qualityofservice</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="bar">
 		<item-type>String</item-type>
 		<label>Bar Graph</label>
 		<description>Draw a bar graph (format: "value1,value2,value3", last 16 entries will be displayed, last 11 with icon)</description>
+		<category>qualityofservice</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
-	<channel-type id="autoscale">
+	<channel-type id="autoscale" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Autoscale graphs</label>
 		<description>Automatically scales graphs to fit onto display</description>
+		<category>qualityofservice</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="progress">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Progress Bar</label>
 		<description>Show progress bar with specified percentage</description>
+		<category>qualityofservice</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state min="0" max="100"/>
 	</channel-type>
 
@@ -385,18 +476,31 @@
 		<item-type>Color</item-type>
 		<label>Progress Bar Color</label>
 		<description>Color of progress bar</description>
+		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="progressBackground">
 		<item-type>Color</item-type>
 		<label>Progress Bar Background Color</label>
 		<description>Color of progress bar background</description>
+		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="scrollSpeed">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Scroll Speed</label>
 		<description>Speed of text scrolling as percentage of default speed</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

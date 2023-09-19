@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.awtrixlight.internal.Helper;
 
 /**
- * The {@link AwtrixApp} is the representation of the current app configuration and provides methods to create a config
+ * The {@link AwtrixApp} is the representation of the current app configuration and provides a method to create a config
  * string for the clock.
  *
  * @author Thomas Lauterbach - Initial contribution
@@ -45,7 +45,6 @@ public class AwtrixApp {
     public static final boolean DEFAULT_RAINBOW = false;
     public static final String DEFAULT_ICON = "None";
     public static final boolean DEFAULT_PUSHICON = false;
-    // public static final BigDecimal DEFAULT_REPEAT = new BigDecimal(-1);
     public static final BigDecimal DEFAULT_DURATION = new BigDecimal(7);
     public static final BigDecimal[] DEFAULT_LINE = {};
     public static final BigDecimal[] DEFAULT_BAR = {};
@@ -72,7 +71,6 @@ public class AwtrixApp {
     private boolean rainbow = DEFAULT_RAINBOW;
     private String icon = DEFAULT_ICON;
     private boolean pushIcon = DEFAULT_PUSHICON;
-    // private BigDecimal repeat = DEFAULT_REPEAT;
     private BigDecimal duration = DEFAULT_DURATION;
     private BigDecimal[] line = DEFAULT_LINE;
     private BigDecimal[] bar = DEFAULT_BAR;
@@ -102,7 +100,6 @@ public class AwtrixApp {
         this.rainbow = getBoolValue(params, "rainbow", false);
         this.icon = getStringValue(params, "icon", "None");
         this.pushIcon = getBoolValue(params, "pushIcon", false);
-        // this.repeat = getNumberValue(params, "repeat", new BigDecimal(1));
         this.duration = getNumberValue(params, "duration", new BigDecimal(5));
         this.line = getNumberArrayValue(params, "line", new BigDecimal[0]);
         this.bar = getNumberArrayValue(params, "bar", new BigDecimal[0]);
@@ -121,6 +118,246 @@ public class AwtrixApp {
         this.effectSpeed = getNumberValue(effectSettingsValues, "effectSpeed", new BigDecimal(-1));
         this.effectPalette = getStringValue(effectSettingsValues, "effectPalette", "None");
         this.effectBlend = getBoolValue(params, "effectBlend", true);
+    }
+
+    public String getAppConfig() {
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("text", this.text);
+        fields.put("textCase", this.textCase);
+        fields.put("topText", this.topText);
+        fields.put("textOffset", this.textOffset);
+        fields.put("center", this.center);
+        fields.putAll(getColorConfig());
+        fields.putAll(getTextEffectConfig());
+        fields.putAll(getBackgroundConfig());
+        fields.putAll(getIconConfig());
+        fields.put("duration", this.duration);
+        fields.putAll(getGraphConfig());
+        fields.putAll(getProgressConfig());
+        if (this.scrollSpeed.compareTo(BigDecimal.ZERO) == 0) {
+            fields.put("noScroll", true);
+        } else {
+            fields.put("scrollSpeed", this.scrollSpeed);
+        }
+        fields.putAll(getEffectConfig());
+        return Helper.encodeJson(fields);
+    }
+
+    public String getText() {
+        return this.text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public BigDecimal getTextCase() {
+        return this.textCase;
+    }
+
+    public void setTextCase(BigDecimal textCase) {
+        this.textCase = textCase;
+    }
+
+    public Boolean getTopText() {
+        return this.topText;
+    }
+
+    public void setTopText(Boolean topText) {
+        this.topText = topText;
+    }
+
+    public BigDecimal getTextOffset() {
+        return this.textOffset;
+    }
+
+    public void setTextOffset(BigDecimal textOffset) {
+        this.textOffset = textOffset;
+    }
+
+    public Boolean getCenter() {
+        return this.center;
+    }
+
+    public void setCenter(Boolean center) {
+        this.center = center;
+    }
+
+    public BigDecimal[] getColor() {
+        return this.color;
+    }
+
+    public void setColor(BigDecimal[] color) {
+        this.color = color;
+    }
+
+    public BigDecimal[] getGradient() {
+        return this.gradient;
+    }
+
+    public void setGradient(BigDecimal[] gradient) {
+        this.gradient = gradient;
+    }
+
+    public BigDecimal getBlinkText() {
+        return this.blinkText;
+    }
+
+    public void setBlinkText(BigDecimal blinkText) {
+        this.blinkText = blinkText;
+    }
+
+    public BigDecimal getFadeText() {
+        return this.fadeText;
+    }
+
+    public void setFadeText(BigDecimal fadeText) {
+        this.fadeText = fadeText;
+    }
+
+    public BigDecimal[] getBackground() {
+        return this.background;
+    }
+
+    public void setBackground(BigDecimal[] background) {
+        this.background = background;
+    }
+
+    public Boolean getRainbow() {
+        return this.rainbow;
+    }
+
+    public void setRainbow(Boolean rainbow) {
+        this.rainbow = rainbow;
+    }
+
+    public String getIcon() {
+        return this.icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public Boolean getPushIcon() {
+        return this.pushIcon;
+    }
+
+    public void setPushIcon(Boolean pushIcon) {
+        this.pushIcon = pushIcon;
+    }
+
+    public BigDecimal getDuration() {
+        return this.duration;
+    }
+
+    public void setDuration(BigDecimal duration) {
+        this.duration = duration;
+    }
+
+    public BigDecimal[] getLine() {
+        return this.line;
+    }
+
+    public void setLine(BigDecimal[] line) {
+        this.line = line;
+    }
+
+    public BigDecimal[] getBar() {
+        return this.bar;
+    }
+
+    public void setBar(BigDecimal[] bar) {
+        this.bar = bar;
+    }
+
+    public Boolean getAutoscale() {
+        return this.autoscale;
+    }
+
+    public void setAutoscale(Boolean autoscale) {
+        this.autoscale = autoscale;
+    }
+
+    public BigDecimal getProgress() {
+        return this.progress;
+    }
+
+    public void setProgress(BigDecimal progress) {
+        this.progress = progress;
+    }
+
+    public BigDecimal[] getProgressC() {
+        return this.progressC;
+    }
+
+    @Override
+    public String toString() {
+        return "AwtrixApp [text=" + text + ", textCase=" + textCase + ", topText=" + topText + ", textOffset="
+                + textOffset + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient="
+                + Arrays.toString(gradient) + ", blinkText=" + blinkText + ", fadeText=" + fadeText + ", background="
+                + Arrays.toString(background) + ", rainbow=" + rainbow + ", icon=" + icon + ", pushIcon=" + pushIcon
+                + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", bar=" + Arrays.toString(bar)
+                + ", autoscale=" + autoscale + ", progress=" + progress + ", progressC=" + Arrays.toString(progressC)
+                + ", progressBC=" + Arrays.toString(progressBC) + ", scrollSpeed=" + scrollSpeed + ", effect=" + effect
+                + ", effectSpeed=" + effectSpeed + ", effectPalette=" + effectPalette + ", effectBlend=" + effectBlend
+                + "]";
+    }
+
+    public BigDecimal[] setProgressC() {
+        return this.progressC;
+    }
+
+    public void setProgressC(BigDecimal[] progressC) {
+        this.progressC = progressC;
+    }
+
+    public BigDecimal[] getProgressBC() {
+        return this.progressBC;
+    }
+
+    public void setProgressBC(BigDecimal[] progressBC) {
+        this.progressBC = progressBC;
+    }
+
+    public BigDecimal getScrollSpeed() {
+        return this.scrollSpeed;
+    }
+
+    public void setScrollSpeed(BigDecimal scrollSpeed) {
+        this.scrollSpeed = scrollSpeed;
+    }
+
+    public String getEffect() {
+        return this.effect;
+    }
+
+    public void setEffect(String effect) {
+        this.effect = effect;
+    }
+
+    public BigDecimal getEffectSpeed() {
+        return this.effectSpeed;
+    }
+
+    public void setEffectSpeed(BigDecimal effectSpeed) {
+        this.effectSpeed = effectSpeed;
+    }
+
+    public String getEffectPalette() {
+        return this.effectPalette;
+    }
+
+    public void setEffectPalette(String effectPalette) {
+        this.effectPalette = effectPalette;
+    }
+
+    public Boolean getEffectBlend() {
+        return this.effectBlend;
+    }
+
+    public void setEffectBlend(Boolean effectBlend) {
+        this.effectBlend = effectBlend;
     }
 
     private boolean getBoolValue(Map<String, Object> params, String key, boolean defaultValue) {
@@ -202,30 +439,6 @@ public class AwtrixApp {
             }
         }
         return defaultValue;
-    }
-
-    public String getAppConfig() {
-        Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put("text", this.text);
-        fields.put("textCase", this.textCase);
-        fields.put("topText", this.topText);
-        fields.put("textOffset", this.textOffset);
-        fields.put("center", this.center);
-        fields.putAll(getColorConfig());
-        fields.putAll(getTextEffectConfig());
-        fields.putAll(getBackgroundConfig());
-        fields.putAll(getIconConfig());
-        // fields.put("repeat", this.repeat);
-        fields.put("duration", this.duration);
-        fields.putAll(getGraphConfig());
-        fields.putAll(getProgressConfig());
-        if (this.scrollSpeed.compareTo(BigDecimal.ZERO) == 0) {
-            fields.put("noScroll", true);
-        } else {
-            fields.put("scrollSpeed", this.scrollSpeed);
-        }
-        fields.putAll(getEffectConfig());
-        return Helper.encodeJson(fields);
     }
 
     private Map<String, Object> getColorConfig() {
@@ -342,239 +555,5 @@ public class AwtrixApp {
             fields.put("effectSettings", effectSettings);
         }
         return fields;
-    }
-
-    public String getText() {
-        return this.text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public BigDecimal getTextCase() {
-        return this.textCase;
-    }
-
-    public void setTextCase(BigDecimal textCase) {
-        this.textCase = textCase;
-    }
-
-    public Boolean getTopText() {
-        return this.topText;
-    }
-
-    public void setTopText(Boolean topText) {
-        this.topText = topText;
-    }
-
-    public BigDecimal getTextOffset() {
-        return this.textOffset;
-    }
-
-    public void setTextOffset(BigDecimal textOffset) {
-        this.textOffset = textOffset;
-    }
-
-    public Boolean getCenter() {
-        return this.center;
-    }
-
-    public void setCenter(Boolean center) {
-        this.center = center;
-    }
-
-    public BigDecimal[] getColor() {
-        return this.color;
-    }
-
-    public void setColor(BigDecimal[] color) {
-        this.color = color;
-    }
-
-    public BigDecimal[] getGradient() {
-        return this.gradient;
-    }
-
-    public void setGradient(BigDecimal[] gradient) {
-        this.gradient = gradient;
-    }
-
-    public BigDecimal getBlinkText() {
-        return this.blinkText;
-    }
-
-    public void setBlinkText(BigDecimal blinkText) {
-        this.blinkText = blinkText;
-    }
-
-    public BigDecimal getFadeText() {
-        return this.fadeText;
-    }
-
-    public void setFadeText(BigDecimal fadeText) {
-        this.fadeText = fadeText;
-    }
-
-    public BigDecimal[] getBackground() {
-        return this.background;
-    }
-
-    public void setBackground(BigDecimal[] background) {
-        this.background = background;
-    }
-
-    public Boolean getRainbow() {
-        return this.rainbow;
-    }
-
-    public void setRainbow(Boolean rainbow) {
-        this.rainbow = rainbow;
-    }
-
-    public String getIcon() {
-        return this.icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public Boolean getPushIcon() {
-        return this.pushIcon;
-    }
-
-    public void setPushIcon(Boolean pushIcon) {
-        this.pushIcon = pushIcon;
-    }
-
-    // public BigDecimal getRepeat() {
-    // return this.repeat;
-    // }
-
-    // public void setRepeat(BigDecimal repeat) {
-    // this.repeat = repeat;
-    // }
-
-    public BigDecimal getDuration() {
-        return this.duration;
-    }
-
-    public void setDuration(BigDecimal duration) {
-        this.duration = duration;
-    }
-
-    public BigDecimal[] getLine() {
-        return this.line;
-    }
-
-    public void setLine(BigDecimal[] line) {
-        this.line = line;
-    }
-
-    public BigDecimal[] getBar() {
-        return this.bar;
-    }
-
-    public void setBar(BigDecimal[] bar) {
-        this.bar = bar;
-    }
-
-    public Boolean getAutoscale() {
-        return this.autoscale;
-    }
-
-    public void setAutoscale(Boolean autoscale) {
-        this.autoscale = autoscale;
-    }
-
-    public BigDecimal getProgress() {
-        return this.progress;
-    }
-
-    public void setProgress(BigDecimal progress) {
-        this.progress = progress;
-    }
-
-    public BigDecimal[] getProgressC() {
-        return this.progressC;
-    }
-
-    @Override
-    public String toString() {
-        // return "AwtrixApp [text=" + text + ", textCase=" + textCase + ", topText=" + topText + ", textOffset="
-        // + textOffset + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient="
-        // + Arrays.toString(gradient) + ", blinkText=" + blinkText + ", fadeText=" + fadeText + ", background="
-        // + Arrays.toString(background) + ", rainbow=" + rainbow + ", icon=" + icon + ", pushIcon=" + pushIcon
-        // + ", repeat=" + repeat + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", bar="
-        // + Arrays.toString(bar) + ", autoscale=" + autoscale + ", progress=" + progress + ", progressC="
-        // + Arrays.toString(progressC) + ", progressBC=" + Arrays.toString(progressBC) + ", scrollSpeed="
-        // + scrollSpeed + ", effect=" + effect + ", effectSpeed=" + effectSpeed + ", effectPalette="
-        // + effectPalette + ", effectBlend=" + effectBlend + "]";
-        return "AwtrixApp [text=" + text + ", textCase=" + textCase + ", topText=" + topText + ", textOffset="
-                + textOffset + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient="
-                + Arrays.toString(gradient) + ", blinkText=" + blinkText + ", fadeText=" + fadeText + ", background="
-                + Arrays.toString(background) + ", rainbow=" + rainbow + ", icon=" + icon + ", pushIcon=" + pushIcon
-                + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", bar=" + Arrays.toString(bar)
-                + ", autoscale=" + autoscale + ", progress=" + progress + ", progressC=" + Arrays.toString(progressC)
-                + ", progressBC=" + Arrays.toString(progressBC) + ", scrollSpeed=" + scrollSpeed + ", effect=" + effect
-                + ", effectSpeed=" + effectSpeed + ", effectPalette=" + effectPalette + ", effectBlend=" + effectBlend
-                + "]";
-    }
-
-    public BigDecimal[] setProgressC() {
-        return this.progressC;
-    }
-
-    public void setProgressC(BigDecimal[] progressC) {
-        this.progressC = progressC;
-    }
-
-    public BigDecimal[] getProgressBC() {
-        return this.progressBC;
-    }
-
-    public void setProgressBC(BigDecimal[] progressBC) {
-        this.progressBC = progressBC;
-    }
-
-    public BigDecimal getScrollSpeed() {
-        return this.scrollSpeed;
-    }
-
-    public void setScrollSpeed(BigDecimal scrollSpeed) {
-        this.scrollSpeed = scrollSpeed;
-    }
-
-    public String getEffect() {
-        return this.effect;
-    }
-
-    public void setEffect(String effect) {
-        this.effect = effect;
-    }
-
-    public BigDecimal getEffectSpeed() {
-        return this.effectSpeed;
-    }
-
-    public void setEffectSpeed(BigDecimal effectSpeed) {
-        this.effectSpeed = effectSpeed;
-    }
-
-    public String getEffectPalette() {
-        return this.effectPalette;
-    }
-
-    public void setEffectPalette(String effectPalette) {
-        this.effectPalette = effectPalette;
-    }
-
-    public Boolean getEffectBlend() {
-        return this.effectBlend;
-    }
-
-    public void setEffectBlend(Boolean effectBlend) {
-        this.effectBlend = effectBlend;
     }
 }

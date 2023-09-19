@@ -51,13 +51,8 @@ public class AwtrixLightDiscoveryService extends AbstractMQTTDiscovery {
 
     @Activate
     public AwtrixLightDiscoveryService(@Reference MQTTTopicDiscoveryService discoveryService) {
-        super(Set.of(THING_TYPE_BRIDGE), 3, true, BASE_TOPIC + "/#");
+        super(Set.of(THING_TYPE_BRIDGE), 3, true, TOPIC_BASE + "/#");
         this.discoveryService = discoveryService;
-    }
-
-    @Override
-    protected MQTTTopicDiscoveryService getDiscoveryService() {
-        return discoveryService;
     }
 
     @Override
@@ -65,8 +60,8 @@ public class AwtrixLightDiscoveryService extends AbstractMQTTDiscovery {
             byte[] payload) {
         resetTimeout();
         String message = new String(payload, StandardCharsets.UTF_8);
-        if (topic.endsWith(STATS_TOPIC)) {
-            String baseTopic = topic.replace(STATS_TOPIC, "");
+        if (topic.endsWith(TOPIC_STATS)) {
+            String baseTopic = topic.replace(TOPIC_STATS, "");
             if (baseTopic != null) {
                 HashMap<String, Object> messageParams = Helper.decodeJson(message);
                 String vendorString = "Unknown";
@@ -90,19 +85,6 @@ public class AwtrixLightDiscoveryService extends AbstractMQTTDiscovery {
         }
     }
 
-    void publishClock(ThingUID connectionBridgeUid, String baseTopic, String vendor, String firmware,
-            String hardwareUid) {
-
-        String name = baseTopic.replace(BASE_TOPIC + "/", "");
-
-        thingDiscovered(DiscoveryResultBuilder
-                .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_CLOCK), connectionBridgeUid, hardwareUid))
-                .withBridge(connectionBridgeUid).withProperty(PROP_VENDOR, vendor).withProperty(PROP_FIRMWARE, firmware)
-                .withProperty(PROP_UNIQUEID, hardwareUid).withProperty(PROP_BASETOPIC, baseTopic)
-                .withProperty(PROP_APPLOCKTIMEOUT, 10).withProperty(PROP_DISCOVERDEFAULT, false)
-                .withRepresentationProperty(PROP_UNIQUEID).withLabel("Awtrix Clock " + name).build());
-    }
-
     @Override
     public void topicVanished(ThingUID connectionBridge, MqttBrokerConnection connection, String topic) {
     }
@@ -110,5 +92,23 @@ public class AwtrixLightDiscoveryService extends AbstractMQTTDiscovery {
     @Override
     public void deactivate() {
         super.deactivate();
+    }
+
+    @Override
+    protected MQTTTopicDiscoveryService getDiscoveryService() {
+        return discoveryService;
+    }
+
+    void publishClock(ThingUID connectionBridgeUid, String baseTopic, String vendor, String firmware,
+            String hardwareUid) {
+
+        String name = baseTopic.replace(TOPIC_BASE + "/", "");
+
+        thingDiscovered(DiscoveryResultBuilder
+                .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_CLOCK), connectionBridgeUid, hardwareUid))
+                .withBridge(connectionBridgeUid).withProperty(PROP_VENDOR, vendor).withProperty(PROP_FIRMWARE, firmware)
+                .withProperty(PROP_UNIQUEID, hardwareUid).withProperty(PROP_BASETOPIC, baseTopic)
+                .withProperty(PROP_APPLOCKTIMEOUT, 10).withProperty(PROP_DISCOVERDEFAULT, false)
+                .withRepresentationProperty(PROP_UNIQUEID).withLabel("Awtrix Clock " + name).build());
     }
 }
