@@ -14,7 +14,11 @@
 package org.openhab.binding.mqtt.awtrixlight.internal.discovery;
 
 import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
-import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.AWTRIX_APP;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_APPID;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_APPNAME;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_UNIQUEID;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.THING_TYPE_APP;
 
 import java.util.Map;
 import java.util.Set;
@@ -84,12 +88,10 @@ public class AwtrixLightBridgeDiscoveryService extends AbstractDiscoveryService 
     }
 
     void publishApp(ThingUID connectionBridgeUid, String bridgeHardwareId, String basetopic, String appName) {
-        if (bridgeHardwareId != null && appName != null) {
-            String appId = bridgeHardwareId + "-" + appName;
-            thingDiscovered(DiscoveryResultBuilder
-                    .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_APP), connectionBridgeUid, appName))
-                    .withBridge(connectionBridgeUid).withProperty(PROP_APPID, appId).withProperty(PROP_APPNAME, appName)
-                    .withRepresentationProperty(PROP_APPID).withLabel("Awtrix App " + appName).build());
-        }
+        String appId = bridgeHardwareId + "-" + appName;
+        thingDiscovered(DiscoveryResultBuilder
+                .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_APP), connectionBridgeUid, appName))
+                .withBridge(connectionBridgeUid).withProperty(PROP_APPID, appId).withProperty(PROP_APPNAME, appName)
+                .withRepresentationProperty(PROP_APPID).withLabel("Awtrix App " + appName).build());
     }
 }

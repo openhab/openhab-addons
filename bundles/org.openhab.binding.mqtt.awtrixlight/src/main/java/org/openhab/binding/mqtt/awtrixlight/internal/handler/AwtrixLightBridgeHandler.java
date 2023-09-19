@@ -416,10 +416,8 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         logger.debug("Will send {} to topic {}", payload, commandTopic);
         byte[] payloadBytes = payload.getBytes();
         MqttBrokerConnection localConnection = connection;
-        if (payloadBytes != null) {
-            if (localConnection != null) {
-                localConnection.publish(commandTopic, payloadBytes, 1, retain);
-            }
+        if (localConnection != null) {
+            localConnection.publish(commandTopic, payloadBytes, 1, retain);
         }
     }
 
@@ -533,14 +531,10 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         HashMap<String, Object> params = Helper.decodeJson(statsMessage);
         for (HashMap.Entry<String, Object> entry : params.entrySet()) {
 
-            Map<String, String> properties = thing.getProperties();
             Object value = entry.getValue();
             switch (entry.getKey()) {
                 case FIELD_BRIDGE_UID:
-                    if (!properties.containsValue(PROP_UNIQUEID) || properties.get(PROP_UNIQUEID) == null
-                            || !properties.get(PROP_UNIQUEID).equals((String) value)) {
-                        thing.setProperty(PROP_UNIQUEID, (String) value);
-                    }
+                    thing.setProperty(PROP_UNIQUEID, (String) value);
                     break;
                 case FIELD_BRIDGE_BATTERY:
                     if (value instanceof BigDecimal) {
@@ -556,18 +550,12 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     // Not mapped to channel atm
                     break;
                 case FIELD_BRIDGE_FIRMWARE:
-                    if (!properties.containsValue(PROP_FIRMWARE) || properties.get(PROP_FIRMWARE) == null
-                            || !properties.get(PROP_FIRMWARE).equals(value.toString())) {
-                        thing.setProperty(PROP_FIRMWARE, value.toString());
-                    }
+                    thing.setProperty(PROP_FIRMWARE, value.toString());
                     break;
                 case FIELD_BRIDGE_TYPE:
                     if (value instanceof BigDecimal) {
                         String vendor = ((BigDecimal) value).compareTo(BigDecimal.ZERO) == 0 ? "Ulanzi" : "Generic";
-                        if (!properties.containsValue(PROP_VENDOR) || properties.get(PROP_VENDOR) == null
-                                || !properties.get(PROP_VENDOR).equals(vendor)) {
-                            thing.setProperty(PROP_VENDOR, vendor);
-                        }
+                        thing.setProperty(PROP_VENDOR, vendor);
                         break;
                     }
                 case FIELD_BRIDGE_LUX:
