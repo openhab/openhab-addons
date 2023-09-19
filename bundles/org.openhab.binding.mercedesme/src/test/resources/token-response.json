@@ -1,6 +1,0 @@
-{
-    "access_token": "the-token",
-    "refresh_token": "the-refresh-token",
-    "token_type": "Bearer",
-    "expires_in": 7199
-}
