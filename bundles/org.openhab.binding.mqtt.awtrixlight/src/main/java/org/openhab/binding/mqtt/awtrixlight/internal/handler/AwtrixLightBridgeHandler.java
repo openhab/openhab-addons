@@ -95,15 +95,17 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Received command {} of type {} via channel {}", command, command.getClass(),
+                channelUID.getAsString());
         if (command instanceof RefreshType) {
-            if (channelUID.getId() == this.channelPrefix + CHANNEL_SCREEN) {
+            if ((this.channelPrefix + CHANNEL_SCREEN).equals(channelUID.getAsString())) {
                 sendMQTT(this.basetopic + TOPIC_SEND_SCREEN, "", false);
             }
             return;
         }
-        if (channelUID.getId() == this.channelPrefix + CHANNEL_DISPLAY) {
+        if ((this.channelPrefix + CHANNEL_DISPLAY).equals(channelUID.getId())) {
             handleDisplay(command);
-        } else if (channelUID.getId() == this.channelPrefix + CHANNEL_INDICATOR1) {
+        } else if ((this.channelPrefix + CHANNEL_INDICATOR1).equals(channelUID.getAsString())) {
             if (command instanceof OnOffType) {
                 if (OnOffType.ON.equals(command)) {
                     activateIndicator(1, new int[] { 0, 255, 0 });
@@ -111,7 +113,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     deactivateIndicator(1);
                 }
             }
-        } else if (channelUID.getId() == this.channelPrefix + CHANNEL_INDICATOR2) {
+        } else if ((this.channelPrefix + CHANNEL_INDICATOR2).equals(channelUID.getAsString())) {
             if (command instanceof OnOffType) {
                 if (OnOffType.ON.equals(command)) {
                     activateIndicator(2, new int[] { 0, 255, 0 });
@@ -119,7 +121,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     deactivateIndicator(2);
                 }
             }
-        } else if (channelUID.getId() == this.channelPrefix + CHANNEL_INDICATOR3) {
+        } else if ((this.channelPrefix + CHANNEL_INDICATOR3).equals(channelUID.getAsString())) {
             if (command instanceof OnOffType) {
                 if (OnOffType.ON.equals(command)) {
                     activateIndicator(3, new int[] { 0, 255, 0 });
