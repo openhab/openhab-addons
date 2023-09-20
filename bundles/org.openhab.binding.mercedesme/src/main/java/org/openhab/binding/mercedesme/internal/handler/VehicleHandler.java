@@ -538,7 +538,7 @@ public class VehicleHandler extends BaseThingHandler {
             // Command Time
             DateTimeType dtt = Utils.getDateTimeType(value.getTimestampInMs());
             UOMObserver observer = null;
-            if (Locale.US.getCountry().equals(Utils.localeProvider.getLocale().getCountry())) {
+            if (Locale.US.getCountry().equals(Utils.getCountry())) {
                 observer = new UOMObserver(UOMObserver.TIME_US);
             } else {
                 observer = new UOMObserver(UOMObserver.TIME_ROW);
