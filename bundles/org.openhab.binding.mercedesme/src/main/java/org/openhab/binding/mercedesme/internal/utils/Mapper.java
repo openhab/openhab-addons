@@ -167,7 +167,7 @@ public class Mapper {
                                 observer = new UOMObserver(UOMObserver.TIME_ROW);
                             }
                         } catch (NumberFormatException nfe) {
-                            LOGGER.warn("End Charge Time Number Format failed {} for [}", nfe.getMessage(), dv);
+                            LOGGER.warn("End Charge Time Number Format failed {} for {}", nfe.getMessage(), dv);
                             state = UnDefType.UNDEF;
                         }
                     } else {

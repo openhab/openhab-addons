@@ -198,17 +198,16 @@ States and Controls are depending on your vehicle capabilities.
 | rear-right          | Contact              |  Rear Right Door             | X    |       |
 | deck-lid            | Contact              |  Deck lid                    | X    |       |
 | engine-hood         | Contact              |  Engine Hood                 | X    |       |
-| sunroof             | Number               |  Sun roof (only Cabriolet)   | X    |       |
 | rooftop             | Number               |  Roof top                    | X    |       |
 | sunroof-front-blind | Number               |  Sunroof Front Blind         | X    |       |
 | sunroof-rear-blind  | Number               |  Sunroof Rear Blind          | X    |       |
-| sunroof-control     | Number               |  Sunroof Control             |      | X     |
+| sunroof             | Number               |  Sun roof                    | X    | X     |
 
 #### Sunroof Mapping
 
 - 0 : Closed
 - 1 : Open
-- 2 : Open Lifting
+- 2 : Lifted
 - 3 : Running
 - 4 : Closing
 - 5 : Opening
@@ -314,7 +313,7 @@ States and Controls are depending on your vehicle capabilities.
 | zone                | Number              |  Selected Climatization Zone     | X    | X     |
 | temperature         | Number:Temperature  |  Desired Temperature             | X    | X     |
 | activate            | Switch              |  Gas Flap (combustion & hybrid)  | X    | X     |
-| aux-heat            | Switch              |  Sunroof Control (Cabriolet)     | X    | X     |
+| aux-heat            | Switch              |  Auxiliary Heating               | X    | X     |
 
 #### Zone Mapping
 
@@ -515,7 +514,7 @@ Show state of the send command sent by above channels which are able to write va
 Command Names:
 
 -  [ignition | vehicle](#vehicle) : ENGINESTART, ENGINESTOP
--  [sunroof-control | doors](#doors) : SUNROOFOPEN, SUNROOFLIFT, SUNROOFCLOSE  
+-  [sunroof | doors](#doors) : SUNROOFOPEN, SUNROOFLIFT, SUNROOFCLOSE  
 -  [lock-control | lock](#lock) : DOORSLOCK, DOORSUNLOCK
 -  [window-control | windows](#windows) : WINDOWOPEN, WINDOWVENTILATE, WINDOWCLOSE
 -  [activate | hvac](#hvac) : PRECONDSTART, PRECONDSTOP

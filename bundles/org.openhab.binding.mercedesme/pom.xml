@@ -31,18 +31,6 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.openhab.tools.sat</groupId>
-        <artifactId>sat-plugin</artifactId>
-        <configuration>
-          <spotbugsExclude>${project.basedir}/suppressions.xml</spotbugsExclude>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
   <artifactId>org.openhab.binding.mercedesme</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: MercedesMe Binding</name>

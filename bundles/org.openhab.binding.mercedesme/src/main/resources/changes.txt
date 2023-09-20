@@ -1,0 +1,1 @@
+- merged sunroof-control channel into sunroof - sunroof is now writable with command options
