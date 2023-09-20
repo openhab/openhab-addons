@@ -5,7 +5,7 @@ import "gogo.proto";
 import "google/protobuf/wrappers.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = true;
-option java_package = "org.openhab.binding.mercedesme.internal.proto";
+option java_package = "com.daimler.mbcarkit.proto";
 
 // Acknowledge the CommandRequest reached the apptwin actor
 // Websocket <- Apptwin

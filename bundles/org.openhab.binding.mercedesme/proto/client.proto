@@ -8,7 +8,7 @@ import "vehicle-commands.proto";
 import "vehicle-events.proto";
 import "vehicleapi.proto";
 
-option java_package = "org.openhab.binding.mercedesme.internal.proto";
+option java_package = "com.daimler.mbcarkit.proto";
 
 // message that is sent from the client
 // Sending direction: App -> Websocket (-> AppTwin)

@@ -37,9 +37,6 @@ import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
-import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
-import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
-import org.openhab.binding.mercedesme.internal.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
 import org.openhab.binding.mercedesme.internal.server.AuthServer;
 import org.openhab.binding.mercedesme.internal.server.AuthService;
 import org.openhab.binding.mercedesme.internal.server.MBWebsocket;
@@ -58,6 +55,10 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.daimler.mbcarkit.proto.Client.ClientMessage;
+import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
 
 /**
  * The {@link AccountHandler} takes care of the valid authorization for the user account
@@ -174,7 +175,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void dispose() {
         if (server.isPresent()) {
-            CallbackServer serv = server.get();
+            AuthServer serv = server.get();
             serv.stop();
             serv.dispose();
             server = Optional.empty();

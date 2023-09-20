@@ -7,7 +7,7 @@ import "google/protobuf/struct.proto";
 import "gogo.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = true;
-option java_package = "org.openhab.binding.mercedesme.internal.proto";
+option java_package = "com.daimler.mbcarkit.proto";
 
 // Sending direction: App -> BFF -> AppTwin
 message AcknowledgeAppTwinCommandStatusUpdatesByVIN {

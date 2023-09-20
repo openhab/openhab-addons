@@ -6,7 +6,7 @@ import "acp.proto";
 import "gogo.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = true;
-option java_package = "org.openhab.binding.mercedesme.internal.proto";
+option java_package = "com.daimler.mbcarkit.proto";
 
 message EventPushCommand {
     string vin = 1 [json_name = "vin"];
