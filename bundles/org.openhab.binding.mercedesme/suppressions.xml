@@ -2,7 +2,7 @@
 <FindBugsFilter>
   <!-- Ignore classes from external library -->
   <Match>    
-    <Package name="org.openhab.binding.mercedesme.internal.proto"/>
+    <Package name="com.daimler.mbcarkit.proto"/>
   </Match>
 </FindBugsFilter>
 

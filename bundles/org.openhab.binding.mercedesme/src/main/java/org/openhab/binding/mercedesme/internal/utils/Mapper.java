@@ -29,7 +29,6 @@ import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -42,6 +41,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 
 /**
  * The {@link Mapper} maps a given Json Object towards a channel, group and state

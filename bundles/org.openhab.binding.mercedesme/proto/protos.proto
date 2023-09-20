@@ -1,7 +1,7 @@
 syntax = "proto3";
 package proto;
 
-option java_package = "org.openhab.binding.mercedesme.internal.proto";
+option java_package = "com.daimler.mbcarkit.proto";
 
 // SubscriptionRequest is sent to an actor to indicate that the sender wants to subscribe
 // to events of specific topics. By convention the "Sender" property of the actor message is the

@@ -6,7 +6,7 @@ import "vehicle-commands.proto";
 import "protos.proto";
 import "vehicleapi.proto";
 
-option java_package = "org.openhab.binding.mercedesme.internal.proto";
+option java_package = "com.daimler.mbcarkit.proto";
 
 // Sending direction: App <- BFF <- AppTwin
 message VEPUpdate {

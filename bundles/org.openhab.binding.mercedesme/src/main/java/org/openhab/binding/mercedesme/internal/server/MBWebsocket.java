@@ -33,15 +33,16 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
-import org.openhab.binding.mercedesme.internal.proto.Client.ClientMessage;
-import org.openhab.binding.mercedesme.internal.proto.Protos.AcknowledgeAssignedVehicles;
-import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
-import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
-import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
-import org.openhab.binding.mercedesme.internal.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
-import org.openhab.binding.mercedesme.internal.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.daimler.mbcarkit.proto.Client.ClientMessage;
+import com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles;
+import com.daimler.mbcarkit.proto.VehicleEvents;
+import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
+import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
+import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
 
 /**
  * The {@link MBWebsocket} class provides authentication callback endpoint
