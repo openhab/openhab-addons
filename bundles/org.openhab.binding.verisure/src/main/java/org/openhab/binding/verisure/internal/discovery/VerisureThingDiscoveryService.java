@@ -118,7 +118,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof VerisureBridgeHandler verisureBridgeHandler) {
-            verisureBridgeHandler = verisureBridgeHandler;
+            this.verisureBridgeHandler = verisureBridgeHandler;
             bridgeUID = verisureBridgeHandler.getUID();
         }
     }

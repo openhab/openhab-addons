@@ -169,8 +169,8 @@ public class WiFiLEDHandler extends BaseThingHandler {
     }
 
     private void handleWhite2Command(Command command) throws IOException {
-        if (command instanceof PercentType type) {
-            driver.setWhite2(type);
+        if (command instanceof PercentType percentCommand) {
+            driver.setWhite2(percentCommand);
         } else if (command instanceof OnOffType onOffCommand) {
             if (onOffCommand.equals(OnOffType.ON)) {
                 driver.setWhite2(PercentType.HUNDRED);

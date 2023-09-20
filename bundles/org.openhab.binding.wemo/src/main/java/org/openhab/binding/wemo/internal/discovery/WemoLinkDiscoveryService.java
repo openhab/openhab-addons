@@ -125,8 +125,13 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
                     <u:GetEndDevices xmlns:u="urn:Belkin:service:bridge:1">\
                     <DevUDN>\
                     """
-                    + devUDN + "</DevUDN><ReqListType>PAIRED_LIST</ReqListType>" + "</u:GetEndDevices>" + "</s:Body>"
-                    + "</s:Envelope>";
+                    + devUDN + """
+                            </DevUDN>\
+                            <ReqListType>PAIRED_LIST</ReqListType>\
+                            </u:GetEndDevices>\
+                            </s:Body>\
+                            </s:Envelope>\
+                            """;
 
             URL descriptorURL = service.getDescriptorURL(this);
 

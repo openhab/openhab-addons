@@ -223,7 +223,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                                 <EndAction></EndAction>\
                                 <brightness></brightness>\
                                 <fader>\
-                                """ + commandString + ":-1:1:0:0</fader>" + "<UDN></UDN>";
+                                """ + commandString + ":-1:1:0:0</fader><UDN></UDN>";
                         setBinaryState(action, argument, value);
                     }
                     break;
