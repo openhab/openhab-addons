@@ -434,7 +434,7 @@ public class VehicleHandler extends BaseThingHandler {
             /**
              * Commands for Windows
              */
-            if ("sunroof-control".equals(channelUID.getIdWithoutGroup())) {
+            if ("sunroof".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandSunroofOpen");
                 String pin = accountHandler.get().config.get().pin;
                 if (Boolean.FALSE.toString().equals(supported)) {

@@ -51,33 +51,29 @@
 			<options>
 				<option value="0">Closed</option>
 				<option value="1">Open</option>
-				<option value="2">Open Lifting</option>
+				<option value="2">Lifted</option>
 				<option value="3">Running</option>
 				<option value="4">Closing</option>
 				<option value="5">Opening</option>
 				<option value="6">Closing</option>
 			</options>
 		</state>
+		<command>
+           <options>
+                <option value="0">Close</option>
+                <option value="1">Open</option>
+                <option value="2">Lift</option>
+            </options>
+ 		</command>
 	</channel-type>
 	<channel-type id="sunroof-front-blind-channel">
 		<item-type>Number</item-type>
-		<label>Sun Roof Fornt Blind</label>
+		<label>Sun Roof Front Blind</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sunroof-rear-blind-channel">
 		<item-type>Number</item-type>
 		<label>Sun Roof Rear Blind</label>
 		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="sunroof-control-channel">
-		<item-type>Number</item-type>
-		<label>Sun Roof Control</label>
-		<state>
-			<options>
-				<option value="0">Close</option>
-				<option value="1">Open</option>
-				<option value="2">Lift</option>
-			</options>
-		</state>
 	</channel-type>
 </thing:thing-descriptions>

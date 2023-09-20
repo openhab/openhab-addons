@@ -27,4 +27,5 @@
     <suppress files=".+[\\/]mail[\\/].+[\\/]MailBuilderTest\.java" checks="ForbiddenPackageUsageCheck"/>
     <suppress files=".+[\\/]mail[\\/].+[\\/]SMTPHandler\.java" checks="ForbiddenPackageUsageCheck"/>
     <suppress files=".+[\\/]mail[\\/].+[\\/]SendMailActions\.java" checks="ForbiddenPackageUsageCheck"/>
+    <suppress files=".+[\\/]proto[\\/].+\.java" checks="[a-zA-Z0-9]*"/>
 </suppressions>

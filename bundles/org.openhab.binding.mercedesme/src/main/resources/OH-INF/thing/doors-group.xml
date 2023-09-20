@@ -17,7 +17,6 @@
 			<channel id="sunroof" typeId="sunroof-channel"/>
 			<channel id="sunroof-front-blind" typeId="sunroof-front-blind-channel"/>
 			<channel id="sunroof-rear-blind" typeId="sunroof-rear-blind-channel"/>
-			<channel id="sunroof-control" typeId="sunroof-control-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

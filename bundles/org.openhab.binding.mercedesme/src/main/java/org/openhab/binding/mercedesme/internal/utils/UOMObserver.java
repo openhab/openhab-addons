@@ -21,7 +21,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mercedesme.internal.Constants;
-import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -60,7 +59,7 @@ public class UOMObserver {
 
     private String label = Constants.NOT_SET;
 
-    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(UOMObserver.class);
 
     public UOMObserver(String l) {
         if (patternMap.isEmpty()) {
