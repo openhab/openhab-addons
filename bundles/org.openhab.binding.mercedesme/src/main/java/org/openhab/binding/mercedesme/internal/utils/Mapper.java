@@ -29,12 +29,14 @@ import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -63,6 +65,19 @@ public class Mapper {
     public static Unit<Pressure> defaultPressureUnit = Units.BAR;
     public static Unit<Volume> defaultVolumeUnit = Units.LITRE;
     public static Unit<Speed> defaultSpeedUnit = SIUnits.KILOMETRE_PER_HOUR;
+
+    public static void initialze(UnitProvider up) {
+        // Configure Mapper default values
+        Unit<Length> lengthUnit = up.getUnit(Length.class);
+        if (lengthUnit.equals(ImperialUnits.FOOT)) {
+            LOGGER.debug("Switch to ImperialUnits as default");
+            defaultLengthUnit = ImperialUnits.MILE;
+            defaultSpeedUnit = ImperialUnits.MILES_PER_HOUR;
+            defaultPressureUnit = ImperialUnits.POUND_FORCE_SQUARE_INCH;
+            defaultVolumeUnit = ImperialUnits.GALLON_LIQUID_US;
+            defaultTemperatureUnit = up.getUnit(Temperature.class);
+        }
+    }
 
     public static ChannelStateMap getChannelStateMap(String key, VehicleAttributeStatus value) {
         if (CHANNELS.isEmpty()) {
@@ -161,7 +176,7 @@ public class Mapper {
                             LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC).withHour(hour)
                                     .withMinute(minute);
                             state = DateTimeType.valueOf(ldt.toString());
-                            if (Locale.US.getCountry().equals(Utils.localeProvider.getLocale().getCountry())) {
+                            if (Locale.US.getCountry().equals(Utils.getCountry())) {
                                 observer = new UOMObserver(UOMObserver.TIME_US);
                             } else {
                                 observer = new UOMObserver(UOMObserver.TIME_ROW);
@@ -182,7 +197,7 @@ public class Mapper {
                     } else {
                         state = Utils.getDateTimeType(value.getTimestampInMs());
                     }
-                    if (Locale.US.getCountry().equals(Utils.localeProvider.getLocale().getCountry())) {
+                    if (Locale.US.getCountry().equals(Utils.getCountry())) {
                         observer = new UOMObserver(UOMObserver.TIME_US);
                     } else {
                         observer = new UOMObserver(UOMObserver.TIME_ROW);

@@ -73,23 +73,28 @@ public class Utils {
     private static final List<Integer> PORTS = new ArrayList<>();
     private static int port = 8090;
 
-    public static final Gson GSON = new Gson();
-    public static final Map<String, Integer> ZONE_HASHMAP = new HashMap<String, Integer>();
-    public static final Map<String, Integer> PROGRAM_HASHMAP = new HashMap<String, Integer>();
-    public static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+    private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
 
         @Override
         public ZoneId getTimeZone() {
             return ZoneId.systemDefault();
         }
     };
-    public static LocaleProvider localeProvider = new LocaleProvider() {
+    private static LocaleProvider localeProvider = new LocaleProvider() {
 
         @Override
         public Locale getLocale() {
             return Locale.getDefault();
         }
     };
+    public static final Gson GSON = new Gson();
+    public static final Map<String, Integer> ZONE_HASHMAP = new HashMap<String, Integer>();
+    public static final Map<String, Integer> PROGRAM_HASHMAP = new HashMap<String, Integer>();
+
+    public static void initialze(TimeZoneProvider tzp, LocaleProvider lp) {
+        timeZoneProvider = tzp;
+        localeProvider = lp;
+    }
 
     public static DateTimeType getDateTimeType(long ms) {
         Instant timestamp = Instant.ofEpochMilli(ms);
@@ -470,5 +475,9 @@ public class Utils {
             }
         }
         return false;
+    }
+
+    public static String getCountry() {
+        return localeProvider.getLocale().getCountry();
     }
 }

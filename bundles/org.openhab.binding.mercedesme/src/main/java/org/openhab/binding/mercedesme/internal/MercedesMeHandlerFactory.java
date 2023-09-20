@@ -16,9 +16,6 @@ import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.util.Set;
 
-import javax.measure.Unit;
-import javax.measure.quantity.Length;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -32,7 +29,6 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -82,21 +78,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         mmsop = sop;
         mmdsdp = dsdp;
 
-        Utils.timeZoneProvider = tzp;
-        Utils.localeProvider = lp;
-
-        // Configure Mapper default values
-        Unit<Length> lengthUnit = up.getUnit(Length.class);
-        if (lengthUnit.equals(ImperialUnits.FOOT)) {
-            logger.debug("Switch to ImperialUnits as default");
-            // switch to imperial as default
-            Mapper.defaultLengthUnit = ImperialUnits.MILE;
-            Mapper.defaultPressureUnit = ImperialUnits.POUND_FORCE_SQUARE_INCH;
-            Mapper.defaultTemperatureUnit = ImperialUnits.FAHRENHEIT;
-            Mapper.defaultVolumeUnit = ImperialUnits.GALLON_LIQUID_US;
-            Mapper.defaultSpeedUnit = ImperialUnits.MILES_PER_HOUR;
-        }
-
+        Utils.initialze(tzp, lp);
+        Mapper.initialze(up);
         httpClient = hcf.getCommonHttpClient();
         discoveryService = new MercedesMeDiscoveryService();
     }
