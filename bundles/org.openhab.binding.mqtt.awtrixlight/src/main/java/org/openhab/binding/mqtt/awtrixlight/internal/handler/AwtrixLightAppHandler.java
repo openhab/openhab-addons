@@ -82,7 +82,6 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -527,49 +526,51 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
 
     private void initStates() {
         updateState(new ChannelUID(channelPrefix + CHANNEL_ACTIVE), this.active ? OnOffType.ON : OnOffType.OFF);
-        if (this.app.getColor().length == 3) {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_COLOR),
-                    HSBType.fromRGB(this.app.getColor()[0].intValue(), this.app.getColor()[1].intValue(),
-                            this.app.getColor()[2].intValue()));
-        } else {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_COLOR), UnDefType.UNDEF);
-        }
-        if (this.app.getGradient().length == 3) {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_GRADIENT_COLOR),
-                    HSBType.fromRGB(this.app.getGradient()[0].intValue(), this.app.getGradient()[1].intValue(),
-                            this.app.getGradient()[2].intValue()));
-        } else {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_COLOR), UnDefType.UNDEF);
-        }
+
+        BigDecimal[] color = this.app.getColor().length == 3 ? this.app.getColor()
+                : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        updateState(new ChannelUID(channelPrefix + CHANNEL_COLOR),
+                HSBType.fromRGB(color[0].intValue(), color[1].intValue(), color[2].intValue()));
+
+        BigDecimal[] gradient = this.app.getGradient().length == 3 ? this.app.getGradient()
+                : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        updateState(new ChannelUID(channelPrefix + CHANNEL_GRADIENT_COLOR),
+                HSBType.fromRGB(gradient[0].intValue(), gradient[1].intValue(), gradient[2].intValue()));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_SCROLLSPEED),
                 new QuantityType<>(this.app.getScrollSpeed(), Units.PERCENT));
-        // updateState(new ChannelUID(channelPrefix + CHANNEL_REPEAT),
-        // new QuantityType<>(this.app.getRepeat(), Units.ONE));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_DURATION),
                 new QuantityType<>(this.app.getDuration(), Units.SECOND));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_EFFECT), new StringType(this.app.getEffect()));
-        if (this.app.getEffectSpeed().compareTo(BigDecimal.ZERO) > 0) {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_EFFECT_SPEED),
-                    new QuantityType<>(this.app.getEffectSpeed(), Units.ONE));
-        } else {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_EFFECT_SPEED), UnDefType.UNDEF);
-        }
+
+        updateState(new ChannelUID(channelPrefix + CHANNEL_EFFECT_SPEED),
+                new QuantityType<>(this.app.getEffectSpeed(), Units.ONE));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_EFFECT_PALETTE),
                 new StringType(this.app.getEffectPalette()));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_EFFECT_BLEND),
                 this.app.getEffectBlend() ? OnOffType.ON : OnOffType.OFF);
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_TEXT), new StringType(this.app.getText()));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_TEXT_OFFSET),
                 new QuantityType<>(this.app.getTextOffset(), Units.ONE));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_TOP_TEXT),
                 this.app.getTopText() ? OnOffType.ON : OnOffType.OFF);
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_CENTER),
                 this.app.getCenter() ? OnOffType.ON : OnOffType.OFF);
+
         BigDecimal blinkTextInSeconds = this.app.getBlinkText().divide(THOUSAND);
         if (blinkTextInSeconds != null) {
             updateState(new ChannelUID(channelPrefix + CHANNEL_BLINK_TEXT),
                     new QuantityType<>(blinkTextInSeconds, Units.SECOND));
         }
+
         BigDecimal fadeTextInSeconds = this.app.getFadeText().divide(THOUSAND);
         if (fadeTextInSeconds != null) {
             updateState(new ChannelUID(channelPrefix + CHANNEL_FADE_TEXT),
@@ -577,54 +578,44 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         }
         updateState(new ChannelUID(channelPrefix + CHANNEL_RAINBOW),
                 this.app.getRainbow() ? OnOffType.ON : OnOffType.OFF);
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_ICON), new StringType(this.app.getIcon()));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_PUSH_ICON),
                 this.app.getPushIcon() ? OnOffType.ON : OnOffType.OFF);
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_TEXTCASE),
                 new QuantityType<>(this.app.getBlinkText(), Units.ONE));
-        if (this.app.getBackground().length == 3) {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_BACKGROUND),
-                    HSBType.fromRGB(this.app.getBackground()[0].intValue(), this.app.getBackground()[1].intValue(),
-                            this.app.getBackground()[2].intValue()));
-        } else {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_BACKGROUND), UnDefType.UNDEF);
-        }
-        if (this.app.getLine().length > 0) {
-            String line = Arrays.stream(this.app.getLine()).map(BigDecimal::toString).collect(Collectors.joining(","));
-            updateState(new ChannelUID(channelPrefix + CHANNEL_LINE), new StringType(line));
-        } else {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_LINE), new StringType(""));
-        }
-        if (this.app.getBar().length > 0) {
-            String bar = Arrays.stream(this.app.getBar()).map(BigDecimal::toString).collect(Collectors.joining(","));
-            updateState(new ChannelUID(channelPrefix + CHANNEL_BAR), new StringType(bar));
-        } else {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_LINE), new StringType(""));
-        }
+
+        BigDecimal[] background = this.app.getBackground().length == 3 ? this.app.getBackground()
+                : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        updateState(new ChannelUID(channelPrefix + CHANNEL_BACKGROUND),
+                HSBType.fromRGB(background[0].intValue(), background[1].intValue(), background[2].intValue()));
+
+        BigDecimal[] line = this.app.getLine().length > 0 ? this.app.getLine() : new BigDecimal[] { BigDecimal.ZERO };
+        String lineString = Arrays.stream(line).map(BigDecimal::toString).collect(Collectors.joining(","));
+        updateState(new ChannelUID(channelPrefix + CHANNEL_LINE), new StringType(lineString));
+
+        BigDecimal[] bar = this.app.getBar().length > 0 ? this.app.getBar() : new BigDecimal[] { BigDecimal.ZERO };
+        String barString = Arrays.stream(bar).map(BigDecimal::toString).collect(Collectors.joining(","));
+        updateState(new ChannelUID(channelPrefix + CHANNEL_BAR), new StringType(barString));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_AUTOSCALE),
                 this.app.getAutoscale() ? OnOffType.ON : OnOffType.OFF);
-        if (this.app.getProgress().compareTo(BigDecimal.ZERO) > 0) {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESS),
-                    new QuantityType<>(this.app.getBlinkText(), Units.PERCENT));
-        } else {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESS), UnDefType.UNDEF);
-        }
 
-        if (this.app.getProgressC().length == 3) {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESSC),
-                    HSBType.fromRGB(this.app.getProgressC()[0].intValue(), this.app.getProgressC()[1].intValue(),
-                            this.app.getProgressC()[2].intValue()));
-        } else {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESSC), UnDefType.UNDEF);
-        }
+        BigDecimal progress = this.app.getProgress().compareTo(BigDecimal.ZERO) > 0 ? this.app.getProgress()
+                : BigDecimal.ZERO;
+        updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESS), new QuantityType<>(progress, Units.PERCENT));
 
-        if (this.app.getProgressBC().length == 3) {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESSBC),
-                    HSBType.fromRGB(this.app.getProgressBC()[0].intValue(), this.app.getProgressBC()[1].intValue(),
-                            this.app.getProgressBC()[2].intValue()));
-        } else {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESSBC), UnDefType.UNDEF);
-        }
+        BigDecimal[] progressC = this.app.getProgressC().length == 3 ? this.app.getProgressC()
+                : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESSC),
+                HSBType.fromRGB(progressC[0].intValue(), progressC[1].intValue(), progressC[2].intValue()));
+
+        BigDecimal[] progressBC = this.app.getProgressBC().length == 3 ? this.app.getProgressBC()
+                : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESSBC),
+                HSBType.fromRGB(progressBC[0].intValue(), progressBC[1].intValue(), progressBC[2].intValue()));
     }
 
     private void finishInit() {
