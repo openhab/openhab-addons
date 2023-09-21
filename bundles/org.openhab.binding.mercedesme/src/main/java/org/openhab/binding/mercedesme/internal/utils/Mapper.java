@@ -360,7 +360,7 @@ public class Mapper {
      */
     private static void init() {
         CHANNELS.put("doorLockStatusOverall", new String[] { "lock-status", GROUP_VEHICLE });
-        CHANNELS.put("windowStatusOverall", new String[] { "window-status", GROUP_VEHICLE });
+        CHANNELS.put("windowStatusOverall", new String[] { "windows", GROUP_VEHICLE });
         CHANNELS.put("doorStatusOverall", new String[] { "door-status", GROUP_VEHICLE });
         CHANNELS.put("ignitionstate", new String[] { "ignition", GROUP_VEHICLE });
         CHANNELS.put("parkbrakestatus", new String[] { "park-brake", GROUP_VEHICLE });

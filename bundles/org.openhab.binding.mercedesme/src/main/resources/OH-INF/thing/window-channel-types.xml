@@ -79,15 +79,4 @@
 		<label>Flip Window</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="window-control-channel">
-		<item-type>Number</item-type>
-		<label>Window Control</label>
-		<state>
-			<options>
-				<option value="0">Close</option>
-				<option value="1">Open</option>
-				<option value="2">Ventilate</option>
-			</options>
-		</state>
-	</channel-type>
 </thing:thing-descriptions>
