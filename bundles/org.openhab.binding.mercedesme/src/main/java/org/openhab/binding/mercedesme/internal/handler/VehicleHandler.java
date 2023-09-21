@@ -752,7 +752,6 @@ public class VehicleHandler extends BaseThingHandler {
                 if (GROUP_HVAC.equals(csm.getGroup())) {
                     hvacGroupValueStorage.put(csm.getChannel(), csm.getState());
                 }
-                updateChannel(csm);
 
         // Mileage for all cars
         String odoUrl = String.format(ODO_URL, config.get().vin);
@@ -996,8 +995,6 @@ public class VehicleHandler extends BaseThingHandler {
                         }
                     }
                 }
-            } else {
-                // logger.trace("Unable to deliver state for {}", key);
             }
         });
 
