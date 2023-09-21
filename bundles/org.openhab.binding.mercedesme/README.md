@@ -154,7 +154,7 @@ Group name: `vehicle`
 | Channel               | Type                |  Description                  | Read | Write | Advanced |
 |-----------------------|---------------------|-------------------------------|------|-------|----------|
 | lock-status           | Number              |  Lock Status                  | X    |       |          |
-| window-status         | Number              |  Window Status                | X    |       |          |
+| windows               | Number              |  Window Status and Control    | X    | X     |          |
 | door-status           | Number              |  Door Status                  | X    |       |          |
 | ignition              | Number              |  Ignition                     | X    | X     |          |
 | feature-capabilities  | String              |  Feature Capabilities         | X    |       |    X     |
@@ -169,11 +169,23 @@ If you encounter problems with this binding follow the instructions from [Troubl
 - 0 : Locked
 - 1 : Unlocked
 
-#### Window Status Mapping
+#### Window Mappings
+
+State
 
 - 0 : Intermediate
 - 1 : Closed
 - 2 : Open
+
+Command
+
+- 0 : Close
+- 1 : Open
+- 2 : Ventilate
+
+Note: State mapping doesn't correspond to command mapping!
+That's the mapping of Mercedes SDK.
+So if your windows are in state `0 : Intermediate` you need to send command `0 : Close` to close them!
 
 #### Door Status Mapping
 
@@ -182,8 +194,15 @@ If you encounter problems with this binding follow the instructions from [Troubl
 
 #### Ignition Mapping
 
+State 
+
 - 0 : Off
 - 2 : Ready
+- 4 : On
+
+Command
+
+- 0 : Off
 - 4 : On
 
 ### Doors
@@ -257,7 +276,6 @@ States and Controls are depending on your vehicle capabilities and Type.
 
 Group name: `windows`
 State representing current Window position.
-States and Controls are depending on your vehicle capabilities.
 
 | Channel             | Type                 |  Description                 | Read | Write |
 |---------------------|----------------------|------------------------------|------|-------|
@@ -268,7 +286,6 @@ States and Controls are depending on your vehicle capabilities.
 | rear-right-blind    | Number               |  Rear Right Blind            | X    |       |
 | rear-left-blind     | Number               |  Rear Left Blind             | X    |       |
 | rear-blind          | Number               |  Rear  Blind                 | X    |       |
-| window-control      | Number               |  Window Control              |      | X     |
 
 #### Window Channel Mapping
 
@@ -294,11 +311,6 @@ States and Controls are depending on your vehicle capabilities.
 #### Flip Window Channel Mapping
 
 - not available yet!
-
-#### Window Control Channel Mapping
-- 0 : Close
-- 1 : Open
-- 2 : Ventilate
 
 
 ### HVAC
@@ -517,9 +529,9 @@ Show state of the send command sent by above channels which are able to write va
 Command Names:
 
 -  [ignition | vehicle](#vehicle) : ENGINESTART, ENGINESTOP
+-  [windows | vehicle](#windows) : WINDOWOPEN, WINDOWVENTILATE, WINDOWCLOSE
 -  [sunroof | doors](#doors) : SUNROOFOPEN, SUNROOFLIFT, SUNROOFCLOSE  
 -  [lock-control | lock](#lock) : DOORSLOCK, DOORSUNLOCK
--  [window-control | windows](#windows) : WINDOWOPEN, WINDOWVENTILATE, WINDOWCLOSE
 -  [activate | hvac](#hvac) : PRECONDSTART, PRECONDSTOP
 -  [other-channels | hvac](#hvac) : TEMPERATURECONFIGURE
 -  [program, mox-soc, auto-unlock | charge](#charge) : CHARGEPROGRAMCONFIGURE

@@ -187,6 +187,48 @@ public class VehicleHandler extends BaseThingHandler {
                         accountHandler.get().sendCommand(cm);
                     }
                 }
+            } else if ("windows".equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get("commandWindowsOpen");
+                String pin = accountHandler.get().config.get().pin;
+                if (Boolean.FALSE.toString().equals(supported)) {
+                    logger.info("Windows control not supported {}", supported);
+                } else {
+                    CommandRequest cr;
+                    ClientMessage cm;
+                    switch (((DecimalType) command).intValue()) {
+                        case 0:
+                            WindowsClose wc = WindowsClose.newBuilder().build();
+                            cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                    .setRequestId(UUID.randomUUID().toString()).setWindowsClose(wc).build();
+                            cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                            accountHandler.get().sendCommand(cm);
+                            break;
+                        case 1:
+                            if (Constants.NOT_SET.equals(pin)) {
+                                logger.info("Security PIN missing {}", pin);
+                            } else {
+                                WindowsOpen wo = WindowsOpen.newBuilder().setPin(pin).build();
+                                cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                        .setRequestId(UUID.randomUUID().toString()).setWindowsOpen(wo).build();
+                                cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                                accountHandler.get().sendCommand(cm);
+                            }
+                            break;
+                        case 2:
+                            if (Constants.NOT_SET.equals(pin)) {
+                                logger.info("Security PIN missing {}", pin);
+                            } else {
+                                WindowsVentilate wv = WindowsVentilate.newBuilder().setPin(pin).build();
+                                cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                        .setRequestId(UUID.randomUUID().toString()).setWindowsVentilate(wv).build();
+                                cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                                accountHandler.get().sendCommand(cm);
+                            }
+                            break;
+                        default:
+                            logger.info("No Windows movement known for {}", command);
+                    }
+                }
             }
         } else if (Constants.GROUP_HVAC.equals(channelUID.getGroupId())) {
             /**
@@ -388,49 +430,6 @@ public class VehicleHandler extends BaseThingHandler {
             /**
              * Commands for Windows
              */
-            if ("window-control".equals(channelUID.getIdWithoutGroup())) {
-                String supported = thing.getProperties().get("commandWindowsOpen");
-                String pin = accountHandler.get().config.get().pin;
-                if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Windows control not supported {}", supported);
-                } else {
-                    CommandRequest cr;
-                    ClientMessage cm;
-                    switch (((DecimalType) command).intValue()) {
-                        case 0:
-                            WindowsClose wc = WindowsClose.newBuilder().build();
-                            cr = CommandRequest.newBuilder().setVin(config.get().vin)
-                                    .setRequestId(UUID.randomUUID().toString()).setWindowsClose(wc).build();
-                            cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                            accountHandler.get().sendCommand(cm);
-                            break;
-                        case 1:
-                            if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing {}", pin);
-                            } else {
-                                WindowsOpen wo = WindowsOpen.newBuilder().setPin(pin).build();
-                                cr = CommandRequest.newBuilder().setVin(config.get().vin)
-                                        .setRequestId(UUID.randomUUID().toString()).setWindowsOpen(wo).build();
-                                cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                                accountHandler.get().sendCommand(cm);
-                            }
-                            break;
-                        case 2:
-                            if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing {}", pin);
-                            } else {
-                                WindowsVentilate wv = WindowsVentilate.newBuilder().setPin(pin).build();
-                                cr = CommandRequest.newBuilder().setVin(config.get().vin)
-                                        .setRequestId(UUID.randomUUID().toString()).setWindowsVentilate(wv).build();
-                                cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                                accountHandler.get().sendCommand(cm);
-                            }
-                            break;
-                        default:
-                            logger.info("No Windows movement known for {}", command);
-                    }
-                }
-            }
         } else if (Constants.GROUP_DOORS.equals(channelUID.getGroupId())) {
             /**
              * Commands for Windows
