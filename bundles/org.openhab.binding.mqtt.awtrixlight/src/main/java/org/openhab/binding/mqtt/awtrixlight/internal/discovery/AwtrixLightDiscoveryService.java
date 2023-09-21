@@ -63,7 +63,7 @@ public class AwtrixLightDiscoveryService extends AbstractMQTTDiscovery {
 
     @Activate
     public AwtrixLightDiscoveryService(@Reference MQTTTopicDiscoveryService discoveryService) {
-        super(Set.of(THING_TYPE_BRIDGE), 3, true, TOPIC_BASE + "+" + TOPIC_STATS);
+        super(Set.of(THING_TYPE_BRIDGE), 3, true, TOPIC_BASE + "/+" + TOPIC_STATS);
         this.discoveryService = discoveryService;
     }
 
