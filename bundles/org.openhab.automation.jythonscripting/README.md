@@ -1,10 +1,10 @@
-# Jython Scripting
+# Jython Scripting (DEPRECATED)
 
 ::: tip Note:
 Currently, the development of Jython stopped at version 2.7 with no definite timeline to support Python 3.x.
 The 3rd party openHAB helper library for Jython is also no longer maintained.
 We would not recommend using Jython scripting at this point in time.
-For alternatives, check out the list of other supported [automation add-ons](/addons/automation/).
+For alternatives, check out the list of other supported [automation add-ons](/addons/).
 :::
 
 This add-on provides [Jython](https://www.jython.org/) 2.7.2 that can be used as a scripting language within automation rules and which eliminates the need to download Jython and create `EXTRA_JAVA_OPTS` entries for `bootclasspath`, `python.home` and `python.path`.
