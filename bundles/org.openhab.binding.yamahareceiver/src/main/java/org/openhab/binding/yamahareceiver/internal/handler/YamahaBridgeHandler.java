@@ -16,10 +16,10 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -316,7 +316,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ZoneDiscoveryService.class);
+        return Set.of(ZoneDiscoveryService.class);
     }
 
     /**
@@ -336,7 +336,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
                 bridgeConfig.getPort());
 
         Optional<String> host = bridgeConfig.getHostWithPort();
-        if (!host.isPresent()) {
+        if (host.isEmpty()) {
             String msg = "Host or port not set. Double check your thing settings.";
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             logger.warn(msg);

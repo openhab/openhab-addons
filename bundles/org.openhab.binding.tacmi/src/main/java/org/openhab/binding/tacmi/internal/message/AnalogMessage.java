@@ -93,8 +93,7 @@ public final class AnalogMessage extends Message {
     public AnalogValue getAnalogValue(int portNumber) {
         // Get the internal index for portNumber within the message
         int idx = (portNumber - 1) % 4;
-        AnalogValue value = new AnalogValue(this.getValue(idx), getMeasureType(idx));
-        return value;
+        return new AnalogValue(this.getValue(idx), getMeasureType(idx));
     }
 
     /**
