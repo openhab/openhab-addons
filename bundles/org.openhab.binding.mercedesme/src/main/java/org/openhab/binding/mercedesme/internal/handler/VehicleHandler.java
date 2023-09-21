@@ -201,6 +201,7 @@ public class VehicleHandler extends BaseThingHandler {
                             cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                     .setRequestId(UUID.randomUUID().toString()).setWindowsClose(wc).build();
                             cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                            addBlocker(GROUP_VEHICLE);
                             accountHandler.get().sendCommand(cm);
                             break;
                         case 1:
@@ -211,6 +212,7 @@ public class VehicleHandler extends BaseThingHandler {
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                         .setRequestId(UUID.randomUUID().toString()).setWindowsOpen(wo).build();
                                 cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                                addBlocker(GROUP_VEHICLE);
                                 accountHandler.get().sendCommand(cm);
                             }
                             break;
@@ -222,11 +224,46 @@ public class VehicleHandler extends BaseThingHandler {
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                         .setRequestId(UUID.randomUUID().toString()).setWindowsVentilate(wv).build();
                                 cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                                addBlocker(GROUP_VEHICLE);
                                 accountHandler.get().sendCommand(cm);
                             }
                             break;
                         default:
                             logger.info("No Windows movement known for {}", command);
+                            break;
+                    }
+                }
+            } else if ("lock".equals(channelUID.getIdWithoutGroup())) {
+                String pin = accountHandler.get().config.get().pin;
+                String supported = thing.getProperties().get("commandDoorsLock");
+                if (Boolean.FALSE.toString().equals(supported)) {
+                    logger.info("Door Lock not supported {}", supported);
+                } else {
+                    switch (((DecimalType) command).intValue()) {
+                        case 0:
+                            DoorsLock dl = DoorsLock.newBuilder().build();
+                            CommandRequest lockCr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                    .setRequestId(UUID.randomUUID().toString()).setDoorsLock(dl).build();
+                            ClientMessage lockCm = ClientMessage.newBuilder().setCommandRequest(lockCr).build();
+                            addBlocker(GROUP_VEHICLE);
+                            accountHandler.get().sendCommand(lockCm);
+                            break;
+                        case 1:
+
+                            if (Constants.NOT_SET.equals(pin)) {
+                                logger.info("Security PIN missing! {}", pin);
+                            } else {
+                                DoorsUnlock du = DoorsUnlock.newBuilder().setPin(pin).build();
+                                CommandRequest unlockCr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                        .setRequestId(UUID.randomUUID().toString()).setDoorsUnlock(du).build();
+                                ClientMessage unlockCm = ClientMessage.newBuilder().setCommandRequest(unlockCr).build();
+                                addBlocker(GROUP_VEHICLE);
+                                accountHandler.get().sendCommand(unlockCm);
+                            }
+                            break;
+                        default:
+                            logger.info("No lock command mapped to {}", command);
+                            break;
                     }
                 }
             }
@@ -397,39 +434,6 @@ public class VehicleHandler extends BaseThingHandler {
                     accountHandler.get().sendCommand(cm);
                 }
             }
-        } else if (Constants.GROUP_LOCK.equals(channelUID.getGroupId())) {
-            /**
-             * Commands for Locks
-             */
-            if ("lock-control".equals(channelUID.getIdWithoutGroup())) {
-                String pin = accountHandler.get().config.get().pin;
-                String supported = thing.getProperties().get("commandDoorsLock");
-                if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Door Lock not supported {}", supported);
-                } else {
-                    if (OnOffType.ON.equals(command)) {
-                        DoorsLock dl = DoorsLock.newBuilder().build();
-                        CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
-                                .setRequestId(UUID.randomUUID().toString()).setDoorsLock(dl).build();
-                        ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                        accountHandler.get().sendCommand(cm);
-                    } else {
-                        if (Constants.NOT_SET.equals(pin)) {
-                            logger.info("Security PIN missing! {}", pin);
-                        } else {
-                            DoorsUnlock du = DoorsUnlock.newBuilder().setPin(pin).build();
-                            CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
-                                    .setRequestId(UUID.randomUUID().toString()).setDoorsUnlock(du).build();
-                            ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                            accountHandler.get().sendCommand(cm);
-                        }
-                    }
-                }
-            }
-        } else if (Constants.GROUP_WINDOWS.equals(channelUID.getGroupId())) {
-            /**
-             * Commands for Windows
-             */
         } else if (Constants.GROUP_DOORS.equals(channelUID.getGroupId())) {
             /**
              * Commands for Windows

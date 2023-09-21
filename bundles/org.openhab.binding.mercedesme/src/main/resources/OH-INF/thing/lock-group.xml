@@ -13,7 +13,6 @@
 			<channel id="rear-right" typeId="rear-right-lock-channel"/>
 			<channel id="deck-lid" typeId="deck-lid-lock-channel"/>
 			<channel id="gas-flap" typeId="egas-flap-lock-channel"/>
-			<channel id="lock-control" typeId="lock-control-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
