@@ -197,6 +197,18 @@ public class VehicleHandler extends BaseThingHandler {
                     ClientMessage cm;
                     switch (((DecimalType) command).intValue()) {
                         case 0:
+                            if (Constants.NOT_SET.equals(pin)) {
+                                logger.info("Security PIN missing {}", pin);
+                            } else {
+                                WindowsVentilate wv = WindowsVentilate.newBuilder().setPin(pin).build();
+                                cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                        .setRequestId(UUID.randomUUID().toString()).setWindowsVentilate(wv).build();
+                                cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                                addBlocker(GROUP_VEHICLE);
+                                accountHandler.get().sendCommand(cm);
+                            }
+                            break;
+                        case 1:
                             WindowsClose wc = WindowsClose.newBuilder().build();
                             cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                     .setRequestId(UUID.randomUUID().toString()).setWindowsClose(wc).build();
@@ -204,25 +216,13 @@ public class VehicleHandler extends BaseThingHandler {
                             addBlocker(GROUP_VEHICLE);
                             accountHandler.get().sendCommand(cm);
                             break;
-                        case 1:
+                        case 2:
                             if (Constants.NOT_SET.equals(pin)) {
                                 logger.info("Security PIN missing {}", pin);
                             } else {
                                 WindowsOpen wo = WindowsOpen.newBuilder().setPin(pin).build();
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                         .setRequestId(UUID.randomUUID().toString()).setWindowsOpen(wo).build();
-                                cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                                addBlocker(GROUP_VEHICLE);
-                                accountHandler.get().sendCommand(cm);
-                            }
-                            break;
-                        case 2:
-                            if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing {}", pin);
-                            } else {
-                                WindowsVentilate wv = WindowsVentilate.newBuilder().setPin(pin).build();
-                                cr = CommandRequest.newBuilder().setVin(config.get().vin)
-                                        .setRequestId(UUID.randomUUID().toString()).setWindowsVentilate(wv).build();
                                 cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
                                 addBlocker(GROUP_VEHICLE);
                                 accountHandler.get().sendCommand(cm);
@@ -680,7 +680,9 @@ public class VehicleHandler extends BaseThingHandler {
                 logger.trace("No TemperaturePointsValue found");
             }
         } else {
-            logger.trace("No TemperaturePoint Key found");
+            if (fullUpdate) {
+                logger.trace("No TemperaturePoint Key found");
+            }
         }
         if (fullUpdate && !hvacUpdated) {
             ChannelStateMap zoneMap = new ChannelStateMap("zone", Constants.GROUP_HVAC, UnDefType.UNDEF);
@@ -738,7 +740,9 @@ public class VehicleHandler extends BaseThingHandler {
                     logger.trace("No Charge Program property available for {}", thing.getThingTypeUID());
                 }
             } else {
-                logger.trace("No Charge Programs found");
+                if (fullUpdate) {
+                    logger.trace("No Charge Programs found");
+                }
             }
         }
         /**

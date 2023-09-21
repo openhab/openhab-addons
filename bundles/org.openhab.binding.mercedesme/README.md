@@ -186,9 +186,9 @@ State
 
 Command
 
-- 0 : Close
-- 1 : Open
-- 2 : Ventilate
+- 0 : Ventilate 
+- 1 : Close
+- 2 : Open
 
 Note: State mapping doesn't correspond to command mapping!
 That's the mapping of Mercedes SDK.

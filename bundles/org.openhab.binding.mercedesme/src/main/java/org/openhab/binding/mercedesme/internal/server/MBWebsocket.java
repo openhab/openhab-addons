@@ -58,7 +58,7 @@ public class MBWebsocket {
     // standard runtime of Websocket
     private final int WS_RUNTIME_MS = 60 * 1000;
     // addon time of 1 minute for a new send command
-    private final int ADDON_MESSAGE_TIME_MS = 60 * 10 * 1000;
+    private final int ADDON_MESSAGE_TIME_MS = 60 * 1000;
     // check Socket time elapsed each second
     private final int CHECK_INTERVAL_MS = 1000;
     // additional 5 minutes after keep alive
