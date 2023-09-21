@@ -108,8 +108,8 @@ public class TradfriBlindHandler extends TradfriThingHandler {
     }
 
     private void handlePositionCommand(Command command) {
-        if (command instanceof PercentType) {
-            setPosition((PercentType) command);
+        if (command instanceof PercentType percentCommand) {
+            setPosition(percentCommand);
         } else if (command instanceof StopMoveType) {
             if (StopMoveType.STOP.equals(command)) {
                 triggerStop();

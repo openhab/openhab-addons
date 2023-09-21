@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class PostResponse extends VocAnswer {
 
-    public static enum Status {
+    public enum Status {
         @SerializedName("Started")
         STARTED,
         @SerializedName("MessageDelivered")
@@ -38,7 +38,7 @@ public class PostResponse extends VocAnswer {
         SUCCESSFULL
     }
 
-    public static enum ServiceType {
+    public enum ServiceType {
         RHBLF, // Remote Honk and Blink Lights ?
         RDU, // Remote door unlock
         ERS, // Remote engine start

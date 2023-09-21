@@ -122,7 +122,7 @@ public class FritzboxActions implements ThingActions {
 
         Optional<SCPDServiceType> scpdService = scpdUtil.getDevice("")
                 .flatMap(deviceType -> deviceType.getServiceList().stream().filter(
-                        service -> service.getServiceId().equals("urn:DeviceConfig-com:serviceId:DeviceConfig1"))
+                        service -> "urn:DeviceConfig-com:serviceId:DeviceConfig1".equals(service.getServiceId()))
                         .findFirst());
         if (scpdService.isEmpty()) {
             logger.warn("Could not get service.");

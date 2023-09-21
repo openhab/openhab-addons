@@ -91,8 +91,7 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
         }
         String urtsiCommand = new StringBuilder(address).append(mappedChannel).append(rtsCommand.getActionKey())
                 .toString();
-        boolean executedSuccessfully = writeString(urtsiCommand);
-        return executedSuccessfully;
+        return writeString(urtsiCommand);
     }
 
     /**
