@@ -124,7 +124,7 @@ public class TivoStatusProvider {
         }
         for (int i = 1; i <= repeatCount; i++) {
             // Send the command
-            streamWriter.println(tivoCommand.toString() + "\r");
+            streamWriter.println(tivoCommand + "\r");
             if (streamWriter.checkError()) {
                 logger.debug("TiVo '{}' - called cmdTivoSend and encountered an IO error",
                         tivoConfigData.getCfgIdentifier());

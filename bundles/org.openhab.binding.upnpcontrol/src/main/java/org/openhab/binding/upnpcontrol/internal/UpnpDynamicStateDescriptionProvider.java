@@ -52,8 +52,7 @@ public class UpnpDynamicStateDescriptionProvider implements DynamicStateDescript
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
-        StateDescription description = descriptions.get(channel.getUID());
-        return description;
+        return descriptions.get(channel.getUID());
     }
 
     @Deactivate

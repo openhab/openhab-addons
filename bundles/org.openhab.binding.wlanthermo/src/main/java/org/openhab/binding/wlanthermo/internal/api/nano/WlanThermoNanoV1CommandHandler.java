@@ -130,7 +130,7 @@ public class WlanThermoNanoV1CommandHandler {
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_1)) {
             if (data.getPitmaster() != null && data.getPitmaster().getPm() != null
-                    && data.getPitmaster().getPm().size() > 0) {
+                    && !data.getPitmaster().getPm().isEmpty()) {
                 Pm pm = data.getPitmaster().getPm().get(0);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_PITMASTER_CHANNEL_ID:
@@ -175,9 +175,9 @@ public class WlanThermoNanoV1CommandHandler {
                         }
                         return false;
                     case CHANNEL_MIN:
-                        if (command instanceof QuantityType) {
+                        if (command instanceof QuantityType quantityCommand) {
                             try {
-                                channel.setMin(requireNonNull(((QuantityType<?>) command).toUnit(unit)).doubleValue());
+                                channel.setMin(requireNonNull(quantityCommand.toUnit(unit)).doubleValue());
                                 return true;
                             } catch (WlanThermoInputException ignore) {
                                 return false;
@@ -185,9 +185,9 @@ public class WlanThermoNanoV1CommandHandler {
                         }
                         return false;
                     case CHANNEL_MAX:
-                        if (command instanceof QuantityType) {
+                        if (command instanceof QuantityType quantityCommand) {
                             try {
-                                channel.setMax(requireNonNull(((QuantityType<?>) command).toUnit(unit)).doubleValue());
+                                channel.setMax(requireNonNull(quantityCommand.toUnit(unit)).doubleValue());
                                 return true;
                             } catch (WlanThermoInputException ignore) {
                                 return false;
@@ -219,8 +219,8 @@ public class WlanThermoNanoV1CommandHandler {
                         }
                         return false;
                     case CHANNEL_COLOR_NAME:
-                        if (command instanceof StringType) {
-                            channel.setColor(WlanThermoNanoV1Util.toHex(((StringType) command).toString()));
+                        if (command instanceof StringType stringCommand) {
+                            channel.setColor(WlanThermoNanoV1Util.toHex(stringCommand.toString()));
                             return true;
                         }
                         return false;
@@ -228,7 +228,7 @@ public class WlanThermoNanoV1CommandHandler {
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_1)) {
             if (data.getPitmaster() != null && data.getPitmaster().getPm() != null
-                    && data.getPitmaster().getPm().size() > 0) {
+                    && !data.getPitmaster().getPm().isEmpty()) {
                 Pm pm = data.getPitmaster().getPm().get(0);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_PITMASTER_CHANNEL_ID:
@@ -246,8 +246,8 @@ public class WlanThermoNanoV1CommandHandler {
                         }
                     case CHANNEL_PITMASTER_STATE:
                         String state = ((StringType) command).toString();
-                        if (state.equalsIgnoreCase("off") || state.equalsIgnoreCase("manual")
-                                || state.equalsIgnoreCase("auto")) {
+                        if ("off".equalsIgnoreCase(state) || "manual".equalsIgnoreCase(state)
+                                || "auto".equalsIgnoreCase(state)) {
                             pm.setTyp(state);
                             return true;
                         }
@@ -260,7 +260,6 @@ public class WlanThermoNanoV1CommandHandler {
 
     public static String getTrigger(ChannelUID channelUID, Data data)
             throws WlanThermoUnknownChannelException, WlanThermoInputException {
-
         String groupId = requireNonNull(channelUID.getGroupId());
         List<Channel> channelList = data.getChannel();
 

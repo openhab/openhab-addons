@@ -259,8 +259,8 @@ public class UniFiSiteActions implements ThingActions {
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof UniFiSiteThingHandler) {
-            this.handler = (UniFiSiteThingHandler) handler;
+        if (handler instanceof UniFiSiteThingHandler siteThingHandler) {
+            this.handler = siteThingHandler;
         }
     }
 
