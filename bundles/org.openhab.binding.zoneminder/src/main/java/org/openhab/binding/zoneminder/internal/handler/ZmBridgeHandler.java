@@ -222,7 +222,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MonitorDiscoveryService.class);
+        return Set.of(MonitorDiscoveryService.class);
     }
 
     public boolean isBackgroundDiscoveryEnabled() {
@@ -294,8 +294,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         try {
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.OK_200) {
-                RawType image = new RawType(response.getContent(), response.getHeaders().get(HttpHeader.CONTENT_TYPE));
-                return image;
+                return new RawType(response.getContent(), response.getHeaders().get(HttpHeader.CONTENT_TYPE));
             } else {
                 errorMsg = String.format("HTTP GET failed: %d, %s", response.getStatus(), response.getReason());
             }

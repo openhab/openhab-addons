@@ -135,8 +135,8 @@ public class TradfriAirPurifierData extends TradfriDeviceData {
     public @Nullable State getAirQualityRating() {
         State pm25State = getAirQualityPM25();
         if (pm25State != null) {
-            if (pm25State instanceof Number) {
-                int pm25Value = ((Number) pm25State).intValue();
+            if (pm25State instanceof Number number) {
+                int pm25Value = number.intValue();
                 int qualityRating = 1;
 
                 if (pm25Value >= AIR_PURIFIER_AIR_QUALITY_BAD) {

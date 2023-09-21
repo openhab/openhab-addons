@@ -27,7 +27,7 @@ public class YIOremoteBindingConstants {
     public static final String BINDING_ID = "yioremote";
 
     // List of all used global variables
-    public static enum YioRemoteDockHandleStatus {
+    public enum YioRemoteDockHandleStatus {
         UNINITIALIZED_STATE,
         AUTHENTICATION_PROCESS,
         AUTHENTICATION_FAILED,
@@ -37,15 +37,15 @@ public class YIOremoteBindingConstants {
         CONNECTION_FAILED,
         CONNECTION_ESTABLISHED,
         COMMUNICATION_ERROR,
-        RECONNECTION_PROCESS;
+        RECONNECTION_PROCESS
     }
 
-    public static enum YioRemoteMessages {
+    public enum YioRemoteMessages {
         IR_SEND,
         AUTHENTICATE_MESSAGE,
         HEARTBEAT_MESSAGE,
         IR_RECEIVER_ON,
-        IR_RECEIVER_OFF;
+        IR_RECEIVER_OFF
     }
 
     // List of all Thing Type UIDs
