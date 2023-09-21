@@ -52,6 +52,7 @@ public class BoschSHCBindingConstants {
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
     public static final String CHANNEL_SCENARIO = "triggered-scenario";
+    public static final String CHANNEL_EXECUTE_SCENARIO = "execute-scenario";
     public static final String CHANNEL_POWER_SWITCH = "power-switch";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_TEMPERATURE_RATING = "temperature-rating";

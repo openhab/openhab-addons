@@ -11,6 +11,7 @@
 
 		<channels>
 			<channel id="triggered-scenario" typeId="triggered-scenario"/>
+			<channel id="execute-scenario" typeId="execute-scenario"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
@@ -529,6 +530,11 @@
 		<label>Triggered Scenario</label>
 		<description>Name of the triggered scenario</description>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="execute-scenario">
+		<item-type>String</item-type>
+		<label>Execute Scenario</label>
+		<description>Name of the scenario to execute</description>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -102,8 +103,11 @@ public class BridgeHandler extends BaseBridgeHandler {
      */
     private @Nullable ThingDiscoveryService thingDiscoveryService;
 
+    private final @NonNullByDefault ScenarioHandler scenarioHandler;
+
     public BridgeHandler(Bridge bridge) {
         super(bridge);
+        scenarioHandler = new ScenarioHandler(new HashMap<>());
 
         this.longPolling = new LongPolling(this.scheduler, this::handleLongPollResult, this::handleLongPollFailure);
     }
@@ -198,6 +202,10 @@ public class BridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // commands are handled by individual device handlers
+        if (channelUID.getId().equals(BoschSHCBindingConstants.CHANNEL_EXECUTE_SCENARIO)
+                && !command.toString().equals("REFRESH") && this.httpClient != null) {
+            this.scenarioHandler.executeScenario(this.httpClient, command.toString());
+        }
     }
 
     /**
