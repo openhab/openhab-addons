@@ -59,7 +59,7 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.Temperatu
 class VehicleHandlerTest {
 
     @Test
-    public void TestBEVWIthoutCapacities() {
+    public void testBEVFullUpdateNoCapacities() {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
@@ -81,8 +81,8 @@ class VehicleHandlerTest {
         assertEquals(8, updateListener.getUpdatesForGroup("windows"), "Windows Update Count");
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
-        assertEquals(8, updateListener.getUpdatesForGroup("service"), "Service Update Count");
-        // assertEquals(13 - 4, updateListener.getUpdatesForGroup("range"), "Range Update Count");
+        assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
+        assertEquals(6, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -90,7 +90,7 @@ class VehicleHandlerTest {
     }
 
     @Test
-    public void TestHybridWIthoutCapacities() {
+    public void testHybridFullUpdateNoCapacities() {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_HYBRID);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.HYBRID));
@@ -113,7 +113,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Trip Update Count");
         assertEquals(8, updateListener.getUpdatesForGroup("service"), "Trip Update Count");
-        assertEquals(13 - 4, updateListener.getUpdatesForGroup("range"), "Update Upadte Count");
+        assertEquals(13, updateListener.getUpdatesForGroup("range"), "Update Upadte Count");
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Update Upadte Count");
         assertEquals(7, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -121,7 +121,7 @@ class VehicleHandlerTest {
     }
 
     @Test
-    public void TestHybridWithCapacities() {
+    public void testHybridFullUpadteWithCapacities() {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_HYBRID);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", "hybrid"));
