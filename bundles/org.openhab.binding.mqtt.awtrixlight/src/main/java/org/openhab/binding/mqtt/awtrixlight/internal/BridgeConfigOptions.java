@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.awtrixlight.internal;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -24,5 +26,5 @@ public class BridgeConfigOptions {
     public String basetopic = "awtrix";
     public int appLockTimeout = 10;
     public boolean discoverDefaultApps = false;
-    public int lowBatteryThreshold = 25;
+    public BigDecimal lowBatteryThreshold = new BigDecimal(25);
 }

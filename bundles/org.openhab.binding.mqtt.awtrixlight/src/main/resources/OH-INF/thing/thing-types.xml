@@ -59,15 +59,16 @@
 			<channel id="textCase" typeId="textCase"/>
 			<channel id="topText" typeId="topText"/>
 			<channel id="textOffset" typeId="textOffset"/>
+			<channel id="blinkText" typeId="blinkText"/>
+			<channel id="fadeText" typeId="fadeText"/>
+			<channel id="scrollSpeed" typeId="scrollSpeed"/>
 			<channel id="center" typeId="center"/>
 			<channel id="color" typeId="color"/>
 			<channel id="gradientColor" typeId="gradientColor"/>
-			<channel id="blinkText" typeId="blinkText"/>
-			<channel id="fadeText" typeId="fadeText"/>
-			<channel id="background" typeId="background"/>
 			<channel id="rainbow" typeId="rainbow"/>
 			<channel id="icon" typeId="icon"/>
 			<channel id="pushIcon" typeId="pushIcon"/>
+			<channel id="background" typeId="background"/>
 			<channel id="duration" typeId="duration"/>
 			<channel id="line" typeId="line"/>
 			<channel id="bar" typeId="bar"/>
@@ -75,7 +76,6 @@
 			<channel id="progress" typeId="progress"/>
 			<channel id="progressColor" typeId="progressColor"/>
 			<channel id="progressBackground" typeId="progressBackground"/>
-			<channel id="scrollSpeed" typeId="scrollSpeed"/>
 			<channel id="effect" typeId="effect"/>
 			<channel id="effectSpeed" typeId="effectSpeed"/>
 			<channel id="effectPalette" typeId="effectPalette"/>

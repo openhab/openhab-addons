@@ -21,7 +21,7 @@
 				recommended to ignore them during app discovery.</description>
 			<default>false</default>
 		</parameter>
-		<parameter name="lowBatteryThreshold" type="integer" required="true">
+		<parameter name="lowBatteryThreshold" type="decimal" required="true">
 			<label>Low battery threshold</label>
 			<description>Threshold for issuing a low battery warning.</description>
 			<default>25</default>
@@ -37,7 +37,7 @@
 			<label>Button controlled</label>
 			<description><![CDATA[
 				Activate if the app can be controlled by the user.
-				The select button locks on current app and the app will emit subsequent button events until the appLockTimeout is reached. Every button press before the timeout will reset timeout.
+				The select button locks on current app and the app will emit subsequent button events until the appLockTimeout of the bridge is reached. Every button press before the timeout will reset timeout.
 				]]>
 			</description>
 			<default>false</default>
