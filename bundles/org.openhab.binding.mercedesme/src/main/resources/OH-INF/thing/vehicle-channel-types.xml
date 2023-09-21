@@ -31,9 +31,9 @@
 		</state>
 		<command>
 			<options>
-				<option value="0">Close</option>
-				<option value="1">Open</option>
-				<option value="2">Ventilate</option>
+				<option value="0">Ventilate</option>
+				<option value="1">Close</option>
+				<option value="2">Open</option>
 			</options>
 		</command>
 	</channel-type>
