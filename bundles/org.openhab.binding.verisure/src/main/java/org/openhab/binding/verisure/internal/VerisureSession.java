@@ -761,7 +761,7 @@ public class VerisureSession {
                         if (deviceId != null) {
                             deviceId = VerisureThingConfiguration.normalizeDeviceId(deviceId);
                             VerisureThingDTO mouseThing = verisureThings.get(deviceId);
-                            if (mouseThing != null && mouseThing instanceof VerisureMiceDetectionDTO) {
+                            if (mouseThing instanceof VerisureMiceDetectionDTO) {
                                 VerisureMiceDetectionDTO miceDetectorThing = (VerisureMiceDetectionDTO) mouseThing;
                                 miceDetectorThing.setTemperatureValue(climate.getTemperatureValue());
                                 miceDetectorThing.setTemperatureTime(climate.getTemperatureTimestamp());

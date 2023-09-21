@@ -151,7 +151,7 @@ public class WindcentraleDiscoveryService extends AbstractDiscoveryService
     }
 
     private void addWindmillDiscoveryResult(ThingUID bridgeUID, Windmill windmill, int shares) {
-        String deviceId = windmill.getName().toLowerCase().replaceAll(" ", "-");
+        String deviceId = windmill.getName().toLowerCase().replace(" ", "-");
         ThingUID thingUID = new ThingUID(THING_TYPE_WINDMILL, bridgeUID, deviceId);
 
         thingDiscovered(DiscoveryResultBuilder.create(thingUID) //

@@ -310,7 +310,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             updateProperties(properties);
 
             // Update channels
-            if (zwaveController.getData().getSecureInclusion().getValue().equals("true")) {
+            if ("true".equals(zwaveController.getData().getSecureInclusion().getValue())) {
                 updateState(SECURE_INCLUSION_CHANNEL, OnOffType.ON);
             } else {
                 updateState(SECURE_INCLUSION_CHANNEL, OnOffType.OFF);

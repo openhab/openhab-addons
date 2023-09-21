@@ -73,7 +73,7 @@ public class VeluxProductPosition {
      *
      * @author AndrewFG - Initial contribution.
      */
-    public static enum PositionType {
+    public enum PositionType {
         ABSOLUTE_VALUE(0f),
         OFFSET_POSITIVE(1f),
         OFFSET_NEGATIVE(-1f);

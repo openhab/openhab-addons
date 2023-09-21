@@ -70,12 +70,12 @@ public class BulbDevice extends SmartHomeDevice {
         final int transitionPeriod = configuration.transitionPeriod;
         final HasErrorResponse response;
 
-        if (command instanceof OnOffType && CHANNELS_BULB_SWITCH.contains(channelId)) {
-            response = handleOnOffType(channelId, (OnOffType) command, transitionPeriod);
-        } else if (command instanceof HSBType && CHANNEL_COLOR.equals(channelId)) {
-            response = handleHSBType(channelId, (HSBType) command, transitionPeriod);
-        } else if (command instanceof DecimalType) {
-            response = handleDecimalType(channelId, (DecimalType) command, transitionPeriod);
+        if (command instanceof OnOffType onOffCommand && CHANNELS_BULB_SWITCH.contains(channelId)) {
+            response = handleOnOffType(channelId, onOffCommand, transitionPeriod);
+        } else if (command instanceof HSBType hsbCommand && CHANNEL_COLOR.equals(channelId)) {
+            response = handleHSBType(channelId, hsbCommand, transitionPeriod);
+        } else if (command instanceof DecimalType decimalCommand) {
+            response = handleDecimalType(channelId, decimalCommand, transitionPeriod);
         } else {
             return false;
         }

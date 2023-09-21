@@ -135,8 +135,8 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
             return UnDefType.UNDEF;
         } else {
             return new DecimalType(site.getCache().countClients(site,
-                    c -> c instanceof UniFiWirelessClient
-                            && (wlan.getName() != null && wlan.getName().equals(((UniFiWirelessClient) c).getEssid()))
+                    c -> c instanceof UniFiWirelessClient wirelessClient
+                            && (wlan.getName() != null && wlan.getName().equals(wirelessClient.getEssid()))
                             && filter.test(c)));
         }
     }

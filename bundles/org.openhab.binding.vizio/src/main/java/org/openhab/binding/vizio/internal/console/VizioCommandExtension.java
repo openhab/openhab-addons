@@ -65,8 +65,8 @@ public class VizioCommandExtension extends AbstractConsoleCommandExtension {
             VizioHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof VizioHandler) {
-                    handler = (VizioHandler) thingHandler;
+                if (thingHandler instanceof VizioHandler vizioHandler) {
+                    handler = vizioHandler;
                 }
             }
             if (thing == null) {

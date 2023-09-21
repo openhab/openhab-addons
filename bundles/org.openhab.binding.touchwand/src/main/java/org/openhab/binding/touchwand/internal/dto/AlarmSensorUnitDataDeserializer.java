@@ -69,7 +69,7 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
 
             for (Entry<String, JsonElement> entry : currentStatusObj.entrySet()) {
                 String key = entry.getKey();
-                String splits[] = key.split("_"); // the key is xxxx_n where xxx is sensor type and n is
+                String[] splits = key.split("_"); // the key is xxxx_n where xxx is sensor type and n is
                 String keyName = splits[0];
                 int index = 0;
 

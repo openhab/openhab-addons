@@ -51,9 +51,9 @@ public class DesklampDevice extends DeviceBase {
                     JsonArray status = result.get("result").getAsJsonArray();
 
                     // power:
-                    if (status.get(0).toString().equals("\"off\"")) {
+                    if ("\"off\"".equals(status.get(0).toString())) {
                         mDeviceStatus.setPowerOff(true);
-                    } else if (status.get(0).toString().equals("\"on\"")) {
+                    } else if ("\"on\"".equals(status.get(0).toString())) {
                         mDeviceStatus.setPowerOff(false);
                     }
 

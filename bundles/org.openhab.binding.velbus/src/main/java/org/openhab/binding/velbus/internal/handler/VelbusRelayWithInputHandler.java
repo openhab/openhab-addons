@@ -58,17 +58,15 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
             return;
         }
 
-        if (isButtonChannel(channelUID) && command instanceof StringType) {
-            StringType stringTypeCommand = (StringType) command;
-
-            if (stringTypeCommand.equals(PRESSED) || stringTypeCommand.equals(LONG_PRESSED)) {
+        if (isButtonChannel(channelUID) && command instanceof StringType stringCommand) {
+            if (stringCommand.equals(PRESSED) || stringCommand.equals(LONG_PRESSED)) {
                 VelbusButtonPacket packet = new VelbusButtonPacket(getModuleAddress().getChannelIdentifier(channelUID));
 
                 packet.Pressed();
                 velbusBridgeHandler.sendPacket(packet.getBytes());
                 triggerChannel("CH6t", CommonTriggerEvents.PRESSED);
 
-                if (stringTypeCommand.equals(LONG_PRESSED)) {
+                if (stringCommand.equals(LONG_PRESSED)) {
                     packet.LongPressed();
                     velbusBridgeHandler.sendPacket(packet.getBytes());
                     triggerChannel("CH6t", CommonTriggerEvents.LONG_PRESSED);

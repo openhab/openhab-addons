@@ -199,8 +199,8 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             getThing().getThings().forEach((thing) -> {
                 final ThingHandler handler = thing.getHandler();
 
-                if (handler instanceof UniFiBaseThingHandler) {
-                    ((UniFiBaseThingHandler<?, ?>) handler).refresh();
+                if (handler instanceof UniFiBaseThingHandler baseThingHandler) {
+                    baseThingHandler.refresh();
                 }
             });
         }

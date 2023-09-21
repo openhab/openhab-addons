@@ -964,7 +964,7 @@ public class TeslaChannelSelectorProxy {
         VEHICLE_NAME("vehicle_name", "name", StringType.class, true) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                return super.getState(s.replaceAll("\"", ""));
+                return super.getState(s.replace("\"", ""));
             }
         },
         VALET_MODE("valet_mode", "valetmode", OnOffType.class, false) {

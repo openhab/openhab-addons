@@ -180,32 +180,32 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                 }
                 case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR:
                 case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR: {
-                    if (command instanceof DecimalType) {
-                        byte wakeupHour = ((DecimalType) command).byteValue();
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte wakeupHour = decimalCommand.byteValue();
                         alarmClock.setWakeupHour(wakeupHour);
                     }
                     break;
                 }
                 case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE:
                 case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE: {
-                    if (command instanceof DecimalType) {
-                        byte wakeupMinute = ((DecimalType) command).byteValue();
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte wakeupMinute = decimalCommand.byteValue();
                         alarmClock.setWakeupMinute(wakeupMinute);
                     }
                     break;
                 }
                 case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR:
                 case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR: {
-                    if (command instanceof DecimalType) {
-                        byte bedTimeHour = ((DecimalType) command).byteValue();
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte bedTimeHour = decimalCommand.byteValue();
                         alarmClock.setBedtimeHour(bedTimeHour);
                     }
                     break;
                 }
                 case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE:
                 case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE: {
-                    if (command instanceof DecimalType) {
-                        byte bedTimeMinute = ((DecimalType) command).byteValue();
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte bedTimeMinute = decimalCommand.byteValue();
                         alarmClock.setBedtimeMinute(bedTimeMinute);
                     }
                     break;

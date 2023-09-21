@@ -76,8 +76,8 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(final ThingHandler handler) {
-        if (handler instanceof UniFiControllerThingHandler) {
-            bridgeHandler = (UniFiControllerThingHandler) handler;
+        if (handler instanceof UniFiControllerThingHandler controllerThingHandler) {
+            bridgeHandler = controllerThingHandler;
         }
     }
 

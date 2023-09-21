@@ -140,7 +140,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         TapoErrorHandler configErr = new TapoErrorHandler();
 
         /* check bridge */
-        if (bridge == null || !(bridge instanceof TapoBridgeHandler)) {
+        if (!(bridge instanceof TapoBridgeHandler)) {
             configErr.raiseError(ERR_CONFIG_NO_BRIDGE);
             return configErr;
         }

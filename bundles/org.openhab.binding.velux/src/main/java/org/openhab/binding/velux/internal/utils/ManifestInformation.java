@@ -49,8 +49,6 @@ public class ManifestInformation {
      * @return <B>bundleVersion</B> the resulted bundle version as {@link String}.
      */
     public static String getBundleVersion() {
-        String osgiBundleVersion = FrameworkUtil.getBundle(ManifestInformation.class).getBundleContext().getBundle()
-                .toString();
-        return osgiBundleVersion;
+        return FrameworkUtil.getBundle(ManifestInformation.class).getBundleContext().getBundle().toString();
     }
 }

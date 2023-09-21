@@ -26,7 +26,7 @@ public class VehicleData {
     public String option_codes;
     public String vehicle_id;
     public String vin;
-    public String tokens[];
+    public String[] tokens;
     public String state;
     public boolean remote_start_enabled;
     public boolean calendar_enabled;

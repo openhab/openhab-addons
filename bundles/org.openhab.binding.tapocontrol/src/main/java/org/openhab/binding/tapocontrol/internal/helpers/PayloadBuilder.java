@@ -44,10 +44,10 @@ public class PayloadBuilder {
      * @param value parameter value (typeOf Bool,Number or String)
      */
     public void addParameter(String name, Object value) {
-        if (value instanceof Boolean) {
-            this.parameters.addProperty(name, (Boolean) value);
-        } else if (value instanceof Number) {
-            this.parameters.addProperty(name, (Number) value);
+        if (value instanceof Boolean bool) {
+            this.parameters.addProperty(name, bool);
+        } else if (value instanceof Number number) {
+            this.parameters.addProperty(name, number);
         } else {
             this.parameters.addProperty(name, value.toString());
         }

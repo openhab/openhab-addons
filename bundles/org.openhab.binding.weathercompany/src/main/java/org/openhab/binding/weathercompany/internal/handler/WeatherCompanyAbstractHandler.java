@@ -273,8 +273,7 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
     protected DateTimeType getLocalDateTimeType(long epochSeconds) {
         Instant instant = Instant.ofEpochSecond(epochSeconds);
         ZonedDateTime localDateTime = instant.atZone(getZoneId());
-        DateTimeType dateTimeType = new DateTimeType(localDateTime);
-        return dateTimeType;
+        return new DateTimeType(localDateTime);
     }
 
     /*

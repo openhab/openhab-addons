@@ -14,7 +14,6 @@ package org.openhab.binding.yioremote.internal;
 
 import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.THING_TYPE_YIOREMOTEDOCK;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.yioremote", service = ThingHandlerFactory.class)
 public class YIOremoteHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_YIOREMOTEDOCK);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_YIOREMOTEDOCK);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

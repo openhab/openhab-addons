@@ -75,7 +75,7 @@ public class DescriptionLoader {
 
                 // currently, the old and new location of the WebThings schema are supported only.
                 // In the future, other schemas such as http://iotschema.org/docs/full.html may be supported
-                if (schema.equals("https://webthings.io/schemas") || schema.equals("https://iot.mozilla.org/schemas")) {
+                if ("https://webthings.io/schemas".equals(schema) || "https://iot.mozilla.org/schemas".equals(schema)) {
                     return description;
                 }
                 logger.debug(

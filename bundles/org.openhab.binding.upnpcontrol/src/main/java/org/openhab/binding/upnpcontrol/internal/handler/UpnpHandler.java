@@ -333,7 +333,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * Invoke ConnectionComplete on UPnP Connection Manager.
      */
     protected void connectionComplete() {
-        Map<String, String> inputs = Collections.singletonMap(CONNECTION_ID, Integer.toString(connectionId));
+        Map<String, String> inputs = Map.of(CONNECTION_ID, Integer.toString(connectionId));
 
         invokeAction(CONNECTION_MANAGER, "ConnectionComplete", inputs);
     }
@@ -367,7 +367,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         isRcsIdSet = new CompletableFuture<Boolean>();
 
         // ConnectionID will default to 0 if not set through prepareForConnection method
-        Map<String, String> inputs = Collections.singletonMap(CONNECTION_ID, Integer.toString(connectionId));
+        Map<String, String> inputs = Map.of(CONNECTION_ID, Integer.toString(connectionId));
 
         invokeAction(CONNECTION_MANAGER, "GetCurrentConnectionInfo", inputs);
     }

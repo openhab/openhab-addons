@@ -51,7 +51,7 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
     private BigDecimal lastEventId = BigDecimal.ZERO;
     private long lastEventTime = 0;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_EVENT_LOG);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_EVENT_LOG);
 
     public VerisureEventLogThingHandler(Thing thing) {
         super(thing);
@@ -83,7 +83,7 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
 
     private void updateEventLogState(VerisureEventLogDTO eventLogJSON) {
         EventLog eventLog = eventLogJSON.getData().getInstallation().getEventLog();
-        if (eventLog.getPagedList().size() > 0) {
+        if (!eventLog.getPagedList().isEmpty()) {
             getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID))
                     .forEach(channelUID -> {
                         State state = getValue(channelUID.getId(), eventLogJSON, eventLog);

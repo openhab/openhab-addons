@@ -120,8 +120,8 @@ public class TellstickHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof TelldusBridgeHandler) {
-            unregisterDeviceDiscoveryService((TelldusBridgeHandler) thingHandler);
+        if (thingHandler instanceof TelldusBridgeHandler telldusBridgeHandler) {
+            unregisterDeviceDiscoveryService(telldusBridgeHandler);
         }
     }
 }

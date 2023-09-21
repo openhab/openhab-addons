@@ -112,8 +112,8 @@ public class TwitterActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TwitterHandler) {
-            this.handler = (TwitterHandler) handler;
+        if (handler instanceof TwitterHandler twitterHandler) {
+            this.handler = twitterHandler;
         }
     }
 

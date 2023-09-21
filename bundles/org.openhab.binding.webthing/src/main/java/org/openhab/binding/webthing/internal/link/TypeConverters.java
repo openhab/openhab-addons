@@ -53,7 +53,7 @@ class TypeConverters {
             case "color":
                 return new ColorTypeConverter();
             case "number":
-                if (propertyType.toLowerCase(Locale.ENGLISH).equals("integer")) {
+                if ("integer".equals(propertyType.toLowerCase(Locale.ENGLISH))) {
                     return new IntegerTypeConverter();
                 } else {
                     return new NumberTypeConverter();
@@ -169,8 +169,8 @@ class TypeConverters {
         @Override
         public Command toStateCommand(Object propertyValue) {
             String textValue = propertyValue.toString();
-            if (propertyValue instanceof Collection) {
-                textValue = ((Collection<Object>) propertyValue).stream()
+            if (propertyValue instanceof Collection collection) {
+                textValue = collection.stream()
                         .reduce("", (entry1, entry2) -> entry1.toString() + "\n" + entry2.toString()).toString();
             }
             return StringType.valueOf(textValue);

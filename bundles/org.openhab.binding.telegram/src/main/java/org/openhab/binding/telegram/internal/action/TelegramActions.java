@@ -672,11 +672,11 @@ public class TelegramActions implements ThingActions {
 
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String chatId, @Nullable String replyId,
             @Nullable String message) {
-        if (actions instanceof TelegramActions) {
+        if (actions instanceof TelegramActions telegramActions) {
             if (chatId == null) {
                 return false;
             }
-            return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
+            return telegramActions.sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
         } else {
             throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
         }
@@ -689,11 +689,11 @@ public class TelegramActions implements ThingActions {
 
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String chatId, @Nullable String callbackId,
             @Nullable String messageId, @Nullable String message) {
-        if (actions instanceof TelegramActions) {
+        if (actions instanceof TelegramActions telegramActions) {
             if (chatId == null) {
                 return false;
             }
-            return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), callbackId,
+            return telegramActions.sendTelegramAnswer(Long.valueOf(chatId), callbackId,
                     messageId != null ? Long.parseLong(messageId) : null, message);
         } else {
             throw new IllegalArgumentException("Actions is not an instance of TelegramActions");

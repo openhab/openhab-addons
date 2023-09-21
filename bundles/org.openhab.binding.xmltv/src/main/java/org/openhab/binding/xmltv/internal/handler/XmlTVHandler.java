@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.xmltv.internal.handler;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.time.Instant;
@@ -77,7 +76,7 @@ public class XmlTVHandler extends BaseBridgeHandler {
             XMLStreamReader xsr = null;
             try {
                 // This can take some seconds depending upon weight of the XmlTV source file
-                xsr = xif.createXMLStreamReader(new FileInputStream(new File(config.filePath)), config.encoding);
+                xsr = xif.createXMLStreamReader(new FileInputStream(config.filePath), config.encoding);
                 try {
                     Tv xmlFile = (Tv) unmarshaller.unmarshal(xsr);
                     // Remove all finished programmes

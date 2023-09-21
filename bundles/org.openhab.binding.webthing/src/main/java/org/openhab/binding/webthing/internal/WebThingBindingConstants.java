@@ -13,7 +13,7 @@
 package org.openhab.binding.webthing.internal;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -31,8 +31,8 @@ public class WebThingBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "generic");
 
-    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(WebThingBindingConstants.THING_TYPE_UID);
+    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(WebThingBindingConstants.THING_TYPE_UID);
 
     public static final String MDNS_SERVICE_TYPE = "_webthing._tcp.local.";
 }

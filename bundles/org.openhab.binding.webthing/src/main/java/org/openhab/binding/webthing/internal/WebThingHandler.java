@@ -261,9 +261,9 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof State) {
+        if (command instanceof State stateCommand) {
             itemChangedListenerMap.getOrDefault(channelUID, EMPTY_ITEM_CHANGED_LISTENER).onItemStateChanged(channelUID,
-                    (State) command);
+                    stateCommand);
         } else if (command instanceof RefreshType) {
             tryReconnect();
         }

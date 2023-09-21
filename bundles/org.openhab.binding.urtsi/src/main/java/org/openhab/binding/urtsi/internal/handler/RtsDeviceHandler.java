@@ -42,8 +42,8 @@ public class RtsDeviceHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(UrtsiBindingConstants.POSITION)) {
             RtsCommand rtsCommand = null;
-            if (command instanceof UpDownType) {
-                switch ((UpDownType) command) {
+            if (command instanceof UpDownType upDownCommand) {
+                switch (upDownCommand) {
                     case UP:
                         rtsCommand = RtsCommand.UP;
                         break;
@@ -53,8 +53,8 @@ public class RtsDeviceHandler extends BaseThingHandler {
                     default:
                         break;
                 }
-            } else if (command instanceof StopMoveType) {
-                switch ((StopMoveType) command) {
+            } else if (command instanceof StopMoveType stopMoveCommand) {
+                switch (stopMoveCommand) {
                     case STOP:
                         rtsCommand = RtsCommand.STOP;
                         break;
@@ -65,11 +65,10 @@ public class RtsDeviceHandler extends BaseThingHandler {
             if (rtsCommand != null) {
                 // We delegate the execution to the bridge handler
                 ThingHandler bridgeHandler = getBridge().getHandler();
-                if (bridgeHandler instanceof UrtsiDeviceHandler) {
-                    boolean executedSuccessfully = ((UrtsiDeviceHandler) bridgeHandler).executeRtsCommand(getThing(),
-                            rtsCommand);
-                    if (executedSuccessfully && command instanceof State) {
-                        updateState(channelUID, (State) command);
+                if (bridgeHandler instanceof UrtsiDeviceHandler deviceHandler) {
+                    boolean executedSuccessfully = deviceHandler.executeRtsCommand(getThing(), rtsCommand);
+                    if (executedSuccessfully && command instanceof State state) {
+                        updateState(channelUID, state);
                     }
                 }
             }

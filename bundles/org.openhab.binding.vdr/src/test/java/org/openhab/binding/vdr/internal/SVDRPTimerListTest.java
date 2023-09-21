@@ -27,10 +27,14 @@ import org.openhab.binding.vdr.internal.svdrp.SVDRPTimerList;
  */
 @NonNullByDefault
 public class SVDRPTimerListTest {
-    private final String timerListResponseTimerActive = "1 1:1:2021-01-12:2013:2110:50:99:Charité (1/6)~Eiserne Lunge:Test\n"
-            + "2 9:1:2021-01-12:2058:2200:50:99:Charité (2/6)~Blutsauger:Test";
-    private final String timerListResponseTimerNotActive = "1 1:1:2021-01-12:2013:2110:50:99:Charité (1/6)~Eiserne Lunge:Test\n"
-            + "2 1:1:2021-01-12:2058:2200:50:99:Charité (2/6)~Blutsauger:Test";
+    private final String timerListResponseTimerActive = """
+            1 1:1:2021-01-12:2013:2110:50:99:Charité (1/6)~Eiserne Lunge:Test
+            2 9:1:2021-01-12:2058:2200:50:99:Charité (2/6)~Blutsauger:Test\
+            """;
+    private final String timerListResponseTimerNotActive = """
+            1 1:1:2021-01-12:2013:2110:50:99:Charité (1/6)~Eiserne Lunge:Test
+            2 1:1:2021-01-12:2058:2200:50:99:Charité (2/6)~Blutsauger:Test\
+            """;
 
     @Test
     public void testParseTimerList() throws SVDRPException {

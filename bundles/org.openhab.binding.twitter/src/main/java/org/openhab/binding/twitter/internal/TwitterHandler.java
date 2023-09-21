@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -82,7 +82,7 @@ public class TwitterHandler extends BaseThingHandler {
     // creates list of available Actions
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(TwitterActions.class);
+        return List.of(TwitterActions.class);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class TwitterHandler extends BaseThingHandler {
             Twitter localClient = client;
             if (localClient != null) {
                 ResponseList<Status> statuses = localClient.getUserTimeline();
-                if (statuses.size() > 0) {
+                if (!statuses.isEmpty()) {
                     updateState(CHANNEL_LASTTWEET, StringType.valueOf(statuses.get(0).getText()));
                 } else {
                     logger.debug("No Statuses Found");

@@ -156,10 +156,10 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
                     turnOn(device);
                 } else if (command == OnOffType.OFF) {
                     turnOff(device);
-                } else if (command instanceof PercentType) {
-                    dim(device, (PercentType) command);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    increaseDecrease(device, ((IncreaseDecreaseType) command));
+                } else if (command instanceof PercentType percentCommand) {
+                    dim(device, percentCommand);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    increaseDecrease(device, increaseDecreaseCommand);
                 }
             } else if (device instanceof SwitchableDevice) {
                 if (command == OnOffType.ON) {
@@ -198,29 +198,29 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
         double value = command.doubleValue();
 
         // 0 means OFF and 100 means ON
-        if (value == 0 && dev instanceof SwitchableDevice) {
-            ((SwitchableDevice) dev).off();
-        } else if (value == 100 && dev instanceof SwitchableDevice) {
-            ((SwitchableDevice) dev).on();
-        } else if (dev instanceof DimmableDevice) {
+        if (value == 0 && dev instanceof SwitchableDevice device) {
+            device.off();
+        } else if (value == 100 && dev instanceof SwitchableDevice device) {
+            device.on();
+        } else if (dev instanceof DimmableDevice device) {
             long tdVal = Math.round((value / 100) * 255);
-            ((DimmableDevice) dev).dim((int) tdVal);
+            device.dim((int) tdVal);
         } else {
             throw new TelldusBindingException("Cannot send DIM to " + dev);
         }
     }
 
     private void turnOff(Device dev) throws TellstickException {
-        if (dev instanceof SwitchableDevice) {
-            ((SwitchableDevice) dev).off();
+        if (dev instanceof SwitchableDevice device) {
+            device.off();
         } else {
             throw new TelldusBindingException("Cannot send OFF to " + dev);
         }
     }
 
     private void turnOn(Device dev) throws TellstickException {
-        if (dev instanceof SwitchableDevice) {
-            ((SwitchableDevice) dev).on();
+        if (dev instanceof SwitchableDevice device) {
+            device.on();
         } else {
             throw new TelldusBindingException("Cannot send ON to " + dev);
         }

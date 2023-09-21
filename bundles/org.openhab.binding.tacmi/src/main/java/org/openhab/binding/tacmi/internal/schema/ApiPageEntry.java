@@ -26,7 +26,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class ApiPageEntry {
 
-    static enum Type {
+    enum Type {
         READ_ONLY_SWITCH(true),
         READ_ONLY_NUMERIC(true),
         NUMERIC_FORM(false),

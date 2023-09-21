@@ -85,7 +85,7 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         if (!name.contains("wled")) {
             return null;
         }
-        String address[] = service.getURLs();
+        String[] address = service.getURLs();
         if ((address == null) || address.length < 1) {
             logger.debug("WLED discovered with empty IP address-{}", service);
             return null;

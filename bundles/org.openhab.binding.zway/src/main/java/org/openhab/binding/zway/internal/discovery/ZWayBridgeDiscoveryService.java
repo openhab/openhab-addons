@@ -117,7 +117,7 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
 
                 if (connection.getResponseCode() == 401) {
                     ThingUID thingUID = new ThingUID(ZWayBindingConstants.THING_TYPE_BRIDGE,
-                            ipAddress.replaceAll("\\.", "_"));
+                            ipAddress.replace(".", "_"));
 
                     // Attention: if is already present as thing in the ThingRegistry
                     // the configuration for thing will be updated!

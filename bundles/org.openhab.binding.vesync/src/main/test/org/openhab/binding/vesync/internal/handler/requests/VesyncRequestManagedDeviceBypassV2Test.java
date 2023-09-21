@@ -46,7 +46,7 @@ public class VesyncRequestManagedDeviceBypassV2Test {
     public void checkEmptyPayload() {
         final VesyncRequestManagedDeviceBypassV2.EmptyPayload testPaylaod = new VesyncRequestManagedDeviceBypassV2.EmptyPayload();
         final String contentTest1 = VeSyncConstants.GSON.toJson(testPaylaod);
-        assertEquals(true, contentTest1.equals("{}"));
+        assertEquals(true, "{}".equals(contentTest1));
     }
 
     @Test

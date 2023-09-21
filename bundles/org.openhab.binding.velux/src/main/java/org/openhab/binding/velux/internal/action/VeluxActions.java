@@ -41,8 +41,8 @@ public class VeluxActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VeluxBridgeHandler) {
-            this.bridgeHandler = (VeluxBridgeHandler) handler;
+        if (handler instanceof VeluxBridgeHandler veluxBridgeHandler) {
+            this.bridgeHandler = veluxBridgeHandler;
         }
     }
 

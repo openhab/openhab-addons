@@ -27,26 +27,48 @@ import org.openhab.binding.vesync.internal.dto.responses.VesyncLoginResponse;
 @NonNullByDefault
 public class VesyncLoginResponseTest {
 
-    public final static String testGoodLoginResponseBody = "{\r\n" + "    \"traceId\": \"1634253816\",\r\n"
-            + "    \"code\": 0,\r\n" + "    \"msg\": \"request success\",\r\n" + "    \"result\": {\r\n"
-            + "        \"isRequiredVerify\": true,\r\n" + "        \"accountID\": \"5328043\",\r\n"
-            + "        \"avatarIcon\": \"https://image.vesync.com/defaultImages/user/avatar_nor.png\",\r\n"
-            + "        \"birthday\": \"\",\r\n" + "        \"gender\": \"\",\r\n"
-            + "        \"acceptLanguage\": \"en\",\r\n" + "        \"userType\": \"1\",\r\n"
-            + "        \"nickName\": \"david.goodyear\",\r\n" + "        \"mailConfirmation\": true,\r\n"
-            + "        \"termsStatus\": true,\r\n" + "        \"gdprStatus\": true,\r\n"
-            + "        \"countryCode\": \"GB\",\r\n" + "        \"registerAppVersion\": \"VeSync 3.1.37 build3\",\r\n"
-            + "        \"registerTime\": \"2021-10-14 17:35:50\",\r\n"
-            + "        \"verifyEmail\": \"david.goodyear@gmail.com\",\r\n" + "        \"heightCm\": 0.0,\r\n"
-            + "        \"weightTargetSt\": 0.0,\r\n" + "        \"heightUnit\": \"FT\",\r\n"
-            + "        \"heightFt\": 0.0,\r\n" + "        \"weightTargetKg\": 0.0,\r\n"
-            + "        \"weightTargetLb\": 0.0,\r\n" + "        \"weightUnit\": \"LB\",\r\n"
-            + "        \"targetBfr\": 0.0,\r\n" + "        \"displayFlag\": [],\r\n"
-            + "        \"real_weight_kg\": 0.0,\r\n" + "        \"real_weight_lb\": 0.0,\r\n"
-            + "        \"real_weight_unit\": \"lb\",\r\n" + "        \"heart_rate_zones\": 0.0,\r\n"
-            + "        \"run_step_long_cm\": 0.0,\r\n" + "        \"walk_step_long_cm\": 0.0,\r\n"
-            + "        \"step_target\": 0.0,\r\n" + "        \"sleep_target_mins\": 0.0,\r\n"
-            + "        \"token\": \"AccessTokenString=\"\r\n" + "    }\r\n" + "}";
+    public static final String testGoodLoginResponseBody = """
+            {
+                "traceId": "1634253816",
+                "code": 0,
+                "msg": "request success",
+                "result": {
+                    "isRequiredVerify": true,
+                    "accountID": "5328043",
+                    "avatarIcon": "https://image.vesync.com/defaultImages/user/avatar_nor.png",
+                    "birthday": "",
+                    "gender": "",
+                    "acceptLanguage": "en",
+                    "userType": "1",
+                    "nickName": "david.goodyear",
+                    "mailConfirmation": true,
+                    "termsStatus": true,
+                    "gdprStatus": true,
+                    "countryCode": "GB",
+                    "registerAppVersion": "VeSync 3.1.37 build3",
+                    "registerTime": "2021-10-14 17:35:50",
+                    "verifyEmail": "david.goodyear@gmail.com",
+                    "heightCm": 0.0,
+                    "weightTargetSt": 0.0,
+                    "heightUnit": "FT",
+                    "heightFt": 0.0,
+                    "weightTargetKg": 0.0,
+                    "weightTargetLb": 0.0,
+                    "weightUnit": "LB",
+                    "targetBfr": 0.0,
+                    "displayFlag": [],
+                    "real_weight_kg": 0.0,
+                    "real_weight_lb": 0.0,
+                    "real_weight_unit": "lb",
+                    "heart_rate_zones": 0.0,
+                    "run_step_long_cm": 0.0,
+                    "walk_step_long_cm": 0.0,
+                    "step_target": 0.0,
+                    "sleep_target_mins": 0.0,
+                    "token": "AccessTokenString="
+                }
+            }\
+            """;
 
     @Test
     public void testParseLoginGoodResponse() {
@@ -67,8 +89,14 @@ public class VesyncLoginResponseTest {
 
     @Test
     public void testParseLoginFailResponse() {
-        String testReponse = "{\r\n" + "    \"traceId\": \"1634253816\",\r\n" + "    \"code\": -11201022,\r\n"
-                + "    \"msg\": \"password incorrect\",\r\n" + "    \"result\": null\r\n" + "}";
+        String testReponse = """
+                {
+                    "traceId": "1634253816",
+                    "code": -11201022,
+                    "msg": "password incorrect",
+                    "result": null
+                }\
+                """;
         VesyncLoginResponse response = VeSyncConstants.GSON.fromJson(testReponse,
                 VesyncLoginResponse.class);
         if (response != null) {

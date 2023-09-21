@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.wifiled.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +31,7 @@ public class WiFiLEDBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_WIFILED = new ThingTypeUID(BINDING_ID, "wifiled");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WIFILED);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WIFILED);
 
     // List of all Channel IDs
     public static final String CHANNEL_POWER = "power";

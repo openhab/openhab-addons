@@ -46,8 +46,8 @@ public class VolvoOnCallActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VehicleHandler) {
-            this.handler = (VehicleHandler) handler;
+        if (handler instanceof VehicleHandler vehicleHandler) {
+            this.handler = vehicleHandler;
         }
     }
 

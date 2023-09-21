@@ -60,11 +60,12 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId()) && command instanceof QuantityType<?>) {
-            setOverride((QuantityType<?>) command);
+        if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())
+                && command instanceof QuantityType<?> quantityCommand) {
+            setOverride(quantityCommand);
         }
-        if (CHANNEL_FROST_PROTECTION_MODE.equals(channelUID.getId()) && command instanceof OnOffType) {
-            toggleFrostProtectionMode((OnOffType) command);
+        if (CHANNEL_FROST_PROTECTION_MODE.equals(channelUID.getId()) && command instanceof OnOffType onOffCommand) {
+            toggleFrostProtectionMode(onOffCommand);
         }
     }
 

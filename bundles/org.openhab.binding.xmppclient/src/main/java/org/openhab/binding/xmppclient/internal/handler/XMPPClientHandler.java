@@ -14,9 +14,9 @@ package org.openhab.binding.xmppclient.internal.handler;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.jivesoftware.smack.SmackException;
@@ -57,7 +57,7 @@ public class XMPPClientHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(XMPPActions.class);
+        return Set.of(XMPPActions.class);
     }
 
     @Override

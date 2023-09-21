@@ -68,7 +68,7 @@ public class VeluxProduct {
      *
      * @author AndrewFG - Initial contribution.
      */
-    public static enum ProductState {
+    public enum ProductState {
         NON_EXECUTING(0),
         ERROR(1),
         NOT_USED(2),
@@ -137,9 +137,9 @@ public class VeluxProduct {
      *
      * @author AndrewFG - Initial contribution.
      */
-    public static enum DataSource {
+    public enum DataSource {
         GATEWAY,
-        BINDING;
+        BINDING
     }
 
     // Class internal

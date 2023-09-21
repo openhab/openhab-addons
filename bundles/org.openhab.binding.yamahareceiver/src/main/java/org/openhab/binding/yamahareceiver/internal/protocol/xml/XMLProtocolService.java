@@ -84,8 +84,7 @@ public class XMLProtocolService {
         if (doc.getFirstChild() == null) {
             throw new ReceivedMessageParseException("The command '" + cmd + "' failed: " + response);
         }
-        Node content = XMLUtils.getNode(doc.getFirstChild(), path);
-        return content;
+        return XMLUtils.getNode(doc.getFirstChild(), path);
     }
 
     /**

@@ -57,8 +57,7 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandUnitDataAlarmSensor) {
-            TouchWandUnitDataAlarmSensor sensor = (TouchWandUnitDataAlarmSensor) unitData;
+        if (unitData instanceof TouchWandUnitDataAlarmSensor sensor) {
             if (isFirstUpdateTouchWandUnitState) {
                 removeUnsupportedChannels(sensor);
                 isFirstUpdateTouchWandUnitState = false;

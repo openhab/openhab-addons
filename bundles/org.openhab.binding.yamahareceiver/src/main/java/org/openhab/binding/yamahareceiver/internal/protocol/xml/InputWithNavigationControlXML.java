@@ -205,8 +205,7 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
         if (sameMenu) {
             if (!selectItem(selectItemName)) {
                 observer.navigationError("Item '" + selectItemName + "' doesn't exist in menu " + state.menuName
-                        + " at level " + String.valueOf(state.menuLayer) + ". Available options are: "
-                        + state.getAllItemLabels());
+                        + " at level " + state.menuLayer + ". Available options are: " + state.getAllItemLabels());
             }
             return;
         }
@@ -220,8 +219,7 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
         for (String pathElement : pathArr) {
             if (!selectItem(pathElement)) {
                 observer.navigationError("Item '" + pathElement + "' doesn't exist in menu " + state.menuName
-                        + " at level " + String.valueOf(state.menuLayer) + ". Available options are: "
-                        + state.getAllItemLabels());
+                        + " at level " + state.menuLayer + ". Available options are: " + state.getAllItemLabels());
                 return;
             }
         }
@@ -258,8 +256,7 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
 
             int index = findItemOnCurrentPage(name);
             if (index > 0) {
-                com.send(wrInput(
-                        "<List_Control><Direct_Sel>Line_" + String.valueOf(index) + "</Direct_Sel></List_Control>"));
+                com.send(wrInput("<List_Control><Direct_Sel>Line_" + index + "</Direct_Sel></List_Control>"));
                 update();
                 return true;
             }

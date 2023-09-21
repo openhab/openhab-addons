@@ -90,10 +90,10 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
                     turnOn(device);
                 } else if (command == OnOffType.OFF) {
                     turnOff(device);
-                } else if (command instanceof PercentType) {
-                    dim(device, (PercentType) command);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    increaseDecrease(device, ((IncreaseDecreaseType) command));
+                } else if (command instanceof PercentType percentCommand) {
+                    dim(device, percentCommand);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    increaseDecrease(device, increaseDecreaseCommand);
                 }
             } else if (device instanceof SwitchableDevice) {
                 if (command == OnOffType.ON) {
@@ -137,22 +137,22 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
             turnOff(dev);
         } else if (value == 100 && dev instanceof TellstickLocalDeviceDTO) {
             turnOn(dev);
-        } else if (dev instanceof TellstickLocalDeviceDTO
-                && (((TellstickLocalDeviceDTO) dev).getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
+        } else if (dev instanceof TellstickLocalDeviceDTO device
+                && (device.getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
             long tdVal = Math.round((value / 100) * 255);
             TelldusLocalResponseDTO response = callRestMethod(
                     String.format(HTTP_LOCAL_API_DEVICE_DIM, dev.getId(), tdVal), TelldusLocalResponseDTO.class);
-            handleResponse((TellstickLocalDeviceDTO) dev, response);
+            handleResponse(device, response);
         } else {
             throw new TelldusBindingException("Cannot send DIM to " + dev);
         }
     }
 
     private void turnOff(Device dev) throws TellstickException, InterruptedException {
-        if (dev instanceof TellstickLocalDeviceDTO) {
+        if (dev instanceof TellstickLocalDeviceDTO device) {
             TelldusLocalResponseDTO response = callRestMethod(String.format(HTTP_LOCAL_API_DEVICE_TURNOFF, dev.getId()),
                     TelldusLocalResponseDTO.class);
-            handleResponse((TellstickLocalDeviceDTO) dev, response);
+            handleResponse(device, response);
         } else {
             throw new TelldusBindingException("Cannot send OFF to " + dev);
         }
@@ -165,16 +165,16 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
         } else if (response.getError() != null) {
             device.setUpdated(true);
             throw new TelldusBindingException("Error " + response.getError());
-        } else if (!response.getStatus().trim().equals("success")) {
+        } else if (!"success".equals(response.getStatus().trim())) {
             throw new TelldusBindingException("Response " + response.getStatus());
         }
     }
 
     private void turnOn(Device dev) throws TellstickException, InterruptedException {
-        if (dev instanceof TellstickLocalDeviceDTO) {
+        if (dev instanceof TellstickLocalDeviceDTO device) {
             TelldusLocalResponseDTO response = callRestMethod(String.format(HTTP_LOCAL_DEVICE_TURNON, dev.getId()),
                     TelldusLocalResponseDTO.class);
-            handleResponse((TellstickLocalDeviceDTO) dev, response);
+            handleResponse(device, response);
         } else {
             throw new TelldusBindingException("Cannot send ON to " + dev);
         }

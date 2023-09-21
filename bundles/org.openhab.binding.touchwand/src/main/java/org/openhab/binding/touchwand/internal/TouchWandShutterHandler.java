@@ -59,8 +59,8 @@ public class TouchWandShutterHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandShutterSwitchUnitData) {
-            int status = ((TouchWandShutterSwitchUnitData) unitData).getCurrStatus();
+        if (unitData instanceof TouchWandShutterSwitchUnitData shutterSwitchUnitData) {
+            int status = shutterSwitchUnitData.getCurrStatus();
             PercentType state = PercentType.ZERO;
             int convertStatus = 100 - status;
             state = new PercentType(convertStatus);

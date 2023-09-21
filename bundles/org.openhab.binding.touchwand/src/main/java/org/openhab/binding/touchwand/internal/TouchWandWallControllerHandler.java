@@ -48,8 +48,8 @@ public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandUnitDataWallController) {
-            Csc status = ((TouchWandUnitDataWallController) unitData).getCurrStatus();
+        if (unitData instanceof TouchWandUnitDataWallController unitDataWallController) {
+            Csc status = unitDataWallController.getCurrStatus();
             long ts = status.getTs();
             long timeDiff = ts - timeLastEventMs;
             if ((timeDiff) > ADJACENT_EVENT_FILTER_TIME_MILLISEC) {

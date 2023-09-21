@@ -33,32 +33,72 @@ import org.openhab.binding.vdr.internal.svdrp.SVDRPParseResponseException;
  */
 @NonNullByDefault
 public class SVDRPEpgEventTest {
-    private final String epgResponseComplete = "C S19.2E-1-1201-28326 WDR HD Bielefeld\n"
-            + "E 9886 1610391600 900 4E F\n" + "T Tagesschau\n" + "S Aktuelle Nachrichten aus der Welt\n"
-            + "D Themen u.a.:|* Corona-Pandemie in Deutschland: Verschärfter Lockdown bundesweit in Kraft|* Entmachtung des US-Präsidenten: Demokraten planen Schritte gegen Trump|* Wintereinbruch in Bosnien-Herzegowina: Dramatische Lage der Flüchtlinge an der Grenze zu Kroatien\n"
-            + "G 20 80\n" + "X 2 03 deu stereo\n" + "X 2 03 deu ohne Audiodeskription\n"
-            + "X 3 01 deu Teletext-Untertitel\n" + "X 3 20 deu mit DVB-Untertitel\n" + "X 5 0B deu HD-Video\n"
-            + "V 1610391600\n" + "e\n" + "c\n" + "End of EPG data";
-    private final String epgMissingSubtitle = "C S19.2E-1-1201-28326 WDR HD Bielefeld\n"
-            + "E 9886 1610391600 900 4E F\n" + "T Tagesschau\n"
-            + "D Themen u.a.:|* Corona-Pandemie in Deutschland: Verschärfter Lockdown bundesweit in Kraft|* Entmachtung des US-Präsidenten: Demokraten planen Schritte gegen Trump|* Wintereinbruch in Bosnien-Herzegowina: Dramatische Lage der Flüchtlinge an der Grenze zu Kroatien\n"
-            + "G 20 80\n" + "X 2 03 deu stereo\n" + "X 2 03 deu ohne Audiodeskription\n"
-            + "X 3 01 deu Teletext-Untertitel\n" + "X 3 20 deu mit DVB-Untertitel\n" + "X 5 0B deu HD-Video\n"
-            + "V 1610391600\n" + "e\n" + "c\n" + "End of EPG data";
+    private final String epgResponseComplete = """
+            C S19.2E-1-1201-28326 WDR HD Bielefeld
+            E 9886 1610391600 900 4E F
+            T Tagesschau
+            S Aktuelle Nachrichten aus der Welt
+            D Themen u.a.:|* Corona-Pandemie in Deutschland: Verschärfter Lockdown bundesweit in Kraft|* Entmachtung des US-Präsidenten: Demokraten planen Schritte gegen Trump|* Wintereinbruch in Bosnien-Herzegowina: Dramatische Lage der Flüchtlinge an der Grenze zu Kroatien
+            G 20 80
+            X 2 03 deu stereo
+            X 2 03 deu ohne Audiodeskription
+            X 3 01 deu Teletext-Untertitel
+            X 3 20 deu mit DVB-Untertitel
+            X 5 0B deu HD-Video
+            V 1610391600
+            e
+            c
+            End of EPG data\
+            """;
+    private final String epgMissingSubtitle = """
+            C S19.2E-1-1201-28326 WDR HD Bielefeld
+            E 9886 1610391600 900 4E F
+            T Tagesschau
+            D Themen u.a.:|* Corona-Pandemie in Deutschland: Verschärfter Lockdown bundesweit in Kraft|* Entmachtung des US-Präsidenten: Demokraten planen Schritte gegen Trump|* Wintereinbruch in Bosnien-Herzegowina: Dramatische Lage der Flüchtlinge an der Grenze zu Kroatien
+            G 20 80
+            X 2 03 deu stereo
+            X 2 03 deu ohne Audiodeskription
+            X 3 01 deu Teletext-Untertitel
+            X 3 20 deu mit DVB-Untertitel
+            X 5 0B deu HD-Video
+            V 1610391600
+            e
+            c
+            End of EPG data\
+            """;
     private final String epgParseError = "E 9999999999999999999999999";
-    private final String epgCorruptDate = "C S19.2E-1-1201-28326 WDR HD Bielefeld\n" + "E 9886 2a10391600 900 4E F\n"
-            + "T Tagesschau\n"
-            + "D Themen u.a.:|* Corona-Pandemie in Deutschland: Verschärfter Lockdown bundesweit in Kraft|* Entmachtung des US-Präsidenten: Demokraten planen Schritte gegen Trump|* Wintereinbruch in Bosnien-Herzegowina: Dramatische Lage der Flüchtlinge an der Grenze zu Kroatien\n"
-            + "G 20 80\n" + "X 2 03 deu stereo\n" + "X 2 03 deu ohne Audiodeskription\n"
-            + "X 3 01 deu Teletext-Untertitel\n" + "X 3 20 deu mit DVB-Untertitel\n" + "X 5 0B deu HD-Video\n"
-            + "V 1610391600\n" + "e\n" + "c\n" + "End of EPG data";
+    private final String epgCorruptDate = """
+            C S19.2E-1-1201-28326 WDR HD Bielefeld
+            E 9886 2a10391600 900 4E F
+            T Tagesschau
+            D Themen u.a.:|* Corona-Pandemie in Deutschland: Verschärfter Lockdown bundesweit in Kraft|* Entmachtung des US-Präsidenten: Demokraten planen Schritte gegen Trump|* Wintereinbruch in Bosnien-Herzegowina: Dramatische Lage der Flüchtlinge an der Grenze zu Kroatien
+            G 20 80
+            X 2 03 deu stereo
+            X 2 03 deu ohne Audiodeskription
+            X 3 01 deu Teletext-Untertitel
+            X 3 20 deu mit DVB-Untertitel
+            X 5 0B deu HD-Video
+            V 1610391600
+            e
+            c
+            End of EPG data\
+            """;
 
-    private final String epgMissingEnd = "C S19.2E-1-1201-28326 WDR HD Bielefeld\n" + "E 9886 1610391600 900 4E F\n"
-            + "T Tagesschau\n"
-            + "D Themen u.a.:|* Corona-Pandemie in Deutschland: Verschärfter Lockdown bundesweit in Kraft|* Entmachtung des US-Präsidenten: Demokraten planen Schritte gegen Trump|* Wintereinbruch in Bosnien-Herzegowina: Dramatische Lage der Flüchtlinge an der Grenze zu Kroatien\n"
-            + "G 20 80\n" + "X 2 03 deu stereo\n" + "X 2 03 deu ohne Audiodeskription\n"
-            + "X 3 01 deu Teletext-Untertitel\n" + "X 3 20 deu mit DVB-Untertitel\n" + "X 5 0B deu HD-Video\n"
-            + "V 1610391600\n" + "e\n" + "c\n";
+    private final String epgMissingEnd = """
+            C S19.2E-1-1201-28326 WDR HD Bielefeld
+            E 9886 1610391600 900 4E F
+            T Tagesschau
+            D Themen u.a.:|* Corona-Pandemie in Deutschland: Verschärfter Lockdown bundesweit in Kraft|* Entmachtung des US-Präsidenten: Demokraten planen Schritte gegen Trump|* Wintereinbruch in Bosnien-Herzegowina: Dramatische Lage der Flüchtlinge an der Grenze zu Kroatien
+            G 20 80
+            X 2 03 deu stereo
+            X 2 03 deu ohne Audiodeskription
+            X 3 01 deu Teletext-Untertitel
+            X 3 20 deu mit DVB-Untertitel
+            X 5 0B deu HD-Video
+            V 1610391600
+            e
+            c
+            """;
 
     @Test
     public void testParseEpgEventComplete() throws SVDRPException, ParseException {

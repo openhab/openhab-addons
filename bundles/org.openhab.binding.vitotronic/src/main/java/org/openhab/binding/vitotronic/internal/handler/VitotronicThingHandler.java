@@ -82,8 +82,8 @@ public class VitotronicThingHandler extends BaseThingHandler {
         VitotronicBridgeHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof VitotronicBridgeHandler) {
-            bridgeHandler = (VitotronicBridgeHandler) handler;
+        if (handler instanceof VitotronicBridgeHandler vitotronicBridgeHandler) {
+            bridgeHandler = vitotronicBridgeHandler;
         } else {
             logger.debug("No available bridge handler found yet. Bridge: {} .", bridge.getUID());
             bridgeHandler = null;

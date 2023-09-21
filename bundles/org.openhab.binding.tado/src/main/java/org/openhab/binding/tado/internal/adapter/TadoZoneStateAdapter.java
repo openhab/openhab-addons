@@ -221,7 +221,7 @@ public class TadoZoneStateAdapter {
                 break;
         }
 
-        return power.getValue().equals("ON");
+        return "ON".equals(power.getValue());
     }
 
     private static DecimalType toDecimalType(double value) {

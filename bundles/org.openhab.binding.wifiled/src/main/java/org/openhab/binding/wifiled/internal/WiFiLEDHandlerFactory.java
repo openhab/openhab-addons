@@ -14,7 +14,6 @@ package org.openhab.binding.wifiled.internal;
 
 import static org.openhab.binding.wifiled.internal.WiFiLEDBindingConstants.THING_TYPE_WIFILED;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openhab.binding.wifiled.internal.handler.WiFiLEDHandler;
@@ -34,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.wifiled")
 public class WiFiLEDHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WIFILED);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WIFILED);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

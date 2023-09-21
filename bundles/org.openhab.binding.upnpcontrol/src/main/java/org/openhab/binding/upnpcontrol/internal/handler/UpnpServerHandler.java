@@ -321,8 +321,8 @@ public class UpnpServerHandler extends UpnpHandler {
     private void handleCommandUpnpRenderer(ChannelUID channelUID, Command command) {
         UpnpRendererHandler renderer = null;
         UpnpRendererHandler previousRenderer = currentRendererHandler;
-        if (command instanceof StringType) {
-            renderer = (upnpRenderers.get(((StringType) command).toString()));
+        if (command instanceof StringType stringCommand) {
+            renderer = (upnpRenderers.get(stringCommand.toString()));
             currentRendererHandler = renderer;
             if (config.filter) {
                 // only refresh title list if filtering by renderer capabilities

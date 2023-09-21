@@ -82,8 +82,7 @@ public class TapoUtils {
      */
     public static String formatMac(String mac, char newDivisionChar) {
         String unformatedMac = unformatMac(mac);
-        String formatedMac = unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
-        return formatedMac;
+        return unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
     }
 
     /**

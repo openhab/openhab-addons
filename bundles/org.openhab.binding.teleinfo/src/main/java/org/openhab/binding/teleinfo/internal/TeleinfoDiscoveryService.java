@@ -187,8 +187,8 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TeleinfoAbstractControllerHandler) {
-            controllerHandler = (TeleinfoAbstractControllerHandler) handler;
+        if (handler instanceof TeleinfoAbstractControllerHandler teleinfoAbstractControllerHandler) {
+            controllerHandler = teleinfoAbstractControllerHandler;
         }
     }
 

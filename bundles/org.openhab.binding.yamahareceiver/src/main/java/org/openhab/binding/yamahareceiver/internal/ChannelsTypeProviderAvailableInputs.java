@@ -16,11 +16,11 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,7 +49,7 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider,
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return Collections.singleton(channelType);
+        return Set.of(channelType);
     }
 
     @Override

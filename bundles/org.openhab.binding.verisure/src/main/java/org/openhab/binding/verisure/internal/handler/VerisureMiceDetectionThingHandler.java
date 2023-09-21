@@ -14,7 +14,6 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -46,7 +45,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<VerisureMiceDetectionDTO> {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MICE_DETECTION);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MICE_DETECTION);
 
     public VerisureMiceDetectionThingHandler(Thing thing) {
         super(thing);
@@ -68,12 +67,12 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
         if (!miceList.isEmpty()) {
             Mouse mouse = miceList.get(0);
             getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID)
-                    && !channelUID.getId().equals("timestamp") && !channelUID.getId().equals("temperatureTimestamp"))
+                    && !"timestamp".equals(channelUID.getId()) && !"temperatureTimestamp".equals(channelUID.getId()))
                     .forEach(channelUID -> {
                         State state = getValue(channelUID.getId(), miceDetectionJSON, mouse);
                         updateState(channelUID, state);
                     });
-            if (mouse.getDetections().size() != 0) {
+            if (!mouse.getDetections().isEmpty()) {
                 updateTimeStamp(mouse.getDetections().get(0).getNodeTime());
             }
             updateTimeStamp(miceDetectionJSON.getTemperatureTime(), CHANNEL_TEMPERATURE_TIMESTAMP);
@@ -86,25 +85,25 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
     public State getValue(String channelId, VerisureMiceDetectionDTO miceDetectionJSON, Mouse mouse) {
         switch (channelId) {
             case CHANNEL_COUNT_LATEST_DETECTION:
-                if (mouse.getDetections().size() == 0) {
+                if (mouse.getDetections().isEmpty()) {
                     return new DecimalType(0);
                 } else {
                     return new DecimalType(mouse.getDetections().get(0).getCount());
                 }
             case CHANNEL_COUNT_LAST_24_HOURS:
-                if (mouse.getDetections().size() == 0) {
+                if (mouse.getDetections().isEmpty()) {
                     return new DecimalType(0);
                 } else {
                     return new DecimalType(mouse.getDetections().stream().mapToInt(Detection::getCount).sum());
                 }
             case CHANNEL_DURATION_LATEST_DETECTION:
-                if (mouse.getDetections().size() == 0) {
+                if (mouse.getDetections().isEmpty()) {
                     return new QuantityType<Time>(0, Units.SECOND);
                 } else {
                     return new QuantityType<Time>(mouse.getDetections().get(0).getDuration(), Units.SECOND);
                 }
             case CHANNEL_DURATION_LAST_24_HOURS:
-                if (mouse.getDetections().size() == 0) {
+                if (mouse.getDetections().isEmpty()) {
                     return new QuantityType<Time>(0, Units.SECOND);
                 } else {
                     return new QuantityType<Time>(mouse.getDetections().stream().mapToInt(Detection::getDuration).sum(),

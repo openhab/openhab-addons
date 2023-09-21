@@ -74,8 +74,10 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
     private static final String THING_TYPE_UID = "upnpcontrol:upnprenderer";
     private static final String THING_UID = THING_TYPE_UID + ":mockrenderer";
 
-    private static final String LAST_CHANGE_HEADER = "<Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/AVT/\">"
-            + "<InstanceID val=\"0\">";
+    private static final String LAST_CHANGE_HEADER = """
+            <Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/">\
+            <InstanceID val="0">\
+            """;
     private static final String LAST_CHANGE_FOOTER = "</InstanceID></Event>";
     private static final String AV_TRANSPORT_URI = "<AVTransportURI val=\"";
     private static final String AV_TRANSPORT_URI_METADATA = "<AVTransportURIMetaData val=\"";

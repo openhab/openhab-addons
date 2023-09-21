@@ -73,7 +73,7 @@ public class TiVoHandler extends BaseThingHandler {
         // Handles the commands from the various TiVo channel objects
         logger.debug("handleCommand '{}', parameter: {}", channelUID, command);
 
-        if (!isInitialized() || !tivoConnection.isPresent()) {
+        if (!isInitialized() || tivoConnection.isEmpty()) {
             logger.debug("handleCommand '{}' device is not initialized yet, command '{}' will be ignored.",
                     getThing().getUID(), channelUID + " " + command);
             return;
@@ -122,7 +122,7 @@ public class TiVoHandler extends BaseThingHandler {
 
     private void sendCommand(String commandKeyword, String commandParameter, TivoStatusData currentStatus)
             throws InterruptedException {
-        if (!tivoConnection.isPresent()) {
+        if (tivoConnection.isEmpty()) {
             return;
         }
 
@@ -299,8 +299,7 @@ public class TiVoHandler extends BaseThingHandler {
             }
 
         } catch (NumberFormatException e) {
-            logger.warn("TiVo'{}' unable to parse channel integer, value sent was: '{}'", getThing().getUID(),
-                    command.toString());
+            logger.warn("TiVo'{}' unable to parse channel integer, value sent was: '{}'", getThing().getUID(), command);
         }
         return tmpStatus;
     }

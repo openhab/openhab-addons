@@ -226,8 +226,8 @@ public class TadoApiTypeUtils {
             @Nullable GenericZoneCapabilities capabilities) {
         AirConditioningCapabilities acCapabilities;
 
-        if (capabilities instanceof AirConditioningCapabilities) {
-            acCapabilities = (AirConditioningCapabilities) capabilities;
+        if (capabilities instanceof AirConditioningCapabilities conditioningCapabilities) {
+            acCapabilities = conditioningCapabilities;
         } else {
             acCapabilities = new AirConditioningCapabilities();
         }

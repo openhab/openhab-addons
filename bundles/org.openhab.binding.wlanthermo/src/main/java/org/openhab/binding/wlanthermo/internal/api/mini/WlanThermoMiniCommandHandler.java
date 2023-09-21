@@ -134,7 +134,7 @@ public class WlanThermoMiniCommandHandler {
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_DUTY_CYCLE:
                     return new DecimalType(pit.getControlOut());
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_LID_OPEN:
-                    return OnOffType.from(pit.getOpenLid().equals("True"));
+                    return OnOffType.from("True".equals(pit.getOpenLid()));
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_CHANNEL_ID:
                     return new DecimalType(pit.getCh());
             }

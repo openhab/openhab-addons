@@ -15,7 +15,7 @@ package org.openhab.binding.unifi.internal.handler;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -134,6 +134,6 @@ public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniF
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(UniFiSiteActions.class);
+        return Set.of(UniFiSiteActions.class);
     }
 }
