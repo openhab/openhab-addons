@@ -45,19 +45,15 @@ public class AuthServer {
 
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
-    private final String oauthID;
 
     private Optional<Server> server = Optional.empty();
-    private AccessTokenRefreshListener listener;
     private AccountConfiguration config;
     public String callbackUrl;
 
     public AuthServer(AccessTokenRefreshListener l, HttpClient hc, AccountConfiguration config, String callbackUrl,
             LocaleProvider lp) {
-        listener = l;
         httpClient = hc;
         localeProvider = lp;
-        oauthID = Constants.BINDING_ID + "_" + config.email;
         SERVER_MAP.put(Integer.valueOf(config.callbackPort), this);
         this.config = config;
         this.callbackUrl = callbackUrl;

@@ -257,7 +257,7 @@
 	},
 	"positionLong": {
 		"timestamp_in_ms": 1695136113000,
-		"double_value": 6.104619,
+		"double_value": 3.4,
 		"timestamp": 1695136113
 	},
 	"precondDuration": {
@@ -442,7 +442,7 @@
 	},
 	"positionLat": {
 		"timestamp_in_ms": 1695136113000,
-		"double_value": 46.226885,
+		"double_value": 1.2,
 		"timestamp": 1695136113
 	},
 	"gasconsumptionstart": {
@@ -579,7 +579,7 @@
 	},
 	"temperaturePoints": {
 		"temperature_points_value": {
-			"emperature_points": [
+			"temperature_points": [
 				{
 					"temperature": 20,
 					"zone": "frontCenter",

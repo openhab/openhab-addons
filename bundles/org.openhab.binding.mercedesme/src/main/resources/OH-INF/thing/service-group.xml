@@ -13,7 +13,7 @@
 			<channel id="wash-water" typeId="wash-water-channel"/>
 			<channel id="tires-rdk" typeId="tires-rdk-channel"/>
 			<channel id="coolant-fluid" typeId="coolant-fluid-channel"/>
-			<channel id="wengine" typeId="engine-channel"/>
+			<channel id="engine" typeId="engine-channel"/>
 			<channel id="service-days" typeId="service-days-channel"/>
 		</channels>
 	</channel-group-type>

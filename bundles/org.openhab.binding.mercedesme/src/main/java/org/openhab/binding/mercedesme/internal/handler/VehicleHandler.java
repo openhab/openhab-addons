@@ -114,8 +114,6 @@ public class VehicleHandler extends BaseThingHandler {
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
-    private Optional<AccountHandler> accountHandler = Optional.empty();
-    private Optional<VehicleConfiguration> config = Optional.empty();
     private Map<String, Instant> blockerMap = new HashMap<String, Instant>();
     private Map<String, UOMObserver> unitStorage = new HashMap<String, UOMObserver>();
     private Map<String, ChannelStateMap> eventStorage = new HashMap<String, ChannelStateMap>();
@@ -127,6 +125,9 @@ public class VehicleHandler extends BaseThingHandler {
     private JSONObject chargeGroupValueStorage = new JSONObject();
     private Map<String, State> hvacGroupValueStorage = new HashMap<String, State>();
     private String vehicleType = NOT_SET;
+
+    Optional<AccountHandler> accountHandler = Optional.empty();
+    Optional<VehicleConfiguration> config = Optional.empty();
 
     public VehicleHandler(Thing thing, MercedesMeCommandOptionProvider cop, MercedesMeStateOptionProvider sop,
             MercedesMeDynamicStateDescriptionProvider dsdp) {
@@ -524,6 +525,7 @@ public class VehicleHandler extends BaseThingHandler {
         super.dispose();
     }
 
+    @SuppressWarnings("rawtypes")
     public void distributeCommandStatus(AppTwinCommandStatusUpdatesByPID cmdUpadtes) {
         Map<Long, AppTwinCommandStatus> updates = cmdUpadtes.getUpdatesByPidMap();
         updates.forEach((key, value) -> {
@@ -550,6 +552,10 @@ public class VehicleHandler extends BaseThingHandler {
 
     public void distributeContent(VEPUpdate data) {
         updateStatus(ThingStatus.ONLINE);
+        boolean fullUpdate = data.getFullUpdate();
+        /**
+         * Deliver proto update
+         */
         try {
             // logger.info("Received new proto data vep {}", data);
             String newProto = Utils.proto2Json(data);
@@ -570,9 +576,13 @@ public class VehicleHandler extends BaseThingHandler {
                     }
                 }
             }
-            ChannelStateMap dataUpdateMap = new ChannelStateMap("proto-update", GROUP_VEHICLE,
-                    StringType.valueOf(combinedProto));
-            updateChannel(dataUpdateMap);
+            // proto updates causing large printouts in openhab.log
+            // update channel in case of user connected this channel with an item
+            if (isLinked(protoUpdateChannelUID)) {
+                ChannelStateMap dataUpdateMap = new ChannelStateMap("proto-update", GROUP_VEHICLE,
+                        StringType.valueOf(combinedProto));
+                updateChannel(dataUpdateMap);
+            }
         } catch (Throwable t) {
             logger.trace("Exception when combining Protos: {}", t.getMessage());
             StackTraceElement[] ste = t.getStackTrace();
@@ -586,21 +596,23 @@ public class VehicleHandler extends BaseThingHandler {
          * handle GPS
          */
         if (atts.containsKey("positionLat") && atts.containsKey("positionLong")) {
-            boolean latitudeNil = Utils.isNil(atts.get("positionLat"));
-            boolean longitudeNil = Utils.isNil(atts.get("positionLong"));
-            if (!latitudeNil && !longitudeNil) {
-                String gps = atts.get("positionLat").getDoubleValue() + "," + atts.get("positionLong").getDoubleValue();
-                PointType pt = new PointType(gps);
+            double lat = Utils.getDouble(atts.get("positionLat"));
+            double lon = Utils.getDouble(atts.get("positionLong"));
+            if (lat > 0 && lon > 0) {
+                PointType pt = new PointType(lat + "," + lon);
                 updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, pt));
             } else {
-                logger.info("Either Latitude {} or Longitude {} attribute nil", latitudeNil, longitudeNil);
-                updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, UnDefType.UNDEF));
+                if (fullUpdate) {
+                    logger.info("Either Latitude {} or Longitude {} attribute nil", lat, lon);
+                    updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, UnDefType.UNDEF));
+                }
             }
         }
 
         /**
          * handle temperature point
          */
+        boolean hvacUpdated = false;
         if (atts.containsKey("temperaturePoints")) {
             VehicleAttributeStatus hvacTemperaturePointAttribute = atts.get("temperaturePoints");
             if (hvacTemperaturePointAttribute.hasTemperaturePointsValue()) {
@@ -657,19 +669,22 @@ public class VehicleHandler extends BaseThingHandler {
                     ChannelStateMap tempMap = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC,
                             QuantityType.valueOf(temp, temperatureUnit), observer);
                     updateChannel(tempMap);
-
+                    hvacUpdated = true;
                 } else {
-                    ChannelStateMap zoneMap = new ChannelStateMap("zone", Constants.GROUP_HVAC, UnDefType.UNDEF);
-                    updateChannel(zoneMap);
-                    QuantityType<Temperature> tempState = QuantityType.valueOf(-1, Mapper.defaultTemperatureUnit);
-                    ChannelStateMap tempMap = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC, tempState);
-                    updateChannel(tempMap);
+                    logger.trace("No TemperaturePoints found - list empty");
                 }
             } else {
-                logger.info("No TemperaturePoint Value found");
+                logger.trace("No TemperaturePointsValue found");
             }
         } else {
-            logger.info("No TemperaturePoint Attribute found");
+            logger.trace("No TemperaturePoint Key found");
+        }
+        if (fullUpdate && !hvacUpdated) {
+            ChannelStateMap zoneMap = new ChannelStateMap("zone", Constants.GROUP_HVAC, UnDefType.UNDEF);
+            updateChannel(zoneMap);
+            QuantityType<Temperature> tempState = QuantityType.valueOf(-1, Mapper.defaultTemperatureUnit);
+            ChannelStateMap tempMap = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC, tempState);
+            updateChannel(tempMap);
         }
 
         /**
@@ -703,8 +718,7 @@ public class VehicleHandler extends BaseThingHandler {
                     mmcop.setCommandOptions(cuid, commandOptions);
                     mmsop.setStateOptions(cuid, stateOptions);
 
-                    boolean selectedProgram = atts.containsKey("selectedChargeProgram");
-                    if (selectedProgram) {
+                    if (atts.containsKey("selectedChargeProgram")) {
                         selectedChargeProgram = (int) atts.get("selectedChargeProgram").getIntValue();
                         ChargeProgramParameters cpp = cpv.getChargeProgramParameters(selectedChargeProgram);
                         ChannelStateMap programMap = new ChannelStateMap("program", GROUP_CHARGE,
@@ -1019,6 +1033,17 @@ public class VehicleHandler extends BaseThingHandler {
         eventStorage.put(cuid.getAsString(), csm);
 
         /**
+         * proto updates causing large printouts in openhab.log
+         * only log in case of channel is connected to an item
+         */
+        if ("proto-update".equals(csm.getChannel())) {
+            ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
+            if (!isLinked(protoUpdateChannelUID)) {
+                return;
+            }
+        }
+
+        /**
          * Check correct channel patterns
          */
         if (csm.hasUomObersever()) {
@@ -1093,7 +1118,9 @@ public class VehicleHandler extends BaseThingHandler {
     public void updateStatus(ThingStatus ts) {
         if (ThingStatus.ONLINE.equals(ts) && !ThingStatus.ONLINE.equals(thing.getStatus())) {
             logger.info("Request capabilities");
-            accountHandler.get().getVehicleCapabilities(config.get().vin);
+            if (accountHandler.isPresent()) {
+                accountHandler.get().getVehicleCapabilities(config.get().vin);
+            }
         }
         super.updateStatus(ts);
     }
