@@ -20,7 +20,6 @@ import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,11 +67,9 @@ public class MBWebsocket {
     private AccountHandler accountHandler;
     private boolean running = false;
     private Instant runTill = Instant.now();
-    private @Nullable Future<?> sessionFuture;
     private @Nullable Session session;
     private List<ClientMessage> commandQueue = new ArrayList<ClientMessage>();
 
-    private static int fileCounter = 1;
     private boolean keepAlive = false;
 
     public MBWebsocket(AccountHandler ah) {
@@ -102,7 +99,7 @@ public class MBWebsocket {
             String websocketURL = accountHandler.getWSUri();
             logger.debug("Websocket start {}", websocketURL);
             client.start();
-            sessionFuture = client.connect(this, new URI(websocketURL), request);
+            client.connect(this, new URI(websocketURL), request);
             while (keepAlive || Instant.now().isBefore(runTill)) {
                 // sends one message per second
                 if (sendMessage()) {

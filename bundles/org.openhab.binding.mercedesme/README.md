@@ -140,7 +140,7 @@ Channels are separated in groups:
 | [charge](#charge)                | Charging data and programs                        |
 | [trip](#trip)                    | Trip data                                         |
 | [position](#position)            | Positioning Data                                  |
-| [tires](#tires)                  | Tire Informations                                  |
+| [tires](#tires)                  | Tire Informations                                 |
 
 ## Actions
 
@@ -160,6 +160,9 @@ Group name: `vehicle`
 | feature-capabilities  | String              |  Feature Capabilities         | X    |       |    X     |
 | command-capabilities  | String              |  Command Capabilities         | X    |       |    X     |
 | proto-update          | String              |  Last Vehicle Data Update     | X    |       |    X     |
+
+Advanced channels are only for debugging. 
+If you encounter problems with this binding follow the instructions from [Troubleshooting](#troubleshooting) section.
 
 #### Lock Status Mapping
 
@@ -572,6 +575,24 @@ rule "Send POI"
         mercedesmeActions.sendPoi(Poi_Location_Name.state.toString,lat,lon)
 end
 ````
+
+## Troubleshooting
+
+There's a big variety of vehicles with different features and different command capabilities.
+In order to be able to analyze problems 3 advanced channels are placed in the vehicle group.
+
+* feature-capabilities - showing which feature your vehicle is eqipped with
+* command-capabilities - showing which commands can be sent to your vehicle
+* proto-update - latest update of your vehicle data
+
+In case you find problems regarding this binding add items to these 3 channels.
+The items are reporting Strings in json format.
+Please check yourself no critical data is inside.
+Vehicle Identification Number (VIN) isn't part of data.
+GPS data which is showing your location is anonymized.
+The content of these items shall be used to create a problem report.
+
+Keep these 3 channels disconnected during normal operation.
 
 
 

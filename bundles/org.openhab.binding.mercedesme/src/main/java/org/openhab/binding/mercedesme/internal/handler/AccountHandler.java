@@ -80,7 +80,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     private Optional<AuthServer> server = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
-    private Optional<ScheduledFuture> scheduledFuture = Optional.empty();
+    private Optional<ScheduledFuture<?>> scheduledFuture = Optional.empty();
 
     private String capabilitiesEndpoint = "/v1/vehicle/%s/capabilities";
     private String commandCapabilitiesEndpoint = "/v1/vehicle/%s/capabilities/commands";
@@ -247,6 +247,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         activeVehicleHandlerMap.remove(vin);
     }
 
+    @SuppressWarnings("null")
     public void getVehicleCapabilities(String vin) {
         logger.info("Register VIN Features? {} Commands? {}", storage.containsKey(vin + FEATURE_APPENDIX),
                 storage.containsKey(vin + COMMAND_APPENDIX));
@@ -291,6 +292,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         });
     }
 
+    @SuppressWarnings("null")
     public void discovery(String vin) {
         if (activeVehicleHandlerMap.containsKey(vin)) {
             VehicleHandler vh = activeVehicleHandlerMap.get(vin);

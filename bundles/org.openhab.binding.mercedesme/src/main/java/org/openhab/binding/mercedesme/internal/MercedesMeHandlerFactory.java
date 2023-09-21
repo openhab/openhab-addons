@@ -41,8 +41,6 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MercedesMeHandlerFactory} is responsible for creating things and thing
@@ -56,7 +54,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BEV, THING_TYPE_COMB,
             THING_TYPE_HYBRID, THING_TYPE_ACCOUNT);
 
-    private final Logger logger = LoggerFactory.getLogger(MercedesMeHandlerFactory.class);
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
     private final StorageService storageService;

@@ -71,7 +71,6 @@ public class AuthServlet extends HttpServlet {
         } else if (guid != null && pin == null) {
             // show instert PIN input field
 
-            String url = "/mb-auth?guid=" + guid;
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println("<HTML>");

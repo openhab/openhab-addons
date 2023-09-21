@@ -286,6 +286,7 @@ public class Utils {
         return Constants.NOT_SET;
     }
 
+    @SuppressWarnings("rawtypes")
     public static Map combineMaps(Map oldData, Map newData) {
         final Map combined = new TreeMap();
         oldData.forEach((key, value) -> {
@@ -297,6 +298,7 @@ public class Utils {
         return combined;
     }
 
+    @SuppressWarnings("unused")
     public static String proto2Json(VEPUpdate update) {
         JSONObject protoJson = new JSONObject();
         Map<String, VehicleAttributeStatus> m = update.getAttributesMap();
@@ -314,7 +316,7 @@ public class Utils {
                     tmpPoints.put(tmpPoint);
                 });
                 JSONObject points = new JSONObject();
-                points.put("emperature_points", tmpPoints);
+                points.put("temperature_points", tmpPoints);
                 attributesJson.put("temperature_points_value", points);
             } else if (value.hasChargeProgramsValue()) {
                 ChargeProgramsValue cpv = value.getChargeProgramsValue();
@@ -351,7 +353,8 @@ public class Utils {
                 });
                 attributesJson.put("weekly_settings_head_unit_value", settingsJsonArray);
             }
-            // check for errors
+
+            // check for errors - in fact JSONObject returns null in case of errors
             if (attributesJson.toString() == null) {
                 LOGGER.trace("JSON conversion failed for Proto {}", key);
                 attributesJson = new JSONObject();
@@ -361,6 +364,13 @@ public class Utils {
                 LOGGER.trace("JSON conversion failed for Map {}", key);
                 attributesJson = new JSONObject();
                 attributesJson.put(key, "Not supported by binding");
+            }
+
+            // Anonymize position
+            if ("positionLat".equals(key)) {
+                attributesJson.put("double_value", 1.2);
+            } else if ("positionLong".equals(key)) {
+                attributesJson.put("double_value", 3.4);
             }
             protoJson.put(key, attributesJson);
 
@@ -445,24 +455,26 @@ public class Utils {
      * @param value
      * @return
      */
-    public static double getDouble(VehicleAttributeStatus value) {
+    public static double getDouble(@Nullable VehicleAttributeStatus value) {
         double ret = -1;
-        if (!isNil(value)) {
-            if (value.getDisplayValue() != null) {
-                if (value.getDisplayValue().strip().length() > 0) {
-                    try {
-                        ret = Double.valueOf(value.getDisplayValue());
-                        return ret;
-                    } catch (NumberFormatException nfe) {
-                        LOGGER.info("Cannot transform {} / {} Display Value {} into Double", value.getStringValue(),
-                                value.toString(), value.getDisplayValue());
+        if (value != null) {
+            if (!isNil(value)) {
+                if (value.getDisplayValue() != null) {
+                    if (value.getDisplayValue().strip().length() > 0) {
+                        try {
+                            ret = Double.valueOf(value.getDisplayValue());
+                            return ret;
+                        } catch (NumberFormatException nfe) {
+                            LOGGER.info("Cannot transform {} / {} Display Value {} into Double", value.getStringValue(),
+                                    value.toString(), value.getDisplayValue());
+                        }
                     }
                 }
-            }
-            if (value.hasDoubleValue()) {
-                return value.getDoubleValue();
-            } else if (value.hasIntValue()) {
-                return value.getIntValue();
+                if (value.hasDoubleValue()) {
+                    return value.getDoubleValue();
+                } else if (value.hasIntValue()) {
+                    return value.getIntValue();
+                }
             }
         }
         return ret;

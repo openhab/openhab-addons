@@ -1,1 +1,2 @@
 - merged sunroof-control channel into sunroof - sunroof is now writable with command options
+- update proto-update channel only if item is linked to reduce logging
