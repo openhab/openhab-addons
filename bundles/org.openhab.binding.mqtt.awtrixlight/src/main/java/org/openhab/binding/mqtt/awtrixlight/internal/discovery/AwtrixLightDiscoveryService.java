@@ -18,9 +18,7 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_FIRMWARE;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_TYPE;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_UID;
-import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_APPLOCKTIMEOUT;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_BASETOPIC;
-import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_DISCOVERDEFAULT;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_FIRMWARE;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_UNIQUEID;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_VENDOR;
@@ -118,7 +116,6 @@ public class AwtrixLightDiscoveryService extends AbstractMQTTDiscovery {
                 .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_CLOCK), connectionBridgeUid, hardwareUid))
                 .withBridge(connectionBridgeUid).withProperty(PROP_VENDOR, vendor).withProperty(PROP_FIRMWARE, firmware)
                 .withProperty(PROP_UNIQUEID, hardwareUid).withProperty(PROP_BASETOPIC, baseTopic)
-                .withProperty(PROP_APPLOCKTIMEOUT, 10).withProperty(PROP_DISCOVERDEFAULT, false)
                 .withRepresentationProperty(PROP_UNIQUEID).withLabel("Awtrix Clock " + name).build());
     }
 }

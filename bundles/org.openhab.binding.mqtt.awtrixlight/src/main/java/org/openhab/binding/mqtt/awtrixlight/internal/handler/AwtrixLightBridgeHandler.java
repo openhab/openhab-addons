@@ -204,7 +204,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         this.basetopic = config.basetopic;
         this.appLockTimeout = config.appLockTimeout;
         this.discoverDefaultApps = config.discoverDefaultApps;
-        this.lowBatteryThreshold = new BigDecimal(config.lowBatteryThreshold);
+        this.lowBatteryThreshold = config.lowBatteryThreshold;
         this.channelPrefix = thing.getUID() + ":";
         logger.debug(
                 "Configured handler with baseTopic {}, channelPrefix {}, appLockTimeout {}, discoverDefaultApps {}",
@@ -332,15 +332,15 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     }
 
     public void reboot() {
-        this.sendMQTT(TOPIC_REBOOT, "", false);
+        this.sendMQTT(this.basetopic + TOPIC_REBOOT, "", false);
     }
 
     public void playSound(String melodyName) {
-        this.sendMQTT(TOPIC_SOUND, "{\"sound\":\"" + melodyName + "\"}", false);
+        this.sendMQTT(this.basetopic + TOPIC_SOUND, "{\"sound\":\"" + melodyName + "\"}", false);
     }
 
     public void upgrade() {
-        this.sendMQTT(TOPIC_UPGRADE, "", false);
+        this.sendMQTT(this.basetopic + TOPIC_UPGRADE, "", false);
     }
 
     public void setAppDiscoveryCallback(AwtrixLightBridgeDiscoveryService awtrixLightBridgeDiscoveryService) {

@@ -17,6 +17,7 @@ import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.AWTRIX_APP;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_APPID;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_APPNAME;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_APP_CONTROLLABLE;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_UNIQUEID;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.THING_TYPE_APP;
 
@@ -91,7 +92,8 @@ public class AwtrixLightBridgeDiscoveryService extends AbstractDiscoveryService 
         String appId = bridgeHardwareId + "-" + appName;
         thingDiscovered(DiscoveryResultBuilder
                 .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_APP), connectionBridgeUid, appName))
-                .withBridge(connectionBridgeUid).withProperty(PROP_APPID, appId).withProperty(PROP_APPNAME, appName)
+                .withBridge(connectionBridgeUid).withProperty(PROP_APPID, appId)
+                .withProperty(PROP_APP_CONTROLLABLE, false).withProperty(PROP_APPNAME, appName)
                 .withRepresentationProperty(PROP_APPID).withLabel("Awtrix App " + appName).build());
     }
 }

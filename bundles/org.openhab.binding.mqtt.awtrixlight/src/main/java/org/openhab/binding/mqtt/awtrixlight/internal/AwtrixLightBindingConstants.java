@@ -47,6 +47,7 @@ public class AwtrixLightBindingConstants {
     public static final String PROP_APPID = "appid";
     public static final String PROP_APPLOCKTIMEOUT = "appLockTimeout";
     public static final String PROP_APPNAME = "appname";
+    public static final String PROP_APP_CONTROLLABLE = "useButtons";
     public static final String PROP_BASETOPIC = "basetopic";
     public static final String PROP_DISCOVERDEFAULT = "discoverDefaultApps";
     public static final String PROP_FIRMWARE = "firmware";
