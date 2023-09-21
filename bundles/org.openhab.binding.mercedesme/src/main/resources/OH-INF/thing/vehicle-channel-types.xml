@@ -3,15 +3,21 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="lock-status-channel">
+	<channel-type id="lock-channel">
 		<item-type>Number</item-type>
-		<label>Lock Status</label>
-		<state readOnly="true">
+		<label>Lock Status/Control</label>
+		<state>
 			<options>
 				<option value="0">Locked</option>
 				<option value="1">Unlocked</option>
 			</options>
 		</state>
+		<command>
+			<options>
+				<option value="0">Lock</option>
+				<option value="1">Unlock</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="windows-channel">
 		<item-type>Number</item-type>
@@ -23,13 +29,13 @@
 				<option value="2">Open</option>
 			</options>
 		</state>
-        <command>
-            <options>
-                <option value="0">Close</option>
-                <option value="1">Open</option>
-                <option value="2">Ventilate</option>
-            </options>
-        </command>
+		<command>
+			<options>
+				<option value="0">Close</option>
+				<option value="1">Open</option>
+				<option value="2">Ventilate</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="door-status-channel">
 		<item-type>Number</item-type>

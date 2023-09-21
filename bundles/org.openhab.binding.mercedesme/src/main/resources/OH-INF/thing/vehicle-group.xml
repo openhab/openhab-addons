@@ -7,7 +7,7 @@
 		<label>Vehicle Status</label>
 		<description>General vehicle status data</description>
 		<channels>
-			<channel id="lock-status" typeId="lock-status-channel"/>
+			<channel id="lock" typeId="lock-channel"/>
 			<channel id="windows" typeId="windows-channel"/>
 			<channel id="door-status" typeId="door-status-channel"/>
 			<channel id="ignition" typeId="ignition-channel"/>

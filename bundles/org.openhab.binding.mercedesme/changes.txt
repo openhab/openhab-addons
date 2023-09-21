@@ -1,3 +1,7 @@
-- merged doors#sunroof-control channel into doors#sunroof - sunroof is now writable with command options
-- merged window#windows-control channel into vehicle#windows. Channel is now writable with command options
+- merged doors#sunroof-control channel into doors#sunroof 
+  Channel is now writable with command options described in readme
+- merged window#windows-control channel and vehicle#window-sattus into vehicle#windows. 
+  Channel is now writable with command options described in readme
+- merged lock#lock-control with #vehicle#lock-status into vehicle#lock
+  Channel is now writable with command options described in readme
 - update proto-update channel only if item is linked to reduce logging

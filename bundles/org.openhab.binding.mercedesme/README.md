@@ -153,7 +153,7 @@ Group name: `vehicle`
 
 | Channel               | Type                |  Description                  | Read | Write | Advanced |
 |-----------------------|---------------------|-------------------------------|------|-------|----------|
-| lock-status           | Number              |  Lock Status                  | X    |       |          |
+| lock                  | Number              |  Lock Status and Control      | X    | X     |          |
 | windows               | Number              |  Window Status and Control    | X    | X     |          |
 | door-status           | Number              |  Door Status                  | X    |       |          |
 | ignition              | Number              |  Ignition                     | X    | X     |          |
@@ -166,8 +166,15 @@ If you encounter problems with this binding follow the instructions from [Troubl
 
 #### Lock Status Mapping
 
+State 
+
 - 0 : Locked
 - 1 : Unlocked
+
+Command 
+
+- 0 : Lock
+- 1 : Unlock
 
 #### Window Mappings
 
@@ -225,15 +232,6 @@ States and Controls are depending on your vehicle capabilities.
 | sunroof-rear-blind  | Number               |  Sunroof Rear Blind          | X    |       |
 | sunroof             | Number               |  Sun roof                    | X    | X     |
 
-#### Sunroof Mapping
-
-- 0 : Closed
-- 1 : Open
-- 2 : Lifted
-- 3 : Running
-- 4 : Closing
-- 5 : Opening
-- 6 : Closing
 
 #### Rooftop Mapping
             
@@ -249,7 +247,19 @@ States and Controls are depending on your vehicle capabilities.
 
 - not available yet!
 
-#### Sunroof Control Mapping
+#### Sunroof Mapping
+
+State
+
+- 0 : Closed
+- 1 : Open
+- 2 : Lifted
+- 3 : Running
+- 4 : Closing
+- 5 : Opening
+- 6 : Closing
+
+Command
 
 - 0 : Close
 - 1 : Open
@@ -258,7 +268,7 @@ States and Controls are depending on your vehicle capabilities.
 ### Lock
 
 Group name: `lock`
-State representing if Door or other roofs, hoods or flaps are locked.
+State representing if doors, hoods or flaps are locked.
 States and Controls are depending on your vehicle capabilities and Type.
 
 | Channel             | Type                 |  Description                    | Read | Write |
@@ -269,7 +279,6 @@ States and Controls are depending on your vehicle capabilities and Type.
 | rear-right          | Switch              |  Rear Right Door Lock            | X    |       |
 | deck-lid            | Switch              |  Deck lid                        | X    |       |
 | gas-flap            | Switch              |  Gas Flap (combustion & hybrid)  | X    |       |
-| lock-control        | Switch              |  Lock / Unlock Verhicle          |      | X     |
 
 
 ### Windows
@@ -529,11 +538,11 @@ Show state of the send command sent by above channels which are able to write va
 Command Names:
 
 -  [ignition | vehicle](#vehicle) : ENGINESTART, ENGINESTOP
--  [windows | vehicle](#windows) : WINDOWOPEN, WINDOWVENTILATE, WINDOWCLOSE
+-  [lock | vehicle](#vehicle) : DOORSLOCK, DOORSUNLOCK
+-  [windows | vehicle](#vehicle) : WINDOWOPEN, WINDOWVENTILATE, WINDOWCLOSE
 -  [sunroof | doors](#doors) : SUNROOFOPEN, SUNROOFLIFT, SUNROOFCLOSE  
--  [lock-control | lock](#lock) : DOORSLOCK, DOORSUNLOCK
 -  [activate | hvac](#hvac) : PRECONDSTART, PRECONDSTOP
--  [other-channels | hvac](#hvac) : TEMPERATURECONFIGURE
+-  [seats,zone,temperature | hvac](#hvac) : TEMPERATURECONFIGURE
 -  [program, mox-soc, auto-unlock | charge](#charge) : CHARGEPROGRAMCONFIGURE
 -  [signal | position](#position) : SIGPOSSTART
 

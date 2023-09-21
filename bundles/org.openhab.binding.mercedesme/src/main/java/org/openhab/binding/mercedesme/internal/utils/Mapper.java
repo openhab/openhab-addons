@@ -359,7 +359,7 @@ public class Mapper {
      * Mapping of json id towards channel group and id
      */
     private static void init() {
-        CHANNELS.put("doorLockStatusOverall", new String[] { "lock-status", GROUP_VEHICLE });
+        CHANNELS.put("doorLockStatusOverall", new String[] { "lock", GROUP_VEHICLE });
         CHANNELS.put("windowStatusOverall", new String[] { "windows", GROUP_VEHICLE });
         CHANNELS.put("doorStatusOverall", new String[] { "door-status", GROUP_VEHICLE });
         CHANNELS.put("ignitionstate", new String[] { "ignition", GROUP_VEHICLE });
