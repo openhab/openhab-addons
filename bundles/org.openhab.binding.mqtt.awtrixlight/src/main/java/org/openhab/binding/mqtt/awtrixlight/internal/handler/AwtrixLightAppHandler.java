@@ -466,6 +466,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 HashMap<String, Object> decodedJson = Helper.decodeJson(payloadString);
                 this.app.updateFields(decodedJson);
                 initStates();
+                finishInit();
             }
         }
     }
@@ -621,11 +622,15 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     private void finishInit() {
         synchronized (this.synchronizationRequired) {
             if (this.synchronizationRequired) {
+                this.synchronizationRequired = false;
                 initStates();
                 updateApp();
-                this.synchronizationRequired = false;
             }
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        }
+        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        Future<?> localJob = this.finishInitJob;
+        if (localJob != null && !localJob.isCancelled() && !localJob.isDone()) {
+            localJob.cancel(true);
             this.finishInitJob = null;
         }
     }
