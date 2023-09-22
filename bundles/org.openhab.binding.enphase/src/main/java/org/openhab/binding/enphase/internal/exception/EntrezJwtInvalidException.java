@@ -10,26 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enphase.internal;
+package org.openhab.binding.enphase.internal.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Exception thrown when a connection problem occurs to the Envoy gateway.
+ * Exception thrown when the JWT access token is invalid.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class EnvoyConnectionException extends Exception {
+public class EntrezJwtInvalidException extends EnphaseException {
 
     private static final long serialVersionUID = 1L;
 
-    public EnvoyConnectionException(final String message) {
+    public EntrezJwtInvalidException(final String message) {
         super(message);
-    }
-
-    public EnvoyConnectionException(final String message, final @Nullable Throwable e) {
-        super(message + (e == null ? "" : e.getMessage()), e);
     }
 }
