@@ -20,6 +20,7 @@ import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -41,8 +42,9 @@ public class SmartthingsHubBridgeHandler extends SmartthingsBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SmartthingsHubBridgeHandler.class);
 
     public SmartthingsHubBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
-            BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory) {
-        super(bridge, smartthingsHandlerFactory, bundleContext, httpService, oAuthFactory);
+            BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory,
+            HttpClientFactory httpClientFactory) {
+        super(bridge, smartthingsHandlerFactory, bundleContext, httpService, oAuthFactory, httpClientFactory);
     }
 
     @Override

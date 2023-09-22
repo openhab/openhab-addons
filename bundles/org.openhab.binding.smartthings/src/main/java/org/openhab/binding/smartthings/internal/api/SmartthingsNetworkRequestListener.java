@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.network;
+package org.openhab.binding.smartthings.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,23 +34,24 @@ import com.google.gson.JsonObject;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public class networkRequestListener extends BufferingResponseListener
+public class SmartthingsNetworkRequestListener extends BufferingResponseListener
         implements SuccessListener, FailureListener, ContentListener, CompleteListener, QueuedListener, BeginListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(networkRequestListener.class);
-    private networkConnector hvacConnector;
+    private static final Logger logger = LoggerFactory.getLogger(SmartthingsNetworkRequestListener.class);
+    private SmartthingsNetworkConnector hvacConnector;
 
     /**
      * Callback to execute on complete response
      */
-    private final networkCallback callback;
+    private final SmartthingsNetworkCallback callback;
 
     /**
      * Constructor
      *
      * @param callback Callback which execute method has to be called.
      */
-    public networkRequestListener(networkCallback callback, networkConnector hvacConnector) {
+    public SmartthingsNetworkRequestListener(SmartthingsNetworkCallback callback,
+            SmartthingsNetworkConnector hvacConnector) {
         this.callback = callback;
         this.hvacConnector = hvacConnector;
     }
@@ -100,7 +101,7 @@ public class networkRequestListener extends BufferingResponseListener
                 } else {
                     JsonObject resultObj = null;
                     try {
-                        Gson gson = networkConnectorImpl.getGson();
+                        Gson gson = SmartthingsNetworkConnectorImpl.getGson();
                         resultObj = gson.fromJson(content, JsonObject.class);
                     } catch (Exception ex) {
                         logger.debug("error: {}", ex.toString());

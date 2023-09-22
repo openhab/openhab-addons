@@ -32,7 +32,6 @@ import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler
 import org.openhab.binding.smartthings.internal.handler.SmartthingsCloudBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsHubBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
-import org.openhab.binding.smartthings.internal.network.networkConnector;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -74,7 +73,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     private List<SmartthingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
     private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) HttpClient httpClient;
-    private final networkConnector networkConnector;
+    private final HttpClientFactory httpClientFactory;
     private final SmartthingsAuthService authService;
     private final OAuthFactory oAuthFactory;
 
@@ -87,14 +86,21 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     @Activate
     public SmartthingsHandlerFactory(final @Reference HttpService httpService,
             final @Reference SmartthingsAuthService authService, final @Reference OAuthFactory oAuthFactory,
-            final @Reference networkConnector networkConnector) {
+            final @Reference HttpClientFactory httpClientFactory) {
         // Get a Gson instance
         gson = new Gson();
         this.httpService = httpService;
         this.authService = authService;
-        this.networkConnector = networkConnector;
+        this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
     }
+
+    /*
+     * @Reference
+     * protected void setSmartthingsDiscoveryService(SmartthingsDiscoveryService disco) {
+     * logger.info("disco");
+     * }
+     */
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
@@ -110,7 +116,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
                 return null;
             }
             bridgeHandler = new SmartthingsHubBridgeHandler((Bridge) thing, this, bundleContext, httpService,
-                    oAuthFactory);
+                    oAuthFactory, httpClientFactory);
 
             authService.setSmartthingsAccountHandler(bridgeHandler);
 
@@ -128,7 +134,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
             }
 
             bridgeHandler = new SmartthingsCloudBridgeHandler((Bridge) thing, this, bundleContext, httpService,
-                    oAuthFactory);
+                    oAuthFactory, httpClientFactory);
 
             authService.setSmartthingsAccountHandler(bridgeHandler);
 

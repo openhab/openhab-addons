@@ -10,20 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.network;
-
-import java.net.URI;
+package org.openhab.binding.smartthings.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.api.Request;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public interface networkCallback {
-    /**
-     * Runs callback code after response completion.
-     */
-    void execute(URI uri, int status, @Nullable Object response);
+public interface SmartthingsNetworkConnector {
+
+    public @Nullable JsonObject DoRequest(String req, @Nullable SmartthingsNetworkCallback callback,
+            String accessToken);
+
+    public void WaitAllPendingRequest();
+
+    public void WaitNoNewRequest();
+
+    public void onComplete(Request request);
+
+    public void onError(Request request, SmartthingsNetworkCallback cb) throws Exception;
+
 }
