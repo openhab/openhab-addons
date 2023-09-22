@@ -452,7 +452,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 thing.setProperty(PROP_APPID, bridgeHardwareId + "-" + this.appName);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY, "Synchronizing...");
-            this.finishInitJob = scheduler.schedule(this::finishInit, 5, TimeUnit.SECONDS);
+            this.finishInitJob = scheduler.schedule(this::finishInit, 15, TimeUnit.SECONDS);
         }
         return;
     }
@@ -461,11 +461,11 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     public void processMessage(String topic, byte[] payload) {
         synchronized (this.synchronizationRequired) {
             if (this.synchronizationRequired) {
+                this.synchronizationRequired = false;
                 String payloadString = new String(payload, StandardCharsets.UTF_8);
                 HashMap<String, Object> decodedJson = Helper.decodeJson(payloadString);
                 this.app.updateFields(decodedJson);
                 initStates();
-                this.synchronizationRequired = false;
             }
         }
     }
