@@ -32,11 +32,11 @@ import org.openhab.core.types.Type;
 public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? extends Quantity<?>>> {
 
     // this literal is required because some gateway types are mixing up encodings in their XML-RPC responses
-    private final String UNCORRECT_ENCODED_CELSIUS = "Â°C";
+    private static final String UNCORRECT_ENCODED_CELSIUS = "Â°C";
 
     // "100%" is a commonly used "unit" in datapoints. Generated channel-type is of DecimalType,
     // but clients may define a QuantityType if preferred
-    private final String HUNDRED_PERCENT = "100%";
+    private static final String HUNDRED_PERCENT = "100%";
 
     @Override
     protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
