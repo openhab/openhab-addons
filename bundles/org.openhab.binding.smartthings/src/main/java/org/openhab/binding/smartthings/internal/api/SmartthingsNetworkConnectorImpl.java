@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.network;
+package org.openhab.binding.smartthings.internal.api;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -28,10 +28,9 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +43,9 @@ import com.google.gson.JsonObject;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true)
-public class networkConnectorImpl implements networkConnector {
+public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnector {
 
-    private static final Logger logger = LoggerFactory.getLogger(networkConnectorImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SmartthingsNetworkConnectorImpl.class);
 
     private final static @NotNull Gson gson;
     // private final static @NotNull Gson gsonWithAdpter;
@@ -81,7 +79,7 @@ public class networkConnectorImpl implements networkConnector {
     }
 
     @Activate
-    public networkConnectorImpl(@Reference HttpClientFactory httpClientFactory) {
+    public SmartthingsNetworkConnectorImpl(HttpClientFactory httpClientFactory, OAuthClientService oAuthClientService) {
         this.httpClientFactory = httpClientFactory;
 
         SslContextFactory ctxFactory = new SslContextFactory.Client(true);
@@ -131,7 +129,7 @@ public class networkConnectorImpl implements networkConnector {
     }
 
     @Override
-    public void onError(@Nullable Request request, @Nullable networkCallback cb) throws Exception {
+    public void onError(@Nullable Request request, @Nullable SmartthingsNetworkCallback cb) throws Exception {
         lockObj.lock();
         try {
             logger.debug("OnError");
@@ -157,16 +155,16 @@ public class networkConnectorImpl implements networkConnector {
         }
     }
 
-    private @Nullable ContentResponse executeRequest(final Request request, @Nullable networkCallback callback)
-            throws Exception {
+    private @Nullable ContentResponse executeRequest(final Request request,
+            @Nullable SmartthingsNetworkCallback callback) throws Exception {
         request.timeout(240, TimeUnit.SECONDS);
 
         ContentResponse response = null;
 
         @Nullable
-        networkRequestListener requestListener = null;
+        SmartthingsNetworkRequestListener requestListener = null;
         if (callback != null) {
-            requestListener = new networkRequestListener(callback, this);
+            requestListener = new SmartthingsNetworkRequestListener(callback, this);
             request.onResponseSuccess(requestListener);
             request.onResponseFailure(requestListener);
         }
@@ -196,20 +194,22 @@ public class networkConnectorImpl implements networkConnector {
     private void initConfig() throws Exception {
     }
 
-    public @Nullable String DoBasicRequest(String uri) throws Exception {
-        return DoBasicRequest(uri, null);
+    public @Nullable String DoBasicRequest(String uri, String accessToken) throws Exception {
+        return DoBasicRequest(uri, null, accessToken);
     }
 
-    public @Nullable String DoBasicRequestAsync(String uri, @Nullable networkCallback callback) throws Exception {
-        return DoBasicRequest(uri, callback);
+    public @Nullable String DoBasicRequestAsync(String uri, @Nullable SmartthingsNetworkCallback callback,
+            String accessToken) throws Exception {
+        return DoBasicRequest(uri, callback, accessToken);
     }
 
-    public @Nullable String DoBasicRequest(String uri, @Nullable networkCallback callback) throws Exception {
+    public @Nullable String DoBasicRequest(String uri, @Nullable SmartthingsNetworkCallback callback,
+            String accessToken) throws Exception {
 
         try {
             logger.debug("Execute request: {}", uri);
-            final Request request = httpClient.newRequest(uri)
-                    .header("Authorization", "Bearer abd108f7-88c0-44e1-9d35-fc520086c11c").method(HttpMethod.GET);
+            final Request request = httpClient.newRequest(uri).header("Authorization", "Bearer " + accessToken)
+                    .method(HttpMethod.GET);
 
             ContentResponse response = executeRequest(request, callback);
             if (callback == null && response != null) {
@@ -230,9 +230,10 @@ public class networkConnectorImpl implements networkConnector {
     }
 
     @Override
-    public @Nullable JsonObject DoRequest(String req, @Nullable networkCallback callback) {
+    public @Nullable JsonObject DoRequest(String req, @Nullable SmartthingsNetworkCallback callback,
+            String accessToken) {
         try {
-            String response = DoBasicRequest(req, callback);
+            String response = DoBasicRequest(req, callback, accessToken);
 
             if (response != null) {
 

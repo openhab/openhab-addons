@@ -27,8 +27,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHubCommand;
+import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDeviceData;
-import org.openhab.binding.smartthings.internal.network.networkConnector;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -69,7 +70,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     private @Nullable ScheduledFuture<?> scanningJob;
 
-    private @Nullable networkConnector networkConnector;
+    private @Nullable SmartthingsApi api;
 
     /*
      * default constructor
@@ -84,15 +85,6 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         smartthingsHubCommand = hubCommand;
     }
 
-    @Reference
-    public void setNetworkConnector(@Nullable networkConnector networkConnector) {
-        this.networkConnector = networkConnector;
-    }
-
-    public void unsetNetworkConnector(networkConnector networkConnector) {
-        this.networkConnector = null;
-    }
-
     protected void unsetSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
         // Make sure it is this handleFactory that should be unset
         if (Objects.equals(hubCommand, smartthingsHubCommand)) {
@@ -100,6 +92,15 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         }
     }
 
+    /*
+     * public void setApi(@Nullable SmartthingsApi api) {
+     * this.api = api;
+     * }
+     *
+     * public void unssetApi(SmartthingsApi api) {
+     * this.api = null;
+     * }
+     */
     /**
      * Called from the UI when starting a search.
      */
@@ -107,10 +108,10 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     public void startScan() {
         // sendSmartthingsDiscoveryRequest();
 
-        JsonObject res = networkConnector.DoRequest("https://api.smartthings.com/v1/devices", null);
+        SmartthingsBridgeHandler bridge = smartthingsHubCommand.getBridgeHandler();
+        SmartthingsApi api = bridge.getSmartthingsApi();
 
-        JsonElement res1 = res.get("items");
-        JsonArray devices = res1.getAsJsonArray();
+        JsonArray devices = api.GetAllDevices();
 
         for (JsonElement dev : devices) {
             JsonObject devObj = (JsonObject) dev;
@@ -126,7 +127,6 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
         }
 
-        // JsonArray arr = (JsonArray) res[0].value;
         logger.debug("End Discovery");
     }
 
