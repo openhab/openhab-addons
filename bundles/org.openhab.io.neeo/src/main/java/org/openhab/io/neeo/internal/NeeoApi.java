@@ -600,8 +600,15 @@ public class NeeoApi implements AutoCloseable {
         NeeoUtil.cancel(connect.getAndSet(null));
 
         try {
+            int stackSize = httpClientStack.size();
+            while (stackSize > 0) {
+                HttpClient httpClient = (HttpClient) httpClientStack.pop();
+                httpClient.stop();
+                httpClient = null;
+                stackSize--;
+            }
             deregisterApi();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.debug("Exception while deregistring api during close - ignoring: {}", e.getMessage(), e);
         } finally {
             // Do this regardless if a runtime exception was thrown
