@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
 public class SmartthingsAuthService {
 
     private static final String TEMPLATE_PATH = "templates/";
-    private static final String TEMPLATE_PLAYER = TEMPLATE_PATH + "player.html";
     private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
     private static final String ERROR_UKNOWN_BRIDGE = "Returned 'state' by doesn't match any Bridges. Has the bridge been removed?";
 
@@ -86,7 +85,7 @@ public class SmartthingsAuthService {
      * @throws IOException thrown when an HTML template could not be read
      */
     private HttpServlet createServlet() throws IOException {
-        return new SmartthingsAuthServlet(this, readTemplate(TEMPLATE_INDEX), readTemplate(TEMPLATE_PLAYER));
+        return new SmartthingsAuthServlet(this, readTemplate(TEMPLATE_INDEX));
     }
 
     /**

@@ -89,8 +89,8 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
         OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
                 SmartthingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
-                SmartthingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, "a6e1c31e-d50e-4ed2-a374-060d0f696a72",
-                "ca0a6bc9-ee3a-44d1-a15d-81b17a957d28", SmartthingsBindingConstants.SMARTTHINGS_SCOPES, true);
+                SmartthingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, config.clientId, config.clientSecret,
+                SmartthingsBindingConstants.SMARTTHINGS_SCOPES, true);
 
         this.oAuthService = oAuthService;
         oAuthService.addAccessTokenRefreshListener(SmartthingsBridgeHandler.this);
@@ -171,11 +171,11 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     private String updateProperties(AccessTokenResponse credentials) {
         /*
          * if (spotifyApi != null) {
-         * 
+         *
          * final Me me = spotifyApi.getMe();
          * final String user = me.getDisplayName() == null ? me.getId() : me.getDisplayName();
          * final Map<String, String> props = editProperties();
-         * 
+         *
          * props.put(PROPERTY_SPOTIFY_USER, user);
          * updateProperties(props);
          * return user;

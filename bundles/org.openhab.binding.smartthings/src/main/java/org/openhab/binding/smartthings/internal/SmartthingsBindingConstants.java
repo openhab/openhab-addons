@@ -43,7 +43,9 @@ public class SmartthingsBindingConstants {
     /**
      * Smartthings scopes needed by this binding to work.
      */
-    public static final String SMARTTHINGS_SCOPES = Stream.of("r:devices:*").collect(Collectors.joining(" "));
+    public static final String SMARTTHINGS_SCOPES = Stream.of("r:devices:*", "w:devices:*", "x:devices:*", "r:hubs:*",
+            "r:locations:*", "w:locations:*", "x:locations:*", "r:scenes:*", "x:scenes:*", "r:rules:*", "w:rules:*",
+            "r:installedapps", "w:installedapps").collect(Collectors.joining(" "));
 
     // List of Spotify services related urls, information
     public static final String SMARTTHINGS_ACCOUNT_URL = "https://api.smartthings.com/oauth";
