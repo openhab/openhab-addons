@@ -14,11 +14,9 @@ package org.openhab.binding.homematic.internal.converter;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import javax.measure.quantity.Temperature;
 
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -76,20 +74,19 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         floatQuantityDp.setUnit("°C");
         convertedState = temperatureConverter.convertFromBinding(floatQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertEquals(((QuantityType<?>) convertedState).getDimension(), SIUnits.CELSIUS.getDimension());
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(equalTo(SIUnits.CELSIUS.getDimension())));
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(10.5));
         assertThat(((QuantityType<?>) convertedState).toUnit(ImperialUnits.FAHRENHEIT).doubleValue(), is(50.9));
 
         floatQuantityDp.setUnit("Â°C");
-        assertEquals(((QuantityType<?>) convertedState).getDimension(),
-                new QuantityType<Temperature>(0, SIUnits.CELSIUS).getDimension());
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(equalTo(SIUnits.CELSIUS.getDimension())));
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(10.5));
 
         integerQuantityDp.setValue(50000);
         integerQuantityDp.setUnit("mHz");
         convertedState = frequencyConverter.convertFromBinding(integerQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertEquals(((QuantityType<?>) convertedState).getDimension(), Units.HERTZ.getDimension());
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(equalTo(Units.HERTZ.getDimension())));
         assertThat(((QuantityType<?>) convertedState).intValue(), is(50000));
         assertThat(((QuantityType<?>) convertedState).toUnit(Units.HERTZ).intValue(), is(50));
 
@@ -97,7 +94,7 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         floatQuantityDp.setUnit("100%");
         convertedState = timeConverter.convertFromBinding(floatQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertEquals(((QuantityType<?>) convertedState).getDimension(), Units.ONE.getDimension());
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(equalTo(Units.ONE.getDimension())));
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(70.0));
         assertThat(((QuantityType<?>) convertedState).getUnit(), is(Units.PERCENT));
         assertThat(((QuantityType<?>) convertedState).toUnit(Units.ONE).doubleValue(), is(0.7));
