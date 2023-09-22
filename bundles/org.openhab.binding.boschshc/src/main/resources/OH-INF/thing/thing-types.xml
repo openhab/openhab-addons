@@ -14,6 +14,10 @@
 			<channel id="execute-scenario" typeId="execute-scenario"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
 	</bridge-type>
 
