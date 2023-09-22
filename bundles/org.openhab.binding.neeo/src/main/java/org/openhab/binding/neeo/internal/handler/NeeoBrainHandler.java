@@ -198,9 +198,13 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
 
                 NeeoUtil.checkInterrupt();
                 try {
-                    servletPath = NeeoConstants.WEBAPP_FORWARDACTIONS.replace("{brainid}", brainId);
+                    String servletPath = NeeoConstants.WEBAPP_FORWARDACTIONS.replace("{brainid}", brainId);
+                    this.servletPath = servletPath;
 
-                    httpService.registerServlet(servletPath, forwardActionServlet, new Hashtable<>(),
+                    Hashtable<Object, Object> initParams = new Hashtable<>();
+                    initParams.put("servlet-name", servletPath);
+
+                    httpService.registerServlet(servletPath, forwardActionServlet, initParams,
                             httpService.createDefaultHttpContext());
 
                     final URL callbackURL = createCallbackUrl(brainId, config);
