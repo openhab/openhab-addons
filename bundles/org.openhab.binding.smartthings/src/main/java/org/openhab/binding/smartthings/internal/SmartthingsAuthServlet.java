@@ -69,14 +69,10 @@ public class SmartthingsAuthServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(SmartthingsAuthServlet.class);
     private final SmartthingsAuthService smartthingsAuthService;
     private final String indexTemplate;
-    private final String playerTemplate;
 
-    public SmartthingsAuthServlet(SmartthingsAuthService smartthingsAuthService, String indexTemplate,
-            String playerTemplate) {
+    public SmartthingsAuthServlet(SmartthingsAuthService smartthingsAuthService, String indexTemplate) {
         this.smartthingsAuthService = smartthingsAuthService;
         this.indexTemplate = indexTemplate;
-        this.playerTemplate = playerTemplate;
-
     }
 
     @Override

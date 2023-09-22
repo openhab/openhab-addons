@@ -68,9 +68,15 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
             return false;
         }
 
-        if (config.accessToken.isEmpty()) {
+        if (config.clientId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Smartthings acces token is not specified");
+                    "Smartthings Client Id is not specified");
+            return false;
+        }
+
+        if (config.clientSecret.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Smartthings Client Secret is not specified");
             return false;
         }
 
@@ -82,8 +88,12 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
         return smartthingsHandlerFactory;
     }
 
-    public String getAccessToken() {
-        return config.accessToken;
+    public String getClientId() {
+        return config.clientId;
+    }
+
+    public String getClientSecret() {
+        return config.clientSecret;
     }
 
     @Override
