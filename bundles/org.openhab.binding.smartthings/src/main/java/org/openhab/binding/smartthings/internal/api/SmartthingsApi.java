@@ -15,6 +15,7 @@ package org.openhab.binding.smartthings.internal.api;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -54,6 +55,14 @@ public class SmartthingsApi {
     }
 
     public JsonArray GetAllDevices() {
+        JsonElement result = DoRequest("https://api.smartthings.com/v1/devices");
+        JsonElement res1 = ((JsonObject) result).get("items");
+        JsonArray devices = res1.getAsJsonArray();
+        return devices;
+
+    }
+
+    private @Nullable JsonElement DoRequest(String uri) {
         try {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
@@ -63,18 +72,15 @@ public class SmartthingsApi {
                         "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
             } else {
 
-                JsonObject res = networkConnector.DoRequest("https://api.smartthings.com/v1/devices", null,
-                        accessToken);
-
-                JsonElement res1 = res.get("items");
-                JsonArray devices = res1.getAsJsonArray();
-                return devices;
+                JsonObject res = networkConnector.DoRequest(uri, null, accessToken);
+                return res;
             }
         } catch (final IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         } catch (OAuthException | OAuthResponseException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+
     }
 
     /**
