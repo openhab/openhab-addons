@@ -33,8 +33,22 @@ public class SmartthingsBindingConstants {
 
     // List of Bridge Type UIDs
     public static final ThingTypeUID THING_TYPE_SMARTTHINGS = new ThingTypeUID(BINDING_ID, "smartthings");
-    
+
     public static final ThingTypeUID THING_TYPE_SMARTTHINGSCLOUD = new ThingTypeUID(BINDING_ID, "smartthingscloud");
+
+    // Authorization related Servlet and resources aliases.
+    public static final String SMARTTHINGS_ALIAS = "/connectsmartthings";
+    public static final String SMARTTHINGS_IMG_ALIAS = "/img";
+
+    /**
+     * Smartthings scopes needed by this binding to work.
+     */
+    public static final String SMARTTHINGS_SCOPES = Stream.of("r:devices:*").collect(Collectors.joining(" "));
+
+    // List of Spotify services related urls, information
+    public static final String SMARTTHINGS_ACCOUNT_URL = "https://api.smartthings.com/oauth";
+    public static final String SMARTTHINGS_AUTHORIZE_URL = SMARTTHINGS_ACCOUNT_URL + "/authorize";
+    public static final String SMARTTHINGS_API_TOKEN_URL = SMARTTHINGS_ACCOUNT_URL + "/token";
 
     // List of all Thing Type UIDs
     // I tried to replace this with a dynamic processing of the thing-types.xml file using the ThingTypeRegistry

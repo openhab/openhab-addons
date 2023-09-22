@@ -17,6 +17,7 @@ import java.util.LinkedList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -39,8 +40,8 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SmartthingsCloudBridgeHandler.class);
 
     public SmartthingsCloudBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
-            BundleContext bundleContext, HttpService httpService) {
-        super(bridge, smartthingsHandlerFactory, bundleContext, httpService);
+            BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory) {
+        super(bridge, smartthingsHandlerFactory, bundleContext, httpService, oAuthFactory);
     }
 
     @Override
@@ -91,4 +92,5 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
 
         return configStatusMessages;
     }
+
 }
