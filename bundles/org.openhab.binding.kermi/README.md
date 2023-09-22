@@ -58,5 +58,5 @@ Number:Temperature Drinking_water_temperature  {channel="kermi:drinkingwater-hea
 Number:Temperature Heating_current_temperature_buffer {channel="kermi:room-heating:heatpumpbridge:rheating:BufferSystem_HeatingTemperatureActual"}
 Number:Temperature Cooling_current_temperature_buffer {channel="kermi:room-heating:heatpumpbridge:rheating:BufferSystem_CoolingTemperatureActual"}
 
-String Combined_Heatpump_State {channel="kermi:room-heating:heatpumpbridge:hpmanager:Rubin_CombinedHeatpumpState"}
+Number:Temperature Outside_temperature {channel="kermi:room-heating:heatpumpbridge:rheating:LuftTemperatur"}
 ```
