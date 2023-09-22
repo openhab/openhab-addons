@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="kermi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- heatpump-manager Thing Type -->
+	<thing-type id="heatpump-manager">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Kermi Heatpump Manager</label>
+		<description>Kermi Heatpump Manager</description>
+	</thing-type>
+
+	<!-- drinkingwater-heating -->
+	<thing-type id="drinkingwater-heating">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Drinkingwater Heating</label>
+
+		<channels>
+			<channel id="BufferSystem_TweTemperatureActual" typeId="temperature" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="integer">
+				<label>Address ID</label>
+				<description>Specific device identifier</description>
+				<default>51</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- heatpump -->
+	<thing-type id="heatpump">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Heatpump</label>
+
+		<channels>
+			<channel id="Rubin_CombinedHeatpumpState" typeId="combinedHeatpumpState" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="integer">
+				<label>Address ID</label>
+				<description>Specific device identifier</description>
+				<default>40</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<state pattern="%.2f °C" readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
