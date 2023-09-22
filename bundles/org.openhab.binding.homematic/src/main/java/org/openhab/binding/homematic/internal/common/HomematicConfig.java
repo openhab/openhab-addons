@@ -58,7 +58,6 @@ public class HomematicConfig {
     private int bufferSize = 2048;
 
     private HmGatewayInfo gatewayInfo;
-    private int callbackRegistrationRetries;
     private int callbackRegTimeout;
 
     /**

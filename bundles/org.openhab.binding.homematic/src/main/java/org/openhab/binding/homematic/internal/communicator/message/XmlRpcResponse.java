@@ -149,7 +149,7 @@ public class XmlRpcResponse implements RpcResponse {
                     break;
                 case "datetime.iso8601":
                     try {
-                        data.add(XmlRpcRequest.xmlRpcDateFormat.parse(currentValue));
+                        data.add(XmlRpcRequest.XML_RPC_DATEFORMAT.parse(currentValue));
                     } catch (ParseException ex) {
                         throw new SAXException(ex.getMessage(), ex);
                     }
