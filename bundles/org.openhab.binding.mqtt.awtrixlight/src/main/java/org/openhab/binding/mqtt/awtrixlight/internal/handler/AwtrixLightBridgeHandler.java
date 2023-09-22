@@ -408,7 +408,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             HashMap<String, Object> params = new HashMap<String, Object>();
             params.put("power", OnOffType.ON.equals(command));
             String json = Helper.encodeJson(params);
-            sendMQTT(this.basetopic + TOPIC_POWER, "{" + json + "}", false);
+            sendMQTT(this.basetopic + TOPIC_POWER, json, false);
         }
     }
 
