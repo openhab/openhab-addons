@@ -139,6 +139,33 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     @Override
+    public void initialize() {
+        config = Optional.of(getConfigAs(VehicleConfiguration.class));
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            updateStatus(ThingStatus.UNKNOWN);
+            BridgeHandler handler = bridge.getHandler();
+            if (handler != null) {
+                accountHandler = Optional.of((AccountHandler) handler);
+                accountHandler.get().registerVin(config.get().vin, this);
+                // triggers Websocket update to get online immediately
+                accountHandler.get().sendCommand(null);
+            } else {
+                throw new IllegalStateException("BridgeHandler is null");
+            }
+        } else {
+            String textKey = Constants.STATUS_TEXT_PREFIX + "vehicle" + Constants.STATUS_BRIDGE_MISSING;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, textKey);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        accountHandler.get().unregisterVin(config.get().vin);
+        super.dispose();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.info("Received command {} {} for {}", command.getClass(), command, channelUID);
         if (command instanceof RefreshType) {
@@ -501,31 +528,6 @@ public class VehicleHandler extends BaseThingHandler {
             ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
             accountHandler.get().sendCommand(cm);
         }
-    }
-
-    @Override
-    public void initialize() {
-        config = Optional.of(getConfigAs(VehicleConfiguration.class));
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            updateStatus(ThingStatus.UNKNOWN);
-            BridgeHandler handler = bridge.getHandler();
-            if (handler != null) {
-                accountHandler = Optional.of((AccountHandler) handler);
-                accountHandler.get().registerVin(config.get().vin, this);
-            } else {
-                throw new IllegalStateException("BridgeHandler is null");
-            }
-        } else {
-            String textKey = Constants.STATUS_TEXT_PREFIX + "vehicle" + Constants.STATUS_BRIDGE_MISSING;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, textKey);
-        }
-    }
-
-    @Override
-    public void dispose() {
-        accountHandler.get().unregisterVin(config.get().vin);
-        super.dispose();
     }
 
     @SuppressWarnings("rawtypes")

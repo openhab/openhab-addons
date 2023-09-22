@@ -76,9 +76,7 @@
 	"weeklyProfile": {
 		"timestamp_in_ms": 1675419313000,
 		"weekly_profile_value": {
-			"max_number_of_time_profiles": -1,
-			"max_number_of_weekly_time_profile_slots": 21,
-			"current_number_of_time_profiles": -1
+			
 		},
 		"timestamp": 1675419313
 	},
@@ -165,7 +163,7 @@
 	},
 	"weeklySetHU": {
 		"timestamp_in_ms": 1675419313000,
-		"weekly_settings_head_unit_value": "",
+		"weekly_settings_head_unit_value": [],
 		"timestamp": 1675419313
 	},
 	"rangeelectric": {
@@ -253,9 +251,9 @@
 		"int_value": 0
 	},
 	"positionLong": {
-		"timestamp_in_ms": 1693923713000,
-		"double_value": 8.49561,
-		"timestamp": 1693923713
+		"timestamp_in_ms": 1692957336,
+		"double_value": 3.4,
+		"timestamp": 1692957336
 	},
 	"electricconsumptionreset": {
 		"display_value": "21.0",
@@ -396,9 +394,9 @@
 		"int_value": 16605
 	},
 	"positionLat": {
-		"timestamp_in_ms": 1693923713000,
-		"double_value": 50.556017,
-		"timestamp": 1693923713
+		"timestamp_in_ms": 1692957336,
+		"double_value": 1.23,
+		"timestamp": 1692957336
 	},
 	"averageSpeedStart": {
 		"display_value": "55",

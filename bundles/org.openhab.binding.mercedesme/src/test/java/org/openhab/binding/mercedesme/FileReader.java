@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mercedesme;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -41,7 +41,8 @@ public class FileReader {
             return buf.toString();
         } catch (IOException e) {
             // fail if file cannot be read
-            assertTrue(false);
+            e.printStackTrace();
+            fail();
         }
         return null;
     }

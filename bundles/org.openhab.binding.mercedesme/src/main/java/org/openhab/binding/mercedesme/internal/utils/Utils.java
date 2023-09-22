@@ -98,8 +98,15 @@ public class Utils {
 
     public static DateTimeType getDateTimeType(long ms) {
         Instant timestamp = Instant.ofEpochMilli(ms);
+        return new DateTimeType(timestamp.atZone(timeZoneProvider.getTimeZone()));
+    }
+
+    public static DateTimeType getEndOfChargeTime(long ms, long minutesAfterMidnight) {
+        // get today midnight
+        Instant timestamp = Instant.ofEpochMilli(ms);
         ZonedDateTime zdt = timestamp.atZone(timeZoneProvider.getTimeZone());
-        return DateTimeType.valueOf(zdt.toLocalDateTime().toString());
+        ZonedDateTime endTime = zdt.withHour(0).withMinute(0).withSecond(0).plusMinutes(minutesAfterMidnight);
+        return new DateTimeType(endTime);
     }
 
     /**
@@ -425,11 +432,11 @@ public class Utils {
         long hours = remain / 60;
         remain = remain - (hours * 60);
         if (days == 0 && hours == 0) {
-            return remain + "m";
+            return remain + "min";
         } else if (days > 0) {
-            return days + "d " + hours + "h " + remain + "m";
+            return days + " d " + hours + "hr " + remain + "min";
         } else {
-            return hours + "h " + remain + "m";
+            return hours + "hr " + remain + "min";
         }
     }
 
