@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
@@ -372,8 +371,10 @@ public class HomematicThingHandler extends BaseThingHandler {
      * @param datapointName The datapoint that will be updated on the device
      * @param currentValue The current value of the datapoint
      * @param newValue The value that will be sent to the device
-     * @return The rxMode ({@link HomematicBindingConstants#RX_BURST_MODE "BURST"} for burst mode,
-     *         {@link HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"} for wakeup mode, or null for the default mode)
+     * @return The rxMode ({@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_BURST_MODE
+     *         "BURST"} for burst mode,
+     *         {@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"} for
+     *         wakeup mode, or null for the default mode)
      */
     protected String getRxModeForDatapointTransmission(String datapointName, Object currentValue, Object newValue) {
         return null;
