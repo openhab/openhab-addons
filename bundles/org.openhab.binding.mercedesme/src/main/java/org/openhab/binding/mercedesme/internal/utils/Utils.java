@@ -375,14 +375,18 @@ public class Utils {
 
             // Anonymize position
             if ("positionLat".equals(key)) {
-                attributesJson.put("double_value", 1.2);
+                attributesJson.put("double_value", 1.23);
             } else if ("positionLong".equals(key)) {
-                attributesJson.put("double_value", 3.4);
+                attributesJson.put("double_value", 4.56);
             }
             protoJson.put(key, attributesJson);
 
             // System.out.println("New size " + protoJson.length());
         });
+        // finally put binding version in
+        JSONObject version = new JSONObject();
+        version.put("display_value", Constants.BINDING_VERSION);
+        protoJson.put("bindingVersion", version);
         return protoJson.toString();
     }
 

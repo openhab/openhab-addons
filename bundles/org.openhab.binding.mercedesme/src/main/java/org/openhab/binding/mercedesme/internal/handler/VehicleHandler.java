@@ -116,7 +116,7 @@ public class VehicleHandler extends BaseThingHandler {
     private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
     private Map<String, Instant> blockerMap = new HashMap<String, Instant>();
     private Map<String, UOMObserver> unitStorage = new HashMap<String, UOMObserver>();
-    private Map<String, ChannelStateMap> eventStorage = new HashMap<String, ChannelStateMap>();
+    Map<String, ChannelStateMap> eventStorage = new HashMap<String, ChannelStateMap>();
 
     private int ignitionState = -1;
     private boolean chargingState = false;
@@ -176,7 +176,7 @@ public class VehicleHandler extends BaseThingHandler {
                 });
             } else {
                 // deliver from event storage
-                ChannelStateMap csm = eventStorage.get(channelUID.getAsString());
+                ChannelStateMap csm = eventStorage.get(channelUID.getId());
                 if (csm != null) {
                     updateChannel(csm);
                 }
@@ -566,7 +566,7 @@ public class VehicleHandler extends BaseThingHandler {
             String newProto = Utils.proto2Json(data);
             String combinedProto = newProto;
             ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
-            ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getAsString());
+            ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
             if (oldProtoMap != null) {
                 try {
                     String oldProto = ((StringType) oldProtoMap.getState()).toFullString();
@@ -1036,7 +1036,7 @@ public class VehicleHandler extends BaseThingHandler {
     protected void updateChannel(ChannelStateMap csm) {
         String channel = csm.getChannel();
         ChannelUID cuid = new ChannelUID(thing.getUID(), csm.getGroup(), channel);
-        eventStorage.put(cuid.getAsString(), csm);
+        eventStorage.put(cuid.getId(), csm);
 
         /**
          * proto updates causing large printouts in openhab.log

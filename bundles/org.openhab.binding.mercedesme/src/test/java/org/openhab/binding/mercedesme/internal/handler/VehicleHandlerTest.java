@@ -12,8 +12,10 @@ import org.openhab.binding.mercedesme.internal.MercedesMeCommandOptionProvider;
 import org.openhab.binding.mercedesme.internal.MercedesMeDynamicStateDescriptionProvider;
 import org.openhab.binding.mercedesme.internal.MercedesMeStateOptionProvider;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.types.RefreshType;
 
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 
@@ -138,6 +140,59 @@ class VehicleHandlerTest {
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-Charging.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
         vh.distributeContent(update);
+        assertEquals(2, updateListener.updatesReceived.size(), "Update Count");
+        assertEquals("2023-09-19T20:45:00.000+0200",
+                updateListener.updatesReceived.get("test::bev:charge#end-time").toFullString(), "End of Charge Time");
+        assertEquals("2.1 kW", updateListener.updatesReceived.get("test::bev:charge#power").toFullString(),
+                "Charge Power");
+    }
+
+    @Test
+    public void testBEVPartialGPSUpdate() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-GPS.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, false);
+        vh.distributeContent(update);
+        assertEquals(2, updateListener.updatesReceived.size(), "Update Count");
+        assertEquals("1.23,4.56", updateListener.updatesReceived.get("test::bev:position#gps").toFullString(),
+                "GPS update");
+        assertEquals("41.9 °", updateListener.updatesReceived.get("test::bev:position#heading").toFullString(),
+                "Heading Update");
+    }
+
+    @Test
+    public void testBEVPartialRangeUpdate() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-Range.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, false);
+        vh.distributeContent(update);
+        assertEquals(3, updateListener.updatesReceived.size(), "Update Count");
+        assertEquals("15017 km", updateListener.updatesReceived.get("test::bev:range#mileage").toFullString(),
+                "Mileage Update");
+        assertEquals("246 km", updateListener.updatesReceived.get("test::bev:range#radius-electric").toFullString(),
+                "Range Update");
+        assertEquals("307 km", updateListener.updatesReceived.get("test::bev:range#range-electric").toFullString(),
+                "Range Radius Update");
     }
 
     @Test
@@ -189,5 +244,119 @@ class VehicleHandlerTest {
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Hybrid-Charging.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
         vh.distributeContent(update);
+
+        // Test charged / uncharged battery and filled / unfilled tank volume
+        assertEquals("5.800000190734863 kWh",
+                updateListener.updatesReceived.get("test::hybrid:range#charged").toFullString(),
+                "Battery Charged Update");
+        assertEquals("3.4000000953674316 kWh",
+                updateListener.updatesReceived.get("test::hybrid:range#uncharged").toFullString(),
+                "Battery Uncharged Update");
+        assertEquals("9.579999923706055 l",
+                updateListener.updatesReceived.get("test::hybrid:range#tank-remain").toFullString(),
+                "Tank Remain Update");
+        assertEquals("50.31999969482422 l",
+                updateListener.updatesReceived.get("test::hybrid:range#tank-open").toFullString(), "Tank Open Update");
     }
+
+    @Test
+    public void testEventStorage() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        updateListener.linked = true;
+        vh.setCallback(updateListener);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vh.distributeContent(update);
+
+        assertEquals(11, updateListener.updatesPerGroupMap.size(), "Group Update Count");
+        assertEquals(10, updateListener.getUpdatesForGroup("doors"), "Doors Update Count");
+        // 1 update more due to proto channel connected
+        // assertEquals(6, updateListener.getUpdatesForGroup("vehicle"), "Vehcile Update Count");
+        assertEquals(8, updateListener.getUpdatesForGroup("windows"), "Windows Update Count");
+        assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
+        assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
+        assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
+        assertEquals(6, updateListener.getUpdatesForGroup("range"), "Range Update Count");
+        assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
+        assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
+        assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
+        assertEquals(10, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
+
+        /**
+         * VehicleHandler fully updated eventStorage shall contain all data
+         * Let's simulate an item ad causing a RefreshType command
+         * Shall deliver data immediately
+         */
+        assertEquals(82, vh.eventStorage.size());
+        assertEquals(82, updateListener.updatesReceived.size());
+        updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+        ChannelUID mileageChannelUID = new ChannelUID(new ThingUID("test", Constants.BEV), Constants.GROUP_RANGE,
+                "mileage");
+
+        vh.handleCommand(mileageChannelUID, RefreshType.REFRESH);
+        assertEquals(1, updateListener.updatesReceived.size());
+    }
+
+    @Test
+    public void testProtoChannelLinked() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vh.distributeContent(update);
+        assertFalse(updateListener.updatesReceived.containsKey("test::bev:vehicle#proto-update"),
+                "Proto Channel not updated");
+
+        updateListener.linked = true;
+        vh.distributeContent(update);
+        assertTrue(updateListener.updatesReceived.containsKey("test::bev:vehicle#proto-update"),
+                "Proto Channel not updated");
+
+    }
+
+    @Test
+    public void testAkashkumar() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown-akashkumar.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vh.distributeContent(update);
+        assertFalse(updateListener.updatesReceived.containsKey("test::bev:vehicle#proto-update"),
+                "Proto Channel not updated");
+
+        updateListener.linked = true;
+        vh.distributeContent(update);
+        assertTrue(updateListener.updatesReceived.containsKey("test::bev:vehicle#proto-update"),
+                "Proto Channel not updated");
+
+    }
+
 }

@@ -47,6 +47,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     public Map<String, State> updatesReceived = new HashMap<String, State>();
     public Map<String, Map<String, State>> updatesPerGroupMap = new HashMap<String, Map<String, State>>();
+    public boolean linked = false;
 
     public int getUpdatesForGroup(String group) {
         Map<String, State> groupMap = updatesPerGroupMap.get(group);
@@ -59,7 +60,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
         // if (Constants.GROUP_LOCK.equals(channelUID.getGroupId())) {
-        // System.out.println(channelUID.toString() + " received " + state.toFullString());
+        System.out.println(channelUID.toString() + " received " + state.toFullString());
         // }
         updatesReceived.put(channelUID.toString(), state);
         Map<String, State> groupMap = updatesPerGroupMap.get(channelUID.getGroupId());
@@ -142,8 +143,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     @Override
     public boolean isChannelLinked(ChannelUID channelUID) {
-        // TODO Auto-generated method stub
-        return false;
+        return linked;
     }
 
     @Override

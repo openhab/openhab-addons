@@ -59,6 +59,9 @@
 		"timestamp": 1638508946,
 		"status": 1
 	},
+	"bindingVersion": {
+		"display_value": "2.2-alpha"
+	},
 	"maxrange": {
 		"display_value": "330.0",
 		"timestamp_in_ms": 1693998228000,
@@ -252,7 +255,7 @@
 	},
 	"positionLong": {
 		"timestamp_in_ms": 1692957336,
-		"double_value": 3.4,
+		"double_value": 4.56,
 		"timestamp": 1692957336
 	},
 	"electricconsumptionreset": {
