@@ -12,17 +12,27 @@
  */
 package org.openhab.binding.smartthings.internal.handler;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.SmartthingsAccountHandler;
+import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.SmartthingsServlet;
+import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
 import org.openhab.core.types.Command;
 import org.osgi.framework.BundleContext;
@@ -37,7 +47,8 @@ import org.slf4j.LoggerFactory;
  * @author Bob Raker - Initial contribution
  */
 @NonNullByDefault
-public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler {
+public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
+        implements SmartthingsAccountHandler, AccessTokenRefreshListener {
     private final Logger logger = LoggerFactory.getLogger(SmartthingsBridgeHandler.class);
 
     protected SmartthingsBridgeConfig config;
@@ -46,13 +57,16 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     protected BundleContext bundleContext;
     private @NonNullByDefault({}) HttpService httpService;
     private @Nullable SmartthingsServlet servlet;
+    private @Nullable OAuthClientService oAuthService;
+    private final OAuthFactory oAuthFactory;
 
     public SmartthingsBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
-            BundleContext bundleContext, HttpService httpService) {
+            BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory) {
         super(bridge);
         this.smartthingsHandlerFactory = smartthingsHandlerFactory;
         this.bundleContext = bundleContext;
         this.httpService = httpService;
+        this.oAuthFactory = oAuthFactory;
         config = getThing().getConfiguration().as(SmartthingsBridgeConfig.class);
     }
 
@@ -73,7 +87,20 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
             servlet.activate();
         }
 
+        OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
+                SmartthingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
+                SmartthingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, "a6e1c31e-d50e-4ed2-a374-060d0f696a72",
+                "ca0a6bc9-ee3a-44d1-a15d-81b17a957d28", SmartthingsBindingConstants.SMARTTHINGS_SCOPES, true);
+
+        this.oAuthService = oAuthService;
+        oAuthService.addAccessTokenRefreshListener(SmartthingsBridgeHandler.this);
+
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
+
     }
 
     @Override
@@ -99,5 +126,76 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
         Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<>();
 
         return configStatusMessages;
+    }
+
+    @Override
+    public boolean isAuthorized() {
+        final AccessTokenResponse accessTokenResponse = getAccessTokenResponse();
+
+        return accessTokenResponse != null && accessTokenResponse.getAccessToken() != null
+                && accessTokenResponse.getRefreshToken() != null;
+
+    }
+
+    private @Nullable AccessTokenResponse getAccessTokenResponse() {
+        try {
+            OAuthClientService oAuthService = this.oAuthService;
+            return oAuthService == null ? null : oAuthService.getAccessTokenResponse();
+        } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
+            logger.debug("Exception checking authorization: ", e);
+            return null;
+        }
+    }
+
+    @Override
+    public String authorize(String redirectUri, String reqCode) {
+        try {
+            OAuthClientService oAuthService = this.oAuthService;
+            if (oAuthService == null) {
+                throw new OAuthException("OAuth service is not initialized");
+            }
+            logger.debug("Make call to Smartthings to get access token.");
+            final AccessTokenResponse credentials = oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode,
+                    redirectUri);
+            final String user = updateProperties(credentials);
+            logger.debug("Authorized for user: {}", user);
+            return user;
+        } catch (RuntimeException | OAuthException | IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
+        } catch (final OAuthResponseException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private String updateProperties(AccessTokenResponse credentials) {
+        /*
+         * if (spotifyApi != null) {
+         * 
+         * final Me me = spotifyApi.getMe();
+         * final String user = me.getDisplayName() == null ? me.getId() : me.getDisplayName();
+         * final Map<String, String> props = editProperties();
+         * 
+         * props.put(PROPERTY_SPOTIFY_USER, user);
+         * updateProperties(props);
+         * return user;
+         * }
+         */
+        return "";
+    }
+
+    @Override
+    public String formatAuthorizationUrl(String redirectUri) {
+        try {
+            OAuthClientService oAuthService = this.oAuthService;
+            if (oAuthService == null) {
+                throw new OAuthException("OAuth service is not initialized");
+            }
+
+            return oAuthService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
+        } catch (final OAuthException e) {
+            logger.debug("Error constructing AuthorizationUrl: ", e);
+            return "";
+        }
     }
 }
