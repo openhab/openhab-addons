@@ -78,6 +78,6 @@
 	</channel-type>
 	<channel-type id="auto-unlock-channel">
 		<item-type>Switch</item-type>
-		<label>Charge Coupler Auto Unlock</label>
+		<label>Coupler Auto Unlock</label>
 	</channel-type>
 </thing:thing-descriptions>

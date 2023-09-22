@@ -15,8 +15,7 @@ package org.openhab.binding.mercedesme.internal.utils;
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -30,7 +29,6 @@ import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.UnitProvider;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -166,27 +164,17 @@ public class Mapper {
                 case "endofchargetime":
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
-                    } else if (value.getDisplayValue() != null) {
-                        String dv = value.getDisplayValue();
-                        try {
-                            String[] vals = dv.split(":");
-                            Integer hour = Integer.parseInt(vals[0]);
-                            Integer minute = Integer.parseInt(vals[1]);
-                            Instant time = Instant.ofEpochMilli(value.getTimestampInMs());
-                            LocalDateTime ldt = LocalDateTime.ofInstant(time, ZoneOffset.UTC).withHour(hour)
-                                    .withMinute(minute);
-                            state = DateTimeType.valueOf(ldt.toString());
-                            if (Locale.US.getCountry().equals(Utils.getCountry())) {
-                                observer = new UOMObserver(UOMObserver.TIME_US);
-                            } else {
-                                observer = new UOMObserver(UOMObserver.TIME_ROW);
-                            }
-                        } catch (NumberFormatException nfe) {
-                            LOGGER.warn("End Charge Time Number Format failed {} for {}", nfe.getMessage(), dv);
-                            state = UnDefType.UNDEF;
-                        }
                     } else {
-                        state = UnDefType.UNDEF;
+                        // int value is representing "minutes after Midnight!
+                        Instant time = Instant.ofEpochMilli(value.getTimestampInMs());
+                        long minutesAddon = Utils.getInt(value);
+                        time.plus(minutesAddon, ChronoUnit.MINUTES);
+                        state = Utils.getEndOfChargeTime(time.toEpochMilli(), minutesAddon);
+                        if (Locale.US.getCountry().equals(Utils.getCountry())) {
+                            observer = new UOMObserver(UOMObserver.TIME_US);
+                        } else {
+                            observer = new UOMObserver(UOMObserver.TIME_ROW);
+                        }
                     }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
