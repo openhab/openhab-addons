@@ -61,9 +61,13 @@ class ProtoTest {
                         .readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Unformatted.json");
                 assertEquals(referenceJson, protoJson, "Prto2Json compare");
                 JSONObject protoJsonObject = new JSONObject(protoJson);
-                assertEquals(vepUpdate.getAttributesCount(), protoJsonObject.length(), "Attributes Count");
+                // plus one due to added binding version
+                assertEquals(vepUpdate.getAttributesCount() + 1, protoJsonObject.length(), "Attributes Count");
+                // assure version is in
+                assertTrue(protoJsonObject.has("bindingVersion"));
+                System.out.println(protoJsonObject.get("bindingVersion"));
                 VEPUpdate roundTrip = ProtoConverter.json2Proto(protoJsonObject.toString(), true);
-                assertEquals(156, roundTrip.getAttributesCount(), "Roundtrip Count");
+                assertEquals(157, roundTrip.getAttributesCount(), "Roundtrip Count");
             } else {
                 fail();
             }

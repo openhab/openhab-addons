@@ -37,6 +37,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class Constants {
+    public static final String BINDING_VERSION = "2.2-alpha";
     public static final String BINDING_ID = "mercedesme";
 
     public static final String COMBUSTION = "combustion";

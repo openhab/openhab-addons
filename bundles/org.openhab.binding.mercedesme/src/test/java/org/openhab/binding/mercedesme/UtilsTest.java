@@ -13,6 +13,7 @@
 package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.mercedesme.internal.Constants.GROUP_VEHICLE;
 
 import java.io.File;
 
@@ -22,6 +23,8 @@ import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * The {@link UtilsTest} Test configuration settings
@@ -118,5 +121,13 @@ class UtilsTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void testChannel() {
+        ChannelUID protoUpdateChannelUID = new ChannelUID(new ThingUID("test", Constants.BEV), GROUP_VEHICLE,
+                "proto-update");
+        System.out.println(protoUpdateChannelUID.getAsString());
+        System.out.println(protoUpdateChannelUID.getId());
     }
 }
