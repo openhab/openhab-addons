@@ -100,7 +100,7 @@
 			<tag>Measurement</tag>
 			<tag>Light</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"></state>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="brightness">
@@ -468,7 +468,7 @@
 		<tags>
 			<tag>Control</tag>
 		</tags>
-		<state min="0" max="100"/>
+		<state min="0" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="progressColor">
@@ -500,6 +500,7 @@
 		<tags>
 			<tag>Control</tag>
 		</tags>
+		<state pattern="%.0f %unit%"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

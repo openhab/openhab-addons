@@ -119,6 +119,11 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Received command {} of type {} on channel {}", command.toString(), command.getClass(),
                 channelUID.getAsString());
+        if (this.synchronizationRequired) {
+            // Don't accept any commands while we're synchronizing our settings
+            return;
+        }
+
         if (command instanceof RefreshType) {
             updateApp();
             return;
