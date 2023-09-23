@@ -308,6 +308,6 @@ public class DwdWarningsData {
      */
     protected void setDataAccess(DwdWarningDataAccess dataAccess) {
         dataAccessCached = new ExpiringCache<>(Duration.ofMinutes(MIN_REFRESH_WAIT_MINUTES),
-                () -> dataAccess.getDataFromEndpoint(""));
+                () -> dataAccess.getDataFromEndpoint("TestCity"));
     }
 }
