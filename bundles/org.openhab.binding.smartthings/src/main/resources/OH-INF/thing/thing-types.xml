@@ -1760,5 +1760,84 @@
 			</options>
 		</state>
 	</channel-type>
+	
+	
+	<!-- Light -->
+    <thing-type id="leaksensor">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="smartthings"/>
+        </supported-bridge-type-refs>
+        <label>Light</label>
+        <description>Light</description>
+        <channels>
+            <channel id="switch" typeId="switch-channel">
+                <label>Switch</label>
+            </channel>
+        </channels>
+        <config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+    </thing-type>
+
+
+<!-- Light -->
+    <thing-type id="smartplug">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="smartthings"/>
+        </supported-bridge-type-refs>
+        <label>Light</label>
+        <description>Light</description>
+        <channels>
+            <channel id="switch" typeId="switch-channel">
+                <label>Switch</label>
+            </channel>
+        </channels>
+        <config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+    </thing-type>
+	
+<!-- Light -->
+    <thing-type id="oven">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="smartthings"/>
+        </supported-bridge-type-refs>
+        <label>Light</label>
+        <description>Light</description>
+        <channels>
+            <channel id="switch" typeId="switch-channel">
+                <label>Switch</label>
+            </channel>
+        </channels>
+        <config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+    </thing-type>
+    
+<!-- Light -->
+    <thing-type id="dishwasher">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="smartthings"/>
+        </supported-bridge-type-refs>
+        <label>Light</label>
+        <description>Light</description>
+        <channels>
+            <channel id="switch" typeId="switch-channel">
+                <label>Switch</label>
+            </channel>
+        </channels>
+        <config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+    </thing-type>
+    
+    <!-- Light -->
+    <thing-type id="cooktop">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="smartthings"/>
+        </supported-bridge-type-refs>
+        <label>Light</label>
+        <description>Light</description>
+        <channels>
+            <channel id="switch" typeId="switch-channel">
+                <label>Switch</label>
+            </channel>
+        </channels>
+        <config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+    </thing-type>
+    
+    
 
 </thing:thing-descriptions>
