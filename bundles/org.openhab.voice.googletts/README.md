@@ -78,7 +78,7 @@ org.openhab.voice:defaultTTS=googletts
 org.openhab.voice:defaultVoice=googletts:XXX
 ```
 You can see the available voices by entering `voice voices` in the karaf console
-```
+```shell
 openhab> voice voices
   ...
   Google Cloud - Deutsch (Deutschland) - de-DE-Standard-C (googletts:deDEStandardC)
