@@ -23,7 +23,7 @@ Before you can integrate this service with your Google Cloud Text-to-Speech, you
 1. Select or create a Google Cloud project ([link](https://console.cloud.google.com/cloud-resource-manager))
 2. Make sure that billing is enabled for your project ([link](https://cloud.google.com/billing/docs/how-to/modify-project))
 3. Enable the `Text-to-Speech API` ([link](https://console.cloud.google.com/apis/dashboard))
-  * Don't mistake with the `Spech-to-Text API`
+  * Don't mistake with the `Speech-to-Text API`
 4. Set up authentication:
   1. Go to the `APIs & Services` -> `Credentials` page in the GCP Console and your project ([link](https://console.cloud.google.com/apis/credentials))
   2. From the `Create credentials` drop-down list, select `OAuth client ID`.
