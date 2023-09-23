@@ -14,13 +14,16 @@ package org.openhab.binding.hue.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;
 
 /**
+ * @author Markus Rathgeb - Initial contribution
  * @author Markus Rathgeb - migrated to plain Java test
  */
+@NonNullByDefault
 public class AbstractHueOSGiTestParent extends JavaOSGiTest {
 
     /**
@@ -38,7 +41,7 @@ public class AbstractHueOSGiTestParent extends JavaOSGiTest {
             } else {
                 assertNotNull(tmp);
                 assertEquals(clazz, tmp.getClass());
-                throw new RuntimeException();
+                throw new IllegalStateException();
             }
         });
     }

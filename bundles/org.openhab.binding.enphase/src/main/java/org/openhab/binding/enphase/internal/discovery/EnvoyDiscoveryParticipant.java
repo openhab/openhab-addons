@@ -15,7 +15,6 @@ package org.openhab.binding.enphase.internal.discovery;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.*;
 
 import java.net.Inet4Address;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +55,7 @@ public class EnvoyDiscoveryParticipant implements MDNSDiscoveryParticipant, Envo
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(EnphaseBindingConstants.THING_TYPE_ENPHASE_ENVOY);
+        return Set.of(EnphaseBindingConstants.THING_TYPE_ENPHASE_ENVOY);
     }
 
     @Override

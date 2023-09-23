@@ -31,7 +31,7 @@ public class PowermaxMessageConstants {
 
     // System events
 
-    public static enum PowermaxSysEventType {
+    public enum PowermaxSysEventType {
         NONE,
         ALARM,
         SILENT_ALARM,
@@ -41,7 +41,7 @@ public class PowermaxMessageConstants {
         RESTORE,
         GENERAL_RESTORE,
         CANCEL,
-        RESET;
+        RESET
     }
 
     public static class PowermaxSysEvent {

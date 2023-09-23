@@ -123,6 +123,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
      * @throws TimeoutException
      * @throws ExecutionException
      */
+    @Override
     public void sendDeviceCommand(String path, int timeout, String data)
             throws InterruptedException, TimeoutException, ExecutionException {
         ContentResponse response = httpClient

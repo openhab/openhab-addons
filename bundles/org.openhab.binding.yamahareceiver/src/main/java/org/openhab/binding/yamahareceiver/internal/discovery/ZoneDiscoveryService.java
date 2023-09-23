@@ -101,9 +101,9 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService implements Di
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof YamahaBridgeHandler) {
-            this.handler = (YamahaBridgeHandler) handler;
-            this.handler.setZoneDiscoveryService(this);
+        if (handler instanceof YamahaBridgeHandler bridgeHandler) {
+            bridgeHandler.setZoneDiscoveryService(this);
+            this.handler = bridgeHandler;
         }
     }
 

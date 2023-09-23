@@ -87,9 +87,7 @@ public class EDSSensorThingHandlerTest extends AbstractThingHandlerTest {
 
         initializeHandlerMocks();
 
-        Mockito.doAnswer(answer -> {
-            return new OwPageBuffer("EDS0065 ".getBytes());
-        }).when(secondBridgeHandler).readPages(any());
+        Mockito.doAnswer(answer -> new OwPageBuffer("EDS0065 ".getBytes())).when(secondBridgeHandler).readPages(any());
     }
 
     @Test

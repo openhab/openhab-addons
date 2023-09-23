@@ -188,9 +188,9 @@ public class Property implements AttributeChanged {
                 value = new OnOffValue("true", "false");
                 break;
             case color_:
-                if (attributes.format.equals("hsv")) {
+                if ("hsv".equals(attributes.format)) {
                     value = new ColorValue(ColorMode.HSB, null, null, 100);
-                } else if (attributes.format.equals("rgb")) {
+                } else if ("rgb".equals(attributes.format)) {
                     value = new ColorValue(ColorMode.RGB, null, null, 100);
                 } else {
                     logger.warn("Non supported color format: '{}'. Only 'hsv' and 'rgb' are supported",
@@ -199,13 +199,13 @@ public class Property implements AttributeChanged {
                 }
                 break;
             case enum_:
-                String enumValues[] = attributes.format.split(",");
+                String[] enumValues = attributes.format.split(",");
                 value = new TextValue(enumValues);
                 break;
             case float_:
             case integer_:
                 isDecimal = attributes.datatype == DataTypeEnum.float_;
-                String s[] = attributes.format.split("\\:");
+                String[] s = attributes.format.split("\\:");
                 BigDecimal min = s.length == 2 ? convertFromString(s[0]) : null;
                 BigDecimal max = s.length == 2 ? convertFromString(s[1]) : null;
                 BigDecimal step = (min != null && max != null)
@@ -338,9 +338,8 @@ public class Property implements AttributeChanged {
     public List<String> getRetainedTopics() {
         List<String> topics = new ArrayList<>();
 
-        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
-            return String.format("%s/$%s", this.propertyID, f.getName());
-        }).collect(Collectors.toList()));
+        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields())
+                .map(f -> String.format("%s/$%s", this.propertyID, f.getName())).collect(Collectors.toList()));
 
         // All exceptions can be ignored because the 'retained' attribute of the PropertyAttributes class
         // is public, is a boolean variable and has a default value (true)

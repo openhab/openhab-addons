@@ -64,12 +64,12 @@ public enum Pollutant {
             new ConcentrationRange(205, 404, TWO_HUNDRED), new ConcentrationRange(405, 504, THREE_HUNDRED),
             new ConcentrationRange(505, 604, FOUR_HUNDRED));
 
-    public static enum SensitiveGroup {
+    public enum SensitiveGroup {
         RESPIRATORY,
         HEART,
         ELDERLY,
         CHILDREN,
-        ASTHMA;
+        ASTHMA
     }
 
     public final Set<SensitiveGroup> sensitiveGroups;

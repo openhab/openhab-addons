@@ -43,7 +43,7 @@ import org.w3c.dom.Node;
  * No state will be saved in here, but in {@link PlayInfoState} and
  * {@link PresetInfoState} instead.
  *
- * @author David Graeff
+ * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Compatibility fixes
  */
 public class InputWithPresetControlXML extends AbstractInputControlXML implements InputWithPresetControl {

@@ -136,8 +136,8 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
         ResolBridgeHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof ResolBridgeHandler) {
-            bridgeHandler = (ResolBridgeHandler) handler;
+        if (handler instanceof ResolBridgeHandler resolBridgeHandler) {
+            bridgeHandler = resolBridgeHandler;
         } else {
             logger.debug("No available bridge handler found yet. Bridge: {} .", bridge.getUID());
         }
@@ -190,13 +190,13 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
         float value = 0;
         int intValue = 0;
 
-        if (command instanceof QuantityType<?>) {
-            value = Objects.requireNonNullElse(((QuantityType<?>) command).toUnit(SIUnits.CELSIUS),
+        if (command instanceof QuantityType<?> quantityCommand) {
+            value = Objects.requireNonNullElse(quantityCommand.toUnit(SIUnits.CELSIUS),
                     new QuantityType<>(888.8, SIUnits.CELSIUS)).floatValue();
-        } else if (command instanceof OnOffType) {
-            intValue = ((OnOffType) command).equals(OnOffType.ON) ? 1 : 0;
-        } else if (command instanceof DecimalType) {
-            intValue = ((DecimalType) command).intValue();
+        } else if (command instanceof OnOffType onOffCommand) {
+            intValue = onOffCommand.equals(OnOffType.ON) ? 1 : 0;
+        } else if (command instanceof DecimalType decimalCommand) {
+            intValue = decimalCommand.intValue();
             value = intValue;
         } else {
             /* nothing to do */

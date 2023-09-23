@@ -16,9 +16,9 @@ import static java.util.stream.Collectors.toList;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,7 +49,7 @@ public class ChannelsTypeProviderPreset implements ChannelTypeProvider, ThingHan
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return Collections.singleton(channelType);
+        return Set.of(channelType);
     }
 
     @Override

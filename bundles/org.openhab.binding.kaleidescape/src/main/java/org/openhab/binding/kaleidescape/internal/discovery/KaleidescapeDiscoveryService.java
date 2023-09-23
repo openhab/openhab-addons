@@ -281,7 +281,6 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
             input.close();
             writer.close();
             output.close();
-            socket.close();
         } catch (IOException e) {
             logger.debug("isKaleidescapeDevice() IOException: {}", e.getMessage());
         }

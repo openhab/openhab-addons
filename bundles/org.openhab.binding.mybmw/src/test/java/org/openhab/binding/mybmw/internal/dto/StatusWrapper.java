@@ -357,8 +357,8 @@ public class StatusWrapper {
                 } // else no check needed
                 break;
             case HEADING:
-                if (state instanceof QuantityType) {
-                    qt = ((QuantityType) state);
+                if (state instanceof QuantityType quantityCommand) {
+                    qt = quantityCommand;
                     assertEquals(Units.DEGREE_ANGLE, qt.getUnit(), "Angle Unit");
                     assertNotNull(vehicleState.getLocation());
                     assertEquals(vehicleState.getLocation().getHeading(), qt.intValue(), 0.01, "Heading");
@@ -658,8 +658,8 @@ public class StatusWrapper {
                 } // else no check needed
                 break;
             case HOME_DISTANCE:
-                if (state instanceof QuantityType) {
-                    qt = (QuantityType) state;
+                if (state instanceof QuantityType quantity) {
+                    qt = quantity;
                     PointType vehicleLocation = PointType
                             .valueOf(Double.toString(vehicleState.getLocation().getCoordinates().getLatitude()) + ","
                                     + Double.toString(vehicleState.getLocation().getCoordinates().getLongitude()));
