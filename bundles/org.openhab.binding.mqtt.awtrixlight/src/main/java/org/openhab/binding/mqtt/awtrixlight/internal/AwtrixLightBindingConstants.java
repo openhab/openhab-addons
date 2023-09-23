@@ -105,6 +105,7 @@ public class AwtrixLightBindingConstants {
     public static final String FIELD_BRIDGE_SET_BLOCK_KEYS = "BLOCKN";
     public static final String FIELD_BRIDGE_SET_BRIGHTNESS = "BRI";
     public static final String FIELD_BRIDGE_SET_DISPLAY = "MATP";
+
     // TODO: Validate that it really mutes
     public static final String FIELD_BRIDGE_SET_MUTE = "SOUND";
     public static final String FIELD_BRIDGE_SET_SCROLL_SPEED = "SSPEED";
@@ -123,6 +124,7 @@ public class AwtrixLightBindingConstants {
 
     // Clock Channels
     public static final String CHANNEL_APP = "app";
+    public static final String CHANNEL_AUTO_BRIGHTNESS = "autoBrightness";
     public static final String CHANNEL_BATTERY = "batterylevel";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_DISPLAY = "display";
