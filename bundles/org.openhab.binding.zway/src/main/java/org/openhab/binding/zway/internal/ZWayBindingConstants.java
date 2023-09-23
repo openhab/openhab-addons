@@ -40,8 +40,7 @@ public class ZWayBindingConstants {
             .unmodifiableSet(Stream.of(THING_TYPE_DEVICE, THING_TYPE_VIRTUAL_DEVICE).collect(Collectors.toSet()));
 
     // List of ignored devices for Discovery
-    public static final Set<String> DISCOVERY_IGNORED_DEVICES = Collections
-            .unmodifiableSet(Collections.singleton(("BatteryPolling")));
+    public static final Set<String> DISCOVERY_IGNORED_DEVICES = Collections.unmodifiableSet(Set.of(("BatteryPolling")));
 
     // List of all Channel IDs
     public static final String BATTERY_CHANNEL = "battery";

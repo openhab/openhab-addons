@@ -46,7 +46,7 @@ public class CloudConnector {
 
     private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(60);
 
-    private static enum DeviceListState {
+    private enum DeviceListState {
         FAILED,
         STARTING,
         REFRESHING,
