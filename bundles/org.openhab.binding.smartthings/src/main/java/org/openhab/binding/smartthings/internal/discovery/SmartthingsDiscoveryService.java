@@ -119,15 +119,96 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
             String name = devObj.get("name").getAsString();
             logger.debug("Device");
 
+            JsonElement components = devObj.get("components");
+            if (components == null || !components.isJsonArray()) {
+                return;
+            }
+
+            JsonArray componentsArray = (JsonArray) components;
+
+            String deviceType = null;
+
+            for (JsonElement elm : componentsArray) {
+                JsonObject component = (JsonObject) elm;
+                String id = component.get("id").getAsString();
+                String label = component.get("label").getAsString();
+
+                JsonElement capabilitites = component.get("capabilities");
+                if (capabilitites != null && capabilitites.isJsonArray()) {
+                    JsonArray capabilititesArray = (JsonArray) capabilitites;
+                    for (JsonElement elmCap : capabilititesArray) {
+                        JsonObject elmCapObj = (JsonObject) elmCap;
+                        String capId = elmCapObj.get("id").getAsString();
+                        String capVersion = elmCapObj.get("version").getAsString();
+
+                        logger.info("");
+                    }
+                }
+
+                JsonElement categories = component.get("categories");
+                if (categories != null && categories.isJsonArray()) {
+                    JsonArray categoriesArray = (JsonArray) categories;
+                    for (JsonElement elmCat : categoriesArray) {
+                        JsonObject elmCatObj = (JsonObject) elmCat;
+                        String catId = elmCatObj.get("name").getAsString();
+                        String catType = elmCatObj.get("categoryType").getAsString();
+
+                        if (id.equals("main")) {
+                            deviceType = catId;
+                        }
+                    }
+                }
+            }
+
+            if (deviceType == null) {
+                logger.info("unknow device, bypass");
+                continue;
+            }
+
             SmartthingsDeviceData deviceData = new SmartthingsDeviceData();
             deviceData.name = name;
             deviceData.id = name;
-            deviceData.capability = "battery";
+            deviceData.deviceType = deviceType.toLowerCase();
             createDevice(Objects.requireNonNull(deviceData));
 
         }
 
         logger.debug("End Discovery");
+    }
+
+    /**
+     * Create a device with the data from the Smartthings hub
+     *
+     * @param deviceData Device data from the hub
+     */
+    private void createDevice(SmartthingsDeviceData deviceData) {
+        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceData.deviceType, deviceData.name);
+
+        // Build the UID as a string smartthings:{ThingType}:{BridgeName}:{DeviceName}
+        String name = deviceData.name; // Note: this is necessary for null analysis to work
+        if (name == null) {
+            logger.info(
+                    "Unexpectedly received data for a device with no name. Check the Smartthings hub devices and make sure every device has a name");
+            return;
+        }
+        String deviceNameNoSpaces = name.replaceAll("\\s", "_");
+        String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
+        if (smartthingsHubCommand == null) {
+            logger.info("SmartthingsHubCommand is unexpectedly null, could not create device {}", deviceData);
+            return;
+        }
+        ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
+        String bridgeId = bridgeUid.getId();
+        String uidStr = String.format("smartthings:%s:%s:%s", deviceData.deviceType, bridgeId, smartthingsDeviceName);
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("smartthingsName", name);
+        properties.put("deviceId", deviceData.id);
+
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
+                .withRepresentationProperty("deviceId").withBridge(bridgeUid).withLabel(name).build();
+
+        thingDiscovered(discoveryResult);
     }
 
     /**
@@ -208,38 +289,4 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         }
     }
 
-    /**
-     * Create a device with the data from the Smartthings hub
-     *
-     * @param deviceData Device data from the hub
-     */
-    private void createDevice(SmartthingsDeviceData deviceData) {
-        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceData.capability, deviceData.name);
-
-        // Build the UID as a string smartthings:{ThingType}:{BridgeName}:{DeviceName}
-        String name = deviceData.name; // Note: this is necessary for null analysis to work
-        if (name == null) {
-            logger.info(
-                    "Unexpectedly received data for a device with no name. Check the Smartthings hub devices and make sure every device has a name");
-            return;
-        }
-        String deviceNameNoSpaces = name.replaceAll("\\s", "_");
-        String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
-        if (smartthingsHubCommand == null) {
-            logger.info("SmartthingsHubCommand is unexpectedly null, could not create device {}", deviceData);
-            return;
-        }
-        ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
-        String bridgeId = bridgeUid.getId();
-        String uidStr = String.format("smartthings:%s:%s:%s", deviceData.capability, bridgeId, smartthingsDeviceName);
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("smartthingsName", name);
-        properties.put("deviceId", deviceData.id);
-
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
-                .withRepresentationProperty("deviceId").withBridge(bridgeUid).withLabel(name).build();
-
-        thingDiscovered(discoveryResult);
-    }
 }
