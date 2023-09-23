@@ -61,14 +61,22 @@ public class Conversions {
      *
      * @param RGB
      * @param map with device variables containing the brightness info
+     * @param report brightness 0 on power off
      * @return HSV
      */
-    private static JsonElement addBrightToHSV(JsonElement rgbValue, @Nullable Map<String, Object> deviceVariables)
-            throws ClassCastException, IllegalStateException {
+    private static JsonElement addBrightToHSV(JsonElement rgbValue, @Nullable Map<String, Object> deviceVariables,
+            boolean powerDependent) throws ClassCastException, IllegalStateException {
         int bright = 100;
         if (deviceVariables != null) {
             JsonElement lastBright = (JsonElement) deviceVariables.getOrDefault("bright", new JsonPrimitive(100));
             bright = lastBright.getAsInt();
+            if (powerDependent) {
+                String lastPower = ((JsonElement) deviceVariables.getOrDefault("power", new JsonPrimitive("on")))
+                        .getAsString();
+                if (lastPower.toLowerCase().contentEquals("off")) {
+                    bright = 0;
+                }
+            }
         }
         if (rgbValue.isJsonPrimitive()
                 && (rgbValue.getAsJsonPrimitive().isNumber() || rgbValue.getAsString().matches("^[0-9]+$"))) {
@@ -215,7 +223,9 @@ public class Conversions {
                 case "TANKLEVEL":
                     return tankLevel(value);
                 case "ADDBRIGHTTOHSV":
-                    return addBrightToHSV(value, deviceVariables);
+                    return addBrightToHSV(value, deviceVariables, false);
+                case "ADDBRIGHTTOHSVPOWER":
+                    return addBrightToHSV(value, deviceVariables, true);
                 case "BRGBTOHSV":
                     return bRGBtoHSV(value);
                 case "DEVICEDATATAB":
