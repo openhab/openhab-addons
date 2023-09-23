@@ -169,7 +169,7 @@ public class DwdWarningsDataTest {
         private String rawData = "";
 
         @Override
-        public String getDataFromEndpoint(String cellId) {
+        public String getByURL(String url) {
             return rawData;
         }
     }
