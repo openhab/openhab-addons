@@ -206,7 +206,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 340 different models.
+Currently the miio binding supports more than 360 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -378,9 +378,19 @@ Currently the miio binding supports more than 340 different models.
 | Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#roborock-vacuum-a38) | Yes          |            |
 | Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#roborock-vacuum-a40) | Yes          |            |
 | Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#roborock-vacuum-a46) | Yes          |            |
+| Roborock S8                        | miio:vacuum      | [roborock.vacuum.a51](#roborock-vacuum-a51) | Yes          |            |
 | Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#roborock-vacuum-a52) | Yes          |            |
 | Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-a62) | Yes          |            |
-| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-a75) | Yes          |            |
+| Roborock G10S Pure                 | miio:vacuum      | [roborock.vacuum.a64](#roborock-vacuum-a64) | Yes          |            |
+| Roborock S7 Max Ultra              | miio:vacuum      | [roborock.vacuum.a65](#roborock-vacuum-a65) | Yes          |            |
+| Roborock G10 Plus                  | miio:vacuum      | [roborock.vacuum.a66](#roborock-vacuum-a66) | Yes          |            |
+| Roborock G20                       | miio:vacuum      | [roborock.vacuum.a69](#roborock-vacuum-a69) | Yes          |            |
+| Roborock S8 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a70](#roborock-vacuum-a70) | Yes          |            |
+| Roborock Q5 Pro                    | miio:vacuum      | [roborock.vacuum.a72](#roborock-vacuum-a72) | Yes          |            |
+| Roborock Q8 Max                    | miio:vacuum      | [roborock.vacuum.a73](#roborock-vacuum-a73) | Yes          |            |
+| Roborock P10                       | miio:vacuum      | [roborock.vacuum.a74](#roborock-vacuum-a74) | Yes          |            |
+| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a75](#roborock-vacuum-a75) | Yes          |            |
+| Roborock G10S Auto                 | miio:vacuum      | [roborock.vacuum.a76](#roborock-vacuum-a76) | Yes          |            |
 | Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes          |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No           |            |
 | Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes          |            |
