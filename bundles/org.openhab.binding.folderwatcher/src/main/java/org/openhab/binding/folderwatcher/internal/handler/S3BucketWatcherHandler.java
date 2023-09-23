@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.folderwatcher.internal.api.S3Actions;
+import org.openhab.binding.folderwatcher.internal.api.exception.APIException;
 import org.openhab.binding.folderwatcher.internal.common.WatcherCommon;
 import org.openhab.binding.folderwatcher.internal.config.S3BucketWatcherConfiguration;
 import org.openhab.core.OpenHAB;
@@ -71,12 +72,16 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(S3BucketWatcherConfiguration.class);
-
-        if (config.s3Anonymous) {
-            s3 = new S3Actions(httpClientFactory, config.s3BucketName, config.awsRegion);
-        } else {
-            s3 = new S3Actions(httpClientFactory, config.s3BucketName, config.awsRegion, config.awsKey,
-                    config.awsSecret);
+        try {
+            if (config.s3Anonymous) {
+                s3 = new S3Actions(httpClientFactory, config.s3BucketName, config.awsRegion);
+            } else {
+                s3 = new S3Actions(httpClientFactory, config.s3BucketName, config.awsRegion, config.awsKey,
+                        config.awsSecret);
+            }
+        } catch (APIException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+            return;
         }
 
         try {
