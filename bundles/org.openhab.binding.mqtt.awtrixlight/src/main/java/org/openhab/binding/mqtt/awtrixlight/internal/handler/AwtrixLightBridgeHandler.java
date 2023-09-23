@@ -14,6 +14,7 @@
 package org.openhab.binding.mqtt.awtrixlight.internal.handler;
 
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_APP;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_AUTO_BRIGHTNESS;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BATTERY;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BRIGHTNESS;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_BUTLEFT;
@@ -43,8 +44,10 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_LUX;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_MESSAGES;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_RAM;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_SET_AUTO_BRIGHTNESS;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_SET_AUTO_TRANSITION;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_SET_BLOCK_KEYS;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_SET_BRIGHTNESS;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_TEMPERATURE;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_TYPE;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_UID;
@@ -159,6 +162,24 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             return;
         }
         switch (channelUID.getId()) {
+            case CHANNEL_AUTO_BRIGHTNESS:
+                if (command instanceof OnOffType) {
+                    boolean param = OnOffType.ON.equals(command);
+                    sendMQTT(this.basetopic + TOPIC_SETTINGS,
+                            "{\"" + FIELD_BRIDGE_SET_AUTO_BRIGHTNESS + "\":" + param + "}", false);
+                }
+                break;
+            case CHANNEL_BRIGHTNESS:
+                if (command instanceof QuantityType) {
+                    double brightnessInt = ((QuantityType<?>) command).doubleValue();
+                    if (0 <= brightnessInt && brightnessInt <= 100) {
+                        long param = Math.round(255 * (brightnessInt / 100));
+                        sendMQTT(this.basetopic + TOPIC_SETTINGS, "{\"" + FIELD_BRIDGE_SET_AUTO_BRIGHTNESS
+                                + "\":false,\"" + FIELD_BRIDGE_SET_BRIGHTNESS + "\":" + param + "}", false);
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_AUTO_BRIGHTNESS), OnOffType.OFF);
+                    }
+                }
+                break;
             case CHANNEL_DISPLAY:
                 handleDisplay(command);
                 break;
@@ -569,8 +590,9 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     // Not mapped to channel atm
                     break;
                 case FIELD_BRIDGE_BRIGHTNESS:
+                    long brightnessInPercent = Math.round((((BigDecimal) value).doubleValue() / 255) * 100);
                     updateState(new ChannelUID(channelPrefix + CHANNEL_BRIGHTNESS),
-                            new QuantityType<>((BigDecimal) value, Units.PERCENT));
+                            new QuantityType<>(brightnessInPercent, Units.PERCENT));
                     break;
                 case FIELD_BRIDGE_TEMPERATURE:
                     updateState(new ChannelUID(channelPrefix + CHANNEL_TEMPERATURE),
