@@ -40,8 +40,7 @@ public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandThermostatUnitData) {
-            TouchWandThermostatUnitData thermostat = (TouchWandThermostatUnitData) unitData;
+        if (unitData instanceof TouchWandThermostatUnitData thermostat) {
             updateThermostatState(thermostat);
             updateTargetTemperature(thermostat);
             updateRoomTemperature(thermostat);
@@ -56,12 +55,12 @@ public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {
     void touchWandUnitHandleCommand(Command command) {
         TouchWandBridgeHandler touchWandBridgeHandler = bridgeHandler;
         if (touchWandBridgeHandler != null) {
-            if (command instanceof OnOffType) {
-                touchWandBridgeHandler.touchWandClient.cmdThermostatOnOff(unitId, (OnOffType) command);
+            if (command instanceof OnOffType onOffCommand) {
+                touchWandBridgeHandler.touchWandClient.cmdThermostatOnOff(unitId, onOffCommand);
                 return;
             }
-            if (command instanceof QuantityType) {
-                final QuantityType<?> value = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+            if (command instanceof QuantityType quantityCommand) {
+                final QuantityType<?> value = quantityCommand.toUnit(SIUnits.CELSIUS);
                 String targetTemperature = String.valueOf(value.intValue());
                 touchWandBridgeHandler.touchWandClient.cmdThermostatTargetTemperature(unitId, targetTemperature);
                 return;

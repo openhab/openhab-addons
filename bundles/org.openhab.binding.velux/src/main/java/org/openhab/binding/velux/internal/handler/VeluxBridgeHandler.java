@@ -1029,8 +1029,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     private void updateDynamicChannels() {
         getThing().getThings().stream().forEach(thing -> {
             ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler instanceof VeluxHandler) {
-                ((VeluxHandler) thingHandler).updateDynamicChannels(this);
+            if (thingHandler instanceof VeluxHandler veluxHandler) {
+                veluxHandler.updateDynamicChannels(this);
             }
         });
     }

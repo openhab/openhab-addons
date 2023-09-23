@@ -98,7 +98,7 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
     public void sendDatagram(NibeHeatPumpMessage msg) throws NibeHeatPumpException {
         logger.debug("Sending request: {}", msg.toHexString());
 
-        byte data[] = msg.decodeMessage();
+        byte[] data = msg.decodeMessage();
         int port = -1;
 
         if (msg instanceof ModbusWriteRequestMessage) {

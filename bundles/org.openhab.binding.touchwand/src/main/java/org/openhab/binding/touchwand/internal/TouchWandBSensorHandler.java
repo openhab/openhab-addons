@@ -42,21 +42,21 @@ public class TouchWandBSensorHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandBSensorUnitData) {
+        if (unitData instanceof TouchWandBSensorUnitData bSensorUnitData) {
             if (isFirstUpdateTouchWandUnitState) {
-                removeUnsupportedChannels((TouchWandBSensorUnitData) unitData);
+                removeUnsupportedChannels(bSensorUnitData);
                 isFirstUpdateTouchWandUnitState = false;
             }
-            String sensorSubType = ((TouchWandBSensorUnitData) unitData).getIdData().getSubType();
+            String sensorSubType = bSensorUnitData.getIdData().getSubType();
             switch (sensorSubType) {
                 case BSENSOR_SUBTYPE_DOORWINDOW:
-                    updateChannelDoorWindow((TouchWandBSensorUnitData) unitData);
+                    updateChannelDoorWindow(bSensorUnitData);
                     break;
                 case BSENSOR_SUBTYPE_MOTION:
-                    updateChannelMotion((TouchWandBSensorUnitData) unitData);
+                    updateChannelMotion(bSensorUnitData);
                     break;
                 case BSENSOR_SUBTYPE_SMOKE:
-                    updateChannelSmoke((TouchWandBSensorUnitData) unitData);
+                    updateChannelSmoke(bSensorUnitData);
                     break;
                 default:
             }
