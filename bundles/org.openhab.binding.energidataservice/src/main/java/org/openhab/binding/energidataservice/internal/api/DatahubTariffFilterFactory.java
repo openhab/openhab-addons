@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DatahubTariffFilterFactory {
 
+    private static final String GLN_AAL_ELNET = "5790001095451";
     private static final String GLN_CERIUS = "5790000705184";
     private static final String GLN_DINEL = "5790000610099";
     private static final String GLN_ELEKTRUS = "5790000836239";
@@ -71,6 +72,9 @@ public class DatahubTariffFilterFactory {
 
     public static DatahubTariffFilter getNetTariffByGLN(String globalLocationNumber) {
         switch (globalLocationNumber) {
+            case GLN_AAL_ELNET:
+                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("AAL-NT-05")), Set.of(NOTE_NET_TARIFF_C_HOUR),
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_CERIUS:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("30TR_C_ET")), Set.of(NOTE_NET_TARIFF_C_HOUR));
             case GLN_DINEL:
