@@ -15,6 +15,7 @@ package org.openhab.binding.hue.internal.discovery;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,7 +56,7 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
 
     protected static final String BRIDGE_INDICATOR = "fffe";
 
-    private static final String MODEL_NAME_PHILIPS_HUE = "\"name\":\"Philips hue\"";
+    private static final String[] MODEL_NAME_PHILIPS_HUE = { "\"name\":\"Hue Bridge\"", "\"name\":\"Philips hue\"" };
     private static final String DISCOVERY_URL = "https://discovery.meethue.com/";
     private static final String CONFIG_URL_PATTERN = "http://%s/api/0/config";
     private static final int REQUEST_TIMEOUT = 5000;
@@ -156,7 +157,7 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
             logger.debug("Bridge not discovered: Failure accessing description file for ip: {}", host);
             return false;
         }
-        if (description == null || !description.contains(MODEL_NAME_PHILIPS_HUE)) {
+        if (description == null || !Arrays.stream(MODEL_NAME_PHILIPS_HUE).anyMatch(description::contains)) {
             logger.debug("Bridge not discovered: Description does not contain the model name: {}", description);
             return false;
         }
