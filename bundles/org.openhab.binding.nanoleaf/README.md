@@ -128,11 +128,11 @@ The controller thing has the following parameters:
 
 **Important note on the topic of IPV6 ip addresses:**
 
-Since at least firmware 8.5.2 panels may start to go offline and online. 
-After some investigation it turned down that the devices are discovered as IPV6 devices which then cannot be used correctly within the binding to run the API requests to the devices.
-For the time being it is therefore recommended, if this is an option for you, to disable IPV6 on the openhab server. 
+With firmware version 8.5.2 or newer, panels may change between being OFFLINE and ONLINE.  
+This is due to the fact that if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices.
+It is therefore recommended to disable IPv6 on the openHAB server.
 
-For example this can be achieved on openhabian with the following
+This can e.g. be achieved on openHABian the following way:
 
 ```text
 sudo nano /etc/sysctl.conf`
@@ -145,7 +145,7 @@ net.ipv6.conf.lo.disable_ipv6 = 1
 
 ```
 
-then reboot.
+Reboot your server after the change.
 
 The lightpanel thing has the following parameters:
 
