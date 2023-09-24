@@ -1,12 +1,12 @@
 {
-	"chargeCouplerACStatus": {
-		"timestamp_in_ms": 1695564475000,
-		"timestamp": 1695564475,
-		"int_value": 0
-	},
 	"doorLockStatusOverall": {
 		"timestamp_in_ms": 1695564464000,
 		"timestamp": 1695564464,
+		"int_value": 0
+	},
+	"chargeCouplerACStatus": {
+		"timestamp_in_ms": 1695564475000,
+		"timestamp": 1695564475,
 		"int_value": 0
 	},
 	"precondSeatFrontRight": {
@@ -25,15 +25,15 @@
 		"timestamp": 1695477069,
 		"int_value": 1695477069
 	},
-	"drivenTimeStart": {
-		"timestamp_in_ms": 1695477043000,
-		"timestamp": 1695477043,
-		"int_value": 37
-	},
 	"smartCharging": {
 		"timestamp_in_ms": 1695564474000,
 		"timestamp": 1695564474,
 		"int_value": 0
+	},
+	"drivenTimeStart": {
+		"timestamp_in_ms": 1695477043000,
+		"timestamp": 1695477043,
+		"int_value": 37
 	},
 	"vehicleHealthStatus": {
 		"timestamp_in_ms": 1654831900642,
@@ -61,9 +61,9 @@
 	},
 	"maxrange": {
 		"display_value": "364.0",
-		"timestamp_in_ms": 1695566683000,
+		"timestamp_in_ms": 1695568134000,
 		"distance_unit": "KILOMETERS",
-		"timestamp": 1695566683,
+		"timestamp": 1695568134,
 		"int_value": 364
 	},
 	"maxSocLowerLimit": {
@@ -77,6 +77,7 @@
 		"timestamp_in_ms": 1694957120000,
 		"weekly_profile_value": {
 			"1": {
+				"hour": 0,
 				"days": [
 					"Tu",
 					"We",
@@ -84,17 +85,16 @@
 					"Fr"
 				],
 				"active": false,
-				"hour": 0,
 				"applicationIdentifier": -1,
 				"minute": 0
 			},
 			"2": {
+				"hour": 0,
 				"days": [
 					"Fr",
 					"Sa"
 				],
 				"active": false,
-				"hour": 0,
 				"applicationIdentifier": -1,
 				"minute": 0
 			}
@@ -107,15 +107,15 @@
 		"timestamp": 1695477069,
 		"status": 4
 	},
-	"chargeCouplerDCStatus": {
-		"timestamp_in_ms": 1695564475000,
-		"timestamp": 1695564475,
-		"int_value": 0
-	},
 	"doorlockstatusfrontright": {
 		"timestamp_in_ms": 1695564464000,
 		"bool_value": false,
 		"timestamp": 1695564464
+	},
+	"chargeCouplerDCStatus": {
+		"timestamp_in_ms": 1695564475000,
+		"timestamp": 1695564475,
+		"int_value": 0
 	},
 	"tirepressureRearRight": {
 		"display_value": "2.9",
@@ -135,8 +135,8 @@
 		"int_value": 0
 	},
 	"vehiclePositionErrorCode": {
-		"timestamp_in_ms": 1695565297851,
-		"timestamp": 1695565297,
+		"timestamp_in_ms": 1695579296234,
+		"timestamp": 1695579296,
 		"int_value": 5
 	},
 	"distanceElectricalStart": {
@@ -156,19 +156,20 @@
 		"bool_value": true,
 		"timestamp": 1695566523
 	},
-	"bindingInfo": {
-		"version": "2.2-alpha",
-		"vehicle": "mercedesme:bev"
-	},
 	"gasTankLevel": {
 		"timestamp_in_ms": 1638508946000,
 		"nil_value": true,
 		"timestamp": 1638508946,
 		"status": 4
 	},
+	"bindingInfo": {
+		"oh-bundle": "4.1.0.202309241814",
+		"version": "2.2-alpha",
+		"vehicle": "mercedesme:bev"
+	},
 	"starterBatteryState": {
-		"timestamp_in_ms": 1695566683000,
-		"timestamp": 1695566683,
+		"timestamp_in_ms": 1695568134000,
+		"timestamp": 1695568134,
 		"int_value": 0
 	},
 	"precondNowError": {
@@ -190,38 +191,37 @@
 		"timestamp_in_ms": 1694957120000,
 		"weekly_settings_head_unit_value": [
 			{
-				"day": 1,
-				"minutes_since_midnight": 510
+				"minutes_since_midnight": 510,
+				"day": 1
 			},
 			{
-				"day": 2,
-				"minutes_since_midnight": 510
+				"minutes_since_midnight": 510,
+				"day": 2
 			},
 			{
-				"day": 3,
-				"minutes_since_midnight": 510
+				"minutes_since_midnight": 510,
+				"day": 3
 			},
 			{
-				"day": 4,
-				"minutes_since_midnight": 510
+				"minutes_since_midnight": 510,
+				"day": 4
 			},
 			{
-				"day": 4,
-				"minutes_since_midnight": 810
+				"minutes_since_midnight": 810,
+				"day": 4
 			},
 			{
-				"day": 5,
-				"minutes_since_midnight": 810
+				"minutes_since_midnight": 810,
+				"day": 5
 			}
 		],
 		"timestamp": 1694957120
 	},
 	"rangeelectric": {
 		"display_value": "329",
-		"timestamp_in_ms": 1695566683000,
+		"timestamp_in_ms": 1695568134000,
 		"distance_unit": "KILOMETERS",
-		"timestamp": 1695566683,
-		"changed": true,
+		"timestamp": 1695568134,
 		"int_value": 329
 	},
 	"tireMarkerRearRight": {
@@ -235,11 +235,9 @@
 		"int_value": 2
 	},
 	"serviceintervaldays": {
-		"timestamp_in_ms": 1695566751000,
-		"nil_value": true,
-		"timestamp": 1695566751,
-		"changed": true,
-		"status": 3
+		"timestamp_in_ms": 1695568097000,
+		"timestamp": 1695568097,
+		"int_value": 131
 	},
 	"electricalRangeSkipIndication": {
 		"timestamp_in_ms": 1695477069000,
@@ -256,7 +254,6 @@
 		"clock_hour_unit": "T24H",
 		"nil_value": true,
 		"timestamp": 1695566691,
-		"changed": true,
 		"status": 3
 	},
 	"hybridWarnings": {
@@ -287,16 +284,16 @@
 		"timestamp": 1695477045,
 		"int_value": 15146
 	},
+	"tirewarninglamp": {
+		"timestamp_in_ms": 1695477069000,
+		"timestamp": 1695477069,
+		"int_value": 0
+	},
 	"evRangeAssistDriveOnTime": {
 		"timestamp_in_ms": 1692956198000,
 		"nil_value": true,
 		"timestamp": 1692956198,
 		"status": 3
-	},
-	"tirewarninglamp": {
-		"timestamp_in_ms": 1695477069000,
-		"timestamp": 1695477069,
-		"int_value": 0
 	},
 	"positionLong": {
 		"timestamp_in_ms": 1695477082000,
@@ -337,13 +334,6 @@
 		"timestamp": 1695104468,
 		"status": 3
 	},
-	"averageSpeedReset": {
-		"display_value": "42",
-		"timestamp_in_ms": 1692956198000,
-		"speed_unit": "KM_PER_HOUR",
-		"double_value": 42,
-		"timestamp": 1692956198
-	},
 	"ecoscoreconst": {
 		"display_value": "27",
 		"timestamp_in_ms": 1695477052000,
@@ -351,19 +341,25 @@
 		"timestamp": 1695477052,
 		"int_value": 27
 	},
+	"averageSpeedReset": {
+		"display_value": "42",
+		"timestamp_in_ms": 1692956198000,
+		"speed_unit": "KM_PER_HOUR",
+		"double_value": 42,
+		"timestamp": 1692956198
+	},
 	"doorstatusfrontright": {
 		"timestamp_in_ms": 1695566751000,
 		"bool_value": false,
 		"timestamp": 1695566751
 	},
 	"tcuConnectionStateLowChannel": {
-		"timestamp_in_ms": 1695565248250,
-		"timestamp": 1695565248
+		"timestamp_in_ms": 1695568227194,
+		"timestamp": 1695568227
 	},
 	"chargingstatus": {
 		"timestamp_in_ms": 1695566691000,
 		"timestamp": 1695566691,
-		"changed": true,
 		"int_value": 2
 	},
 	"ecoscoretotal": {
@@ -420,17 +416,17 @@
 		"timestamp": 1695477069,
 		"int_value": 0
 	},
-	"precondNow": {
-		"timestamp_in_ms": 1695104459000,
-		"bool_value": false,
-		"timestamp": 1695104459
-	},
 	"rangeliquid": {
-		"timestamp_in_ms": 1695566743000,
+		"timestamp_in_ms": 1695568134000,
 		"distance_unit": "KILOMETERS",
 		"nil_value": true,
-		"timestamp": 1695566743,
+		"timestamp": 1695568134,
 		"status": 4
+	},
+	"precondNow": {
+		"timestamp_in_ms": 1695565701000,
+		"bool_value": false,
+		"timestamp": 1695565701
 	},
 	"sunroofEventActive": {
 		"timestamp_in_ms": 1695566751000,
@@ -438,9 +434,14 @@
 		"timestamp": 1695566751
 	},
 	"chargingPower": {
-		"timestamp_in_ms": 1695566743000,
-		"double_value": 4.2,
-		"timestamp": 1695566743
+		"timestamp_in_ms": 1695568134000,
+		"double_value": 0,
+		"timestamp": 1695568134
+	},
+	"positionLat": {
+		"timestamp_in_ms": 1695477082000,
+		"double_value": 1.23,
+		"timestamp": 1695477082
 	},
 	"averageSpeedStart": {
 		"display_value": "21",
@@ -453,11 +454,6 @@
 		"timestamp_in_ms": 1695477043000,
 		"timestamp": 1695477043,
 		"int_value": 16880
-	},
-	"positionLat": {
-		"timestamp_in_ms": 1695477082000,
-		"double_value": 1.23,
-		"timestamp": 1695477082
 	},
 	"gasconsumptionstart": {
 		"timestamp_in_ms": 1638508946000,
@@ -573,10 +569,24 @@
 	},
 	"liquidconsumptionstart": {
 		"timestamp_in_ms": 1688905509000,
-		"nil_value": true,
 		"combustion_consumption_unit": "LITER_PER_100KM",
+		"nil_value": true,
 		"timestamp": 1688905509,
 		"status": 4
+	},
+	"temperaturePoints": {
+		"temperature_points_value": {
+			"temperature_points": [
+				{
+					"zone": "frontCenter",
+					"temperature_display_value": "23.0",
+					"temperature": 23
+				}
+			]
+		},
+		"timestamp_in_ms": 1695565548000,
+		"temperature_unit": "CELSIUS",
+		"timestamp": 1695565548
 	},
 	"distanceGasReset": {
 		"timestamp_in_ms": 1638508946000,
@@ -585,31 +595,24 @@
 		"timestamp": 1638508946,
 		"status": 4
 	},
-	"temperaturePoints": {
-		"temperature_points_value": {
-			"temperature_points": [
-				{
-					"temperature": 21,
-					"zone": "frontCenter",
-					"temperature_display_value": "21.0"
-				}
-			]
-		},
-		"timestamp_in_ms": 1695562441000,
-		"temperature_unit": "CELSIUS",
-		"timestamp": 1695562441
-	},
-	"departuretimesoc": {
-		"display_value": "80",
-		"timestamp_in_ms": 1695566683000,
-		"ratio_unit": "PERCENT",
-		"timestamp": 1695566683,
-		"int_value": 80
-	},
 	"selectedChargeProgram": {
 		"timestamp_in_ms": 1695499059000,
 		"timestamp": 1695499059,
 		"int_value": 2
+	},
+	"departuretimesoc": {
+		"timestamp_in_ms": 1695568134000,
+		"ratio_unit": "PERCENT",
+		"nil_value": true,
+		"timestamp": 1695568134,
+		"status": 3
+	},
+	"distanceZEReset": {
+		"timestamp_in_ms": 1638508946000,
+		"distance_unit": "KILOMETERS",
+		"nil_value": true,
+		"timestamp": 1638508946,
+		"status": 4
 	},
 	"chargePrograms": {
 		"timestamp_in_ms": 1695566524000,
@@ -626,20 +629,12 @@
 				"max_soc": 80
 			},
 			{
-				"charge_program": "WORK_CHARGE_PROGRAM",
 				"auto_unlock": true,
+				"charge_program": "WORK_CHARGE_PROGRAM",
 				"max_soc": 80
 			}
 		],
-		"timestamp": 1695566524,
-		"changed": true
-	},
-	"distanceZEReset": {
-		"timestamp_in_ms": 1638508946000,
-		"distance_unit": "KILOMETERS",
-		"nil_value": true,
-		"timestamp": 1638508946,
-		"status": 4
+		"timestamp": 1695566524
 	},
 	"tiremarker": {
 		"timestamp_in_ms": 1695477069000,
@@ -648,11 +643,10 @@
 	},
 	"overallRange": {
 		"display_value": "329",
-		"timestamp_in_ms": 1695566683000,
+		"timestamp_in_ms": 1695568134000,
 		"distance_unit": "KILOMETERS",
 		"double_value": 329,
-		"timestamp": 1695566683,
-		"changed": true
+		"timestamp": 1695568134
 	},
 	"tirewarningsprw": {
 		"timestamp_in_ms": 1695477069000,
@@ -677,17 +671,20 @@
 		"int_value": 0
 	},
 	"serviceintervaldistance": {
-		"display_value": "20165",
-		"timestamp_in_ms": 1695566751000,
+		"timestamp_in_ms": 1695568097000,
 		"distance_unit": "KILOMETERS",
-		"timestamp": 1695566751,
-		"changed": true,
-		"int_value": 20165
+		"nil_value": true,
+		"timestamp": 1695568097,
+		"status": 3
 	},
 	"precondActive": {
 		"timestamp_in_ms": 1695104459000,
 		"bool_value": false,
 		"timestamp": 1695104459
+	},
+	"precondState": {
+		"timestamp_in_ms": 1695565701000,
+		"timestamp": 1695565701
 	},
 	"ecoscorebonusrange": {
 		"display_value": "1.3",
@@ -695,10 +692,6 @@
 		"distance_unit": "KILOMETERS",
 		"double_value": 1.3,
 		"timestamp": 1695477045
-	},
-	"precondState": {
-		"timestamp_in_ms": 1695104459000,
-		"timestamp": 1695104459
 	},
 	"distanceGasStart": {
 		"timestamp_in_ms": 1638508946000,
@@ -721,8 +714,8 @@
 	},
 	"liquidconsumptionreset": {
 		"timestamp_in_ms": 1688905509000,
-		"nil_value": true,
 		"combustion_consumption_unit": "LITER_PER_100KM",
+		"nil_value": true,
 		"timestamp": 1688905509,
 		"status": 4
 	},
@@ -763,7 +756,6 @@
 	"ignitionstate": {
 		"timestamp_in_ms": 1695566691000,
 		"timestamp": 1695566691,
-		"changed": true,
 		"int_value": 0
 	},
 	"precondSeatRearLeft": {
@@ -778,28 +770,22 @@
 		"timestamp": 1638508946,
 		"status": 4
 	},
+	"warningwashwater": {
+		"timestamp_in_ms": 1695477069000,
+		"bool_value": false,
+		"timestamp": 1695477069
+	},
 	"electricRatioReset": {
 		"timestamp_in_ms": 1668701631000,
 		"nil_value": true,
 		"timestamp": 1668701631,
 		"status": 4
 	},
-	"warningwashwater": {
-		"timestamp_in_ms": 1695477069000,
-		"bool_value": false,
-		"timestamp": 1695477069
-	},
 	"sunroofstatus": {
 		"timestamp_in_ms": 1638508946000,
 		"nil_value": true,
 		"timestamp": 1638508946,
 		"status": 4
-	},
-	"filterParticleLoading": {
-		"timestamp_in_ms": 1692956198000,
-		"nil_value": true,
-		"timestamp": 1692956198,
-		"status": 1
 	},
 	"tirepressureFrontRight": {
 		"display_value": "2.9",
@@ -808,11 +794,11 @@
 		"double_value": 292.5,
 		"timestamp": 1695477018
 	},
-	"auxheatwarnings": {
-		"timestamp_in_ms": 1659023673000,
+	"filterParticleLoading": {
+		"timestamp_in_ms": 1692956198000,
 		"nil_value": true,
-		"timestamp": 1659023673,
-		"status": 4
+		"timestamp": 1692956198,
+		"status": 1
 	},
 	"precondSeatRearRight": {
 		"timestamp_in_ms": 1692956198000,
@@ -827,16 +813,21 @@
 		"double_value": 297.5,
 		"timestamp": 1695477023
 	},
+	"auxheatwarnings": {
+		"timestamp_in_ms": 1659023673000,
+		"nil_value": true,
+		"timestamp": 1659023673,
+		"status": 4
+	},
 	"proximityCalculationForVehiclePositionRequired": {
-		"timestamp_in_ms": 1695565297851,
+		"timestamp_in_ms": 1695579296234,
 		"bool_value": false,
-		"timestamp": 1695565297
+		"timestamp": 1695579296
 	},
 	"chargingactive": {
 		"timestamp_in_ms": 1695566691000,
 		"bool_value": false,
-		"timestamp": 1695566691,
-		"changed": true
+		"timestamp": 1695566691
 	},
 	"gasTankLevelPercent": {
 		"timestamp_in_ms": 1638508946000,
@@ -852,22 +843,21 @@
 		"double_value": 24,
 		"timestamp": 1695477069
 	},
-	"vehicleDataConnectionState": {
-		"timestamp_in_ms": 1695565248250,
-		"bool_value": true,
-		"timestamp": 1695565248
-	},
 	"windowStatusRearBlind": {
 		"timestamp_in_ms": 1692956198000,
 		"nil_value": true,
 		"timestamp": 1692956198,
 		"status": 4
 	},
+	"vehicleDataConnectionState": {
+		"timestamp_in_ms": 1695568227194,
+		"bool_value": false,
+		"timestamp": 1695568227
+	},
 	"endofChargeTimeWeekday": {
 		"timestamp_in_ms": 1695566691000,
 		"nil_value": true,
 		"timestamp": 1695566691,
-		"changed": true,
 		"status": 3
 	},
 	"warningcoolantlevellow": {
@@ -901,9 +891,9 @@
 		"status": 4
 	},
 	"departuretime": {
-		"timestamp_in_ms": 1695565246000,
+		"timestamp_in_ms": 1695568087000,
 		"clock_hour_unit": "T24H",
-		"timestamp": 1695565246,
+		"timestamp": 1695568087,
 		"int_value": -1
 	},
 	"decklidstatus": {
@@ -917,22 +907,22 @@
 		"timestamp": 1695564464
 	},
 	"rangeElectricWltp": {
-		"timestamp_in_ms": 1695566743000,
+		"timestamp_in_ms": 1695568134000,
 		"distance_unit": "KILOMETERS",
 		"nil_value": true,
-		"timestamp": 1695566743,
+		"timestamp": 1695568134,
 		"status": 4
-	},
-	"chargeFlapDCStatus": {
-		"timestamp_in_ms": 1695564463000,
-		"timestamp": 1695564463,
-		"int_value": 0
 	},
 	"tireWarningLevelPrw": {
 		"timestamp_in_ms": 1695477069000,
 		"nil_value": true,
 		"timestamp": 1695477069,
 		"status": 4
+	},
+	"chargeFlapDCStatus": {
+		"timestamp_in_ms": 1695564463000,
+		"timestamp": 1695564463,
+		"int_value": 0
 	},
 	"tanklevelpercent": {
 		"timestamp_in_ms": 1638508946000,
@@ -962,16 +952,15 @@
 		"timestamp": 1692956198,
 		"int_value": 0
 	},
+	"vtime": {
+		"timestamp_in_ms": 1695568136000,
+		"timestamp": 1695568136,
+		"int_value": 1695575332
+	},
 	"chargingErrorDetails": {
 		"timestamp_in_ms": 1692956198000,
 		"timestamp": 1692956198,
 		"int_value": 0
-	},
-	"vtime": {
-		"timestamp_in_ms": 1695566752000,
-		"timestamp": 1695566752,
-		"changed": true,
-		"int_value": 1695573950
 	},
 	"tireMarkerFrontLeft": {
 		"timestamp_in_ms": 1695477069000,

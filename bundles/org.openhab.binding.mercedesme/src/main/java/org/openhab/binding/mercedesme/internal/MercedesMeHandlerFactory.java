@@ -36,11 +36,14 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MercedesMeHandlerFactory} is responsible for creating things and thing
@@ -51,6 +54,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.mercedesme", service = ThingHandlerFactory.class)
 public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(MercedesMeHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BEV, THING_TYPE_COMB,
             THING_TYPE_HYBRID, THING_TYPE_ACCOUNT);
 
@@ -62,6 +66,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final MercedesMeStateOptionProvider mmsop;
     private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
+
+    public static String ohVersion = "unknown";
 
     @Activate
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
@@ -88,6 +94,14 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
+        Bundle[] bundleList = this.getBundleContext().getBundles();
+        for (int i = 0; i < bundleList.length; i++) {
+            // logger.info("Bundle {} Name {}", i, bundleList[i].getSymbolicName(), bundleList[i].getVersion());
+            if ("org.openhab.binding.mercedesme".equals(bundleList[i].getSymbolicName())) {
+                ohVersion = bundleList[i].getVersion().toString();
+            }
+        }
+
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             if (discoveryServiceReg == null) {
@@ -108,5 +122,9 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         if (discoveryServiceReg != null) {
             discoveryServiceReg.unregister();
         }
+    }
+
+    public static String getVersion() {
+        return ohVersion;
     }
 }
