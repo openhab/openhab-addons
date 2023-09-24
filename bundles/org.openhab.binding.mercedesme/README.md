@@ -346,10 +346,14 @@ Minimum and Maximum Temperature depends on your local settings either Degrre Cle
 
 Celsius 
 
+Step width : 0.5
+
 - Minimum : 16
 - Maximum : 28
 
 Fahrenheit
+
+Step width : 1.0
 
 - Minimum : 60
 - Maximum : 84

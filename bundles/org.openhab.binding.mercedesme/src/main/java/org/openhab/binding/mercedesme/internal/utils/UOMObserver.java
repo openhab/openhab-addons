@@ -68,7 +68,7 @@ public class UOMObserver {
             patternMap.put(SPEED_KM_UNIT, "%.0f km/h");
             patternMap.put(SPEED_MILES_UNIT, "%.0f mph");
             patternMap.put(CELSIUS_UNIT, "%.1f °C");
-            patternMap.put(FAHRENHEIT_UNIT, "%.1f °F");
+            patternMap.put(FAHRENHEIT_UNIT, "%.0f °F");
             patternMap.put(BAR_UNIT, "%.1f bar");
             patternMap.put(KPA_UNIT, "%.1f kPa");
             patternMap.put(PSI_UNIT, "%.1f psi");

@@ -60,9 +60,10 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
+        MercedesMeDynamicStateDescriptionProviderMock patternMock = new MercedesMeDynamicStateDescriptionProviderMock();
+        MercedesMeCommandOptionProviderMock commandOptionMock = new MercedesMeCommandOptionProviderMock();
         VehicleHandler vh = new VehicleHandler(thingMock, commandOptionMock, mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                patternMock);
         AuccountHandlerMock ahm = new AuccountHandlerMock();
         vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
@@ -96,12 +97,19 @@ class VehicleHandlerTest {
                 .endsWith("psi"), "Pressure Unit");
         assertTrue(updateListener.updatesReceived.get("test::bev:hvac#temperature").toFullString().endsWith("°F"),
                 "Temperature Unit");
+        assertEquals("%.0f °F", patternMock.patternMap.get("test::bev:hvac#temperature"), "Temperature Pattern");
+        commandOptionMock.commands.get("test::bev:hvac#temperature").forEach(cmd -> {
+            assertTrue(cmd.getCommand().endsWith(" °F"), "Command Option Fahrenheit Unit");
+        });
 
-        System.out.println("--- Switch to Celsius");
         // overwrite with EU Units
         json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         update = ProtoConverter.json2Proto(json, true);
         vh.distributeContent(update);
+        assertEquals("%.1f °C", patternMock.patternMap.get("test::bev:hvac#temperature"), "Temperature Pattern");
+        commandOptionMock.commands.get("test::bev:hvac#temperature").forEach(cmd -> {
+            assertTrue(cmd.getCommand().endsWith(" °C"), "Command Option Celsius Unit");
+        });
     }
 
     @Test
@@ -364,13 +372,15 @@ class VehicleHandlerTest {
         assertEquals("22 °C", updateListener.updatesReceived.get("test::bev:hvac#temperature").toFullString(),
                 "Temperature Point One Updated");
 
-        System.out.println("---");
         ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_HVAC, "zone");
         updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         vh.handleCommand(cuid, new DecimalType(2));
+        assertEquals("2", updateListener.updatesReceived.get("test::bev:hvac#zone").toFullString(),
+                "Temperature Point One Updated");
         assertEquals("19 °C", updateListener.updatesReceived.get("test::bev:hvac#temperature").toFullString(),
                 "Temperature Point One Updated");
+        vh.handleCommand(cuid, new DecimalType(-1));
     }
 
     @Test
@@ -387,7 +397,6 @@ class VehicleHandlerTest {
         vh.config = Optional.of(vehicleConfig);
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
-        System.out.println("---");
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
         vh.distributeContent(update);
@@ -396,11 +405,11 @@ class VehicleHandlerTest {
         updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         vh.handleCommand(cuid, QuantityType.valueOf("18 °C"));
-        System.out.println(ahm.getCommand());
-        System.out.println(Utils.getZoneNumber(ahm.getCommand().get("zone").toString()));
+        assertEquals("frontLeft", ahm.getCommand().get("zone").toString(), "Zone Selection");
+        assertEquals(18, ahm.getCommand().getDouble("temperature_in_celsius"), "Temperature Selection");
         vh.handleCommand(cuid, QuantityType.valueOf("80 °F"));
-        System.out.println(ahm.getCommand());
-        System.out.println(Utils.getZoneNumber(ahm.getCommand().get("zone").toString()));
+        assertEquals("frontLeft", ahm.getCommand().get("zone").toString(), "Zone Selection");
+        assertEquals(26, ahm.getCommand().getDouble("temperature_in_celsius"), "Temperature Selection");
     }
 
     @Test
@@ -423,25 +432,18 @@ class VehicleHandlerTest {
         vh.distributeContent(update);
 
         ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "max-soc");
-        updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
         vh.handleCommand(cuid, QuantityType.valueOf("90 %"));
-        System.out.println(ahm.getCommand());
-        System.out.println("---");
+        int selectedChargeProgram = ((DecimalType) updateListener.updatesReceived.get("test::bev:charge#program"))
+                .intValue();
+        assertEquals(selectedChargeProgram,
+                Utils.getChargeProgramNumber(ahm.getCommand().get("charge_program").toString()),
+                "Charge Program Command");
+        assertEquals(90, ahm.getCommand().getInt("max_soc"), "Charge Program SOC Setting");
 
         cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "program");
         vh.handleCommand(cuid, new DecimalType(3));
-        System.out.println("---");
-
-        cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "program");
-        vh.handleCommand(cuid, new DecimalType(2));
-        System.out.println("---");
-
-        cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "program");
-        vh.handleCommand(cuid, new DecimalType(0));
-        System.out.println("---");
-
-        cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "program");
-        vh.handleCommand(cuid, new DecimalType(5));
+        assertEquals(3, Utils.getChargeProgramNumber(ahm.getCommand().get("charge_program").toString()),
+                "Charge Program Command");
+        assertEquals(100, ahm.getCommand().getInt("max_soc"), "Charge Program SOC Setting");
     }
 }
