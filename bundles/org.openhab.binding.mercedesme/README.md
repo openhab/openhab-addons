@@ -190,10 +190,6 @@ Command
 - 1 : Close
 - 2 : Open
 
-Note: State mapping doesn't correspond to command mapping!
-That's the mapping of Mercedes SDK.
-So if your windows are in state `0 : Intermediate` you need to send command `0 : Close` to close them!
-
 #### Door Status Mapping
 
 - 0 : Open

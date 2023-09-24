@@ -41,6 +41,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.MercedesMeHandlerFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -395,6 +396,7 @@ public class Utils {
         JSONObject bindingInfo = new JSONObject();
         bindingInfo.put("version", Constants.BINDING_VERSION);
         bindingInfo.put("vehicle", ttuid.getAsString());
+        bindingInfo.put("oh-bundle", MercedesMeHandlerFactory.getVersion());
         protoJson.put("bindingInfo", bindingInfo);
         return protoJson.toString();
     }
