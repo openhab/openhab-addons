@@ -130,7 +130,7 @@ public class Schedules implements RegistryChangeListener<Rule> {
         HueScheduleEntry entry = new HueScheduleEntry();
         entry.name = rule.getName();
         entry.description = rule.getDescription();
-        entry.autodelete = rule.getActions().stream().anyMatch(p -> p.getId().equals("autodelete"));
+        entry.autodelete = rule.getActions().stream().anyMatch(p -> "autodelete".equals(p.getId()));
         entry.status = ruleManager.isEnabled(rule.getUID()) ? "enabled" : "disabled";
 
         String timeStringFromTrigger = RuleUtils.timeStringFromTrigger(rule.getTriggers());
@@ -142,7 +142,7 @@ public class Schedules implements RegistryChangeListener<Rule> {
         entry.localtime = timeStringFromTrigger;
 
         for (Action a : rule.getActions()) {
-            if (!a.getTypeUID().equals("rules.HttpAction")) {
+            if (!"rules.HttpAction".equals(a.getTypeUID())) {
                 continue;
             }
             HueCommand command = RuleUtils.httpActionToHueCommand(cs.ds, a, rule.getName());
@@ -208,7 +208,7 @@ public class Schedules implements RegistryChangeListener<Rule> {
 
         if (command != null) {
             RuleUtils.validateHueHttpAddress(ds, command.address);
-            actions.removeIf(a -> a.getId().equals("command")); // Remove old command action if any and add new one
+            actions.removeIf(a -> "command".equals(a.getId())); // Remove old command action if any and add new one
             actions.add(RuleUtils.createHttpAction(command, "command"));
         } else if (oldActions.isEmpty()) { // This is a new rule without an action yet
             throw new IllegalStateException("No command set!");
@@ -216,7 +216,7 @@ public class Schedules implements RegistryChangeListener<Rule> {
 
         if (autodelete != null) {
             // Remove action to remove rule after execution
-            actions = actions.stream().filter(e -> !e.getId().equals("autodelete"))
+            actions = actions.stream().filter(e -> !"autodelete".equals(e.getId()))
                     .collect(Collectors.toCollection(() -> new ArrayList<>()));
             if (autodelete) { // Add action to remove this rule again after execution
                 final Configuration actionConfig = new Configuration();

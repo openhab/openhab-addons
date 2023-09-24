@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -66,7 +67,7 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      * 120 seconds (depending on how many network interfaces there are)
      */
     public RioSystemDiscovery() {
-        super(Collections.singleton(RioConstants.BRIDGE_TYPE_RIO), 120);
+        super(Set.of(RioConstants.BRIDGE_TYPE_RIO), 120);
     }
 
     /**

@@ -61,7 +61,7 @@ public class HomekitTelevisionSpeakerImpl extends AbstractHomekitAccessoryImpl {
         var volumeCharacteristic = getCharacteristic(VolumeCharacteristic.class);
         var volumeSelectorCharacteristic = getCharacteristic(VolumeSelectorCharacteristic.class);
 
-        if (!volumeControlTypeCharacteristic.isPresent()) {
+        if (volumeControlTypeCharacteristic.isEmpty()) {
             VolumeControlTypeEnum type;
             if (volumeCharacteristic.isPresent()) {
                 type = VolumeControlTypeEnum.ABSOLUTE;

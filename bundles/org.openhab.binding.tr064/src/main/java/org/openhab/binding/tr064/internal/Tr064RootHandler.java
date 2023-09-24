@@ -207,8 +207,6 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
         uninstallPolling();
         stateCache.clear();
         scpdUtil = null;
-
-        super.dispose();
     }
 
     /**
@@ -244,7 +242,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
                 SCPDDeviceType device = scpdUtil.getDevice("")
                         .orElseThrow(() -> new SCPDException("Root device not found"));
                 SCPDServiceType deviceService = device.getServiceList().stream()
-                        .filter(service -> service.getServiceId().equals("urn:DeviceInfo-com:serviceId:DeviceInfo1"))
+                        .filter(service -> "urn:DeviceInfo-com:serviceId:DeviceInfo1".equals(service.getServiceId()))
                         .findFirst().orElseThrow(() -> new SCPDException(
                                 "service 'urn:DeviceInfo-com:serviceId:DeviceInfo1' not found"));
 
@@ -267,8 +265,16 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
                 // clear auth cache and force re-auth
                 AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                authStore.clearAuthentications();
-                authStore.clearAuthenticationResults();
+                URI endpointUri = URI.create(endpointBaseURL);
+                Authentication authentication = authStore.findAuthentication("Digest", endpointUri,
+                        Authentication.ANY_REALM);
+                if (authentication != null) {
+                    authStore.removeAuthentication(authentication);
+                }
+                Authentication.Result authResult = authStore.findAuthenticationResult(endpointUri);
+                if (authResult != null) {
+                    authStore.removeAuthenticationResult(authResult);
+                }
                 authStore.addAuthentication(new DigestAuthentication(new URI(endpointBaseURL), Authentication.ANY_REALM,
                         config.user, config.password));
 
@@ -276,7 +282,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
                 SCPDActionType getInfoAction = scpdUtil.getService(deviceService.getServiceId())
                         .orElseThrow(() -> new SCPDException(
                                 "Could not get service definition for 'urn:DeviceInfo-com:serviceId:DeviceInfo1'"))
-                        .getActionList().stream().filter(action -> action.getName().equals("GetInfo")).findFirst()
+                        .getActionList().stream().filter(action -> "GetInfo".equals(action.getName())).findFirst()
                         .orElseThrow(() -> new SCPDException("Action 'GetInfo' not found"));
                 SOAPMessage soapResponse1 = soapConnector
                         .doSOAPRequest(new SOAPRequest(deviceService, getInfoAction.getName()));

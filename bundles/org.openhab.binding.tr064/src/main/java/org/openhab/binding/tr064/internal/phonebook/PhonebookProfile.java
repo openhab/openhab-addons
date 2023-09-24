@@ -98,17 +98,17 @@ public class PhonebookProfile implements StateProfile {
                 phonebookName = UIDUtils.decode(phonebookParams[1]);
             }
             if (matchCountParam != null) {
-                if (matchCountParam instanceof BigDecimal) {
-                    matchCount = ((BigDecimal) matchCountParam).intValue();
-                } else if (matchCountParam instanceof String) {
-                    matchCount = Integer.parseInt((String) matchCountParam);
+                if (matchCountParam instanceof BigDecimal bigDecimal) {
+                    matchCount = bigDecimal.intValue();
+                } else if (matchCountParam instanceof String string) {
+                    matchCount = Integer.parseInt(string);
                 }
             }
             if (phoneNumberIndexParam != null) {
-                if (phoneNumberIndexParam instanceof BigDecimal) {
-                    phoneNumberIndex = ((BigDecimal) phoneNumberIndexParam).intValue();
-                } else if (phoneNumberIndexParam instanceof String) {
-                    phoneNumberIndex = Integer.parseInt((String) phoneNumberIndexParam);
+                if (phoneNumberIndexParam instanceof BigDecimal bigDecimal) {
+                    phoneNumberIndex = bigDecimal.intValue();
+                } else if (phoneNumberIndexParam instanceof String string) {
+                    phoneNumberIndex = Integer.parseInt(string);
                 }
             }
         } catch (IllegalArgumentException e) {

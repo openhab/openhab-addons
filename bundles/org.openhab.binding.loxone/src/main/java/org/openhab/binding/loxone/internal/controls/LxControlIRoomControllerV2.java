@@ -163,16 +163,14 @@ class LxControlIRoomControllerV2 extends LxControl {
     }
 
     private void setOperatingMode(Command command) throws IOException {
-        if (command instanceof DecimalType) {
-            DecimalType mode = (DecimalType) command;
-            sendAction(CMD_SET_OPERATING_MODE + String.valueOf(mode.intValue()));
+        if (command instanceof DecimalType mode) {
+            sendAction(CMD_SET_OPERATING_MODE + mode.intValue());
         }
     }
 
     private void setTemperature(Command command, String prefix) throws IOException {
-        if (command instanceof DecimalType) {
-            DecimalType temp = (DecimalType) command;
-            sendAction(prefix + String.valueOf(temp.doubleValue()));
+        if (command instanceof DecimalType temp) {
+            sendAction(prefix + temp.doubleValue());
         }
     }
 }

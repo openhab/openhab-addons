@@ -56,7 +56,7 @@ public class RegExTransformationService implements TransformationService {
             String regex = substMatcher.group(1);
             String substitution = substMatcher.group(2);
             String options = substMatcher.group(3);
-            if (options.equals("g")) {
+            if ("g".equals(options)) {
                 result = source.trim().replaceAll(regex, substitution);
             } else {
                 result = source.trim().replaceFirst(regex, substitution);

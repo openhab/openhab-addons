@@ -79,7 +79,7 @@ public class DmxBindingConstants {
     public static final ChannelTypeUID MUTE_CHANNEL_TYPEUID = new ChannelTypeUID(BINDING_ID, CHANNEL_MUTE);
 
     // Listener Type for channel updates
-    public static enum ListenerType {
+    public enum ListenerType {
         VALUE,
         ACTION
     }

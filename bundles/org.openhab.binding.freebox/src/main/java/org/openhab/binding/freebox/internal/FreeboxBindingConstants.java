@@ -41,8 +41,7 @@ public class FreeboxBindingConstants {
     public static final ThingTypeUID FREEBOX_THING_TYPE_AIRPLAY = new ThingTypeUID(BINDING_ID, "airplay");
 
     // All supported Bridge types
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections
-            .singleton(FREEBOX_BRIDGE_TYPE_SERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Set.of(FREEBOX_BRIDGE_TYPE_SERVER);
 
     // All supported Thing types
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

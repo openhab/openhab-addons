@@ -51,8 +51,8 @@ public class QolsysIQChildDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof QolsysIQChildDiscoveryHandler) {
-            ((QolsysIQChildDiscoveryHandler) handler).setDiscoveryService(this);
+        if (handler instanceof QolsysIQChildDiscoveryHandler childDiscoveryHandler) {
+            childDiscoveryHandler.setDiscoveryService(this);
             this.thingHandler = handler;
         }
     }

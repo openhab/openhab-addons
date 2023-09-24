@@ -369,8 +369,7 @@ public class ShellyComponents {
 
         // EM: compute from provided values
         if (emeter.reactive != null && Math.abs(emeter.power) + Math.abs(emeter.reactive) > 1.5) {
-            double pf = emeter.power / Math.sqrt(emeter.power * emeter.power + emeter.reactive * emeter.reactive);
-            return pf;
+            return emeter.power / Math.sqrt(emeter.power * emeter.power + emeter.reactive * emeter.reactive);
         }
         return 0.0;
     }
@@ -491,7 +490,7 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM, toQuantityType(
                         getInteger(sdata.concentration.ppm).doubleValue(), DIGITS_NONE, Units.PARTS_PER_MILLION));
             }
-            if ((sdata.adcs != null) && (sdata.adcs.size() > 0)) {
+            if ((sdata.adcs != null) && (!sdata.adcs.isEmpty())) {
                 ShellyADC adc = sdata.adcs.get(0);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
                         toQuantityType(getDouble(adc.voltage), 2, Units.VOLT));

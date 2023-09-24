@@ -61,8 +61,8 @@ public class UrtsiHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(URTSI_DEVICE_THING_TYPE) && thing instanceof Bridge) {
-            return new UrtsiDeviceHandler((Bridge) thing, serialPortManager);
+        if (thingTypeUID.equals(URTSI_DEVICE_THING_TYPE) && thing instanceof Bridge bridge) {
+            return new UrtsiDeviceHandler(bridge, serialPortManager);
         } else if (thingTypeUID.equals(RTS_DEVICE_THING_TYPE)) {
             return new RtsDeviceHandler(thing);
         }

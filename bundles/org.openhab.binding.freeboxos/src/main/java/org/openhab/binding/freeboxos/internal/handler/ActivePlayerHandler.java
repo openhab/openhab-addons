@@ -15,7 +15,7 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -93,7 +93,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(ActivePlayerActions.class);
+        return List.of(ActivePlayerActions.class);
     }
 
     @Override
