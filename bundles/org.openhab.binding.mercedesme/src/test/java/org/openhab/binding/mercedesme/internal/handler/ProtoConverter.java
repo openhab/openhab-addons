@@ -29,6 +29,7 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.PressureU
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.RatioUnit;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.SpeedUnit;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TemperatureUnit;
+import com.google.protobuf.Int32Value;
 
 public class ProtoConverter {
 
@@ -169,7 +170,10 @@ public class ProtoConverter {
             return Utils.getJsonObject(cr.getTemperatureConfigure().getTemperaturePoints(0).getAllFields());
         }
         if (cr.hasChargeProgramConfigure()) {
-            return Utils.getJsonObject(cr.getChargeProgramConfigure().getAllFields());
+            JSONObject cpv = Utils.getJsonObject(cr.getChargeProgramConfigure().getAllFields());
+            Int32Value soc = (Int32Value) cpv.get("max_soc");
+            cpv.put("max_soc", soc.getValue());
+            return cpv;
         }
         return cmJson;
     }

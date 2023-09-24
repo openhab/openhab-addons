@@ -362,12 +362,16 @@ public class VehicleHandler extends BaseThingHandler {
                 }
             } else if ("zone".equals(channelUID.getIdWithoutGroup())) {
                 int zone = ((DecimalType) command).intValue();
-                ChannelStateMap zoneMap = new ChannelStateMap("zone", GROUP_HVAC, (DecimalType) command);
-                updateChannel(zoneMap);
-                QuantityType<Temperature> selectedTemp = temperaturePointsStorage.get(zone);
-                if (selectedTemp != null) {
-                    ChannelStateMap tempCSM = new ChannelStateMap("temperature", GROUP_HVAC, selectedTemp);
-                    updateChannel(tempCSM);
+                if (temperaturePointsStorage.containsKey(zone)) {
+                    ChannelStateMap zoneMap = new ChannelStateMap("zone", GROUP_HVAC, (DecimalType) command);
+                    updateChannel(zoneMap);
+                    QuantityType<Temperature> selectedTemp = temperaturePointsStorage.get(zone);
+                    if (selectedTemp != null) {
+                        ChannelStateMap tempCSM = new ChannelStateMap("temperature", GROUP_HVAC, selectedTemp);
+                        updateChannel(tempCSM);
+                    }
+                } else {
+                    logger.info("No Temperature Zone found for {}", command);
                 }
             }
         } else if (Constants.GROUP_POSITION.equals(channelUID.getGroupId())) {
@@ -632,7 +636,6 @@ public class VehicleHandler extends BaseThingHandler {
                                 temperatureUnit = observer.getUnit().get();
                             }
                         }
-                        System.out.println("Default " + temperatureUnit);
                         ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "temperature");
                         mmcop.setCommandOptions(cuid, Utils.getTemperatureOptions(temperatureUnit));
                         if (zoneNumber > 0) {

@@ -15,7 +15,9 @@ package org.openhab.binding.mercedesme.internal.handler;
 import static org.mockito.Mockito.mock;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.MercedesMeCommandOptionProvider;
 import org.openhab.core.events.EventPublisher;
@@ -31,6 +33,7 @@ import org.openhab.core.types.CommandOption;
  */
 @NonNullByDefault
 public class MercedesMeCommandOptionProviderMock extends MercedesMeCommandOptionProvider {
+    public Map<String, List<CommandOption>> commands = new HashedMap<String, List<CommandOption>>();
 
     public MercedesMeCommandOptionProviderMock() {
         super(mock(EventPublisher.class), mock(ItemChannelLinkRegistry.class),
@@ -39,6 +42,6 @@ public class MercedesMeCommandOptionProviderMock extends MercedesMeCommandOption
 
     @Override
     public void setCommandOptions(ChannelUID cuid, List<CommandOption> col) {
-        System.out.println(col);
+        commands.put(cuid.toString(), col);
     }
 }

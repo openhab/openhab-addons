@@ -30,7 +30,7 @@ public class AuccountHandlerMock extends AccountHandler {
 
     @Override
     public void sendCommand(ClientMessage cm) {
-        System.out.println(cm.getAllFields());
+        // System.out.println(cm.getAllFields());
         command = ProtoConverter.clientMessage2Json(cm);
     }
 
