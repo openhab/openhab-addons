@@ -364,7 +364,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
         // Switch is trigger channel, but current state can be deduced from state.
         ChannelUID channelUid = new ChannelUID(getThing().getUID(), SWITCH_CHANNEL_ID);
-        State state = OnOffType.from(dp.Value.equals(String.valueOf(STATE_RUNNING)));
+        State state = OnOffType.from(dp.Value.equals(String.valueOf(STATE_RUNNING))
+                || dp.Value.equals(String.valueOf(STATE_END)) || dp.Value.equals(String.valueOf(STATE_RINSE_HOLD)));
         logger.trace("Update state of {} to {} through '{}'", channelUid, state, dp.Name);
         updateState(channelUid, state);
     }

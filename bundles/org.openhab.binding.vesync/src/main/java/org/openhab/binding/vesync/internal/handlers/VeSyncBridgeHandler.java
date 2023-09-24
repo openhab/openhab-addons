@@ -15,9 +15,9 @@ package org.openhab.binding.vesync.internal.handlers;
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -86,8 +86,8 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
         boolean frequentScanReq = false;
         for (Thing th : getThing().getThings()) {
             ThingHandler handler = th.getHandler();
-            if (handler instanceof VeSyncBaseDeviceHandler) {
-                if (((VeSyncBaseDeviceHandler) handler).requiresMetaDataFrequentUpdates()) {
+            if (handler instanceof VeSyncBaseDeviceHandler veSyncBaseDeviceHandler) {
+                if (veSyncBaseDeviceHandler.requiresMetaDataFrequentUpdates()) {
                     frequentScanReq = true;
                     break;
                 }
@@ -185,15 +185,15 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     }
 
     private void updateThing(VeSyncBridgeConfiguration config, @Nullable ThingHandler handler) {
-        if (handler instanceof VeSyncBaseDeviceHandler) {
-            ((VeSyncBaseDeviceHandler) handler).updateDeviceMetaData();
-            ((VeSyncBaseDeviceHandler) handler).updateBridgeBasedPolls(config);
+        if (handler instanceof VeSyncBaseDeviceHandler veSyncBaseDeviceHandler) {
+            veSyncBaseDeviceHandler.updateDeviceMetaData();
+            veSyncBaseDeviceHandler.updateBridgeBasedPolls(config);
         }
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(VeSyncDiscoveryService.class);
+        return Set.of(VeSyncDiscoveryService.class);
     }
 
     @Override
@@ -240,6 +240,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
         this.updateProperties(newProps);
     }
 
+    @Override
     public String reqV2Authorized(final String url, final String macId, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException, DeviceUnknownException {
         return api.reqV2Authorized(url, macId, requestData);

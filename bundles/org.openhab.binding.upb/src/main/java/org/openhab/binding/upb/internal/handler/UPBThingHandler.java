@@ -144,8 +144,8 @@ public class UPBThingHandler extends BaseThingHandler {
             message = MessageBuilder.forCommand(ACTIVATE);
         } else if (cmd == OnOffType.OFF) {
             message = MessageBuilder.forCommand(DEACTIVATE);
-        } else if (cmd instanceof PercentType) {
-            message = MessageBuilder.forCommand(GOTO).args(((PercentType) cmd).byteValue());
+        } else if (cmd instanceof PercentType percentCommand) {
+            message = MessageBuilder.forCommand(GOTO).args(percentCommand.byteValue());
         } else if (cmd == RefreshType.REFRESH) {
             refreshDeviceState();
             return;

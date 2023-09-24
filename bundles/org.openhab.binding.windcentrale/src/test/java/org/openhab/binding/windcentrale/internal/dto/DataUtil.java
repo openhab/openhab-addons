@@ -45,7 +45,7 @@ public class DataUtil {
 
     @SuppressWarnings("null")
     public Reader openDataReader(String fileName) throws FileNotFoundException {
-        String packagePath = (DataUtil.class.getPackage().getName()).replaceAll("\\.", "/");
+        String packagePath = (DataUtil.class.getPackage().getName()).replace(".", "/");
         String filePath = "src/test/resources/" + packagePath + "/" + fileName;
 
         InputStream inputStream = new FileInputStream(filePath);
