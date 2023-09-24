@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -58,7 +57,7 @@ public class PhilipsAirConfiguration {
     private float humidityOffset;;
 
     public void updateFromProperties(Map<String, Object> properties) {
-        Validate.notNull(properties);
+        // Validate.notNull(properties); //eliminate need apache.commons--> Should not be needed
 
         for (Map.Entry<String, Object> e : properties.entrySet()) {
             if (e.getKey() != null) {
@@ -91,7 +90,7 @@ public class PhilipsAirConfiguration {
     }
 
     public void updateFromProperties(Dictionary<String, Object> properties) {
-        Validate.notNull(properties);
+        // Validate.notNull(properties);//eliminate need apache.commons--> Should not be needed
         List<String> keys = Collections.list(properties.keys());
         Map<String, Object> dictCopy = keys.stream().collect(Collectors.toMap(Function.identity(), properties::get));
         updateFromProperties(dictCopy);

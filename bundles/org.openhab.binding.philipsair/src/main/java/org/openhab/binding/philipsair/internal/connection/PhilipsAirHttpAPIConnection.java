@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -85,7 +84,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     private void initCipher() {
         try {
             final PhilipsAirCipher cipher = new PhilipsAirCipher();
-            if (StringUtils.isEmpty(config.getKey())) {
+            if (config.getKey() != null && config.getKey().isEmpty()) {
                 exchangeKeys();
             }
             cipher.initKey(config.getKey());
@@ -160,7 +159,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
             }
 
             Request request = httpClient.newRequest(url).method(method);
-            if (method == PUT && StringUtils.isNotEmpty(content)) {
+            if (method == PUT && (content != null && !content.isEmpty())) {
                 request.content(new StringContentProvider(content));
             }
 

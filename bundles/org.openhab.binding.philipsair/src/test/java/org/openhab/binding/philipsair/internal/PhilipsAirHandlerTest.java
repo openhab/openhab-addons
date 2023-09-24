@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,8 @@ import java.util.concurrent.TimeoutException;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -74,23 +76,30 @@ import com.google.gson.Gson;
  * @author michalboronski - Initial contribution
  */
 
+@NonNullByDefault
 public class PhilipsAirHandlerTest extends JavaTest {
 
+    @Nullable
     private PhilipsAirHandler handler;
 
     @Mock
+    @Nullable
     private ThingHandlerCallback callback;
 
     @Mock
+    @Nullable
     private Thing thing;
 
     @Mock
+    @Nullable
     private Request request;
 
     @Mock
+    @Nullable
     private HttpClient httpClient;
 
     @Mock
+    @Nullable
     private ContentResponse response;
 
     private static String decodedContent1 = "{\"name\":\"Philips\",\"type\":\"AC2889\",\"modelid\":\"AC2889/10\",\"swversion\":\"1.0.4\"}";// "ETThbheNTZ3X8dHXUnnPWkzoQGPiH2Fi+4U3Xto4vdD4kPQeZSRjWs+y5y2h2NhfYhKsiiJoat7EQQCLGoqwkJsMjxqAEhxCWNB3cJH/xK0=";
@@ -109,19 +118,31 @@ public class PhilipsAirHandlerTest extends JavaTest {
     private static String decodedContent11 = "{\"om\":\"1\",\"pwr\":\"1\",\"cl\":false,\"aqil\":25,\"uil\":\"1\",\"dt\":1,\"dtrs\":57,\"mode\":\"A\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":7,\"iaql\":2,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0}";
     private static String decodedContent12 = "{\"om\":\"1\",\"pwr\":\"1\",\"cl\":true,\"aqil\":25,\"uil\":\"1\",\"dt\":1,\"dtrs\":57,\"mode\":\"A\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":7,\"iaql\":2,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0}";
 
+    @Nullable
     private static String content1 = null;
+    @Nullable
     private static String content2 = null;
+    @Nullable
     private static String content3 = null;
+    @Nullable
     private static String content4 = null;
+    @Nullable
     private static String content5 = null;
+    @Nullable
     private static String content6 = null;
+    @Nullable
     private static String content7 = null;
+    @Nullable
     private static String content8 = null;
+    @Nullable
     private static String content9 = null;
+    @Nullable
     private static String content10 = null;
+    @Nullable
     private static String content11 = null;
+    @Nullable
     private static String content12 = null;
-
+    @Nullable
     private static PhilipsAirCipher cipher;
     private static Configuration config = new Configuration();
 
@@ -189,8 +210,12 @@ public class PhilipsAirHandlerTest extends JavaTest {
         when(thing.getUID()).thenReturn(thingUID);
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
 
-        handler = new PhilipsAirHandler(thing, httpClient);
-        when(request.send()).thenReturn(response);
+        final Thing thing = this.thing;
+        final HttpClient httpClient = this.httpClient;
+        if (thing != null && httpClient != null) {
+            handler = new PhilipsAirHandler(thing, httpClient);
+            when(request.send()).thenReturn(response);
+        }
     }
 
     @Test
@@ -237,6 +262,10 @@ public class PhilipsAirHandlerTest extends JavaTest {
     @Disabled
     public void testStateUpdates() throws Exception {
         // mock getConfiguration to prevent NPEs
+        final ThingHandlerCallback callback = this.callback;
+        if (callback == null) {
+            return;
+        }
 
         initChannels(callback, "sensors#pm25:Number", "control#pwr:Switch", "control#om:String", "control#cl:Switch",
                 "control-ui#aqil:Number", "control-ui#uil:Switch", "control#dt:Number", "control#dtrs:Number",
@@ -344,7 +373,10 @@ public class PhilipsAirHandlerTest extends JavaTest {
     @Disabled
     public void testStateOffsetUpdates() throws Exception {
         // mock getConfiguration to prevent NPEs
-
+        final ThingHandlerCallback callback = this.callback;
+        if (callback == null) {
+            return;
+        }
         initChannels(callback, "rh:Number", "temp:Number");
 
         when(request.timeout(5, TimeUnit.SECONDS)).thenReturn(request);
@@ -397,7 +429,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     private void sendCommandTemplate(Channel channel, Command command, State stateBefore, State stateAfter,
-            String responseBefore, String commandResponse)
+            @Nullable String responseBefore, @Nullable String commandResponse)
             throws InterruptedException, TimeoutException, ExecutionException {
         // mock getConfiguration to prevent NPEs
 
