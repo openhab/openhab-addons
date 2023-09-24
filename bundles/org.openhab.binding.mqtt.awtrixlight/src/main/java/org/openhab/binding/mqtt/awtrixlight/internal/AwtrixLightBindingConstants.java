@@ -168,6 +168,10 @@ public class AwtrixLightBindingConstants {
     public static final String CHANNEL_TEXT_OFFSET = "textOffset";
     public static final String CHANNEL_TOP_TEXT = "topText";
 
+    public static final String PUSH_ICON_OPTION_0 = "STATIC";
+    public static final String PUSH_ICON_OPTION_1 = "PUSHOUT";
+    public static final String PUSH_ICON_OPTION_2 = "PUSHOUTRETURN";
+
     // Just some little helpers...
     public static final BigDecimal MINUSONE = new BigDecimal(-1);
     public static final BigDecimal ONEHUNDRED = new BigDecimal(100);

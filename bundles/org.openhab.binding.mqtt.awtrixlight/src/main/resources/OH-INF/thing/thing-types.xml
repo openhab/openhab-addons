@@ -422,13 +422,21 @@
 	</channel-type>
 
 	<channel-type id="pushIcon">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Scroll Icon</label>
 		<description>Make the icon scroll along with the text</description>
 		<category>screen</category>
 		<tags>
 			<tag>Control</tag>
 		</tags>
+		<state>
+			<options>
+				<option value="STATIC">Icon does not move</option>
+				<option value="PUSHOUT">Icon moves and disappears</option>
+				<option value="PUSHOUTRETURN">Icon moves and reappears</option>
+			</options>
+		</state>
+
 	</channel-type>
 
 	<channel-type id="line">
