@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:freeboxos:vm">
+		<parameter name="refreshInterval" type="integer" min="1" unit="s">
+			<label>Refresh Interval</label>
+			<description>The refresh interval in seconds which is used to poll given virtual machine</description>
+			<default>30</default>
+		</parameter>
+		<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
+			<label>MAC Address</label>
+			<description>The MAC address of the network device</description>
+		</parameter>
+		<parameter name="id" type="integer" required="true">
+			<label>ID</label>
+			<description>Id of the Virtual Machine</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

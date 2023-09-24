@@ -46,6 +46,8 @@ public class CallbackServer {
     private static final Map<Integer, CallbackServer> SERVER_MAP = new HashMap<Integer, CallbackServer>();
     private static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
 
+    private final OAuthFactory oAuthFactory;
+
     private Optional<Server> server = Optional.empty();
     private AccessTokenRefreshListener listener;
     private AccountConfiguration config;
@@ -54,6 +56,7 @@ public class CallbackServer {
 
     public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
             AccountConfiguration config, String callbackUrl) {
+        this.oAuthFactory = oAuthFactory;
         oacs = oAuthFactory.createOAuthClientService(config.clientId, Constants.MB_TOKEN_URL, Constants.MB_AUTH_URL,
                 config.clientId, config.clientSecret, config.getScope(), false);
         listener = l;
@@ -62,6 +65,16 @@ public class CallbackServer {
         this.config = config;
         this.callbackUrl = callbackUrl;
         INVALID_ACCESS_TOKEN.setAccessToken(Constants.EMPTY);
+    }
+
+    public void dispose() {
+        oAuthFactory.ungetOAuthService(config.clientId);
+        AUTH_MAP.remove(Integer.valueOf(config.callbackPort));
+        SERVER_MAP.remove(Integer.valueOf(config.callbackPort));
+    }
+
+    public void deleteOAuthServiceAndAccessToken() {
+        oAuthFactory.deleteServiceAndAccessToken(config.clientId);
     }
 
     public String getAuthorizationUrl() {
@@ -79,7 +92,7 @@ public class CallbackServer {
 
     public boolean start() {
         LOGGER.debug("Start Callback Server for port {}", config.callbackPort);
-        if (!server.isEmpty()) {
+        if (server.isPresent()) {
             LOGGER.debug("Callback server for port {} already started", config.callbackPort);
             return true;
         }
@@ -102,7 +115,7 @@ public class CallbackServer {
     public void stop() {
         LOGGER.debug("Stop Callback Server");
         try {
-            if (!server.isEmpty()) {
+            if (server.isPresent()) {
                 server.get().stop();
                 server = Optional.empty();
             }

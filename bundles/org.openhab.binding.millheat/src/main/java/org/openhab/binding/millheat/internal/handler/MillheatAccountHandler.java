@@ -15,6 +15,7 @@ package org.openhab.binding.millheat.internal.handler;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -107,7 +108,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) MillheatAccountConfiguration config;
 
     private static String getRandomString(final int sizeOfRandomString) {
-        final Random random = new Random();
+        final Random random = new SecureRandom();
         final StringBuilder sb = new StringBuilder(sizeOfRandomString);
         for (int i = 0; i < sizeOfRandomString; ++i) {
             sb.append(ALLOWED_NONCE_CHARACTERS.charAt(random.nextInt(ALLOWED_NONCE_CHARACTERS_LENGTH)));
@@ -362,7 +363,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
 
         return req.header("Connection", "Keep-Alive").header("X-Zc-Major-Domain", "seanywell")
                 .header("X-Zc-Msg-Name", "millService").header("X-Zc-Sub-Domain", "milltype").header("X-Zc-Seq-Id", "1")
-                .header("X-Zc-Version", "1").method(HttpMethod.POST).timeout(5, TimeUnit.SECONDS)
+                .header("X-Zc-Version", "1").method(HttpMethod.POST).timeout(30, TimeUnit.SECONDS)
                 .content(new BytesContentProvider(gson.toJson(payload).getBytes(StandardCharsets.UTF_8)), CONTENT_TYPE);
     }
 
@@ -371,8 +372,8 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         final Optional<Room> optionalRoom = model.findRoomById(roomId);
         if (optionalHome.isPresent() && optionalRoom.isPresent()) {
             final SetRoomTempRequest req = new SetRoomTempRequest(optionalHome.get(), optionalRoom.get());
-            if (command instanceof QuantityType<?>) {
-                final int newTemp = (int) ((QuantityType<?>) command).longValue();
+            if (command instanceof QuantityType<?> quantityCommand) {
+                final int newTemp = (int) quantityCommand.longValue();
                 switch (mode) {
                     case SLEEP:
                         req.sleepTemp = newTemp;
@@ -403,8 +404,8 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
             @Nullable final Command fanCommand) {
         model.findHeaterByMacOrId(macAddress, heaterId).ifPresent(heater -> {
             int setTemp = heater.getTargetTemp();
-            if (temperatureCommand instanceof QuantityType<?>) {
-                setTemp = (int) ((QuantityType<?>) temperatureCommand).longValue();
+            if (temperatureCommand instanceof QuantityType<?> temperature) {
+                setTemp = (int) temperature.longValue();
             }
             boolean masterOnOff = heater.powerStatus();
             if (masterOnOffCommand != null) {

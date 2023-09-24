@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Ecobee Binding</name>
 	<description>This is the binding for Ecobee smart thermostats.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

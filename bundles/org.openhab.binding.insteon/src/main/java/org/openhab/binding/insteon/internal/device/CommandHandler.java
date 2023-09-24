@@ -299,8 +299,8 @@ public abstract class CommandHandler {
         @Override
         public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
             try {
-                if (cmd instanceof DecimalType) {
-                    int v = ((DecimalType) cmd).intValue();
+                if (cmd instanceof DecimalType decimalCommand) {
+                    int v = decimalCommand.intValue();
                     int cmd1 = (v != 1) ? 0x17 : 0x18; // start or stop
                     int cmd2 = (v == 2) ? 0x01 : 0; // up or down
                     Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) cmd1, (byte) cmd2, getGroup(conf));

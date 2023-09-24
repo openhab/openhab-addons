@@ -32,21 +32,21 @@ public interface VirtualGateway extends HomematicGateway {
     /**
      * Sends the datapoint from a virtual datapoint.
      */
-    public void sendDatapointIgnoreVirtual(HmDatapoint dp, HmDatapointConfig dpConfig, Object newValue)
+    void sendDatapointIgnoreVirtual(HmDatapoint dp, HmDatapointConfig dpConfig, Object newValue)
             throws IOException, HomematicClientException;
 
     /**
      * Returns the rpc client.
      */
-    public RpcClient<?> getRpcClient(HmInterface hmInterface) throws IOException;
+    RpcClient<?> getRpcClient(HmInterface hmInterface) throws IOException;
 
     /**
      * Disables a boolean datapoint by setting the value to false after a given delay.
      */
-    public void disableDatapoint(HmDatapoint dp, double delay);
+    void disableDatapoint(HmDatapoint dp, double delay);
 
     /**
      * Returns the event listener.
      */
-    public HomematicGatewayAdapter getGatewayAdapter();
+    HomematicGatewayAdapter getGatewayAdapter();
 }

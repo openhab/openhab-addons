@@ -46,7 +46,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<SmartBulbHandler> {
+class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<SmartBulbHandler> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<BinarySwitchServiceState> binarySwitchServiceStateCaptor;
 
@@ -70,7 +70,7 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testHandleCommandBinarySwitch()
+    void testHandleCommandBinarySwitch()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH),
                 OnOffType.ON);
@@ -88,7 +88,7 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testHandleCommandMultiLevelSwitch()
+    void testHandleCommandMultiLevelSwitch()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_BRIGHTNESS),
                 new PercentType(42));
@@ -99,7 +99,7 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testHandleCommandHSBColorActuator()
+    void testHandleCommandHSBColorActuator()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_COLOR),
                 HSBType.BLUE);
@@ -110,7 +110,7 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testUpdateChannelBinarySwitchState() {
+    void testUpdateChannelBinarySwitchState() {
         JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"binarySwitchState\",\"on\":true}");
         getFixture().processUpdate("BinarySwitch", jsonObject);
         verify(getCallback()).stateUpdated(
@@ -123,7 +123,7 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testUpdateChannelMultiLevelSwitchState() {
+    void testUpdateChannelMultiLevelSwitchState() {
         JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"multiLevelSwitchState\",\"level\":16}");
         getFixture().processUpdate("MultiLevelSwitch", jsonObject);
         verify(getCallback()).stateUpdated(
@@ -131,10 +131,16 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testUpdateChannelHSBColorActuatorState() {
-        JsonElement jsonObject = JsonParser.parseString("{\"colorTemperatureRange\": {\n" + "        \"minCt\": 153,\n"
-                + "        \"maxCt\": 526\n" + "    },\n" + "    \"@type\": \"colorState\",\n"
-                + "    \"gamut\": \"LEDVANCE_GAMUT_A\",\n" + "    \"rgb\": -12427}");
+    void testUpdateChannelHSBColorActuatorState() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {"colorTemperatureRange": {
+                        "minCt": 153,
+                        "maxCt": 526
+                    },
+                    "@type": "colorState",
+                    "gamut": "LEDVANCE_GAMUT_A",
+                    "rgb": -12427}\
+                """);
         getFixture().processUpdate("HSBColorActuator", jsonObject);
         verify(getCallback()).stateUpdated(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_COLOR),
                 HSBType.fromRGB(255, 207, 117));

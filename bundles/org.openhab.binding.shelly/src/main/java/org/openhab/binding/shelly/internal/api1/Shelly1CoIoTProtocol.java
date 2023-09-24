@@ -207,11 +207,11 @@ public class Shelly1CoIoTProtocol {
             // event count
             updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(idx), getDecimal(count));
             logger.trace(
-                    "{}: Check button[{}] for event trigger (isButtonMode={}, isButton={}, hasBattery={}, serial={}, count={}, lastEventCount[{}]={}",
+                    "{}: Check button[{}] for event trigger (inButtonMode={}, isButton={}, hasBattery={}, serial={}, count={}, lastEventCount[{}]={}",
                     thingName, idx, profile.inButtonMode(idx), profile.isButton, profile.hasBattery, serial, count, idx,
                     lastEventCount[idx]);
-            if (profile.inButtonMode(idx) && ((profile.hasBattery && (count == 1))
-                    || ((lastEventCount[idx] != -1) && (count != lastEventCount[idx])))) {
+            if (profile.inButtonMode(idx) && ((profile.hasBattery && count == 1) || lastEventCount[idx] == -1
+                    || count != lastEventCount[idx])) {
                 if (!profile.isButton || (profile.isButton && (serial != 0x200))) { // skip duplicate on wake-up
                     logger.debug("{}: Trigger event {}", thingName, inputEvent[idx]);
                     thingHandler.triggerButton(group, idx, inputEvent[idx]);
@@ -263,9 +263,9 @@ public class Shelly1CoIoTProtocol {
                     // continue until we find the correct one
                     continue;
                 }
-                if (d.desc.equalsIgnoreCase("brightness")) {
+                if ("brightness".equalsIgnoreCase(d.desc)) {
                     brightness = update.value;
-                } else if (d.desc.equalsIgnoreCase("output") || d.desc.equalsIgnoreCase("state")) {
+                } else if ("output".equalsIgnoreCase(d.desc) || "state".equalsIgnoreCase(d.desc)) {
                     power = update.value;
                 }
             }
@@ -356,8 +356,8 @@ public class Shelly1CoIoTProtocol {
         int idx = 0;
         for (Map.Entry<String, CoIotDescrSen> se : sensorMap.entrySet()) {
             CoIotDescrSen sen = se.getValue();
-            if (sen.desc.equalsIgnoreCase("external_temperature") || sen.desc.equalsIgnoreCase("external temperature c")
-                    || (sen.desc.equalsIgnoreCase("extTemp") && !sen.unit.equalsIgnoreCase(SHELLY_TEMP_FAHRENHEIT))) {
+            if ("external_temperature".equalsIgnoreCase(sen.desc) || "external temperature c".equalsIgnoreCase(sen.desc)
+                    || ("extTemp".equalsIgnoreCase(sen.desc) && !sen.unit.equalsIgnoreCase(SHELLY_TEMP_FAHRENHEIT))) {
                 idx++; // iterate from temperature1..2..n
             }
             if (sen.id.equalsIgnoreCase(sensorId)) {

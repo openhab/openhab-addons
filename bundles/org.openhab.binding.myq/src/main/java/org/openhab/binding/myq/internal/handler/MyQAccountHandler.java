@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -162,23 +162,29 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         stopPolls();
         OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService != null) {
-            oAuthService.close();
+            oAuthService.removeAccessTokenRefreshListener(this);
+            oAuthFactory.ungetOAuthService(getThing().toString());
+            this.oAuthService = null;
         }
     }
 
     @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(getThing().toString());
+        super.handleRemoval();
+    }
+
+    @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MyQDiscoveryService.class);
+        return Set.of(MyQDiscoveryService.class);
     }
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         List<DeviceDTO> localDeviceCaches = devicesCache;
-        if (childHandler instanceof MyQDeviceHandler) {
-            MyQDeviceHandler handler = (MyQDeviceHandler) childHandler;
-            localDeviceCaches.stream()
-                    .filter(d -> ((MyQDeviceHandler) childHandler).getSerialNumber().equalsIgnoreCase(d.serialNumber))
-                    .findFirst().ifPresent(handler::handleDeviceUpdate);
+        if (childHandler instanceof MyQDeviceHandler deviceHandler) {
+            localDeviceCaches.stream().filter(d -> deviceHandler.getSerialNumber().equalsIgnoreCase(d.serialNumber))
+                    .findFirst().ifPresent(deviceHandler::handleDeviceUpdate);
         }
     }
 

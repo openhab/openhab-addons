@@ -22,6 +22,7 @@ import org.openhab.binding.mielecloud.internal.webservice.api.json.Device;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceIdentLabel;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DryingStep;
+import org.openhab.binding.mielecloud.internal.webservice.api.json.EcoFeedback;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Ident;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Light;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.PlateStep;
@@ -43,7 +44,7 @@ import org.openhab.binding.mielecloud.internal.webservice.api.json.VentilationSt
  * @author Björn Lange - Introduced null handling
  * @author Benjamin Bolte - Add pre-heat finished, plate step, door state, door alarm, info state channel and map signal
  *         flags from API
- * @author Björn Lange - Add elapsed time channel, dish warmer and robotic vacuum cleaner things
+ * @author Björn Lange - Add elapsed time channel, dish warmer and robotic vacuum cleaner things, eco feedback
  */
 @NonNullByDefault
 public class DeviceState {
@@ -180,7 +181,7 @@ public class DeviceState {
         Optional<Integer> targetTemperature = getTargetTemperature(0);
         Optional<Integer> currentTemperature = getTemperature(0);
 
-        if (!targetTemperature.isPresent() || !currentTemperature.isPresent()) {
+        if (targetTemperature.isEmpty() || currentTemperature.isEmpty()) {
             return Optional.empty();
         }
 
@@ -451,11 +452,41 @@ public class DeviceState {
         Optional<Boolean> doorState = getDoorState();
         Optional<Boolean> failure = device.flatMap(Device::getState).flatMap(State::getSignalFailure);
 
-        if (!doorState.isPresent() || !failure.isPresent()) {
+        if (doorState.isEmpty() || failure.isEmpty()) {
             return Optional.empty();
         }
 
         return Optional.of(doorState.get() && failure.get());
+    }
+
+    /**
+     * Gets the amount of water consumed since the currently running program started.
+     *
+     * @return The amount of water consumed since the currently running program started.
+     */
+    public Optional<Quantity> getCurrentWaterConsumption() {
+        if (deviceIsInOffState()) {
+            return Optional.empty();
+        }
+
+        return device.flatMap(Device::getState).flatMap(State::getEcoFeedback)
+                .flatMap(EcoFeedback::getCurrentWaterConsumption).flatMap(consumption -> consumption.getValue()
+                        .map(value -> new Quantity(value, consumption.getUnit().orElse(null))));
+    }
+
+    /**
+     * Gets the amount of energy consumed since the currently running program started.
+     *
+     * @return The amount of energy consumed since the currently running program started.
+     */
+    public Optional<Quantity> getCurrentEnergyConsumption() {
+        if (deviceIsInOffState()) {
+            return Optional.empty();
+        }
+
+        return device.flatMap(Device::getState).flatMap(State::getEcoFeedback)
+                .flatMap(EcoFeedback::getCurrentEnergyConsumption).flatMap(consumption -> consumption.getValue()
+                        .map(value -> new Quantity(value, consumption.getUnit().orElse(null))));
     }
 
     /**

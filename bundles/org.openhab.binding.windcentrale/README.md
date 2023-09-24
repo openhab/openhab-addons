@@ -1,14 +1,19 @@
 # Windcentrale Binding
 
-This Binding is used to display the details of a Windcentrale windmill.
+This Binding is used to display the details of Windcentrale windmills.
 
 ## Supported Things
 
-This Binding supports Windcentrale mill devices.
+The binding supports the following Windcentrale Things:
+
+| Thing Type | Description                               |
+|------------|-------------------------------------------|
+| account    | An account for using the Windcentrale API |
+| windmill   | Windcentrale Windmill                     |
 
 ## Discovery
 
-There is no discovery available for this binding.
+After creating an account Thing the Binding can discover windmills based on the participations linked to the account.
 
 ## Binding Configuration
 
@@ -16,62 +21,72 @@ No binding configuration required.
 
 ## Thing Configuration
 
-| Configuration Parameter | Required | Default | Description                                         |
-|-------------------------|----------|---------|-----------------------------------------------------|
-| millId                  | X        | 131     | Identifies the windmill (see table below)           |
-| wd                      |          | 1       | Number of wind shares ("Winddelen")                 |
-| refreshInterval         |          | 30      | Refresh interval for refreshing the data in seconds |
+### Account
 
-| millId | Windmill name     |
-|--------|-------------------|
-| 1      | De Grote Geert    |
-| 2      | De Jonge Held     |
-| 31     | Het Rode Hert     |
-| 41     | De Ranke Zwaan    |
-| 51     | De Witte Juffer   |
-| 111    | De Bonte Hen      |
-| 121    | De Trouwe Wachter |
-| 131    | De Blauwe Reiger  |
-| 141    | De Vier Winden    |
-| 201    | De Boerenzwaluw   |
+| Configuration Parameter | Required |
+|-------------------------|----------|
+| username                | X        |
+| password                | X        |
+
+### Windmill
+
+| Configuration Parameter | Required | Default          | Description                                         |
+|-------------------------|----------|------------------|-----------------------------------------------------|
+| name                    | X        | De Blauwe Reiger | Identifies the windmill (see names list below)      |
+| shares                  |          | 1                | Number of wind shares ("Winddelen")                 |
+| refreshInterval         |          | 30               | Refresh interval for refreshing the data in seconds |
+
+The following windmill names are supported:
+
+- De Blauwe Reiger
+- De Boerenzwaluw
+- De Bonte Hen
+- De Grote Geert
+- De Jonge Held
+- De Ranke Zwaan
+- De Trouwe Wachter
+- De Vier Winden
+- De Witte Juffer
+- Het Rode Hert
+- Het Vliegend Hert
 
 ## Channels
 
-| Channel Type ID | Item Type            | Description                         |
-|-----------------|----------------------|-------------------------------------|
-| kwh             | Number:Energy        | Current energy                      |
-| kwhForecast     | Number:Energy        | Energy forecast                     |
-| powerAbsTot     | Number:Power         | Total power                         |
-| powerAbsWd      | Number:Power         | Power provided for your wind shares |
-| powerRel        | Number:Dimensionless | Relative power                      |
-| runPercentage   | Number:Dimensionless | Run percentage this year            |
-| runTime         | Number:Time          | Run time this year                  |
-| timestamp       | DateTime             | Timestamp of the last update        |
-| windDirection   | String               | Current wind direction              |
-| windSpeed       | Number               | Measured current wind speed (Bft)   |
+| Channel ID     | Item Type            | Description                         |
+|----------------|----------------------|-------------------------------------|
+| energy-total   | Number:Energy        | Total energy this year              |
+| power-relative | Number:Dimensionless | Relative power                      |
+| power-shares   | Number:Power         | Power provided for your wind shares |
+| power-total    | Number:Power         | Total power                         |
+| run-percentage | Number:Dimensionless | Run percentage this year            |
+| run-time       | Number:Time          | Run time this year                  |
+| timestamp      | DateTime             | Timestamp of the last update        |
+| wind-direction | String               | Current wind direction              |
+| wind-speed     | Number               | Measured current wind speed (Bft)   |
 
 ## Example
 
 ### demo.things
 
-```
-Thing windcentrale:mill:geert  [ millId=1 ]
-Thing windcentrale:mill:reiger [ millId=131, wd=3, refreshInterval=60 ]
+```java
+Bridge windcentrale:account:demo-account [ username="johndoe@acme.com", password="Mf!BU45LTF6X2Cf36zxt" ] {
+    Thing windmill    de-grote-geert      [ name="De Grote Geert" ]
+    Thing windmill    de-blauwe-reiger    [ name="De Blauwe Reiger", shares=3, refreshInterval=60 ]
+}
 ```
 
 ### demo.items
 
-```
-Group                 gReiger                 "Windcentrale Reiger"              <wind>
+```java
+Group                 gReiger                "Windcentrale Reiger"
 
-Number                ReigerWindSpeed         "Wind speed [%d Bft]"              <wind>  (gReiger) { channel="windcentrale:mill:reiger:windSpeed" }
-String                ReigerWindDirection     "Wind direction [%s]"              <wind>  (gReiger) { channel="windcentrale:mill:reiger:windDirection" }
-Number:Power          ReigerPowerAbsTot       "Total mill power [%.1f %unit%]"   <wind>  (gReiger) { channel="windcentrale:mill:reiger:powerAbsTot" }
-Number:Power          ReigerPowerAbsWd        "Wind shares power [%.1f %unit%]"  <wind>  (gReiger) { channel="windcentrale:mill:reiger:powerAbsWd" }
-Number:Dimensionless  ReigerPowerRel          "Relative power [%.1f %unit%]"     <wind>  (gReiger) { channel="windcentrale:mill:reiger:powerRel" }
-Number:Energy         ReigerKwh               "Current energy [%.0f %unit%]"     <wind>  (gReiger) { channel="windcentrale:mill:reiger:kwh" }
-Number:Energy         ReigerKwhForecast       "Energy forecast [%.0f %unit%]"    <wind>  (gReiger) { channel="windcentrale:mill:reiger:kwhForecast" }
-Number:Dimensionless  ReigerRunPercentage     "Run percentage [%.1f %unit%]"     <wind>  (gReiger) { channel="windcentrale:mill:reiger:runPercentage" }
-Number:Time           ReigerRunTime           "Run time [%.0f %unit%]"           <wind>  (gReiger) { channel="windcentrale:mill:reiger:runTime" }
-DateTime              ReigerTimestamp         "Update timestamp [%1$ta %1$tR]"   <wind>  (gReiger) { channel="windcentrale:mill:reiger:timestamp" }
+Number                ReigerWindSpeed        "Wind speed [%d Bft]"                  (gReiger) { channel="windcentrale:windmill:demo-account:de-blauwe-reiger:wind-speed" }
+String                ReigerWindDirection    "Wind direction [%s]"                  (gReiger) { channel="windcentrale:windmill:demo-account:de-blauwe-reiger:wind-direction" }
+Number:Power          ReigerPowerTotal       "Total windmill power [%.1f %unit%]"   (gReiger) { channel="windcentrale:windmill:demo-account:de-blauwe-reiger:power-total" }
+Number:Power          ReigerPowerShares      "Wind shares power [%.1f %unit%]"      (gReiger) { channel="windcentrale:windmill:demo-account:de-blauwe-reiger:power-shares" }
+Number:Dimensionless  ReigerPowerRelative    "Relative power [%.1f %unit%]"         (gReiger) { channel="windcentrale:windmill:demo-account:de-blauwe-reiger:power-relative" }
+Number:Energy         ReigerEnergyTotal      "Total windmill energy [%.0f %unit%]"  (gReiger) { channel="windcentrale:windmill:demo-account:de-blauwe-reiger:energy-total" }
+Number:Dimensionless  ReigerRunPercentage    "Run percentage [%.1f %unit%]"         (gReiger) { channel="windcentrale:windmill:demo-account:de-blauwe-reiger:run-percentage" }
+Number:Time           ReigerRunTime          "Run time [%.0f %unit%]"               (gReiger) { channel="windcentrale:windmill:demo-account:de-blauwe-reiger:run-time" }
+DateTime              ReigerTimestamp        "Update timestamp [%1$ta %1$tR]"       (gReiger) { channel="windcentrale:windmill:demo-account:de-blauwe-reiger:timestamp" }
 ```

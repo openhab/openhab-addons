@@ -30,8 +30,6 @@ public class LifxSequenceNumberSupplier implements Supplier<Integer> {
 
     @Override
     public Integer get() {
-        return sequenceNumber.getAndUpdate((value) -> {
-            return (value + 1) % SEQUENCE_NUMBER_DIVISOR;
-        });
+        return sequenceNumber.getAndUpdate((value) -> (value + 1) % SEQUENCE_NUMBER_DIVISOR);
     }
 }

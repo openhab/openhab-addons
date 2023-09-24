@@ -244,11 +244,15 @@ public class AndroidDebugBridgeDevice {
 
     public boolean isScreenOn() throws InterruptedException, AndroidDebugBridgeDeviceException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
+        if (isAtLeastVersion(12)) {
+            String devicesResp = runAdbShell("getprop", "debug.tracing.screen_state");
+            return "2".equals(devicesResp.replace("\n", ""));
+        }
         String devicesResp = runAdbShell("dumpsys", "power", "|", "grep", "'Display Power'");
         if (devicesResp.contains("=")) {
             try {
                 var state = devicesResp.split("=")[1].trim();
-                return state.equals("ON");
+                return "ON".equals(state);
             } catch (NumberFormatException e) {
                 logger.debug("Unable to parse device screen state: {}", e.getMessage());
             }

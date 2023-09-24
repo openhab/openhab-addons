@@ -80,10 +80,7 @@ public class RadoneyeDiscoveryParticipant implements BluetoothDiscoveryParticipa
 
     private boolean isRadoneyeDevice(BluetoothDiscoveryDevice device) {
         String manufacturerMacId = device.getAddress().toString().toLowerCase().replace(":", "").substring(0, 6);
-        if (manufacturerMacId.equals(RADONEYE_BLUETOOTH_COMPANY_ID.toLowerCase())) {
-            return true;
-        }
-        return false;
+        return manufacturerMacId.equals(RADONEYE_BLUETOOTH_COMPANY_ID.toLowerCase());
     }
 
     private String getSerial(BluetoothDiscoveryDevice device) {
@@ -120,7 +117,6 @@ public class RadoneyeDiscoveryParticipant implements BluetoothDiscoveryParticipa
         Map<String, Object> properties = new HashMap<>();
         properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
         properties.put(Thing.PROPERTY_VENDOR, "RadonEye");
-        String name = device.getName();
         String serialNumber = device.getSerialNumber();
         String firmwareRevision = device.getFirmwareRevision();
         String model = device.getModel();

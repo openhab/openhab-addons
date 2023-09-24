@@ -27,7 +27,7 @@ import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
 @NonNullByDefault
 public final class KeypadConfigGrafikEye extends KeypadConfig {
 
-    private static enum Component implements KeypadComponent {
+    private enum Component implements KeypadComponent {
         BUTTON1(70, "button1", "Button 1", ComponentType.BUTTON), // Scene button 1
         BUTTON2(71, "button2", "Button 2", ComponentType.BUTTON), // Scene button 2
         BUTTON3(76, "button3", "Button 3", ComponentType.BUTTON), // Scene button 3

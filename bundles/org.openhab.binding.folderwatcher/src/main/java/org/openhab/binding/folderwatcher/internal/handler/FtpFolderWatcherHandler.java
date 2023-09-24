@@ -108,9 +108,11 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
         ScheduledFuture<?> initJob = this.initJob;
         if (executionJob != null) {
             executionJob.cancel(true);
+            this.executionJob = null;
         }
         if (initJob != null) {
             initJob.cancel(true);
+            this.initJob = null;
         }
         if (ftp.isConnected()) {
             try {
@@ -127,7 +129,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
         Instant dateNow = Instant.now();
         for (FTPFile file : ftpClient.listFiles(dirPath)) {
             String currentFileName = file.getName();
-            if (currentFileName.equals(".") || currentFileName.equals("..")) {
+            if (".".equals(currentFileName) || "..".equals(currentFileName)) {
                 continue;
             }
             String filePath = dirPath + "/" + currentFileName;

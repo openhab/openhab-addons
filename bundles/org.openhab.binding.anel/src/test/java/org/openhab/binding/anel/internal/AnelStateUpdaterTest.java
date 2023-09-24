@@ -135,8 +135,8 @@ public class AnelStateUpdaterTest implements IAnelTestStatus, IAnelConstants {
 
     private void assertTemperature(@Nullable State state, double value) {
         assertThat(state, isA(QuantityType.class));
-        if (state instanceof QuantityType<?>) {
-            assertThat(((QuantityType<?>) state).doubleValue(), closeTo(value, 0.0001d));
+        if (state instanceof QuantityType<?> temperature) {
+            assertThat(temperature.doubleValue(), closeTo(value, 0.0001d));
         }
     }
 }

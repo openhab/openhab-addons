@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>MyNice Binding</name>
 	<description>This binding lets you connect to your IT4Wifi Nice device.</description>
+	<connection>local</connection>
 
 </addon:addon>

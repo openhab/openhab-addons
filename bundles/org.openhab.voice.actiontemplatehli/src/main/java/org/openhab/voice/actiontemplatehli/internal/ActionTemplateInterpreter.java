@@ -465,7 +465,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         String itemLabel = targetItem.getLabel();
         String groupLabel = null;
         Item finalTargetItem = targetItem;
-        if (finalTargetItem.getType().equals("Group") && memberTargets != null) {
+        if ("Group".equals(finalTargetItem.getType()) && memberTargets != null) {
             if (memberTargets.mergeState && memberTargets.itemName.isEmpty() && !memberTargets.itemType.isEmpty()) {
                 // handle states that can be merged
                 switch (memberTargets.itemType) {
@@ -708,9 +708,9 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                     .filter(Objects::nonNull).toArray(String[]::new);
             itemOptionPlaceholder.posStaticValues = cmdDescription.getCommandOptions().stream()
                     .collect(Collectors.toMap(
-                            option -> option.getLabel() != null ? option.getLabel().replaceAll(" ", "__")
-                                    : option.getCommand().replaceAll(" ", "__"),
-                            option -> option.getCommand().replaceAll(" ", "__")));
+                            option -> option.getLabel() != null ? option.getLabel().replace(" ", "__")
+                                    : option.getCommand().replace(" ", "__"),
+                            option -> option.getCommand().replace(" ", "__")));
             return itemOptionPlaceholder;
         } else if (stateDescription != null) {
             itemOptionPlaceholder.nerStaticValues = stateDescription.getOptions().stream()
@@ -718,15 +718,15 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                     .filter(Objects::nonNull).toArray(String[]::new);
             if (isRead) {
                 itemOptionPlaceholder.posStaticValues = stateDescription.getOptions().stream()
-                        .collect(Collectors.toMap(option -> option.getValue().replaceAll(" ", "__"),
-                                option -> option.getLabel() != null ? option.getLabel().replaceAll(" ", "__")
-                                        : option.getValue().replaceAll(" ", "__")));
+                        .collect(Collectors.toMap(option -> option.getValue().replace(" ", "__"),
+                                option -> option.getLabel() != null ? option.getLabel().replace(" ", "__")
+                                        : option.getValue().replace(" ", "__")));
             } else {
                 itemOptionPlaceholder.posStaticValues = stateDescription.getOptions().stream()
                         .collect(Collectors.toMap(
-                                option -> option.getLabel() != null ? option.getLabel().replaceAll(" ", "__")
-                                        : option.getValue().replaceAll(" ", "__"),
-                                option -> option.getValue().replaceAll(" ", "__")));
+                                option -> option.getLabel() != null ? option.getLabel().replace(" ", "__")
+                                        : option.getValue().replace(" ", "__"),
+                                option -> option.getValue().replace(" ", "__")));
             }
             return itemOptionPlaceholder;
         }
@@ -1022,7 +1022,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         if (tag == null) {
             return "";
         }
-        return tag.replaceAll("__", " ");
+        return tag.replace("__", " ");
     }
 
     private Map<String[], Item> getItemsByLabelTokensMap() {

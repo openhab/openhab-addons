@@ -24,9 +24,14 @@
 				<label>Address</label>
 				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
 			</parameter>
+			<parameter name="fwVersion" type="integer" min="1" max="2">
+				<label>Firmware Version</label>
+				<description>The major version of the firmware on the device.</description>
+				<default>1</default>
+			</parameter>
 			<parameter name="refreshInterval" type="integer" min="10">
 				<label>Refresh Interval</label>
-				<description>States how often a refresh shall occur in seconds. This could have impact to battery lifetime</description>
+				<description>States how often a refresh shall occur in seconds.</description>
 				<default>300</default>
 			</parameter>
 		</config-description>

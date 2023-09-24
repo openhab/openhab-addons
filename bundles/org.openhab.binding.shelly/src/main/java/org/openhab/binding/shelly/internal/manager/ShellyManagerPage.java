@@ -164,7 +164,7 @@ public class ShellyManagerPage {
         }
 
         String html = "";
-        String file = TEMPLATE_PATH + template;
+        String file = BUNDLE_RESOURCE_SNIPLETS + "/" + template;
         logger.debug("Read HTML from {}", file);
         ClassLoader cl = ShellyManagerInterface.class.getClassLoader();
         if (cl != null) {
@@ -338,15 +338,14 @@ public class ShellyManagerPage {
         State state = thingHandler.getChannelValue(group, attribute);
         String value = "";
         if (state != UnDefType.NULL) {
-            if (state instanceof DateTimeType) {
-                DateTimeType dt = (DateTimeType) state;
+            if (state instanceof DateTimeType dateTimeState) {
                 switch (attribute) {
                     case ATTRIBUTE_LAST_ALARM:
-                        value = dt.format(null).replace('T', ' ').replace('-', '/');
+                        value = dateTimeState.format(null).replace('T', ' ').replace('-', '/');
                         break;
                     default:
-                        value = getTimestamp(dt);
-                        value = dt.format(null).replace('T', ' ').replace('-', '/');
+                        value = getTimestamp(dateTimeState);
+                        value = dateTimeState.format(null).replace('T', ' ').replace('-', '/');
                 }
             } else {
                 value = state.toString();

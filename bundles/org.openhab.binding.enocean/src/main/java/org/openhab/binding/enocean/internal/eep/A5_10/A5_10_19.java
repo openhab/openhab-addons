@@ -12,15 +12,22 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_10;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-public class A5_10_19 extends A5_10 {
+@NonNullByDefault
+public class A5_10_19 extends A5_10_18 {
 
     public A5_10_19(ERP1Message packet) {
         super(packet);
+    }
+
+    @Override
+    protected double getHumidityValue() {
+        return getDB3Value();
     }
 }

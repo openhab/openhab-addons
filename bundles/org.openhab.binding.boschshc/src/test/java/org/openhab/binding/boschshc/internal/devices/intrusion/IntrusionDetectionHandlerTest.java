@@ -41,7 +41,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<IntrusionDetectionHandler> {
+class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<IntrusionDetectionHandler> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<ArmActionRequest> armActionRequestCaptor;
 
@@ -56,7 +56,7 @@ public class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<I
     }
 
     @Test
-    public void testHandleCommandArmAction() throws InterruptedException, TimeoutException, ExecutionException {
+    void testHandleCommandArmAction() throws InterruptedException, TimeoutException, ExecutionException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ARM_ACTION),
                 new StringType("0"));
         verify(getBridgeHandler()).postAction(eq("intrusion/actions/arm"), armActionRequestCaptor.capture());
@@ -65,33 +65,52 @@ public class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<I
     }
 
     @Test
-    public void testHandleCommandDisarmAction() throws InterruptedException, TimeoutException, ExecutionException {
+    void testHandleCommandDisarmAction() throws InterruptedException, TimeoutException, ExecutionException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISARM_ACTION),
                 OnOffType.ON);
         verify(getBridgeHandler()).postAction("intrusion/actions/disarm");
     }
 
     @Test
-    public void testHandleCommandMuteAction() throws InterruptedException, TimeoutException, ExecutionException {
+    void testHandleCommandMuteAction() throws InterruptedException, TimeoutException, ExecutionException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_MUTE_ACTION),
                 OnOffType.ON);
         verify(getBridgeHandler()).postAction("intrusion/actions/mute");
     }
 
     @Test
-    public void testUpdateChannelsIntrusionDetectionSystemState() {
-        JsonElement jsonObject = JsonParser.parseString("{\n" + "     \"@type\": \"systemState\",\n"
-                + "     \"systemAvailability\": {\n" + "         \"@type\": \"systemAvailabilityState\",\n"
-                + "         \"available\": true,\n" + "         \"deleted\": false\n" + "     },\n"
-                + "     \"armingState\": {\n" + "         \"@type\": \"armingState\",\n"
-                + "         \"state\": \"SYSTEM_DISARMED\",\n" + "         \"deleted\": false\n" + "     },\n"
-                + "     \"alarmState\": {\n" + "         \"@type\": \"alarmState\",\n"
-                + "         \"value\": \"ALARM_OFF\",\n" + "         \"incidents\": [],\n"
-                + "         \"deleted\": false\n" + "     },\n" + "     \"activeConfigurationProfile\": {\n"
-                + "         \"@type\": \"activeConfigurationProfile\",\n" + "         \"deleted\": false\n"
-                + "     },\n" + "     \"securityGapState\": {\n" + "         \"@type\": \"securityGapState\",\n"
-                + "         \"securityGaps\": [],\n" + "         \"deleted\": false\n" + "     },\n"
-                + "     \"deleted\": false\n" + " }\n");
+    void testUpdateChannelsIntrusionDetectionSystemState() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                     "@type": "systemState",
+                     "systemAvailability": {
+                         "@type": "systemAvailabilityState",
+                         "available": true,
+                         "deleted": false
+                     },
+                     "armingState": {
+                         "@type": "armingState",
+                         "state": "SYSTEM_DISARMED",
+                         "deleted": false
+                     },
+                     "alarmState": {
+                         "@type": "alarmState",
+                         "value": "ALARM_OFF",
+                         "incidents": [],
+                         "deleted": false
+                     },
+                     "activeConfigurationProfile": {
+                         "@type": "activeConfigurationProfile",
+                         "deleted": false
+                     },
+                     "securityGapState": {
+                         "@type": "securityGapState",
+                         "securityGaps": [],
+                         "deleted": false
+                     },
+                     "deleted": false
+                 }
+                """);
         getFixture().processUpdate(BoschSHCBindingConstants.SERVICE_INTRUSION_DETECTION, jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SYSTEM_AVAILABILITY),
@@ -108,16 +127,36 @@ public class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<I
     }
 
     @Test
-    public void testUpdateChannelsIntrusionDetectionControlState() {
-        JsonElement jsonObject = JsonParser.parseString("{\n" + "   \"@type\": \"intrusionDetectionControlState\",\n"
-                + "   \"activeProfile\": \"0\",\n" + "   \"alarmActivationDelayTime\": 30,\n" + "   \"actuators\": [\n"
-                + "     {\n" + "       \"readonly\": false,\n" + "       \"active\": true,\n"
-                + "       \"id\": \"intrusion:video\"\n" + "     },\n" + "     {\n" + "       \"readonly\": false,\n"
-                + "       \"active\": false,\n" + "       \"id\": \"intrusion:siren\"\n" + "     }\n" + "   ],\n"
-                + "   \"remainingTimeUntilArmed\": 29559,\n" + "   \"armActivationDelayTime\": 30,\n"
-                + "   \"triggers\": [\n" + "     {\n" + "       \"readonly\": false,\n" + "       \"active\": true,\n"
-                + "       \"id\": \"hdm:ZigBee:000d6f0012f02378\"\n" + "     }\n" + "   ],\n"
-                + "   \"value\": \"SYSTEM_ARMING\"\n" + " }");
+    void testUpdateChannelsIntrusionDetectionControlState() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "intrusionDetectionControlState",
+                   "activeProfile": "0",
+                   "alarmActivationDelayTime": 30,
+                   "actuators": [
+                     {
+                       "readonly": false,
+                       "active": true,
+                       "id": "intrusion:video"
+                     },
+                     {
+                       "readonly": false,
+                       "active": false,
+                       "id": "intrusion:siren"
+                     }
+                   ],
+                   "remainingTimeUntilArmed": 29559,
+                   "armActivationDelayTime": 30,
+                   "triggers": [
+                     {
+                       "readonly": false,
+                       "active": true,
+                       "id": "hdm:ZigBee:000d6f0012f02378"
+                     }
+                   ],
+                   "value": "SYSTEM_ARMING"
+                 }\
+                """);
         getFixture().processUpdate("IntrusionDetectionControl", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ARMING_STATE),
@@ -125,12 +164,23 @@ public class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<I
     }
 
     @Test
-    public void testUpdateChannelsSurveillanceAlarmState() {
-        JsonElement jsonObject = JsonParser.parseString("{\n" + "   \"@type\": \"surveillanceAlarmState\",\n"
-                + "   \"incidents\": [\n" + "     {\n" + "       \"triggerName\": \"Motion Detector\",\n"
-                + "       \"locationId\": \"hz_5\",\n" + "       \"location\": \"Living Room\",\n"
-                + "       \"id\": \"hdm:ZigBee:000d6f0012f02342\",\n" + "       \"time\": 1652615755336,\n"
-                + "       \"type\": \"INTRUSION\"\n" + "     }\n" + "   ],\n" + "   \"value\": \"ALARM_ON\"\n" + " }");
+    void testUpdateChannelsSurveillanceAlarmState() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "surveillanceAlarmState",
+                   "incidents": [
+                     {
+                       "triggerName": "Motion Detector",
+                       "locationId": "hz_5",
+                       "location": "Living Room",
+                       "id": "hdm:ZigBee:000d6f0012f02342",
+                       "time": 1652615755336,
+                       "type": "INTRUSION"
+                     }
+                   ],
+                   "value": "ALARM_ON"
+                 }\
+                """);
         getFixture().processUpdate("SurveillanceAlarm", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ALARM_STATE),

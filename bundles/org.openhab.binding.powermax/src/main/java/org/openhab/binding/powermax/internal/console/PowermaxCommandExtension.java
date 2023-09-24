@@ -65,8 +65,8 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension im
             PowermaxBridgeHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof PowermaxBridgeHandler) {
-                    handler = (PowermaxBridgeHandler) thingHandler;
+                if (thingHandler instanceof PowermaxBridgeHandler bridgeHandler) {
+                    handler = bridgeHandler;
                 }
             }
             if (thing == null) {
@@ -126,8 +126,8 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension im
             return new StringsCompleter(thingRegistry.getAll().stream()
                     .filter(t -> PowermaxBindingConstants.BRIDGE_TYPE_SERIAL.equals(t.getThingTypeUID())
                             || PowermaxBindingConstants.BRIDGE_TYPE_IP.equals(t.getThingTypeUID()))
-                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
-                            cursorArgumentIndex, cursorPosition, candidates);
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true)
+                    .complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
             Thing thing = getThing(args[0]);
             if (thing != null && (PowermaxBindingConstants.BRIDGE_TYPE_SERIAL.equals(thing.getThingTypeUID())

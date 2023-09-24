@@ -62,8 +62,8 @@ public class FreeboxCommandExtension extends AbstractConsoleCommandExtension imp
             FreeboxHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof FreeboxHandler) {
-                    handler = (FreeboxHandler) thingHandler;
+                if (thingHandler instanceof FreeboxHandler freeboxHandler) {
+                    handler = freeboxHandler;
                 }
             }
             if (thing == null) {
@@ -106,8 +106,8 @@ public class FreeboxCommandExtension extends AbstractConsoleCommandExtension imp
         if (cursorArgumentIndex <= 0) {
             return new StringsCompleter(thingRegistry.getAll().stream()
                     .filter(t -> FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER.equals(t.getThingTypeUID()))
-                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
-                            cursorArgumentIndex, cursorPosition, candidates);
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true)
+                    .complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
             Thing thing = getThing(args[0]);
             if (thing != null && FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER.equals(thing.getThingTypeUID())) {

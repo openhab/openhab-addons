@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -569,27 +570,31 @@ public class VizioHandler extends BaseThingHandler {
     }
 
     // The remaining methods are used by the console when obtaining the auth token from the TV.
+    public int startPairing(String deviceName) throws VizioException {
+        Random rng = new Random();
+        pairingDeviceId = rng.nextInt(100000);
+
+        pairingToken = communicator.startPairing(deviceName, pairingDeviceId).getItem().getPairingReqToken();
+
+        return pairingToken;
+    }
+
+    public String submitPairingCode(String pairingCode) throws IllegalStateException, VizioException {
+        if (pairingDeviceId < 0 || pairingToken < 0) {
+            throw new IllegalStateException();
+        }
+
+        return communicator.submitPairingCode(pairingDeviceId, pairingCode, pairingToken).getItem().getAuthToken();
+    }
+
     public void saveAuthToken(String authToken) {
+        pairingDeviceId = -1;
+        pairingToken = -1;
+
         // Store the auth token in the configuration and restart the thing
         Configuration configuration = this.getConfig();
         configuration.put(PROPERTY_AUTH_TOKEN, authToken);
         this.updateConfiguration(configuration);
         this.thingUpdated(this.getThing());
-    }
-
-    public int getPairingDeviceId() {
-        return pairingDeviceId;
-    }
-
-    public void setPairingDeviceId(int pairingDeviceId) {
-        this.pairingDeviceId = pairingDeviceId;
-    }
-
-    public int getPairingToken() {
-        return pairingToken;
-    }
-
-    public void setPairingToken(int pairingToken) {
-        this.pairingToken = pairingToken;
     }
 }

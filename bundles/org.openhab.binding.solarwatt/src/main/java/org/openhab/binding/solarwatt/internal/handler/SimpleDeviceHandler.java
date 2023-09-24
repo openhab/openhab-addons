@@ -212,8 +212,8 @@ public class SimpleDeviceHandler extends BaseThingHandler {
         Bridge bridge = this.getBridge();
         if (bridge != null) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof EnergyManagerHandler) {
-                return (EnergyManagerHandler) bridgeHandler;
+            if (bridgeHandler instanceof EnergyManagerHandler energyManagerHandler) {
+                return energyManagerHandler;
             } else {
                 // happens while dynamically reloading the binding
                 this.logger.warn("BridgeHandler is not implementing EnergyManagerHandler {}", bridgeHandler);

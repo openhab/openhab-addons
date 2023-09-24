@@ -111,19 +111,20 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         this.eventListener = eventListener;
         this.scheduler = scheduler;
 
+        String name = ThingWebClientUtil.buildWebClientConsumerName(uid, null);
+        httpClient = httpClientFactory.createHttpClient(name);
+        httpClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
+        httpClient.setIdleTimeout(httpClient.getConnectTimeout());
+
+        name = ThingWebClientUtil.buildWebClientConsumerName(uid, "ws-");
+        webSocketClient = webSocketFactory.createWebSocketClient(name);
+        webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
+        webSocketClient.setStopTimeout(3000);
+        webSocketClient.setMaxIdleTimeout(150000);
+
         logger.debug("Starting GardenaSmart");
         try {
-            String name = ThingWebClientUtil.buildWebClientConsumerName(uid, null);
-            httpClient = httpClientFactory.createHttpClient(name);
-            httpClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
-            httpClient.setIdleTimeout(httpClient.getConnectTimeout());
             httpClient.start();
-
-            name = ThingWebClientUtil.buildWebClientConsumerName(uid, "ws-");
-            webSocketClient = webSocketFactory.createWebSocketClient(name);
-            webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
-            webSocketClient.setStopTimeout(3000);
-            webSocketClient.setMaxIdleTimeout(150000);
             webSocketClient.start();
 
             // initially load access token
@@ -198,8 +199,8 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             AbstractTypedContentProvider contentProvider = null;
             String contentType = "application/vnd.api+json";
             if (content != null) {
-                if (content instanceof Fields) {
-                    contentProvider = new FormContentProvider((Fields) content);
+                if (content instanceof Fields contentAsFields) {
+                    contentProvider = new FormContentProvider(contentAsFields);
                     contentType = "application/x-www-form-urlencoded";
                 } else {
                     contentProvider = new StringContentProvider(gson.toJson(content));

@@ -102,13 +102,17 @@ in case of gateway, instead of defining it as a Thing, use Bridge
 
 `Bridge miio:gateway:lumigateway "Mi Smarter Gateway" [ host="10.10.x.x", token="put here your token", deviceId="326xxxx", model="lumi.gateway.mieu01", communication="direct", cloudServer="de" ]`
 
-# Advanced: Unsupported devices
+# Advanced: Getting unsupported devices to work with the binding
 
 Newer devices may not yet be supported.
 However, many devices share large similarities with existing devices.
 The binding allows to try/test if your new device is working with database files of older devices as well.
 
-There are 2 ways to get unsupported devices working, by overriding the model with the model of a supported item or by test all known properties to see which are supported by your device.
+There are 3 ways to get unsupported devices working:
+
+- by overriding the model with the model of a similar supported device. E.g. this works great for roborock vacuum devices and yeelight devices). See [Substitute model for unsupported devices](#substitute-model-for-unsupported-devices)
+- by switching on the `(experimental) Create channels for new/unsupported devices (MIOT protocol)` channel, this works for most newer devices. See [Create support for new devices based on online published spec database](#create-support-for-new-devices-based-on-online-published-spec-database)
+- by switching on the `(experimental) Create channels / test properties for unsupported devices (legacy protocol)` channel. This works for older / legacy devices. It test all known properties to see which are supported by your device. See [Supported property test for unsupported devices](#supported-property-test-for-unsupported-devices)
 
 ## Substitute model for unsupported devices
 
@@ -116,7 +120,18 @@ Replace the model with the model which is already supported.
 For this, first remove your unsupported thing. Manually add a miio:basic thing.
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
-Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
+Look at the openHAB forum, or the openHAB GitHub repository or this readme for the modelId of similar devices.
+
+## Create support for new devices based on online published spec database
+
+The unsupported device has a `(experimental) Create channels for new/unsupported devices (MIOT protocol)` channel. When switching on, it will try to build support based on the published spec from [https://home.miot-spec.com/](https://home.miot-spec.com/).
+It will test all properties are in the spec for your device, which may take few minutes.
+A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
+The experimental database file is saved to the conf/misc/miio folder (see below chapter).
+The thing will go offline and will come back online as basic device, supporting the found channels.
+If this does not happen automatically, restart the binding or restart openHAB in order to have the new database file picked up.
+
+Please validate and feedback if all channels and actions are working, and share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
 
 ## Supported property test for unsupported devices
 
@@ -191,7 +206,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 340 different models.
+Currently the miio binding supports more than 360 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -363,8 +378,19 @@ Currently the miio binding supports more than 340 different models.
 | Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#roborock-vacuum-a38) | Yes          |            |
 | Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#roborock-vacuum-a40) | Yes          |            |
 | Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#roborock-vacuum-a46) | Yes          |            |
+| Roborock S8                        | miio:vacuum      | [roborock.vacuum.a51](#roborock-vacuum-a51) | Yes          |            |
 | Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#roborock-vacuum-a52) | Yes          |            |
 | Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-a62) | Yes          |            |
+| Roborock G10S Pure                 | miio:vacuum      | [roborock.vacuum.a64](#roborock-vacuum-a64) | Yes          |            |
+| Roborock S7 Max Ultra              | miio:vacuum      | [roborock.vacuum.a65](#roborock-vacuum-a65) | Yes          |            |
+| Roborock G10 Plus                  | miio:vacuum      | [roborock.vacuum.a66](#roborock-vacuum-a66) | Yes          |            |
+| Roborock G20                       | miio:vacuum      | [roborock.vacuum.a69](#roborock-vacuum-a69) | Yes          |            |
+| Roborock S8 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a70](#roborock-vacuum-a70) | Yes          |            |
+| Roborock Q5 Pro                    | miio:vacuum      | [roborock.vacuum.a72](#roborock-vacuum-a72) | Yes          |            |
+| Roborock Q8 Max                    | miio:vacuum      | [roborock.vacuum.a73](#roborock-vacuum-a73) | Yes          |            |
+| Roborock P10                       | miio:vacuum      | [roborock.vacuum.a74](#roborock-vacuum-a74) | Yes          |            |
+| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a75](#roborock-vacuum-a75) | Yes          |            |
+| Roborock G10S Auto                 | miio:vacuum      | [roborock.vacuum.a76](#roborock-vacuum-a76) | Yes          |            |
 | Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes          |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No           |            |
 | Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes          |            |

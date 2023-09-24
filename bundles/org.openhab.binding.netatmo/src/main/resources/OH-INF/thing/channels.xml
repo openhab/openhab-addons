@@ -18,15 +18,18 @@
 	</channel-type>
 
 	<channel-type id="siren-status">
-		<item-type>String</item-type>
-		<label>Status</label>
+		<item-type>Switch</item-type>
+		<label>Siren</label>
 		<description>Status of the siren</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="no_sound">Silent</option>
-				<option value="sound">Alarm</option>
-			</options>
-		</state>
+		<category>Soundvolume</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="siren-status-rw">
+		<item-type>Switch</item-type>
+		<label>Siren</label>
+		<description>Status of the siren</description>
+		<category>Soundvolume</category>
 	</channel-type>
 
 	<channel-type id="window-open">
@@ -56,19 +59,6 @@
 		<label>Heating Status</label>
 		<description>Is the furnace currently heating?</description>
 		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="camera-event">
-		<kind>trigger</kind>
-		<label>Camera Event</label>
-		<event>
-			<options>
-				<option value="ANIMAL"/>
-				<option value="HUMAN"/>
-				<option value="MOVEMENT"/>
-				<option value="VEHICLE"/>
-			</options>
-		</event>
 	</channel-type>
 
 	<channel-type id="battery-status">
@@ -417,6 +407,8 @@
 				<option value="BATTERY_VERY_LOW">Battery very low</option>
 				<option value="SMOKE_CLEARED">Smoke cleared</option>
 				<option value="SMOKE_DETECTED">Smoke detected</option>
+				<option value="HUSH_ACTIVATED">Smoke detection activated</option>
+				<option value="HUSH_DEACTIVATED">Smoke detection deactivated</option>
 				<option value="WIFI_STATUS_OK">Wi-Fi status ok</option>
 				<option value="WIFI_STATUS_ERROR">Wi-Fi status error</option>
 				<option value="CO_OK">Carbon Monoxide OK</option>

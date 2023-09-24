@@ -17,6 +17,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.TimeZone;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
@@ -27,8 +29,10 @@ import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.ImageItem;
 import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
@@ -37,10 +41,14 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,18 +76,18 @@ public class InfluxDBStateConvertUtils {
             value = state.toString();
         } else if (state instanceof PointType) {
             value = state.toString();
-        } else if (state instanceof DecimalType) {
-            value = ((DecimalType) state).toBigDecimal();
-        } else if (state instanceof QuantityType<?>) {
-            value = ((QuantityType<?>) state).toBigDecimal();
+        } else if (state instanceof DecimalType type) {
+            value = type.toBigDecimal();
+        } else if (state instanceof QuantityType<?> type) {
+            value = type.toBigDecimal();
         } else if (state instanceof OnOffType) {
             value = state == OnOffType.ON ? DIGITAL_VALUE_ON : DIGITAL_VALUE_OFF;
         } else if (state instanceof OpenClosedType) {
             value = state == OpenClosedType.OPEN ? DIGITAL_VALUE_ON : DIGITAL_VALUE_OFF;
-        } else if (state instanceof DateTimeType) {
-            value = ((DateTimeType) state).getZonedDateTime().toInstant().toEpochMilli();
+        } else if (state instanceof DateTimeType type) {
+            value = type.getZonedDateTime().toInstant().toEpochMilli();
         } else {
-            value = state.toString();
+            value = state.toFullString();
         }
         return value;
     }
@@ -109,15 +117,20 @@ public class InfluxDBStateConvertUtils {
 
         @Nullable
         Item item = itemToSetState;
-        if (item instanceof GroupItem) {
-            item = ((GroupItem) item).getBaseItem();
+        if (item instanceof GroupItem groupItem) {
+            item = groupItem.getBaseItem();
         }
         if (item instanceof ColorItem) {
             return new HSBType(valueStr);
         } else if (item instanceof LocationItem) {
             return new PointType(valueStr);
-        } else if (item instanceof NumberItem) {
-            return new DecimalType(valueStr);
+        } else if (item instanceof NumberItem numberItem) {
+            Unit<?> unit = numberItem.getUnit();
+            if (unit == null) {
+                return new DecimalType(valueStr);
+            } else {
+                return new QuantityType<>(new BigDecimal(valueStr), unit);
+            }
         } else if (item instanceof DimmerItem) {
             return new PercentType(valueStr);
         } else if (item instanceof SwitchItem) {
@@ -130,14 +143,26 @@ public class InfluxDBStateConvertUtils {
             Instant i = Instant.ofEpochMilli(new BigDecimal(valueStr).longValue());
             ZonedDateTime z = ZonedDateTime.ofInstant(i, TimeZone.getDefault().toZoneId());
             return new DateTimeType(z);
+        } else if (item instanceof PlayerItem) {
+            try {
+                return PlayPauseType.valueOf(valueStr);
+            } catch (IllegalArgumentException ignored) {
+            }
+            try {
+                return RewindFastforwardType.valueOf(valueStr);
+            } catch (IllegalArgumentException ignored) {
+            }
+        } else if (item instanceof ImageItem) {
+            return RawType.valueOf(valueStr);
         } else {
             return new StringType(valueStr);
         }
+        return UnDefType.UNDEF;
     }
 
     private static boolean toBoolean(@Nullable Object object) {
-        if (object instanceof Boolean) {
-            return (Boolean) object;
+        if (object instanceof Boolean boolean1) {
+            return boolean1;
         } else if (object != null) {
             if ("1".equals(object) || "1.0".equals(object)) {
                 return true;

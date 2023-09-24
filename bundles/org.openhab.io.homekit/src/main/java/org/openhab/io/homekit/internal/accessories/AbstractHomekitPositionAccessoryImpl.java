@@ -16,7 +16,6 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.POSITION_STATE;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_POSITION;
 
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,11 +67,7 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
                 false);
         closedPosition = inverted ? 0 : 100;
         openPosition = inverted ? 100 : 0;
-        positionStateMapping = new EnumMap<>(PositionStateEnum.class);
-        positionStateMapping.put(PositionStateEnum.DECREASING, "DECREASING");
-        positionStateMapping.put(PositionStateEnum.INCREASING, "INCREASING");
-        positionStateMapping.put(PositionStateEnum.STOPPED, "STOPPED");
-        updateMapping(POSITION_STATE, positionStateMapping);
+        positionStateMapping = createMapping(POSITION_STATE, PositionStateEnum.class);
     }
 
     public CompletableFuture<Integer> getCurrentPosition() {
@@ -92,20 +87,20 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         getCharacteristic(TARGET_POSITION).ifPresentOrElse(taggedItem -> {
             final Item item = taggedItem.getItem();
             final int targetPosition = convertPosition(value, openPosition);
-            if (item instanceof RollershutterItem) {
+            if (item instanceof RollershutterItem itemAsRollerShutterItem) {
                 // HomeKit home app never sends STOP. we emulate stop if we receive 100% or 0% while the blind is moving
                 if (emulateState && (targetPosition == 100 && emulatedState == PositionStateEnum.DECREASING)
                         || ((targetPosition == 0 && emulatedState == PositionStateEnum.INCREASING))) {
                     if (emulateStopSameDirection) {
                         // some blinds devices do not support "STOP" but would stop if receive UP/DOWN while moving
-                        ((RollershutterItem) item)
+                        itemAsRollerShutterItem
                                 .send(emulatedState == PositionStateEnum.INCREASING ? UpDownType.UP : UpDownType.DOWN);
                     } else {
-                        ((RollershutterItem) item).send(StopMoveType.STOP);
+                        itemAsRollerShutterItem.send(StopMoveType.STOP);
                     }
                     emulatedState = PositionStateEnum.STOPPED;
                 } else {
-                    ((RollershutterItem) item).send(new PercentType(targetPosition));
+                    itemAsRollerShutterItem.send(new PercentType(targetPosition));
                     if (emulateState) {
                         @Nullable
                         PercentType currentPosition = item.getStateAs(PercentType.class);
@@ -115,16 +110,19 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
                                         : PositionStateEnum.DECREASING;
                     }
                 }
-            } else if (item instanceof DimmerItem) {
-                ((DimmerItem) item).send(new PercentType(targetPosition));
-            } else if (item instanceof NumberItem) {
-                ((NumberItem) item).send(new DecimalType(targetPosition));
-            } else if (item instanceof GroupItem && ((GroupItem) item).getBaseItem() instanceof RollershutterItem) {
-                ((GroupItem) item).send(new PercentType(targetPosition));
-            } else if (item instanceof GroupItem && ((GroupItem) item).getBaseItem() instanceof DimmerItem) {
-                ((GroupItem) item).send(new PercentType(targetPosition));
-            } else if (item instanceof GroupItem && ((GroupItem) item).getBaseItem() instanceof NumberItem) {
-                ((GroupItem) item).send(new DecimalType(targetPosition));
+            } else if (item instanceof DimmerItem itemAsDimmerItem) {
+                itemAsDimmerItem.send(new PercentType(targetPosition));
+            } else if (item instanceof NumberItem itemAsNumberItem) {
+                itemAsNumberItem.send(new DecimalType(targetPosition));
+            } else if (item instanceof GroupItem itemAsGroupItem
+                    && itemAsGroupItem.getBaseItem() instanceof RollershutterItem) {
+                itemAsGroupItem.send(new PercentType(targetPosition));
+            } else if (item instanceof GroupItem itemAsGroupItem
+                    && itemAsGroupItem.getBaseItem() instanceof DimmerItem) {
+                itemAsGroupItem.send(new PercentType(targetPosition));
+            } else if (item instanceof GroupItem itemAsGroupItem
+                    && itemAsGroupItem.getBaseItem() instanceof NumberItem) {
+                itemAsGroupItem.send(new DecimalType(targetPosition));
             } else {
                 logger.warn(
                         "Unsupported item type for characteristic {} at accessory {}. Expected Rollershutter, Dimmer or Number item, got {}",

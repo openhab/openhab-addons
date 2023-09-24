@@ -65,8 +65,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension imple
             LinkyHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof LinkyHandler) {
-                    handler = (LinkyHandler) thingHandler;
+                if (thingHandler instanceof LinkyHandler linkyHandler) {
+                    handler = linkyHandler;
                 }
             }
             if (thing == null) {
@@ -140,8 +140,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension imple
         if (cursorArgumentIndex <= 0) {
             return new StringsCompleter(thingRegistry.getAll().stream()
                     .filter(t -> LinkyBindingConstants.THING_TYPE_LINKY.equals(t.getThingTypeUID()))
-                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
-                            cursorArgumentIndex, cursorPosition, candidates);
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true)
+                    .complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
             Thing thing = getThing(args[0]);
             if (thing != null && LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {

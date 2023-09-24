@@ -14,14 +14,16 @@ package org.openhab.binding.vesync.internal.discovery;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.vesync.internal.handlers.VeSyncBaseDeviceHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
+import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
+import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -43,7 +45,7 @@ import org.osgi.service.component.annotations.Component;
 public class VeSyncDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService, DeviceMetaDataUpdatedHandler {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
 
@@ -76,8 +78,8 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VeSyncBridgeHandler) {
-            bridgeHandler = (VeSyncBridgeHandler) handler;
+        if (handler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
+            bridgeHandler = veSyncBridgeHandler;
             bridgeUID = bridgeHandler.getUID();
         }
     }
@@ -117,6 +119,10 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
             final String deviceUUID = apMeta.getUuid();
             properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());
             properties.put(DEVICE_PROP_DEVICE_TYPE, apMeta.getDeviceType());
+            properties.put(DEVICE_PROP_DEVICE_FAMILY,
+                    VeSyncBaseDeviceHandler.getDeviceFamilyMetadata(apMeta.getDeviceType(),
+                            VeSyncDeviceAirHumidifierHandler.DEV_TYPE_FAMILY_AIR_HUMIDIFIER,
+                            VeSyncDeviceAirHumidifierHandler.SUPPORTED_MODEL_FAMILIES));
             properties.put(DEVICE_PROP_DEVICE_MAC_ID, apMeta.getMacId());
             properties.put(DEVICE_PROP_DEVICE_UUID, deviceUUID);
             properties.put(DEVICE_PROP_CONFIG_DEVICE_MAC, apMeta.getMacId());
@@ -131,6 +137,10 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
             final String deviceUUID = apMeta.getUuid();
             properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());
             properties.put(DEVICE_PROP_DEVICE_TYPE, apMeta.getDeviceType());
+            properties.put(DEVICE_PROP_DEVICE_FAMILY,
+                    VeSyncBaseDeviceHandler.getDeviceFamilyMetadata(apMeta.getDeviceType(),
+                            VeSyncDeviceAirPurifierHandler.DEV_TYPE_FAMILY_AIR_PURIFIER,
+                            VeSyncDeviceAirPurifierHandler.SUPPORTED_MODEL_FAMILIES));
             properties.put(DEVICE_PROP_DEVICE_MAC_ID, apMeta.getMacId());
             properties.put(DEVICE_PROP_DEVICE_UUID, deviceUUID);
             properties.put(DEVICE_PROP_CONFIG_DEVICE_MAC, apMeta.getMacId());

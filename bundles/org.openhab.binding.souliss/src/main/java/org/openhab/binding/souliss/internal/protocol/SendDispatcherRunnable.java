@@ -136,7 +136,7 @@ public class SendDispatcherRunnable implements Runnable {
     public void run() {
         DatagramSocket sender = null;
 
-        try (var channel = DatagramChannel.open();) {
+        try (var channel = DatagramChannel.open()) {
             if (checkTime()) {
                 PacketStruct sp = pop();
                 if (sp != null) {

@@ -28,8 +28,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -112,6 +112,13 @@ public class OpenhabGraalJSScriptEngine
                     // picking two members to check as Duration has many common function names
                     v -> v.hasMember("minusDuration") && v.hasMember("toNanos"),
                     v -> Duration.ofNanos(v.invokeMember("toNanos").asLong()), HostAccess.TargetMappingPrecedence.LOW)
+
+            // Translate JS-Joda Instant to java.time.Instant
+            .targetTypeMapping(Value.class, Instant.class,
+                    // picking two members to check as Instant has many common function names
+                    v -> v.hasMember("toEpochMilli") && v.hasMember("epochSecond"),
+                    v -> Instant.ofEpochMilli(v.invokeMember("toEpochMilli").asLong()),
+                    HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate openhab-js Item to org.openhab.core.items.Item
             .targetTypeMapping(Value.class, Item.class, v -> v.hasMember("rawItem"),
@@ -201,7 +208,7 @@ public class OpenhabGraalJSScriptEngine
                             public Map<String, Object> readAttributes(Path path, String attributes,
                                     LinkOption... options) throws IOException {
                                 if (isRootNodePath(path)) {
-                                    return Collections.singletonMap("isRegularFile", true);
+                                    return Map.of("isRegularFile", true);
                                 }
                                 return super.readAttributes(path, attributes, options);
                             }

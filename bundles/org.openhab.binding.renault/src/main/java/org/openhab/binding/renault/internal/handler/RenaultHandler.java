@@ -37,6 +37,7 @@ import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car;
 import org.openhab.binding.renault.internal.api.Car.ChargingMode;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultAPIGatewayException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultActionException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
@@ -122,15 +123,14 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         switch (channelUID.getId()) {
             case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
                 if (!car.isDisableHvac()) {
                     if (command instanceof RefreshType) {
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
                                 new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
-                    } else if (command instanceof DecimalType) {
-                        car.setHvacTargetTemperature(((DecimalType) command).doubleValue());
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        car.setHvacTargetTemperature(decimalCommand.doubleValue());
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
                                 new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
                     } else if (command instanceof QuantityType) {
@@ -292,7 +292,7 @@ public class RenaultHandler extends BaseThingHandler {
             } catch (RenaultNotImplementedException e) {
                 logger.warn("Disabling unsupported HVAC status update.");
                 car.setDisableHvac(true);
-            } catch (RenaultForbiddenException | RenaultUpdateException e) {
+            } catch (RenaultForbiddenException | RenaultUpdateException | RenaultAPIGatewayException e) {
                 logger.warn("Error updating HVAC status.", e);
             }
         }
@@ -315,7 +315,8 @@ public class RenaultHandler extends BaseThingHandler {
             } catch (RenaultNotImplementedException e) {
                 logger.warn("Disabling unsupported location update.");
                 car.setDisableLocation(true);
-            } catch (IllegalArgumentException | RenaultForbiddenException | RenaultUpdateException e) {
+            } catch (IllegalArgumentException | RenaultForbiddenException | RenaultUpdateException
+                    | RenaultAPIGatewayException e) {
                 logger.warn("Error updating location.", e);
             }
         }
@@ -332,7 +333,7 @@ public class RenaultHandler extends BaseThingHandler {
             } catch (RenaultNotImplementedException e) {
                 logger.warn("Disabling unsupported cockpit status update.");
                 car.setDisableCockpit(true);
-            } catch (RenaultForbiddenException | RenaultUpdateException e) {
+            } catch (RenaultForbiddenException | RenaultUpdateException | RenaultAPIGatewayException e) {
                 logger.warn("Error updating cockpit status.", e);
             }
         }
@@ -370,7 +371,7 @@ public class RenaultHandler extends BaseThingHandler {
             } catch (RenaultNotImplementedException e) {
                 logger.warn("Disabling unsupported battery update.");
                 car.setDisableBattery(true);
-            } catch (RenaultForbiddenException | RenaultUpdateException e) {
+            } catch (RenaultForbiddenException | RenaultUpdateException | RenaultAPIGatewayException e) {
                 logger.warn("Error updating battery status.", e);
             }
         }
@@ -391,7 +392,8 @@ public class RenaultHandler extends BaseThingHandler {
                         updateState(CHANNEL_LOCKED, UnDefType.UNDEF);
                         break;
                 }
-            } catch (RenaultNotImplementedException e) {
+            } catch (RenaultNotImplementedException | RenaultAPIGatewayException e) {
+                // If not supported API returns a Bad Gateway for this call.
                 updateState(CHANNEL_LOCKED, UnDefType.UNDEF);
                 logger.warn("Disabling unsupported lock status update.");
                 car.setDisableLockStatus(true);

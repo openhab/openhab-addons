@@ -103,6 +103,66 @@
 		<state min="0" max="100" pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO2</label>
+		<description>CO2 level in ppm</description>
+		<category>Carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="co">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO</label>
+		<description>CO level in ppm</description>
+		<category>Gas</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="volatileOrganicCompounds">
+		<item-type>Number:Dimensionless</item-type>
+		<label>VOC</label>
+		<description>Volatile organic compounds level in ppm/</description>
+		<category>Gas</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="volatileOrganicCompoundsId">
+		<item-type>String</item-type>
+		<label>VOC ID</label>
+		<description>Volatile organic compounds identification</description>
+		<category>Gas</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="totalVolatileOrganicCompounds">
+		<item-type>Number:Dimensionless</item-type>
+		<label>TVOC</label>
+		<description>Total volatile organic compounds level in ppb/</description>
+		<category>Gas</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="setPoint">
 		<item-type>Number</item-type>
 		<label>Set Point</label>
@@ -111,7 +171,7 @@
 	</channel-type>
 
 	<channel-type id="fanSpeedStage">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Fan Speed</label>
 		<state readOnly="true">
 			<options>
@@ -120,6 +180,9 @@
 				<option value="1">Stage 1</option>
 				<option value="2">Stage 2</option>
 				<option value="3">Stage 3</option>
+				<option value="4">Stage 4</option>
+				<option value="5">Stage 5</option>
+				<option value="6">Off</option>
 			</options>
 		</state>
 	</channel-type>
@@ -855,6 +918,18 @@
 				<option value="RELEASED"></option>
 			</options>
 		</event>
+	</channel-type>
+
+	<channel-type id="dayNightModeState">
+		<item-type>Number</item-type>
+		<label>Day/Night Mode</label>
+		<description>Day (1) or Night (0) mode activated.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Night</option>
+				<option value="1">Day</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

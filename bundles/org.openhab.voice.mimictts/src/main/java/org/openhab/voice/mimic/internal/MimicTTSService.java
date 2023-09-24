@@ -12,20 +12,19 @@
  */
 package org.openhab.voice.mimic.internal;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -38,13 +37,13 @@ import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.core.OpenHAB;
-import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.HttpRequestBuilder;
+import org.openhab.core.voice.AbstractCachedTTSService;
+import org.openhab.core.voice.TTSCache;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
@@ -67,11 +66,11 @@ import com.google.gson.JsonSyntaxException;
  * @author Gwendal Roulleau - Initial contribution
  */
 @Component(configurationPid = MimicTTSService.SERVICE_PID, property = Constants.SERVICE_PID + "="
-        + MimicTTSService.SERVICE_PID)
+        + MimicTTSService.SERVICE_PID, service = TTSService.class)
 @ConfigurableService(category = MimicTTSService.SERVICE_CATEGORY, label = MimicTTSService.SERVICE_NAME
         + " Text-to-Speech", description_uri = MimicTTSService.SERVICE_CATEGORY + ":" + MimicTTSService.SERVICE_ID)
 @NonNullByDefault
-public class MimicTTSService implements TTSService {
+public class MimicTTSService extends AbstractCachedTTSService {
 
     private final Logger logger = LoggerFactory.getLogger(MimicTTSService.class);
 
@@ -84,7 +83,6 @@ public class MimicTTSService implements TTSService {
      * Configuration parameters
      */
     private static final String PARAM_URL = "url";
-    private static final String PARAM_WORKAROUNDSERVLETSINK = "workaroundServletSink";
     private static final String PARAM_SPEAKINGRATE = "speakingRate";
     private static final String PARAM_AUDIOVOLATITLITY = "audioVolatility";
     private static final String PARAM_PHONEMEVOLATITLITY = "phonemeVolatility";
@@ -108,7 +106,9 @@ public class MimicTTSService implements TTSService {
     private final HttpClient httpClient;
 
     @Activate
-    public MimicTTSService(final @Reference HttpClientFactory httpClientFactory, Map<String, Object> config) {
+    public MimicTTSService(final @Reference HttpClientFactory httpClientFactory, @Reference TTSCache ttsCache,
+            Map<String, Object> config) {
+        super(ttsCache);
         updateConfig(config);
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
@@ -128,12 +128,6 @@ public class MimicTTSService implements TTSService {
             logger.warn("Missing URL to access Mimic TTS API. Using localhost");
         } else {
             config.url = param.toString();
-        }
-
-        // workaround
-        param = newConfig.get(PARAM_WORKAROUNDSERVLETSINK);
-        if (param != null) {
-            config.workaroundServletSink = Boolean.parseBoolean(param.toString());
         }
 
         // audio volatility
@@ -227,8 +221,7 @@ public class MimicTTSService implements TTSService {
      * @throws TTSException in case the service is unavailable or a parameter is invalid.
      */
     @Override
-    public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
-
+    public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
         if (!availableVoices.contains(voice)) {
             // let a chance for the service to update :
             refreshVoices();
@@ -294,24 +287,7 @@ public class MimicTTSService implements TTSService {
                 }
 
                 InputStream inputStreamFromMimic = inputStreamResponseListener.getInputStream();
-                try {
-                    if (!config.workaroundServletSink) {
-                        return new InputStreamAudioStream(inputStreamFromMimic, AUDIO_FORMAT, length);
-                    } else {
-                        // Some audio sinks use the openHAB servlet to get audio. This servlet require the
-                        // getClonedStream()
-                        // method
-                        // So we cache the file on disk, thus implementing the method thanks to FileAudioStream.
-                        return createTemporaryFile(inputStreamFromMimic, AUDIO_FORMAT);
-                    }
-                } catch (TTSException e) {
-                    try {
-                        inputStreamFromMimic.close();
-                    } catch (IOException e1) {
-                    }
-                    throw e;
-                }
-
+                return new InputStreamAudioStream(inputStreamFromMimic, AUDIO_FORMAT, length);
             } else {
                 String errorMessage = "Cannot get wav from mimic url " + urlTTS + " with HTTP response code "
                         + response.getStatus() + " for reason " + response.getReason();
@@ -325,16 +301,16 @@ public class MimicTTSService implements TTSService {
         }
     }
 
-    private AudioStream createTemporaryFile(InputStream inputStream, AudioFormat audioFormat) throws TTSException {
-        File mimicDirectory = new File(OpenHAB.getUserDataFolder(), "mimic");
-        mimicDirectory.mkdir();
+    @Override
+    public String getCacheKey(String text, Voice voice, AudioFormat requestedFormat) {
+        MessageDigest md;
         try {
-            File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".wav", mimicDirectory);
-            tempFile.deleteOnExit();
-            Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return new AutoDeleteFileAudioStream(tempFile, audioFormat);
-        } catch (AudioException | IOException e) {
-            throw new TTSException("Cannot create temporary audio file", e);
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            return "nomd5algorithm";
         }
+        byte[] binaryKey = ((text + voice.getUID() + requestedFormat.toString() + config.speakingRate
+                + config.audioVolatility + config.phonemeVolatility).getBytes());
+        return String.format("%032x", new BigInteger(1, md.digest(binaryKey)));
     }
 }

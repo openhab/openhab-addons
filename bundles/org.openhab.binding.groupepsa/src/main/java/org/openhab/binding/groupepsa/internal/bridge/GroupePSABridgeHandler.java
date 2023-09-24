@@ -13,11 +13,9 @@
 package org.openhab.binding.groupepsa.internal.bridge;
 
 import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.THING_TYPE_BRIDGE;
-import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.VendorConstants;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -26,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.VendorConstants;
 import org.openhab.binding.groupepsa.internal.discovery.GroupePSADiscoveryService;
 import org.openhab.binding.groupepsa.internal.rest.api.GroupePSAConnectApi;
 import org.openhab.binding.groupepsa.internal.rest.api.dto.Vehicle;
@@ -53,7 +52,7 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class GroupePSABridgeHandler extends BaseBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
     private static final long DEFAULT_POLLING_INTERVAL_M = TimeUnit.HOURS.toMinutes(1);
 
     private final OAuthFactory oAuthFactory;
@@ -94,7 +93,10 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         stopGroupePSABridgePolling();
-        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+        if (oAuthService != null) {
+            oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+            oAuthService = null;
+        }
     }
 
     @Override
@@ -136,6 +138,12 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
 
             updateStatus(ThingStatus.UNKNOWN);
         }
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
     }
 
     private void startGroupePSABridgePolling(@Nullable Integer pollingIntervalM) {
@@ -220,6 +228,6 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(GroupePSADiscoveryService.class);
+        return Set.of(GroupePSADiscoveryService.class);
     }
 }

@@ -77,7 +77,7 @@ public class TestMeterReading {
         try {
             verify(changeListener, after(
                     period.toMillis() + 2 * period.toMillis() * ConnectorBase.NUMBER_OF_RETRIES + period.toMillis() / 2)
-                            .times(1)).errorOccurred(any());
+                    .times(1)).errorOccurred(any());
             verify(connector, times(ConnectorBase.NUMBER_OF_RETRIES)).retryHook(ArgumentMatchers.anyInt());
         } finally {
             disposable.dispose();

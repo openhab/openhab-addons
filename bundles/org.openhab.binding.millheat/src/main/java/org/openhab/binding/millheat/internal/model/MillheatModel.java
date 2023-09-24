@@ -60,7 +60,7 @@ public class MillheatModel {
         if (macAddress != null) {
             heater = findHeaterByMac(macAddress);
         }
-        if (!heater.isPresent() && id != null) {
+        if (heater.isEmpty() && id != null) {
             heater = findHeaterById(id);
         }
         return heater;

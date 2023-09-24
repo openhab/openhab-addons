@@ -14,8 +14,6 @@ package org.openhab.binding.nanoleaf.internal.handler;
 
 import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,6 +46,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,8 +137,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof NanoleafControllerHandler) {
-                ((NanoleafControllerHandler) handler).getColorInformation().unregisterChangeListener(getPanelID());
+            if (handler instanceof NanoleafControllerHandler controllerHandler) {
+                controllerHandler.getColorInformation().unregisterChangeListener(getPanelID());
             }
         }
 
@@ -175,8 +174,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof NanoleafControllerHandler) {
-                ((NanoleafControllerHandler) handler).getColorInformation().registerChangeListener(getPanelID(), this);
+            if (handler instanceof NanoleafControllerHandler controllerHandler) {
+                controllerHandler.getColorInformation().registerChangeListener(getPanelID(), this);
             }
         }
     }
@@ -186,8 +185,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         logger.debug("currentPanelColor: {}", currentPanelColor);
 
         HSBType newPanelColor = new HSBType();
-        if (command instanceof HSBType) {
-            newPanelColor = (HSBType) command;
+        if (command instanceof HSBType hsbCommand) {
+            newPanelColor = hsbCommand;
         } else if (command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
                 newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(),
@@ -196,9 +195,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
                 newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(),
                         MIN_PANEL_BRIGHTNESS);
             }
-        } else if (command instanceof PercentType) {
-            PercentType brightness = new PercentType(
-                    Math.max(MIN_PANEL_BRIGHTNESS.intValue(), ((PercentType) command).intValue()));
+        } else if (command instanceof PercentType type) {
+            PercentType brightness = new PercentType(Math.max(MIN_PANEL_BRIGHTNESS.intValue(), type.intValue()));
             newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(), brightness);
         } else if (command instanceof IncreaseDecreaseType) {
             int brightness = currentPanelColor.getBrightness().intValue();
@@ -220,15 +218,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         logger.trace("Setting new color {} to panel {}", newPanelColor, getPanelID());
         setPanelColor(newPanelColor);
         // transform to RGB
-        PercentType[] rgbPercent = newPanelColor.toRGB();
-        logger.trace("Setting new rgbpercent {} {} {}", rgbPercent[0], rgbPercent[1], rgbPercent[2]);
-        int red = rgbPercent[0].toBigDecimal().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
-                .multiply(new BigDecimal(255)).intValue();
-        int green = rgbPercent[1].toBigDecimal().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
-                .multiply(new BigDecimal(255)).intValue();
-        int blue = rgbPercent[2].toBigDecimal().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)
-                .multiply(new BigDecimal(255)).intValue();
-        logger.trace("Setting new rgb {} {} {}", red, green, blue);
+        int[] rgb = ColorUtil.hsbToRgb(newPanelColor);
+        logger.trace("Setting new rgb {} {} {}", rgb[0], rgb[1], rgb[2]);
         Bridge bridge = getBridge();
         if (bridge != null) {
             Effects effects = new Effects();
@@ -243,14 +234,14 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
                 // Light Panels and Canvas use different stream commands
                 if (config.deviceType.equals(CONFIG_DEVICE_TYPE_LIGHTPANELS)
                         || config.deviceType.equals(CONFIG_DEVICE_TYPE_CANVAS)) {
-                    logger.trace("Anim Data rgb {} {} {} {}", panelID, red, green, blue);
-                    write.setAnimData(String.format("1 %s 1 %d %d %d 0 10", panelID, red, green, blue));
+                    logger.trace("Anim Data rgb {} {} {} {}", panelID, rgb[0], rgb[1], rgb[2]);
+                    write.setAnimData(String.format("1 %s 1 %d %d %d 0 10", panelID, rgb[0], rgb[1], rgb[2]));
                 } else {
                     // this is only used in special streaming situations with canvas which is not yet supported
                     int quotient = Integer.divideUnsigned(panelID, 256);
                     int remainder = Integer.remainderUnsigned(panelID, 256);
                     write.setAnimData(
-                            String.format("0 1 %d %d %d %d %d 0 0 10", quotient, remainder, red, green, blue));
+                            String.format("0 1 %d %d %d %d %d 0 0 10", quotient, remainder, rgb[0], rgb[1], rgb[2]));
                 }
                 write.setLoop(false);
                 effects.setWrite(write);
@@ -289,8 +280,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         Object panelId = getThing().getConfiguration().get(CONFIG_PANEL_ID);
         if (panelId instanceof Integer) {
             return (Integer) panelId;
-        } else if (panelId instanceof Number) {
-            return ((Number) panelId).intValue();
+        } else if (panelId instanceof Number numberValue) {
+            return numberValue.intValue();
         } else {
             // Fall back to parsing string representation of panel if it is not returning an integer
             String stringPanelId = panelId.toString();
@@ -308,8 +299,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof NanoleafControllerHandler) {
-                ((NanoleafControllerHandler) handler).getColorInformation().setPanelColor(panelId, color);
+            if (handler instanceof NanoleafControllerHandler controllerHandler) {
+                controllerHandler.getColorInformation().setPanelColor(panelId, color);
             } else {
                 logger.debug("Couldn't find handler for panel {}", panelId);
             }

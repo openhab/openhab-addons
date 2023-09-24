@@ -24,8 +24,6 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tracks JS module dependencies
@@ -37,8 +35,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class JSDependencyTracker extends AbstractScriptDependencyTracker {
 
-    private final Logger logger = LoggerFactory.getLogger(JSDependencyTracker.class);
-
     private static final String LIB_PATH = String.join(File.separator, "automation", "js", "node_modules");
 
     @Activate
@@ -47,15 +43,18 @@ public class JSDependencyTracker extends AbstractScriptDependencyTracker {
     }
 
     @Deactivate
+    @Override
     public void deactivate() {
         super.deactivate();
     }
 
+    @Override
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "removeChangeTracker")
     public void addChangeTracker(ScriptDependencyTracker.Listener listener) {
         super.addChangeTracker(listener);
     }
 
+    @Override
     public void removeChangeTracker(ScriptDependencyTracker.Listener listener) {
         super.removeChangeTracker(listener);
     }

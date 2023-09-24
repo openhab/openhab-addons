@@ -173,8 +173,7 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
 
         if (getSupportedThingTypes().contains(thingTypeUID)) {
             String thingSceneId = scene.getID();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingSceneId);
-            return thingUID;
+            return new ThingUID(thingTypeUID, bridgeUID, thingSceneId);
         } else {
             return null;
         }

@@ -155,7 +155,7 @@ public class VehicleHandler extends BaseThingHandler {
                     logger.debug("Image {} is empty", key);
                 }
             }
-        } else if (channelUID.getIdWithoutGroup().equals("clear-cache") && command.equals(OnOffType.ON)) {
+        } else if ("clear-cache".equals(channelUID.getIdWithoutGroup()) && command.equals(OnOffType.ON)) {
             List<String> removals = new ArrayList<String>();
             imageStorage.get().getKeys().forEach(entry -> {
                 if (entry.contains("_" + config.get().vin)) {

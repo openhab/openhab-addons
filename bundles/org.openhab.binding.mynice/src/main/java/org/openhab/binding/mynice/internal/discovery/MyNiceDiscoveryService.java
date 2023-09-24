@@ -15,6 +15,7 @@ package org.openhab.binding.mynice.internal.discovery;
 import static org.openhab.binding.mynice.internal.MyNiceBindingConstants.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,49 +46,43 @@ public class MyNiceDiscoveryService extends AbstractDiscoveryService
     private static final int SEARCH_TIME = 5;
     private final Logger logger = LoggerFactory.getLogger(MyNiceDiscoveryService.class);
 
-    private @Nullable It4WifiHandler bridgeHandler;
+    private Optional<It4WifiHandler> bridgeHandler = Optional.empty();
 
     /**
      * Creates a MyNiceDiscoveryService with background discovery disabled.
      */
     public MyNiceDiscoveryService() {
-        super(Set.of(THING_TYPE_SWING), SEARCH_TIME, false);
+        super(Set.of(THING_TYPE_SWING, THING_TYPE_SLIDING), SEARCH_TIME, false);
     }
 
     @Override
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof It4WifiHandler it4Handler) {
-            bridgeHandler = it4Handler;
+            bridgeHandler = Optional.of(it4Handler);
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+        return bridgeHandler.orElse(null);
     }
 
     @Override
     public void activate() {
         super.activate(null);
-        It4WifiHandler handler = bridgeHandler;
-        if (handler != null) {
-            handler.registerDataListener(this);
-        }
+        bridgeHandler.ifPresent(h -> h.registerDataListener(this));
     }
 
     @Override
     public void deactivate() {
-        It4WifiHandler handler = bridgeHandler;
-        if (handler != null) {
-            handler.unregisterDataListener(this);
-        }
+        bridgeHandler.ifPresent(h -> h.unregisterDataListener(this));
+        bridgeHandler = Optional.empty();
         super.deactivate();
     }
 
     @Override
     public void onDataFetched(List<Device> devices) {
-        It4WifiHandler handler = bridgeHandler;
-        if (handler != null) {
+        bridgeHandler.ifPresent(handler -> {
             ThingUID bridgeUID = handler.getThing().getUID();
             devices.stream().filter(device -> device.type != null).forEach(device -> {
                 ThingUID thingUID = switch (device.type) {
@@ -105,14 +100,11 @@ public class MyNiceDiscoveryService extends AbstractDiscoveryService
                     logger.info("`{}` type of device is not yet supported", device.type);
                 }
             });
-        }
+        });
     }
 
     @Override
     protected void startScan() {
-        It4WifiHandler handler = bridgeHandler;
-        if (handler != null) {
-            handler.sendCommand(CommandType.INFO);
-        }
+        bridgeHandler.ifPresent(h -> h.sendCommand(CommandType.INFO));
     }
 }

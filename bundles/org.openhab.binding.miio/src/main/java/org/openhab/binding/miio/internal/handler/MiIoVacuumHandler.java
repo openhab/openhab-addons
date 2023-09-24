@@ -213,13 +213,13 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
         }
         if (channelUID.getId().equals(CHANNEL_CONTROL)) {
-            if (command.toString().equals("vacuum")) {
+            if ("vacuum".equals(command.toString())) {
                 sendCommand(MiIoCommand.START_VACUUM);
-            } else if (command.toString().equals("spot")) {
+            } else if ("spot".equals(command.toString())) {
                 sendCommand(MiIoCommand.START_SPOT);
-            } else if (command.toString().equals("pause")) {
+            } else if ("pause".equals(command.toString())) {
                 sendCommand(MiIoCommand.PAUSE);
-            } else if (command.toString().equals("dock")) {
+            } else if ("dock".equals(command.toString())) {
                 sendCommand(MiIoCommand.STOP_VACUUM);
                 miIoScheduler.schedule(() -> {
                     sendCommand(MiIoCommand.CHARGE);
@@ -402,7 +402,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         return true;
     }
 
-    private boolean updateHistory(JsonArray historyData) {
+    private boolean updateHistoryLegacy(JsonArray historyData) {
         logger.trace("Cleaning history data: {}", historyData.toString());
         updateState(CHANNEL_HISTORY_TOTALTIME,
                 new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), Units.MINUTE));
@@ -414,6 +414,32 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             if (!lastClean.equals(lastHistoryId)) {
                 lastHistoryId = lastClean;
                 sendCommand(MiIoCommand.CLEAN_RECORD_GET, "[" + lastClean + "]");
+            }
+        }
+        return true;
+    }
+
+    private boolean updateHistory(JsonObject historyData) {
+        logger.trace("Cleaning history data: {}", historyData);
+        if (historyData.has("clean_time")) {
+            updateState(CHANNEL_HISTORY_TOTALTIME, new QuantityType<>(
+                    TimeUnit.SECONDS.toMinutes(historyData.get("clean_time").getAsLong()), Units.MINUTE));
+        }
+        if (historyData.has("clean_area")) {
+            updateState(CHANNEL_HISTORY_TOTALAREA,
+                    new QuantityType<>(historyData.get("clean_area").getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
+        }
+        if (historyData.has("clean_count")) {
+            updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get("clean_count").getAsLong()));
+        }
+        if (historyData.has("records") & historyData.get("records").isJsonArray()) {
+            JsonArray historyRecords = historyData.get("records").getAsJsonArray();
+            if (!historyRecords.isEmpty()) {
+                String lastClean = historyRecords.get(0).getAsString();
+                if (!lastClean.equals(lastHistoryId)) {
+                    lastHistoryId = lastClean;
+                    sendCommand(MiIoCommand.CLEAN_RECORD_GET, "[" + lastClean + "]");
+                }
             }
         }
         return true;
@@ -536,7 +562,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 break;
             case CLEAN_SUMMARY_GET:
                 if (response.getResult().isJsonArray()) {
-                    updateHistory(response.getResult().getAsJsonArray());
+                    updateHistoryLegacy(response.getResult().getAsJsonArray());
+                } else if (response.getResult().isJsonObject()) {
+                    updateHistory(response.getResult().getAsJsonObject());
                 }
                 break;
             case CLEAN_RECORD_GET:

@@ -13,7 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.api;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
-import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.util.concurrent.TimeUnit;
@@ -158,7 +158,7 @@ public class TapoDeviceHttpApi {
             String payload = plBuilder.getPayload();
 
             /* send request (create ) */
-            logger.trace("({}) create handhsake with payload: {}", uid, payload.toString());
+            logger.trace("({}) create handhsake with payload: {}", uid, payload);
             ContentResponse response = sendRequest(this.deviceURL, payload);
             if (response != null && getErrorCode(response) == 0) {
                 String encryptedKey = getKeyFromResponse(response);
@@ -167,7 +167,7 @@ public class TapoDeviceHttpApi {
             }
         } catch (Exception e) {
             logger.debug("({}) could not createHandshake: {}", uid, e.toString());
-            handleError(new TapoErrorHandler(ERR_HAND_SHAKE_FAILED, "could not createHandshake"));
+            handleError(new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED, "could not createHandshake"));
         }
         return cookie;
     }
@@ -186,7 +186,7 @@ public class TapoDeviceHttpApi {
             return jsonObjectToString(jsonObj.getAsJsonObject("result"), "key");
         } else {
             logger.warn("({}) could not getKeyFromResponse '{}'", uid, rBody);
-            handleError(new TapoErrorHandler(ERR_HAND_SHAKE_FAILED, "could not getKeyFromResponse"));
+            handleError(new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED, "could not getKeyFromResponse"));
         }
         return "";
     }
@@ -204,7 +204,7 @@ public class TapoDeviceHttpApi {
             logger.trace("({}) got cookie: '{}'", uid, cookie);
         } catch (Exception e) {
             logger.warn("({}) could not getCookieFromResponse", uid);
-            handleError(new TapoErrorHandler(ERR_HAND_SHAKE_FAILED, "could not getCookieFromResponse"));
+            handleError(new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED, "could not getCookieFromResponse"));
         }
         return cookie;
     }
@@ -258,7 +258,7 @@ public class TapoDeviceHttpApi {
             /* get errocode (0=success) */
             JsonObject jsonObject = GSON.fromJson(decryptedResponse, JsonObject.class);
             if (jsonObject != null) {
-                Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_JSON_DECODE_FAIL);
+                Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_API_JSON_DECODE_FAIL.getCode());
                 if (errorCode == 0) {
                     /* return result if set / else request was successful */
                     result = jsonObjectToString(jsonObject.getAsJsonObject("result"), "token");
@@ -269,11 +269,11 @@ public class TapoDeviceHttpApi {
                 }
             } else {
                 logger.debug("({}) unexpected json-response '{}'", uid, decryptedResponse);
-                tapoError.raiseError(ERR_JSON_ENCODE_FAIL, "could not get token");
+                tapoError.raiseError(ERR_API_JSON_ENCODE_FAIL, "could not get token");
             }
         } else {
             logger.debug("({}) invalid response while login", uid);
-            tapoError.raiseError(ERR_HTTP_RESPONSE, "invalid response while login");
+            tapoError.raiseError(ERR_BINDING_HTTP_RESPONSE, "invalid response while login");
         }
         /* handle error */
         if (tapoError.hasError()) {
@@ -308,14 +308,13 @@ public class TapoDeviceHttpApi {
         httpRequest.content(new StringContentProvider(payload, CONTENT_CHARSET), CONTENT_TYPE_JSON);
 
         try {
-            ContentResponse httpResponse = httpRequest.send();
-            return httpResponse;
+            return httpRequest.send();
         } catch (InterruptedException e) {
             logger.debug("({}) sending request interrupted: {}", uid, e.toString());
             handleError(new TapoErrorHandler(e));
         } catch (TimeoutException e) {
             logger.debug("({}) sending request timeout: {}", uid, e.toString());
-            handleError(new TapoErrorHandler(ERR_CONNECT_TIMEOUT, e.toString()));
+            handleError(new TapoErrorHandler(ERR_BINDING_CONNECT_TIMEOUT, e.toString()));
         } catch (Exception e) {
             logger.debug("({}) sending request failed: {}", uid, e.toString());
             handleError(new TapoErrorHandler(e));
@@ -355,14 +354,14 @@ public class TapoDeviceHttpApi {
                         String errorMessage = getValueOrDefault(e.getMessage(), "");
                         if (e instanceof TimeoutException) {
                             logger.debug("({}) sendAsyncRequest timeout'{}'", uid, errorMessage);
-                            handleError(new TapoErrorHandler(ERR_CONNECT_TIMEOUT, errorMessage));
+                            handleError(new TapoErrorHandler(ERR_BINDING_CONNECT_TIMEOUT, errorMessage));
                         } else {
                             logger.debug("({}) sendAsyncRequest failed'{}'", uid, errorMessage);
                             handleError(new TapoErrorHandler(new Exception(e), errorMessage));
                         }
                     } else if (response.getStatus() != 200) {
                         logger.debug("({}) sendAsyncRequest response error'{}'", uid, response.getStatus());
-                        handleError(new TapoErrorHandler(ERR_HTTP_RESPONSE, getContentAsString()));
+                        handleError(new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, getContentAsString()));
                     } else {
                         /* request successful */
                         String rBody = getContentAsString();
@@ -411,10 +410,10 @@ public class TapoDeviceHttpApi {
                 String responseBody = response.getContentAsString();
                 return getErrorCode(responseBody);
             } else {
-                return ERR_HTTP_RESPONSE;
+                return ERR_BINDING_HTTP_RESPONSE.getCode();
             }
         } catch (Exception e) {
-            return ERR_HTTP_RESPONSE;
+            return ERR_BINDING_HTTP_RESPONSE.getCode();
         }
     }
 
@@ -428,7 +427,7 @@ public class TapoDeviceHttpApi {
         try {
             JsonObject jsonObject = GSON.fromJson(responseBody, JsonObject.class);
             /* get errocode (0=success) */
-            Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_JSON_DECODE_FAIL);
+            Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_API_JSON_DECODE_FAIL.getCode());
             if (errorCode == 0) {
                 return 0;
             } else {
@@ -437,7 +436,7 @@ public class TapoDeviceHttpApi {
                 return errorCode;
             }
         } catch (Exception e) {
-            return ERR_HTTP_RESPONSE;
+            return ERR_BINDING_HTTP_RESPONSE.getCode();
         }
     }
 
@@ -451,7 +450,7 @@ public class TapoDeviceHttpApi {
         if (isValidJson(responseBody)) {
             JsonObject jsonObject = GSON.fromJson(responseBody, JsonObject.class);
             /* get errocode (0=success) */
-            Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_JSON_DECODE_FAIL);
+            Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_API_JSON_DECODE_FAIL.getCode());
             if (errorCode > 0) {
                 return true;
             }
@@ -491,7 +490,7 @@ public class TapoDeviceHttpApi {
                 String encryptedResponse = jsonObjectToString(jsonObject.getAsJsonObject("result"), "response");
                 return tapoCipher.decode(encryptedResponse);
             } else {
-                handleError(new TapoErrorHandler(ERR_JSON_DECODE_FAIL));
+                handleError(new TapoErrorHandler(ERR_API_JSON_DECODE_FAIL));
             }
         } catch (Exception ex) {
             logger.debug("({}) exception '{}' decryptingResponse: '{}'", uid, ex.toString(), responseBody);
@@ -549,7 +548,7 @@ public class TapoDeviceHttpApi {
         } else {
             logger.trace("({}) not logged in", uid);
             if (raiseError) {
-                handleError(new TapoErrorHandler(ERR_LOGIN));
+                handleError(new TapoErrorHandler(ERR_API_LOGIN));
             }
             return false;
         }

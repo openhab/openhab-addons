@@ -68,7 +68,9 @@ public class MqttChannelStateDescriptionProvider implements DynamicStateDescript
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         StateDescription description = descriptions.get(channel.getUID());
-        logger.trace("Providing state description for channel {}", channel.getUID());
+        if (description != null) {
+            logger.trace("Providing state description for channel {}", channel.getUID());
+        }
         return description;
     }
 

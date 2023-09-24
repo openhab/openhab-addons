@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.knx.internal;
 
-import static java.util.stream.Collectors.toSet;
-
-import java.util.Collections;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -31,6 +32,10 @@ import org.openhab.core.thing.ThingTypeUID;
 public class KNXBindingConstants {
 
     public static final String BINDING_ID = "knx";
+
+    // Global config
+    public static final String CONFIG_DISABLE_UOM = "disableUoM";
+    public static boolean disableUoM = false;
 
     // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_IP_BRIDGE = new ThingTypeUID(BINDING_ID, "ip");
@@ -84,7 +89,8 @@ public class KNXBindingConstants {
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SWITCH_CONTROL = "switch-control";
 
-    public static final Set<String> CONTROL_CHANNEL_TYPES = Collections.unmodifiableSet(Stream.of(CHANNEL_COLOR_CONTROL, //
+    public static final Set<String> CONTROL_CHANNEL_TYPES = Set.of( //
+            CHANNEL_COLOR_CONTROL, //
             CHANNEL_CONTACT_CONTROL, //
             CHANNEL_DATETIME_CONTROL, //
             CHANNEL_DIMMER_CONTROL, //
@@ -92,7 +98,7 @@ public class KNXBindingConstants {
             CHANNEL_ROLLERSHUTTER_CONTROL, //
             CHANNEL_STRING_CONTROL, //
             CHANNEL_SWITCH_CONTROL //
-    ).collect(toSet()));
+    );
 
     public static final String CHANNEL_RESET = "reset";
 
@@ -105,4 +111,26 @@ public class KNXBindingConstants {
     public static final String STOP_MOVE_GA = "stopMove";
     public static final String SWITCH_GA = "switch";
     public static final String UP_DOWN_GA = "upDown";
+
+    public static final Map<Integer, String> MANUFACTURER_MAP = readManufacturerMap();
+
+    private static Map<Integer, String> readManufacturerMap() {
+        ClassLoader classLoader = KNXBindingConstants.class.getClassLoader();
+        if (classLoader == null) {
+            return Map.of();
+        }
+
+        try (InputStream is = classLoader.getResourceAsStream("manufacturer.properties")) {
+            if (is == null) {
+                return Map.of();
+            }
+
+            Properties properties = new Properties();
+            properties.load(is);
+            return properties.entrySet().stream()
+                    .collect(Collectors.toMap(e -> Integer.parseInt((String) e.getKey()), e -> (String) e.getValue()));
+        } catch (IOException e) {
+            return Map.of();
+        }
+    }
 }

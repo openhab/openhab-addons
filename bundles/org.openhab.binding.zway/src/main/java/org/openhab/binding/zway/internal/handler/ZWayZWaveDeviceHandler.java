@@ -101,7 +101,7 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                         // Check command classes (only for ThermostatMode)
                         ZWaveDevice zwaveDevice = getZWayBridgeHandler().getZWayApi()
                                 .getZWaveDevice(mConfig.getNodeId());
-                        if (!zwaveDevice.getInstances().get0().getCommandClasses().get64().getName().equals("")) {
+                        if (!"".equals(zwaveDevice.getInstances().get0().getCommandClasses().get64().getName())) {
                             // Load available thermostat modes
                             Map<Integer, String> modes = zwaveDevice.getInstances().get0().getCommandClasses().get64()
                                     .getThermostatModes();

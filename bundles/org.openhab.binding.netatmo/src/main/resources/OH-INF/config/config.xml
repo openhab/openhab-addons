@@ -111,9 +111,21 @@
 	</config-description>
 
 	<config-description uri="netatmo:home">
-		<parameter name="id" type="text" required="true">
+		<parameter name="id" type="text" required="false">
 			<label>@text/config.thingId.label</label>
 			<description>@text/config.thingId.description</description>
+		</parameter>
+
+		<parameter name="securityId" type="text" required="false">
+			<label>@text/config.securityId.label</label>
+			<description>@text/config.securityId.description</description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="energyId" type="text" required="false">
+			<label>@text/config.energyId.label</label>
+			<description>@text/config.energyId.description</description>
+			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="refreshInterval" type="integer" min="20" unit="s">
