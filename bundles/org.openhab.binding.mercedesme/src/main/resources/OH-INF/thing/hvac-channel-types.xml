@@ -6,39 +6,41 @@
 	<channel-type id="front-left-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Seat Front Left</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="front-right-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Seat Front Right</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="rear-left-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Seat Rear Left</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="rear-right-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Seat Rear Right</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="zone-hvac-channel">
 		<item-type>Number</item-type>
 		<label>AC Zone</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="temperature-hvac-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>AC Temperature</label>
-		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state min="16" max="28" step="0.5" pattern="%d %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="active-hvac-channel">
 		<item-type>Switch</item-type>
 		<label>AC Control</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="aux-heat-channel">
 		<item-type>Switch</item-type>
 		<label>Auxiliary Heating Control</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

@@ -233,15 +233,13 @@ public class MBWebsocket {
                 logger.debug("MB Message: {} not handeled", pm.getAllFields());
             }
 
-        } catch (
-
-        IOException e) {
-            logger.warn("IOEXception {}", e.getMessage());
+        } catch (IOException e) {
+            logger.debug("IOEXception {}", e.getMessage());
         } catch (Error err) {
-            logger.warn("Error caught {}", err.getMessage());
+            logger.trace("Error caught {}", err.getMessage());
             StackTraceElement[] stack = err.getStackTrace();
             for (int i = 0; i < stack.length; i++) {
-                logger.warn("{}", stack[i]);
+                logger.trace("{}", stack[i]);
             }
         }
     }

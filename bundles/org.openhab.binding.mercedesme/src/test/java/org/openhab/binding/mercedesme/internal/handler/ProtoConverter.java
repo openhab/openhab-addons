@@ -8,7 +8,10 @@ import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.mercedesme.internal.utils.Utils;
 
+import com.daimler.mbcarkit.proto.Client.ClientMessage;
+import com.daimler.mbcarkit.proto.VehicleCommands.CommandRequest;
 import com.daimler.mbcarkit.proto.VehicleEvents;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
@@ -118,9 +121,9 @@ public class ProtoConverter {
                                         tpBuilder.setTemperatureDisplayValue(tpJson.getString(tpValueKey));
                                         break;
                                 }
-                                TemperaturePoint tpProto = tpBuilder.build();
-                                tpList.add(tpProto);
                             }
+                            TemperaturePoint tpProto = tpBuilder.build();
+                            tpList.add(tpProto);
                         }
                         TemperaturePointsValue tpValueProto = TemperaturePointsValue.newBuilder()
                                 .addAllTemperaturePoints(tpList).build();
@@ -157,5 +160,17 @@ public class ProtoConverter {
             updateMap.put(key, builder.build());
         }
         return VEPUpdate.newBuilder().setFullUpdate(fullUpdate).putAllAttributes(updateMap).build();
+    }
+
+    public static JSONObject clientMessage2Json(ClientMessage cm) {
+        JSONObject cmJson = new JSONObject();
+        CommandRequest cr = cm.getCommandRequest();
+        if (cr.hasTemperatureConfigure()) {
+            return Utils.getJsonObject(cr.getTemperatureConfigure().getTemperaturePoints(0).getAllFields());
+        }
+        if (cr.hasChargeProgramConfigure()) {
+            return Utils.getJsonObject(cr.getChargeProgramConfigure().getAllFields());
+        }
+        return cmJson;
     }
 }

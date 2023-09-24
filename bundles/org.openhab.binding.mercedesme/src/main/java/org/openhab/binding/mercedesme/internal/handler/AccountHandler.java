@@ -74,6 +74,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Storage<String> storage;
     private final MBWebsocket ws;
     private final Map<String, VehicleHandler> activeVehicleHandlerMap = new HashMap<String, VehicleHandler>();
+    private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<String, VEPUpdate>();
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<String, Map<String, Object>>();
     private final String FEATURE_APPENDIX = "-features";
     private final String COMMAND_APPENDIX = "-commands";
@@ -87,6 +88,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private String poiEndpoint = "/v1/vehicle/%s/route";
 
     Optional<AccountConfiguration> config = Optional.empty();
+    @Nullable
+    ClientMessage message;
 
     public AccountHandler(Bridge bridge, MercedesMeDiscoveryService mmds, HttpClient hc, LocaleProvider lp,
             StorageService store) {
@@ -240,7 +243,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     public void registerVin(String vin, VehicleHandler handler) {
         discoveryService.vehicleRemove(this, vin, handler.getThing().getThingTypeUID().getId());
         activeVehicleHandlerMap.put(vin, handler);
-        scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
+        VEPUpdate updateForVin = vepUpdateMap.get(vin);
+        if (updateForVin != null) {
+            handler.distributeContent(updateForVin);
+        }
     }
 
     public void unregisterVin(String vin) {
@@ -272,6 +278,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (h != null) {
                 h.distributeContent(value);
             } else {
+                if (value.getFullUpdate()) {
+                    vepUpdateMap.put(key, value);
+                }
                 notFoundList.add(key);
             }
         });

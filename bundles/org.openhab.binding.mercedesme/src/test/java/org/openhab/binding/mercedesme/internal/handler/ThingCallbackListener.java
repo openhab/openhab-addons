@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -59,9 +60,9 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
-        // if (Constants.GROUP_LOCK.equals(channelUID.getGroupId())) {
-        System.out.println(channelUID.toString() + " received " + state.toFullString());
-        // }
+        if (Constants.GROUP_HVAC.equals(channelUID.getGroupId())) {
+            System.out.println("THL " + channelUID.toString() + " received " + state.toFullString());
+        }
         updatesReceived.put(channelUID.toString(), state);
         Map<String, State> groupMap = updatesPerGroupMap.get(channelUID.getGroupId());
         if (groupMap == null) {

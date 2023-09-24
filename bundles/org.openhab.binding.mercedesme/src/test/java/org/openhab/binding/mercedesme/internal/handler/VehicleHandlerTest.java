@@ -12,6 +12,9 @@ import org.openhab.binding.mercedesme.internal.MercedesMeCommandOptionProvider;
 import org.openhab.binding.mercedesme.internal.MercedesMeDynamicStateDescriptionProvider;
 import org.openhab.binding.mercedesme.internal.MercedesMeStateOptionProvider;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
+import org.openhab.binding.mercedesme.internal.utils.Utils;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -57,9 +60,11 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
+        VehicleHandler vh = new VehicleHandler(thingMock, commandOptionMock, mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
+        AuccountHandlerMock ahm = new AuccountHandlerMock();
+        vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
         ThingCallbackListener updateListener = new ThingCallbackListener();
@@ -89,6 +94,14 @@ class VehicleHandlerTest {
                 "Range Electric Unit");
         assertTrue(updateListener.updatesReceived.get("test::bev:tires#pressure-front-left").toFullString()
                 .endsWith("psi"), "Pressure Unit");
+        assertTrue(updateListener.updatesReceived.get("test::bev:hvac#temperature").toFullString().endsWith("°F"),
+                "Temperature Unit");
+
+        System.out.println("--- Switch to Celsius");
+        // overwrite with EU Units
+        json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
+        update = ProtoConverter.json2Proto(json, true);
+        vh.distributeContent(update);
     }
 
     @Test
@@ -330,11 +343,10 @@ class VehicleHandlerTest {
         vh.distributeContent(update);
         assertTrue(updateListener.updatesReceived.containsKey("test::bev:vehicle#proto-update"),
                 "Proto Channel not updated");
-
     }
 
     @Test
-    public void testAkashkumar() {
+    public void testTemperaturePoints() {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
@@ -346,17 +358,90 @@ class VehicleHandlerTest {
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
 
-        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown-akashkumar.json");
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
         vh.distributeContent(update);
-        assertFalse(updateListener.updatesReceived.containsKey("test::bev:vehicle#proto-update"),
-                "Proto Channel not updated");
+        assertEquals("22 °C", updateListener.updatesReceived.get("test::bev:hvac#temperature").toFullString(),
+                "Temperature Point One Updated");
 
-        updateListener.linked = true;
-        vh.distributeContent(update);
-        assertTrue(updateListener.updatesReceived.containsKey("test::bev:vehicle#proto-update"),
-                "Proto Channel not updated");
-
+        System.out.println("---");
+        ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_HVAC, "zone");
+        updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+        vh.handleCommand(cuid, new DecimalType(2));
+        assertEquals("19 °C", updateListener.updatesReceived.get("test::bev:hvac#temperature").toFullString(),
+                "Temperature Point One Updated");
     }
 
+    @Test
+    public void testTemperaturePointSelection() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
+        AuccountHandlerMock ahm = new AuccountHandlerMock();
+        VehicleHandler vh = new VehicleHandler(thingMock, commandOptionMock, mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
+        vh.accountHandler = Optional.of(ahm);
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+        System.out.println("---");
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vh.distributeContent(update);
+
+        ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_HVAC, "temperature");
+        updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+        vh.handleCommand(cuid, QuantityType.valueOf("18 °C"));
+        System.out.println(ahm.getCommand());
+        System.out.println(Utils.getZoneNumber(ahm.getCommand().get("zone").toString()));
+        vh.handleCommand(cuid, QuantityType.valueOf("80 °F"));
+        System.out.println(ahm.getCommand());
+        System.out.println(Utils.getZoneNumber(ahm.getCommand().get("zone").toString()));
+    }
+
+    @Test
+    public void testChargeProgramSelection() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
+        AuccountHandlerMock ahm = new AuccountHandlerMock();
+        VehicleHandler vh = new VehicleHandler(thingMock, commandOptionMock, mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
+        vh.accountHandler = Optional.of(ahm);
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vh.distributeContent(update);
+
+        ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "max-soc");
+        updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+        vh.handleCommand(cuid, QuantityType.valueOf("90 %"));
+        System.out.println(ahm.getCommand());
+        System.out.println("---");
+
+        cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "program");
+        vh.handleCommand(cuid, new DecimalType(3));
+        System.out.println("---");
+
+        cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "program");
+        vh.handleCommand(cuid, new DecimalType(2));
+        System.out.println("---");
+
+        cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "program");
+        vh.handleCommand(cuid, new DecimalType(0));
+        System.out.println("---");
+
+        cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "program");
+        vh.handleCommand(cuid, new DecimalType(5));
+    }
 }

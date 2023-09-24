@@ -67,13 +67,18 @@ public class Mapper {
     public static void initialze(UnitProvider up) {
         // Configure Mapper default values
         Unit<Length> lengthUnit = up.getUnit(Length.class);
-        if (lengthUnit.equals(ImperialUnits.FOOT)) {
-            LOGGER.debug("Switch to ImperialUnits as default");
-            defaultLengthUnit = ImperialUnits.MILE;
-            defaultSpeedUnit = ImperialUnits.MILES_PER_HOUR;
-            defaultPressureUnit = ImperialUnits.POUND_FORCE_SQUARE_INCH;
-            defaultVolumeUnit = ImperialUnits.GALLON_LIQUID_US;
-            defaultTemperatureUnit = up.getUnit(Temperature.class);
+        if (lengthUnit != null) {
+            if (lengthUnit.equals(ImperialUnits.FOOT)) {
+                LOGGER.debug("Switch to ImperialUnits as default");
+                defaultLengthUnit = ImperialUnits.MILE;
+                defaultSpeedUnit = ImperialUnits.MILES_PER_HOUR;
+                defaultPressureUnit = ImperialUnits.POUND_FORCE_SQUARE_INCH;
+                defaultVolumeUnit = ImperialUnits.GALLON_LIQUID_US;
+            }
+        }
+        Unit<Temperature> temperatureUnit = up.getUnit(Temperature.class);
+        if (temperatureUnit != null) {
+            defaultTemperatureUnit = temperatureUnit;
         }
     }
 

@@ -531,13 +531,13 @@
             "temperature_points": [
                 {
                     "zone": "frontCenter",
-                    "temperature_display_value": "21.5",
+                    "temperature_display_value": "71.0",
                     "temperature": 21.5
                 }
             ]
         },
         "timestamp_in_ms": 1693923891000,
-        "temperature_unit": "CELSIUS",
+        "temperature_unit": "FAHRENHEIT",
         "timestamp": 1693923891
     },
     "distanceGasReset": {

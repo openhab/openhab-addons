@@ -46,6 +46,7 @@
 	<channel-type id="active-channel">
 		<item-type>Switch</item-type>
 		<label>Charge Active</label>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-channel">
 		<item-type>Number:Power</item-type>
@@ -55,6 +56,7 @@
 	<channel-type id="program-channel">
 		<item-type>Number</item-type>
 		<label>Charge Program</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="end-time-channel">
 		<item-type>DateTime</item-type>
@@ -75,9 +77,11 @@
 				<option value="100 %">100 %</option>
 			</options>
 		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="auto-unlock-channel">
 		<item-type>Switch</item-type>
 		<label>Coupler Auto Unlock</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
