@@ -65,6 +65,7 @@
 				<option value="2">Lift</option>
 			</options>
 		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="sunroof-front-blind-channel">
 		<item-type>Number</item-type>

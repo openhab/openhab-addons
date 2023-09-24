@@ -346,10 +346,40 @@ Automatically calculated based on your vehicle capabilities
 #### Temperature Setting
 
 Preconfigure selected zone with desired temperature
+Minimum and Maximum Temperature depends on your local settings either Degrre Clesius or Fahrenheit.
+
+Celsius 
 
 - Minimum : 16
 - Maximum : 28
 
+Fahrenheit
+
+- Minimum : 60
+- Maximum : 84
+
+If you need details regarding your specific vehicle connect advanced channel `command-capabilities`.
+It delivers a JSON String with your vehcile command capabilities.
+
+````
+"commandName": "TEMPERATURE_CONFIGURE",
+"isAvailable": true,
+"parameters": [
+    {
+        "allowedEnums": [
+            "FRONT_CENTER"
+        ],
+        "parameterName": "TEMPERATURE_POINTS_ZONE"
+    },
+    {
+        "allowedEnums": null,
+        "maxValue": 28,
+        "minValue": 16,
+        "parameterName": "TEMPERATURE_POINTS_TEMPERATURE",
+        "steps": 0.5
+    }
+]
+````
 ### Service
 
 Group name: `service`
@@ -534,6 +564,10 @@ All channels `read-only`
 | cmd-last-update      | String      |  Timestamp of last update          |
 
 Show state of the send command sent by above channels which are able to write values.
+**Don't flood the API with commands**.
+The Mercedes API cannot withstand _Monkey Testing_.
+Send lock/unlock or temperatures in a short period of time will result in failures.
+
 
 Command Names:
 

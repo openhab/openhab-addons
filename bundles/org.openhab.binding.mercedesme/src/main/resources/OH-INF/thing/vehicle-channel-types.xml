@@ -18,6 +18,7 @@
 				<option value="1">Unlock</option>
 			</options>
 		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="windows-channel">
 		<item-type>Number</item-type>
@@ -36,6 +37,7 @@
 				<option value="2">Open</option>
 			</options>
 		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="door-status-channel">
 		<item-type>Number</item-type>
@@ -63,6 +65,7 @@
 				<option value="4">On</option>
 			</options>
 		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="park-brake-channel">
 		<item-type>Switch</item-type>

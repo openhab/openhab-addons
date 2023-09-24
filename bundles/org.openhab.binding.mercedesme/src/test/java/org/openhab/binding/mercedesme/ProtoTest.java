@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.handler.ProtoConverter;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 
@@ -56,7 +57,7 @@ class ProtoTest {
             Map<String, VEPUpdate> updates = pm.getVepUpdates().getUpdatesMap();
             VEPUpdate vepUpdate = updates.get(VIN_ANON);
             if (vepUpdate != null) {
-                String protoJson = Utils.proto2Json(vepUpdate);
+                String protoJson = Utils.proto2Json(vepUpdate, Constants.THING_TYPE_BEV);
                 String referenceJson = FileReader
                         .readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Unformatted.json");
                 assertEquals(referenceJson, protoJson, "Prto2Json compare");
@@ -64,8 +65,7 @@ class ProtoTest {
                 // plus one due to added binding version
                 assertEquals(vepUpdate.getAttributesCount() + 1, protoJsonObject.length(), "Attributes Count");
                 // assure version is in
-                assertTrue(protoJsonObject.has("bindingVersion"));
-                System.out.println(protoJsonObject.get("bindingVersion"));
+                assertTrue(protoJsonObject.has("bindingInfo"));
                 VEPUpdate roundTrip = ProtoConverter.json2Proto(protoJsonObject.toString(), true);
                 assertEquals(157, roundTrip.getAttributesCount(), "Roundtrip Count");
             } else {
@@ -92,5 +92,21 @@ class ProtoTest {
         } catch (Throwable e) {
             fail();
         }
+    }
+
+    @Test
+    void testChargeProgramValues() {
+        assertEquals(0, Utils.getChargeProgramNumber("DEFAULT_CHARGE_PROGRAM"), "Default Charge Program");
+        assertEquals(2, Utils.getChargeProgramNumber("HOME_CHARGE_PROGRAM"), "Home Charge Program");
+        assertEquals(3, Utils.getChargeProgramNumber("WORK_CHARGE_PROGRAM"), "Work Charge Program");
+        assertEquals(-1, Utils.getChargeProgramNumber("whatever"), "Fail Value");
+    }
+
+    @Test
+    void testTemperaturePointsValues() {
+        assertEquals(3, Utils.getZoneNumber("frontCenter"), "Front Center Zone");
+        assertEquals(1, Utils.getZoneNumber("frontLeft"), "Front Left Zone");
+        assertEquals(2, Utils.getZoneNumber("frontRight"), "Front Right Zone");
+        assertEquals(-1, Utils.getZoneNumber("whatever"), "Fail Value");
     }
 }

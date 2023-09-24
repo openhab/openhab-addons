@@ -34,6 +34,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
@@ -43,6 +45,10 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +79,8 @@ public class Utils {
     private static final List<Integer> PORTS = new ArrayList<>();
     private static int port = 8090;
 
+    private static List<CommandOption> FAHRENHIT_COMMAND_OPTIONS = new ArrayList<CommandOption>();
+    private static List<CommandOption> CELSIUS_COMMAND_OPTIONS = new ArrayList<CommandOption>();
     private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
 
         @Override
@@ -306,7 +314,7 @@ public class Utils {
     }
 
     @SuppressWarnings("unused")
-    public static String proto2Json(VEPUpdate update) {
+    public static String proto2Json(VEPUpdate update, ThingTypeUID ttuid) {
         JSONObject protoJson = new JSONObject();
         Map<String, VehicleAttributeStatus> m = update.getAttributesMap();
         // System.out.println("Total size " + m.size());
@@ -384,9 +392,10 @@ public class Utils {
             // System.out.println("New size " + protoJson.length());
         });
         // finally put binding version in
-        JSONObject version = new JSONObject();
-        version.put("display_value", Constants.BINDING_VERSION);
-        protoJson.put("bindingVersion", version);
+        JSONObject bindingInfo = new JSONObject();
+        bindingInfo.put("version", Constants.BINDING_VERSION);
+        bindingInfo.put("vehicle", ttuid.getAsString());
+        protoJson.put("bindingInfo", bindingInfo);
         return protoJson.toString();
     }
 
@@ -397,7 +406,7 @@ public class Utils {
             if (bKey.length > 1) {
                 joa.put(bKey[bKey.length - 1], aValue);
             } else {
-                joa.put(bKey[0], aValue);
+                joa.put(bKey[0], aValue.toString());
             }
         });
         return joa;
@@ -502,5 +511,69 @@ public class Utils {
 
     public static String getCountry() {
         return localeProvider.getLocale().getCountry();
+    }
+
+    public static List<CommandOption> getTemperatureOptions(Unit unit) {
+        if (ImperialUnits.FAHRENHEIT.equals(unit)) {
+            if (FAHRENHIT_COMMAND_OPTIONS.isEmpty()) {
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("60 °F", "60 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("61 °F", "61 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("62 °F", "62 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("63 °F", "63 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("64 °F", "64 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("65 °F", "65 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("66 °F", "66 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("67 °F", "67 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("68 °F", "68 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("69 °F", "69 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("70 °F", "70 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("71 °F", "71 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("72 °F", "72 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("73 °F", "73 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("74 °F", "74 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("75 °F", "75 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("76 °F", "76 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("77 °F", "77 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("78 °F", "78 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("79 °F", "79 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("80 °F", "80 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("81 °F", "81 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("82 °F", "82 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("83 °F", "83 °F"));
+                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("84 °F", "84 °F"));
+            }
+            return FAHRENHIT_COMMAND_OPTIONS;
+        } else if (SIUnits.CELSIUS.equals(unit)) {
+            if (CELSIUS_COMMAND_OPTIONS.isEmpty()) {
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("16 °C", "16 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("16.5 °C", "16.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("17 °C", "17 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("17.5 °C", "17.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("18 °C", "18 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("18.5 °C", "18.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("19 °C", "19 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("19.5 °C", "19.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("20 °C", "20 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("20.5 °C", "20.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("21 °C", "21 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("21.5 °C", "21.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("22 °C", "22 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("22.5 °C", "22.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("23 °C", "23 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("23.5 °C", "23.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("24 °C", "24 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("24.5 °C", "24.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("25 °C", "25 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("25.5 °C", "25.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("26 °C", "26 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("26.5 °C", "26.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("27 °C", "27 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("27.5 °C", "27.5 °C"));
+                CELSIUS_COMMAND_OPTIONS.add(new CommandOption("28 °C", "28 °C"));
+            }
+            return CELSIUS_COMMAND_OPTIONS;
+        } else {
+            return new ArrayList<CommandOption>();
+        }
     }
 }

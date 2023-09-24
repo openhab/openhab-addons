@@ -14,7 +14,6 @@ package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,6 +47,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -114,7 +114,6 @@ public class VehicleHandler extends BaseThingHandler {
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
-    private Map<String, Instant> blockerMap = new HashMap<String, Instant>();
     private Map<String, UOMObserver> unitStorage = new HashMap<String, UOMObserver>();
     Map<String, ChannelStateMap> eventStorage = new HashMap<String, ChannelStateMap>();
 
@@ -122,10 +121,10 @@ public class VehicleHandler extends BaseThingHandler {
     private boolean chargingState = false;
     private int selectedChargeProgram = -1;
     private int activeTemperaturePoint = -1;
+    private Map<Integer, QuantityType<Temperature>> temperaturePointsStorage = new HashMap<Integer, QuantityType<Temperature>>();
     private JSONObject chargeGroupValueStorage = new JSONObject();
     private Map<String, State> hvacGroupValueStorage = new HashMap<String, State>();
     private String vehicleType = NOT_SET;
-
     Optional<AccountHandler> accountHandler = Optional.empty();
     Optional<VehicleConfiguration> config = Optional.empty();
 
@@ -148,8 +147,6 @@ public class VehicleHandler extends BaseThingHandler {
             if (handler != null) {
                 accountHandler = Optional.of((AccountHandler) handler);
                 accountHandler.get().registerVin(config.get().vin, this);
-                // triggers Websocket update to get online immediately
-                accountHandler.get().sendCommand(null);
             } else {
                 throw new IllegalStateException("BridgeHandler is null");
             }
@@ -202,7 +199,6 @@ public class VehicleHandler extends BaseThingHandler {
                             CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                     .setRequestId(UUID.randomUUID().toString()).setEngineStart(eStart).build();
                             ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                            addBlocker(GROUP_VEHICLE);
                             accountHandler.get().sendCommand(cm);
                         }
                     } else if (commandValue == 0) {
@@ -210,7 +206,6 @@ public class VehicleHandler extends BaseThingHandler {
                         CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                 .setRequestId(UUID.randomUUID().toString()).setEngineStop(eStop).build();
                         ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                        addBlocker(GROUP_VEHICLE);
                         accountHandler.get().sendCommand(cm);
                     }
                 }
@@ -231,7 +226,6 @@ public class VehicleHandler extends BaseThingHandler {
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                         .setRequestId(UUID.randomUUID().toString()).setWindowsVentilate(wv).build();
                                 cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                                addBlocker(GROUP_VEHICLE);
                                 accountHandler.get().sendCommand(cm);
                             }
                             break;
@@ -240,7 +234,6 @@ public class VehicleHandler extends BaseThingHandler {
                             cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                     .setRequestId(UUID.randomUUID().toString()).setWindowsClose(wc).build();
                             cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                            addBlocker(GROUP_VEHICLE);
                             accountHandler.get().sendCommand(cm);
                             break;
                         case 2:
@@ -251,7 +244,6 @@ public class VehicleHandler extends BaseThingHandler {
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                         .setRequestId(UUID.randomUUID().toString()).setWindowsOpen(wo).build();
                                 cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                                addBlocker(GROUP_VEHICLE);
                                 accountHandler.get().sendCommand(cm);
                             }
                             break;
@@ -272,7 +264,6 @@ public class VehicleHandler extends BaseThingHandler {
                             CommandRequest lockCr = CommandRequest.newBuilder().setVin(config.get().vin)
                                     .setRequestId(UUID.randomUUID().toString()).setDoorsLock(dl).build();
                             ClientMessage lockCm = ClientMessage.newBuilder().setCommandRequest(lockCr).build();
-                            addBlocker(GROUP_VEHICLE);
                             accountHandler.get().sendCommand(lockCm);
                             break;
                         case 1:
@@ -284,7 +275,6 @@ public class VehicleHandler extends BaseThingHandler {
                                 CommandRequest unlockCr = CommandRequest.newBuilder().setVin(config.get().vin)
                                         .setRequestId(UUID.randomUUID().toString()).setDoorsUnlock(du).build();
                                 ClientMessage unlockCm = ClientMessage.newBuilder().setCommandRequest(unlockCr).build();
-                                addBlocker(GROUP_VEHICLE);
                                 accountHandler.get().sendCommand(unlockCm);
                             }
                             break;
@@ -305,14 +295,15 @@ public class VehicleHandler extends BaseThingHandler {
                 } else {
                     logger.info("Received Air Condition Temperature change {}", command.getClass());
                     logger.info("Received DecimalType {}", ((QuantityType) command).doubleValue());
+                    QuantityType<Temperature> tempToSet = ((QuantityType<Temperature>) command);
                     TemperatureConfigure tc = TemperatureConfigure.newBuilder()
                             .addTemperaturePoints(TemperaturePoint.newBuilder().setZoneValue(activeTemperaturePoint)
-                                    .setTemperatureInCelsius(((QuantityType) command).doubleValue()).build())
+                                    .setTemperatureInCelsius(tempToSet.toInvertibleUnit(SIUnits.CELSIUS).intValue())
+                                    .build())
                             .build();
                     CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
                             .setRequestId(UUID.randomUUID().toString()).setTemperatureConfigure(tc).build();
                     ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                    addBlocker(GROUP_HVAC);
                     accountHandler.get().sendCommand(cm);
                 }
             } else if ("active".equals(channelUID.getIdWithoutGroup())) {
@@ -327,7 +318,6 @@ public class VehicleHandler extends BaseThingHandler {
                                 .setRequestId(UUID.randomUUID().toString()).setZevPreconditioningStart(precondStart)
                                 .build();
                         ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                        addBlocker(GROUP_HVAC);
                         accountHandler.get().sendCommand(cm);
                     } else {
                         ZEVPreconditioningStop precondStop = ZEVPreconditioningStop.newBuilder()
@@ -336,24 +326,19 @@ public class VehicleHandler extends BaseThingHandler {
                                 .setRequestId(UUID.randomUUID().toString()).setZevPreconditioningStop(precondStop)
                                 .build();
                         ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                        addBlocker(GROUP_HVAC);
                         accountHandler.get().sendCommand(cm);
                     }
                 }
             } else if ("front-left".equals(channelUID.getIdWithoutGroup())) {
-                addBlocker(GROUP_HVAC);
                 hvacGroupValueStorage.put("front-left", (State) command);
                 configureSeats();
             } else if ("front-right".equals(channelUID.getIdWithoutGroup())) {
-                addBlocker(GROUP_HVAC);
                 hvacGroupValueStorage.put("front-right", (State) command);
                 configureSeats();
             } else if ("rear-left".equals(channelUID.getIdWithoutGroup())) {
-                addBlocker(GROUP_HVAC);
                 hvacGroupValueStorage.put("rear-left", (State) command);
                 configureSeats();
             } else if ("rear-right".equals(channelUID.getIdWithoutGroup())) {
-                addBlocker(GROUP_HVAC);
                 hvacGroupValueStorage.put("rear-right", (State) command);
                 configureSeats();
             } else if ("aux-heat".equals(channelUID.getIdWithoutGroup())) {
@@ -376,9 +361,14 @@ public class VehicleHandler extends BaseThingHandler {
                     }
                 }
             } else if ("zone".equals(channelUID.getIdWithoutGroup())) {
-                ChannelStateMap temperatureMap = new ChannelStateMap("zone", GROUP_HVAC,
-                        new DecimalType(((DecimalType) command).intValue()));
-                updateChannel(temperatureMap);
+                int zone = ((DecimalType) command).intValue();
+                ChannelStateMap zoneMap = new ChannelStateMap("zone", GROUP_HVAC, (DecimalType) command);
+                updateChannel(zoneMap);
+                QuantityType<Temperature> selectedTemp = temperaturePointsStorage.get(zone);
+                if (selectedTemp != null) {
+                    ChannelStateMap tempCSM = new ChannelStateMap("temperature", GROUP_HVAC, selectedTemp);
+                    updateChannel(tempCSM);
+                }
             }
         } else if (Constants.GROUP_POSITION.equals(channelUID.getGroupId())) {
             /**
@@ -419,46 +409,51 @@ public class VehicleHandler extends BaseThingHandler {
              * Commands for Charging
              */
             synchronized (chargeGroupValueStorage) {
-                int programToSelect = selectedChargeProgram;
                 int maxSocToSelect = 80;
                 boolean autoUnlockToSelect = false;
-                if (chargeGroupValueStorage.has(Integer.toString(programToSelect))) {
-                    maxSocToSelect = chargeGroupValueStorage.getJSONObject(Integer.toString(programToSelect))
-                            .getInt(Constants.MAX_SOC_KEY);
-                    autoUnlockToSelect = chargeGroupValueStorage.getJSONObject(Integer.toString(programToSelect))
-                            .getBoolean(Constants.AUTOUNLOCK_KEY);
-                } else {
-                    logger.trace("No Charge Program found for {}", programToSelect);
-                }
-
                 String supported = thing.getProperties().get("commandChargeProgramConfigure");
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.info("Charge Program Cosnfigure not supported");
                 } else {
-                    if ("auto-unlock".equals(channelUID.getIdWithoutGroup())) {
-                        autoUnlockToSelect = ((OnOffType) command).equals(OnOffType.ON);
-                    } else if ("max-soc".equals(channelUID.getIdWithoutGroup())) {
-                        maxSocToSelect = ((QuantityType) command).intValue();
-                    } else if ("program".equals(channelUID.getIdWithoutGroup())) {
-                        programToSelect = ((DecimalType) command).intValue();
-                        if (chargeGroupValueStorage.has(Integer.toString(programToSelect))) {
-                            maxSocToSelect = chargeGroupValueStorage.getJSONObject(Integer.toString(programToSelect))
+                    boolean sendCommand = false;
+                    if ("program".equals(channelUID.getIdWithoutGroup())) {
+                        selectedChargeProgram = ((DecimalType) command).intValue();
+                        if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
+                            maxSocToSelect = chargeGroupValueStorage
+                                    .getJSONObject(Integer.toString(selectedChargeProgram))
                                     .getInt(Constants.MAX_SOC_KEY);
                             autoUnlockToSelect = chargeGroupValueStorage
-                                    .getJSONObject(Integer.toString(programToSelect))
+                                    .getJSONObject(Integer.toString(selectedChargeProgram))
                                     .getBoolean(Constants.AUTOUNLOCK_KEY);
+                            // updateChannel(new ChannelStateMap("max-soc", GROUP_CHARGE,
+                            // QuantityType.valueOf(maxSocToSelect, Units.PERCENT)));
+                            // updateChannel(new ChannelStateMap("auto-unlock", GROUP_CHARGE,
+                            // OnOffType.from(autoUnlockToSelect)));
+                            sendCommand = true;
+                        } else {
+                            logger.info("No charge program found for {}", selectedChargeProgram);
                         }
                     }
-                    Int32Value maxSocValue = Int32Value.newBuilder().setValue(maxSocToSelect).build();
-                    BoolValue autoUnlockValue = BoolValue.newBuilder().setValue(autoUnlockToSelect).build();
-                    ChargeProgramConfigure cpc = ChargeProgramConfigure.newBuilder()
-                            .setChargeProgramValue(programToSelect).setMaxSoc(maxSocValue)
-                            .setAutoUnlock(autoUnlockValue).build();
-                    CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
-                            .setRequestId(UUID.randomUUID().toString()).setChargeProgramConfigure(cpc).build();
-                    ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                    addBlocker(GROUP_CHARGE);
-                    accountHandler.get().sendCommand(cm);
+                    if ("auto-unlock".equals(channelUID.getIdWithoutGroup())) {
+                        autoUnlockToSelect = ((OnOffType) command).equals(OnOffType.ON);
+                        sendCommand = true;
+                    } else if ("max-soc".equals(channelUID.getIdWithoutGroup())) {
+                        maxSocToSelect = ((QuantityType) command).intValue();
+                        sendCommand = true;
+                    } else {
+                        // nothing to be send
+                    }
+                    if (sendCommand) {
+                        Int32Value maxSocValue = Int32Value.newBuilder().setValue(maxSocToSelect).build();
+                        BoolValue autoUnlockValue = BoolValue.newBuilder().setValue(autoUnlockToSelect).build();
+                        ChargeProgramConfigure cpc = ChargeProgramConfigure.newBuilder()
+                                .setChargeProgramValue(selectedChargeProgram).setMaxSoc(maxSocValue)
+                                .setAutoUnlock(autoUnlockValue).build();
+                        CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                .setRequestId(UUID.randomUUID().toString()).setChargeProgramConfigure(cpc).build();
+                        ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                        accountHandler.get().sendCommand(cm);
+                    }
                 }
             }
         } else if (Constants.GROUP_DOORS.equals(channelUID.getGroupId())) {
@@ -563,7 +558,7 @@ public class VehicleHandler extends BaseThingHandler {
          */
         try {
             // logger.info("Received new proto data vep {}", data);
-            String newProto = Utils.proto2Json(data);
+            String newProto = Utils.proto2Json(data, thing.getThingTypeUID());
             String combinedProto = newProto;
             ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
             ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
@@ -583,11 +578,9 @@ public class VehicleHandler extends BaseThingHandler {
             }
             // proto updates causing large printouts in openhab.log
             // update channel in case of user connected this channel with an item
-            if (isLinked(protoUpdateChannelUID)) {
-                ChannelStateMap dataUpdateMap = new ChannelStateMap("proto-update", GROUP_VEHICLE,
-                        StringType.valueOf(combinedProto));
-                updateChannel(dataUpdateMap);
-            }
+            ChannelStateMap dataUpdateMap = new ChannelStateMap("proto-update", GROUP_VEHICLE,
+                    StringType.valueOf(combinedProto));
+            updateChannel(dataUpdateMap);
         } catch (Throwable t) {
             logger.trace("Exception when combining Protos: {}", t.getMessage());
             StackTraceElement[] ste = t.getStackTrace();
@@ -617,64 +610,66 @@ public class VehicleHandler extends BaseThingHandler {
         /**
          * handle temperature point
          */
-        boolean hvacUpdated = false;
         if (atts.containsKey("temperaturePoints")) {
             VehicleAttributeStatus hvacTemperaturePointAttribute = atts.get("temperaturePoints");
             if (hvacTemperaturePointAttribute.hasTemperaturePointsValue()) {
                 TemperaturePointsValue tpValue = hvacTemperaturePointAttribute.getTemperaturePointsValue();
-                List<VehicleEvents.TemperaturePoint> tpList = new ArrayList<VehicleEvents.TemperaturePoint>();
+                // List<VehicleEvents.TemperaturePoint> tpList = new ArrayList<VehicleEvents.TemperaturePoint>();
                 if (tpValue.getTemperaturePointsCount() > 0) {
                     List<VehicleEvents.TemperaturePoint> tPointList = tpValue.getTemperaturePointsList();
                     List<CommandOption> commandOptions = new ArrayList<CommandOption>();
                     List<StateOption> stateOptions = new ArrayList<StateOption>();
                     tPointList.forEach(point -> {
                         String zoneName = point.getZone();
-                        int number = Utils.getZoneNumber(zoneName);
-                        if (number > 0) {
-                            if (activeTemperaturePoint == -1) {
-                                activeTemperaturePoint = number;
-                                tpList.add(point);
-                            } else if (activeTemperaturePoint == number) {
-
-                                tpList.add(point);
+                        int zoneNumber = Utils.getZoneNumber(zoneName);
+                        Unit<Temperature> temperatureUnit = Mapper.defaultTemperatureUnit;
+                        UOMObserver observer = null;
+                        if (hvacTemperaturePointAttribute.hasTemperatureUnit()) {
+                            observer = new UOMObserver(hvacTemperaturePointAttribute.getTemperatureUnit().toString());
+                            if (observer.getUnit().isEmpty()) {
+                                logger.warn("No Unit found for temperature - take default ");
+                            } else {
+                                temperatureUnit = observer.getUnit().get();
                             }
-                            commandOptions.add(new CommandOption(Integer.toString(number), zoneName));
-                            stateOptions.add(new StateOption(Integer.toString(number), zoneName));
+                        }
+                        System.out.println("Default " + temperatureUnit);
+                        ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "temperature");
+                        mmcop.setCommandOptions(cuid, Utils.getTemperatureOptions(temperatureUnit));
+                        if (zoneNumber > 0) {
+                            if (activeTemperaturePoint == -1) {
+                                activeTemperaturePoint = zoneNumber;
+                            }
+                            double temperature = point.getTemperature();
+                            if (point.getTemperatureDisplayValue() != null) {
+                                if (point.getTemperatureDisplayValue().strip().length() > 0) {
+                                    try {
+                                        temperature = Double.valueOf(point.getTemperatureDisplayValue());
+                                    } catch (NumberFormatException nfe) {
+                                        logger.info("Cannot transform Temperature Display Value {} into Double",
+                                                point.getTemperatureDisplayValue());
+                                    }
+                                }
+                            }
+                            QuantityType<Temperature> temperatureState = QuantityType.valueOf(temperature,
+                                    temperatureUnit);
+                            temperaturePointsStorage.put(zoneNumber, temperatureState);
+                            if (activeTemperaturePoint == zoneNumber) {
+                                ChannelStateMap zoneCSM = new ChannelStateMap("zone", Constants.GROUP_HVAC,
+                                        new DecimalType(activeTemperaturePoint));
+                                updateChannel(zoneCSM);
+                                ChannelStateMap tempCSM = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC,
+                                        temperatureState, observer);
+                                updateChannel(tempCSM);
+                            }
                         } else {
                             logger.info("No Integer mapping found for Temperature Zone {}", zoneName);
                         }
+                        commandOptions.add(new CommandOption(Integer.toString(zoneNumber), zoneName));
+                        stateOptions.add(new StateOption(Integer.toString(zoneNumber), zoneName));
                     });
                     ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "zone");
                     mmcop.setCommandOptions(cuid, commandOptions);
                     mmsop.setStateOptions(cuid, stateOptions);
-
-                    ChannelStateMap zoneMap = new ChannelStateMap("zone", Constants.GROUP_HVAC,
-                            new DecimalType(activeTemperaturePoint));
-                    updateChannel(zoneMap);
-
-                    Unit<Temperature> temperatureUnit = Mapper.defaultTemperatureUnit;
-                    UOMObserver observer = null;
-                    if (hvacTemperaturePointAttribute.hasTemperatureUnit()) {
-                        observer = new UOMObserver(hvacTemperaturePointAttribute.getTemperatureUnit().toString());
-                        if (observer.getUnit().isEmpty()) {
-                            logger.warn("No Unit found for temperature - take default ");
-                        } else {
-                            temperatureUnit = observer.getUnit().get();
-                        }
-                    }
-
-                    double temp = 0;
-                    if (!tpList.isEmpty()) {
-                        try {
-                            temp = Double.parseDouble(tpList.get(0).getTemperatureDisplayValueBytes().toString());
-                        } catch (NumberFormatException nfe) {
-                            temp = tpList.get(0).getTemperature();
-                        }
-                    }
-                    ChannelStateMap tempMap = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC,
-                            QuantityType.valueOf(temp, temperatureUnit), observer);
-                    updateChannel(tempMap);
-                    hvacUpdated = true;
                 } else {
                     logger.trace("No TemperaturePoints found - list empty");
                 }
@@ -684,14 +679,12 @@ public class VehicleHandler extends BaseThingHandler {
         } else {
             if (fullUpdate) {
                 logger.trace("No TemperaturePoint Key found");
+                ChannelStateMap zoneMap = new ChannelStateMap("zone", Constants.GROUP_HVAC, UnDefType.UNDEF);
+                updateChannel(zoneMap);
+                QuantityType<Temperature> tempState = QuantityType.valueOf(-1, Mapper.defaultTemperatureUnit);
+                ChannelStateMap tempMap = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC, tempState);
+                updateChannel(tempMap);
             }
-        }
-        if (fullUpdate && !hvacUpdated) {
-            ChannelStateMap zoneMap = new ChannelStateMap("zone", Constants.GROUP_HVAC, UnDefType.UNDEF);
-            updateChannel(zoneMap);
-            QuantityType<Temperature> tempState = QuantityType.valueOf(-1, Mapper.defaultTemperatureUnit);
-            ChannelStateMap tempMap = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC, tempState);
-            updateChannel(tempMap);
         }
 
         /**
@@ -1045,6 +1038,7 @@ public class VehicleHandler extends BaseThingHandler {
         if ("proto-update".equals(csm.getChannel())) {
             ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
             if (!isLinked(protoUpdateChannelUID)) {
+                eventStorage.put(protoUpdateChannelUID.getId(), csm);
                 return;
             }
         }
@@ -1085,14 +1079,7 @@ public class VehicleHandler extends BaseThingHandler {
             activeTemperaturePoint = ((DecimalType) csm.getState()).intValue();
         }
 
-        /**
-         * Check if group is blocked due to running command
-         */
-        if (!isBlocked(csm.getGroup())) {
-            updateState(cuid, csm.getState());
-        } else {
-            logger.trace("Update for {} temporarely blocked", csm.getGroup());
-        }
+        updateState(cuid, csm.getState());
     }
 
     private void handleComplexTripPattern(String channel, String pattern) {
@@ -1147,25 +1134,11 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void addBlocker(String group) {
-        blockerMap.put(group, Instant.now().plusSeconds(15));
-    }
-
-    private boolean isBlocked(String group) {
-        Instant block = blockerMap.get(group);
-        if (block != null) {
-            return Instant.now().isBefore(block);
-        }
-        return false;
-    }
-
     /**
      * Vehicle Actions
      */
-
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        logger.info("[THING_ACTIONS] getServices()");
         return Collections.singleton(VehicleActions.class);
     }
 
