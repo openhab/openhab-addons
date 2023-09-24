@@ -45,6 +45,9 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_TOP_TEXT;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_APPID;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PROP_UNIQUEID;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PUSH_ICON_OPTION_0;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PUSH_ICON_OPTION_1;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.PUSH_ICON_OPTION_2;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.THING_TYPE_APP;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.THOUSAND;
 
@@ -247,8 +250,18 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 }
                 break;
             case CHANNEL_PUSH_ICON:
-                if (command instanceof OnOffType) {
-                    this.app.setPushIcon(command.equals(OnOffType.ON));
+                if (command instanceof StringType) {
+                    switch (((StringType) command).toString()) {
+                        case PUSH_ICON_OPTION_0:
+                            this.app.setPushIcon(new BigDecimal(0));
+                            break;
+                        case PUSH_ICON_OPTION_1:
+                            this.app.setPushIcon(new BigDecimal(1));
+                            break;
+                        case PUSH_ICON_OPTION_2:
+                            this.app.setPushIcon(new BigDecimal(2));
+                            break;
+                    }
                 }
                 break;
             case CHANNEL_BACKGROUND:
@@ -456,10 +469,13 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             if (bridgeHardwareId != null) {
                 thing.setProperty(PROP_APPID, bridgeHardwareId + "-" + this.appName);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY, "Synchronizing...");
-            this.finishInitJob = scheduler.schedule(this::finishInit, 15, TimeUnit.SECONDS);
+            if (this.synchronizationRequired) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY, "Synchronizing...");
+                this.finishInitJob = scheduler.schedule(this::finishInit, 15, TimeUnit.SECONDS);
+            } else {
+                finishInit();
+            }
         }
-        return;
     }
 
     @Override
@@ -587,8 +603,15 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_ICON), new StringType(this.app.getIcon()));
 
-        updateState(new ChannelUID(channelPrefix + CHANNEL_PUSH_ICON),
-                this.app.getPushIcon() ? OnOffType.ON : OnOffType.OFF);
+        String param = "";
+        if (this.app.getPushIcon().equals(BigDecimal.ZERO)) {
+            param = PUSH_ICON_OPTION_0;
+        } else if (this.app.getPushIcon().equals(BigDecimal.ONE)) {
+            param = PUSH_ICON_OPTION_1;
+        } else if (this.app.getPushIcon().equals(new BigDecimal(2))) {
+            param = PUSH_ICON_OPTION_2;
+        }
+        updateState(new ChannelUID(channelPrefix + CHANNEL_PUSH_ICON), new StringType(param));
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_TEXTCASE),
                 new QuantityType<>(this.app.getBlinkText(), Units.ONE));

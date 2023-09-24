@@ -33,28 +33,28 @@ import org.openhab.binding.mqtt.awtrixlight.internal.Helper;
 public class AwtrixApp {
 
     public static final String DEFAULT_TEXT = "New Awtrix App";
-    public static final BigDecimal DEFAULT_TEXTCASE = new BigDecimal(0);
+    public static final BigDecimal DEFAULT_TEXTCASE = BigDecimal.ZERO;
     public static final boolean DEFAULT_TOPTEXT = false;
-    public static final BigDecimal DEFAULT_TEXTOFFSET = new BigDecimal(0);
+    public static final BigDecimal DEFAULT_TEXTOFFSET = BigDecimal.ZERO;
     public static final boolean DEFAULT_CENTER = true;
     public static final BigDecimal[] DEFAULT_COLOR = {};
     public static final BigDecimal[] DEFAULT_GRADIENT = {};
-    public static final BigDecimal DEFAULT_BLINKTEXT = new BigDecimal(0);
-    public static final BigDecimal DEFAULT_FADETEXT = new BigDecimal(0);
+    public static final BigDecimal DEFAULT_BLINKTEXT = BigDecimal.ZERO;
+    public static final BigDecimal DEFAULT_FADETEXT = BigDecimal.ZERO;
     public static final BigDecimal[] DEFAULT_BACKGROUND = {};
     public static final boolean DEFAULT_RAINBOW = false;
     public static final String DEFAULT_ICON = "None";
-    public static final boolean DEFAULT_PUSHICON = false;
+    public static final BigDecimal DEFAULT_PUSHICON = BigDecimal.ZERO;
     public static final BigDecimal DEFAULT_DURATION = new BigDecimal(7);
     public static final BigDecimal[] DEFAULT_LINE = {};
     public static final BigDecimal[] DEFAULT_BAR = {};
     public static final boolean DEFAULT_AUTOSCALE = true;
-    public static final BigDecimal DEFAULT_PROGRESS = new BigDecimal(-1);
+    public static final BigDecimal DEFAULT_PROGRESS = MINUSONE;
     public static final BigDecimal[] DEFAULT_PROGRESSC = {};
     public static final BigDecimal[] DEFAULT_PROGRESSBC = {};
-    public static final BigDecimal DEFAULT_SCROLLSPEED = new BigDecimal(100);
+    public static final BigDecimal DEFAULT_SCROLLSPEED = ONEHUNDRED;
     public static final String DEFAULT_EFFECT = "None";
-    public static final BigDecimal DEFAULT_EFFECTSPEED = new BigDecimal(1);
+    public static final BigDecimal DEFAULT_EFFECTSPEED = BigDecimal.ONE;
     public static final String DEFAULT_EFFECTPALETTE = "None";
     public static final boolean DEFAULT_EFFECTBLEND = true;
 
@@ -70,7 +70,7 @@ public class AwtrixApp {
     private BigDecimal[] background = DEFAULT_BACKGROUND;
     private boolean rainbow = DEFAULT_RAINBOW;
     private String icon = DEFAULT_ICON;
-    private boolean pushIcon = DEFAULT_PUSHICON;
+    private BigDecimal pushIcon = DEFAULT_PUSHICON;
     private BigDecimal duration = DEFAULT_DURATION;
     private BigDecimal[] line = DEFAULT_LINE;
     private BigDecimal[] bar = DEFAULT_BAR;
@@ -87,37 +87,37 @@ public class AwtrixApp {
     private boolean effectBlend = DEFAULT_EFFECTBLEND;
 
     public void updateFields(Map<String, Object> params) {
-        this.text = getStringValue(params, "text", "New Awtrix App");
-        this.textCase = getNumberValue(params, "textCase", new BigDecimal(0));
-        this.topText = getBoolValue(params, "topText", false);
-        this.textOffset = getNumberValue(params, "textOffset", new BigDecimal(0));
-        this.center = getBoolValue(params, "center", true);
-        this.color = getNumberArrayValue(params, "color", new BigDecimal[0]);
-        this.gradient = getGradientValue(params, new BigDecimal[0]);
-        this.blinkText = getNumberValue(params, "blinkText", new BigDecimal(0));
-        this.fadeText = getNumberValue(params, "fadeText", new BigDecimal(0));
-        this.background = getNumberArrayValue(params, "background", new BigDecimal[0]);
-        this.rainbow = getBoolValue(params, "rainbow", false);
-        this.icon = getStringValue(params, "icon", "None");
-        this.pushIcon = getBoolValue(params, "pushIcon", false);
-        this.duration = getNumberValue(params, "duration", new BigDecimal(5));
-        this.line = getNumberArrayValue(params, "line", new BigDecimal[0]);
-        this.bar = getNumberArrayValue(params, "bar", new BigDecimal[0]);
-        this.autoscale = getBoolValue(params, "autoscale", true);
-        this.progress = getNumberValue(params, "progress", new BigDecimal(-1));
-        this.progressC = getNumberArrayValue(params, "progressC", new BigDecimal[0]);
-        this.progressBC = getNumberArrayValue(params, "progressBC", new BigDecimal[0]);
-        this.scrollSpeed = getNumberValue(params, "scrollSpeed", new BigDecimal(100));
-        this.effect = getStringValue(params, "effect", "None");
+        this.text = getStringValue(params, "text", DEFAULT_TEXT);
+        this.textCase = getNumberValue(params, "textCase", DEFAULT_TEXTCASE);
+        this.topText = getBoolValue(params, "topText", DEFAULT_TOPTEXT);
+        this.textOffset = getNumberValue(params, "textOffset", DEFAULT_TEXTOFFSET);
+        this.center = getBoolValue(params, "center", DEFAULT_CENTER);
+        this.color = getNumberArrayValue(params, "color", DEFAULT_COLOR);
+        this.gradient = getGradientValue(params, DEFAULT_GRADIENT);
+        this.blinkText = getNumberValue(params, "blinkText", DEFAULT_BLINKTEXT);
+        this.fadeText = getNumberValue(params, "fadeText", DEFAULT_FADETEXT);
+        this.background = getNumberArrayValue(params, "background", DEFAULT_BACKGROUND);
+        this.rainbow = getBoolValue(params, "rainbow", DEFAULT_RAINBOW);
+        this.icon = getStringValue(params, "icon", DEFAULT_ICON);
+        this.pushIcon = getNumberValue(params, "pushIcon", DEFAULT_PUSHICON);
+        this.duration = getNumberValue(params, "duration", DEFAULT_DURATION);
+        this.line = getNumberArrayValue(params, "line", DEFAULT_LINE);
+        this.bar = getNumberArrayValue(params, "bar", DEFAULT_BAR);
+        this.autoscale = getBoolValue(params, "autoscale", DEFAULT_AUTOSCALE);
+        this.progress = getNumberValue(params, "progress", DEFAULT_PROGRESS);
+        this.progressC = getNumberArrayValue(params, "progressC", DEFAULT_PROGRESSC);
+        this.progressBC = getNumberArrayValue(params, "progressBC", DEFAULT_PROGRESSBC);
+        this.scrollSpeed = getNumberValue(params, "scrollSpeed", DEFAULT_SCROLLSPEED);
+        this.effect = getStringValue(params, "effect", DEFAULT_EFFECT);
 
         Map<String, Object> defaultEffectSettings = new HashMap<String, Object>();
-        defaultEffectSettings.put("effectSpeed", 1);
-        defaultEffectSettings.put("effectPalette", "None");
-        defaultEffectSettings.put("effectBlend", true);
+        defaultEffectSettings.put("effectSpeed", DEFAULT_EFFECTSPEED);
+        defaultEffectSettings.put("effectPalette", DEFAULT_EFFECTPALETTE);
+        defaultEffectSettings.put("effectBlend", DEFAULT_EFFECTBLEND);
         Map<String, Object> effectSettingsValues = getEffectSettingsValues(params, defaultEffectSettings);
-        this.effectSpeed = getNumberValue(effectSettingsValues, "effectSpeed", new BigDecimal(-1));
-        this.effectPalette = getStringValue(effectSettingsValues, "effectPalette", "None");
-        this.effectBlend = getBoolValue(params, "effectBlend", true);
+        this.effectSpeed = getNumberValue(effectSettingsValues, "effectSpeed", DEFAULT_EFFECTSPEED);
+        this.effectPalette = getStringValue(effectSettingsValues, "effectPalette", DEFAULT_EFFECTPALETTE);
+        this.effectBlend = getBoolValue(params, "effectBlend", DEFAULT_EFFECTBLEND);
     }
 
     public String getAppConfig() {
@@ -239,11 +239,11 @@ public class AwtrixApp {
         this.icon = icon;
     }
 
-    public Boolean getPushIcon() {
+    public BigDecimal getPushIcon() {
         return this.pushIcon;
     }
 
-    public void setPushIcon(Boolean pushIcon) {
+    public void setPushIcon(BigDecimal pushIcon) {
         this.pushIcon = pushIcon;
     }
 
