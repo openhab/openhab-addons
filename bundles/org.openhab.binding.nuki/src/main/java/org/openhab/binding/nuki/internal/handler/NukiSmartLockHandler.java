@@ -82,9 +82,8 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLoc
                 }
                 break;
             case NukiBindingConstants.CHANNEL_SMARTLOCK_STATE:
-                if (command instanceof DecimalType) {
-                    DecimalType cmd = (DecimalType) command;
-                    SmartLockAction action = SmartLockAction.fromAction(cmd.intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    SmartLockAction action = SmartLockAction.fromAction(decimalCommand.intValue());
                     if (action != null) {
                         withHttpClient(client -> {
                             BridgeLockActionResponse bridgeLockActionResponse = client

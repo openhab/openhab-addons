@@ -56,8 +56,7 @@ public class EventChannelHelper extends ChannelHelper {
 
     @Override
     public void setNewData(@Nullable NAObject data) {
-        if (data instanceof Event) {
-            Event event = (Event) data;
+        if (data instanceof Event event) {
             if (!event.getEventType().validFor(moduleType)) {
                 return;
             }

@@ -37,11 +37,4 @@ public interface EaseeCommand extends SuccessListener, FailureListener, ContentL
      * @throws ValidationException
      */
     void performAction(HttpClient asyncclient, String token) throws ValidationException;
-
-    /**
-     * sets a result processor for json result data
-     *
-     * @param resultProcessor
-     */
-    void registerResultProcessor(JsonResultProcessor resultProcessor);
 }

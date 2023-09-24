@@ -75,8 +75,8 @@ public class TradfriAirPurifierHandler extends TradfriThingHandler {
     }
 
     private void handleFanModeCommand(Command command) {
-        if (command instanceof Number) {
-            set(new TradfriAirPurifierData().setFanMode((Number) command).getJsonString());
+        if (command instanceof Number numberCommand) {
+            set(new TradfriAirPurifierData().setFanMode(numberCommand).getJsonString());
         } else {
             logger.debug("Cannot handle command '{}' of type {} for channel '{}'", command, command.getClass(),
                     CHANNEL_FAN_MODE);
@@ -84,8 +84,8 @@ public class TradfriAirPurifierHandler extends TradfriThingHandler {
     }
 
     private void handleDisableLed(Command command) {
-        if (command instanceof OnOffType) {
-            set(new TradfriAirPurifierData().setDisableLed((OnOffType) command).getJsonString());
+        if (command instanceof OnOffType onOffCommand) {
+            set(new TradfriAirPurifierData().setDisableLed(onOffCommand).getJsonString());
         } else {
             logger.debug("Cannot handle command '{}' of type {} for channel '{}'", command, command.getClass(),
                     CHANNEL_DISABLE_LED);
@@ -93,8 +93,8 @@ public class TradfriAirPurifierHandler extends TradfriThingHandler {
     }
 
     private void handleLockButton(Command command) {
-        if (command instanceof OnOffType) {
-            set(new TradfriAirPurifierData().setLockPhysicalButton((OnOffType) command).getJsonString());
+        if (command instanceof OnOffType onOffCommand) {
+            set(new TradfriAirPurifierData().setLockPhysicalButton(onOffCommand).getJsonString());
         } else {
             logger.debug("Cannot handle command '{}' of type {} for channel '{}'", command, command.getClass(),
                     CHANNEL_DISABLE_LED);

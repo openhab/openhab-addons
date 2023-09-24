@@ -245,13 +245,13 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
 
             default:
                 // mgb: additional wired client channels
-                if (client.isWired() && (client instanceof UniFiWiredClient)) {
-                    state = getWiredChannelState((UniFiWiredClient) client, channelId, state);
+                if (client.isWired() && (client instanceof UniFiWiredClient wiredClient)) {
+                    state = getWiredChannelState(wiredClient, channelId, state);
                 }
 
                 // mgb: additional wireless client channels
-                else if (client.isWireless() && (client instanceof UniFiWirelessClient)) {
-                    state = getWirelessChannelState((UniFiWirelessClient) client, channelId, state);
+                else if (client.isWireless() && (client instanceof UniFiWirelessClient wirelessClient)) {
+                    state = getWirelessChannelState(wirelessClient, channelId, state);
                 }
                 break;
         }

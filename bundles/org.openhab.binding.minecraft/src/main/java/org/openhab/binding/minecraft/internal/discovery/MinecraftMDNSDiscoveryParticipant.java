@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.minecraft.internal.discovery;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +37,7 @@ public class MinecraftMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(MinecraftBindingConstants.THING_TYPE_SERVER);
+        return Set.of(MinecraftBindingConstants.THING_TYPE_SERVER);
     }
 
     @Override
@@ -48,7 +47,7 @@ public class MinecraftMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
-        if (service.getName().equals("wc-minecraft")) {
+        if ("wc-minecraft".equals(service.getName())) {
             ThingUID uid = getThingUID(service);
 
             if (uid != null) {

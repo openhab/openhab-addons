@@ -15,8 +15,8 @@ package org.openhab.binding.ecovacs.internal.handler;
 import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -96,7 +96,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(EcovacsDeviceDiscoveryService.class);
+        return Set.of(EcovacsDeviceDiscoveryService.class);
     }
 
     @Override

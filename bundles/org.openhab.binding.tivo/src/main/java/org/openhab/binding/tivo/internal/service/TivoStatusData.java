@@ -78,7 +78,7 @@ public class TivoStatusData {
         UNKNOWN,
         OFFLINE,
         STANDBY,
-        ONLINE;
+        ONLINE
     }
 
     /**

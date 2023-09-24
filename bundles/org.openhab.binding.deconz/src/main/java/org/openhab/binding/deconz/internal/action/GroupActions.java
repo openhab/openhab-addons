@@ -144,8 +144,8 @@ public class GroupActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof GroupThingHandler) {
-            this.handler = (GroupThingHandler) handler;
+        if (handler instanceof GroupThingHandler thingHandler) {
+            this.handler = thingHandler;
         }
     }
 

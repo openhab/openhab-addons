@@ -145,12 +145,12 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         break;
                     }
 
-                    if (command instanceof PercentType) {
-                        Float percent = ((PercentType) command).floatValue();
+                    if (command instanceof PercentType percentCommand) {
+                        Float percent = percentCommand.floatValue();
                         value = percent.intValue(); // 0..100% = 0..100
                         logger.debug("{}: Set brightness to {}%/{}", thingName, percent, value);
-                    } else if (command instanceof DecimalType) {
-                        value = ((DecimalType) command).intValue();
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        value = decimalCommand.intValue();
                         logger.debug("{}: Set brightness to {} (Integer)", thingName, value);
                     }
                     if (value == 0) {
@@ -158,9 +158,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         api.setLightTurn(lightId, SHELLY_API_OFF);
                         update = false;
                     } else {
-                        if (command instanceof IncreaseDecreaseType) {
+                        if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                             ShellyShortLightStatus light = api.getLightStatus(lightId);
-                            if (((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
+                            if (increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE)) {
                                 value = Math.min(light.brightness + DIM_STEPSIZE, 100);
                             } else {
                                 value = Math.max(light.brightness - DIM_STEPSIZE, 0);
@@ -178,14 +178,14 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
                 case CHANNEL_COLOR_TEMP:
                     Integer temp = -1;
-                    if (command instanceof PercentType) {
-                        logger.debug("{}: Set color temp to {}%", thingName, ((PercentType) command).floatValue());
-                        Float percent = ((PercentType) command).floatValue() / 100;
+                    if (command instanceof PercentType percentCommand) {
+                        logger.debug("{}: Set color temp to {}%", thingName, percentCommand.floatValue());
+                        Float percent = percentCommand.floatValue() / 100;
                         temp = new DecimalType(col.minTemp + ((col.maxTemp - col.minTemp)) * percent).intValue();
                         logger.debug("{}: Converted color-temp {}% to {}K (from Percent to Integer)", thingName,
                                 percent, temp);
-                    } else if (command instanceof DecimalType) {
-                        temp = ((DecimalType) command).intValue();
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        temp = decimalCommand.intValue();
                         logger.debug("{}: Set color temp to {}K (Integer)", thingName, temp);
                     }
                     validateRange(CHANNEL_COLOR_TEMP, temp, col.minTemp, col.maxTemp);
@@ -225,9 +225,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     private boolean handleColorPicker(ShellyDeviceProfile profile, Integer lightId, ShellyColorUtils col,
             Command command) throws ShellyApiException {
         boolean updated = false;
-        if (command instanceof HSBType) {
-            HSBType hsb = (HSBType) command;
-
+        if (command instanceof HSBType hsb) {
             logger.debug("HSB-Info={}, Hue={}, getRGB={}, toRGB={}/{}/{}", hsb, hsb.getHue(),
                     String.format("0x%08X", hsb.getRGB()), hsb.toRGB()[0], hsb.toRGB()[1], hsb.toRGB()[2]);
             if (hsb.toString().contains("360,")) {
@@ -242,16 +240,15 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             col.setBrightness(getColorFromHSB(hsb.getBrightness(), BRIGHTNESS_FACTOR));
             // white, gain and temp are not part of the HSB color scheme
             updated = true;
-        } else if (command instanceof PercentType) {
+        } else if (command instanceof PercentType percentCommand) {
             if (!profile.inColor || profile.isBulb) {
-                col.brightness = SHELLY_MAX_BRIGHTNESS * ((PercentType) command).intValue();
+                col.brightness = SHELLY_MAX_BRIGHTNESS * percentCommand.intValue();
                 updated = true;
             }
-        } else if (command instanceof OnOffType) {
-            logger.debug("{}: Switch light {}", thingName, command);
-            api.setLightParm(lightId, SHELLY_LIGHT_TURN,
-                    (OnOffType) command == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
-            col.power = (OnOffType) command;
+        } else if (command instanceof OnOffType onOffCommand) {
+            logger.debug("{}: Switch light {}", thingName, onOffCommand);
+            api.setLightParm(lightId, SHELLY_LIGHT_TURN, onOffCommand == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
+            col.power = onOffCommand;
         } else if (command instanceof IncreaseDecreaseType) {
             if (!profile.inColor || profile.isBulb) {
                 logger.debug("{}: {} brightness by {}", thingName, command, SHELLY_DIM_STEPSIZE);
@@ -410,16 +407,15 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             throws ShellyApiException, IllegalArgumentException {
         Integer value = -1;
         logger.debug("{}: Set {} to {} ({})", thingName, colorName, command, command.getClass());
-        if (command instanceof PercentType) {
-            PercentType percent = (PercentType) command;
-            double v = (double) maxValue * percent.doubleValue() / 100.0;
+        if (command instanceof PercentType percentCommand) {
+            double v = (double) maxValue * percentCommand.doubleValue() / 100.0;
             value = (int) v;
-            logger.debug("{}: Value for {} is in percent: {}%={}", thingName, colorName, percent, value);
-        } else if (command instanceof DecimalType) {
-            value = ((DecimalType) command).intValue();
+            logger.debug("{}: Value for {} is in percent: {}%={}", thingName, colorName, percentCommand, value);
+        } else if (command instanceof DecimalType decimalCommand) {
+            value = decimalCommand.intValue();
             logger.debug("Value for {} is a number: {}", colorName, value);
-        } else if (command instanceof OnOffType) {
-            value = ((OnOffType) command).equals(OnOffType.ON) ? SHELLY_MAX_COLOR : SHELLY_MIN_COLOR;
+        } else if (command instanceof OnOffType onOffCommand) {
+            value = onOffCommand.equals(OnOffType.ON) ? SHELLY_MAX_COLOR : SHELLY_MIN_COLOR;
             logger.debug("{}: Value for {} of type OnOff was converted to {}", thingName, colorName, value);
         } else {
             throw new IllegalArgumentException(

@@ -103,7 +103,7 @@ public class GreeHandler extends BaseThingHandler {
     private void initializeThing() {
         String message = "";
         try {
-            if (!clientSocket.isPresent()) {
+            if (clientSocket.isEmpty()) {
                 clientSocket = Optional.of(new DatagramSocket());
                 clientSocket.get().setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
             }
@@ -224,9 +224,9 @@ public class GreeHandler extends BaseThingHandler {
         int mode = -1;
         String modeStr = "";
         boolean isNumber = false;
-        if (command instanceof DecimalType) {
+        if (command instanceof DecimalType decimalCommand) {
             // backward compatibility when channel was Number
-            mode = ((DecimalType) command).intValue();
+            mode = decimalCommand.intValue();
         } else if (command instanceof OnOffType) {
             // Switch
             logger.debug("{}: Send Power-{}", thingId, command);
@@ -295,8 +295,8 @@ public class GreeHandler extends BaseThingHandler {
 
     private void handleQuietCommand(DatagramSocket socket, Command command) throws GreeException {
         int mode = -1;
-        if (command instanceof DecimalType) {
-            mode = ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            mode = decimalCommand.intValue();
         } else if (command instanceof StringType) {
             switch (command.toString().toLowerCase()) {
                 case QUIET_OFF:
@@ -321,8 +321,8 @@ public class GreeHandler extends BaseThingHandler {
         if (command instanceof OnOffType) {
             return command == OnOffType.ON ? 1 : 0;
         }
-        if (command instanceof DecimalType) {
-            int value = ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            int value = decimalCommand.intValue();
             if ((value == 0) || (value == 1)) {
                 return value;
             }
@@ -331,22 +331,22 @@ public class GreeHandler extends BaseThingHandler {
     }
 
     private int getNumber(Command command) {
-        if (command instanceof DecimalType) {
-            return ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.intValue();
         }
         throw new IllegalArgumentException("Invalid Number type");
     }
 
     private QuantityType<?> convertTemp(Command command) {
-        if (command instanceof DecimalType) {
+        if (command instanceof DecimalType temperature) {
             // The Number alone doesn't specify the temp unit
             // for this get current setting from the A/C unit
             int unit = device.getIntStatusVal(GREE_PROP_TEMPUNIT);
-            return toQuantityType((DecimalType) command, DIGITS_TEMP,
+            return toQuantityType(temperature, DIGITS_TEMP,
                     unit == TEMP_UNIT_CELSIUS ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT);
         }
-        if (command instanceof QuantityType) {
-            return (QuantityType<?>) command;
+        if (command instanceof QuantityType quantityCommand) {
+            return quantityCommand;
         }
         throw new IllegalArgumentException("Invalud Temp type");
     }

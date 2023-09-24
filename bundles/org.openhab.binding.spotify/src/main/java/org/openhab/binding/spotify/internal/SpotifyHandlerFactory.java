@@ -81,8 +81,8 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof SpotifyBridgeHandler) {
-            authService.removeSpotifyAccountHandler((SpotifyBridgeHandler) thingHandler);
+        if (thingHandler instanceof SpotifyBridgeHandler bridgeHandler) {
+            authService.removeSpotifyAccountHandler(bridgeHandler);
         }
     }
 }

@@ -107,8 +107,8 @@ public class RobonectHandler extends BaseThingHandler {
     private void sendCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
             case CHANNEL_MOWER_NAME:
-                if (command instanceof StringType) {
-                    updateName((StringType) command);
+                if (command instanceof StringType stringCommand) {
+                    updateName(stringCommand);
                 } else {
                     logger.debug("Got name update of type {} but StringType is expected.",
                             command.getClass().getName());
@@ -125,8 +125,8 @@ public class RobonectHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_MOWER_START:
-                if (command instanceof OnOffType) {
-                    handleStartStop((OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    handleStartStop(onOffCommand);
                 } else {
                     logger.debug("Got stopped update of type {} but OnOffType is expected.",
                             command.getClass().getName());

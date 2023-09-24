@@ -37,6 +37,7 @@ There are three required fields to connect successfully to a ShieldTV.
 | ipAddress        | text    | IP address of the device              | N/A     | yes      | no       |
 | keystore         | text    | Location of the Java Keystore         | N/A     | no       | no       |
 | keystorePassword | text    | Password of the Java Keystore         | N/A     | no       | no       |
+| gtvEnabled       | boolean | Enable/Disable the GoogleTV protocol  | true    | no       | no       |
 
 ```java
 Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]

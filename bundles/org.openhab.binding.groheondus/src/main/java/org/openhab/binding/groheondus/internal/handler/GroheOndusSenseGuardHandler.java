@@ -153,7 +153,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             logger.debug("Could not get appliance command", e);
             return null;
         }
-        if (!commandOptional.isPresent()) {
+        if (commandOptional.isEmpty()) {
             return null;
         }
         if (commandOptional.get().getType() != Appliance.TYPE) {

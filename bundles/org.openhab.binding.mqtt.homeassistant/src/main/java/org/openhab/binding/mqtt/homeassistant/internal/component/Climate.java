@@ -58,7 +58,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String TEMPERATURE_LOW_CH_ID = "temperatureLow";
     public static final String POWER_CH_ID = "power";
 
-    public static enum TemperatureUnit {
+    public enum TemperatureUnit {
         @SerializedName("C")
         CELSIUS(SIUnits.CELSIUS, new BigDecimal("0.1")),
         @SerializedName("F")

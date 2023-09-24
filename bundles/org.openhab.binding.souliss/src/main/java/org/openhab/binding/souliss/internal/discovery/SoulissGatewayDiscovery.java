@@ -263,8 +263,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof SoulissGatewayHandler) {
-            SoulissGatewayHandler localGwHandler = (SoulissGatewayHandler) handler;
+        if (handler instanceof SoulissGatewayHandler localGwHandler) {
             this.soulissGwHandler = localGwHandler;
             localGwHandler.discoverResult = this;
         }
