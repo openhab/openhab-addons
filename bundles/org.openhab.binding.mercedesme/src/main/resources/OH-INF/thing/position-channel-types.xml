@@ -21,5 +21,11 @@
 				<option value="1">Position Horn</option>
 			</options>
 		</state>
+        <command>
+            <options>
+                <option value="0">Position Lights</option>
+                <option value="1">Position Horn</option>
+            </options>
+        </command>
 	</channel-type>
 </thing:thing-descriptions>

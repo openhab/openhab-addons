@@ -23,6 +23,8 @@ import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.unit.ImperialUnits;
 
+import com.daimler.mbcarkit.proto.VehicleCommands.TemperatureConfigure.TemperaturePoint.Zone;
+
 /**
  * {@link UtilsTest} fot helper functions
  *
@@ -120,19 +122,28 @@ class UtilsTest {
         }
     }
 
-    // @Test
-    // public void testCommanedTypes() {
-    // CommandType[] ctValues = CommandType.values();
-    // for (int i = 0; i < ctValues.length; i++) {
-    // if (!"UNRECOGNIZED".equals(ctValues[i].toString())) {
-    // System.out.println("- " + ctValues[i].getNumber() + " : " + ctValues[i].toString());
-    // }
-    // }
-    // CommandState[] csValues = CommandState.values();
-    // for (int j = 0; j < csValues.length; j++) {
-    // if (!"UNRECOGNIZED".equals(csValues[j].toString())) {
-    // System.out.println("- " + csValues[j].getNumber() + " : " + csValues[j].toString());
-    // }
-    // }
-    // }
+    @Test
+    public void testCommanedTypes() {
+        // CommandType[] ctValues = CommandType.values();
+        // for (int i = 0; i < ctValues.length; i++) {
+        // if (!"UNRECOGNIZED".equals(ctValues[i].toString())) {
+        // System.out.println("- " + ctValues[i].getNumber() + " : " + ctValues[i].toString());
+        // }
+        // }
+        // CommandState[] csValues = CommandState.values();
+        // for (int j = 0; j < csValues.length; j++) {
+        // if (!"UNRECOGNIZED".equals(csValues[j].toString())) {
+        // System.out.println("- " + csValues[j].getNumber() + " : " + csValues[j].toString());
+        // }
+        // }
+        // ChargeProgram[] programs = ChargeProgram.values();
+        // for (int i = 0; i < programs.length - 1; i++) {
+        // System.out.println(programs[i].name() + programs[i].getNumber());
+        // }
+        Zone[] zones = Zone.values();
+        for (int i = 0; i < zones.length - 1; i++) {
+            System.out.println(zones[i].name() + zones[i].getNumber());
+        }
+
+    }
 }
