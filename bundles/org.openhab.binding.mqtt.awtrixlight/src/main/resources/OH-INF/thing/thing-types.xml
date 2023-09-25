@@ -55,7 +55,6 @@
 			<channel id="reset" typeId="reset">
 				<autoUpdatePolicy>recommend</autoUpdatePolicy>
 			</channel>
-			<channel id="buttonControl" typeId="buttonControl"/>
 			<channel id="text" typeId="text"/>
 			<channel id="textCase" typeId="textCase"/>
 			<channel id="topText" typeId="topText"/>
@@ -182,21 +181,6 @@
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
-		</tags>
-	</channel-type>
-
-	<channel-type id="buttonControl">
-		<item-type>Switch</item-type>
-		<label>Use buttons</label>
-		<description><![CDATA[
-			Middle button locks on the current app.
-			Subsequent button presses can be used to control the app. App flow continues after app lock timeout
-			has been reached as configured for the clock.
-			]]>
-		</description>
-		<category>switch</category>
-		<tags>
-			<tag>Control</tag>
 		</tags>
 	</channel-type>
 
