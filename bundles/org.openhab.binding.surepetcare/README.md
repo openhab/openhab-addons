@@ -12,7 +12,6 @@ This binding offers integration to the Sure Petcare API, supporting cloud-connec
 
 1. The Sure Petcare API is not publicly available and this binding has been based on observed interactions between their mobile phone app and the cloud API.
    If the Sure Petcare API changes, this binding might stop working.
-1. The current version of the binding supports only cat/pet flaps. Feeders are not yet supported as I don't own one yet.
 
 ### Credits
 
