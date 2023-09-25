@@ -19,7 +19,7 @@
 	</channel-type>
 	<channel-type id="brake-lining-wear-channel">
 		<item-type>Switch</item-type>
-		<label>Break Lining Wear</label>
+		<label>Brake Lining Wear</label>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="wash-water-channel">
