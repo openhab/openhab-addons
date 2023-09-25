@@ -18,16 +18,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
+import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.converter.SmartthingsConverter;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -97,7 +97,8 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 path = "/state";
                 // Go to ST hub and ask for current state
                 jsonMsg = String.format(
-                        "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"openHabStartTime\": %d}",
+                        "{\"capabilityKey\": \"%s\", " + "\"deviceDisplayName\": \"%s\", "
+                                + "\"capabilityAttribute\": \"%s\", \"openHabStartTime\": %d}",
                         thingTypeId, smartthingsName, smartthingsType, System.currentTimeMillis());
             } else {
                 // Send update to ST hub
@@ -108,14 +109,29 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 // message back to the SmartthingBridgeHandler.receivedPushMessage handler
             }
 
-            try {
-                smartthingsHandlerFactory.sendDeviceCommand(path, timeout, jsonMsg);
-                // Smartthings will not return a response to this message but will send it's response message
-                // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("Attempt to send command to the Smartthings hub for {} failed with exception: {}",
-                        smartthingsName, e.getMessage());
+            // try {
+
+            if (command instanceof OnOffType) {
+                OnOffType OnOff = (OnOffType) command;
+                String val = OnOff.toString().toLowerCase();
+
+                jsonMsg = String
+                        .format("{'commands': [{'component': 'main', 'capability': 'switch', 'command': '%s'}]}", val);
+
+                SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
+                SmartthingsApi api = cloudBridge.getSmartthingsApi();
+                api.SendCommand(jsonMsg);
+
+                updateState(channelUID, OnOff);
+
             }
+            // smartthingsHandlerFactory.sendDeviceCommand(path, timeout, jsonMsg);
+            // Smartthings will not return a response to this message but will send it's response message
+            // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
+            // } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            // logger.warn("Attempt to send command to the Smartthings hub for {} failed with exception: {}",
+            // smartthingsName, e.getMessage());
+            // }
         }
     }
 

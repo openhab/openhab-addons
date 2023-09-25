@@ -15,6 +15,7 @@ package org.openhab.binding.smartthings.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpMethod;
 
 import com.google.gson.JsonObject;
 
@@ -24,8 +25,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public interface SmartthingsNetworkConnector {
 
-    public @Nullable JsonObject DoRequest(String req, @Nullable SmartthingsNetworkCallback callback,
-            String accessToken);
+    public @Nullable JsonObject DoRequest(String req, @Nullable SmartthingsNetworkCallback callback, String accessToken,
+            @Nullable String data, HttpMethod method);
 
     public void WaitAllPendingRequest();
 

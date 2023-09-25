@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -62,6 +63,28 @@ public class SmartthingsApi {
 
     }
 
+    public void SendCommand(String jsonMsg) {
+        try {
+            final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+            final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
+
+            String uri = "https://api.smartthings.com/v1/devices/b5da91c8-bc89-428e-b396-7540dd6c194b/commands";
+
+            if (accessToken == null || accessToken.isEmpty()) {
+                throw new RuntimeException(
+                        "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
+            } else {
+
+                networkConnector.DoRequest(uri, null, accessToken, jsonMsg, HttpMethod.POST);
+            }
+        } catch (final IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        } catch (OAuthException | OAuthResponseException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+
+    }
+
     private @Nullable JsonElement DoRequest(String uri) {
         try {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
@@ -72,7 +95,7 @@ public class SmartthingsApi {
                         "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
             } else {
 
-                JsonObject res = networkConnector.DoRequest(uri, null, accessToken);
+                JsonObject res = networkConnector.DoRequest(uri, null, accessToken, null, HttpMethod.GET);
                 return res;
             }
         } catch (final IOException e) {

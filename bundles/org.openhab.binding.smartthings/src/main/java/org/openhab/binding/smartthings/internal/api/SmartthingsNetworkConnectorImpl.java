@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -194,22 +195,26 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
     private void initConfig() throws Exception {
     }
 
-    public @Nullable String DoBasicRequest(String uri, String accessToken) throws Exception {
-        return DoBasicRequest(uri, null, accessToken);
+    public @Nullable String DoBasicRequest(String uri, String accessToken, @Nullable String data, HttpMethod method)
+            throws Exception {
+        return DoBasicRequest(uri, null, accessToken, data, method);
     }
 
     public @Nullable String DoBasicRequestAsync(String uri, @Nullable SmartthingsNetworkCallback callback,
-            String accessToken) throws Exception {
-        return DoBasicRequest(uri, callback, accessToken);
+            String accessToken, @Nullable String data, HttpMethod method) throws Exception {
+        return DoBasicRequest(uri, callback, accessToken, data, method);
     }
 
     public @Nullable String DoBasicRequest(String uri, @Nullable SmartthingsNetworkCallback callback,
-            String accessToken) throws Exception {
+            String accessToken, @Nullable String data, HttpMethod method) throws Exception {
 
         try {
             logger.debug("Execute request: {}", uri);
-            final Request request = httpClient.newRequest(uri).header("Authorization", "Bearer " + accessToken)
-                    .method(HttpMethod.GET);
+            Request request = httpClient.newRequest(uri).header("Authorization", "Bearer " + accessToken)
+                    .method(method);
+            if (method == HttpMethod.POST) {
+                request = request.content(new StringContentProvider(data), "application/json");
+            }
 
             ContentResponse response = executeRequest(request, callback);
             if (callback == null && response != null) {
@@ -230,10 +235,10 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
     }
 
     @Override
-    public @Nullable JsonObject DoRequest(String req, @Nullable SmartthingsNetworkCallback callback,
-            String accessToken) {
+    public @Nullable JsonObject DoRequest(String req, @Nullable SmartthingsNetworkCallback callback, String accessToken,
+            @Nullable String data, HttpMethod method) {
         try {
-            String response = DoBasicRequest(req, callback, accessToken);
+            String response = DoBasicRequest(req, callback, accessToken, data, method);
 
             if (response != null) {
 
