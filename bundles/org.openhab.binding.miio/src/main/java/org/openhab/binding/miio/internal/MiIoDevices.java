@@ -74,6 +74,7 @@ public enum MiIoDevices {
     DREAME_VACUUM_P2156O("dreame.vacuum.p2156o", "MOVA Z500 Robot Vacuum and Mop Cleaner", THING_TYPE_BASIC),
     DREAME_VACUUM_P2157("dreame.vacuum.p2157", "MOVA L600 Robot Vacuum and Mop Cleaner", THING_TYPE_BASIC),
     DREAME_VACUUM_P2259("dreame.vacuum.p2259", "Dreame Bot D9 Max", THING_TYPE_BASIC),
+    DREAME_VACUUM_R2228O("dreame.vacuum.r2228o", "DreameBot L10s Ultra", THING_TYPE_BASIC),
     HUAYI_LIGHT_ARI013("huayi.light.ari013", "HUIZUO ARIES For Bedroom", THING_TYPE_BASIC),
     HUAYI_LIGHT_ARIES("huayi.light.aries", "HUIZUO ARIES For Living Room", THING_TYPE_BASIC),
     HUAYI_LIGHT_FANWY("huayi.light.fanwy", "HUIZUO Fan Light", THING_TYPE_BASIC),
