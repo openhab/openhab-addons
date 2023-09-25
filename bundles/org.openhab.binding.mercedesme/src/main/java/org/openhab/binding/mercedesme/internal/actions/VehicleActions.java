@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
@@ -27,7 +26,7 @@ import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 
 /**
- * ActionsS to query forecast objects
+ * {@link VehicleActions} which can be sent to a vehicle
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -58,7 +57,6 @@ public class VehicleActions implements ThingActions {
             @ActionInput(name = "latitude", label = "@text/latitudeLabel", description = "@text/latitudeDescription") double latitude,
             @ActionInput(name = "longitude", label = "@text/longitudeLabel", description = "@text/longitudeDescription") double longitude,
             String... args) {
-
         if (thingHandler.isPresent()) {
             JSONObject poi = new JSONObject();
             poi.put("routeTitle", title);

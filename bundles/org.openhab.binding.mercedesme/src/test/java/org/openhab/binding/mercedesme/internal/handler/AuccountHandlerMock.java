@@ -1,8 +1,21 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.mockito.Mockito.mock;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
@@ -12,8 +25,15 @@ import org.openhab.core.thing.Bridge;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
 
+/**
+ * {@link AuccountHandlerMock} to retrieve and collect commands from {@link VehicleHandler}
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
+@NonNullByDefault
 public class AuccountHandlerMock extends AccountHandler {
-    JSONObject command;
+
+    JSONObject command = new JSONObject();
 
     public AuccountHandlerMock() {
         super(mock(Bridge.class), mock(MercedesMeDiscoveryService.class), mock(HttpClient.class),
@@ -21,7 +41,7 @@ public class AuccountHandlerMock extends AccountHandler {
     }
 
     @Override
-    public void registerVin(@NonNull String vin, @NonNull VehicleHandler handler) {
+    public void registerVin(String vin, VehicleHandler handler) {
     }
 
     @Override
@@ -29,9 +49,11 @@ public class AuccountHandlerMock extends AccountHandler {
     }
 
     @Override
-    public void sendCommand(ClientMessage cm) {
+    public void sendCommand(@Nullable ClientMessage cm) {
         // System.out.println(cm.getAllFields());
-        command = ProtoConverter.clientMessage2Json(cm);
+        if (cm != null) {
+            command = ProtoConverter.clientMessage2Json(cm);
+        }
     }
 
     public JSONObject getCommand() {

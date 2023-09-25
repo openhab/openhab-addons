@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link UOMObserver} holds the necessary values to update a channel state
+ * {@link UOMObserver} resppnsible to identify Unit and StatePattern for a Mercedes VehcileAttribute
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -54,50 +54,50 @@ public class UOMObserver {
     public static final String TIME_US = "TIME_US";
     public static final String TIME_ROW = "TIME_ROW";
 
-    private static final Map<String, String> patternMap = new HashMap<String, String>();
-    private static final Map<String, Unit> unitMap = new HashMap<String, Unit>();
+    private static final Map<String, String> PATTERN_MAP = new HashMap<String, String>();
+    private static final Map<String, Unit> UNIT_MAP = new HashMap<String, Unit>();
 
     private String label = Constants.NOT_SET;
 
     private final Logger logger = LoggerFactory.getLogger(UOMObserver.class);
 
     public UOMObserver(String l) {
-        if (patternMap.isEmpty()) {
-            patternMap.put(LENGTH_KM_UNIT, "%.1f km");
-            patternMap.put(LENGTH_MILES_UNIT, "%.1f mi");
-            patternMap.put(SPEED_KM_UNIT, "%.0f km/h");
-            patternMap.put(SPEED_MILES_UNIT, "%.0f mph");
-            patternMap.put(CELSIUS_UNIT, "%.1f °C");
-            patternMap.put(FAHRENHEIT_UNIT, "%.0f °F");
-            patternMap.put(BAR_UNIT, "%.1f bar");
-            patternMap.put(KPA_UNIT, "%.1f kPa");
-            patternMap.put(PSI_UNIT, "%.1f psi");
-            patternMap.put(CONSUMPTION_ELECTRIC_KM, "km/kWh");
-            patternMap.put(CONSUMPTION_ELECTRIC_MI, "m/kWh");
-            patternMap.put(CONSUMPTION_ELECTRIC_100KM, "kWh/100km");
-            patternMap.put(CONSUMPTION_ELECTRIC_100MI, "kWh/100mi");
-            patternMap.put(CONSUMPTION_LIQUID_100KM, "l/100km");
-            patternMap.put(CONSUMPTION_LIQUID_MI, "mpge");
-            patternMap.put(TIME_US, "%1$tA, %1$td.%1$tm. %1$tI:%1$tM %1$Tp");
-            patternMap.put(TIME_ROW, "%1$tA, %1$td.%1$tm. %1$tH:%1$tM");
+        if (PATTERN_MAP.isEmpty()) {
+            PATTERN_MAP.put(LENGTH_KM_UNIT, "%.1f km");
+            PATTERN_MAP.put(LENGTH_MILES_UNIT, "%.1f mi");
+            PATTERN_MAP.put(SPEED_KM_UNIT, "%.0f km/h");
+            PATTERN_MAP.put(SPEED_MILES_UNIT, "%.0f mph");
+            PATTERN_MAP.put(CELSIUS_UNIT, "%.1f °C");
+            PATTERN_MAP.put(FAHRENHEIT_UNIT, "%.0f °F");
+            PATTERN_MAP.put(BAR_UNIT, "%.1f bar");
+            PATTERN_MAP.put(KPA_UNIT, "%.1f kPa");
+            PATTERN_MAP.put(PSI_UNIT, "%.1f psi");
+            PATTERN_MAP.put(CONSUMPTION_ELECTRIC_KM, "km/kWh");
+            PATTERN_MAP.put(CONSUMPTION_ELECTRIC_MI, "m/kWh");
+            PATTERN_MAP.put(CONSUMPTION_ELECTRIC_100KM, "kWh/100km");
+            PATTERN_MAP.put(CONSUMPTION_ELECTRIC_100MI, "kWh/100mi");
+            PATTERN_MAP.put(CONSUMPTION_LIQUID_100KM, "l/100km");
+            PATTERN_MAP.put(CONSUMPTION_LIQUID_MI, "mpge");
+            PATTERN_MAP.put(TIME_US, "%1$tA, %1$td.%1$tm. %1$tI:%1$tM %1$Tp");
+            PATTERN_MAP.put(TIME_ROW, "%1$tA, %1$td.%1$tm. %1$tH:%1$tM");
 
-            unitMap.put(LENGTH_KM_UNIT, Constants.KILOMETRE_UNIT);
-            unitMap.put(LENGTH_MILES_UNIT, ImperialUnits.MILE);
-            unitMap.put(SPEED_KM_UNIT, SIUnits.KILOMETRE_PER_HOUR);
-            unitMap.put(SPEED_MILES_UNIT, ImperialUnits.MILES_PER_HOUR);
-            unitMap.put(CELSIUS_UNIT, SIUnits.CELSIUS);
-            unitMap.put(FAHRENHEIT_UNIT, ImperialUnits.FAHRENHEIT);
-            unitMap.put(BAR_UNIT, Units.BAR);
-            unitMap.put(KPA_UNIT, Constants.KPA_UNIT);
-            unitMap.put(PSI_UNIT, ImperialUnits.POUND_FORCE_SQUARE_INCH);
-            unitMap.put(CONSUMPTION_ELECTRIC_KM, Constants.KILOWATT_HOUR_UNIT);
-            unitMap.put(CONSUMPTION_ELECTRIC_MI, Constants.KILOWATT_HOUR_UNIT);
-            unitMap.put(CONSUMPTION_ELECTRIC_100KM, Constants.KILOWATT_HOUR_UNIT);
-            unitMap.put(CONSUMPTION_ELECTRIC_100MI, Constants.KILOWATT_HOUR_UNIT);
-            unitMap.put(CONSUMPTION_LIQUID_100KM, Units.LITRE);
-            unitMap.put(CONSUMPTION_LIQUID_MI, ImperialUnits.GALLON_LIQUID_US);
+            UNIT_MAP.put(LENGTH_KM_UNIT, Constants.KILOMETRE_UNIT);
+            UNIT_MAP.put(LENGTH_MILES_UNIT, ImperialUnits.MILE);
+            UNIT_MAP.put(SPEED_KM_UNIT, SIUnits.KILOMETRE_PER_HOUR);
+            UNIT_MAP.put(SPEED_MILES_UNIT, ImperialUnits.MILES_PER_HOUR);
+            UNIT_MAP.put(CELSIUS_UNIT, SIUnits.CELSIUS);
+            UNIT_MAP.put(FAHRENHEIT_UNIT, ImperialUnits.FAHRENHEIT);
+            UNIT_MAP.put(BAR_UNIT, Units.BAR);
+            UNIT_MAP.put(KPA_UNIT, Constants.KPA_UNIT);
+            UNIT_MAP.put(PSI_UNIT, ImperialUnits.POUND_FORCE_SQUARE_INCH);
+            UNIT_MAP.put(CONSUMPTION_ELECTRIC_KM, Constants.KILOWATT_HOUR_UNIT);
+            UNIT_MAP.put(CONSUMPTION_ELECTRIC_MI, Constants.KILOWATT_HOUR_UNIT);
+            UNIT_MAP.put(CONSUMPTION_ELECTRIC_100KM, Constants.KILOWATT_HOUR_UNIT);
+            UNIT_MAP.put(CONSUMPTION_ELECTRIC_100MI, Constants.KILOWATT_HOUR_UNIT);
+            UNIT_MAP.put(CONSUMPTION_LIQUID_100KM, Units.LITRE);
+            UNIT_MAP.put(CONSUMPTION_LIQUID_MI, ImperialUnits.GALLON_LIQUID_US);
         }
-        if (!patternMap.containsKey(l)) {
+        if (!PATTERN_MAP.containsKey(l)) {
             logger.info("No mapping found for {}", l);
         }
         label = l;
@@ -108,7 +108,7 @@ public class UOMObserver {
     }
 
     public Optional<Unit> getUnit() {
-        Unit u = unitMap.get(label);
+        Unit u = UNIT_MAP.get(label);
         if (u != null) {
             return Optional.of(u);
         } else {
@@ -118,7 +118,7 @@ public class UOMObserver {
 
     @Nullable
     public String getPattern(String group) {
-        String pattern = patternMap.get(label);
+        String pattern = PATTERN_MAP.get(label);
         if (Constants.GROUP_RANGE.equals(group) && pattern != null) {
             return pattern.replace("1", "0");
         }

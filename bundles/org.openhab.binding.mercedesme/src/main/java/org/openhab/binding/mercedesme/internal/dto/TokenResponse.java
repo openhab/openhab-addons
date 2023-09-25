@@ -17,6 +17,8 @@ import java.time.Instant;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.Constants;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link TokenResponse} dto contains JSon body of token response
  *
@@ -24,9 +26,13 @@ import org.openhab.binding.mercedesme.internal.Constants;
  */
 @NonNullByDefault
 public class TokenResponse {
-    public String access_token = Constants.NOT_SET;
-    public String refresh_token = Constants.NOT_SET;
-    public String token_type = Constants.NOT_SET;
-    public int expires_in;
+    @SerializedName("access_token")
+    public String accessToken = Constants.NOT_SET;
+    @SerializedName("refresh_token")
+    public String refreshToken = Constants.NOT_SET;
+    @SerializedName("token_type")
+    public String tokenType = Constants.NOT_SET;
+    @SerializedName("expires_in")
+    public int expiresIn;
     public Instant created = Instant.now();
 }

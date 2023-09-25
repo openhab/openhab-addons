@@ -103,8 +103,7 @@ import com.google.protobuf.BoolValue;
 import com.google.protobuf.Int32Value;
 
 /**
- * The {@link VehicleHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * {@link VehicleHandler} transform data into state updates and handling of vehicle commands
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -267,7 +266,6 @@ public class VehicleHandler extends BaseThingHandler {
                             accountHandler.get().sendCommand(lockCm);
                             break;
                         case 1:
-
                             if (Constants.NOT_SET.equals(pin)) {
                                 logger.info("Security PIN missing! {}", pin);
                             } else {
@@ -444,9 +442,7 @@ public class VehicleHandler extends BaseThingHandler {
                     } else if ("max-soc".equals(channelUID.getIdWithoutGroup())) {
                         maxSocToSelect = ((QuantityType) command).intValue();
                         sendCommand = true;
-                    } else {
-                        // nothing to be send
-                    }
+                    } // else - nothing to be sent
                     if (sendCommand) {
                         Int32Value maxSocValue = Int32Value.newBuilder().setValue(maxSocToSelect).build();
                         BoolValue autoUnlockValue = BoolValue.newBuilder().setValue(autoUnlockToSelect).build();
@@ -493,7 +489,7 @@ public class VehicleHandler extends BaseThingHandler {
                             break;
                         case 2:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN? missing", pin);
+                                logger.info("Security PIN missing");
                             } else {
                                 SunroofLift sl = SunroofLift.newBuilder().setPin(pin).build();
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -567,18 +563,9 @@ public class VehicleHandler extends BaseThingHandler {
             ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
             ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
             if (oldProtoMap != null) {
-                try {
-                    String oldProto = ((StringType) oldProtoMap.getState()).toFullString();
-                    Map combinedMap = Utils.combineMaps(new JSONObject(oldProto).toMap(),
-                            new JSONObject(newProto).toMap());
-                    combinedProto = (new JSONObject(combinedMap)).toString();
-                } catch (Throwable t) {
-                    logger.trace("Exception when decoding old Proto: {}", t.getMessage());
-                    StackTraceElement[] ste = t.getStackTrace();
-                    for (int i = 0; i < ste.length; i++) {
-                        logger.trace("{}", ste[i].toString());
-                    }
-                }
+                String oldProto = ((StringType) oldProtoMap.getState()).toFullString();
+                Map combinedMap = Utils.combineMaps(new JSONObject(oldProto).toMap(), new JSONObject(newProto).toMap());
+                combinedProto = (new JSONObject(combinedMap)).toString();
             }
             // proto updates causing large printouts in openhab.log
             // update channel in case of user connected this channel with an item
@@ -750,7 +737,6 @@ public class VehicleHandler extends BaseThingHandler {
             // logger.trace("Distribute {}", key);
             ChannelStateMap csm = Mapper.getChannelStateMap(key, value);
             if (csm.isValid()) {
-
                 /**
                  * Store some values and UOM Observer
                  */

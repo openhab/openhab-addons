@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.mercedesme.internal.handler;
 
 import java.util.ArrayList;
@@ -6,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
@@ -31,6 +44,12 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.SpeedUnit
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TemperatureUnit;
 import com.google.protobuf.Int32Value;
 
+/**
+ * {@link ProtoConverter} Proto conversions for Unit Tests and not necessary for binding
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
+@NonNullByDefault
 public class ProtoConverter {
 
     public static VEPUpdate json2Proto(String json, boolean fullUpdate) {

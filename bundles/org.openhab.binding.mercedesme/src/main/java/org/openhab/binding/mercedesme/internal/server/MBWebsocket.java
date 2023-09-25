@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -44,26 +44,25 @@ import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpda
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
 
 /**
- * The {@link MBWebsocket} class provides authentication callback endpoint
+ * {@link MBWebsocket} as socket endpoint to communicate with Mercedes
  *
  * @author Bernd Weymann - Initial contribution
  */
-
 @WebSocket
+@NonNullByDefault
 public class MBWebsocket {
-    private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
-
     // timeout 14 Minutes - just below scheduling of 15 Minutes by Accounthandler
-    private final int CONNECT_TIMEOUT_MS = 14 * 60 * 1000;
+    private static final int CONNECT_TIMEOUT_MS = 14 * 60 * 1000;
     // standard runtime of Websocket
-    private final int WS_RUNTIME_MS = 60 * 1000;
+    private static final int WS_RUNTIME_MS = 60 * 1000;
     // addon time of 1 minute for a new send command
-    private final int ADDON_MESSAGE_TIME_MS = 60 * 1000;
+    private static final int ADDON_MESSAGE_TIME_MS = 60 * 1000;
     // check Socket time elapsed each second
-    private final int CHECK_INTERVAL_MS = 1000;
+    private static final int CHECK_INTERVAL_MS = 1000;
     // additional 5 minutes after keep alive
-    private final int KEEP_ALIVE_ADDON = 5 * 60 * 1000;
+    private static final int KEEP_ALIVE_ADDON = 5 * 60 * 1000;
 
+    private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
     private AccountHandler accountHandler;
     private boolean running = false;
     private Instant runTill = Instant.now();
@@ -128,12 +127,12 @@ public class MBWebsocket {
         }
     }
 
-    public void setCommand(@NonNull ClientMessage cm) {
+    public void setCommand(ClientMessage cm) {
         commandQueue.add(cm);
     }
 
     private boolean sendMessage() {
-        if (commandQueue.size() > 0 && this.session != null) {
+        if (!commandQueue.isEmpty() && this.session != null) {
             ClientMessage message = commandQueue.remove(0);
             logger.info("Send Message {}", message.getAllFields());
             try {
@@ -145,8 +144,6 @@ public class MBWebsocket {
                 logger.warn("Error sending message {} : {}", message.getAllFields(), e.getMessage());
             }
             logger.info("Send Message {} done", message.getAllFields());
-        } else {
-            // logger.info("Message {} or Session is null", commandQueue.size());
         }
         return false;
     }
@@ -224,13 +221,13 @@ public class MBWebsocket {
                 ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack)
                         .build();
                 sendAchnowledgeMessage(cm);
-                logger.trace("Command Status acknowledged {}" + cm.getAllFields());
+                logger.trace("Command Status acknowledged {}", cm.getAllFields());
             } else if (pm.hasApptwinPendingCommandRequest()) {
-                // logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
+                logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
             } else if (pm.hasDebugMessage()) {
                 logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
             } else {
-                logger.debug("MB Message: {} not handeled", pm.getAllFields());
+                logger.trace("MB Message: {} not handeled", pm.getAllFields());
             }
 
         } catch (IOException e) {

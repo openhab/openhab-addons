@@ -346,40 +346,16 @@ Minimum and Maximum Temperature depends on your local settings either Degrre Cle
 
 Celsius 
 
-Step width : 0.5
-
-- Minimum : 16
-- Maximum : 28
+- Minimum : 16 °C
+- Maximum : 28 °C
+- Step width : 0.5 °C
 
 Fahrenheit
 
-Step width : 1.0
+- Minimum : 60 °F
+- Maximum : 84 °F
+- Step width : 1 °F
 
-- Minimum : 60
-- Maximum : 84
-
-If you need details regarding your specific vehicle connect advanced channel `command-capabilities`.
-It delivers a JSON String with your vehcile command capabilities.
-
-````
-"commandName": "TEMPERATURE_CONFIGURE",
-"isAvailable": true,
-"parameters": [
-    {
-        "allowedEnums": [
-            "FRONT_CENTER"
-        ],
-        "parameterName": "TEMPERATURE_POINTS_ZONE"
-    },
-    {
-        "allowedEnums": null,
-        "maxValue": 28,
-        "minValue": 16,
-        "parameterName": "TEMPERATURE_POINTS_TEMPERATURE",
-        "steps": 0.5
-    }
-]
-````
 ### Service
 
 Group name: `service`

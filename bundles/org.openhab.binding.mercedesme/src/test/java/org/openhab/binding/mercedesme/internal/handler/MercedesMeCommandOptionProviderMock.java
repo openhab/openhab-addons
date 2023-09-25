@@ -14,10 +14,10 @@ package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.mockito.Mockito.mock;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.MercedesMeCommandOptionProvider;
 import org.openhab.core.events.EventPublisher;
@@ -27,13 +27,13 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.CommandOption;
 
 /**
- * Dynamic provider of command options while leaving other state description fields as original.
+ * {@link MercedesMeCommandOptionProviderMock} Mock to collect CommandOption settings
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class MercedesMeCommandOptionProviderMock extends MercedesMeCommandOptionProvider {
-    public Map<String, List<CommandOption>> commands = new HashedMap<String, List<CommandOption>>();
+    public Map<String, List<CommandOption>> commands = new HashMap<String, List<CommandOption>>();
 
     public MercedesMeCommandOptionProviderMock() {
         super(mock(EventPublisher.class), mock(ItemChannelLinkRegistry.class),
