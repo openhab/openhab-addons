@@ -54,6 +54,7 @@ public class XmlTVHandlerFactory extends BaseThingHandlerFactory {
     public XmlTVHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) throws JAXBException {
         this.timeZoneProvider = timeZoneProvider;
         this.unmarshaller = JAXBContext.newInstance(Tv.class).createUnmarshaller();
+        xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
         xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     }
 

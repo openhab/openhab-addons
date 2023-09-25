@@ -225,7 +225,7 @@ e.g. via command line `curl --location --request POST 'http://<address>:16021/ap
 
 Note: If you auto-discovered your things and items:
 
-- A controller item looks like nanoleaf:controller:F0ED4F9351AF:power where F0ED4F9351AF is the id of the controller that has been automatically assigned by the binding.
+- A controller item looks like nanoleaf:controller:F0ED4F9351AF:color where F0ED4F9351AF is the id of the controller that has been automatically assigned by the binding.
 - A panel item looks like nanoleaf:lightpanel:F0ED4F9351AF:39755:singleTap where 39755 is the id of the panel that has been automatically assigned by the binding.
 
 ```java
