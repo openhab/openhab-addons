@@ -79,6 +79,7 @@ public class SmartthingsBindingConstants {
             new ThingTypeUID(BINDING_ID, "sleepSensor"), new ThingTypeUID(BINDING_ID, "smokeDetector"),
             new ThingTypeUID(BINDING_ID, "soundPressureLevel"), new ThingTypeUID(BINDING_ID, "soundSensor"),
             new ThingTypeUID(BINDING_ID, "speechRecognition"), new ThingTypeUID(BINDING_ID, "stepSensor"),
+            new ThingTypeUID(BINDING_ID, "smartplug"), new ThingTypeUID(BINDING_ID, "switchLevel"),
             new ThingTypeUID(BINDING_ID, "switch"), new ThingTypeUID(BINDING_ID, "switchLevel"),
             new ThingTypeUID(BINDING_ID, "tamperAlert"), new ThingTypeUID(BINDING_ID, "temperatureMeasurement"),
             new ThingTypeUID(BINDING_ID, "thermostat"), new ThingTypeUID(BINDING_ID, "thermostatCoolingSetpoint"),

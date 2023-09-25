@@ -30,6 +30,10 @@ import org.openhab.binding.smartthings.internal.SmartthingsHubCommand;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDeviceData;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.type.SmartthingsChannelGroupTypeProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsChannelTypeProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsConfigDescriptionProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsThingTypeProvider;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -72,6 +76,11 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     private @Nullable SmartthingsApi api;
 
+    private @Nullable SmartthingsThingTypeProvider thingTypeProvider;
+    private @Nullable SmartthingsChannelTypeProvider channelTypeProvider;
+    private @Nullable SmartthingsChannelGroupTypeProvider channelGroupTypeProvider;
+    private @Nullable SmartthingsConfigDescriptionProvider configDescriptionProvider;
+
     /*
      * default constructor
      */
@@ -90,6 +99,43 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         if (Objects.equals(hubCommand, smartthingsHubCommand)) {
             this.smartthingsHubCommand = null;
         }
+    }
+
+    @Reference
+    protected void setThingTypeProvider(SmartthingsThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = thingTypeProvider;
+    }
+
+    protected void unsetThingTypeProvider(SmartthingsThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = null;
+    }
+
+    @Reference
+    protected void setChannelTypeProvider(SmartthingsChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = channelTypeProvider;
+    }
+
+    protected void unsetChannelTypeProvider(SmartthingsChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = null;
+    }
+
+    //
+    @Reference
+    protected void setChannelGroupTypeProvider(SmartthingsChannelGroupTypeProvider channelGroupTypeProvider) {
+        this.channelGroupTypeProvider = channelGroupTypeProvider;
+    }
+
+    protected void unsetChannelGroupTypeProvider(SmartthingsChannelGroupTypeProvider channelGroupTypeProvider) {
+        this.channelGroupTypeProvider = null;
+    }
+
+    @Reference
+    protected void setConfigDescriptionProvider(SmartthingsConfigDescriptionProvider configDescriptionProvider) {
+        this.configDescriptionProvider = configDescriptionProvider;
+    }
+
+    protected void unsetConfigDescriptionProvider(SmartthingsConfigDescriptionProvider configDescriptionProvider) {
+        this.configDescriptionProvider = null;
     }
 
     /*
@@ -122,6 +168,9 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
             JsonElement components = devObj.get("components");
             if (components == null || !components.isJsonArray()) {
                 return;
+            }
+            if (!name.equals("switch-power-energy-consumption-report-aqara")) {
+                continue;
             }
 
             JsonArray componentsArray = (JsonArray) components;
