@@ -22,6 +22,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -36,6 +37,7 @@ import java.util.TreeMap;
 
 import javax.measure.Unit;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
@@ -441,17 +443,15 @@ public class Utils {
     }
 
     public static String getDurationString(long durationMinutes) {
-        long minutesPerDay = 24 * 60;
-        long days = durationMinutes / minutesPerDay;
-        long remain = durationMinutes - (days * minutesPerDay);
-        long hours = remain / 60;
-        remain = remain - (hours * 60);
-        if (days == 0 && hours == 0) {
-            return remain + "min";
-        } else if (days > 0) {
-            return days + " d " + hours + "hr " + remain + "min";
+        if (durationMinutes < 0) {
+            return "00:00";
+        }
+        Duration duration = Duration.ofMinutes(durationMinutes);
+        if (duration.toDays() == 0) {
+            return DurationFormatUtils.formatDuration(duration.toMillis(), "HH:mm", true);
         } else {
-            return hours + "hr " + remain + "min";
+            return DurationFormatUtils.formatDuration(duration.toMillis(), "d 'days', HH:mm", true);
+
         }
     }
 
