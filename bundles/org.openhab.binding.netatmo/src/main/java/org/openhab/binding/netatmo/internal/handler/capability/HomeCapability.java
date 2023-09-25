@@ -27,7 +27,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.Location;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
+import org.openhab.binding.netatmo.internal.api.dto.NAError;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.HomeConfiguration;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
@@ -106,6 +106,12 @@ public class HomeCapability extends RestCapability<HomeApi> {
     }
 
     @Override
+    protected void updateErrors(NAError error) {
+        handler.getActiveChildren().stream().filter(handler -> handler.getId().equals(error.getId())).findFirst()
+                .ifPresent(handler -> handler.setNewData(error));
+    }
+
+    @Override
     protected List<NAObject> updateReadings(HomeApi api) {
         List<NAObject> result = new ArrayList<>();
         homeIds.stream().filter(id -> !id.isEmpty()).forEach(id -> {
@@ -115,10 +121,11 @@ public class HomeCapability extends RestCapability<HomeApi> {
                     result.add(homeData);
                     featureAreas.addAll(homeData.getFeatures());
                 }
-                HomeStatus homeStatus = api.getHomeStatus(id);
-                if (homeStatus != null) {
-                    result.add(homeStatus);
-                }
+
+                api.getHomeStatus(id).ifPresent(body -> {
+                    body.getHomeStatus().ifPresent(homeStatus -> result.add(homeStatus));
+                    result.addAll(body.getErrors());
+                });
             } catch (NetatmoException e) {
                 logger.warn("Error getting Home informations : {}", e.getMessage());
             }

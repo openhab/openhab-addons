@@ -431,4 +431,27 @@ public class NetatmoConstants {
         @SerializedName("41")
         DEVICE_IS_UNREACHABLE
     }
+
+    public enum HomeStatusError {
+        @SerializedName("1")
+        UNKNOWN_ERROR("homestatus-unknown-error"),
+        @SerializedName("2")
+        INTERNAL_ERROR("homestatus-internal-error"),
+        @SerializedName("3")
+        PARSER_ERROR("homestatus-parser-error"),
+        @SerializedName("4")
+        COMMAND_UNKNOWN_NODE_MODULE_ERROR("homestatus-command-unknown"),
+        @SerializedName("5")
+        COMMAND_INVALID_PARAMS("homestatus-invalid-params"),
+        @SerializedName("6")
+        UNREACHABLE("device-not-connected"),
+        UNKNOWN("deserialization-unknow");
+
+        // Associated error message that can be found in properties files
+        public final String message;
+
+        HomeStatusError(String message) {
+            this.message = message;
+        }
+    }
 }
