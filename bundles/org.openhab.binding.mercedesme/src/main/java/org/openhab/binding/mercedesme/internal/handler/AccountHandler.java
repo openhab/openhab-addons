@@ -61,12 +61,15 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
 
 /**
- * The {@link AccountHandler} takes care of the valid authorization for the user account
+ * The {@link AccountHandler} acts as Bridge between MercedesMe Account and the associated vehicles
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
+    private static final String FEATURE_APPENDIX = "-features";
+    private static final String COMMAND_APPENDIX = "-commands";
+
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final MercedesMeDiscoveryService discoveryService;
     private final HttpClient httpClient;
@@ -76,8 +79,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Map<String, VehicleHandler> activeVehicleHandlerMap = new HashMap<String, VehicleHandler>();
     private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<String, VEPUpdate>();
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<String, Map<String, Object>>();
-    private final String FEATURE_APPENDIX = "-features";
-    private final String COMMAND_APPENDIX = "-commands";
 
     private Optional<AuthServer> server = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
@@ -115,7 +116,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         } else {
             String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
             thing.setProperty("callbackUrl", callbackUrl);
-            server = Optional.of(new AuthServer(this, httpClient, config.get(), callbackUrl, localeProvider));
+            server = Optional.of(new AuthServer(httpClient, config.get(), callbackUrl));
             authService = Optional
                     .of(new AuthService(this, httpClient, config.get(), localeProvider.getLocale(), storage));
             if (!server.get().start()) {
@@ -350,7 +351,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
 
             JSONObject jsonResponse = new JSONObject(featureCapabilitiesJsonString);
-            logger.info(jsonResponse.toString());
             JSONObject features = jsonResponse.getJSONObject("features");
             features.keySet().forEach(key -> {
                 String value = features.get(key).toString();
@@ -385,7 +385,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 storage.put(vin + COMMAND_APPENDIX, commandCapabilitiesJsonString);
             }
             JSONObject commands = new JSONObject(commandCapabilitiesJsonString);
-            logger.info(commands.toString());
             JSONArray commandArray = commands.getJSONArray("commands");
             commandArray.forEach(object -> {
                 String commandName = ((JSONObject) object).get("commandName").toString();

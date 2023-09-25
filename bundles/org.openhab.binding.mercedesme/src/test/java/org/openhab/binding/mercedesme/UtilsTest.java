@@ -24,7 +24,7 @@ import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.unit.ImperialUnits;
 
 /**
- * The {@link UtilsTest} Test configuration settings
+ * {@link UtilsTest} fot helper functions
  *
  * @author Bernd Weymann - Initial contribution
  */

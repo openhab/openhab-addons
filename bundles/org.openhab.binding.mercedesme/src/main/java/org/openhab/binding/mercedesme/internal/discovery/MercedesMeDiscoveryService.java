@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,8 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link MercedesMeDiscoveryService} discovers things for the Adorne hub and Adorne devices.
- * Discovery is only supported if the hub is accessible via default host and port.
+ * {@link MercedesMeDiscoveryService} will be notified from Bridge {@link AccountHandler} regarding
+ * associated vehicles and provides DiscoveryResults
  *
  * @author Mark Theiding - Initial Contribution
  */

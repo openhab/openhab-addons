@@ -20,17 +20,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link FileReader} Helper Util to read test resource files
+ * {@link FileReader} reads from file into String
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class FileReader {
 
-    public static @Nullable String readFileInString(String filename) {
+    public static String readFileInString(String filename) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "CP1252"));) {
             StringBuffer buf = new StringBuffer();
             String sCurrentLine;
@@ -41,9 +40,8 @@ public class FileReader {
             return buf.toString();
         } catch (IOException e) {
             // fail if file cannot be read
-            e.printStackTrace();
             fail();
         }
-        return null;
+        return "ERR";
     }
 }

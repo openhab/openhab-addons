@@ -75,19 +75,15 @@ public class AuthService {
         // restore token
         String storedObject = storage.get(identifier);
         if (storedObject == null) {
-            logger.info(prefix() + "Got nothing from storage for {}", identifier);
             token = INVALID_TOKEN;
-            logger.info(prefix() + "no token found in storage");
             listener.onAccessTokenResponse(token);
         } else {
-            logger.info(prefix() + "Got {} from storage for {}", storedObject, identifier);
             token = (AccessTokenResponse) Utils.fromString(storedObject);
             if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
                 if (!token.getRefreshToken().equals(Constants.NOT_SET)) {
                     refreshToken();
                     listener.onAccessTokenResponse(token);
                 } else {
-                    logger.info(prefix() + "Refresh token empty");
                     token = INVALID_TOKEN;
                     listener.onAccessTokenResponse(token);
                 }
@@ -121,23 +117,20 @@ public class AuthService {
         try {
             ContentResponse cr = req.send();
             if (cr.getStatus() == 200) {
-                logger.debug(prefix() + "Success requesting PIN");
                 return pr.nonce;
             } else {
-                logger.debug(prefix() + "Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
+                logger.info("{} Failed to request pin {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug(prefix() + "Error getting image resources {}", e.getMessage());
+            logger.info("{} Failed to request pin {}", prefix(), e.getMessage());
         }
         return Constants.NOT_SET;
     }
 
     public boolean requestToken(String password) {
-        logger.info(prefix() + "Request Token");
         try {
             // Request + headers
             String url = Utils.getTokenUrl(config.region);
-            logger.info(prefix() + "Get Token base URL {}", url);
             Request req = httpClient.POST(url);
             addBasicHeaders(req);
             req.header("Stage", "prod");
@@ -153,7 +146,6 @@ public class AuthService {
             String scopeAttribute = "scope=" + URLEncoder.encode(Constants.SCOPE, StandardCharsets.UTF_8.toString());
             String content = clientid + "&" + grantAttribute + "&" + userAttribute + "&" + passwordAttribute + "&"
                     + scopeAttribute;
-            logger.info(prefix() + "Get Token Content {}", content);
             req.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
             req.content(new StringContentProvider(content));
 
@@ -161,26 +153,21 @@ public class AuthService {
             ContentResponse cr = req.send();
             if (cr.getStatus() == 200) {
                 String responseString = cr.getContentAsString();
-                logger.info(prefix() + "Success getting token: {}", responseString);
                 saveTokenResponse(responseString);
-                logger.info(prefix() + "ATR {}", token);
                 listener.onAccessTokenResponse(token);
                 return true;
             } else {
-                logger.debug(prefix() + "Failed to get token {} {}", cr.getStatus(), cr.getContentAsString());
+                logger.debug("{} Failed to get token {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
-            logger.debug(prefix() + "Failed to get token {}", e.getMessage());
+            logger.debug("{} Failed to get token {}", prefix(), e.getMessage());
         }
         return false;
     }
 
     public void refreshToken() {
-        logger.info(prefix() + "Refresh Token");
         try {
-            // Request + headers
             String url = Utils.getTokenUrl(config.region);
-            logger.info(prefix() + "Get Token base URL {}", url);
             Request req = httpClient.POST(url);
             req.header("X-Device-Id", UUID.randomUUID().toString());
             req.header("X-Request-Id", UUID.randomUUID().toString());
@@ -196,34 +183,31 @@ public class AuthService {
             // Send
             ContentResponse cr = req.send();
             if (cr.getStatus() == 200) {
-                logger.info(prefix() + "Success getting token");
                 saveTokenResponse(cr.getContentAsString());
                 listener.onAccessTokenResponse(token);
-                logger.info(prefix() + "ATR {}", token);
             } else {
-                logger.debug(prefix() + "Failed to refresh token {} {}", cr.getStatus(), cr.getContentAsString());
+                logger.debug("{} Failed to refresh token {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
-            logger.debug(prefix() + "Failed to refresh token {}", e.getMessage());
+            logger.debug("{} Failed to refresh token {}", prefix(), e.getMessage());
         }
     }
 
     public String getToken() {
         // logger.info(prefix() + "Investigate token {}", token);
         if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-            logger.info(prefix() + "Token {} expired", token);
             if (!token.getRefreshToken().equals(Constants.NOT_SET)) {
                 refreshToken();
                 // token shall be updated now - retry expired check
                 if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
                     token = INVALID_TOKEN;
-                    logger.warn(prefix() + "Not able to return fresh token");
+                    logger.warn("{} Not able to return fresh token", prefix());
                     listener.onAccessTokenResponse(token);
                     return Constants.NOT_SET;
                 }
             } else {
                 token = INVALID_TOKEN;
-                logger.info(prefix() + "Refresh token empty");
+                logger.debug("{} Refresh token empty", prefix());
             }
         }
         return token.getAccessToken();
@@ -242,24 +226,25 @@ public class AuthService {
     private void saveTokenResponse(String response) {
         TokenResponse tr = Utils.GSON.fromJson(response, TokenResponse.class);
         AccessTokenResponse atr = new AccessTokenResponse();
-        atr.setAccessToken(tr.access_token);
-        atr.setCreatedOn(Instant.now());
-        atr.setExpiresIn(tr.expires_in);
-        // Preserve refresh token if available
-        if (Constants.NOT_SET.equals(tr.refresh_token) && !Constants.NOT_SET.equals(token.getRefreshToken())) {
-            logger.info(prefix() + "Preserve refresh token {}", token.getRefreshToken());
-            atr.setRefreshToken(token.getRefreshToken());
-        } else if (!Constants.NOT_SET.equals(tr.refresh_token)) {
-            logger.info(prefix() + "New refresh token {}", tr.refresh_token);
-            atr.setRefreshToken(tr.refresh_token);
+        if (tr != null) {
+            atr.setAccessToken(tr.accessToken);
+            atr.setCreatedOn(Instant.now());
+            atr.setExpiresIn(tr.expiresIn);
+            // Preserve refresh token if available
+            if (Constants.NOT_SET.equals(tr.refreshToken) && !Constants.NOT_SET.equals(token.getRefreshToken())) {
+                atr.setRefreshToken(token.getRefreshToken());
+            } else if (!Constants.NOT_SET.equals(tr.refreshToken)) {
+                atr.setRefreshToken(tr.refreshToken);
+            } else {
+                logger.debug("{} Neither new nor old refresh token available", prefix());
+            }
+            atr.setTokenType("Bearer");
+            atr.setScope(Constants.SCOPE);
+            storage.put(identifier, Utils.toString(atr));
+            token = atr;
         } else {
-            logger.info(prefix() + "Neither new nor old refresh token available");
+            logger.debug("{} Token Response is null", prefix());
         }
-        atr.setTokenType("Bearer");
-        atr.setScope(Constants.SCOPE);
-        logger.info(prefix() + "Store at {} token {}", identifier, atr);
-        storage.put(identifier, Utils.toString(atr));
-        token = atr;
     }
 
     private String prefix() {

@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.Constants;
 
 /**
- * The {@link VehicleConfiguration} class contains fields mapping thing configuration parameters.
+ * {@link VehicleConfiguration} to configure vehicle
  *
  * @author Bernd Weymann - Initial contribution
  */

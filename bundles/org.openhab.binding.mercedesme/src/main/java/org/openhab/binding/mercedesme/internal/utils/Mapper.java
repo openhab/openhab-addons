@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 
 /**
- * The {@link Mapper} maps a given Json Object towards a channel, group and state
+ * {@link Mapper} converts Mercedes keys to channel name and group and converts delivered vehicle data
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -107,7 +107,6 @@ public class Mapper {
                             lengthUnit = observer.getUnit().get();
                         }
                     }
-                    double d = Utils.getDouble(value);
                     state = QuantityType.valueOf(Utils.getDouble(value), lengthUnit);
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
@@ -331,12 +330,9 @@ public class Mapper {
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
                 default:
                     // LOGGER.trace("No mapping available for {}", key);
+                    break;
             }
-        } else
-
-        {
-            // LOGGER.trace("No mapping available for {}", key);
-        }
+        } // LOGGER.trace("No mapping available for {}", key);
         return INVALID_MAP;
     }
 

@@ -17,7 +17,7 @@ import static org.openhab.binding.mercedesme.internal.Constants.NOT_SET;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AccountConfiguration} class contains fields mapping thing configuration parameters.
+ * {@link AccountConfiguration} for Account Bridge
  *
  * @author Bernd Weymann - Initial contribution
  */

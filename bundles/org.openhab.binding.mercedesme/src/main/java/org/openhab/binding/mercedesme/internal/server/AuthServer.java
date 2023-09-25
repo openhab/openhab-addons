@@ -13,7 +13,6 @@
 package org.openhab.binding.mercedesme.internal.server;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,14 +25,12 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
-import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
-import org.openhab.core.i18n.LocaleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AuthServer} class defines an HTTP Server for authentication callbacks
+ * {@link AuthServer} provides HTTP Server to show servlet content of the authentication process
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -44,16 +41,13 @@ public class AuthServer {
     private static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
 
     private final HttpClient httpClient;
-    private final LocaleProvider localeProvider;
 
     private Optional<Server> server = Optional.empty();
     private AccountConfiguration config;
     public String callbackUrl;
 
-    public AuthServer(AccessTokenRefreshListener l, HttpClient hc, AccountConfiguration config, String callbackUrl,
-            LocaleProvider lp) {
+    public AuthServer(HttpClient hc, AccountConfiguration config, String callbackUrl) {
         httpClient = hc;
-        localeProvider = lp;
         SERVER_MAP.put(Integer.valueOf(config.callbackPort), this);
         this.config = config;
         this.callbackUrl = callbackUrl;
@@ -109,13 +103,5 @@ public class AuthServer {
 
     public String getRegion() {
         return config.region;
-    }
-
-    public String getMail() {
-        return config.email;
-    }
-
-    public Locale getLocale() {
-        return localeProvider.getLocale();
     }
 }

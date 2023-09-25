@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -7,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -19,6 +32,12 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdatesByVIN;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 
+/**
+ * {@link ProtoTest} to check conversions made in the binding proto <-> json
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
+@NonNullByDefault
 class ProtoTest {
     public static final String VIN_ANON = "anonymous";
 
@@ -39,8 +58,6 @@ class ProtoTest {
                     .putAttributes("positionLat", latStatus).putAttributes("positionLong", lonStatus).build();
             PushMessage pmAnon = PushMessage.newBuilder()
                     .setVepUpdates(VEPUpdatesByVIN.newBuilder().putUpdates(VIN_ANON, vepUpdateAnon).build()).build();
-            System.out.println(pmAnon.getAllFields());
-
             try (FileOutputStream outputStream = new FileOutputStream("src/test/resources/proto-blob/anon.blob")) {
                 pmAnon.writeTo(outputStream);
             }
@@ -89,7 +106,7 @@ class ProtoTest {
             long hours = minutesAfterMIdnight / 60;
             long minutes = minutesAfterMIdnight - hours * 60;
             assertEquals(value.getDisplayValue(), hours + ":" + minutes);
-        } catch (Throwable e) {
+        } catch (IOException e) {
             fail();
         }
     }

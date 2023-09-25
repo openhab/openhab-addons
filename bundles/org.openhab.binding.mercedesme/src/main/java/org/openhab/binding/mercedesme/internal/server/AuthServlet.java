@@ -20,13 +20,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AuthServlet} class provides authentication callback endpoint
+ * {@link AuthServlet} provides simple HTML pages for authorization workflow
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -39,8 +38,6 @@ public class AuthServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AuthService myAuthService = AuthService.getAuthService(request.getLocalPort());
-        AuthServer myServer = AuthServer.getServer(request.getLocalPort());
-        HttpClient client = myServer.getHttpClient();
         String guid = request.getParameter(Constants.GUID);
         String pin = request.getParameter(Constants.PIN);
         if (guid == null && pin == null) {

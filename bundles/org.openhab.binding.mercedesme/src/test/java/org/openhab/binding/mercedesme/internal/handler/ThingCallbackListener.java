@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.Configuration;
@@ -39,10 +40,11 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
- * The {@link ThingCallbackListener} Helper Util to read test resource files
+ * {@link ThingCallbackListener} Listener mock to store vehicle state updates
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class ThingCallbackListener implements ThingHandlerCallback {
 
     public Map<String, State> updatesReceived = new HashMap<String, State>();
@@ -64,65 +66,56 @@ public class ThingCallbackListener implements ThingHandlerCallback {
         // }
         updatesReceived.put(channelUID.toString(), state);
         Map<String, State> groupMap = updatesPerGroupMap.get(channelUID.getGroupId());
-        if (groupMap == null) {
+        String groupId = channelUID.getGroupId();
+        if (groupMap == null && groupId != null) {
             groupMap = new HashMap<String, State>();
-            updatesPerGroupMap.put(channelUID.getGroupId(), groupMap);
+            updatesPerGroupMap.put(groupId, groupMap);
         }
         groupMap.put(channelUID.toString(), state);
     }
 
     @Override
     public void postCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void thingUpdated(Thing thing) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void validateConfigurationParameters(Thing thing,
             Map<@NonNull String, @NonNull Object> configurationParameters) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void validateConfigurationParameters(Channel channel,
             Map<@NonNull String, @NonNull Object> configurationParameters) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public @Nullable ConfigDescription getConfigDescription(ChannelTypeUID channelTypeUID) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public @Nullable ConfigDescription getConfigDescription(ThingTypeUID thingTypeUID) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void configurationUpdated(Thing thing) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void migrateThingType(Thing thing, ThingTypeUID thingTypeUID, Configuration configuration) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void channelTriggered(Thing thing, ChannelUID channelUID, String event) {
-        // TODO Auto-generated method stub
     }
 
     @Override
@@ -148,7 +141,6 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     @Override
     public @Nullable Bridge getBridge(ThingUID bridgeUID) {
-        // TODO Auto-generated method stub
         return null;
     }
 }

@@ -30,7 +30,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link Constants} class defines common constants, which are
+ * {@link Constants} defines common constants, which are
  * used across the whole binding.
  *
  * @author Bernd Weymann - Initial contribution
