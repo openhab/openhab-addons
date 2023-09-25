@@ -50,16 +50,11 @@ public class CacheManager {
     private final Clock clock;
     private final PriceListParser priceListParser = new PriceListParser();
 
-    private Collection<DatahubPricelistRecord> netTariffRecords = new ArrayList<>();
-    private Collection<DatahubPricelistRecord> systemTariffRecords = new ArrayList<>();
-    private Collection<DatahubPricelistRecord> electricityTaxRecords = new ArrayList<>();
-    private Collection<DatahubPricelistRecord> transmissionNetTariffRecords = new ArrayList<>();
+    private Map<DatahubTariff, Collection<DatahubPricelistRecord>> datahubRecordsMap = new HashMap<>();
 
     private Map<Instant, BigDecimal> spotPriceMap = new ConcurrentHashMap<>(SPOT_PRICE_MAX_CACHE_SIZE);
-    private Map<Instant, BigDecimal> netTariffMap = new ConcurrentHashMap<>(TARIFF_MAX_CACHE_SIZE);
-    private Map<Instant, BigDecimal> systemTariffMap = new ConcurrentHashMap<>(TARIFF_MAX_CACHE_SIZE);
-    private Map<Instant, BigDecimal> electricityTaxMap = new ConcurrentHashMap<>(TARIFF_MAX_CACHE_SIZE);
-    private Map<Instant, BigDecimal> transmissionNetTariffMap = new ConcurrentHashMap<>(TARIFF_MAX_CACHE_SIZE);
+
+    private Map<DatahubTariff, Map<Instant, BigDecimal>> tariffsMap = new ConcurrentHashMap<>();
 
     public CacheManager() {
         this(Clock.systemDefaultZone());
@@ -67,22 +62,20 @@ public class CacheManager {
 
     public CacheManager(Clock clock) {
         this.clock = clock.withZone(NORD_POOL_TIMEZONE);
+
+        for (DatahubTariff tariff : DatahubTariff.values()) {
+            datahubRecordsMap.put(tariff, new ArrayList<>());
+            tariffsMap.put(tariff, new ConcurrentHashMap<>(TARIFF_MAX_CACHE_SIZE));
+        }
     }
 
     /**
      * Clear all cached data.
      */
     public void clear() {
-        netTariffRecords.clear();
-        systemTariffRecords.clear();
-        electricityTaxRecords.clear();
-        transmissionNetTariffRecords.clear();
-
+        datahubRecordsMap.clear();
         spotPriceMap.clear();
-        netTariffMap.clear();
-        systemTariffMap.clear();
-        electricityTaxMap.clear();
-        transmissionNetTariffMap.clear();
+        tariffsMap.clear();
     }
 
     /**
@@ -101,47 +94,18 @@ public class CacheManager {
     }
 
     /**
-     * Replace current "raw"/unprocessed net tariff records in cache.
+     * Replace current "raw"/unprocessed tariff records in cache.
      * Map of hourly tariffs will be updated automatically.
      *
      * @param records to cache
      */
-    public void putNetTariffs(Collection<DatahubPricelistRecord> records) {
-        putDatahubRecords(netTariffRecords, records);
-        updateNetTariffs();
-    }
-
-    /**
-     * Replace current "raw"/unprocessed system tariff records in cache.
-     * Map of hourly tariffs will be updated automatically.
-     *
-     * @param records to cache
-     */
-    public void putSystemTariffs(Collection<DatahubPricelistRecord> records) {
-        putDatahubRecords(systemTariffRecords, records);
-        updateSystemTariffs();
-    }
-
-    /**
-     * Replace current "raw"/unprocessed electricity tax records in cache.
-     * Map of hourly taxes will be updated automatically.
-     *
-     * @param records to cache
-     */
-    public void putElectricityTaxes(Collection<DatahubPricelistRecord> records) {
-        putDatahubRecords(electricityTaxRecords, records);
-        updateElectricityTaxes();
-    }
-
-    /**
-     * Replace current "raw"/unprocessed transmission net tariff records in cache.
-     * Map of hourly tariffs will be updated automatically.
-     *
-     * @param records to cache
-     */
-    public void putTransmissionNetTariffs(Collection<DatahubPricelistRecord> records) {
-        putDatahubRecords(transmissionNetTariffRecords, records);
-        updateTransmissionNetTariffs();
+    public void putTariffs(DatahubTariff datahubTariff, Collection<DatahubPricelistRecord> records) {
+        Collection<DatahubPricelistRecord> datahubRecords = datahubRecordsMap.get(datahubTariff);
+        if (datahubRecords == null) {
+            throw new IllegalStateException("Datahub records not initialized");
+        }
+        putDatahubRecords(datahubRecords, records);
+        updateTariffs(datahubTariff);
     }
 
     private void putDatahubRecords(Collection<DatahubPricelistRecord> destination,
@@ -154,34 +118,14 @@ public class CacheManager {
     }
 
     /**
-     * Update map of hourly net tariffs from internal cache.
+     * Update map of hourly tariffs from internal cache.
      */
-    public void updateNetTariffs() {
-        netTariffMap = priceListParser.toHourly(netTariffRecords);
-        cleanup();
-    }
-
-    /**
-     * Update map of system tariffs from internal cache.
-     */
-    public void updateSystemTariffs() {
-        systemTariffMap = priceListParser.toHourly(systemTariffRecords);
-        cleanup();
-    }
-
-    /**
-     * Update map of electricity taxes from internal cache.
-     */
-    public void updateElectricityTaxes() {
-        electricityTaxMap = priceListParser.toHourly(electricityTaxRecords);
-        cleanup();
-    }
-
-    /**
-     * Update map of hourly transmission net tariffs from internal cache.
-     */
-    public void updateTransmissionNetTariffs() {
-        transmissionNetTariffMap = priceListParser.toHourly(transmissionNetTariffRecords);
+    public void updateTariffs(DatahubTariff datahubTariff) {
+        Collection<DatahubPricelistRecord> datahubRecords = datahubRecordsMap.get(datahubTariff);
+        if (datahubRecords == null) {
+            throw new IllegalStateException("Datahub records not initialized");
+        }
+        tariffsMap.put(datahubTariff, priceListParser.toHourly(datahubRecords));
         cleanup();
     }
 
@@ -214,115 +158,39 @@ public class CacheManager {
     }
 
     /**
-     * Get current net tariff.
+     * Get current tariff.
      *
-     * @return net tariff currently valid
+     * @return tariff currently valid
      */
-    public @Nullable BigDecimal getNetTariff() {
-        return getNetTariff(Instant.now(clock));
+    public @Nullable BigDecimal getTariff(DatahubTariff datahubTariff) {
+        return getTariff(datahubTariff, Instant.now(clock));
     }
 
     /**
-     * Get net tariff valid at provided instant.
+     * Get tariff valid at provided instant.
      *
-     * @param time {@link Instant} for which to get the net tariff
-     * @return net tariff at given time or null if not available
+     * @param time {@link Instant} for which to get the tariff
+     * @return tariff at given time or null if not available
      */
-    public @Nullable BigDecimal getNetTariff(Instant time) {
-        return netTariffMap.get(getHourStart(time));
+    public @Nullable BigDecimal getTariff(DatahubTariff datahubTariff, Instant time) {
+        Map<Instant, BigDecimal> tariffs = tariffsMap.get(datahubTariff);
+        if (tariffs == null) {
+            throw new IllegalStateException("Tariffs not initialized");
+        }
+        return tariffs.get(getHourStart(time));
     }
 
     /**
-     * Get map of all cached net tariffs.
+     * Get map of all cached tariffs.
      *
-     * @return net tariffs currently available, {@link #NUMBER_OF_HISTORIC_HOURS} back
+     * @return tariffs currently available, {@link #NUMBER_OF_HISTORIC_HOURS} back
      */
-    public Map<Instant, BigDecimal> getNetTariffs() {
-        return new HashMap<Instant, BigDecimal>(netTariffMap);
-    }
-
-    /**
-     * Get current system tariff.
-     *
-     * @return system tariff currently valid
-     */
-    public @Nullable BigDecimal getSystemTariff() {
-        return getSystemTariff(Instant.now(clock));
-    }
-
-    /**
-     * Get system tariff valid at provided instant.
-     *
-     * @param time {@link Instant} for which to get the system tariff
-     * @return system tariff at given time or null if not available
-     */
-    public @Nullable BigDecimal getSystemTariff(Instant time) {
-        return systemTariffMap.get(getHourStart(time));
-    }
-
-    /**
-     * Get map of all cached system tariffs.
-     *
-     * @return system tariffs currently available, {@link #NUMBER_OF_HISTORIC_HOURS} back
-     */
-    public Map<Instant, BigDecimal> getSystemTariffs() {
-        return new HashMap<Instant, BigDecimal>(systemTariffMap);
-    }
-
-    /**
-     * Get current electricity tax.
-     *
-     * @return electricity tax currently valid
-     */
-    public @Nullable BigDecimal getElectricityTax() {
-        return getElectricityTax(Instant.now(clock));
-    }
-
-    /**
-     * Get electricity tax valid at provided instant.
-     *
-     * @param time {@link Instant} for which to get the electricity tax
-     * @return electricity tax at given time or null if not available
-     */
-    public @Nullable BigDecimal getElectricityTax(Instant time) {
-        return electricityTaxMap.get(getHourStart(time));
-    }
-
-    /**
-     * Get map of all cached electricity taxes.
-     *
-     * @return electricity taxes currently available, {@link #NUMBER_OF_HISTORIC_HOURS} back
-     */
-    public Map<Instant, BigDecimal> getElectricityTaxes() {
-        return new HashMap<Instant, BigDecimal>(electricityTaxMap);
-    }
-
-    /**
-     * Get current transmission net tariff.
-     *
-     * @return transmission net tariff currently valid
-     */
-    public @Nullable BigDecimal getTransmissionNetTariff() {
-        return getTransmissionNetTariff(Instant.now(clock));
-    }
-
-    /**
-     * Get transmission net tariff valid at provided instant.
-     *
-     * @param time {@link Instant} for which to get the transmission net tariff
-     * @return transmission net tariff at given time or null if not available
-     */
-    public @Nullable BigDecimal getTransmissionNetTariff(Instant time) {
-        return transmissionNetTariffMap.get(getHourStart(time));
-    }
-
-    /**
-     * Get map of all cached transmission net tariffs.
-     *
-     * @return transmission net tariffs currently available, {@link #NUMBER_OF_HISTORIC_HOURS} back
-     */
-    public Map<Instant, BigDecimal> getTransmissionNetTariffs() {
-        return new HashMap<Instant, BigDecimal>(transmissionNetTariffMap);
+    public Map<Instant, BigDecimal> getTariffs(DatahubTariff datahubTariff) {
+        Map<Instant, BigDecimal> tariffs = tariffsMap.get(datahubTariff);
+        if (tariffs == null) {
+            throw new IllegalStateException("Tariffs not initialized");
+        }
+        return new HashMap<Instant, BigDecimal>(tariffs);
     }
 
     /**
@@ -373,39 +241,16 @@ public class CacheManager {
     }
 
     /**
-     * Check if we have "raw" net tariff records cached which are valid tomorrow.
+     * Check if we have "raw" tariff records cached which are valid tomorrow.
      * 
-     * @return true if net tariff records for tomorrow are cached
+     * @return true if tariff records for tomorrow are cached
      */
-    public boolean areNetTariffsValidTomorrow() {
-        return isValidNextDay(netTariffRecords);
-    }
-
-    /**
-     * Check if we have "raw" system tariff records cached which are valid tomorrow.
-     * 
-     * @return true if system tariff records for tomorrow are cached
-     */
-    public boolean areSystemTariffsValidTomorrow() {
-        return isValidNextDay(systemTariffRecords);
-    }
-
-    /**
-     * Check if we have "raw" electricity tax records cached which are valid tomorrow.
-     * 
-     * @return true if electricity tax records for tomorrow are cached
-     */
-    public boolean areElectricityTaxesValidTomorrow() {
-        return isValidNextDay(electricityTaxRecords);
-    }
-
-    /**
-     * Check if we have "raw" transmission net tariff records cached which are valid tomorrow.
-     * 
-     * @return true if transmission net tariff records for tomorrow are cached
-     */
-    public boolean areTransmissionNetTariffsValidTomorrow() {
-        return isValidNextDay(transmissionNetTariffRecords);
+    public boolean areTariffsValidTomorrow(DatahubTariff datahubTariff) {
+        Collection<DatahubPricelistRecord> datahubRecords = datahubRecordsMap.get(datahubTariff);
+        if (datahubRecords == null) {
+            throw new IllegalStateException("Datahub records not initialized");
+        }
+        return isValidNextDay(datahubRecords);
     }
 
     /**
@@ -415,10 +260,10 @@ public class CacheManager {
         Instant firstHourStart = getFirstHourStart();
 
         spotPriceMap.entrySet().removeIf(entry -> entry.getKey().isBefore(firstHourStart));
-        netTariffMap.entrySet().removeIf(entry -> entry.getKey().isBefore(firstHourStart));
-        systemTariffMap.entrySet().removeIf(entry -> entry.getKey().isBefore(firstHourStart));
-        electricityTaxMap.entrySet().removeIf(entry -> entry.getKey().isBefore(firstHourStart));
-        transmissionNetTariffMap.entrySet().removeIf(entry -> entry.getKey().isBefore(firstHourStart));
+
+        for (Map<Instant, BigDecimal> tariffs : tariffsMap.values()) {
+            tariffs.entrySet().removeIf(entry -> entry.getKey().isBefore(firstHourStart));
+        }
     }
 
     private boolean isValidNextDay(Collection<DatahubPricelistRecord> records) {
