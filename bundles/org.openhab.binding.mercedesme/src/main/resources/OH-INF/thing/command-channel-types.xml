@@ -4,12 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="cmd-name-channel">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Command Name</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="cmd-state-channel">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Command State</label>
 		<state readOnly="true"/>
 	</channel-type>
