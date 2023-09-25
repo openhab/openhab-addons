@@ -127,4 +127,21 @@ public class TellstickLocalSensorDTO implements Device {
     public String getUUId() {
         return Integer.toString(deviceId);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        // used to test if sensor exist
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof TellstickLocalSensorDTO other)) {
+            return false;
+        }
+        return deviceId == other.deviceId;
+    }
+
+    @Override
+    public int hashCode() {
+        return deviceId;
+    }
 }
