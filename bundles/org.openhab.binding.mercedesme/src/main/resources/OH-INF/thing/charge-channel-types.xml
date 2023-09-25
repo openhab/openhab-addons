@@ -77,7 +77,6 @@
 				<option value="100 %">100 %</option>
 			</options>
 		</command>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="auto-unlock-channel">
 		<item-type>Switch</item-type>
