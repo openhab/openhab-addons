@@ -535,9 +535,9 @@ All channels `read-only`
 
 | Channel              | Type        |  Description                       |
 |----------------------|-------------|------------------------------------|
-| cmd-name             | String      |  Command Name which is handled     |
-| cmd-state            | String      |  Current Command State             |
-| cmd-last-update      | String      |  Timestamp of last update          |
+| cmd-name             | Number      |  Command Name which is handled     |
+| cmd-state            | Number      |  Current Command State             |
+| cmd-last-update      | DateTime    |  Timestamp of last update          |
 
 Show state of the send command sent by above channels which are able to write values.
 **Don't flood the API with commands**.
@@ -556,14 +556,48 @@ Command Names:
 -  [program, mox-soc, auto-unlock | charge](#charge) : CHARGEPROGRAMCONFIGURE
 -  [signal | position](#position) : SIGPOSSTART
 
+Command Name Mapping
 
-Command State:
+- 0 : UNKNOWNCOMMANDTYPE
+- 100 : DOORSLOCK
+- 110 : DOORSUNLOCK
+- 115 : TRUNKUNLOCK
+- 116 : FUELFLAPUNLOCK
+- 117 : CHARGEFLAPUNLOCK
+- 118 : CHARGECOUPLERUNLOCK
+- 300 : AUXHEATSTART
+- 310 : AUXHEATSTOP
+- 320 : AUXHEATCONFIGURE
+- 350 : TEMPERATURECONFIGURE
+- 400 : PRECONDSTART
+- 410 : PRECONDSTOP
+- 420 : PRECONDCONFIGURE
+- 425 : PRECONDCONFIGURESEATS
+- 550 : ENGINESTART
+- 560 : ENGINESTOP
+- 570 : ENGINEAVPSTART
+- 770 : SIGPOSSTART
+- 1100 : WINDOWOPEN
+- 1110 : WINDOWCLOSE
+- 1120 : WINDOWVENTILATE
+- 1121 : WINDOWMOVE
+- 1130 : ROOFOPEN
+- 1140 : ROOFCLOSE
+- 1150 : ROOFLIFT
+- 1151 : ROOFMOVE
+- 2000 : BATTERYMAXSOC
+- 2010 : BATTERYCHARGEPROGRAM
+- 2020 : CHARGEPROGRAMCONFIGURE
 
-- INITIATION
-- ENQUEUED
-- PROCESSING
-- FINISHED
-- FAILED
+Command State Mapping
+
+- 0 : UNKNOWN_COMMAND_STATE
+- 1 : INITIATION
+- 2 : ENQUEUED
+- 3 : PROCESSING
+- 4 : WAITING
+- 5 : FINISHED
+- 6 : FAILED
 
 ## Vehicle Actions
 

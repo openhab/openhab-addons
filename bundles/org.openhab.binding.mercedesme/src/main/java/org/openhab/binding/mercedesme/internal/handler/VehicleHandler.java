@@ -66,6 +66,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.daimler.mbcarkit.proto.Acp.ACP.CommandType;
+import com.daimler.mbcarkit.proto.Acp.VehicleAPI.CommandState;
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
 import com.daimler.mbcarkit.proto.VehicleCommands.AuxheatStart;
 import com.daimler.mbcarkit.proto.VehicleCommands.AuxheatStop;
@@ -144,6 +146,7 @@ public class VehicleHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
+                setCommandStateOptions();
                 accountHandler = Optional.of((AccountHandler) handler);
                 accountHandler.get().registerVin(config.get().vin, this);
             } else {
@@ -525,17 +528,16 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     public void distributeCommandStatus(AppTwinCommandStatusUpdatesByPID cmdUpadtes) {
         Map<Long, AppTwinCommandStatus> updates = cmdUpadtes.getUpdatesByPidMap();
         updates.forEach((key, value) -> {
             // Command name
-            StringType command = StringType.valueOf(value.getType().toString());
-            ChannelStateMap csmCommand = new ChannelStateMap("cmd-name", GROUP_COMMAND, command);
+            ChannelStateMap csmCommand = new ChannelStateMap("cmd-name", GROUP_COMMAND,
+                    new DecimalType(value.getType().getNumber()));
             updateChannel(csmCommand);
             // Command State
-            StringType state = StringType.valueOf(value.getState().toString());
-            ChannelStateMap csmState = new ChannelStateMap("cmd-state", GROUP_COMMAND, state);
+            ChannelStateMap csmState = new ChannelStateMap("cmd-state", GROUP_COMMAND,
+                    new DecimalType(value.getState().getNumber()));
             updateChannel(csmState);
             // Command Time
             DateTimeType dtt = Utils.getDateTimeType(value.getTimestampInMs());
@@ -1121,6 +1123,28 @@ public class VehicleHandler extends BaseThingHandler {
             ChannelStateMap csm = new ChannelStateMap("command-capabilities", GROUP_VEHICLE, StringType.valueOf(capa));
             updateChannel(csm);
         }
+    }
+
+    private void setCommandStateOptions() {
+        List<StateOption> commandTypeOptions = new ArrayList<StateOption>();
+        CommandType[] ctValues = CommandType.values();
+        for (int i = 0; i < ctValues.length; i++) {
+            if (!"UNRECOGNIZED".equals(ctValues[i].toString())) {
+                StateOption so = new StateOption(Integer.toString(ctValues[i].getNumber()), ctValues[i].toString());
+                commandTypeOptions.add(so);
+            }
+        }
+        mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_COMMAND, "cmd-name"), commandTypeOptions);
+        List<StateOption> commandStateOptions = new ArrayList<StateOption>();
+        CommandState[] csValues = CommandState.values();
+        for (int j = 0; j < csValues.length; j++) {
+            if (!"UNRECOGNIZED".equals(csValues[j].toString())) {
+                StateOption so = new StateOption(Integer.toString(csValues[j].getNumber()), csValues[j].toString());
+                commandTypeOptions.add(so);
+                commandStateOptions.add(so);
+            }
+        }
+        mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_COMMAND, "cmd-state"), commandStateOptions);
     }
 
     /**

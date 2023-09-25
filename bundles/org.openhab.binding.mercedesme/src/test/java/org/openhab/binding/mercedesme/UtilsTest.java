@@ -119,4 +119,20 @@ class UtilsTest {
             }
         }
     }
+
+    // @Test
+    // public void testCommanedTypes() {
+    // CommandType[] ctValues = CommandType.values();
+    // for (int i = 0; i < ctValues.length; i++) {
+    // if (!"UNRECOGNIZED".equals(ctValues[i].toString())) {
+    // System.out.println("- " + ctValues[i].getNumber() + " : " + ctValues[i].toString());
+    // }
+    // }
+    // CommandState[] csValues = CommandState.values();
+    // for (int j = 0; j < csValues.length; j++) {
+    // if (!"UNRECOGNIZED".equals(csValues[j].toString())) {
+    // System.out.println("- " + csValues[j].getNumber() + " : " + csValues[j].toString());
+    // }
+    // }
+    // }
 }
