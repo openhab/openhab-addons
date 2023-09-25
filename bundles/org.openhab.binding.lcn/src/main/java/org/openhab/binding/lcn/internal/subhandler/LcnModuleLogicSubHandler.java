@@ -101,6 +101,7 @@ public class LcnModuleLogicSubHandler extends AbstractLcnModuleSubHandler {
                     state = LcnDefs.LogicOpStatus.OR;
                     break;
                 case "050":
+                case "200": // not documented, but seen in the field and confirmed by the LCN hotline
                     state = LcnDefs.LogicOpStatus.AND;
                     break;
                 default:

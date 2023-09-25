@@ -106,4 +106,11 @@ public class LcnModuleLogicSubHandlerTest extends AbstractTestLcnModuleSubHandle
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "3", AND);
         verify(handler).updateChannel(any(), any(), any());
     }
+
+    @Test
+    public void testStatusSingleLogic3And200() {
+        tryParseAllHandlers("=M000005S3200");
+        verify(handler).updateChannel(LcnChannelGroup.LOGIC, "3", AND);
+        verify(handler).updateChannel(any(), any(), any());
+    }
 }
