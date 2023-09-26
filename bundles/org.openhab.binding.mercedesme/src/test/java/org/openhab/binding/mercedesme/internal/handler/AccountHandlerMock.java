@@ -26,16 +26,16 @@ import org.openhab.core.thing.Bridge;
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
 
 /**
- * {@link AuccountHandlerMock} to retrieve and collect commands from {@link VehicleHandler}
+ * {@link AccountHandlerMock} to retrieve and collect commands from {@link VehicleHandler}
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class AuccountHandlerMock extends AccountHandler {
+public class AccountHandlerMock extends AccountHandler {
 
     JSONObject command = new JSONObject();
 
-    public AuccountHandlerMock() {
+    public AccountHandlerMock() {
         super(mock(Bridge.class), mock(MercedesMeDiscoveryService.class), mock(HttpClient.class),
                 mock(LocaleProvider.class), mock(StorageService.class));
     }

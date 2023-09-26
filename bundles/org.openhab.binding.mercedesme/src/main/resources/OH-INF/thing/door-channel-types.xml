@@ -47,7 +47,7 @@
 	<channel-type id="sunroof-channel">
 		<item-type>Number</item-type>
 		<label>Sun Roof</label>
-		<state readOnly="true">
+		<state>
 			<options>
 				<option value="0">Closed</option>
 				<option value="1">Open</option>
