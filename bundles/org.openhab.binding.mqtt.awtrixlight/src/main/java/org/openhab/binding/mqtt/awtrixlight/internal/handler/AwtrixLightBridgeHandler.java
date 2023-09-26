@@ -544,6 +544,9 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     localDiscoveryCallback.appDiscovered(this.basetopic, currentAppMessage);
                 }
             }
+        } else {
+            AwtrixLightAppHandler alah = this.appHandlers.get(currentAppMessage);
+            alah.setActive(true);
         }
     }
 

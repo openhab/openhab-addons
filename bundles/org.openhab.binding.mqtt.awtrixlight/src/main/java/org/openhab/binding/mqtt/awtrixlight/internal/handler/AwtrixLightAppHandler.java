@@ -662,4 +662,11 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             this.finishInitJob = null;
         }
     }
+
+    public void setActive(boolean active) {
+        if (this.active != active) {
+            this.active = active;
+            updateState(new ChannelUID(channelPrefix + CHANNEL_ACTIVE), active ? OnOffType.ON : OnOffType.OFF);
+        }
+    }
 }
