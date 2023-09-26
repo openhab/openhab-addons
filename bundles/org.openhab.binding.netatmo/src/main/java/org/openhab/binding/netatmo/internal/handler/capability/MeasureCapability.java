@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class MeasureCapability extends BufferedWeatherCapability {
+public class MeasureCapability extends CacheWeatherCapability {
     private final static int MIN_DATA_VALIDITY_MIN = 30;
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();

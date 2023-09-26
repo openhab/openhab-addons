@@ -24,14 +24,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link WeatherCapability} give the ability to read weather station api
+ * {@link WeatherCapability} give the ability to read weather station API
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class WeatherCapability extends BufferedWeatherCapability {
-    private final static int MIN_DATA_VALIDITY_S = 3;
+public class WeatherCapability extends CacheWeatherCapability {
+    private final static int MIN_DATA_VALIDITY_S = 2;
+
     private final Logger logger = LoggerFactory.getLogger(WeatherCapability.class);
 
     public WeatherCapability(CommonInterface handler) {

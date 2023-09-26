@@ -18,6 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
@@ -25,21 +26,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link BufferedWeatherCapability} give the ability to buffer weather related requests and reduce server requests
+ * {@link CacheWeatherCapability} give the ability to buffer weather related requests and reduce server requests
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public abstract class BufferedWeatherCapability extends RestCapability<WeatherApi> {
-    private final Logger logger = LoggerFactory.getLogger(BufferedWeatherCapability.class);
+public abstract class CacheWeatherCapability extends RestCapability<WeatherApi> {
+    private final Logger logger = LoggerFactory.getLogger(CacheWeatherCapability.class);
     private final int minValidity;
     private final ChronoUnit unit;
 
     private List<NAObject> lastResult = List.of();
-    private ZonedDateTime requestTS = ZonedDateTime.now();
+    private @Nullable ZonedDateTime requestTS;
 
-    public BufferedWeatherCapability(CommonInterface handler, int minValidity, ChronoUnit unit) {
+    public CacheWeatherCapability(CommonInterface handler, int minValidity, ChronoUnit unit) {
         super(handler, WeatherApi.class);
         this.minValidity = minValidity;
         this.unit = unit;
@@ -48,12 +49,14 @@ public abstract class BufferedWeatherCapability extends RestCapability<WeatherAp
     @Override
     protected List<NAObject> updateReadings(WeatherApi api) {
         ZonedDateTime now = ZonedDateTime.now();
-        if (!lastResult.isEmpty() && Duration.between(requestTS, now).get(unit) < minValidity) {
-            logger.debug("Using buffered result");
-            return lastResult;
+        ZonedDateTime timestamp = requestTS;
+
+        if (timestamp == null || Duration.between(timestamp, now).get(unit) > minValidity) {
+            logger.debug("Requesting fresh data");
+            lastResult = getFreshData(api);
+            requestTS = now;
         }
-        lastResult = getFreshData(api);
-        requestTS = now;
+
         return lastResult;
     }
 
