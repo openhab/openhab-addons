@@ -291,19 +291,6 @@ public class AwtrixApp {
         return this.progressC;
     }
 
-    @Override
-    public String toString() {
-        return "AwtrixApp [text=" + text + ", textCase=" + textCase + ", topText=" + topText + ", textOffset="
-                + textOffset + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient="
-                + Arrays.toString(gradient) + ", blinkText=" + blinkText + ", fadeText=" + fadeText + ", background="
-                + Arrays.toString(background) + ", rainbow=" + rainbow + ", icon=" + icon + ", pushIcon=" + pushIcon
-                + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", bar=" + Arrays.toString(bar)
-                + ", autoscale=" + autoscale + ", progress=" + progress + ", progressC=" + Arrays.toString(progressC)
-                + ", progressBC=" + Arrays.toString(progressBC) + ", scrollSpeed=" + scrollSpeed + ", effect=" + effect
-                + ", effectSpeed=" + effectSpeed + ", effectPalette=" + effectPalette + ", effectBlend=" + effectBlend
-                + "]";
-    }
-
     public BigDecimal[] setProgressC() {
         return this.progressC;
     }
@@ -358,6 +345,19 @@ public class AwtrixApp {
 
     public void setEffectBlend(Boolean effectBlend) {
         this.effectBlend = effectBlend;
+    }
+
+    @Override
+    public String toString() {
+        return "AwtrixApp [text=" + text + ", textCase=" + textCase + ", topText=" + topText + ", textOffset="
+                + textOffset + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient="
+                + Arrays.toString(gradient) + ", blinkText=" + blinkText + ", fadeText=" + fadeText + ", background="
+                + Arrays.toString(background) + ", rainbow=" + rainbow + ", icon=" + icon + ", pushIcon=" + pushIcon
+                + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", bar=" + Arrays.toString(bar)
+                + ", autoscale=" + autoscale + ", progress=" + progress + ", progressC=" + Arrays.toString(progressC)
+                + ", progressBC=" + Arrays.toString(progressBC) + ", scrollSpeed=" + scrollSpeed + ", effect=" + effect
+                + ", effectSpeed=" + effectSpeed + ", effectPalette=" + effectPalette + ", effectBlend=" + effectBlend
+                + "]";
     }
 
     private boolean getBoolValue(Map<String, Object> params, String key, boolean defaultValue) {
