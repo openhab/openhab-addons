@@ -617,7 +617,7 @@ public class VehicleHandler extends BaseThingHandler {
         if (atts.containsKey("positionLat") && atts.containsKey("positionLong")) {
             double lat = Utils.getDouble(atts.get("positionLat"));
             double lon = Utils.getDouble(atts.get("positionLong"));
-            if (lat > 0 && lon > 0) {
+            if (lat != -1 && lon != -1) {
                 PointType pt = new PointType(lat + "," + lon);
                 updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, pt));
             } else {
