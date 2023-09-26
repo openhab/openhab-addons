@@ -229,8 +229,7 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
                 return null;
             }
             ThingHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof VelbusBridgeHandler) {
-                VelbusBridgeHandler velbusBridgeHandler = (VelbusBridgeHandler) bridgeHandler;
+            if (bridgeHandler instanceof VelbusBridgeHandler velbusBridgeHandler) {
                 this.velbusBridgeHandler = velbusBridgeHandler;
 
                 if (velbusModuleAddress != null) {

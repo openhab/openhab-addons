@@ -67,7 +67,7 @@ public class WeatherUndergroundBridgeHandler extends BaseBridgeHandler {
 
         // Check if an api key has been provided during the bridge creation
         Object configApiKey = config.get(WeatherUndergroundBindingConstants.APIKEY);
-        if (configApiKey == null || !(configApiKey instanceof String) || ((String) configApiKey).trim().isEmpty()) {
+        if (!(configApiKey instanceof String) || ((String) configApiKey).trim().isEmpty()) {
             logger.debug("Setting thing '{}' to OFFLINE: Parameter 'apikey' must be configured.", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-apikey");

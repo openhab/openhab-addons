@@ -111,8 +111,8 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
         } else if (isThermostatChannel(channelUID)
                 && (command instanceof QuantityType<?> || command instanceof DecimalType)) {
             byte temperatureVariable = determineTemperatureVariable(channelUID);
-            QuantityType<?> temperatureInDegreesCelcius = (command instanceof QuantityType<?>)
-                    ? ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS)
+            QuantityType<?> temperatureInDegreesCelcius = (command instanceof QuantityType<?> qt)
+                    ? qt.toUnit(SIUnits.CELSIUS)
                     : new QuantityType<>(((DecimalType) command), SIUnits.CELSIUS);
 
             if (temperatureInDegreesCelcius != null) {
@@ -125,8 +125,8 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
                 byte[] packetBytes = packet.getBytes();
                 velbusBridgeHandler.sendPacket(packetBytes);
             }
-        } else if (channelUID.equals(operatingModeChannel) && command instanceof StringType) {
-            byte commandByte = ((StringType) command).equals(OPERATING_MODE_HEATING) ? COMMAND_SET_HEATING_MODE
+        } else if (channelUID.equals(operatingModeChannel) && command instanceof StringType stringCommand) {
+            byte commandByte = stringCommand.equals(OPERATING_MODE_HEATING) ? COMMAND_SET_HEATING_MODE
                     : COMMAND_SET_COOLING_MODE;
 
             VelbusThermostatOperatingModePacket packet = new VelbusThermostatOperatingModePacket(
@@ -134,15 +134,13 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);
-        } else if (channelUID.equals(modeChannel) && command instanceof StringType) {
+        } else if (channelUID.equals(modeChannel) && command instanceof StringType stringCommand) {
             byte commandByte = COMMAND_SWITCH_TO_SAFE_MODE;
-
-            StringType stringTypeCommand = (StringType) command;
-            if (stringTypeCommand.equals(MODE_COMFORT)) {
+            if (stringCommand.equals(MODE_COMFORT)) {
                 commandByte = COMMAND_SWITCH_TO_COMFORT_MODE;
-            } else if (stringTypeCommand.equals(MODE_DAY)) {
+            } else if (stringCommand.equals(MODE_DAY)) {
                 commandByte = COMMAND_SWITCH_TO_DAY_MODE;
-            } else if (stringTypeCommand.equals(MODE_NIGHT)) {
+            } else if (stringCommand.equals(MODE_NIGHT)) {
                 commandByte = COMMAND_SWITCH_TO_NIGHT_MODE;
             }
 
