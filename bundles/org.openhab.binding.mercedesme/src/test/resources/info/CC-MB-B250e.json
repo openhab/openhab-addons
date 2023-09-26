@@ -1,0 +1,441 @@
+{
+	"commands": [
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "ZEV_PRECONDITION_CONFIGURE",
+			"isAvailable": true,
+			"parameters": [
+				{
+					"allowedEnums": null,
+					"maxValue": 1439,
+					"minValue": 0,
+					"parameterName": "DEPARTURE_TIME",
+					"steps": 1
+				},
+				{
+					"allowedEnums": [
+						"DISABLED",
+						"SINGLE_DEPARTURE",
+						"WEEKLY_DEPARTURE"
+					],
+					"parameterName": "DEPARTURE_TIME_MODE"
+				}
+			]
+		},
+		{
+			"additionalInformation": [
+				"OnlyDriverOrAllSeats"
+			],
+			"capabilityInformation": [
+				"ONLY_DRIVER_OR_ALL_SEATS"
+			],
+			"commandName": "ZEV_PRECONDITION_CONFIGURE_SEATS",
+			"isAvailable": true,
+			"parameters": [
+				{
+					"allowedBools": "TRUE_AND_FALSE",
+					"allowedEnums": null,
+					"parameterName": "FRONT_LEFT_SEAT"
+				},
+				{
+					"allowedBools": "ONLY_TRUE",
+					"allowedEnums": null,
+					"parameterName": "FRONT_RIGHT_SEAT"
+				},
+				{
+					"allowedBools": "TRUE_AND_FALSE",
+					"allowedEnums": null,
+					"parameterName": "REAR_LEFT_SEAT"
+				},
+				{
+					"allowedBools": "TRUE_AND_FALSE",
+					"allowedEnums": null,
+					"parameterName": "REAR_RIGHT_SEAT"
+				}
+			]
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "ZEV_PRECONDITIONING_START",
+			"isAvailable": true,
+			"parameters": [
+				{
+					"allowedEnums": null,
+					"maxValue": 1439,
+					"minValue": 0,
+					"parameterName": "DEPARTURE_TIME",
+					"steps": 1
+				},
+				{
+					"allowedEnums": [
+						"IMMEDIATE",
+						"DEPARTURE",
+						"NOW",
+						"DEPARTURE_WEEKLY"
+					],
+					"parameterName": "TYPE"
+				}
+			]
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "ZEV_PRECONDITIONING_STOP",
+			"isAvailable": true,
+			"parameters": [
+				{
+					"allowedEnums": [
+						"IMMEDIATE",
+						"DEPARTURE",
+						"NOW",
+						"DEPARTURE_WEEKLY"
+					],
+					"parameterName": "TYPE"
+				}
+			]
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "AUXHEAT_CONFIGURE",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "AUXHEAT_START",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "AUXHEAT_STOP",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "BATTERY_CHARGE_PROGRAM_CONFIGURE",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "BATTERY_MAX_SOC_CONFIGURE",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "CHARGE_OPT_CONFIGURE",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "CHARGE_OPT_START",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "CHARGE_OPT_STOP",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "SPEEDALERT_START",
+			"isAvailable": true,
+			"parameters": [
+				{
+					"allowedEnums": null,
+					"maxValue": 255,
+					"minValue": 1,
+					"parameterName": "THRESHOLD",
+					"steps": 1
+				},
+				{
+					"allowedEnums": null,
+					"maxValue": 2147483647,
+					"minValue": 0,
+					"parameterName": "ALERT_END_TIME",
+					"steps": 1
+				}
+			]
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "SPEEDALERT_STOP",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "SUNROOF_OPEN",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "SUNROOF_LIFT",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "SUNROOF_CLOSE",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "ENGINE_START",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "ENGINE_STOP",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "DOORS_LOCK",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "DOORS_UNLOCK",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "CHARGE_PROGRAM_CONFIGURE",
+			"isAvailable": true,
+			"parameters": [
+				{
+					"allowedEnums": [
+						"DEFAULT_CHARGEPROGRAM"
+					],
+					"parameterName": "CHARGE_PROGRAM"
+				},
+				{
+					"allowedEnums": null,
+					"maxValue": 100,
+					"minValue": 50,
+					"parameterName": "MAX_SOC",
+					"steps": 10
+				}
+			]
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "CHILDPRESENCEDETECTION_DEACTIVATEALARM",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "WINDOWS_OPEN",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "WINDOWS_CLOSE",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "WINDOWS_VENTILATE",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "THEFTALARM_DESELECT_INTERIOR",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "THEFTALARM_DESELECT_TOW",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "THEFTALARM_SELECT_INTERIOR",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "THEFTALARM_SELECT_TOW",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "THEFTALARM_START",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "THEFTALARM_STOP",
+			"isAvailable": true,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "THEFTALARM_CONFIRM_DAMAGEDETECTION",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "THEFTALARM_DESELECT_DAMAGEDETECTION",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "THEFTALARM_SELECT_DAMAGEDETECTION",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "WEEK_PROFILE_CONFIGURE",
+			"isAvailable": true,
+			"parameters": [
+				{
+					"allowedEnums": [
+						"MONDAY",
+						"TUESDAY",
+						"WEDNESDAY",
+						"THURSDAY",
+						"FRIDAY",
+						"SATURDAY",
+						"SUNDAY"
+					],
+					"parameterName": "WEEKLY_SET_HU_DAY"
+				},
+				{
+					"allowedEnums": null,
+					"maxValue": 1439,
+					"minValue": 0,
+					"parameterName": "WEEKLY_SET_HU_TIME",
+					"steps": 1
+				}
+			]
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "WIPER_HEALTH_RESET",
+			"isAvailable": false,
+			"parameters": null
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "SIGPOS_START",
+			"isAvailable": true,
+			"parameters": [
+				{
+					"allowedEnums": null,
+					"maxValue": 30,
+					"minValue": 0,
+					"parameterName": "HORN_REPEAT",
+					"steps": 1
+				},
+				{
+					"allowedEnums": [
+						"HORN_OFF"
+					],
+					"parameterName": "HORN_TYPE"
+				},
+				{
+					"allowedEnums": [
+						"DIPPED_HEAD_LIGHT"
+					],
+					"parameterName": "LIGHT_TYPE"
+				},
+				{
+					"allowedEnums": null,
+					"maxValue": 10,
+					"minValue": 0,
+					"parameterName": "SIGPOS_DURATION",
+					"steps": 1
+				},
+				{
+					"allowedEnums": [
+						"LIGHT_ONLY"
+					],
+					"parameterName": "SIGPOS_TYPE"
+				}
+			]
+		},
+		{
+			"additionalInformation": null,
+			"capabilityInformation": null,
+			"commandName": "TEMPERATURE_CONFIGURE",
+			"isAvailable": true,
+			"parameters": [
+				{
+					"allowedEnums": [
+						"FRONT_CENTER"
+					],
+					"parameterName": "TEMPERATURE_POINTS_ZONE"
+				},
+				{
+					"allowedEnums": null,
+					"maxValue": 28,
+					"minValue": 16,
+					"parameterName": "TEMPERATURE_POINTS_TEMPERATURE",
+					"steps": 0.5
+				}
+			]
+		}
+	]
+}
