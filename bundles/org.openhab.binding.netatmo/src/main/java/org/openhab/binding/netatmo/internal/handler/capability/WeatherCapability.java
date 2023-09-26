@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import java.time.temporal.ChronoUnit;
+import java.time.Duration;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,12 +31,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class WeatherCapability extends CacheWeatherCapability {
-    private final static int MIN_DATA_VALIDITY_S = 2;
-
     private final Logger logger = LoggerFactory.getLogger(WeatherCapability.class);
 
     public WeatherCapability(CommonInterface handler) {
-        super(handler, MIN_DATA_VALIDITY_S, ChronoUnit.SECONDS);
+        super(handler, Duration.ofSeconds(2));
     }
 
     @Override

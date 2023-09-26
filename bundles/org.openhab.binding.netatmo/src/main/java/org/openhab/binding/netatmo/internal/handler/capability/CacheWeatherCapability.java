@@ -13,12 +13,10 @@
 package org.openhab.binding.netatmo.internal.handler.capability;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.Instant;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
@@ -34,24 +32,21 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class CacheWeatherCapability extends RestCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(CacheWeatherCapability.class);
-    private final int minValidity;
-    private final ChronoUnit unit;
+    private final Duration validity;
 
     private List<NAObject> lastResult = List.of();
-    private @Nullable ZonedDateTime requestTS;
+    private Instant requestTS = Instant.MIN;
 
-    public CacheWeatherCapability(CommonInterface handler, int minValidity, ChronoUnit unit) {
+    public CacheWeatherCapability(CommonInterface handler, Duration validity) {
         super(handler, WeatherApi.class);
-        this.minValidity = minValidity;
-        this.unit = unit;
+        this.validity = validity;
     }
 
     @Override
     protected List<NAObject> updateReadings(WeatherApi api) {
-        ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime timestamp = requestTS;
+        Instant now = Instant.now();
 
-        if (timestamp == null || Duration.between(timestamp, now).get(unit) > minValidity) {
+        if (requestTS.plus(validity).isBefore(now)) {
             logger.debug("Requesting fresh data");
             lastResult = getFreshData(api);
             requestTS = now;

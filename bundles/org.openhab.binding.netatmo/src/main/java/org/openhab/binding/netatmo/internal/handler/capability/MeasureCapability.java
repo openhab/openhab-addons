@@ -14,8 +14,8 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,12 +44,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MeasureCapability extends CacheWeatherCapability {
-    private final static int MIN_DATA_VALIDITY_MIN = 30;
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();
 
     public MeasureCapability(CommonInterface handler, List<ChannelHelper> helpers) {
-        super(handler, MIN_DATA_VALIDITY_MIN, ChronoUnit.MINUTES);
+        super(handler, Duration.ofMinutes(30));
         MeasuresChannelHelper measureChannelHelper = (MeasuresChannelHelper) helpers.stream()
                 .filter(c -> c instanceof MeasuresChannelHelper).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
