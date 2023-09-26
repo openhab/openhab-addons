@@ -67,7 +67,7 @@ public class ChannelStateMap {
 
     @Override
     public String toString() {
-        return group + ":" + channel + " " + state;
+        return group + "#" + channel + " " + state;
     }
 
     public boolean isValid() {

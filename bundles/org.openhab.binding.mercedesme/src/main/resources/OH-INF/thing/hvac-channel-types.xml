@@ -3,26 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="front-left-hvac-channel">
-		<item-type>Switch</item-type>
-		<label>AC Seat Front Left</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="front-right-hvac-channel">
-		<item-type>Switch</item-type>
-		<label>AC Seat Front Right</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="rear-left-hvac-channel">
-		<item-type>Switch</item-type>
-		<label>AC Seat Rear Left</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="rear-right-hvac-channel">
-		<item-type>Switch</item-type>
-		<label>AC Seat Rear Right</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
 	<channel-type id="zone-hvac-channel">
 		<item-type>Number</item-type>
 		<label>AC Zone</label>
@@ -37,6 +17,26 @@
 		<item-type>Switch</item-type>
 		<label>AC Control</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="front-left-hvac-channel">
+		<item-type>Switch</item-type>
+		<label>AC Seat Front Left</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="front-right-hvac-channel">
+		<item-type>Switch</item-type>
+		<label>AC Seat Front Right</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-left-hvac-channel">
+		<item-type>Switch</item-type>
+		<label>AC Seat Rear Left</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-right-hvac-channel">
+		<item-type>Switch</item-type>
+		<label>AC Seat Rear Right</label>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="aux-heat-channel">
 		<item-type>Switch</item-type>

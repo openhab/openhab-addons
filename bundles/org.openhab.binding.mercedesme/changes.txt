@@ -1,0 +1,8 @@
+- readme finalized
+- command channels are numbers with mappings
+    - command names
+    - command states
+- handling of multiple charge programs
+- handling of multiple climatization zones
+- HVAC Seats marked as read-only
+- Bugfix: Sunroof schnnel was readonly - now writable

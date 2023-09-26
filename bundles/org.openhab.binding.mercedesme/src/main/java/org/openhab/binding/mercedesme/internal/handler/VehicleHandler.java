@@ -331,17 +331,13 @@ public class VehicleHandler extends BaseThingHandler {
                     }
                 }
             } else if ("front-left".equals(channelUID.getIdWithoutGroup())) {
-                hvacGroupValueStorage.put("front-left", (State) command);
-                configureSeats();
+                configureSeats(channelUID, (State) command);
             } else if ("front-right".equals(channelUID.getIdWithoutGroup())) {
-                hvacGroupValueStorage.put("front-right", (State) command);
-                configureSeats();
+                configureSeats(channelUID, (State) command);
             } else if ("rear-left".equals(channelUID.getIdWithoutGroup())) {
-                hvacGroupValueStorage.put("rear-left", (State) command);
-                configureSeats();
+                configureSeats(channelUID, (State) command);
             } else if ("rear-right".equals(channelUID.getIdWithoutGroup())) {
-                hvacGroupValueStorage.put("rear-right", (State) command);
-                configureSeats();
+                configureSeats(channelUID, (State) command);
             } else if ("aux-heat".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("featureAuxHeat");
                 if (Boolean.FALSE.toString().equals(supported)) {
@@ -430,10 +426,10 @@ public class VehicleHandler extends BaseThingHandler {
                             autoUnlockToSelect = chargeGroupValueStorage
                                     .getJSONObject(Integer.toString(selectedChargeProgram))
                                     .getBoolean(Constants.AUTOUNLOCK_KEY);
-                            // updateChannel(new ChannelStateMap("max-soc", GROUP_CHARGE,
-                            // QuantityType.valueOf(maxSocToSelect, Units.PERCENT)));
-                            // updateChannel(new ChannelStateMap("auto-unlock", GROUP_CHARGE,
-                            // OnOffType.from(autoUnlockToSelect)));
+                            updateChannel(new ChannelStateMap("max-soc", GROUP_CHARGE,
+                                    QuantityType.valueOf(maxSocToSelect, Units.PERCENT)));
+                            updateChannel(new ChannelStateMap("auto-unlock", GROUP_CHARGE,
+                                    OnOffType.from(autoUnlockToSelect)));
                             sendCommand = true;
                         } else {
                             logger.info("No charge program found for {}", selectedChargeProgram);
@@ -509,18 +505,50 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void configureSeats() {
+    private void configureSeats(ChannelUID channelUID, State command) {
         String supported = thing.getProperties().get("commandZevPreconditionConfigureSeats");
         if (Boolean.FALSE.toString().equals(supported)) {
             logger.info("Seat Conditioning not supported");
         } else {
-            boolean frontLeft = Utils.boolFromState(hvacGroupValueStorage.get("front-left"));
-            boolean frontRight = Utils.boolFromState(hvacGroupValueStorage.get("front-right"));
-            boolean rearLeft = Utils.boolFromState(hvacGroupValueStorage.get("rear-left"));
-            boolean rearRight = Utils.boolFromState(hvacGroupValueStorage.get("rear-right"));
-            ZEVPreconditioningConfigureSeats seats = ZEVPreconditioningConfigureSeats.newBuilder()
-                    .setFrontLeft(frontLeft).setFrontRight(frontRight).setRearLeft(rearLeft).setRearRight(rearRight)
-                    .build();
+            com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningConfigureSeats.Builder buidler = ZEVPreconditioningConfigureSeats
+                    .newBuilder();
+            if (eventStorage.get("hvac#front-left").getState() != UnDefType.UNDEF
+                    && !"hvac#front-left".equals(channelUID.getId())) {
+                OnOffType oot = (OnOffType) eventStorage.get("hvac#front-left").getState();
+                buidler.setFrontLeft(oot.equals(OnOffType.ON));
+            }
+            if (eventStorage.get("hvac#front-right").getState() != UnDefType.UNDEF
+                    && !"hvac#front-right".equals(channelUID.getId())) {
+                OnOffType oot = (OnOffType) eventStorage.get("hvac#front-right").getState();
+                buidler.setFrontRight(oot.equals(OnOffType.ON));
+            }
+            if (eventStorage.get("hvac#rear-left").getState() != UnDefType.UNDEF
+                    && !"hvac#rear-left".equals(channelUID.getId())) {
+                OnOffType oot = (OnOffType) eventStorage.get("hvac#rear-left").getState();
+                buidler.setRearLeft(oot.equals(OnOffType.ON));
+            }
+            if (eventStorage.get("hvac#rear-right").getState() != UnDefType.UNDEF
+                    && !"hvac#rear-right".equals(channelUID.getId())) {
+                OnOffType oot = (OnOffType) eventStorage.get("hvac#rear-right").getState();
+                buidler.setRearRight(oot.equals(OnOffType.ON));
+            }
+            // now overwrite command
+            switch (channelUID.getId()) {
+                case "hvac#front-left":
+                    buidler.setFrontLeft(command.equals(OnOffType.ON));
+                    break;
+                case "hvac#front-right":
+                    buidler.setFrontRight(command.equals(OnOffType.ON));
+                    break;
+                case "hvac#rear-left":
+                    buidler.setRearLeft(command.equals(OnOffType.ON));
+                    break;
+                case "hvac#rear-right":
+                    buidler.setRearRight(command.equals(OnOffType.ON));
+                    break;
+            }
+            ZEVPreconditioningConfigureSeats seats = buidler.build();
+            logger.info("{Seat config {}", seats.getAllFields());
             CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
                     .setRequestId(UUID.randomUUID().toString()).setZevPreconditionConfigureSeats(seats).build();
             ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();

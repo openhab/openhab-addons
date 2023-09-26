@@ -132,7 +132,7 @@ public class MBWebsocket {
     }
 
     private boolean sendMessage() {
-        if (!commandQueue.isEmpty() && this.session != null) {
+        if (!commandQueue.isEmpty() && session != null) {
             ClientMessage message = commandQueue.remove(0);
             logger.info("Send Message {}", message.getAllFields());
             try {
@@ -149,7 +149,7 @@ public class MBWebsocket {
     }
 
     private void sendAchnowledgeMessage(ClientMessage message) {
-        if (this.session != null) {
+        if (session != null) {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);

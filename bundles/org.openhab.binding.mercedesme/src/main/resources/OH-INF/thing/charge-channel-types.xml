@@ -56,7 +56,6 @@
 	<channel-type id="program-channel">
 		<item-type>Number</item-type>
 		<label>Charge Program</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="end-time-channel">
 		<item-type>DateTime</item-type>
@@ -66,7 +65,7 @@
 	<channel-type id="max-soc-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Charge SoC Maximum</label>
-		<state pattern="%d %%" readOnly="false"/>
+		<state pattern="%d %%"/>
 		<command>
 			<options>
 				<option value="50 %">50 %</option>
@@ -81,6 +80,5 @@
 	<channel-type id="auto-unlock-channel">
 		<item-type>Switch</item-type>
 		<label>Coupler Auto Unlock</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
