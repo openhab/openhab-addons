@@ -17,15 +17,15 @@
 			</options>
 			<default>true</default>
 		</parameter>
-		<parameter name="useIncludedLibrary" type="boolean" required="true">
-			<label>Use Included openHAB JavaScript Library</label>
+		<parameter name="injectionCachingEnabled" type="boolean" required="true">
+			<label>Cache openHAB JavaScript Library Injection</label>
 			<description><![CDATA[
-			Use the included openHAB JavaScript library for optimal performance.<br>
-			Disable this option to allow loading the library from the local user configuration directory "automation/js/node_modules". Using a user provided version of the library may increase script loading times, especially on less powerful systems.
+			Cache the openHAB JavaScript library injection for optimal performance.<br>
+			Disable this option to allow loading the library from the local user configuration directory "automation/js/node_modules". Disabling caching may increase script loading times, especially on less powerful systems.
 			]]></description>
 			<options>
-				<option value="true">Use Included Library</option>
-				<option value="false">Do Not Use Included Library</option>
+				<option value="true">Cache Library Injection</option>
+				<option value="false">Do Not Cache Library Injection</option>
 			</options>
 			<default>true</default>
 		</parameter>
