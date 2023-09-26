@@ -26,6 +26,7 @@ import org.openhab.binding.mercedesme.internal.MercedesMeDynamicStateDescription
 import org.openhab.binding.mercedesme.internal.MercedesMeStateOptionProvider;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
@@ -160,8 +161,10 @@ class VehicleHandlerTest {
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
-        assertEquals("2023-09-06T13:55:00.000+0200",
-                updateListener.updatesReceived.get("test::bev:charge#end-time").toFullString(), "End of Charge Time");
+        assertEquals("2023-09-06 13:55",
+                ((DateTimeType) updateListener.updatesReceived.get("test::bev:charge#end-time"))
+                        .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"),
+                "End of Charge Time");
     }
 
     @Test
@@ -181,8 +184,10 @@ class VehicleHandlerTest {
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
         vh.distributeContent(update);
         assertEquals(2, updateListener.updatesReceived.size(), "Update Count");
-        assertEquals("2023-09-19T20:45:00.000+0200",
-                updateListener.updatesReceived.get("test::bev:charge#end-time").toFullString(), "End of Charge Time");
+        assertEquals("2023-09-19 20:45",
+                ((DateTimeType) updateListener.updatesReceived.get("test::bev:charge#end-time"))
+                        .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"),
+                "End of Charge Time");
         assertEquals("2.1 kW", updateListener.updatesReceived.get("test::bev:charge#power").toFullString(),
                 "Charge Power");
     }

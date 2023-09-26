@@ -647,7 +647,7 @@ Send lock/unlock or temperatures in a short period of time will result in failur
 - 2010 : BATTERYCHARGEPROGRAM
 - 2020 : CHARGEPROGRAMCONFIGURE
 
-Command State Mapping
+#### Command State Mapping
 
 - 0 : UNKNOWN_COMMAND_STATE
 - 1 : INITIATION
