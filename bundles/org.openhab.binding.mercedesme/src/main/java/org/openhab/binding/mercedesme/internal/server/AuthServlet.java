@@ -49,7 +49,7 @@ public class AuthServlet extends HttpServlet {
                 response.getWriter().println("<BODY>");
                 response.getWriter().println("<H1>Step 1 - PIN Requested</H1>");
                 response.getWriter().println("<BR>");
-                response.getWriter().println("PIN was requested and should be avialble in your EMail Inbox<BR>");
+                response.getWriter().println("PIN was requested and should be present in your EMail Inbox<BR>");
                 response.getWriter()
                         .println("Check first if you received the PIN and then continue with the below Link<BR>");
                 response.getWriter().println("<a href=\"" + Constants.CALLBACK_ENDPOINT + "?guid=" + requestVal
