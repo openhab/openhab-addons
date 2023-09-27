@@ -122,7 +122,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (!server.get().start()) {
                 String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                         + Constants.STATUS_SERVER_RESTART;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,  textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]"););
             }
         }
         scheduledFuture = Optional
