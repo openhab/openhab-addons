@@ -44,6 +44,8 @@ public class VelbusSensorHandler extends VelbusThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_VMB6IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB));
 
+    private volatile boolean disposed = true;
+
     private static final StringType SET_LED = new StringType("SET_LED");
     private static final StringType SLOW_BLINK_LED = new StringType("SLOW_BLINK_LED");
     private static final StringType FAST_BLINK_LED = new StringType("FAST_BLINK_LED");
@@ -59,6 +61,20 @@ public class VelbusSensorHandler extends VelbusThingHandler {
 
     public VelbusSensorHandler(Thing thing, int numberOfSubAddresses) {
         super(thing, numberOfSubAddresses);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        disposed = false;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        disposed = true;
     }
 
     @Override
@@ -99,19 +115,19 @@ public class VelbusSensorHandler extends VelbusThingHandler {
 
                 packet.Pressed();
                 velbusBridgeHandler.sendPacket(packet.getBytes());
-                triggerChannel("input#CH" + getModuleAddress().getChannelNumber(channelUID),
+                triggerChannel(CHANNEL_GROUP_INPUT + "#CH" + getModuleAddress().getChannelNumber(channelUID),
                         CommonTriggerEvents.PRESSED);
 
                 if (stringCommand.equals(LONG_PRESSED)) {
                     packet.LongPressed();
                     velbusBridgeHandler.sendPacket(packet.getBytes());
-                    triggerChannel("input#CH" + getModuleAddress().getChannelNumber(channelUID),
+                    triggerChannel(CHANNEL_GROUP_INPUT + "#CH" + getModuleAddress().getChannelNumber(channelUID),
                             CommonTriggerEvents.LONG_PRESSED);
                 }
 
                 packet.Released();
                 velbusBridgeHandler.sendPacket(packet.getBytes());
-                triggerChannel("input#CH" + getModuleAddress().getChannelNumber(channelUID),
+                triggerChannel(CHANNEL_GROUP_INPUT + "#CH" + getModuleAddress().getChannelNumber(channelUID),
                         CommonTriggerEvents.RELEASED);
             } else {
                 throw new UnsupportedOperationException(
@@ -121,15 +137,19 @@ public class VelbusSensorHandler extends VelbusThingHandler {
     }
 
     private boolean isFeedbackChannel(ChannelUID channelUID) {
-        return "feedback".equals(channelUID.getGroupId());
+        return CHANNEL_GROUP_FEEDBACK.equals(channelUID.getGroupId());
     }
 
     private boolean isButtonChannel(ChannelUID channelUID) {
-        return "button".equals(channelUID.getGroupId());
+        return CHANNEL_GROUP_BUTTON.equals(channelUID.getGroupId());
     }
 
     @Override
     public void onPacketReceived(byte[] packet) {
+        if (disposed) {
+            return;
+        }
+
         logger.trace("onPacketReceived() was called");
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
@@ -144,7 +164,8 @@ public class VelbusSensorHandler extends VelbusThingHandler {
                     if (channelJustPressed != 0) {
                         VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
                                 channelJustPressed);
-                        triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
+                        triggerChannel(
+                                CHANNEL_GROUP_INPUT + "#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
                                 CommonTriggerEvents.PRESSED);
                     }
 
@@ -152,7 +173,8 @@ public class VelbusSensorHandler extends VelbusThingHandler {
                     if (channelJustReleased != 0) {
                         VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
                                 channelJustReleased);
-                        triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
+                        triggerChannel(
+                                CHANNEL_GROUP_INPUT + "#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
                                 CommonTriggerEvents.RELEASED);
                     }
 
@@ -160,7 +182,8 @@ public class VelbusSensorHandler extends VelbusThingHandler {
                     if (channelLongPressed != 0) {
                         VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
                                 channelLongPressed);
-                        triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
+                        triggerChannel(
+                                CHANNEL_GROUP_INPUT + "#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
                                 CommonTriggerEvents.LONG_PRESSED);
                     }
                 }

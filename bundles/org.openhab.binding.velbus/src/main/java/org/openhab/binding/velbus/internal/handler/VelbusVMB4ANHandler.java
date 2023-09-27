@@ -51,6 +51,8 @@ import org.openhab.core.types.RefreshType;
 public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB4AN));
 
+    private volatile boolean disposed = true;
+
     private static final String ALARM_GROUP = "alarm";
     private static final String ANALOG_INPUT_GROUP = "analogInput";
     private static final String ANALOG_OUTPUT_GROUP = "analogOutput";
@@ -77,6 +79,7 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
         super.initialize();
 
         initializeAutomaticRefresh();
+        disposed = false;
     }
 
     private void initializeAutomaticRefresh() {
@@ -93,6 +96,9 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        super.dispose();
+
+        disposed = true;
     }
 
     private void startAutomaticRefresh(int refreshInterval) {
@@ -145,6 +151,10 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     @Override
     public void onPacketReceived(byte[] packet) {
         super.onPacketReceived(packet);
+
+        if (disposed) {
+            return;
+        }
 
         logger.trace("onPacketReceived() was called");
 

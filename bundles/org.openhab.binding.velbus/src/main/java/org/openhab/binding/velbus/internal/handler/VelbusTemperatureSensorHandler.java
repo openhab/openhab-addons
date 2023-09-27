@@ -41,6 +41,8 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public abstract class VelbusTemperatureSensorHandler extends VelbusSensorWithAlarmClockHandler {
+    private volatile boolean disposed = true;
+
     private @Nullable ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) VelbusSensorConfig sensorConfig;
     private ChannelUID temperatureChannel;
@@ -58,6 +60,7 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorWithAla
         super.initialize();
 
         initializeAutomaticRefresh();
+        disposed = false;
     }
 
     private void initializeAutomaticRefresh() {
@@ -74,6 +77,9 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorWithAla
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        super.dispose();
+
+        disposed = true;
     }
 
     private void startAutomaticRefresh(int refreshInterval) {
@@ -116,6 +122,10 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorWithAla
     @Override
     public void onPacketReceived(byte[] packet) {
         super.onPacketReceived(packet);
+
+        if (disposed) {
+            return;
+        }
 
         logger.trace("onPacketReceived() was called");
 

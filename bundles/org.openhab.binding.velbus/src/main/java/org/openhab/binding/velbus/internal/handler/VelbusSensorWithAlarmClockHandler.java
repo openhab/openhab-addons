@@ -82,6 +82,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBKP, 0x00A7);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBIN, 0x00A7);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMB4PB, 0x00A7);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBDALI, 0x0513);
     }
 
     private static final byte ALARM_CONFIGURATION_MEMORY_SIZE = 0x09;
@@ -93,29 +94,35 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
     private static final StringType ALARM_TYPE_LOCAL = new StringType("LOCAL");
     private static final StringType ALARM_TYPE_GLOBAL = new StringType("GLOBAL");
 
-    private final ChannelUID clockAlarm1Enabled = new ChannelUID(thing.getUID(), "clockAlarm", "clockAlarm1Enabled");
-    private final ChannelUID clockAlarm1Type = new ChannelUID(thing.getUID(), "clockAlarm", "clockAlarm1Type");
-    private final ChannelUID clockAlarm1WakeupHour = new ChannelUID(thing.getUID(), "clockAlarm",
-            "clockAlarm1WakeupHour");
-    private final ChannelUID clockAlarm1WakeupMinute = new ChannelUID(thing.getUID(), "clockAlarm",
-            "clockAlarm1WakeupMinute");
-    private final ChannelUID clockAlarm1BedtimeHour = new ChannelUID(thing.getUID(), "clockAlarm",
-            "clockAlarm1BedtimeHour");
-    private final ChannelUID clockAlarm1BedtimeMinute = new ChannelUID(thing.getUID(), "clockAlarm",
-            "clockAlarm1BedtimeMinute");
-    private final ChannelUID clockAlarm2Enabled = new ChannelUID(thing.getUID(), "clockAlarm", "clockAlarm2Enabled");
-    private final ChannelUID clockAlarm2Type = new ChannelUID(thing.getUID(), "clockAlarm", "clockAlarm2Type");
-    private final ChannelUID clockAlarm2WakeupHour = new ChannelUID(thing.getUID(), "clockAlarm",
-            "clockAlarm2WakeupHour");
-    private final ChannelUID clockAlarm2WakeupMinute = new ChannelUID(thing.getUID(), "clockAlarm",
-            "clockAlarm2WakeupMinute");
-    private final ChannelUID clockAlarm2BedtimeHour = new ChannelUID(thing.getUID(), "clockAlarm",
-            "clockAlarm2BedtimeHour");
-    private final ChannelUID clockAlarm2BedtimeMinute = new ChannelUID(thing.getUID(), "clockAlarm",
-            "clockAlarm2BedtimeMinute");
+    private final ChannelUID clockAlarm1Enabled = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM1_ENABLED);
+    private final ChannelUID clockAlarm1Type = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM1_TYPE);
+    private final ChannelUID clockAlarm1WakeupHour = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM1_WAKEUP_HOUR);
+    private final ChannelUID clockAlarm1WakeupMinute = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM1_WAKEUP_MINUTE);
+    private final ChannelUID clockAlarm1BedtimeHour = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM1_BEDTIME_HOUR);
+    private final ChannelUID clockAlarm1BedtimeMinute = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM1_BEDTIME_MINUTE);
+    private final ChannelUID clockAlarm2Enabled = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM2_ENABLED);
+    private final ChannelUID clockAlarm2Type = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM2_TYPE);
+    private final ChannelUID clockAlarm2WakeupHour = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM2_WAKEUP_HOUR);
+    private final ChannelUID clockAlarm2WakeupMinute = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM2_WAKEUP_MINUTE);
+    private final ChannelUID clockAlarm2BedtimeHour = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM2_BEDTIME_HOUR);
+    private final ChannelUID clockAlarm2BedtimeMinute = new ChannelUID(thing.getUID(), CHANNEL_GROUP_MODULE_CLOCK_ALARM,
+            CHANNEL_CLOCK_ALARM2_BEDTIME_MINUTE);
 
     private int clockAlarmConfigurationMemoryAddress;
     private VelbusClockAlarmConfiguration alarmClockConfiguration = new VelbusClockAlarmConfiguration();
+
+    private volatile boolean disposed = true;
 
     private long lastUpdateAlarm1TimeMillis;
     private long lastUpdateAlarm2TimeMillis;
@@ -136,6 +143,14 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
             this.clockAlarmConfigurationMemoryAddress = ALARM_CONFIGURATION_MEMORY_ADDRESSES
                     .get(thing.getThingTypeUID());
         }
+        disposed = false;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        disposed = true;
     }
 
     @Override
@@ -158,52 +173,52 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
 
             alarmClock.setLocal(true);
 
-            switch (channelUID.getId()) {
-                case CHANNEL_MODULE_CLOCK_ALARM1_TYPE:
-                case CHANNEL_MODULE_CLOCK_ALARM2_TYPE: {
+            switch (channelUID.getIdWithoutGroup()) {
+                case CHANNEL_CLOCK_ALARM1_TYPE:
+                case CHANNEL_CLOCK_ALARM2_TYPE: {
                     if (command instanceof OnOffType) {
                         // If AlarmType is not read only, it's an old implementation of the module, warn user and
                         // discard the command
                         logger.warn(
-                                "Old implementation of thing '{}', still works, but it's better to remove and recreate the thing.",
+                                "Old implementation of thing '{}'. Only local alarm on module, global alarm only on bridge. To avoid problem, remove and recreate the thing.",
                                 getThing().getUID());
                     }
                     return;
                 }
-                case CHANNEL_MODULE_CLOCK_ALARM1_ENABLED:
-                case CHANNEL_MODULE_CLOCK_ALARM2_ENABLED: {
+                case CHANNEL_CLOCK_ALARM1_ENABLED:
+                case CHANNEL_CLOCK_ALARM2_ENABLED: {
                     if (command instanceof OnOffType) {
                         boolean enabled = command == OnOffType.ON;
                         alarmClock.setEnabled(enabled);
                     }
                     break;
                 }
-                case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR:
-                case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR: {
+                case CHANNEL_CLOCK_ALARM1_WAKEUP_HOUR:
+                case CHANNEL_CLOCK_ALARM2_WAKEUP_HOUR: {
                     if (command instanceof DecimalType decimalCommand) {
                         byte wakeupHour = decimalCommand.byteValue();
                         alarmClock.setWakeupHour(wakeupHour);
                     }
                     break;
                 }
-                case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE:
-                case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE: {
+                case CHANNEL_CLOCK_ALARM1_WAKEUP_MINUTE:
+                case CHANNEL_CLOCK_ALARM2_WAKEUP_MINUTE: {
                     if (command instanceof DecimalType decimalCommand) {
                         byte wakeupMinute = decimalCommand.byteValue();
                         alarmClock.setWakeupMinute(wakeupMinute);
                     }
                     break;
                 }
-                case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR:
-                case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR: {
+                case CHANNEL_CLOCK_ALARM1_BEDTIME_HOUR:
+                case CHANNEL_CLOCK_ALARM2_BEDTIME_HOUR: {
                     if (command instanceof DecimalType decimalCommand) {
                         byte bedTimeHour = decimalCommand.byteValue();
                         alarmClock.setBedtimeHour(bedTimeHour);
                     }
                     break;
                 }
-                case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE:
-                case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE: {
+                case CHANNEL_CLOCK_ALARM1_BEDTIME_MINUTE:
+                case CHANNEL_CLOCK_ALARM2_BEDTIME_MINUTE: {
                     if (command instanceof DecimalType decimalCommand) {
                         byte bedTimeMinute = decimalCommand.byteValue();
                         alarmClock.setBedtimeMinute(bedTimeMinute);
@@ -258,6 +273,10 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
     @Override
     public void onPacketReceived(byte[] packet) {
         super.onPacketReceived(packet);
+
+        if (disposed) {
+            return;
+        }
 
         logger.trace("onPacketReceived() was called");
 
@@ -368,43 +387,28 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
     }
 
     protected boolean isAlarmClockChannel(ChannelUID channelUID) {
-        switch (channelUID.getId()) {
-            case CHANNEL_MODULE_CLOCK_ALARM1_ENABLED:
-            case CHANNEL_MODULE_CLOCK_ALARM1_TYPE:
-            case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR:
-            case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE:
-            case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR:
-            case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE:
-            case CHANNEL_MODULE_CLOCK_ALARM2_ENABLED:
-            case CHANNEL_MODULE_CLOCK_ALARM2_TYPE:
-            case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR:
-            case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE:
-            case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR:
-            case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE:
-                return true;
-        }
-        return false;
+        return CHANNEL_GROUP_MODULE_CLOCK_ALARM.equals(channelUID.getGroupId());
     }
 
     protected byte determineAlarmNumber(ChannelUID channelUID) {
-        switch (channelUID.getId()) {
-            case CHANNEL_MODULE_CLOCK_ALARM1_ENABLED:
-            case CHANNEL_MODULE_CLOCK_ALARM1_TYPE:
-            case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR:
-            case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE:
-            case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR:
-            case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE:
+        switch (channelUID.getIdWithoutGroup()) {
+            case CHANNEL_CLOCK_ALARM1_ENABLED:
+            case CHANNEL_CLOCK_ALARM1_TYPE:
+            case CHANNEL_CLOCK_ALARM1_WAKEUP_HOUR:
+            case CHANNEL_CLOCK_ALARM1_WAKEUP_MINUTE:
+            case CHANNEL_CLOCK_ALARM1_BEDTIME_HOUR:
+            case CHANNEL_CLOCK_ALARM1_BEDTIME_MINUTE:
                 return 1;
-            case CHANNEL_MODULE_CLOCK_ALARM2_ENABLED:
-            case CHANNEL_MODULE_CLOCK_ALARM2_TYPE:
-            case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR:
-            case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE:
-            case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR:
-            case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE:
+            case CHANNEL_CLOCK_ALARM2_ENABLED:
+            case CHANNEL_CLOCK_ALARM2_TYPE:
+            case CHANNEL_CLOCK_ALARM2_WAKEUP_HOUR:
+            case CHANNEL_CLOCK_ALARM2_WAKEUP_MINUTE:
+            case CHANNEL_CLOCK_ALARM2_BEDTIME_HOUR:
+            case CHANNEL_CLOCK_ALARM2_BEDTIME_MINUTE:
                 return 2;
         }
 
-        throw new IllegalArgumentException("The given channelUID is not an alarm clock channel: " + channelUID);
+        throw new IllegalArgumentException("The given channelUID is not a module alarm clock channel: " + channelUID);
     }
 
     protected int getClockAlarmAndProgramSelectionIndexInModuleStatus() {

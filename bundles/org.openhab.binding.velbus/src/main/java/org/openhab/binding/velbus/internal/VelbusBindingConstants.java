@@ -84,6 +84,7 @@ public class VelbusBindingConstants {
     public static final ThingTypeUID THING_TYPE_VMBKP = new ThingTypeUID(BINDING_ID, "vmbkp");
     public static final ThingTypeUID THING_TYPE_VMBIN = new ThingTypeUID(BINDING_ID, "vmbin");
     public static final ThingTypeUID THING_TYPE_VMB4PB = new ThingTypeUID(BINDING_ID, "vmb4pb");
+    public static final ThingTypeUID THING_TYPE_VMBDALI = new ThingTypeUID(BINDING_ID, "vmbdali");
 
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE,
@@ -98,7 +99,7 @@ public class VelbusBindingConstants {
             THING_TYPE_VMBGP1_2, THING_TYPE_VMBGP2, THING_TYPE_VMBGP2_2, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2,
             THING_TYPE_VMBGP4PIR, THING_TYPE_VMBGP4PIR_2, THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2,
             THING_TYPE_VMBMETEO, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM, THING_TYPE_VMBPIRO, THING_TYPE_VMBRFR8S,
-            THING_TYPE_VMBVP1, THING_TYPE_VMBKP, THING_TYPE_VMBIN, THING_TYPE_VMB4PB);
+            THING_TYPE_VMBVP1, THING_TYPE_VMBKP, THING_TYPE_VMBIN, THING_TYPE_VMB4PB, THING_TYPE_VMBDALI);
 
     // Velbus module types
     public static final byte MODULE_TYPE_VMB8PB = 0x01;
@@ -114,6 +115,7 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMB4RYLD = 0x10;
     public static final byte MODULE_TYPE_VMB4RYNO = 0x11;
     public static final byte MODULE_TYPE_VMB4DC = 0x12;
+    public static final byte MODULE_TYPE_VMBLCDWB = 0x13;
     public static final byte MODULE_TYPE_VMBDME = 0x14;
     public static final byte MODULE_TYPE_VMBDMI = 0x15;
     public static final byte MODULE_TYPE_VMB8PBU = 0x16;
@@ -152,6 +154,7 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMBKP = 0x42;
     public static final byte MODULE_TYPE_VMBIN = 0x43;
     public static final byte MODULE_TYPE_VMB4PB = 0x44;
+    public static final byte MODULE_TYPE_VMBDALI = 0x45;
 
     // Velbus commands
     public static final byte COMMAND_PUSH_BUTTON_STATUS = 0x00;
@@ -161,11 +164,18 @@ public class VelbusBindingConstants {
     public static final byte COMMAND_BLIND_UP = 0x05;
     public static final byte COMMAND_BLIND_DOWN = 0x06;
     public static final byte COMMAND_SET_VALUE = 0x07;
+    public static final byte COMMAND_SET_DIMVALUE = 0x07;
     public static final byte COMMAND_SLIDER_STATUS = 0x0F;
     public static final byte COMMAND_RESTORE_LAST_DIMVALUE = 0x11;
     public static final byte COMMAND_BLIND_POS = 0x1C;
+    public static final byte COMMAND_SET_DIMSCENE = (byte) 0x1D;
+    public static final byte COMMAND_SET_COLOR = (byte) 0x1E;
+    public static final byte COMMAND_DIMVALUE_STATUS = (byte) 0xA5;
+    public static final byte COMMAND_SUBTYPE_3 = (byte) 0xA6;
+    public static final byte COMMAND_SUBTYPE_2 = (byte) 0xA7;
     public static final byte COMMAND_SENSOR_RAW_DATA = (byte) 0xA9;
     public static final byte COMMAND_LIGHT_VALUE_REQUEST = (byte) 0xAA;
+    public static final byte COMMAND_POWER_UP = (byte) 0xAB;
     public static final byte COMMAND_TEXT = (byte) 0xAC;
     public static final byte COMMAND_DAYLIGHT_SAVING_STATUS = (byte) 0xAF;
     public static final byte COMMAND_SUBTYPE = (byte) 0xB0;
@@ -210,7 +220,14 @@ public class VelbusBindingConstants {
     public static final byte COMMAND_READ_DATA_FROM_MEMORY = (byte) 0xFD;
     public static final byte COMMAND_MEMORY_DATA = (byte) 0xFE;
     public static final byte COMMAND_MODULE_TYPE = (byte) 0xFF;
+
+    // Usefull values
     public static final byte ALL_CHANNELS = (byte) 0xFF;
+    public static final byte ALL_DALI_CHANNELS = (byte) 0x51;
+    public static final byte SUB_ADDRESS_DISABLED = (byte) 0xFF;
+    public static final byte VALUE_UNCHANGED = (byte) 0xFF;
+    public static final byte DALI_SETTING_ACTUAL_LEVEL = (byte) 0x1A;
+    public static final byte DALI_MAX_VALUE = (byte) 0xFE;
 
     // Module properties
     public static final String PORT = "port";
@@ -226,32 +243,59 @@ public class VelbusBindingConstants {
     public static final String MODULE_MEMORY_MAP_VERSION = "memory map version";
     public static final String MODULE_BUILD = "build";
     public static final String CHANNEL = "CH";
+    public static final String VIRTUAL_LIGHT = "VL";
     public static final String SUB_ADDRESS = "subaddress";
     public static final String DIMSPEED = "dimspeed";
 
+    // Channels group ids
+    public static final String CHANNEL_GROUP_BRIDGE_CLOCK_ALARM = "bridgeClockAlarm";
+    public static final String CHANNEL_GROUP_MODULE_CLOCK_ALARM = "clockAlarm";
+    public static final String CHANNEL_GROUP_INPUT = "input";
+    public static final String CHANNEL_GROUP_FEEDBACK = "feedback";
+    public static final String CHANNEL_GROUP_BUTTON = "button";
+    public static final String CHANNEL_GROUP_OUTPUT = "output";
+    public static final String CHANNEL_GROUP_THERMOSTAT = "thermostat";
+    public static final String CHANNEL_GROUP_COLOR = "color";
+    public static final String CHANNEL_GROUP_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_GROUP_COLOR_TEMPERATURE = "color-temperature";
+    public static final String CHANNEL_GROUP_SCENE = "scene";
+    public static final String CHANNEL_GROUP_VIRTUAL_LIGHT = "virtual-light";
+
     // Channels ids
-    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_ENABLED = "bridgeClockAlarm#clockAlarm1Enabled";
-    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_HOUR = "bridgeClockAlarm#clockAlarm1WakeupHour";
-    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_MINUTE = "bridgeClockAlarm#clockAlarm1WakeupMinute";
-    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_HOUR = "bridgeClockAlarm#clockAlarm1BedtimeHour";
-    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_MINUTE = "bridgeClockAlarm#clockAlarm1BedtimeMinute";
-    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_ENABLED = "bridgeClockAlarm#clockAlarm2Enabled";
-    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_HOUR = "bridgeClockAlarm#clockAlarm2WakeupHour";
-    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_MINUTE = "bridgeClockAlarm#clockAlarm2WakeupMinute";
-    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_HOUR = "bridgeClockAlarm#clockAlarm2BedtimeHour";
-    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_MINUTE = "bridgeClockAlarm#clockAlarm2BedtimeMinute";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM1_ENABLED = "clockAlarm#clockAlarm1Enabled";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM1_TYPE = "clockAlarm#clockAlarm1Type";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR = "clockAlarm#clockAlarm1WakeupHour";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE = "clockAlarm#clockAlarm1WakeupMinute";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR = "clockAlarm#clockAlarm1BedtimeHour";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE = "clockAlarm#clockAlarm1BedtimeMinute";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM2_ENABLED = "clockAlarm#clockAlarm2Enabled";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM2_TYPE = "clockAlarm#clockAlarm2Type";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR = "clockAlarm#clockAlarm2WakeupHour";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE = "clockAlarm#clockAlarm2WakeupMinute";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR = "clockAlarm#clockAlarm2BedtimeHour";
-    public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE = "clockAlarm#clockAlarm2BedtimeMinute";
+    public static final String CHANNEL_CLOCK_ALARM1_TYPE = "clockAlarm1Type";
+    public static final String CHANNEL_CLOCK_ALARM1_ENABLED = "clockAlarm1Enabled";
+    public static final String CHANNEL_CLOCK_ALARM1_WAKEUP_HOUR = "clockAlarm1WakeupHour";
+    public static final String CHANNEL_CLOCK_ALARM1_WAKEUP_MINUTE = "clockAlarm1WakeupMinute";
+    public static final String CHANNEL_CLOCK_ALARM1_BEDTIME_HOUR = "clockAlarm1BedtimeHour";
+    public static final String CHANNEL_CLOCK_ALARM1_BEDTIME_MINUTE = "clockAlarm1BedtimeMinute";
+    public static final String CHANNEL_CLOCK_ALARM2_TYPE = "clockAlarm2Type";
+    public static final String CHANNEL_CLOCK_ALARM2_ENABLED = "clockAlarm2Enabled";
+    public static final String CHANNEL_CLOCK_ALARM2_WAKEUP_HOUR = "clockAlarm2WakeupHour";
+    public static final String CHANNEL_CLOCK_ALARM2_WAKEUP_MINUTE = "clockAlarm2WakeupMinute";
+    public static final String CHANNEL_CLOCK_ALARM2_BEDTIME_HOUR = "clockAlarm2BedtimeHour";
+    public static final String CHANNEL_CLOCK_ALARM2_BEDTIME_MINUTE = "clockAlarm2BedtimeMinute";
+
+    public static final String CHANNEL_THERMOSTAT_CURRENT_TEMPERATURE = "currentTemperatureSetpoint";
+    public static final String CHANNEL_THERMOSTAT_HEATING_COMFORT = "heatingModeComfortTemperatureSetpoint";
+    public static final String CHANNEL_THERMOSTAT_HEATING_DAY = "heatingModeDayTemperatureSetpoint";
+    public static final String CHANNEL_THERMOSTAT_HEATING_NIGHT = "heatingModeNightTemperatureSetpoint";
+    public static final String CHANNEL_THERMOSTAT_HEATING_ANTI_FROST = "heatingModeAntiFrostTemperatureSetpoint";
+    public static final String CHANNEL_THERMOSTAT_COOLING_COMFORT = "coolingModeComfortTemperatureSetpoint";
+    public static final String CHANNEL_THERMOSTAT_COOLING_DAY = "coolingModeDayTemperatureSetpoint";
+    public static final String CHANNEL_THERMOSTAT_COOLING_NIGHT = "coolingModeNightTemperatureSetpoint";
+    public static final String CHANNEL_THERMOSTAT_COOLING_SAFE = "coolingModeSafeTemperatureSetpoint";
+    public static final String CHANNEL_THERMOSTAT_OPERATING_MODE = "operatingMode";
+    public static final String CHANNEL_THERMOSTAT_MODE = "mode";
+    public static final String CHANNEL_THERMOSTAT_HEATER = "heater";
+    public static final String CHANNEL_THERMOSTAT_BOOST = "boost";
+    public static final String CHANNEL_THERMOSTAT_PUMP = "pump";
+    public static final String CHANNEL_THERMOSTAT_COOLER = "cooler";
+    public static final String CHANNEL_THERMOSTAT_ALARM1 = "alarm1";
+    public static final String CHANNEL_THERMOSTAT_ALARM2 = "alarm2";
+    public static final String CHANNEL_THERMOSTAT_ALARM3 = "alarm3";
+    public static final String CHANNEL_THERMOSTAT_ALARM4 = "alarm4";
+
+    public static final String CHANNEL_OUTPUT = "output";
 
     // Delay
     public static final Integer DELAY_SEND_CLOCK_ALARM_UPDATE = 10000;
