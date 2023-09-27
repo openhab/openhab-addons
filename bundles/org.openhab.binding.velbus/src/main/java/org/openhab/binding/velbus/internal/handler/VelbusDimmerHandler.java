@@ -45,6 +45,8 @@ public class VelbusDimmerHandler extends VelbusThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB1DM,
             THING_TYPE_VMB1LED, THING_TYPE_VMB4DC, THING_TYPE_VMBDME, THING_TYPE_VMBDMI, THING_TYPE_VMBDMIR));
 
+    private volatile boolean disposed = true;
+
     private @NonNullByDefault({}) VelbusDimmerConfig dimmerConfig;
 
     public VelbusDimmerHandler(Thing thing) {
@@ -56,6 +58,14 @@ public class VelbusDimmerHandler extends VelbusThingHandler {
         this.dimmerConfig = getConfigAs(VelbusDimmerConfig.class);
 
         super.initialize();
+        disposed = false;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        disposed = true;
     }
 
     @Override
@@ -105,6 +115,10 @@ public class VelbusDimmerHandler extends VelbusThingHandler {
 
     @Override
     public void onPacketReceived(byte[] packet) {
+        if (disposed) {
+            return;
+        }
+
         logger.trace("onPacketReceived() was called");
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {

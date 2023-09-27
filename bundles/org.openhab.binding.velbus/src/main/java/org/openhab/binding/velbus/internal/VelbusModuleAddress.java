@@ -115,7 +115,7 @@ public class VelbusModuleAddress {
     }
 
     public String getChannelId(VelbusChannelIdentifier velbusChannelIdentifier) {
-        return "CH" + getChannelNumber(velbusChannelIdentifier);
+        return CHANNEL + getChannelNumber(velbusChannelIdentifier);
     }
 
     public int getChannelIndex(VelbusChannelIdentifier velbusChannelIdentifier) {
@@ -123,15 +123,6 @@ public class VelbusModuleAddress {
     }
 
     public int getChannelNumber(VelbusChannelIdentifier velbusChannelIdentifier) {
-        /*
-         * byte[] activeAddresses = getActiveAddresses();
-         * 
-         * for (int i = 0; i < activeAddresses.length; i++) {
-         * if (velbusChannelIdentifier.getAddress() == activeAddresses[i]) {
-         * return (i * 8) + velbusChannelIdentifier.getChannelNumberFromBitNumber();
-         * }
-         * }
-         */
         byte[] allAddresses = getAllAddresses();
 
         for (int i = 0; i < allAddresses.length; i++) {

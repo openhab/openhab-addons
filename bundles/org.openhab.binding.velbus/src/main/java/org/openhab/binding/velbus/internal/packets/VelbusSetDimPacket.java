@@ -12,27 +12,28 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velbus.internal.VelbusBindingConstants;
 
 /**
- * The {@link VelbusSetScenePacket} represents a Velbus packet that can be used to
- * set the scene of a channel on the DALI module.
+ * The {@link VelbusSetDimPacket} represents a Velbus packet that can be used to
+ * set the color of a channel on the DALI module.
  *
  * @author Daniel Rosengarten - Initial contribution
  */
 @NonNullByDefault
-public class VelbusSetScenePacket extends VelbusPacket {
+public class VelbusSetDimPacket extends VelbusPacket {
     private byte[] data;
 
-    public VelbusSetScenePacket(byte address, byte channel, byte sceneNumber) {
+    public VelbusSetDimPacket(byte address, byte channel) {
         super(address, PRIO_HI, false);
 
-        this.data = new byte[] { VelbusBindingConstants.COMMAND_SET_DIMSCENE, channel, sceneNumber };
+        this.data = new byte[] { COMMAND_SET_DIMVALUE, channel, VALUE_UNCHANGED, VALUE_UNCHANGED, VALUE_UNCHANGED };
     }
 
-    public void GoToScene(byte sceneNumber) {
-        data[2] = sceneNumber;
+    public void setDim(byte dim) {
+        data[2] = dim;
     }
 
     @Override

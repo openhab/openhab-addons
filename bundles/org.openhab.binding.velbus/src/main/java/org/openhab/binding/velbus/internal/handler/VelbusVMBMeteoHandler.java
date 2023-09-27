@@ -45,6 +45,8 @@ import org.openhab.core.types.RefreshType;
 public class VelbusVMBMeteoHandler extends VelbusTemperatureSensorHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMBMETEO));
 
+    private volatile boolean disposed = true;
+
     private static final byte RAIN_SENSOR_CHANNEL = 0x02;
     private static final byte LIGHT_SENSOR_CHANNEL = 0x04;
     private static final byte WIND_SENSOR_CHANNEL = 0x08;
@@ -60,6 +62,20 @@ public class VelbusVMBMeteoHandler extends VelbusTemperatureSensorHandler {
         this.rainfallChannel = new ChannelUID(thing.getUID(), "weatherStation", "CH11");
         this.illuminanceChannel = new ChannelUID(thing.getUID(), "weatherStation", "CH12");
         this.windspeedChannel = new ChannelUID(thing.getUID(), "weatherStation", "CH13");
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        disposed = false;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        disposed = true;
     }
 
     @Override
@@ -106,6 +122,10 @@ public class VelbusVMBMeteoHandler extends VelbusTemperatureSensorHandler {
     @Override
     public void onPacketReceived(byte[] packet) {
         super.onPacketReceived(packet);
+
+        if (disposed) {
+            return;
+        }
 
         logger.trace("onPacketReceived() was called");
 

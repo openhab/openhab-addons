@@ -44,6 +44,8 @@ public class VelbusSensorHandler extends VelbusThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_VMB6IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB));
 
+    private volatile boolean disposed = true;
+
     private static final StringType SET_LED = new StringType("SET_LED");
     private static final StringType SLOW_BLINK_LED = new StringType("SLOW_BLINK_LED");
     private static final StringType FAST_BLINK_LED = new StringType("FAST_BLINK_LED");
@@ -59,6 +61,20 @@ public class VelbusSensorHandler extends VelbusThingHandler {
 
     public VelbusSensorHandler(Thing thing, int numberOfSubAddresses) {
         super(thing, numberOfSubAddresses);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        disposed = false;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        disposed = true;
     }
 
     @Override
@@ -130,6 +146,10 @@ public class VelbusSensorHandler extends VelbusThingHandler {
 
     @Override
     public void onPacketReceived(byte[] packet) {
+        if (disposed) {
+            return;
+        }
+
         logger.trace("onPacketReceived() was called");
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {

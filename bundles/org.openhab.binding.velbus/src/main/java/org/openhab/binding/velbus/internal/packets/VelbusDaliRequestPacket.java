@@ -43,6 +43,11 @@ public class VelbusDaliRequestPacket extends VelbusPacket {
 
     @Override
     protected byte[] getDataBytes() {
-        return new byte[] { COMMAND_TEMP_SENSOR_SETTINGS_REQUEST, this.channel, GATEWAY_CONFIG };
+        if (this.channel == ALL_DALI_CHANNELS) {
+            return new byte[] { COMMAND_TEMP_SENSOR_SETTINGS_REQUEST, this.channel, GATEWAY_CONFIG };
+        } else {
+            return new byte[] { COMMAND_TEMP_SENSOR_SETTINGS_REQUEST, this.channel, GATEWAY_CONFIG,
+                    DALI_SETTING_ACTUAL_LEVEL };
+        }
     }
 }

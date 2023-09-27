@@ -43,8 +43,24 @@ public class VelbusRelayHandler extends VelbusThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB1RY,
             THING_TYPE_VMB1RYNO, THING_TYPE_VMB1RYNOS, THING_TYPE_VMB4RY, THING_TYPE_VMB4RYLD, THING_TYPE_VMB4RYNO));
 
+    private volatile boolean disposed = true;
+
     public VelbusRelayHandler(Thing thing) {
         super(thing, 0);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        disposed = false;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        disposed = true;
     }
 
     @Override
@@ -80,6 +96,10 @@ public class VelbusRelayHandler extends VelbusThingHandler {
 
     @Override
     public void onPacketReceived(byte[] packet) {
+        if (disposed) {
+            return;
+        }
+
         logger.trace("onPacketReceived() was called");
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {

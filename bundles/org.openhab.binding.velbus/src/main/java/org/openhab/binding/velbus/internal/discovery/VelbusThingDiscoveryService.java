@@ -330,7 +330,7 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
                 break;
             case MODULE_TYPE_VMBDALI:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 9), moduleType, highByteOfSerialNumber,
-                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBDALI, 80);
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBDALI, 81);
                 break;
         }
 

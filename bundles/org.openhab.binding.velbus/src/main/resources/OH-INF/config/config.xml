@@ -922,7 +922,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:velbus:80channelDevice">
+	<config-description uri="thing-type:velbus:81channelDevice">
 		<parameter name="address" type="text" required="true">
 			<label>Address (Channel A0...7)</label>
 			<description>The velbus address of the device</description>
@@ -1457,6 +1457,124 @@
 			<label>CH80 Name</label>
 			<description>The name of CH80.</description>
 			<default>G15</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH81" type="text">
+			<label>CH81 Name</label>
+			<description>The name of CH81.</description>
+			<default>Broadcast</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL1" type="text">
+			<label>Virtual Light 1</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH1,CH2,CH3)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL2" type="text">
+			<label>Virtual Light 2</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH5,CH6,CH7)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL3" type="text">
+			<label>Virtual Light 3</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH9,CH10,CH11)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL4" type="text">
+			<label>Virtual Light 4</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH13,CH14,CH15)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL5" type="text">
+			<label>Virtual Light 5</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH17,CH18,CH19)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL6" type="text">
+			<label>Virtual Light 6</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH21,CH22,CH23)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL7" type="text">
+			<label>Virtual Light 7</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH25,CH26,CH27)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL8" type="text">
+			<label>Virtual Light 8</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH29,CH30,CH31)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL9" type="text">
+			<label>Virtual Light 9</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH33,CH34,CH35)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL10" type="text">
+			<label>Virtual Light 10</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH37,CH38,CH39)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL11" type="text">
+			<label>Virtual Light 11</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH41,CH42,CH43)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL12" type="text">
+			<label>Virtual Light 12</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH45,CH46,CH47)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL13" type="text">
+			<label>Virtual Light 13</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH49,CH50,CH510)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL14" type="text">
+			<label>Virtual Light 14</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH53,CH54,CH55)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL15" type="text">
+			<label>Virtual Light 15</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH57,CH58,CH59)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL16" type="text">
+			<label>Virtual Light 16</label>
+			<description>Create a virtual color light from 3 channels. Format:
+				Red_channel,Green_channel,Blue_channel. From CH1 to
+				CH64. (e.g. CH61,CH62,CH63)</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

@@ -44,8 +44,24 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
     private static final StringType PRESSED = new StringType("PRESSED");
     private static final StringType LONG_PRESSED = new StringType("LONG_PRESSED");
 
+    private volatile boolean disposed = true;
+
     public VelbusRelayWithInputHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        disposed = false;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        disposed = true;
     }
 
     @Override
@@ -95,6 +111,10 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
     @Override
     public void onPacketReceived(byte[] packet) {
         super.onPacketReceived(packet);
+
+        if (disposed) {
+            return;
+        }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
