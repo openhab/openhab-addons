@@ -38,6 +38,7 @@ The following channels are available:
 | activeApp          | String               | A dropdown containing a list of all apps installed on the Roku. The app currently running is automatically selected. The list updates every 10 minutes.         |
 | activeAppName      | String               | The name of the current app (ReadOnly).                                                                                                                         |
 | button             | String               | Sends a remote control command the Roku. See list of available commands below.                                                                                  |
+| control            | Player               | Control Playback e.g. play/pause/next/previous                                                                                                                  |
 | playMode           | String               | The current playback mode ie: stop, play, pause (ReadOnly).                                                                                                     |
 | timeElapsed        | Number:Time          | The total number of seconds of playback time elapsed for the current playing title (ReadOnly).                                                                  |
 | timeTotal          | Number:Time          | The total length of the current playing title in seconds (ReadOnly). This data is not provided by all streaming apps.                                           |
@@ -109,6 +110,7 @@ roku:roku_tv:mytv1 "My Roku TV" [ hostName="192.168.10.1", refresh=10 ]
 String Player_ActiveApp        "Current App: [%s]"         { channel="roku:roku_player:myplayer1:activeApp" }
 String Player_ActiveAppName    "Current App Name: [%s]"    { channel="roku:roku_player:myplayer1:activeAppName" }
 String Player_Button           "Send Command to Roku"      { channel="roku:roku_player:myplayer1:button" }
+Player Player_Control          "Control"                   { channel="roku:roku_player:myplayer1:control" }
 String Player_PlayMode         "Status: [%s]"              { channel="roku:roku_player:myplayer1:playMode" }
 Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="roku:roku_player:myplayer1:timeElapsed" }
 Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="roku:roku_player:myplayer1:timeTotal" }
@@ -118,6 +120,7 @@ Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="roku:roku_
 String Player_ActiveApp          "Current App: [%s]"         { channel="roku:roku_tv:mytv1:activeApp" }
 String Player_ActiveAppName      "Current App Name: [%s]"    { channel="roku:roku_tv:mytv1:activeAppName" }
 String Player_Button             "Send Command to Roku"      { channel="roku:roku_tv:mytv1:button" }
+Player Player_Control            "Control"                   { channel="roku:roku_tv:mytv1:control" }
 String Player_PlayMode           "Status: [%s]"              { channel="roku:roku_tv:mytv1:playMode" }
 Number:Time Player_TimeElapsed   "Elapsed Time: [%d %unit%]" { channel="roku:roku_tv:mytv1:timeElapsed" }
 Number:Time Player_TimeTotal     "Total Time: [%d %unit%]"   { channel="roku:roku_tv:mytv1:timeTotal" }
@@ -141,6 +144,7 @@ sitemap roku label="Roku" {
         Selection item=Player_ActiveApp icon="screen"
         Text item=Player_ActiveAppName
         Selection item=Player_Button icon="screen"
+        Default item=Player_Control
         Text item=Player_PlayMode
         Text item=Player_TimeElapsed icon="time"
         Text item=Player_TimeTotal icon="time"
