@@ -165,7 +165,7 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
 
         if (command instanceof RefreshType) {
             if (isColorGroupChannel(channelUID) || isBrightnessGroupChannel(channelUID)
-                    || isColorTemperatureGroupChannel(channelUID)) {
+                    || isWhiteGroupChannel(channelUID)) {
                 sendDaliReadoutRequest(velbusBridgeHandler, channel);
             }
         } else if (isSceneGroupChannel(channelUID)) {
@@ -179,7 +179,7 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                         "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
             }
         } else if (isColorGroupChannel(channelUID) || isBrightnessGroupChannel(channelUID)
-                || isColorTemperatureGroupChannel(channelUID) || isVirtualLightChannel(channelUID)) {
+                || isWhiteGroupChannel(channelUID) || isVirtualLightChannel(channelUID)) {
             VelbusColorChannel colorChannel = colorChannels[Byte.toUnsignedInt(channel) - 1];
 
             if (isBrightnessGroupChannel(channelUID)) {
@@ -206,13 +206,28 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                     throw new UnsupportedOperationException(
                             "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
                 }
-            } else if (isColorTemperatureGroupChannel(channelUID)) {
+            } else if (isWhiteGroupChannel(channelUID)) {
                 if (command instanceof PercentType percentCommand) {
-                    colorChannel.setWhite(percentCommand);
+                    int channelNumber = getModuleAddress().getChannelNumber(channelUID);
+                    boolean isVirtualLight = false;
 
-                    VelbusSetColorPacket packet = new VelbusSetColorPacket(address, channel);
-                    packet.setWhite(colorChannel.getWhiteVelbus());
-                    velbusBridgeHandler.sendPacket(packet.getBytes());
+                    for (int i = 0; i < 16; i++) {
+                        if (virtualColorChannels[i].isVirtualColorChannel(channelNumber)) {
+                            virtualColorChannels[i].setWhite(percentCommand);
+
+                            VelbusSetDimPacket packet = new VelbusSetDimPacket(address, channel);
+                            packet.setDim(virtualColorChannels[i].getWhiteVelbus());
+                            velbusBridgeHandler.sendPacket(packet.getBytes());
+                            isVirtualLight = true;
+                        }
+                    }
+                    if (!isVirtualLight) {
+                        colorChannel.setWhite(percentCommand);
+
+                        VelbusSetColorPacket packet = new VelbusSetColorPacket(address, channel);
+                        packet.setWhite(colorChannel.getWhiteVelbus());
+                        velbusBridgeHandler.sendPacket(packet.getBytes());
+                    }
                 } else {
                     throw new UnsupportedOperationException(
                             "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
@@ -252,8 +267,8 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
         return CHANNEL_GROUP_BRIGHTNESS.equals(channelUID.getGroupId());
     }
 
-    private boolean isColorTemperatureGroupChannel(ChannelUID channelUID) {
-        return CHANNEL_GROUP_COLOR_TEMPERATURE.equals(channelUID.getGroupId());
+    private boolean isWhiteGroupChannel(ChannelUID channelUID) {
+        return CHANNEL_GROUP_WHITE.equals(channelUID.getGroupId());
     }
 
     private boolean isSceneGroupChannel(ChannelUID channelUID) {
@@ -287,16 +302,7 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                                 CHANNEL + channel);
                         colorChannel.setBrightness(packet[7]);
                         updateState(brightness, colorChannel.getBrightnessPercent());
-
-                        for (int i = 0; i < 16; i++) {
-                            if (virtualColorChannels[i].isVirtualColorChannel(channel)) {
-                                virtualColorChannels[i].setColor(packet[7], channel);
-
-                                ChannelUID virtualLight = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VIRTUAL_LIGHT,
-                                        VIRTUAL_LIGHT + (i + 1));
-                                updateState(virtualLight, virtualColorChannels[i].getColorHSB());
-                            }
-                        }
+                        updateVirtualLightState(channel, packet[7]);
                     } else if (packet.length >= 12) {
                         ChannelUID brightness = new ChannelUID(thing.getUID(), CHANNEL_GROUP_BRIGHTNESS,
                                 CHANNEL + channel);
@@ -307,10 +313,9 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                         colorChannel.setColor(new byte[] { packet[8], packet[9], packet[10] });
                         updateState(color, colorChannel.getColorHSB());
 
-                        ChannelUID temperature = new ChannelUID(thing.getUID(), CHANNEL_GROUP_COLOR_TEMPERATURE,
-                                CHANNEL + channel);
+                        ChannelUID white = new ChannelUID(thing.getUID(), CHANNEL_GROUP_WHITE, CHANNEL + channel);
                         colorChannel.setWhite(packet[11]);
-                        updateState(temperature, colorChannel.getWhitePercent());
+                        updateState(white, colorChannel.getWhitePercent());
                     }
                 } else if (channel == 81) { // Broadcast
                     if (packet.length >= 8 && packet.length < 12) {
@@ -322,22 +327,13 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                             brightness = new ChannelUID(thing.getUID(), CHANNEL_GROUP_BRIGHTNESS, CHANNEL + i);
                             colorChannel.setBrightness(packet[7]);
                             updateState(brightness, colorChannel.getBrightnessPercent());
-
-                            for (int j = 0; j < 16; j++) {
-                                if (virtualColorChannels[j].isVirtualColorChannel(i)) {
-                                    virtualColorChannels[j].setColor(packet[6], i);
-
-                                    ChannelUID virtualLight = new ChannelUID(thing.getUID(),
-                                            CHANNEL_GROUP_VIRTUAL_LIGHT, VIRTUAL_LIGHT + (j + 1));
-                                    updateState(virtualLight, virtualColorChannels[j].getColorHSB());
-                                }
-                            }
+                            updateVirtualLightState(i, packet[7]);
                         }
                     } else if (packet.length >= 12) {
                         VelbusColorChannel colorChannel;
                         ChannelUID brightness;
                         ChannelUID color;
-                        ChannelUID temperature;
+                        ChannelUID white;
                         byte[] rgb = new byte[] { packet[8], packet[9], packet[10] };
 
                         for (int i = 1; i <= 80; i++) {
@@ -351,9 +347,9 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                             colorChannel.setColor(rgb);
                             updateState(color, colorChannel.getColorHSB());
 
-                            temperature = new ChannelUID(thing.getUID(), CHANNEL_GROUP_COLOR_TEMPERATURE, CHANNEL + i);
+                            white = new ChannelUID(thing.getUID(), CHANNEL_GROUP_WHITE, CHANNEL + i);
                             colorChannel.setWhite(packet[11]);
-                            updateState(temperature, colorChannel.getWhitePercent());
+                            updateState(white, colorChannel.getWhitePercent());
                         }
                     }
                 }
@@ -363,9 +359,13 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                 if (channel >= 1 && channel <= 80) {
                     VelbusColorChannel colorChannel = colorChannels[channel - 1];
 
-                    ChannelUID brightness = new ChannelUID(thing.getUID(), CHANNEL_GROUP_BRIGHTNESS, CHANNEL + channel);
-                    colorChannel.setBrightness(packet[6]);
-                    updateState(brightness, colorChannel.getBrightnessPercent());
+                    for (int i = 0; i < (packet.length - 8); i++) {
+                        ChannelUID brightness = new ChannelUID(thing.getUID(), CHANNEL_GROUP_BRIGHTNESS,
+                                CHANNEL + (channel + i));
+                        colorChannel.setBrightness(packet[6 + i]);
+                        updateState(brightness, colorChannel.getBrightnessPercent());
+                        updateVirtualLightState(channel + i, packet[6 + i]);
+                    }
                 } else if (channel == 81) { // Broadcast
                     VelbusColorChannel colorChannel;
                     ChannelUID brightness;
@@ -375,17 +375,25 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                         brightness = new ChannelUID(thing.getUID(), CHANNEL_GROUP_BRIGHTNESS, CHANNEL + i);
                         colorChannel.setBrightness(packet[6]);
                         updateState(brightness, colorChannel.getBrightnessPercent());
-
-                        for (int j = 0; j < 16; j++) {
-                            if (virtualColorChannels[j].isVirtualColorChannel(i)) {
-                                virtualColorChannels[j].setColor(packet[6], i);
-
-                                ChannelUID virtualLight = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VIRTUAL_LIGHT,
-                                        VIRTUAL_LIGHT + (j + 1));
-                                updateState(virtualLight, virtualColorChannels[j].getColorHSB());
-                            }
-                        }
+                        updateVirtualLightState(i, packet[6]);
                     }
+                }
+            }
+        }
+    }
+
+    private void updateVirtualLightState(int channel, byte dimVal) {
+        for (int i = 0; i < 16; i++) {
+            if (virtualColorChannels[i].isVirtualColorChannel(channel)) {
+                virtualColorChannels[i].setColor(dimVal, channel);
+
+                if (virtualColorChannels[i].isColorChannel(channel)) {
+                    ChannelUID virtualLight = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VIRTUAL_LIGHT,
+                            VIRTUAL_LIGHT + (i + 1));
+                    updateState(virtualLight, virtualColorChannels[i].getColorHSB());
+                } else if (virtualColorChannels[i].isWhiteChannel(channel)) {
+                    ChannelUID whiteChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_WHITE, CHANNEL + channel);
+                    updateState(whiteChannel, virtualColorChannels[i].getWhitePercent());
                 }
             }
         }

@@ -28,34 +28,43 @@ public class VelbusVirtualColorChannel extends VelbusColorChannel {
     private byte redChannel;
     private byte greenChannel;
     private byte blueChannel;
+    private byte whiteChannel;
 
     public VelbusVirtualColorChannel() {
         redChannel = NOT_CONFIGURED;
         greenChannel = NOT_CONFIGURED;
         blueChannel = NOT_CONFIGURED;
+        whiteChannel = NOT_CONFIGURED;
     }
 
     public VelbusVirtualColorChannel(int r, int g, int b, int w) {
         redChannel = getByteValue(r);
         greenChannel = getByteValue(g);
         blueChannel = getByteValue(b);
+        whiteChannel = getByteValue(w);
     }
 
     public VelbusVirtualColorChannel(String r, String g, String b, String w) throws NumberFormatException {
         redChannel = getByteValue(r);
         greenChannel = getByteValue(g);
         blueChannel = getByteValue(b);
+        whiteChannel = getByteValue(w);
     }
 
     public VelbusVirtualColorChannel(String rgbw) throws InvalidPropertiesFormatException, NumberFormatException {
         String virtualChannels[] = rgbw.split("\\s*,\\s*");
-        if (virtualChannels.length != 3) {
+        if (virtualChannels.length == 4) {
+            redChannel = getByteValue(virtualChannels[0]);
+            greenChannel = getByteValue(virtualChannels[1]);
+            blueChannel = getByteValue(virtualChannels[2]);
+            whiteChannel = getByteValue(virtualChannels[3]);
+        } else if (virtualChannels.length == 3) {
+            redChannel = getByteValue(virtualChannels[0]);
+            greenChannel = getByteValue(virtualChannels[1]);
+            blueChannel = getByteValue(virtualChannels[2]);
+        } else {
             throw new InvalidPropertiesFormatException("Wrong format");
         }
-
-        redChannel = getByteValue(virtualChannels[0]);
-        greenChannel = getByteValue(virtualChannels[1]);
-        blueChannel = getByteValue(virtualChannels[2]);
     }
 
     private byte getByteValue(String channel) {
@@ -78,7 +87,20 @@ public class VelbusVirtualColorChannel extends VelbusColorChannel {
         return blueChannel;
     }
 
+    public byte getWhiteChannel() {
+        return whiteChannel;
+    }
+
     public boolean isVirtualColorChannel(int channel) {
+        byte c = getByteValue(channel);
+
+        if (c == redChannel || c == greenChannel || c == blueChannel || c == whiteChannel) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isColorChannel(int channel) {
         byte c = getByteValue(channel);
 
         if (c == redChannel || c == greenChannel || c == blueChannel) {
@@ -87,8 +109,24 @@ public class VelbusVirtualColorChannel extends VelbusColorChannel {
         return false;
     }
 
+    public boolean isWhiteChannel(int channel) {
+        byte c = getByteValue(channel);
+
+        if (c == whiteChannel) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isRGBConfigured() {
         if (redChannel != NOT_CONFIGURED && greenChannel != NOT_CONFIGURED && blueChannel != NOT_CONFIGURED) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isWhiteConfigured() {
+        if (whiteChannel != NOT_CONFIGURED) {
             return true;
         }
         return false;
@@ -126,6 +164,8 @@ public class VelbusVirtualColorChannel extends VelbusColorChannel {
             setGreenColor(color);
         } else if (c == blueChannel) {
             setBlueColor(color);
+        } else if (c == whiteChannel) {
+            setWhite(color);
         }
     }
 }

@@ -937,7 +937,7 @@
 			<channel-group id="feedback" typeId="81channelFeedbackModule"/>
 			<channel-group id="color" typeId="81channelColorModule"/>
 			<channel-group id="brightness" typeId="81channelBrightnessModule"/>
-			<channel-group id="color-temperature" typeId="81channelColorTemperatureModule"/>
+			<channel-group id="white" typeId="81channelWhiteColorModule"/>
 			<channel-group id="scene" typeId="81channelSceneModule"/>
 			<channel-group id="virtual-light" typeId="16channelVirtualLight"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -1860,93 +1860,93 @@
 			<channel id="CH81" typeId="system.brightness"/>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="81channelColorTemperatureModule">
-		<label>Color Temperature</label>
+	<channel-group-type id="81channelWhiteColorModule">
+		<label>White Color</label>
 		<description>
-			This is a generic module with 81 color temperature channels.
+			This is a generic module with 81 white color channels.
 		</description>
 		<channels>
-			<channel id="CH1" typeId="system.color-temperature"/>
-			<channel id="CH2" typeId="system.color-temperature"/>
-			<channel id="CH3" typeId="system.color-temperature"/>
-			<channel id="CH4" typeId="system.color-temperature"/>
-			<channel id="CH5" typeId="system.color-temperature"/>
-			<channel id="CH6" typeId="system.color-temperature"/>
-			<channel id="CH7" typeId="system.color-temperature"/>
-			<channel id="CH8" typeId="system.color-temperature"/>
-			<channel id="CH9" typeId="system.color-temperature"/>
-			<channel id="CH10" typeId="system.color-temperature"/>
-			<channel id="CH11" typeId="system.color-temperature"/>
-			<channel id="CH12" typeId="system.color-temperature"/>
-			<channel id="CH13" typeId="system.color-temperature"/>
-			<channel id="CH14" typeId="system.color-temperature"/>
-			<channel id="CH15" typeId="system.color-temperature"/>
-			<channel id="CH16" typeId="system.color-temperature"/>
-			<channel id="CH17" typeId="system.color-temperature"/>
-			<channel id="CH18" typeId="system.color-temperature"/>
-			<channel id="CH19" typeId="system.color-temperature"/>
-			<channel id="CH20" typeId="system.color-temperature"/>
-			<channel id="CH21" typeId="system.color-temperature"/>
-			<channel id="CH22" typeId="system.color-temperature"/>
-			<channel id="CH23" typeId="system.color-temperature"/>
-			<channel id="CH24" typeId="system.color-temperature"/>
-			<channel id="CH25" typeId="system.color-temperature"/>
-			<channel id="CH26" typeId="system.color-temperature"/>
-			<channel id="CH27" typeId="system.color-temperature"/>
-			<channel id="CH28" typeId="system.color-temperature"/>
-			<channel id="CH29" typeId="system.color-temperature"/>
-			<channel id="CH30" typeId="system.color-temperature"/>
-			<channel id="CH31" typeId="system.color-temperature"/>
-			<channel id="CH32" typeId="system.color-temperature"/>
-			<channel id="CH33" typeId="system.color-temperature"/>
-			<channel id="CH34" typeId="system.color-temperature"/>
-			<channel id="CH35" typeId="system.color-temperature"/>
-			<channel id="CH36" typeId="system.color-temperature"/>
-			<channel id="CH37" typeId="system.color-temperature"/>
-			<channel id="CH38" typeId="system.color-temperature"/>
-			<channel id="CH39" typeId="system.color-temperature"/>
-			<channel id="CH40" typeId="system.color-temperature"/>
-			<channel id="CH41" typeId="system.color-temperature"/>
-			<channel id="CH42" typeId="system.color-temperature"/>
-			<channel id="CH43" typeId="system.color-temperature"/>
-			<channel id="CH44" typeId="system.color-temperature"/>
-			<channel id="CH45" typeId="system.color-temperature"/>
-			<channel id="CH46" typeId="system.color-temperature"/>
-			<channel id="CH47" typeId="system.color-temperature"/>
-			<channel id="CH48" typeId="system.color-temperature"/>
-			<channel id="CH49" typeId="system.color-temperature"/>
-			<channel id="CH50" typeId="system.color-temperature"/>
-			<channel id="CH51" typeId="system.color-temperature"/>
-			<channel id="CH52" typeId="system.color-temperature"/>
-			<channel id="CH53" typeId="system.color-temperature"/>
-			<channel id="CH54" typeId="system.color-temperature"/>
-			<channel id="CH55" typeId="system.color-temperature"/>
-			<channel id="CH56" typeId="system.color-temperature"/>
-			<channel id="CH57" typeId="system.color-temperature"/>
-			<channel id="CH58" typeId="system.color-temperature"/>
-			<channel id="CH59" typeId="system.color-temperature"/>
-			<channel id="CH60" typeId="system.color-temperature"/>
-			<channel id="CH61" typeId="system.color-temperature"/>
-			<channel id="CH62" typeId="system.color-temperature"/>
-			<channel id="CH63" typeId="system.color-temperature"/>
-			<channel id="CH64" typeId="system.color-temperature"/>
-			<channel id="CH65" typeId="system.color-temperature"/>
-			<channel id="CH66" typeId="system.color-temperature"/>
-			<channel id="CH67" typeId="system.color-temperature"/>
-			<channel id="CH68" typeId="system.color-temperature"/>
-			<channel id="CH69" typeId="system.color-temperature"/>
-			<channel id="CH70" typeId="system.color-temperature"/>
-			<channel id="CH71" typeId="system.color-temperature"/>
-			<channel id="CH72" typeId="system.color-temperature"/>
-			<channel id="CH73" typeId="system.color-temperature"/>
-			<channel id="CH74" typeId="system.color-temperature"/>
-			<channel id="CH75" typeId="system.color-temperature"/>
-			<channel id="CH76" typeId="system.color-temperature"/>
-			<channel id="CH77" typeId="system.color-temperature"/>
-			<channel id="CH78" typeId="system.color-temperature"/>
-			<channel id="CH79" typeId="system.color-temperature"/>
-			<channel id="CH80" typeId="system.color-temperature"/>
-			<channel id="CH81" typeId="system.color-temperature"/>
+			<channel id="CH1" typeId="system.brightness"/>
+			<channel id="CH2" typeId="system.brightness"/>
+			<channel id="CH3" typeId="system.brightness"/>
+			<channel id="CH4" typeId="system.brightness"/>
+			<channel id="CH5" typeId="system.brightness"/>
+			<channel id="CH6" typeId="system.brightness"/>
+			<channel id="CH7" typeId="system.brightness"/>
+			<channel id="CH8" typeId="system.brightness"/>
+			<channel id="CH9" typeId="system.brightness"/>
+			<channel id="CH10" typeId="system.brightness"/>
+			<channel id="CH11" typeId="system.brightness"/>
+			<channel id="CH12" typeId="system.brightness"/>
+			<channel id="CH13" typeId="system.brightness"/>
+			<channel id="CH14" typeId="system.brightness"/>
+			<channel id="CH15" typeId="system.brightness"/>
+			<channel id="CH16" typeId="system.brightness"/>
+			<channel id="CH17" typeId="system.brightness"/>
+			<channel id="CH18" typeId="system.brightness"/>
+			<channel id="CH19" typeId="system.brightness"/>
+			<channel id="CH20" typeId="system.brightness"/>
+			<channel id="CH21" typeId="system.brightness"/>
+			<channel id="CH22" typeId="system.brightness"/>
+			<channel id="CH23" typeId="system.brightness"/>
+			<channel id="CH24" typeId="system.brightness"/>
+			<channel id="CH25" typeId="system.brightness"/>
+			<channel id="CH26" typeId="system.brightness"/>
+			<channel id="CH27" typeId="system.brightness"/>
+			<channel id="CH28" typeId="system.brightness"/>
+			<channel id="CH29" typeId="system.brightness"/>
+			<channel id="CH30" typeId="system.brightness"/>
+			<channel id="CH31" typeId="system.brightness"/>
+			<channel id="CH32" typeId="system.brightness"/>
+			<channel id="CH33" typeId="system.brightness"/>
+			<channel id="CH34" typeId="system.brightness"/>
+			<channel id="CH35" typeId="system.brightness"/>
+			<channel id="CH36" typeId="system.brightness"/>
+			<channel id="CH37" typeId="system.brightness"/>
+			<channel id="CH38" typeId="system.brightness"/>
+			<channel id="CH39" typeId="system.brightness"/>
+			<channel id="CH40" typeId="system.brightness"/>
+			<channel id="CH41" typeId="system.brightness"/>
+			<channel id="CH42" typeId="system.brightness"/>
+			<channel id="CH43" typeId="system.brightness"/>
+			<channel id="CH44" typeId="system.brightness"/>
+			<channel id="CH45" typeId="system.brightness"/>
+			<channel id="CH46" typeId="system.brightness"/>
+			<channel id="CH47" typeId="system.brightness"/>
+			<channel id="CH48" typeId="system.brightness"/>
+			<channel id="CH49" typeId="system.brightness"/>
+			<channel id="CH50" typeId="system.brightness"/>
+			<channel id="CH51" typeId="system.brightness"/>
+			<channel id="CH52" typeId="system.brightness"/>
+			<channel id="CH53" typeId="system.brightness"/>
+			<channel id="CH54" typeId="system.brightness"/>
+			<channel id="CH55" typeId="system.brightness"/>
+			<channel id="CH56" typeId="system.brightness"/>
+			<channel id="CH57" typeId="system.brightness"/>
+			<channel id="CH58" typeId="system.brightness"/>
+			<channel id="CH59" typeId="system.brightness"/>
+			<channel id="CH60" typeId="system.brightness"/>
+			<channel id="CH61" typeId="system.brightness"/>
+			<channel id="CH62" typeId="system.brightness"/>
+			<channel id="CH63" typeId="system.brightness"/>
+			<channel id="CH64" typeId="system.brightness"/>
+			<channel id="CH65" typeId="system.brightness"/>
+			<channel id="CH66" typeId="system.brightness"/>
+			<channel id="CH67" typeId="system.brightness"/>
+			<channel id="CH68" typeId="system.brightness"/>
+			<channel id="CH69" typeId="system.brightness"/>
+			<channel id="CH70" typeId="system.brightness"/>
+			<channel id="CH71" typeId="system.brightness"/>
+			<channel id="CH72" typeId="system.brightness"/>
+			<channel id="CH73" typeId="system.brightness"/>
+			<channel id="CH74" typeId="system.brightness"/>
+			<channel id="CH75" typeId="system.brightness"/>
+			<channel id="CH76" typeId="system.brightness"/>
+			<channel id="CH77" typeId="system.brightness"/>
+			<channel id="CH78" typeId="system.brightness"/>
+			<channel id="CH79" typeId="system.brightness"/>
+			<channel id="CH80" typeId="system.brightness"/>
+			<channel id="CH81" typeId="system.brightness"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="81channelSceneModule">

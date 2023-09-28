@@ -126,6 +126,8 @@ The `vmbdali` thing also supports 9 subaddresses. The value "FF" = not configure
 Thing velbus:vmbelo:<bridgeId>:<thingId> [subaddress1="F1", subaddress2="F2", subaddress3="F3", subaddress4="F4", subaddress5="F5", subaddress6="F6", subaddress7="F7", subaddress8="F8", subaddress9="F9"]
 ```
 
+In the UI, the subaddress settings are in the advanced configuration of the module.
+
 For thing types with builtin sensors (e.g. temperature), the interval at which the sensors should be checked can be set by specifying the Refresh Interval, e.g.:
 
 ```java
@@ -155,20 +157,21 @@ The following thing types support setting the dimspeed:
 vmb1dm, vmb1led, vmb4dc, vmbdme, vmbdmi, vmbdmir
 ```
 
-The `vmbdali` thing has 16 virtual light. A virtual light is created from 3 channels of the DALI module.
-This is because an RGB DALI light is configured on the DALI module with 3 channels (Red channel, Green channel, Blue channel).  
+The `vmbdali` thing has 16 virtual light. A virtual light is created from 4 channels of the DALI module.
+This is because an RGBW DALI light is configured on the VMBDALI module with 4 channels (Red channel, Green channel, Blue channel, White channel).  
+
 The configuration is set like this :
 
 ```java
-Thing velbus:vmbdali:<bridgeId>:<thingId> [VL1="R,G,B"]
+Thing velbus:vmbdali:<bridgeId>:<thingId> [VL1="R,G,B,W"]
 ```
+The white channel is optionnal.
 
 e.g.:
 ```java
-Thing velbus:vmbdali:<bridgeId>:<thingId> [VL1="CH1,CH2,CH3", VL2="CH6,CH8,CH7"]
+Thing velbus:vmbdali:<bridgeId>:<thingId> [VL1="CH1,CH2,CH3,CH4", VL2="CH6,CH7,CH5"]
 ```
-
-If the light is an RGBW (Red channel, Green channel, Blue channel, White channel), the white channel is managed by the corresponding `brightness` and `color-temperature` channels.
+In the UI, the virtual light settings are in the advanced configuration of the VMBDALI module.
 
 ## Channels
 
@@ -257,7 +260,7 @@ Thing type `vmbdali` has 81 trigger channels `input#CH1` ... `input#CH81`.
 It has 81 channels to steer the button LED feedback `feedback#CH1` ... `feedback#CH81`.
 hsbColor command type is supported on channels `color#CH1` ... `color#CH64` (A1 ... A64), `color#CH65` ... `color#CH80` (G1 ... G16) and `color#CH81` (broadcast). This is to set the color on the channels.
 Percent command type is supported on channels `brightness#CH1` ... `brightness#CH64` (A1 ... A64), `brightness#CH65` ... `brightness#CH80` (G1 ... G16) and `brightness#CH81` (broadcast). This is to set the brightness on the channels.
-Percent command type is supported on channels `color-temperature#CH1` ... `color-temperature#CH64` (A1 ... A64), `color-temperature#CH65` ... `color-temperature#CH80` (G1 ... G16) and `color-temperature#CH81` (broadcast). This is to set the white temperature on the channels.
+Percent command type is supported on channels `white#CH1` ... `white#CH64` (A1 ... A64), `white#CH65` ... `white#CH80` (G1 ... G16) and `white#CH81` (broadcast). This is to set the white on the channels.
 Values 1 to 15 are supported on channels `scene#CH1` ... `scene#CH64` (A1 ... A64), `scene#CH65` ... `scene#CH80` (G1 ... G16) and `scene#CH81` (broadcast). This is to set the scene on the channels.
 hsbColor command type is supported on channels `virtual-light#VL1` ... `virtual-light#VL16`. This is to set the color on the virtual light.
 It has a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.

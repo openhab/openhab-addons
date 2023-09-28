@@ -257,7 +257,7 @@ public class VelbusBindingConstants {
     public static final String CHANNEL_GROUP_THERMOSTAT = "thermostat";
     public static final String CHANNEL_GROUP_COLOR = "color";
     public static final String CHANNEL_GROUP_BRIGHTNESS = "brightness";
-    public static final String CHANNEL_GROUP_COLOR_TEMPERATURE = "color-temperature";
+    public static final String CHANNEL_GROUP_WHITE = "white";
     public static final String CHANNEL_GROUP_SCENE = "scene";
     public static final String CHANNEL_GROUP_VIRTUAL_LIGHT = "virtual-light";
 
