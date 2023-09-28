@@ -50,6 +50,7 @@ public class RokuBindingConstants {
     // List of all Channel id's
     public static final String ACTIVE_APP = "activeApp";
     public static final String BUTTON = "button";
+    public static final String CONTROL = "control";
     public static final String PLAY_MODE = "playMode";
     public static final String TIME_ELAPSED = "timeElapsed";
     public static final String TIME_TOTAL = "timeTotal";
@@ -65,6 +66,7 @@ public class RokuBindingConstants {
     public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;
     public static final Unit<Dimensionless> API_PERCENT_UNIT = Units.PERCENT;
 
+    public static final String PLAY = "play";
     public static final String STOP = "stop";
     public static final String CLOSE = "close";
     public static final String EMPTY = "";
@@ -72,6 +74,9 @@ public class RokuBindingConstants {
     public static final String ROKU_HOME_ID = "-1";
     public static final String ROKU_HOME_ID_562859 = "562859";
     public static final String ROKU_HOME_BUTTON = "Home";
+    public static final String ROKU_PLAY_BUTTON = "Play";
+    public static final String ROKU_NEXT_BUTTON = "Fwd";
+    public static final String ROKU_PREV_BUTTON = "Rev";
     public static final String NON_DIGIT_PATTERN = "[^\\d]";
     public static final String TV_APP = "tvinput.dtv";
     public static final String TV_INPUT = "tvinput";
