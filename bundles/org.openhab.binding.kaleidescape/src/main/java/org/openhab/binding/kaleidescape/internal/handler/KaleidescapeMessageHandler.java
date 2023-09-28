@@ -112,9 +112,7 @@ public enum KaleidescapeMessageHandler {
                 handler.updateChannel(PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
 
-                handler.updateChannel(CONTROL,
-                        (ZERO.equals(matcher.group(1)) || ONE.equals(matcher.group(1))) ? PlayPauseType.PAUSE
-                                : PlayPauseType.PLAY);
+                handler.updateChannel(CONTROL, "2".equals(matcher.group(1)) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
                 handler.updateChannel(PLAY_SPEED, new StringType(matcher.group(2)));
 
@@ -318,8 +316,7 @@ public enum KaleidescapeMessageHandler {
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
 
                 handler.updateChannel(MUSIC_CONTROL,
-                        (ZERO.equals(matcher.group(1)) || ONE.equals(matcher.group(1))) ? PlayPauseType.PAUSE
-                                : PlayPauseType.PLAY);
+                        "2".equals(matcher.group(1)) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
                 handler.updateChannel(MUSIC_PLAY_SPEED, new StringType(matcher.group(2)));
 
