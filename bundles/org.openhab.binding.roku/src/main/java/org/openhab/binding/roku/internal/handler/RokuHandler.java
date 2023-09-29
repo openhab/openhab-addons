@@ -33,7 +33,9 @@ import org.openhab.binding.roku.internal.dto.DeviceInfo;
 import org.openhab.binding.roku.internal.dto.Player;
 import org.openhab.binding.roku.internal.dto.TvChannel;
 import org.openhab.binding.roku.internal.dto.TvChannels.Channel;
+import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -189,6 +191,8 @@ public class RokuHandler extends BaseThingHandler {
                     Player playerInfo = communicator.getPlayerInfo();
                     // When nothing playing, 'close' is reported, replace with 'stop'
                     updateState(PLAY_MODE, new StringType(playerInfo.getState().replaceAll(CLOSE, STOP)));
+                    updateState(CONTROL,
+                            PLAY.equalsIgnoreCase(playerInfo.getState()) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
                     // Remove non-numeric from string, ie: ' ms'
                     String position = playerInfo.getPosition().replaceAll(NON_DIGIT_PATTERN, EMPTY);
@@ -360,6 +364,25 @@ public class RokuHandler extends BaseThingHandler {
                                 e.getMessage());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     }
+                }
+            }
+        } else if (channelUID.getId().equals(CONTROL)) {
+            synchronized (sequenceLock) {
+                try {
+                    if (command instanceof PlayPauseType) {
+                        communicator.keyPress(ROKU_PLAY_BUTTON);
+                    } else if (command instanceof NextPreviousType) {
+                        if (command == NextPreviousType.NEXT) {
+                            communicator.keyPress(ROKU_NEXT_BUTTON);
+                        } else if (command == NextPreviousType.PREVIOUS) {
+                            communicator.keyPress(ROKU_PREV_BUTTON);
+                        }
+                    } else {
+                        logger.warn("Unknown control command: {}", command);
+                    }
+                } catch (RokuHttpException e) {
+                    logger.debug("Unable to send control cmd to Roku, cmd: {}, Exception: {}", command, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
         } else {

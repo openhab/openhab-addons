@@ -15,6 +15,7 @@
 			<channel id="activeApp" typeId="activeApp"/>
 			<channel id="activeAppName" typeId="activeAppName"/>
 			<channel id="button" typeId="button"/>
+			<channel id="control" typeId="control"/>
 			<channel id="playMode" typeId="playMode"/>
 			<channel id="timeElapsed" typeId="timeElapsed"/>
 			<channel id="timeTotal" typeId="timeTotal"/>
@@ -46,6 +47,7 @@
 			<channel id="activeApp" typeId="activeApp"/>
 			<channel id="activeAppName" typeId="activeAppName"/>
 			<channel id="button" typeId="buttonTv"/>
+			<channel id="control" typeId="control"/>
 			<channel id="playMode" typeId="playMode"/>
 			<channel id="timeElapsed" typeId="timeElapsed"/>
 			<channel id="timeTotal" typeId="timeTotal"/>
@@ -136,6 +138,13 @@
 				<option value="POWERON">Power On</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Control playback e.g. Play/Pause/Next/Previous</description>
+		<category>Player</category>
 	</channel-type>
 
 	<channel-type id="activeApp">
