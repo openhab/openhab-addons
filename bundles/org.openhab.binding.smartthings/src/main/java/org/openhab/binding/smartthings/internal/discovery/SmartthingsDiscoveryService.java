@@ -34,6 +34,7 @@ import org.openhab.binding.smartthings.internal.type.SmartthingsChannelGroupType
 import org.openhab.binding.smartthings.internal.type.SmartthingsChannelTypeProvider;
 import org.openhab.binding.smartthings.internal.type.SmartthingsConfigDescriptionProvider;
 import org.openhab.binding.smartthings.internal.type.SmartthingsThingTypeProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -76,6 +77,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     private @Nullable SmartthingsApi api;
 
+    private @Nullable SmartthingsTypeRegistry typeRegistry;
     private @Nullable SmartthingsThingTypeProvider thingTypeProvider;
     private @Nullable SmartthingsChannelTypeProvider channelTypeProvider;
     private @Nullable SmartthingsChannelGroupTypeProvider channelGroupTypeProvider;
@@ -87,6 +89,18 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     public SmartthingsDiscoveryService() {
         super(SmartthingsBindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SEC);
         gson = new Gson();
+    }
+
+    @Reference
+    protected void setSmartthingsTypeRegistry(SmartthingsTypeRegistry typeRegistry) {
+        this.typeRegistry = typeRegistry;
+    }
+
+    protected void unsetSmartthingsTypeRegistry(SmartthingsTypeRegistry typeRegistry) {
+        // Make sure it is this handleFactory that should be unset
+        if (Objects.equals(this.typeRegistry, typeRegistry)) {
+            this.typeRegistry = null;
+        }
     }
 
     @Reference
@@ -163,13 +177,25 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
             JsonObject devObj = (JsonObject) dev;
 
             String name = devObj.get("name").getAsString();
+            String id = devObj.get("deviceId").getAsString();
+            String label = devObj.get("label").getAsString();
+            String manufacturerName = devObj.get("manufacturerName").getAsString();
+            String locationId = null;
+            String roomId = null;
+
+            if (devObj.has("locationId")) {
+                locationId = devObj.get("locationId").getAsString();
+            }
+            if (devObj.has("roomId")) {
+                roomId = devObj.get("roomId").getAsString();
+            }
             logger.debug("Device");
 
             JsonElement components = devObj.get("components");
             if (components == null || !components.isJsonArray()) {
                 return;
             }
-            if (!name.equals("switch-power-energy-consumption-report-aqara")) {
+            if (label.indexOf("Bureau") < 0) {
                 continue;
             }
 
@@ -179,8 +205,8 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
             for (JsonElement elm : componentsArray) {
                 JsonObject component = (JsonObject) elm;
-                String id = component.get("id").getAsString();
-                String label = component.get("label").getAsString();
+                String compId = component.get("id").getAsString();
+                String compLabel = component.get("label").getAsString();
 
                 JsonElement capabilitites = component.get("capabilities");
                 if (capabilitites != null && capabilitites.isJsonArray()) {
@@ -202,7 +228,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                         String catId = elmCatObj.get("name").getAsString();
                         String catType = elmCatObj.get("categoryType").getAsString();
 
-                        if (id.equals("main")) {
+                        if (compId.equals("main")) {
                             deviceType = catId;
                         }
                     }
@@ -214,10 +240,18 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                 continue;
             }
 
+            if (name.equals("white-and-color-ambiance")) {
+                continue;
+            }
+
             SmartthingsDeviceData deviceData = new SmartthingsDeviceData();
+            deviceData.label = label;
             deviceData.name = name;
-            deviceData.id = name;
+            deviceData.id = id;
+            deviceData.description = "";
             deviceData.deviceType = deviceType.toLowerCase();
+
+            this.typeRegistry.Register(deviceData, devObj);
             createDevice(Objects.requireNonNull(deviceData));
 
         }
@@ -234,7 +268,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceData.deviceType, deviceData.name);
 
         // Build the UID as a string smartthings:{ThingType}:{BridgeName}:{DeviceName}
-        String name = deviceData.name; // Note: this is necessary for null analysis to work
+        String name = deviceData.label; // Note: this is necessary for null analysis to work
         if (name == null) {
             logger.info(
                     "Unexpectedly received data for a device with no name. Check the Smartthings hub devices and make sure every device has a name");
@@ -253,6 +287,9 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         Map<String, Object> properties = new HashMap<>();
         properties.put("smartthingsName", name);
         properties.put("deviceId", deviceData.id);
+        properties.put("deviceLabel", deviceData.label);
+        properties.put("deviceName", deviceData.name);
+        properties.put("deviceDescription", deviceData.description);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
                 .withRepresentationProperty("deviceId").withBridge(bridgeUid).withLabel(name).build();

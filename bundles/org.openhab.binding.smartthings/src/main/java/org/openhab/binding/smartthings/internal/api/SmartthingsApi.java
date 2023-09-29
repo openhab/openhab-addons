@@ -63,12 +63,12 @@ public class SmartthingsApi {
 
     }
 
-    public void SendCommand(String jsonMsg) {
+    public void SendCommand(String deviceId, String jsonMsg) {
         try {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
-            String uri = "https://api.smartthings.com/v1/devices/b5da91c8-bc89-428e-b396-7540dd6c194b/commands";
+            String uri = "https://api.smartthings.com/v1/devices/" + deviceId + "/commands";
 
             if (accessToken == null || accessToken.isEmpty()) {
                 throw new RuntimeException(
