@@ -28,12 +28,12 @@ import org.openhab.binding.smartthings.internal.converter.SmartthingsConverter;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ConfigStatusThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -120,18 +120,37 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
 
                 SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
                 SmartthingsApi api = cloudBridge.getSmartthingsApi();
-                api.SendCommand(jsonMsg);
+                Map<String, String> properties = this.getThing().getProperties();
+                String deviceId = properties.get("deviceId");
+
+                if (deviceId != null) {
+                    api.SendCommand(deviceId, jsonMsg);
+                }
 
                 updateState(channelUID, OnOff);
 
             }
-            // smartthingsHandlerFactory.sendDeviceCommand(path, timeout, jsonMsg);
-            // Smartthings will not return a response to this message but will send it's response message
-            // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
-            // } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            // logger.warn("Attempt to send command to the Smartthings hub for {} failed with exception: {}",
-            // smartthingsName, e.getMessage());
-            // }
+
+            else if (command instanceof PercentType) {
+                PercentType pt = (PercentType) command;
+                String val = "" + pt.intValue();
+
+                jsonMsg = String.format(
+                        "{'commands': [{'component': 'main', 'capability': 'switchLevel', 'command': 'setLevel', 'arguments': [%s, 2]}]}",
+                        val);
+
+                SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
+                SmartthingsApi api = cloudBridge.getSmartthingsApi();
+                Map<String, String> properties = this.getThing().getProperties();
+                String deviceId = properties.get("deviceId");
+
+                if (deviceId != null) {
+                    api.SendCommand(deviceId, jsonMsg);
+                }
+
+                updateState(channelUID, pt);
+
+            }
         }
     }
 
@@ -247,13 +266,14 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
     }
 
     private boolean validateConfig(SmartthingsThingConfig config) {
-        String name = config.smartthingsName;
-        if (name.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Smartthings device name is missing");
-            return false;
-        }
-
+        /*
+         * String name = config.smartthingsName;
+         * if (name.isEmpty()) {
+         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+         * "Smartthings device name is missing");
+         * return false;
+         * }
+         */
         return true;
     }
 

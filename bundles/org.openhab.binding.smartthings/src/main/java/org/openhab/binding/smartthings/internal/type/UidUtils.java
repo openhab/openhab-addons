@@ -118,46 +118,8 @@ public class UidUtils {
     /**
      * Generates the ChannelTypeUID for the given datapoint with deviceType, channelNumber and datapointName.
      */
-    public static ChannelTypeUID generateChannelTypeUID(Object dpt) {
-
-        /*
-         * String type = dpt.getDptType();
-         * String id = "";
-         *
-         * if (SmartthingsBindingConstants.DPT_TYPE_ENUM.equals(type)) {
-         * StringBuilder builder = new StringBuilder();
-         * int idx = 0;
-         * for (SmartthingsMetadataPointChild child : dpt.getChild()) {
-         *
-         * if (idx > 0) {
-         * builder.append("_");
-         * }
-         *
-         * String opt = child.getText();
-         * String[] subParts = opt.split(" ");
-         * for (String subPart : subParts) {
-         * if (subPart.length() > 0) {
-         * builder.append(subPart.charAt(0));
-         * }
-         * }
-         * idx++;
-         *
-         * }
-         * String token = sanetizeId(builder.toString());
-         *
-         * id = String.format("%s_%s", type, token);
-         * } else if (SmartthingsBindingConstants.DPT_TYPE_NUMERIC.equals(type)) {
-         * id = sanetizeId(String.format("%s_%s_%s_%s_%s_%s", type, dpt.getDptUnit(), dpt.getMin(), dpt.getMax(),
-         * dpt.getFieldWitdh(), dpt.getResolution()));
-         * } else if (SmartthingsBindingConstants.DPT_TYPE_STRING.equals(type)) {
-         * id = String.format("%s_%s", type, dpt.getMaxLength());
-         * } else {
-         * id = String.format("%s", dpt.getDptType());
-         * }
-         *
-         * // dpt.Display();
-         */
-        return new ChannelTypeUID(SmartthingsBindingConstants.BINDING_ID, "id");
+    public static ChannelTypeUID generateChannelTypeUID(String id) {
+        return new ChannelTypeUID(SmartthingsBindingConstants.BINDING_ID, id);
     }
 
     /**
@@ -179,7 +141,7 @@ public class UidUtils {
     /**
      * Generates the ChannelTypeUID for the given datapoint with deviceType and channelNumber.
      */
-    public static ChannelGroupTypeUID generateChannelGroupTypeUID(Object menu) {
-        return new ChannelGroupTypeUID(SmartthingsBindingConstants.BINDING_ID, String.format("%s", "menu.getId()"));
+    public static ChannelGroupTypeUID generateChannelGroupTypeUID(String name) {
+        return new ChannelGroupTypeUID(SmartthingsBindingConstants.BINDING_ID, name);
     }
 }

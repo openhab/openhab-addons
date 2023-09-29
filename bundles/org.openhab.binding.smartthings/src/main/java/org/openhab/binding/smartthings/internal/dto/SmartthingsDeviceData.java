@@ -20,8 +20,10 @@ package org.openhab.binding.smartthings.internal.dto;
 public class SmartthingsDeviceData {
     public String deviceType;
     public String attribute;
+    public String label;
     public String name;
     public String id;
+    public String description;
 
     @Override
     public String toString() {

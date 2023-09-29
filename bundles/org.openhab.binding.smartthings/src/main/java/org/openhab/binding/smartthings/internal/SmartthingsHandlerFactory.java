@@ -79,8 +79,10 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return THING_TYPE_SMARTTHINGS.equals(thingTypeUID) || THING_TYPE_SMARTTHINGSCLOUD.equals(thingTypeUID)
-                || SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SmartthingsBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId());
+
+        // return THING_TYPE_SMARTTHINGS.equals(thingTypeUID) || THING_TYPE_SMARTTHINGSCLOUD.equals(thingTypeUID)
+        // || SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Activate
@@ -141,7 +143,10 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
             bridgeUID = thing.getUID();
             logger.debug("SmartthingsHandlerFactory created CloudBridgeHandler for {}", thingTypeUID.getAsString());
             return bridgeHandler;
-        } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        }
+        // else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        else if (SmartthingsBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
+
             // Everything but the bridge is handled by this one handler
             // Make sure this thing belongs to the registered Bridge
             if (bridgeUID != null && !bridgeUID.equals(thing.getBridgeUID())) {
@@ -241,6 +246,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
         this.httpClient = null;
     }
 
+    @Override
     @Nullable
     public SmartthingsBridgeHandler getBridgeHandler() {
         return bridgeHandler;
