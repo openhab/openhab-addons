@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link FreeboxBinding} class defines common constants, which are
+ * The {@link FreeboxBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Gaël L'hopital - Initial contribution

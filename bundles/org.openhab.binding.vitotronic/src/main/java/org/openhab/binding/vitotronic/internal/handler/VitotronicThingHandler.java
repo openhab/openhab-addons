@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VitotronicHandler} is responsible for handling commands, which are
+ * The {@link VitotronicThingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Stefan Andres - Initial contribution

@@ -376,7 +376,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     /**
      * Set Device Child data to device
      *
-     * @param energyData
+     * @param hostData
      */
     public void setChildData(TapoChildData hostData) {
         hostData.getChildDeviceList().forEach(child -> {
@@ -399,7 +399,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      * If only one property must be changed, there is also a convenient method
      * updateProperty(String name, String value).
      *
-     * @param TapoDeviceInfo
+     * @param deviceInfo
      */
     protected void devicePropertiesChanged(TapoDeviceInfo deviceInfo) {
         /* device properties */

@@ -354,9 +354,9 @@ public class LcnModuleHandler extends BaseThingHandler {
     }
 
     /**
-     * Updates the LCN module's serial number property.
+     * Updates the LCN module's firmware version property.
      *
-     * @param serialNumber the new serial number
+     * @param firmwareVersion the new firmware version
      */
     public void updateFirmwareVersionProperty(String firmwareVersion) {
         updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);

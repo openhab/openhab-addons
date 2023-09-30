@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link sinopeBinding} class defines common constants, which are
+ * The {@link SinopeBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Pascal Larin - Initial contribution

@@ -136,8 +136,7 @@ public final class StringUtil {
      *
      * @return the string read from stream
      *
-     * @throws {@link IOException}
-     *             if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     public static String streamToString(InputStream input) throws IOException {
         InputStreamReader reader = new InputStreamReader(input);
@@ -162,8 +161,7 @@ public final class StringUtil {
      *
      * @return the string read from stream
      *
-     * @throws {@link IOException}
-     *             if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     public static String readerToString(Reader reader) throws IOException {
         final StringWriter writer = new StringWriter();

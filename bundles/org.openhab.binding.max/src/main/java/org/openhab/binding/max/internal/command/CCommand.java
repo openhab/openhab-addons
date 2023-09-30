@@ -15,7 +15,7 @@ package org.openhab.binding.max.internal.command;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link C_CubeCommand} to request configuration of a new MAX! device after inclusion.
+ * The {@link CubeCommand} to request configuration of a new MAX! device after inclusion.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */

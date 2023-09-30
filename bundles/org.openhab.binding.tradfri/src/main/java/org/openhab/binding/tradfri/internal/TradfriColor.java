@@ -19,7 +19,7 @@ import org.openhab.core.library.types.PercentType;
 
 /**
  * The {@link TradfriColor} is used for conversion between color formats.
- * Use the static methods {@link TradfriColor#fromCie(int, int, int)} and {@link TradfriColor#fromHSBType(HSBType)} for
+ * Use the static constructors {@link #TradfriColor(int, int, int)} and {@link #TradfriColor(HSBType)} for
  * construction.
  *
  * @author Holger Reichert - Initial contribution
