@@ -126,6 +126,7 @@ public class SonosXMLParser {
      *
      * @param xml
      * @return The value of the desc xml tag
+     * @throws SAXException
      */
     public static @Nullable SonosResourceMetaData getResourceMetaData(String xml) throws SAXException {
         XMLReader reader = XMLReaderFactory.createXMLReader();

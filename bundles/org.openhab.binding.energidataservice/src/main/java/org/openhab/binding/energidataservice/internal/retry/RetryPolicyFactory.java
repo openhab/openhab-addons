@@ -76,7 +76,7 @@ public class RetryPolicyFactory {
     /**
      * Determine {@link RetryStrategy} when expected spot price data is missing.
      *
-     * @param localTime local time
+     * @param localTime the time of daily data request
      * @param zoneId time-zone
      * @return retry strategy
      */
