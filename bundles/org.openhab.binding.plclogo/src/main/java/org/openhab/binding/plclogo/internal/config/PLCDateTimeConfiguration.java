@@ -58,7 +58,7 @@ public class PLCDateTimeConfiguration extends PLCCommonConfiguration {
     /**
      * Set Siemens LOGO! block name.
      *
-     * @param name Siemens LOGO! output block name
+     * @param type Siemens LOGO! output block type
      */
     public void setBlockType(final String type) {
         this.type = type.trim();

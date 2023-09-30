@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link VitotronicBinding} class defines common constants, which are
+ * The {@link VitotronicBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Stefan Andres - Initial contribution

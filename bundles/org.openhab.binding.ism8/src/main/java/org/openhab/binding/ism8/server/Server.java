@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ism8Server} is responsible for listening to the Ism8 information
+ * The {@link Server} is responsible for listening to the Ism8 information
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */

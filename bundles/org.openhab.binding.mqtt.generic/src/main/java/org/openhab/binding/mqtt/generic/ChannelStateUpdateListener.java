@@ -44,7 +44,7 @@ public interface ChannelStateUpdateListener {
      * The channel is of kind Trigger.
      *
      * @param channelUID The channel uid
-     * @param value The new value. Doesn't necessarily need to be different than the value before.
+     * @param eventPayload The new value. Doesn't necessarily need to be different than the value before.
      */
     void triggerChannel(ChannelUID channelUID, String eventPayload);
 }

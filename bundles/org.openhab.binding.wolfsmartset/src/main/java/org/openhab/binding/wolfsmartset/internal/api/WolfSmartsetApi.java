@@ -62,7 +62,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link WolfSmartsetCloudConnector} class is used for connecting to the Wolf Smartset cloud service
+ * The {@link WolfSmartsetApi} class is used for connecting to the Wolf Smartset cloud service
  *
  * @author Bo Biene - Initial contribution
  */

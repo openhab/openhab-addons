@@ -34,8 +34,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Dynamic provider of state options for {@link HueBridgeHandler} while leaving other state description fields as
- * original.
+ * Dynamic provider of state options for {@link org.openhab.binding.hue.internal.handler.HueBridgeHandler}
+ * while leaving other state description fields as original.
  *
  * @author Matt Myers - Initial contribution
  */

@@ -232,7 +232,7 @@ public class Shelly1CoIoTProtocol {
      * @param id Sensor id from the update
      * @param sen Sensor description from the update
      * @param s New sensor value
-     * @param allUpdatesList of updates. This is required, because we need to update both values at the same time
+     * @param allUpdates List of updates. This is required, because we need to update both values at the same time
      */
     protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
             CoIotSensor s, List<CoIotSensor> allUpdates) {
@@ -294,7 +294,7 @@ public class Shelly1CoIoTProtocol {
     /**
      * Find index of Input id, which is required to map to channel name
      *
-     * @parm sensorDesc D field from sensor update
+     * @param sensorDesc D field from sensor update
      * @param sensorId The id from the sensor update
      * @return Index of found entry (+1 will be the suffix for the channel name) or null if sensorId is not found
      */

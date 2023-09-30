@@ -83,7 +83,6 @@ public abstract class EEPHelper {
 
     public static State calculateState(int unscaledValue, double scaledMin, double scaledMax, double unscaledMin,
             double unscaledMax, Unit<?> unit) {
-
         if (!validateUnscaledValue(unscaledValue, unscaledMin, unscaledMax)) {
             return UnDefType.UNDEF;
         }

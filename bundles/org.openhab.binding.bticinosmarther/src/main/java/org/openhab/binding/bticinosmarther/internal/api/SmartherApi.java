@@ -125,8 +125,7 @@ public class SmartherApi {
      *
      * @return the list of registered plants, or an empty {@link List} in case of no plants found
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the API gateway
+     * @throws SmartherGatewayException in case of communication issues with the API gateway
      */
     public List<Plant> getPlants() throws SmartherGatewayException {
         try {
@@ -149,8 +148,7 @@ public class SmartherApi {
      *
      * @return the list of registered modules, or an empty {@link List} in case the plant contains no module
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the API gateway
+     * @throws SmartherGatewayException in case of communication issues with the API gateway
      */
     public List<Module> getPlantModules(String plantId) throws SmartherGatewayException {
         try {
@@ -172,8 +170,7 @@ public class SmartherApi {
      *
      * @return the current status of the chronothermostat module
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the API gateway
+     * @throws SmartherGatewayException in case of communication issues with the API gateway
      */
     public ModuleStatus getModuleStatus(String plantId, String moduleId) throws SmartherGatewayException {
         try {
@@ -194,8 +191,7 @@ public class SmartherApi {
      *
      * @return {@code true} if the settings have been successfully applied, {@code false} otherwise
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the API gateway
+     * @throws SmartherGatewayException in case of communication issues with the API gateway
      */
     public boolean setModuleStatus(ModuleSettings settings) throws SmartherGatewayException {
         // Prepare request payload
@@ -252,8 +248,7 @@ public class SmartherApi {
      *
      * @return the list of registered programs, or an empty {@link List} in case of no programs found
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the API gateway
+     * @throws SmartherGatewayException in case of communication issues with the API gateway
      */
     public List<Program> getModulePrograms(String plantId, String moduleId) throws SmartherGatewayException {
         try {
@@ -274,8 +269,7 @@ public class SmartherApi {
      *
      * @return the list of registered subscriptions, or an empty {@link List} in case of no subscriptions found
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the API gateway
+     * @throws SmartherGatewayException in case of communication issues with the API gateway
      */
     public List<Subscription> getSubscriptions() throws SmartherGatewayException {
         try {
@@ -306,8 +300,7 @@ public class SmartherApi {
      *
      * @return the identifier this subscription has been registered under
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the API gateway
+     * @throws SmartherGatewayException in case of communication issues with the API gateway
      */
     public String subscribePlant(String plantId, String notificationUrl) throws SmartherGatewayException {
         try {
@@ -336,8 +329,7 @@ public class SmartherApi {
      *
      * @return {@code true} if the plant is successfully unsubscribed, {@code false} otherwise
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the API gateway
+     * @throws SmartherGatewayException in case of communication issues with the API gateway
      */
     public boolean unsubscribePlant(String plantId, String subscriptionId) throws SmartherGatewayException {
         final ContentResponse response = requestBasic(DELETE, String.format(PATH_UNSUBSCRIBE, plantId, subscriptionId));

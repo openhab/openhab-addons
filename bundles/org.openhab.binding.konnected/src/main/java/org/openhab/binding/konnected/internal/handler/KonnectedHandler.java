@@ -65,10 +65,7 @@ public class KonnectedHandler extends BaseThingHandler {
      * This is the constructor of the Konnected Handler.
      *
      * @param thing the instance of the Konnected thing
-     * @param webHookServlet the instance of the callback servlet that is running for communication with the Konnected
-     *            Module
-     * @param hostAddress the webaddress of the openHAB server instance obtained by the runtime
-     * @param port the port on which the openHAB instance is running that was obtained by the runtime.
+     * @param callbackUrl the webaddress of the openHAB server instance obtained by the runtime
      */
     public KonnectedHandler(Thing thing, String callbackUrl) {
         super(thing);

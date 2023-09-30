@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SeneyeBinding} class defines common constants, which are
+ * The {@link SeneyeBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Niko Tanghe - Initial contribution

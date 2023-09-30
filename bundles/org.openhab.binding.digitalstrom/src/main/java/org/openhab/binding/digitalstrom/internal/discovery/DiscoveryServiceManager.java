@@ -60,8 +60,9 @@ public class DiscoveryServiceManager
 
     /**
      * Creates a new {@link DiscoveryServiceManager} and generates automatically all {@link SceneDiscoveryService}s and
-     * {@link DeviceDiscoveryService}s for all supported {@link ThingType}s of the {@link DeviceHandler} and
-     * {@link SceneHandler}.
+     * {@link org.openhab.binding.digitalstrom.internal.discovery.DeviceDiscoveryService}s for all supported
+     * {@link org.openhab.core.thing.type.ThingType}s of the
+     * {@link org.openhab.binding.digitalstrom.internal.handler.DeviceHandler} and {@link SceneHandler}.
      *
      * @param bridgeHandler (must not be null)
      */

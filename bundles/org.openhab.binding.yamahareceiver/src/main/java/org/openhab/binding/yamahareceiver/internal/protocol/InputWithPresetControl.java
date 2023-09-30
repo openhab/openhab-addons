@@ -40,7 +40,8 @@ public interface InputWithPresetControl extends IStateUpdatable {
      * Select a preset channel.
      *
      * @param presetChannel The preset position [1,40]
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     void selectItemByPresetNumber(int presetChannel) throws IOException, ReceivedMessageParseException;
 }

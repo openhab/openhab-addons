@@ -68,7 +68,7 @@ public class ComfoAirSerialConnector {
     /**
      * Open serial port.
      *
-     * @throws PortInUseException, UnsupportedCommOperationException, IOException
+     * @throws ComfoAirSerialException
      */
     public void open() throws ComfoAirSerialException {
         logger.debug("open(): Opening ComfoAir connection");

@@ -68,7 +68,7 @@ import com.google.gson.Gson;
  * sent to one of the channels.
  *
  * @author Markus Pfleger - Initial contribution
- * @author Marcin Czeczko - Added support for planner & calendar data
+ * @author Marcin Czeczko - Added support for planner and calendar data
  */
 @NonNullByDefault
 public class AutomowerHandler extends BaseThingHandler {

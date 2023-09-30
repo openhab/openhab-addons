@@ -28,7 +28,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecord;
 
 /**
- * Parses results from {@link DatahubPricelistRecords} into map of hourly tariffs.
+ * Parses results from {@link org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecords}
+ * into map of hourly tariffs.
  * 
  * @author Jacob Laursen - Initial contribution
  */

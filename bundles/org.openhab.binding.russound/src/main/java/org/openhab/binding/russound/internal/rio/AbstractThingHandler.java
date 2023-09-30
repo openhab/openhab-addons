@@ -109,7 +109,7 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
     }
 
     /**
-     * Overrides the base method to remove any state linked to the {@lin ChannelUID} from the
+     * Overrides the base method to remove any state linked to the {@link ChannelUID} from the
      * {@link StatefulHandlerCallback}
      */
     @Override

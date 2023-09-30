@@ -127,11 +127,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * Constructor
      *
      * @param thing The Thing object
+     * @param translationProvider
      * @param bindingConfig The binding configuration (beside thing
      *            configuration)
+     * @param thingTable
      * @param coapServer coap server instance
-     * @param localIP local IP address from networkAddressService
-     * @param httpPort from httpService
+     * @param httpClient from httpService
      */
     public ShellyBaseHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,
@@ -811,7 +812,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     /**
      * Save alarm to the lastAlarm channel
      *
-     * @param alarm Alarm Message
+     * @param event Alarm Message
+     * @param force
      */
     @Override
     public void postEvent(String event, boolean force) {
@@ -851,9 +853,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     /**
      * Callback for device events
      *
+     * @param address
      * @param deviceName device receiving the event
+     * @param deviceIndex
+     * @param type the HTML input data
      * @param parameters parameters from the event URL
-     * @param data the HTML input data
      * @return true if event was processed
      */
     @Override
@@ -1123,7 +1127,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * If the authorization failed the binding can't access the device settings and determine the thing type. In this
      * case the thing type shelly-unknown is set.
      *
-     * @param response exception details including the http respone
+     * @param result exception details including the http respone
      * @return true if the authorization failed
      */
     protected boolean isAuthorizationFailed(ShellyApiResult result) {
@@ -1201,8 +1205,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     /**
      * Map input states to channels
-     *
-     * @param groupName Channel Group (relay / relay1...)
      *
      * @param status Shelly device status
      * @return true: one or more inputs were updated
@@ -1313,7 +1315,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     /**
      * Update Thing's channels according to available status information from the API
      *
-     * @param thingHandler
+     * @param dynChannels
      */
     @Override
     public void updateChannelDefinitions(Map<String, Channel> dynChannels) {
@@ -1461,7 +1463,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     /**
      * Return device profile.
      *
-     * @param ForceRefresh true=force refresh before returning, false=return without
+     * @param forceRefresh true=force refresh before returning, false=return without
      *            refresh
      * @return ShellyDeviceProfile instance
      * @throws ShellyApiException

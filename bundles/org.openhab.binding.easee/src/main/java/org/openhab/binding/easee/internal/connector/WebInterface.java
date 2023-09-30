@@ -253,8 +253,6 @@ public class WebInterface implements AtomicReferenceTrait {
 
     /**
      * Constructor to set up interface
-     *
-     * @param config Bridge configuration
      */
     public WebInterface(ScheduledExecutorService scheduler, EaseeBridgeHandler handler, HttpClient httpClient,
             StatusHandler bridgeStatusHandler) {

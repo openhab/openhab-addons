@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link LIRCBinding} class defines common constants, which are
+ * The {@link LIRCBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Andrew Nagle - Initial contribution

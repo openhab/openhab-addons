@@ -95,9 +95,6 @@ public class StuderHandler extends BaseThingHandler {
      * Instances of this handler
      *
      * @param thing the thing to handle
-     * @param type the type of thing to handle
-     * @param slaveAddress the address of thing
-     * @param refreshSec the address of thing
      */
     public StuderHandler(Thing thing) {
         super(thing);
@@ -299,7 +296,7 @@ public class StuderHandler extends BaseThingHandler {
      * The register array is first parsed, then each of the channels are updated
      * to the new values
      *
-     * @param n register readed
+     * @param registerNumber register readed
      * @param registers byte array read from the modbus slave
      */
     protected void handlePolledData(int registerNumber, ModbusRegisterArray registers) {

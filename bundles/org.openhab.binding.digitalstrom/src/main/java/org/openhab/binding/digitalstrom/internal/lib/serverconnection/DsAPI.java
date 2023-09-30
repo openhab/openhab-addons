@@ -737,12 +737,17 @@ public interface DsAPI {
     boolean setZoneTemperatureControlState(String sessionToken, Integer zoneID, String zoneName, String controlState);
 
     /**
-     * Sets the wished temperature (control mode = {@link ControlModes#PID_CONTROL}) or control valve value for a
-     * operation mode, see
-     * {@link OperationModes}.<br>
+     * Sets the wished temperature (control mode =
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}) or control
+     * valve value for a
+     * operation mode, see {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.OperationModes}.<br>
      * To set the values a {@link List} with an object array has to be set as controlVlaues parameter. The 1th field has
-     * to be a {@link String} for the {@link OperationModes} name and the 2nd field has to be an {@link Integer} for the
-     * new value. If the control mode is {@link ControlModes#PID_CONTROL} it is the nominal temperature, otherwise it is
+     * to be a {@link String} for the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.OperationModes}
+     * name and the 2nd field has to be an {@link Integer} for the
+     * new value. If the control mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL} it is the
+     * nominal temperature, otherwise it is
      * the control valve value.
      *
      * @param sessionToken can be null, if a

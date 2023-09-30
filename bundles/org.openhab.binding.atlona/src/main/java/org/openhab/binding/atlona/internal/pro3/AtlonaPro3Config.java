@@ -20,7 +20,8 @@ package org.openhab.binding.atlona.internal.pro3;
 public class AtlonaPro3Config {
 
     /**
-     * Constant field used in {@link AtlonaDiscovery} to set the config property during discovery. Value of this field
+     * Constant field used in {@link org.openhab.binding.atlona.internal.discovery.AtlonaDiscovery}
+     * to set the config property during discovery. Value of this field
      * needs to match {@link #ipAddress}
      */
     public static final String IP_ADDRESS = "ipAddress";

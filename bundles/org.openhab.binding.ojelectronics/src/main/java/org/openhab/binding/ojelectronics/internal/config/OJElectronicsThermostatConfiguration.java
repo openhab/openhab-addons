@@ -15,7 +15,7 @@ package org.openhab.binding.ojelectronics.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The configuration for {@link org.openhab.binding.ojelectronics.internal.OJElectronicsThermostatHandler}
+ * The configuration for {@link org.openhab.binding.ojelectronics.internal.ThermostatHandler}
  *
  * @author Christian Kittel - Initial contribution
  */

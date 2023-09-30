@@ -33,7 +33,6 @@ public class SVDRPTimerList {
      *
      * @param message SVDRP Client Response
      * @return Timer List Object
-     * @throws SVDRPParseResponseException thrown if response data is not parseable
      */
     public static SVDRPTimerList parse(String message) {
         SVDRPTimerList timers = new SVDRPTimerList();

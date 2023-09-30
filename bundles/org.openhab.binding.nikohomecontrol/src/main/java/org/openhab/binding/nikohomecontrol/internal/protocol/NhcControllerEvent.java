@@ -95,7 +95,7 @@ public interface NhcControllerEvent {
     /**
      * This method is called when a notice event is received from the Niko Home Control controller.
      *
-     * @param alarmText
+     * @param noticeText
      */
     void noticeEvent(String noticeText);
 

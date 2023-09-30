@@ -42,8 +42,6 @@ public class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorLi
 
     /**
      * Constructor.
-     *
-     * @param eventListener listener to send received errors or messages to
      */
     public DSMRTelegramListener() {
         parser = new P1TelegramParser(this);

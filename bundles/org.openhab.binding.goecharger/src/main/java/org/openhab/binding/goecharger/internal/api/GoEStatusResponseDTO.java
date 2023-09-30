@@ -15,7 +15,7 @@ package org.openhab.binding.goecharger.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link GoEStatusResponse} class represents a json response from the
+ * The {@link GoEStatusResponseDTO} class represents a json response from the
  * charger.
  *
  * @author Samuel Brucksch - Initial contribution

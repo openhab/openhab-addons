@@ -348,7 +348,6 @@ public class EcovacsXmppDevice implements EcovacsDevice {
             }
 
             if (iqRequest instanceof DeviceCommandIQ iq) {
-
                 try {
                     if (!iq.id.isEmpty()) {
                         CommandResponseHolder responseHolder = pendingCommands.remove(iq.id);

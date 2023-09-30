@@ -16,8 +16,9 @@ import org.openhab.binding.xmppclient.internal.XMPPClient;
 import org.openhab.core.thing.ChannelUID;
 
 /**
- * Subscribes to a chat and calls {@link AbstractBrokerHandler#triggerChannel(ChannelUID, String)} if a value has been
- * received.
+ * Subscribes to a chat and calls
+ * {@link org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler#triggerChannel(ChannelUID, String)} if a
+ * value has been received.
  *
  * @author Pavel Gololobov - Initial contribution
  */

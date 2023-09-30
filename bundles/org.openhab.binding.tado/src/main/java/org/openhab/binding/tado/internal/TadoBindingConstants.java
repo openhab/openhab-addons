@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link TadoBinding} class defines common constants, which are
+ * The {@link TadoBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Dennis Frommknecht - Initial contribution

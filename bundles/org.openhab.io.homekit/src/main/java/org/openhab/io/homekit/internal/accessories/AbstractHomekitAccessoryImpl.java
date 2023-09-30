@@ -332,7 +332,6 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * If the primary service does not yet exist, it won't be added to it. It's the resposibility
      * of the caller to add characteristics when the primary service is created.
      *
-     * @param type
      * @param characteristic
      */
     @NonNullByDefault

@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TweetActions} class defines rule actions for sending tweet
+ * The {@link TwitterActions} class defines rule actions for sending tweet
  *
  * @author Scott Hanson - Initial contribution
  */

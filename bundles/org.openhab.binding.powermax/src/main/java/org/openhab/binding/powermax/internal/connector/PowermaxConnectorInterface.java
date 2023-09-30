@@ -38,7 +38,7 @@ public interface PowermaxConnectorInterface {
     /**
      * Returns connection status
      *
-     * @return: true if connected or false if not
+     * @return true if connected or false if not
      **/
     boolean isConnected();
 

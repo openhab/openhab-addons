@@ -186,7 +186,7 @@ public abstract class AbstractBridgeHandler<E extends AbstractRioProtocol> exten
     }
 
     /**
-     * Overrides the base method to remove any state linked to the {@lin ChannelUID} from the
+     * Overrides the base method to remove any state linked to the {@link ChannelUID} from the
      * {@link StatefulHandlerCallback}
      */
     @Override

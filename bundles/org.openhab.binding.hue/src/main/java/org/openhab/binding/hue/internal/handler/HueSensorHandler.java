@@ -320,7 +320,6 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
      * Handles the sensor change. Implementation should also update sensor-specific configuration that changed since the
      * last update.
      *
-     * @param bridge the bridge
      * @param sensor the sensor
      * @param config the configuration in which to update the config states of the sensor
      */

@@ -54,8 +54,8 @@ public class ShellyComponents {
     /**
      * Update device status
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
+     * @param thingHandler Thing Handler instance
+     * @param status Status message
      */
     public static boolean updateDeviceStatus(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
@@ -205,8 +205,7 @@ public class ShellyComponents {
     /**
      * Update Meter channel
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
+     * @param thingHandler Thing Handler instance
      * @param status Last ShellySettingsStatus
      */
     public static boolean updateMeters(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
@@ -377,8 +376,7 @@ public class ShellyComponents {
     /**
      * Update Sensor channel
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
+     * @param thingHandler Thing Handler instance
      * @param status Last ShellySettingsStatus
      *
      * @throws ShellyApiException

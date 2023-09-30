@@ -72,11 +72,11 @@ public class CloudUtil {
     /**
      * Generate signature for the request.
      *
-     * @param method http request method. GET or POST
      * @param requestUrl the full request url. e.g.: http://api.xiaomi.com/getUser?id=123321
+     * @param signedNonce secret key for encryption.
+     * @param nonce
      * @param params request params. This should be a TreeMap because the
      *            parameters are required to be in lexicographic order.
-     * @param signedNonce secret key for encryption.
      * @return hash value for the values provided
      * @throws MiIoCryptoException
      */

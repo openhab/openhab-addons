@@ -35,7 +35,6 @@ public class SysvarCommand extends LutronCommandNew {
     /**
      * SysvarCommand constructor
      *
-     * @param targetType
      * @param operation
      * @param integrationId
      * @param action

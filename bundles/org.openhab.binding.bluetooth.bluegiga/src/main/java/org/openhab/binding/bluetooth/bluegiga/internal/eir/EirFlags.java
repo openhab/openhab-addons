@@ -59,7 +59,7 @@ public enum EirFlags {
     /**
      * Lookup function based on the type code. Returns {@link UNKNOWN} if the code does not exist.
      *
-     * @param bluetoothAddressType
+     * @param eirFlag
      *            the code to lookup
      * @return enumeration value.
      */

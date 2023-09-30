@@ -32,7 +32,7 @@ import org.openhab.binding.nibeuplink.internal.model.DataResponseTransformer;
 import org.openhab.core.thing.Channel;
 
 /**
- * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
+ * generic command that retrieves status values for all channels defined in VVM320Channels
  *
  * @author Alexander Friese - initial contribution
  */

@@ -13,7 +13,7 @@
 package org.openhab.binding.lutron.internal.hw;
 
 /**
- * Configuration settings for a {@link org.openhab.binding.lutron.handler.HWDimmerHandler}.
+ * Configuration settings for a {@link org.openhab.binding.lutron.internal.hw.HwDimmerHandler}.
  *
  * @author Andrew Shilliday - Initial contribution
  */

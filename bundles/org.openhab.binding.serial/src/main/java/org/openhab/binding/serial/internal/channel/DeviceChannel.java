@@ -81,7 +81,7 @@ public abstract class DeviceChannel {
     /**
      * Format the commnd using the configured format
      * 
-     * @param data the command to transform
+     * @param command the command to transform
      * @return the formatted data. The orginal data is returned if there is no format string
      *         or if there is an error performing the format.
      */

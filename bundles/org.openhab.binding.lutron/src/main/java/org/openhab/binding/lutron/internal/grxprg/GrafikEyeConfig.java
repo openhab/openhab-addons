@@ -115,7 +115,7 @@ public class GrafikEyeConfig {
     /**
      * Returns a comma formatted list of shade zones
      *
-     * @returna non-null, non-empty comma delimited list of shade zones
+     * @return a non-null, non-empty comma delimited list of shade zones
      */
     public String getShadeZones() {
         final StringBuilder sb = new StringBuilder();

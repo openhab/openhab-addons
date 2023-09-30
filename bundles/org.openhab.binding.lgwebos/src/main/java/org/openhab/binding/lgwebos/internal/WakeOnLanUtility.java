@@ -102,7 +102,7 @@ public class WakeOnLanUtility {
     /**
      * Send single WOL (Wake On Lan) package on all interfaces
      *
-     * @macAddress MAC address to send WOL package to
+     * @param macAddress MAC address to send WOL package to
      */
     public static void sendWOLPacket(String macAddress) {
         byte[] bytes = getWOLPackage(macAddress);

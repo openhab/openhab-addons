@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link BondHomeConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link BondDeviceConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Sara Geleskie Damiano - Initial contribution
  */

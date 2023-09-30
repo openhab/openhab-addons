@@ -32,8 +32,9 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public interface NibeUplinkHandler extends ThingHandler, ChannelProvider {
     /**
-     * Called from {@link NibeUplinkWebInterface#authenticate()} to update
-     * the thing status because updateStatus is protected.
+     * Called from
+     * {@link org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface.WebRequestExecutor#authenticate()}
+     * to update the thing status because updateStatus is protected.
      *
      * @param status Bridge status
      * @param statusDetail Bridge status detail

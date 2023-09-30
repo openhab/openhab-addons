@@ -407,7 +407,7 @@ public class Connection {
     /**
      * Gets the SocketChannel of the Connection.
      *
-     * @returnthe socket channel
+     * @return the socket channel
      */
     @Nullable
     public Channel getSocketChannel() {

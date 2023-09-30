@@ -346,7 +346,7 @@ public class HomekitCharacteristicFactory {
      * Takes item state as value and retrieves the key for that value from mapping.
      * E.g. used to map StringItem value to HomeKit Enum
      *
-     * @param characteristicType characteristicType to identify item
+     * @param item item
      * @param mapping mapping
      * @param defaultValue default value if nothing found in mapping
      * @param <T> type of the result derived from

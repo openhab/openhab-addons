@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Markus Katter - Initial contribution
- * @contributer Jan Vybíral - Improved callback handling
+ * @author Jan Vybíral - Improved callback handling
  */
 @NonNullByDefault
 public class NukiBridgeHandler extends BaseBridgeHandler {

@@ -927,7 +927,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      * Max! Cube, they will be removed from the queue as they would not be
      * meaningful. This will improve the behavior when using sliders in the GUI.
      *
-     * @param SendCommand
+     * @param sendCommand
      *            the SendCommand containing the serial number of the device as
      *            String the channelUID used to send the command and the the
      *            command data
@@ -965,7 +965,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /**
      * Delete a devices from the cube and updates the room information
      *
-     * @param Device Serial
+     * @param maxDeviceSerial Serial
      */
     public void sendDeviceDelete(String maxDeviceSerial) {
         Device device = getDevice(maxDeviceSerial);

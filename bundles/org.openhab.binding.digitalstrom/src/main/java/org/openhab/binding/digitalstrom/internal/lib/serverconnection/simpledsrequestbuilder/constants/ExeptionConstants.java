@@ -13,7 +13,11 @@
 package org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsrequestbuilder.constants;
 
 /**
- * The {@link ExeptionConstants} contains the {@link SimpleRequestBuilder} exception strings.
+ * The
+ * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsrequestbuilder.constants.ExeptionConstants}
+ * contains the
+ * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsrequestbuilder.SimpleRequestBuilder}
+ * exception strings.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution

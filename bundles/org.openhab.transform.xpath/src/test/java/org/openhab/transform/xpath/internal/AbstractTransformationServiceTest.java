@@ -13,7 +13,7 @@
 package org.openhab.transform.xpath.internal;
 
 /**
- * @author Thomas.Eichstaedt-Engelen
+ * @author Thomas.Eichstaedt-Engelen - Initial contribution
  */
 public abstract class AbstractTransformationServiceTest {
 

@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * The implementation of {@link TransformationService} which transforms the
  * input by matching it between limits of ranges in a scale file
  *
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  * @author Markus Rathgeb - drop usage of Guava
  */
 @Component(service = { TransformationService.class, ConfigOptionProvider.class }, property = {

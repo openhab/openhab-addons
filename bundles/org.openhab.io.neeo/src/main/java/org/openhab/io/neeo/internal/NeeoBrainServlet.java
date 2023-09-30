@@ -26,7 +26,7 @@ import org.openhab.io.neeo.internal.servletservices.NeeoBrainService;
 /**
  * This implementation of {@link AbstractServlet} will handle any requests from the NEEO Brain. The brain will ask for
  * any search results (performed by {@link NeeoBrainSearchService}) and requests state values, set
- * state values (performed by {@Link NeeoBrainService})
+ * state values (performed by {@link NeeoBrainService})
  *
  * @author Tim Roberts - Initial Contribution
  */

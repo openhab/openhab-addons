@@ -462,7 +462,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
     }
 
     /**
-     * Overrides the base to call {@link #childChanged(ThingHandler)} to recreate the sources/controllers names
+     * Overrides the base to call {@link #childChanged(ThingHandler, boolean)} to recreate the sources/controllers names
      */
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
@@ -470,7 +470,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
     }
 
     /**
-     * Overrides the base to call {@link #childChanged(ThingHandler)} to recreate the sources/controllers names
+     * Overrides the base to call {@link #childChanged(ThingHandler, boolean)} to recreate the sources/controllers names
      */
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {

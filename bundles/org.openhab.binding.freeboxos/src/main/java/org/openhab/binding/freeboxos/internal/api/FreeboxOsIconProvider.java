@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@FreeboxOsIconProvider} delivers icons provided by FreeboxOS
+ * The {@link FreeboxOsIconProvider} delivers icons provided by FreeboxOS
  *
  * @author Gaël L'hopital - Initial contribution
  */

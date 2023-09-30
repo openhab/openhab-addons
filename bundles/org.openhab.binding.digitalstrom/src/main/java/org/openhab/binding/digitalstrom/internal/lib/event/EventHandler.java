@@ -19,7 +19,8 @@ import org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem;
 /**
  * The {@link EventHandler} can be implemented to get informed by {@link EventItem}'s through the {@link EventListener}.
  * <br>
- * For that the {@link #getSupportetEvents()} and {@link #supportsEvent(String)} methods have to be implemented, so that
+ * For that the {@link #getSupportedEvents()} and
+ * {@link #supportsEvent(String)} methods have to be implemented, so that
  * the {@link EventListener} knows whitch events it has to subscribe at the digitalSTROM-server and which handler has
  * to be informed. <br>
  * The implementation of the {@link EventHandler} also has to be registered through

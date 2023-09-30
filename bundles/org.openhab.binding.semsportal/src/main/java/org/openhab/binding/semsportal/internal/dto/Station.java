@@ -15,7 +15,7 @@ package org.openhab.binding.semsportal.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO for mapping the portal data response to the {@link StatusRequest} and the {@Link StationListRequest}
+ * POJO for mapping the portal data response to the {@link StatusRequest} and the {@link StationListRequest}
  *
  * @author Iwan Bron - Initial contribution
  *

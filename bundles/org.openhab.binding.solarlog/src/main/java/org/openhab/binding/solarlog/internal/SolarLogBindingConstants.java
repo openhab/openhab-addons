@@ -15,7 +15,7 @@ package org.openhab.binding.solarlog.internal;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SolarLogBinding} class defines common constants, which are
+ * The {@link SolarLogBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Johann Richard - Initial contribution

@@ -343,7 +343,7 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
     /**
      * Set Thing Handler refresh status.
      *
-     * @param deviceInitialized
+     * @param refreshed
      */
     public void setThingHandlerInitialized(boolean refreshed) {
         this.thingHandlerInitialized = refreshed;

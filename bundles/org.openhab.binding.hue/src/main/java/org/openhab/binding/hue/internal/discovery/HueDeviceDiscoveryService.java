@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HueBridgeServiceTracker} tracks for Hue lights, sensors and groups which are connected
+ * The {@link HueDeviceDiscoveryService} tracks for Hue lights, sensors and groups which are connected
  * to a paired Hue Bridge. The default search time for Hue is 60 seconds.
  *
  * @author Kai Kreuzer - Initial contribution

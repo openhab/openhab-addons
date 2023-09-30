@@ -51,7 +51,7 @@ public class ServerConfig {
     /**
      * Set the host used to connect to server.
      *
-     * @param port host port
+     * @param hostname host port
      */
     public void setHostname(String hostname) {
         this.hostname = hostname;

@@ -55,8 +55,6 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
 
     /**
      * Constructs a new {@link DSMRMeterDiscoveryService} attached to the give bridge handler.
-     *
-     * @param dsmrBridgeHandler The bridge handler this discovery service is attached to
      */
     public DSMRMeterDiscoveryService() {
         super();

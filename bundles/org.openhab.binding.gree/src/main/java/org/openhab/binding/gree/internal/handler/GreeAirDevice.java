@@ -270,7 +270,7 @@ public class GreeAirDevice {
     }
 
     /**
-     * @param value set temperature in degrees Celsius or Fahrenheit
+     * @param temp set temperature in degrees Celsius or Fahrenheit
      */
     public void setDeviceTempSet(DatagramSocket clientSocket, QuantityType<?> temp) throws GreeException {
         // If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer

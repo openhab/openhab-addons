@@ -56,8 +56,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     /**
      * INIT CLASS
-     * 
-     * @param bridgeHandler
      */
     public TapoDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_S, false);

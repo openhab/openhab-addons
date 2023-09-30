@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link AllPlayBinding} class defines common constants, which are
+ * The {@link AllPlayBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Dominic Lerbs - Initial contribution

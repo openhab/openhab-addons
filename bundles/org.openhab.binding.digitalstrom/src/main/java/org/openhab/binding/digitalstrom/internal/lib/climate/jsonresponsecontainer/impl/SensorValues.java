@@ -24,7 +24,8 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link SensorValues} acts as container for the digitalSTROM json-method <i>getSensorValues</i>. So the
- * {@link SensorValues} contains all {@link CachedSensorValue}s of a zone.
+ * {@link SensorValues} contains all
+ * {@link org.openhab.binding.digitalstrom.internal.lib.climate.datatypes.CachedSensorValue}s of a zone.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution

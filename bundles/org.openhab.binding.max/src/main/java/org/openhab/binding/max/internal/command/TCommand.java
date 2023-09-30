@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 
 /**
- * The {@link T_CubeCommand} is used to unlink MAX! devices from the Cube.
+ * The {@link TCommand} is used to unlink MAX! devices from the Cube.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */

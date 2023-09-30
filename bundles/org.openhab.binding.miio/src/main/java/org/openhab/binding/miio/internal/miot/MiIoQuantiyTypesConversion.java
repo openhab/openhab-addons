@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Enum of the unitTypes used in the miio protocol
- * Used to find the right {@link javax.measure.unitType} given the string of the unitType
+ * Used to find the right {@link javax.measure.Unit} given the string of the unitType
  *
  * @author Marcel Verpaalen - Initial contribution
  */

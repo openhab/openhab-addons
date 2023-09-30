@@ -13,7 +13,7 @@
 package org.openhab.binding.nibeheatpump.internal.config;
 
 /**
- * Configuration class for {@link NibeHeatPumpBinding} device.
+ * Configuration class for NibeHeatPump device.
  *
  *
  * @author Pauli Anttila - Initial contribution

@@ -30,7 +30,7 @@ import org.openhab.binding.velux.internal.VeluxBindingConstants;
  * Methods in handle this type of information:
  * <UL>
  * <LI>{@link #getVelocity()} to retrieve the value of the characteristic.</LI>
- * <LI>{@link #get(int)} to convert a value into the characteristic.</LI>
+ * <LI>{@link #get(short)} to convert a value into the characteristic.</LI>
  * <LI>{@link #getByName(String)} to convert a name into the characteristic.</LI>
  * <LI>{@link #dump} to retrieve a human-readable description of all values.</LI>
  * </UL>

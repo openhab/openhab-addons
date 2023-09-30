@@ -13,7 +13,7 @@
 package org.openhab.transform.regex.internal;
 
 /**
- * @author Thomas.Eichstaedt-Engelen
+ * @author Thomas.Eichstaedt-Engelen - Initial contribution
  */
 public abstract class AbstractTransformationServiceTest {
 

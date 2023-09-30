@@ -35,7 +35,7 @@ import org.xml.sax.InputSource;
  * <p>
  * The implementation of {@link TransformationService} which transforms the input by XPath Expressions.
  *
- * @author Thomas.Eichstaedt-Engelen
+ * @author Thomas.Eichstaedt-Engelen - Initial contribution
  */
 @NonNullByDefault
 @Component(property = { "openhab.transform=XPATH" })

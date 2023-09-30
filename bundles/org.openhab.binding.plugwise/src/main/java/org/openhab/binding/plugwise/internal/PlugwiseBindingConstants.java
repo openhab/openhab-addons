@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link PlugwiseBinding} class defines common constants, which are used across the whole binding.
+ * The {@link PlugwiseBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Wouter Born - Initial contribution
  */

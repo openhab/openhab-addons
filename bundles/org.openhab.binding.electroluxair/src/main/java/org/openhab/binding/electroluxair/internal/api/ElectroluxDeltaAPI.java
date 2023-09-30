@@ -96,7 +96,6 @@ public class ElectroluxDeltaAPI {
             }
         } catch (JsonSyntaxException | ElectroluxAirException e) {
             logger.warn("Failed to refresh! {}", e.getMessage());
-
         }
         return false;
     }

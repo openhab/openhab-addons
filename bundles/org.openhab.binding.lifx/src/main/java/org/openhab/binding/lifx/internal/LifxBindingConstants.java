@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link LifxBinding} class defines common constants, which are used across
+ * The {@link LifxBindingConstants} class defines common constants, which are used across
  * the whole binding.
  *
  * @author Dennis Nobel - Initial contribution

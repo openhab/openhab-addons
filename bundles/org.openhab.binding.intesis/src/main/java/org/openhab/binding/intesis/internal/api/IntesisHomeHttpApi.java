@@ -48,7 +48,7 @@ public class IntesisHomeHttpApi {
      * Used to post a request to the device
      *
      * @param ipAddress of the device
-     * @param content string
+     * @param contentString string
      * @return JSON string as response
      */
     @Nullable

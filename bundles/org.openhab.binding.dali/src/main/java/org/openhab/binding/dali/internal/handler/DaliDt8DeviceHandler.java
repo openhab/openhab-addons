@@ -124,7 +124,6 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     logger.warn("Error querying device status: {}", e.getMessage());
                     return null;
                 });
-
             } else if (CHANNEL_COLOR.equals(channelUID.getId())) {
                 DaliAddress address;
                 if (THING_TYPE_DEVICE_DT8.equals(this.thing.getThingTypeUID())) {
@@ -189,7 +188,6 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     logger.warn("Error querying device status: {}", e.getMessage());
                     return null;
                 });
-
             } else {
                 super.handleCommand(channelUID, command);
             }

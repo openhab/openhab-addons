@@ -192,7 +192,6 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
                 Thread.sleep(500 * attempts);
                 attempts++;
             }
-
         } catch (JsonSyntaxException | NumberFormatException e) {
             logger.debug("Received Invalid JSON Data", e);
             throw new FroniusCommunicationException("Invalid JSON data received", e);

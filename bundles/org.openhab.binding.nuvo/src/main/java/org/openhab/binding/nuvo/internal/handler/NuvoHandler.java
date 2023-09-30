@@ -669,7 +669,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     /**
      * Handle an event received from the Nuvo device
      *
-     * @param event the event to process
+     * @param evt the event to process
      */
     @Override
     public void onNewMessageEvent(NuvoMessageEvent evt) {

@@ -221,9 +221,6 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
     /**
      * Send a discover message and resends the message until either a valid response
      * is received or the resend counter reaches the maximum attempts.
-     *
-     * @param scheduler The scheduler is used for resending.
-     * @throws SocketException
      */
     public void startDiscoveryService() {
         // Do nothing if there is already a discovery running

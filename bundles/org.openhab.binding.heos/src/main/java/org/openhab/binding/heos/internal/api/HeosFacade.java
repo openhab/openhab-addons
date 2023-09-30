@@ -457,8 +457,8 @@ public class HeosFacade {
 
     /**
      * Asks for the actual state of the player. The result has
-     * to be handled by the event controller. The system returns {@link HeosConstants.PLAY},
-     * {@link HeosConstants.PAUSE} or {@link HeosConstants.STOP}.
+     * to be handled by the event controller. The system returns {@link HeosConstants#PLAY},
+     * {@link HeosConstants#PAUSE} or {@link HeosConstants#STOP}.
      *
      * @param id The player ID the state shall get for
      * @return
@@ -469,8 +469,8 @@ public class HeosFacade {
 
     /**
      * Ask for the actual mute state of the player. The result has
-     * to be handled by the event controller. The HEOS system returns {@link HeosConstants.ON}
-     * or {@link HeosConstants.OFF}.
+     * to be handled by the event controller. The HEOS system returns {@link HeosConstants#ON}
+     * or {@link HeosConstants#OFF}.
      *
      * @param id The player id the mute state shall get for
      * @return
@@ -493,8 +493,8 @@ public class HeosFacade {
 
     /**
      * Ask for the actual shuffle mode of the player. The result has
-     * to be handled by the event controller. The HEOS system returns {@link HeosConstants.ON},
-     * {@link HeosConstants.HEOS_REPEAT_ALL} or {@link HeosConstants.HEOS_REPEAT_ONE}
+     * to be handled by the event controller. The HEOS system returns {@link HeosConstants#ON},
+     * {@link HeosConstants#HEOS_REPEAT_ALL} or {@link HeosConstants#HEOS_REPEAT_ONE}
      *
      * @param id The player id the shuffle mode shall get for
      * @return

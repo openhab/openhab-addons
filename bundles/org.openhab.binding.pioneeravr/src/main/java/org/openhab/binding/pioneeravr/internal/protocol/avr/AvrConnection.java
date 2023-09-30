@@ -152,7 +152,6 @@ public interface AvrConnection {
      * Send an MCACC Memory selection command to the AVR based on the openHAB command
      *
      * @param command
-     * @param zone
      * @return
      */
     boolean sendMCACCMemoryCommand(Command command) throws CommandTypeNotSupportedException;

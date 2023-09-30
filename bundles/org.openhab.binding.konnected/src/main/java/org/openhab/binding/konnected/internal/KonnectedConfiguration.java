@@ -22,9 +22,12 @@ import org.openhab.core.config.core.Configuration;
 public class KonnectedConfiguration extends Configuration {
 
     /**
-     * @param blink identifies whether the Konnected Alarm Panel LED will blink on transmission of Wifi Commands
-     * @param discovery identifies whether the Konnected Alarm Panel will be discoverable via UPnP
+     * blink identifies whether the Konnected Alarm Panel LED will blink on transmission of Wifi Commands.
      */
     public boolean blink;
+
+    /**
+     * discovery identifies whether the Konnected Alarm Panel will be discoverable via UPnP.
+     */
     public boolean discovery;
 }

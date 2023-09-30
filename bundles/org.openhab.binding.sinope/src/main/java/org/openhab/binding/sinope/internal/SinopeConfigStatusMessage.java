@@ -14,7 +14,7 @@ package org.openhab.binding.sinope.internal;
 
 /**
  * The {@link SinopeConfigStatusMessage} defines
- * the keys to be used for {@link ConfigStatusMessage}s.
+ * the keys to be used for {@link org.openhab.core.config.core.status.ConfigStatusMessage}s.
  *
  * @author Pascal Larin - Initial Contribution
  *

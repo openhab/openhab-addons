@@ -208,8 +208,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
 
     /**
      * Constructor to set up interface
-     *
-     * @param config the Bridge configuration
      */
     public UplinkWebInterface(ScheduledExecutorService scheduler, NibeUplinkHandler handler, HttpClient httpClient) {
         this.uplinkHandler = handler;

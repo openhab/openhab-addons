@@ -103,7 +103,7 @@ public class BoschHttpClient extends HttpClient {
     }
 
     /**
-     * Returns a SmartHome URL for the endpoint - shortcut of {@link BoschSslUtil::getBoschShcUrl()}
+     * Returns a SmartHome URL for the endpoint - shortcut of {@link #getBoschShcUrl(String)}
      *
      * @param endpoint an endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
      * @return SmartHome URL for passed endpoint

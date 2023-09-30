@@ -94,7 +94,6 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
-     * @param managerRef the modbus manager
      */
     public AbstractSunSpecHandler(Thing thing) {
         super(thing);

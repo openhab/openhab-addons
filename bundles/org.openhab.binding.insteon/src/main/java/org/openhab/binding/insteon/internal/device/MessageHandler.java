@@ -292,7 +292,7 @@ public abstract class MessageHandler {
      * Extract button information from message
      *
      * @param msg the message to extract from
-     * @param the device feature (needed for debug printing)
+     * @param f the device feature (needed for debug printing)
      * @return the button number or -1 if no button found
      */
     protected static int getButtonInfo(Msg msg, DeviceFeature f) {

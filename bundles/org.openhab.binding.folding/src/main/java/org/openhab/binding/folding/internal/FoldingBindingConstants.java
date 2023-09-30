@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link FoldingBinding} class defines common constants, which are
+ * The {@link FoldingBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Marius Bjoernstad - Initial contribution

@@ -37,7 +37,7 @@ public interface ApplianceStatusListener {
     /**
      * This method is called whenever a "property" of the given appliance has changed.
      *
-     * @param dco the POJO containing the new state of the property
+     * @param dp the POJO containing the new state of the property
      */
     void onAppliancePropertyChanged(DeviceProperty dp);
 

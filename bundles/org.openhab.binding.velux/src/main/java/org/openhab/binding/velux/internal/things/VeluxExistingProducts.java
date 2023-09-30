@@ -126,7 +126,6 @@ public class VeluxExistingProducts {
      * method may ignore the new product if it was created by certain originating commands, or if the new product has
      * certain actuator states.
      *
-     * @param requestingCommand the command that requested the data from the hub and so triggered calling this method.
      * @param newProduct the product containing new data.
      *
      * @return true if the product exists in the database.

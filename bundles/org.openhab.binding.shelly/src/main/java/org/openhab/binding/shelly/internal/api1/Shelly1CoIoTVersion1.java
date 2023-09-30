@@ -57,11 +57,15 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
      * Process CoIoT status update message. If a status update is received, but the device description has not been
      * received yet a GET is send to query device description.
      *
-     * @param devId device id included in the status packet
-     * @param payload CoAP payload (Json format), example: {"G":[[0,112,0]]}
+     * @param sensorUpdates
+     * @param sen
      * @param serial Serial for this request. If this the the same as last serial
      *            the update was already sent and processed so this one gets
      *            ignored.
+     * @param serial
+     * @param s
+     * @param updates
+     * @param col
      */
     @Override
     public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,

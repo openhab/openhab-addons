@@ -19,8 +19,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SceneReadingJobExecutor} is the implementation of the {@link AbstractSensorJobExecutor} to execute
- * digitalSTROM-Device scene configuration {@link SensorJob}'s e.g. {@link SceneConfigReadingJob} and
- * {@link SceneOutputValueReadingJob}.
+ * digitalSTROM-Device scene configuration {@link SensorJob}'s e.g.
+ * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.impl.SceneConfigReadingJob} and
+ * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.impl.SceneOutputValueReadingJob}.
  * <p>
  * In addition priorities can be assigned to jobs therefore the {@link SceneReadingJobExecutor} offers the methods
  * {@link #addHighPriorityJob(SensorJob)}, {@link #addMediumPriorityJob(SensorJob)} and

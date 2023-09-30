@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ADCCommand} class represents an alarm decoder command, and contains the static methods and definitions
+ * The {@link ADCommand} class represents an alarm decoder command, and contains the static methods and definitions
  * used to construct one. Not all supported AD commands are necessarily used by the current binding.
  *
  * @author Bob Adair - Initial contribution

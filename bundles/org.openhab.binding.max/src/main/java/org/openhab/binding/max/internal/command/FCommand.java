@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link F_CubeCommand} is used to query and update the NTP servers used by the Cube.
+ * The {@link FCommand} is used to query and update the NTP servers used by the Cube.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */

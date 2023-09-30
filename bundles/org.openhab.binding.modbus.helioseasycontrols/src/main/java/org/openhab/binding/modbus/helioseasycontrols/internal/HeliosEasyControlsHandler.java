@@ -423,7 +423,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      *
      * @param variableName The variable name
      * @param value The new value
-     * @return The value if the transaction succeeded, <tt>null</tt> otherwise
      * @throws HeliosException Thrown if the variable is read-only or the provided value is out of range
      */
     public void writeValue(String variableName, String value) throws HeliosException, InterruptedException {
@@ -475,7 +474,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * Read a variable from the Helios device
      *
      * @param variableName The variable name
-     * @return The value
      */
     public void readValue(String variableName) {
         Map<String, HeliosVariable> variableMap = this.variableMap;

@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link BoseSoundTouchBindinConstantsg} class defines common constants, which are
+ * The {@link BoseSoundTouchBindinConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Christian Niessner - Initial contribution

@@ -15,7 +15,7 @@ package org.openhab.binding.fronius.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MeterRealtimeBodyData} is responsible for storing
+ * The {@link MeterRealtimeBodyDataDTO} is responsible for storing
  * the "data" node of the JSON response
  * 
  * The main SerializedName values use Smart Meter 63A names

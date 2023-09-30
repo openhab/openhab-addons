@@ -84,7 +84,7 @@ public abstract class Device {
     /**
      * Creates a new device
      *
-     * @param DeviceConfiguration
+     * @param c
      * @return Device
      */
     public static Device create(DeviceConfiguration c) {

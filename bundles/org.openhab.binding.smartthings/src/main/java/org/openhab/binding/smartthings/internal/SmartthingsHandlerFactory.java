@@ -118,7 +118,6 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
      *
      * @param path http path which tells Smartthings what to execute
      * @param data data to send
-     * @return Response from Smartthings
      * @throws InterruptedException
      * @throws TimeoutException
      * @throws ExecutionException

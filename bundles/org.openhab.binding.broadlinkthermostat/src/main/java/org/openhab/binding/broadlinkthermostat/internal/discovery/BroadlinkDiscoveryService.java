@@ -68,7 +68,6 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void createScanner() {
-
         long timestampOfLastScan = getTimestampOfLastScan();
         BLDevice[] blDevices = new BLDevice[0];
         try {

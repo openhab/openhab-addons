@@ -67,7 +67,6 @@ public class ChildMap<T> {
     /**
      * Modifies the map in way that it matches the entries of the given childIDs.
      *
-     * @param future A future that completes as soon as all children have their added-action performed.
      * @param childIDs The list of IDs that should be in the map. Everything else currently in the map will be removed.
      * @param addedAction A function where the newly added child is given as an argument to perform any actions on it.
      *            A future is expected as a return value that completes as soon as said action is performed.
@@ -75,7 +74,7 @@ public class ChildMap<T> {
      *            expected as a
      *            result.
      * @param removedCallback A callback, that is called whenever a child got removed by the
-     *            {@link #apply(CompletableFuture, String[], Function)} method.
+     *            {@link #apply(String[], Function, Function, Consumer)} method.
      * @return Complete successfully if all "addedAction" complete successfully, otherwise complete exceptionally.
      */
     public CompletableFuture<@Nullable Void> apply(String[] childIDs,

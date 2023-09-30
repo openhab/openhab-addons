@@ -436,7 +436,7 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
      * Implements {@link SocketSessionListener#responseReceived(String)} to try to process the response from the
      * russound system. This response may be for other protocol handler - so ignore if we don't recognize the response.
      *
-     * @param a possibly null, possibly empty response
+     * @param response a possibly null, possibly empty response
      */
     @Override
     public void responseReceived(@Nullable String response) {

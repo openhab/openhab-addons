@@ -33,8 +33,9 @@ public interface IMeterReaderConnector<T> {
      * Establishes the connection against the device and reads native encoded SML informations.
      * Ensures that a connection is opened and notifies any attached listeners
      *
-     * @param serialParmeter
+     * @param initMessage
      * @param period hint for the connector to emit items in this time intervals.
+     * @param executor
      * @return native encoded SML informations from a device.
      */
     Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period, ExecutorService executor);

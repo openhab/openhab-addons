@@ -14,7 +14,7 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
  * @author Markus Pfleger - Initial contribution
- * @author Marcin Czeczko - Added support for planner & calendar data
+ * @author Marcin Czeczko - Added support for planner and calendar data
  */
 public class Planner {
     private long nextStartTimestamp;

@@ -187,7 +187,7 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
     /**
      * Method to set heat point for pool (true) of spa (false)
      *
-     * @param Pool pool=true, spa=false
+     * @param pool pool=true, spa=false
      * @param temp
      */
     public void setPoint(boolean pool, int temp) {

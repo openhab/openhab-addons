@@ -86,8 +86,9 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
 
     /**
      * Updates the preset information
-     *
-     * @throws Exception
+     * 
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void update() throws IOException, ReceivedMessageParseException {
@@ -168,7 +169,8 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
      * Select a preset channel.
      *
      * @param presetChannel The preset position [1,40]
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void selectItemByPresetNumber(int presetChannel) throws IOException, ReceivedMessageParseException {

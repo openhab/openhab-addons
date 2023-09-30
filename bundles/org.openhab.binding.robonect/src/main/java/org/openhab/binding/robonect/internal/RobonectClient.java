@@ -183,7 +183,7 @@ public class RobonectClient {
     }
 
     /**
-     * returns general mower information. See {@MowerInfo} for the detailed information.
+     * returns general mower information. See {@link MowerInfo} for the detailed information.
      *
      * @return - the general mower information including a general success status.
      */

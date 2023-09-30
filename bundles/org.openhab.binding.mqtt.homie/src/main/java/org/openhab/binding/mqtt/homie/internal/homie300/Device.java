@@ -36,8 +36,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Homie 3.x Device. This is also the base class to subscribe to and parse a homie MQTT topic tree.
- * First use {@link #subscribe(AbstractMqttAttributeClass)} to subscribe to the device/nodes/properties tree.
- * If everything has been received and parsed, call {@link #startChannels(MqttBrokerConnection, HomieThingHandler)}
+ * First use {@link #subscribe(MqttBrokerConnection, ScheduledExecutorService, int)}
+ * to subscribe to the device/nodes/properties tree.
+ * If everything has been received and parsed, call
+ * {@link #startChannels(MqttBrokerConnection, ScheduledExecutorService, int, HomieThingHandler)}
  * to also subscribe to the property values. Usage:
  *
  * <pre>
@@ -100,7 +102,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      * and subscribe to all node attributes. Parse node properties. This will not subscribe
      * to properties though. If subscribing to all necessary topics worked {@link #isInitialized()} will return true.
      *
-     * Call {@link #startChannels(MqttBrokerConnection)} subsequently.
+     * Call {@link #startChannels(MqttBrokerConnection, ScheduledExecutorService, int, HomieThingHandler)} subsequently.
      *
      * @param connection A broker connection
      * @param scheduler A scheduler to realize the timeout
@@ -258,7 +260,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
     /**
      * <p>
      * The nodes of a device are determined by the device attribute "$nodes". If that attribute changes,
-     * {@link #attributeChanged(CompletableFuture, String, Object, MqttBrokerConnection, ScheduledExecutorService)} is
+     * {@link #attributeChanged(String, Object, MqttBrokerConnection, ScheduledExecutorService, boolean)} is
      * called. The {@link #nodes} map will be synchronized and this method will be called for every removed node.
      * </p>
      *

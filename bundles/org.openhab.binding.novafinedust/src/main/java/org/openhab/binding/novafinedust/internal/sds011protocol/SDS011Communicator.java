@@ -72,7 +72,6 @@ public class SDS011Communicator {
      *
      * @param mode the {@link WorkMode} if we want to use polling or reporting
      * @param interval the time between polling or reportings
-     * @return {@code true} if we can communicate with the device
      * @throws PortInUseException
      * @throws TooManyListenersException
      * @throws IOException

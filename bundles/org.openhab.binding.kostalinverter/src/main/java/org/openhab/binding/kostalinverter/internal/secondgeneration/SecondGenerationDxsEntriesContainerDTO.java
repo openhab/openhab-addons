@@ -15,7 +15,7 @@ package org.openhab.binding.kostalinverter.internal.secondgeneration;
 import java.util.List;
 
 /**
- * The {@link SecondGenerationDxsEntriesContainer} class defines a Container, which is
+ * The {@link SecondGenerationDxsEntriesContainerDTO} class defines a Container, which is
  * used in the second generation part of the binding.
  *
  * @author Örjan Backsell - Initial contribution Piko1020, Piko New Generation

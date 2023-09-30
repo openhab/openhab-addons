@@ -15,7 +15,7 @@ package org.openhab.binding.sensorcommunity.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link SensorCommunity} class definition for Logging identification
+ * The SensorCommunity class definition for Logging identification
  *
  * @author Bernd Weymann - Initial contribution
  */

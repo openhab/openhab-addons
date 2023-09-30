@@ -14,7 +14,6 @@ package org.openhab.binding.milight.internal.handler;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,10 +67,9 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
     /**
      * A bulb always belongs to a zone in the milight universe and we need a way to queue commands for being send.
      *
-     * @param typeOffset Each bulb type including its zone has to be unique. To realise this, each type has an offset.
+     * @param thing
      * @param sendQueue The send queue.
-     * @param zone A zone, usually 0 means all bulbs of the same type. [0-4]
-     * @throws SocketException
+     * @param typeOffset Each bulb type including its zone has to be unique. To realise this, each type has an offset.
      */
     public AbstractLedHandler(Thing thing, QueuedSend sendQueue, int typeOffset) {
         super(thing);

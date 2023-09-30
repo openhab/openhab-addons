@@ -171,7 +171,7 @@ public class TapoSmartBulb extends TapoDevice {
     /**
      * UPDATE PROPERTIES
      * 
-     * @param TapoDeviceInfo
+     * @param deviceInfo TapoDeviceInfo
      */
     @Override
     protected void devicePropertiesChanged(TapoDeviceInfo deviceInfo) {

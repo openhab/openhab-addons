@@ -508,7 +508,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     /**
      * Update a given channelId from the thermostat data
      *
-     * @param the channel id to be updated
+     * @param channelId the channel id to be updated
      * @param data the RadioThermostat dto
      * @return the value to be set in the state
      */

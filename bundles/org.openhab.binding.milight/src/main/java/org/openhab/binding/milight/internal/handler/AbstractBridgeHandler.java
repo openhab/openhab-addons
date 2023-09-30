@@ -63,8 +63,6 @@ public abstract class AbstractBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Creates a connection and other supportive objects.
-     *
-     * @param addr
      */
     protected abstract void startConnectAndKeepAlive();
 

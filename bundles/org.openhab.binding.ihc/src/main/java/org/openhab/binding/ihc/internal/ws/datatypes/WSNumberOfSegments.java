@@ -46,7 +46,7 @@ public class WSNumberOfSegments {
     /**
      * Sets the number of segmentations.
      *
-     * @param value
+     * @param segments
      */
     public void setNumberOfSegments(int segments) {
         this.segments = segments;

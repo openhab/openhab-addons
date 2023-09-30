@@ -39,8 +39,7 @@ public interface SmartherNotificationHandler extends ThingHandler {
      * @param plantId
      *            the identifier of the plant the notification endpoint belongs to
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API
+     * @throws SmartherGatewayException in case of communication issues with the Smarther API
      */
     void registerNotification(String plantId) throws SmartherGatewayException;
 
@@ -58,8 +57,7 @@ public interface SmartherNotificationHandler extends ThingHandler {
      * @param plantId
      *            the identifier of the plant the notification endpoint belongs to
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API
+     * @throws SmartherGatewayException in case of communication issues with the Smarther API
      */
     void unregisterNotification(String plantId) throws SmartherGatewayException;
 }

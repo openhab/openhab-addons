@@ -80,8 +80,9 @@ public class SpotifyApi {
     /**
      * Constructor.
      *
-     * @param authorizer The authorizer used to refresh the access token when expired
-     * @param connector The Spotify connector handling the Web Api calls to Spotify
+     * @param oAuthClientService The authorizer used to refresh the access token when expired
+     * @param scheduler
+     * @param httpClient The Spotify connector handling the Web Api calls to Spotify
      */
     public SpotifyApi(OAuthClientService oAuthClientService, ScheduledExecutorService scheduler,
             HttpClient httpClient) {

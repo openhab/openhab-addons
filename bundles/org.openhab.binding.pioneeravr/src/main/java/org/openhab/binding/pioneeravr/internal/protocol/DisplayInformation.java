@@ -33,8 +33,6 @@ public class DisplayInformation {
      * parse the display status text send from the receiver
      *
      * @param responsePayload the responses payload, that is without the leading "FL"
-     *
-     * @return
      */
     public DisplayInformation(String responsePayload) {
         volumeDisplay = false;

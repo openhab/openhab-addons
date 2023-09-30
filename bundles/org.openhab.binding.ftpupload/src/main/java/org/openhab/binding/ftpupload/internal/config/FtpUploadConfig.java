@@ -13,7 +13,7 @@
 package org.openhab.binding.ftpupload.internal.config;
 
 /**
- * Configuration class for {@link FtpUploadBinding} device.
+ * Configuration class for FtpUpload device.
  *
  * @author Pauli Anttila - Initial contribution
  */

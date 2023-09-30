@@ -101,8 +101,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     /**
      * Constructor, save bindingConfig (services as default for thingConfig)
      *
+     * @param manager
      * @param thing
-     * @param bindingConfig
+     * @param network
+     * @param httpClient
      */
     public MagentaTVHandler(MagentaTVDeviceManager manager, Thing thing, MagentaTVNetwork network,
             HttpClient httpClient) {
@@ -376,8 +378,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     /**
      * Update thing status
      *
-     * @param mode new thing status
-     * @return ON = power on, OFF=power off
+     * @param newStatus new thing status
+     * @param errorMessage
      */
     public void setOnlineStatus(ThingStatus newStatus, String errorMessage) {
         ThingStatus status = this.getThing().getStatus();

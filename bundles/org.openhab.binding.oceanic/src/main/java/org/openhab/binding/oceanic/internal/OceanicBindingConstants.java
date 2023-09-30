@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.oceanic.internal;
 
-import java.io.InvalidClassException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,7 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Type;
 
 /**
- * The {@link OceanicBinding} class defines common constants, which are used
+ * The {@link OceanicBindingConstants} class defines common constants, which are used
  * across the whole binding.
  *
  * @author Karel Goderis - Initial contribution
@@ -270,7 +269,7 @@ public class OceanicBindingConstants {
          *
          * @param valueSelectorText selector string e.g. RawData, Command, Temperature
          * @return corresponding selector value.
-         * @throws InvalidClassException Not valid class for value selector.
+         * @throws IllegalArgumentException Not valid class for value selector.
          */
         public static OceanicChannelSelector getValueSelector(String valueSelectorText,
                 ValueSelectorType valueSelectorType) throws IllegalArgumentException {

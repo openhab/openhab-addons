@@ -54,9 +54,9 @@ public class DeviceFeatureListener {
     /**
      * Constructor
      *
-     * @param item name of the item that is listening
+     * @param binding
      * @param channelUID channel associated with this item
-     * @param eventPublisher the publisher to use for publishing on the openhab bus
+     * @param item name of the item that is listening
      */
     public DeviceFeatureListener(InsteonBinding binding, ChannelUID channelUID, String item) {
         this.binding = binding;

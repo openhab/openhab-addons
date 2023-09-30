@@ -390,7 +390,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // shuffle command
             if (channelId.equals(CHANNEL_SHUFFLE)) {
                 if (command instanceof OnOffType value) {
-
                     connection.command(device, "{\"type\":\"ShuffleCommand\",\"shuffle\":\""
                             + (value == OnOffType.ON ? "true" : "false") + "\"}");
                 }

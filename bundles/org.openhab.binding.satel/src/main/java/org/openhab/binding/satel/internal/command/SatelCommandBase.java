@@ -55,7 +55,7 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     /**
      * Creates new instance with specified command code and payload.
      *
-     * @param command command code
+     * @param commandCode command code
      * @param payload command payload
      */
     public SatelCommandBase(byte commandCode, byte[] payload) {

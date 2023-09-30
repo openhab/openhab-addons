@@ -50,7 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extended channels can be auto discovered and added to newly created groups in the {@link SysteminfoHandler}. The
+ * Extended channels can be auto discovered and added to newly created groups in the
+ * {@link org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler}. The
  * thing needs to be updated to add the groups. The `SysteminfoThingTypeProvider` OSGi service gives access to the
  * `ThingTypeRegistry` and serves the updated `ThingType`.
  *

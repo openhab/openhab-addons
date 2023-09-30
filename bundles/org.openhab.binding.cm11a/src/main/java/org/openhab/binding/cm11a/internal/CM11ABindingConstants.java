@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link CM11ABinding} class defines common constants, which are
+ * The {@link CM11ABindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Bob Raker - Initial contribution

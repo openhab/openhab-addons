@@ -20,12 +20,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link NukiBinding} class defines common constants, which are
+ * The {@link NukiBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Markus Katter - Initial contribution
- * @contributer Christian Hoefler - Door sensor integration
- * @contributer Jan Vybíral - Opener integration
+ * @author Christian Hoefler - Door sensor integration
+ * @author Jan Vybíral - Opener integration
  */
 @NonNullByDefault
 public class NukiBindingConstants {

@@ -35,7 +35,7 @@ public enum OwserverConnectionState {
     /**
      * The connection is erroneous and was closed by the {@link OwserverConnection}. After due wait time, it
      * is tried to reopen it by a scheduled task of
-     * {@link OwserverBridgeHandler#reportConnectionState(OwserverConnectionState)}.
+     * {@link org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler#reportConnectionState(OwserverConnectionState)}.
      */
     FAILED
 }

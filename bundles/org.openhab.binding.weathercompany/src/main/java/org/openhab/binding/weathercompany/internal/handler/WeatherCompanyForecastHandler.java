@@ -335,7 +335,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
 
     private void updateDaypart(int daypartIndex, String dayOrNight, String channelId, State state) {
         int day = daypartIndex / 2;
-        String dON = dayOrNight.equals("D") ? CH_GROUP_FORECAST_DAYPART_DAY : CH_GROUP_FORECAST_DAYPART_NIGHT;
+        String dON = "D".equals(dayOrNight) ? CH_GROUP_FORECAST_DAYPART_DAY : CH_GROUP_FORECAST_DAYPART_NIGHT;
         updateChannel(CH_GROUP_FORECAST_DAY + String.valueOf(day) + dON + "#" + channelId, state);
     }
 

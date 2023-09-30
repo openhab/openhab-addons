@@ -15,7 +15,7 @@ package org.openhab.binding.boschshc.internal.services.powermeter.dto;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
- * State for {@link PowerMeterService}
+ * State for {@link org.openhab.binding.boschshc.internal.services.powermeter.PowerMeterService}
  *
  * @author Stefan Kästle - Initial contribution
  */

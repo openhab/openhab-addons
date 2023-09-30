@@ -44,7 +44,7 @@ import com.google.gson.Gson;
  * The {@link NukiHttpClient} class is responsible for getting data from the Nuki Bridge.
  *
  * @author Markus Katter - Initial contribution
- * @contributer Jan Vybíral - Hashed token authentication
+ * @author Jan Vybíral - Hashed token authentication
  */
 @NonNullByDefault
 public class NukiHttpClient {

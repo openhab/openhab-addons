@@ -17,7 +17,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link gpioBindingConstants} class defines common constants, which are
+ * The {@link GPIOBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Nils Bauer - Initial contribution

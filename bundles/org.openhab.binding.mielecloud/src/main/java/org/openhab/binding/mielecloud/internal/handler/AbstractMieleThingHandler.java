@@ -282,7 +282,7 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
     /**
      * Updates the device action state channels.
      *
-     * @param action The {@link ActionsChannelState} information to update the action channel states with.
+     * @param actions The {@link ActionsChannelState} information to update the action channel states with.
      */
     protected abstract void updateActionState(ActionsChannelState actions);
 }

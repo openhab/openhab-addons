@@ -131,7 +131,7 @@ public class BluetoothScanNotification extends BluetoothNotification {
     /**
      * Sets the beacon type for this packet
      *
-     * @beaconType the {@link BluetoothBeaconType} for this packet
+     * @param beaconType the {@link BluetoothBeaconType} for this packet
      */
     public void setBeaconType(BluetoothBeaconType beaconType) {
         this.beaconType = beaconType;

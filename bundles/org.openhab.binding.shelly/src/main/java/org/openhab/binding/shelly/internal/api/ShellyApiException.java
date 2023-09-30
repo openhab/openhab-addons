@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link CarNetException} implements an extension to the standard Exception class. This allows to keep also the
+ * The {@link ShellyApiException} implements an extension to the standard Exception class. This allows to keep also the
  * result of the last API call (e.g. including the http status code in the message).
  *
  * @author Markus Michels - Initial contribution

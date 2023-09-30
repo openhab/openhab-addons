@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link WebClient} class contains the logic to get data from a URL.
+ * The {@link WaterAlertWebClient} class contains the logic to get data from a URL.
  *
  * @author Stewart Cossey - Initial contribution
  */

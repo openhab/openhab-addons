@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link Shelly2RpcServlet} implements the WebSocket callback for Gen2 devices
+ * {@link ShellyEventServlet} implements the WebSocket callback for Gen2 devices
  *
  * @author Markus Michels - Initial contribution
  */

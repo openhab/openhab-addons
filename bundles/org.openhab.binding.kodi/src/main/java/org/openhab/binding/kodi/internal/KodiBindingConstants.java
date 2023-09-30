@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link KodiBinding} class defines common constants, which are used across
+ * The {@link KodiBindingConstants} class defines common constants, which are used across
  * the whole binding.
  *
  * @author Paul Frank - Initial contribution

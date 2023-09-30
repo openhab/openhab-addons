@@ -177,8 +177,8 @@ public class IAqualinkClient {
     /**
      * Retrieves {@link Auxiliary[]} devices
      *
-     * @param serialNumber
-     * @param sessionId
+     * @param serial
+     * @param sessionID
      * @return {@link Auxiliary[]}
      * @throws IOException
      * @throws NotAuthorizedException
@@ -221,10 +221,11 @@ public class IAqualinkClient {
     /**
      * Sends an Auxiliary light command
      *
-     * @param serialNumber
-     * @param sessionId
-     * @param command
+     * @param serial
+     * @param sessionID
+     * @param auxID
      * @param lightValue
+     * @param subtype
      * @return
      * @throws IOException
      * @throws NotAuthorizedException
@@ -263,8 +264,8 @@ public class IAqualinkClient {
     /**
      * Sets the Spa Temperature Setpoint
      *
-     * @param serialNumber
-     * @param sessionId
+     * @param serial
+     * @param sessionID
      * @param spaSetpoint
      * @return
      * @throws IOException
@@ -282,8 +283,8 @@ public class IAqualinkClient {
     /**
      * Sets the Pool Temperature Setpoint
      *
-     * @param serialNumber
-     * @param sessionId
+     * @param serial
+     * @param sessionID
      * @param poolSetpoint
      * @return
      * @throws IOException

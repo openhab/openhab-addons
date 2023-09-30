@@ -90,7 +90,7 @@ public class PS4ArtworkHandler {
      * Fetch artwork for PS4 application. First looks for the file on disc, if the file is not on the disc it checks
      * PlayStation store
      *
-     * @param titleid Title ID of application.
+     * @param titleId Title ID of application.
      * @param size Size (width & height) of art work in pixels , max 1024.
      * @param locale Locale used on PlayStation store to find art work.
      * @return A JPEG image as a RawType if an art work file is found otherwise null.
@@ -103,7 +103,7 @@ public class PS4ArtworkHandler {
      * Fetch artwork for PS4 application. First looks for the file on disc, if the file is not on the disc it checks
      * PlayStation store
      *
-     * @param titleid Title ID of application.
+     * @param titleId Title ID of application.
      * @param size Size (width & height) of art work in pixels , max 1024.
      * @param locale Locale used on PlayStation store to find art work.
      * @param forceRefetch When true, tries to re-fetch art work from PlayStation store, sometimes the art work is

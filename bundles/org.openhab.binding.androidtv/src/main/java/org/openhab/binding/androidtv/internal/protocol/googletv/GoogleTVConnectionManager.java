@@ -380,7 +380,6 @@ public class GoogleTVConnectionManager {
                 }
                 androidtvPKI.setCaCert(shimX509ClientChain[0]);
                 androidtvPKI.saveKeyStore(config.keystorePassword, this.encryptionKey);
-
             }
         } catch (Exception e) {
             logger.trace("setShimX509ClientChain Exception", e);

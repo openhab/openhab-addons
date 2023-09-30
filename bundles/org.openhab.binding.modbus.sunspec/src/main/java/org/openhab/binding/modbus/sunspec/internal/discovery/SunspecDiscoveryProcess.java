@@ -142,7 +142,6 @@ public class SunspecDiscoveryProcess {
     /**
      * Start model detection
      *
-     * @param uid the thing type to look for
      * @throws EndpointNotInitializedException
      */
     public void detectModel() {

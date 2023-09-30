@@ -57,7 +57,7 @@ public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory
     /**
      * Used by OSGI to unsets the mediator from the handler factory.
      *
-     * @param mediator the mediator
+     * @param mitsubishiMediator the mediator
      */
     public void unsetMediator(final SilvercrestWifiSocketMediator mitsubishiMediator) {
         logger.debug("Mediator has been unsetted from discovery service.");

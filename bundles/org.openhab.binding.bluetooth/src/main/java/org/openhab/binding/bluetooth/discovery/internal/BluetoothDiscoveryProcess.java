@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BluetoothDiscoveryProcess} does the work of creating a DiscoveryResult from a set of
- * {@link BluetoothDisocveryParticipant}s
+ * {@link BluetoothDiscoveryParticipant}s
  *
  * @author Connor Petty - Initial Contribution
  */

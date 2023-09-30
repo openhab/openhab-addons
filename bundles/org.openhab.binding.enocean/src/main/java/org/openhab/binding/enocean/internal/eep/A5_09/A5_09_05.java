@@ -76,7 +76,6 @@ public class A5_09_05 extends A5_09 {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (CHANNEL_VOC.equals(channelId)) {
             double scaledVOC = getUnscaledVOCValue() * getScalingFactor();
             return new QuantityType<>(scaledVOC, Units.PARTS_PER_BILLION);

@@ -79,8 +79,8 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
 
     /**
      * Parse node properties. This will not subscribe to properties though. Call
-     * {@link Device#startChannels(MqttBrokerConnection)} as soon as the returned future has
-     * completed.
+     * {@link Device#startChannels(MqttBrokerConnection, ScheduledExecutorService, int, HomieThingHandler)}
+     * as soon as the returned future has completed.
      */
     public CompletableFuture<@Nullable Void> subscribe(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
@@ -106,7 +106,6 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     /**
      * Unsubscribe from node attribute and also all property attributes and the property value
      *
-     * @param connection A broker connection
      * @return Returns a future that completes as soon as all unsubscriptions have been performed.
      */
     public CompletableFuture<@Nullable Void> stop() {
@@ -156,7 +155,7 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     /**
      * <p>
      * The properties of a node are determined by the node attribute "$properties". If that attribute changes,
-     * {@link #attributeChanged(CompletableFuture, String, Object, MqttBrokerConnection, ScheduledExecutorService)} is
+     * {@link #attributeChanged(String, Object, MqttBrokerConnection, ScheduledExecutorServic, boolean)} is
      * called. The {@link #properties} map will be synchronized and this method will be called for every removed
      * property.
      * </p>

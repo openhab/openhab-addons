@@ -65,7 +65,7 @@ public class ShellyChannelCache {
      * messing up the log with those updates)
      *
      * @param channelId Channel id
-     * @param value Value (State)
+     * @param newValue Value (State)
      * @param forceUpdate true: ignore cached data, force update; false check cache of changed data
      * @return true, if successful
      */

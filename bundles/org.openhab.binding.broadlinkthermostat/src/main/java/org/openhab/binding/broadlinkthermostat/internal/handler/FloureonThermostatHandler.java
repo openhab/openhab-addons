@@ -262,7 +262,6 @@ public class FloureonThermostatHandler extends BroadlinkBaseHandler {
     }
 
     protected void refreshData() {
-
         AdvancedStatusInfo advancedStatusInfo = advancedStatusInfoExpiringCache.getValue();
         if (advancedStatusInfo == null) {
             return;

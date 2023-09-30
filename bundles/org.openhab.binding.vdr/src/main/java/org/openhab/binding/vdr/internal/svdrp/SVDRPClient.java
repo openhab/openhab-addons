@@ -127,8 +127,6 @@ public interface SVDRPClient {
      * Retrieve VDR Version from SVDRP Client
      *
      * @return VDR Version
-     * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
-     * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
     String getSVDRPVersion();
 }

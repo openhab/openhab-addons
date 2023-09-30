@@ -114,7 +114,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     /**
      * Initializes this handler. Use this method to register all services of the device with
-     * {@link #registerService(BoschSHCService)}.
+     * {@link #registerService(TService, Consumer<TState>, Collection<String>, boolean)}.
      */
     @Override
     public void initialize() {

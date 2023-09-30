@@ -25,8 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CascadedValueTransformationImpl} implements {@link ValueTransformation for a cascaded set of
- * transformations}
+ * The {@link CascadedValueTransformationImpl} implements {@link ValueTransformation} for a cascaded set of
+ * transformations
  *
  * @author Jan N. Klug - Initial contribution
  */

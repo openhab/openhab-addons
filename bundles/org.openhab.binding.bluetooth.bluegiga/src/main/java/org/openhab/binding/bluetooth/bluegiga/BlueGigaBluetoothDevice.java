@@ -58,7 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An extended {@link BluetoothDevice} class to handle BlueGiga specific information
+ * An extended {@link BaseBluetoothDevice} class to handle BlueGiga specific information
  *
  * @author Chris Jackson - Initial contribution
  */
@@ -130,7 +130,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     };
 
     /**
-     * Creates a new {@link BlueGigaBluetoothDevice} which extends {@link BluetoothDevice} for the BlueGiga
+     * Creates a new {@link BlueGigaBluetoothDevice} which extends {@link BaseBluetoothDevice} for the BlueGiga
      * implementation
      *
      * @param bgHandler the {@link BlueGigaBridgeHandler} that provides the link to the dongle

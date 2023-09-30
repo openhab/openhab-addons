@@ -273,8 +273,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     /**
      * Search for devices connected to this bridge handler's gateway
-     *
-     * @param listener to receive device found notifications
      */
     public synchronized void searchDevices() {
         scanIsActive = true;

@@ -17,7 +17,7 @@ import static org.openhab.binding.anthem.internal.AnthemBindingConstants.COMMAND
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AnthemCommend} is responsible for creating commands to be sent to the
+ * The {@link AnthemCommand} is responsible for creating commands to be sent to the
  * Anthem processor.
  *
  * @author Mark Hilbush - Initial contribution

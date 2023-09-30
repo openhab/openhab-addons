@@ -69,8 +69,8 @@ public class Measure {
      *
      * @return a {@link MeasureUnit} object representing the measure unit
      *
-     * @throws {@link SmartherIllegalPropertyValueException}
-     *             if the measure internal raw unit cannot be mapped to any valid measure unit
+     * @throws SmartherIllegalPropertyValueException if the measure internal raw unit cannot be mapped to any valid
+     *             measure unit
      */
     public MeasureUnit getMeasureUnit() throws SmartherIllegalPropertyValueException {
         return MeasureUnit.fromValue(unit);
@@ -81,8 +81,8 @@ public class Measure {
      *
      * @return the value and measure unit
      *
-     * @throws {@link SmartherIllegalPropertyValueException}
-     *             if the measure internal raw unit cannot be mapped to any valid measure unit
+     * @throws SmartherIllegalPropertyValueException if the measure internal raw unit cannot be mapped to any valid
+     *             measure unit
      */
     public State toState() throws SmartherIllegalPropertyValueException {
         State state = UnDefType.UNDEF;

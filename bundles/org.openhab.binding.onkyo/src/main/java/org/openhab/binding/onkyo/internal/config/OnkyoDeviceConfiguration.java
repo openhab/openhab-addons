@@ -13,7 +13,7 @@
 package org.openhab.binding.onkyo.internal.config;
 
 /**
- * Configuration class for {@link OnkyoBinding} device.
+ * Configuration class for Onkyo device.
  *
  * @author Pauli Anttila - Initial contribution
  */

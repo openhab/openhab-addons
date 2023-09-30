@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link VenstarThermostatBinding} class defines common constants, which are
+ * The {@link VenstarThermostatBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author William Welliver - Initial contribution

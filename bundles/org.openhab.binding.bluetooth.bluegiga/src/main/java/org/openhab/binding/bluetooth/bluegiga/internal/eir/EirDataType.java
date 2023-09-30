@@ -85,7 +85,7 @@ public enum EirDataType {
     /**
      * Lookup function based on the type code. Returns {@link UNKNOWN} if the code does not exist.
      *
-     * @param bluetoothAddressType
+     * @param eirDataType
      *            the code to lookup
      * @return enumeration value.
      */

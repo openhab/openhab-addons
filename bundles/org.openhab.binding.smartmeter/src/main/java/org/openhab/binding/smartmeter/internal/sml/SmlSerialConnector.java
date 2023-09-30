@@ -70,7 +70,6 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
      *
      * @param portName the port where the device is connected as defined in openHAB configuration.
      * @param baudrate
-     * @throws IOException
      */
     public SmlSerialConnector(Supplier<SerialPortManager> serialPortManagerSupplier, String portName, int baudrate,
             int baudrateChangeDelay) {
@@ -139,7 +138,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     }
 
     /**
-     * @{inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public void closeConnection() {

@@ -56,7 +56,6 @@ public class NeoHubGetEngineersData {
      * Create wrapper around a JSON string
      * 
      * @param fromJson the JSON string
-     * @return a NeoHubGetEngData wrapper around the JSON string
      * @throws JsonSyntaxException
      * 
      */

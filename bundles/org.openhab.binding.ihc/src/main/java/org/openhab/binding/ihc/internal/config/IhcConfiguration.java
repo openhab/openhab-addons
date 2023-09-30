@@ -13,7 +13,7 @@
 package org.openhab.binding.ihc.internal.config;
 
 /**
- * Configuration class for {@link IhcBinding} binding.
+ * Configuration class for IhcBinding binding.
  *
  * @author Pauli Anttila - Initial contribution
  */

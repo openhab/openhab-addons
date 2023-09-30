@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * See {@ TemplateModel}.
+ * See {@link TemplateModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

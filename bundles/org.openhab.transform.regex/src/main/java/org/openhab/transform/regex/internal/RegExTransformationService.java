@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <b>Note:</b> the given Regular Expression must contain exactly one group!
  *
- * @author Thomas.Eichstaedt-Engelen
+ * @author Thomas.Eichstaedt-Engelen - Initial contribution
  */
 @NonNullByDefault
 @Component(property = { "openhab.transform=REGEX" })

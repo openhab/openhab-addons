@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link AtlonaBinding} class defines common constants, which are used across the whole binding.
+ * The {@link AtlonaBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Tim Roberts - Initial contribution
  * @author Michael Lobstein - Add support for AT-PRO3HD 44/66 M

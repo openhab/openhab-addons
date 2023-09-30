@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link PowermaxBinding} class defines common constants, which are
+ * The {@link PowermaxBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Laurent Garnier - Initial contribution

@@ -125,7 +125,7 @@ public class Client {
      * @return data corresponding to the query
      * @throws FMIIOException on all I/O errors
      * @throws FMIUnexpectedResponseException on all unexpected content errors
-     * @throw FMIExceptionReportException on explicit error responses from the server
+     * @throws FMIExceptionReportException on explicit error responses from the server
      */
     public FMIResponse query(Request request, int timeoutMillis)
             throws FMIExceptionReportException, FMIUnexpectedResponseException, FMIIOException {
@@ -152,7 +152,7 @@ public class Client {
      * @return locations representing stations
      * @throws FMIIOException on all I/O errors
      * @throws FMIUnexpectedResponseException on all unexpected content errors
-     * @throw FMIExceptionReportException on explicit error responses from the server
+     * @throws FMIExceptionReportException on explicit error responses from the server
      */
     public Set<Location> queryWeatherStations(int timeoutMillis)
             throws FMIIOException, FMIUnexpectedResponseException, FMIExceptionReportException {

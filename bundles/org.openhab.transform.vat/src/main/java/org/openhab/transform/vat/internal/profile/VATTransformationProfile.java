@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Profile to offer the {@link VATTransformationService} on an ItemChannelLink.
+ * Profile to offer the {@link VATTransformationProfile} on an ItemChannelLink.
  *
  * @author Jacob Laursen - Initial contribution
  */

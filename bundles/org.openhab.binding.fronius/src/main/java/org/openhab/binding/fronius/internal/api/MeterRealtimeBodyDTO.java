@@ -15,7 +15,7 @@ package org.openhab.binding.fronius.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MeterRealtimeBody} is responsible for storing
+ * The {@link MeterRealtimeBodyDTO} is responsible for storing
  * the "body" node of the JSON response
  *
  * @author Jimmy Tanagra - Initial contribution

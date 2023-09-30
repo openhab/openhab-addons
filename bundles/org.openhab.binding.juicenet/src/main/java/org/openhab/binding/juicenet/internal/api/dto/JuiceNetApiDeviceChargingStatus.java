@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * {@link JuiceNetDeviceChargingStatus } implements DTO for device charging status
+ * {@link JuiceNetApiDeviceChargingStatus } implements DTO for device charging status
  *
  * @author Jeff James - Initial contribution
  */

@@ -25,7 +25,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Type;
 
 /**
- * Converts between a Homematic datapoint value and a {@link DecimalType}.
+ * Converts between a Homematic datapoint value and a {@link org.openhab.core.library.types.DecimalType}.
  *
  * @author Michael Reitler - Initial contribution
  */

@@ -41,7 +41,7 @@ public final class SmlValueExtractor {
     /**
      * Constructor
      *
-     * @param obis
+     * @param listEntry
      */
     public SmlValueExtractor(SmlListEntry listEntry) {
         smlListEntry = listEntry;
