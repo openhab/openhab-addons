@@ -366,7 +366,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     /**
      * Handle an event received from the Oppo player
      *
-     * @param event the event to process
+     * @param evt the event to process
      */
     @Override
     public void onNewMessageEvent(OppoMessageEvent evt) {

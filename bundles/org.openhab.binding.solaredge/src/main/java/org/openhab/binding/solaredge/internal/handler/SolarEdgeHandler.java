@@ -32,8 +32,9 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public interface SolarEdgeHandler extends ThingHandler, ChannelProvider {
     /**
-     * Called from {@link WebInterface#authenticate()} to update
-     * the thing status because updateStatus is protected.
+     * Called from
+     * {@link org.openhab.binding.solaredge.internal.connector.WebInterface.WebRequestExecutor#authenticate()}
+     * to update the thing status because updateStatus is protected.
      *
      * @param status Bridge status
      * @param statusDetail Bridge status detail

@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * The {@link ZoneConfiguration} class contains the configuration parameters for the zone.
  *
- * @author Haavar Valeur
+ * @author Haavar Valeur - Initial contribution
  */
 @NonNullByDefault
 public class ZoneConfiguration {

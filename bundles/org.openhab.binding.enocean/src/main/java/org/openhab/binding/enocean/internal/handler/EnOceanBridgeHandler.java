@@ -66,8 +66,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link EnOceanBridgeHandler} is responsible for sending ESP3Packages build by {@link EnOceanActuatorHandler} and
- * transferring received ESP3Packages to {@link EnOceanSensorHandler}.
+ * The {@link EnOceanBridgeHandler} is responsible for sending ESP3Packages build by
+ * {@link org.openhab.binding.enocean.internal.handler.EnOceanActuatorHandler} and
+ * transferring received ESP3Packages to
+ * {@link org.openhab.binding.enocean.internal.handler.EnOceanSensorHandler}.
  *
  * @author Daniel Weber - Initial contribution
  */

@@ -54,8 +54,8 @@ public class Sensor {
      *
      * @return a {@link State} object representing the overall state of the sensor
      *
-     * @throws {@link SmartherIllegalPropertyValueException}
-     *             if the sensor internal raw state cannot be mapped to any valid value
+     * @throws SmartherIllegalPropertyValueException if the sensor internal raw state cannot be mapped to any valid
+     *             value
      */
     public State toState() throws SmartherIllegalPropertyValueException {
         final Measure measure = getMeasure(0);

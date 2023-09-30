@@ -168,7 +168,7 @@ public class GreeBindingConstants {
      * temperature value shown on the device LCD display should match the value shown by this binding when the config
      * parameter currentTemperatureOffset is set to 0.
      *
-     * @See https://github.com/tomikaa87/gree-remote#getting-the-current-temperature-reading-from-the-internal-sensor
+     * @see https://github.com/tomikaa87/gree-remote#getting-the-current-temperature-reading-from-the-internal-sensor
      *      for more details.
      */
     public static final double INTERNAL_TEMP_SENSOR_OFFSET = -40.0;

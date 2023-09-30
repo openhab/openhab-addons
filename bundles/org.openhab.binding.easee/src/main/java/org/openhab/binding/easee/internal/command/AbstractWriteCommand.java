@@ -43,8 +43,6 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
 
     /**
      * the constructor
-     *
-     * @param config
      */
     public AbstractWriteCommand(EaseeThingHandler handler, Channel channel, Command command,
             RetryOnFailure retryOnFailure, ProcessFailureResponse processFailureResponse,
