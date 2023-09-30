@@ -19,7 +19,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
-import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -42,12 +41,6 @@ public class PresenceCapability extends CameraCapability {
     public PresenceCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
-    }
-
-    @Override
-    public void updateHomeStatusModule(HomeStatusModule newData) {
-        super.updateHomeStatusModule(newData);
-        getSecurityCapability().ifPresent(cap -> cap.changeSirenStatus(handler.getId(), SirenStatus.SOUND));
     }
 
     @Override
