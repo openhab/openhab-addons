@@ -517,6 +517,7 @@ public class NeeoApi implements AutoCloseable {
             logger.debug("Sending Notification to brain ({}): {}", brainId, msg);
             final HttpResponse resp = rqst.sendPostJsonCommand(brainUrl + NeeoConstants.NOTIFICATION, msg);
             if (resp.getHttpCode() != HttpStatus.OK_200) {
+                returnHttpClient(httpClient);
                 throw resp.createException();
             } else {
                 logger.debug("Response from brain ({}): {} - {}", brainId, resp.getHttpCode(), resp.getContent());
