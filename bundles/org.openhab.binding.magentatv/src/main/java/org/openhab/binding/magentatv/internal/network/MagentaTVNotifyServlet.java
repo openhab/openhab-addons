@@ -82,7 +82,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
      * STB_playContent> </e:property> </e:propertyset>
      *
      * @param request
-     * @param resp
+     * @param response
      *
      * @throws ServletException, IOException
      */

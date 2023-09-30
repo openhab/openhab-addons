@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link MinecraftMDNSDiscoveryParticipant} is responsible for discovering Minecraft servers
- * {@link MDNSDiscoveryService}.
+ * {@link org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService}.
  *
  * @author Mattias Markehed - Initial contribution
  */

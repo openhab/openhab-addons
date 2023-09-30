@@ -219,7 +219,7 @@ public class MagentaTVControl {
      * <friendlyName>$friendlyName</friendlyName>\n <userID>$userID</userID>\n
      * </u:X-pairingRequest>\n </s:Body> </s:Envelope>
      *
-     * @returns true: pairing successful
+     * @return true: pairing successful
      * @throws MagentaTVException
      */
     public boolean sendPairingRequest() throws MagentaTVException {

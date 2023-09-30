@@ -56,7 +56,7 @@ public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryServ
     /**
      * Used by OSGI to unset the mediator in the discovery service.
      *
-     * @param mediator the mediator
+     * @param mitsubishiMediator the mediator
      */
     public void unsetMediator(final SilvercrestWifiSocketMediator mitsubishiMediator) {
         logger.debug("Mediator has been unsetted from discovery service.");

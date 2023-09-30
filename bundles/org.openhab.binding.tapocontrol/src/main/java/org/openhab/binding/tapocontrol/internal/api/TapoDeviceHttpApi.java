@@ -66,7 +66,8 @@ public class TapoDeviceHttpApi {
     /**
      * INIT CLASS
      *
-     * @param config TapoControlConfiguration class
+     * @param device
+     * @param bridgeThingHandler
      */
     public TapoDeviceHttpApi(TapoDevice device, TapoBridgeHandler bridgeThingHandler) {
         this.bridge = bridgeThingHandler;
@@ -125,7 +126,7 @@ public class TapoDeviceHttpApi {
     /**
      * handle error
      *
-     * @param te TapoErrorHandler
+     * @param tapoError TapoErrorHandler
      */
     protected void handleError(TapoErrorHandler tapoError) {
     }
@@ -563,7 +564,7 @@ public class TapoDeviceHttpApi {
     /**
      * Set new ipAddress
      *
-     * @param new ipAdress
+     * @param ipAddress new ipAdress
      */
     public void setDeviceURL(String ipAddress) {
         this.ipAddress = ipAddress;
@@ -584,7 +585,6 @@ public class TapoDeviceHttpApi {
     /**
      * Set new token
      *
-     * @param deviceURL
      * @param token
      */
     protected void setToken(String token) {

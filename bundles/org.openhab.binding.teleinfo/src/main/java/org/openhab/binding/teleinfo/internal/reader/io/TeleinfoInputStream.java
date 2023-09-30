@@ -87,10 +87,8 @@ public class TeleinfoInputStream extends InputStream {
      * Returns the next frame.
      *
      * @return the next frame or null if end of stream
-     * @throws TimeoutException
      * @throws IOException
      * @throws InvalidFrameException
-     * @throws Exception
      */
     public synchronized @Nullable Frame readNextFrame() throws InvalidFrameException, IOException {
         // seek the next header frame

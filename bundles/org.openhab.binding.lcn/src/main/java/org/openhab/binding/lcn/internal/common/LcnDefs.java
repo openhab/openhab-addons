@@ -160,7 +160,7 @@ public final class LcnDefs {
     /**
      * Generates an array of booleans from an input integer (actually a byte).
      *
-     * @param input the input byte (0..255)
+     * @param inputByte the input byte (0..255)
      * @return the array of 8 booleans
      * @throws IllegalArgumentException if input is out of range (not a byte)
      */
