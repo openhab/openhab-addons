@@ -86,7 +86,7 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
     private @Nullable String timezone;
 
     private NAObjectMap<HomeDataRoom> rooms = new NAObjectMap<>();
-    private NAObjectMap<HomeDataModule> modules = new NAObjectMap<>();
+    private @Nullable NAObjectMap<HomeDataModule> modules;
 
     @Override
     public ModuleType getType() {
@@ -118,7 +118,8 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
     }
 
     public NAObjectMap<HomeDataModule> getModules() {
-        return modules;
+        NAObjectMap<HomeDataModule> local = modules;
+        return local != null ? local : new NAObjectMap<>();
     }
 
     public Set<FeatureArea> getFeatures() {

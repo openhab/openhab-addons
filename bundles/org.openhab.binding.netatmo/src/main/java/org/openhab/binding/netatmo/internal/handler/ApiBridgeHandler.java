@@ -302,7 +302,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
             @Nullable String contentType, int retryCount) throws NetatmoException {
         try {
-            logger.trace("executeUri {}  {} ", method.toString(), uri);
+            logger.debug("executeUri {}  {} ", method.toString(), uri);
 
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
