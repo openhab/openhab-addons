@@ -329,7 +329,6 @@ public enum Measurand {
             if (customizations.length == 0) {
                 this.customizations = null;
             } else {
-
                 this.customizations = Collections.unmodifiableMap(
                         Arrays.stream(customizations).collect(Collectors.toMap(ParserCustomization::getType,
                                 customization -> customization, (a, b) -> b, HashMap::new)));

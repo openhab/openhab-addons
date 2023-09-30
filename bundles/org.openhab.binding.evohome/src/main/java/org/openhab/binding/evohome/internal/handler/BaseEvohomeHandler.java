@@ -88,8 +88,6 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
 
     /**
      * Retrieves the evohome configuration from the bridge
-     *
-     * @return The current evohome configuration
      */
     protected void requestUpdate() {
         Bridge bridge = getBridge();

@@ -1102,7 +1102,7 @@ public abstract class SonyProjectorConnector {
      * Validate the content of a returned message
      *
      * @param responseMessage the buffer containing the returned message
-     * @param the projector setting to get or set
+     * @param item the projector setting to get or set
      *
      * @throws CommunicationException if the message has unexpected content
      */

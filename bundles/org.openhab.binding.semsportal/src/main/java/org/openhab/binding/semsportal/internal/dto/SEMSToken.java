@@ -13,7 +13,7 @@
 package org.openhab.binding.semsportal.internal.dto;
 
 /**
- * A token is returned in a successful {@Link LoginRequest} and is needed to authorize any subsequent requests.
+ * A token is returned in a successful {@link LoginRequest} and is needed to authorize any subsequent requests.
  *
  * @author Iwan Bron - Initial contribution
  */

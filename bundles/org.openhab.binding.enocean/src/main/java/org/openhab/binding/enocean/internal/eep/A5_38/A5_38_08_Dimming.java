@@ -35,8 +35,10 @@ import org.openhab.core.types.UnDefType;
 /**
  * This class tries to combine the classic EEP A5-38-08 CMD 0x02 dimming with the Eltako interpretation of this EEP.
  * It is doing it by channel config parameter "eltakoDimmer". The differences are:
+ * <ul>
  * <li>Dimming value 0-100%: standard 0-255, Eltako 0-100</li>
  * <li>Store value: standard DB0.1, Eltako DB0.2</li>
+ * </ul>
  *
  * @author Daniel Weber - Initial contribution
  */
