@@ -71,26 +71,12 @@ public class RustpotterKSService implements KSService {
     private final ExecutorService executor = ThreadPoolManager.getPool("voice-rustpotterks");
     private RustpotterKSConfiguration config = new RustpotterKSConfiguration();
     private final List<RustpotterMutex> runningInstances = new ArrayList<>();
-    static {
-        Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
-        tryCreateDir(RUSTPOTTER_FOLDER, logger, "rustpotter dir created {}");
-        tryCreateDir(RUSTPOTTER_RECORDS_FOLDER, logger, "rustpotter record dir created {}");
-    }
-
-    private static void tryCreateDir(Path rustpotterFolder, Logger logger, String msg) {
-        if (!Files.exists(rustpotterFolder) || !Files.isDirectory(rustpotterFolder)) {
-            try {
-                Files.createDirectory(rustpotterFolder);
-            } catch (IOException e) {
-                logger.error("Unable to create folder {}", rustpotterFolder);
-            }
-            logger.info(msg, rustpotterFolder);
-        }
-    }
 
     @Activate
     protected void activate(Map<String, Object> config) {
         logger.debug("Loading library");
+        tryCreateDir(RUSTPOTTER_FOLDER);
+        tryCreateDir(RUSTPOTTER_RECORDS_FOLDER);
         try {
             Rustpotter.loadLibrary();
         } catch (IOException e) {
@@ -262,7 +248,7 @@ public class RustpotterKSService implements KSService {
                 String errorMessage = e.getMessage();
                 ksListener.ksEventReceived(new KSErrorEvent(errorMessage != null ? errorMessage : "Unexpected error"));
                 if (hasFailed) {
-                    logger.warn("multiple consecutive errors, stopping service");
+                    logger.warn("Multiple consecutive errors, stopping service");
                     break;
                 }
                 hasFailed = true;
@@ -272,7 +258,7 @@ public class RustpotterKSService implements KSService {
             this.runningInstances.remove(rustpotter);
         }
         rustpotter.delete();
-        logger.debug("rustpotter stopped");
+        logger.debug("Rustpotter stopped");
     }
 
     private void asyncUpdateActiveInstances() {
@@ -285,11 +271,12 @@ public class RustpotterKSService implements KSService {
         }
         var rustpotterConfig = initRustpotterConfig();
         executor.submit(() -> {
-            logger.debug("updating {} running instances", nInstances);
+            logger.debug("Updating running instances");
             synchronized (this.runningInstances) {
                 for (RustpotterMutex rustpotter : this.runningInstances) {
                     rustpotter.updateConfig(rustpotterConfig);
                 }
+                logger.debug("{} running instances updated", this.runningInstances.size());
             }
             rustpotterConfig.delete();
         });
@@ -327,12 +314,18 @@ public class RustpotterKSService implements KSService {
         };
     }
 
-    private static class RustpotterMutex {
-        private final Rustpotter rustpotter;
-
-        public RustpotterMutex(Rustpotter rustpotter) {
-            this.rustpotter = rustpotter;
+    private void tryCreateDir(Path rustpotterFolder) {
+        if (!Files.exists(rustpotterFolder) || !Files.isDirectory(rustpotterFolder)) {
+            try {
+                Files.createDirectory(rustpotterFolder);
+                logger.info("Folder {} created", rustpotterFolder);
+            } catch (IOException e) {
+                logger.warn("Unable to create folder {}", rustpotterFolder);
+            }
         }
+    }
+
+    private record RustpotterMutex(Rustpotter rustpotter) {
 
         public Optional<RustpotterDetection> processBytes(byte[] bytes) {
             synchronized (this.rustpotter) {
