@@ -14,8 +14,8 @@ package org.openhab.voice.rustpotterks.internal;
 
 import static org.openhab.voice.rustpotterks.internal.RustpotterKSConstants.*;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +65,8 @@ import io.github.givimad.rustpotter_java.VADMode;
 @ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
         + " Keyword Spotter", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class RustpotterKSService implements KSService {
-    private static final String RUSTPOTTER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "rustpotter").toString();
-    private static final String RUSTPOTTER_RECORDS_FOLDER = Path.of(RUSTPOTTER_FOLDER, "records").toString();
+    private static final Path RUSTPOTTER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "rustpotter");
+    private static final Path RUSTPOTTER_RECORDS_FOLDER = RUSTPOTTER_FOLDER.resolve("records");
     private final Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
     private final ExecutorService executor = ThreadPoolManager.getPool("voice-rustpotterks");
     private RustpotterKSConfiguration config = new RustpotterKSConfiguration();
@@ -77,12 +77,14 @@ public class RustpotterKSService implements KSService {
         tryCreateDir(RUSTPOTTER_RECORDS_FOLDER, logger, "rustpotter record dir created {}");
     }
 
-    private static void tryCreateDir(String rustpotterFolder, Logger logger, String msg) {
-        File addonDir = new File(rustpotterFolder);
-        if (!addonDir.exists()) {
-            if (addonDir.mkdir()) {
-                logger.info(msg, rustpotterFolder);
+    private static void tryCreateDir(Path rustpotterFolder, Logger logger, String msg) {
+        if (!Files.exists(rustpotterFolder) || !Files.isDirectory(rustpotterFolder)) {
+            try {
+                Files.createDirectory(rustpotterFolder);
+            } catch (IOException e) {
+                logger.error("Unable to create folder {}", rustpotterFolder);
             }
+            logger.info(msg, rustpotterFolder);
         }
     }
 
@@ -100,7 +102,7 @@ public class RustpotterKSService implements KSService {
     @Modified
     protected void modified(Map<String, Object> config) {
         this.config = new Configuration(config).as(RustpotterKSConfiguration.class);
-        asyncUpdateActiveInstances(this.config);
+        asyncUpdateActiveInstances();
     }
 
     @Override
@@ -142,8 +144,9 @@ public class RustpotterKSService implements KSService {
         logger.debug("Audio wav spec: sample rate {}, {} bits, {} channels, {}", frequency, bitDepth, channels,
                 isBigEndian ? "big-endian" : "little-endian");
         var wakewordName = keyword.replaceAll("\\s", "_") + ".rpw";
-        var wakewordPath = Path.of(RUSTPOTTER_FOLDER, wakewordName);
-        if (!wakewordPath.toFile().exists()) {
+
+        var wakewordPath = RUSTPOTTER_FOLDER.resolve(wakewordName);
+        if (!Files.exists(wakewordPath)) {
             throw new KSException("Missing wakeword file: " + wakewordPath);
         }
         Rustpotter rustpotter;
@@ -175,38 +178,40 @@ public class RustpotterKSService implements KSService {
 
     private Rustpotter initRustpotter(long frequency, int bitDepth, int channels, Endianness endianness)
             throws Exception {
-        var rustpotterConfig = new RustpotterConfig();
-        // audio configs
+        var rustpotterConfig = initRustpotterConfig();
+        // audio format config just need to be set for initializing the instance, is ignored on config updates
         rustpotterConfig.setSampleFormat(getIntSampleFormat(bitDepth));
         rustpotterConfig.setSampleRate(frequency);
         rustpotterConfig.setChannels(channels);
         rustpotterConfig.setEndianness(endianness);
-        setBindingOptions(this.config, rustpotterConfig);
         // init the detector
         var rustpotter = new Rustpotter(rustpotterConfig);
         rustpotterConfig.delete();
         return rustpotter;
     }
 
-    private void setBindingOptions(RustpotterKSConfiguration bindingConfig, RustpotterConfig rustpotterConfig) {
+    private RustpotterConfig initRustpotterConfig() {
+        var rustpotterConfig = new RustpotterConfig();
         // detector configs
-        rustpotterConfig.setThreshold(bindingConfig.threshold);
-        rustpotterConfig.setAveragedThreshold(bindingConfig.averagedThreshold);
-        rustpotterConfig.setScoreMode(getScoreMode(bindingConfig.scoreMode));
-        rustpotterConfig.setMinScores(bindingConfig.minScores);
-        rustpotterConfig.setEager(bindingConfig.eager);
-        rustpotterConfig.setScoreRef(bindingConfig.scoreRef);
-        rustpotterConfig.setBandSize(bindingConfig.bandSize);
-        rustpotterConfig.setVADMode(getVADMode(bindingConfig.vadMode));
-        rustpotterConfig.setRecordPath(bindingConfig.record ? RUSTPOTTER_RECORDS_FOLDER : null);
+        rustpotterConfig.setThreshold(config.threshold);
+        rustpotterConfig.setAveragedThreshold(config.averagedThreshold);
+        rustpotterConfig.setScoreMode(getScoreMode(config.scoreMode));
+        rustpotterConfig.setMinScores(config.minScores);
+        rustpotterConfig.setEager(config.eager);
+        rustpotterConfig.setScoreRef(config.scoreRef);
+        rustpotterConfig.setBandSize(config.bandSize);
+        rustpotterConfig.setVADMode(getVADMode(config.vadMode));
+        rustpotterConfig.setRecordPath(config.record ? RUSTPOTTER_RECORDS_FOLDER.toString() : null);
         // filter configs
-        rustpotterConfig.setGainNormalizerEnabled(bindingConfig.gainNormalizer);
-        rustpotterConfig.setMinGain(bindingConfig.minGain);
-        rustpotterConfig.setMaxGain(bindingConfig.maxGain);
-        rustpotterConfig.setGainRef(bindingConfig.gainRef);
-        rustpotterConfig.setBandPassFilterEnabled(bindingConfig.bandPass);
-        rustpotterConfig.setBandPassLowCutoff(bindingConfig.lowCutoff);
-        rustpotterConfig.setBandPassHighCutoff(bindingConfig.highCutoff);
+        rustpotterConfig.setGainNormalizerEnabled(config.gainNormalizer);
+        rustpotterConfig.setMinGain(config.minGain);
+        rustpotterConfig.setMaxGain(config.maxGain);
+        rustpotterConfig.setGainRef(config.gainRef);
+        rustpotterConfig.setBandPassFilterEnabled(config.bandPass);
+        rustpotterConfig.setBandPassLowCutoff(config.lowCutoff);
+        rustpotterConfig.setBandPassHighCutoff(config.highCutoff);
+
+        return rustpotterConfig;
     }
 
     private void processAudioStream(RustpotterMutex rustpotter, int bufferSize, long bytesPerMs, KSListener ksListener,
@@ -226,6 +231,8 @@ public class RustpotterKSService implements KSService {
                     try {
                         Thread.sleep(remaining / bytesPerMs);
                     } catch (InterruptedException ignored) {
+                        logger.warn("Thread interrupted while waiting for audio, aborting execution");
+                        aborted.set(true);
                     }
                     if (aborted.get()) {
                         break;
@@ -268,7 +275,7 @@ public class RustpotterKSService implements KSService {
         logger.debug("rustpotter stopped");
     }
 
-    private void asyncUpdateActiveInstances(RustpotterKSConfiguration config) {
+    private void asyncUpdateActiveInstances() {
         int nInstances;
         synchronized (this.runningInstances) {
             nInstances = this.runningInstances.size();
@@ -276,8 +283,7 @@ public class RustpotterKSService implements KSService {
         if (nInstances == 0) {
             return;
         }
-        var rustpotterConfig = new RustpotterConfig();
-        setBindingOptions(config, rustpotterConfig);
+        var rustpotterConfig = initRustpotterConfig();
         executor.submit(() -> {
             logger.debug("updating {} running instances", nInstances);
             synchronized (this.runningInstances) {

@@ -3,9 +3,10 @@
 This voice service allows you to use the open source library Rustpotter as your keyword spotter in openHAB.
 [Rustpotter](https://github.com/GiviMAD/rustpotter) is a free and open-source keywords spotter written in rust.
 
-Rustpotter provides personal on-device wake word detection. You need to generate a file for your keyword using audio samples.
+Rustpotter provides personal on-device wake word detection.
+You need to generate a file for your keyword using audio samples.
 
-You can test library in your browser using these web pages:
+You can test the library in your browser using these web pages:
 
 - [The spot demo](https://givimad.github.io/rustpotter-worklet-demo/), which include some example wakewords (but it's recommended to use your own).
 - [The wakeword reference creation demo](https://givimad.github.io/rustpotter-create-model-demo/), it allows you to record compatible wav files and generate a wakeword reference files that you can test on the previous page.
