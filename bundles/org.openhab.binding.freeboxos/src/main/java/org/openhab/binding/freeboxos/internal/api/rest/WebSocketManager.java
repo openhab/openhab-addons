@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.api.rest;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.REACHABLE;
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,7 +32,6 @@ import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
@@ -60,20 +59,21 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     private static final String HOST_UNREACHABLE = "lan_host_l3addr_unreachable";
     private static final String HOST_REACHABLE = "lan_host_l3addr_reachable";
     private static final String VM_CHANGED = "vm_state_changed";
-    private static final Register REGISTRATION = new Register("register",
-            List.of(VM_CHANGED, HOST_REACHABLE, HOST_UNREACHABLE));
+    private static final Register REGISTRATION = new Register(VM_CHANGED, HOST_REACHABLE, HOST_UNREACHABLE);
     private static final String WS_PATH = "ws/event";
 
     private final Logger logger = LoggerFactory.getLogger(WebSocketManager.class);
     private final Map<MACAddress, ApiConsumerHandler> listeners = new HashMap<>();
-    private final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getScheduledPool(FreeboxOsBindingConstants.BINDING_ID);
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
     private final ApiHandler apiHandler;
     private final WebSocketClient client;
     private Optional<ScheduledFuture<?>> reconnectJob = Optional.empty();
     private volatile @Nullable Session wsSession;
 
     private record Register(String action, List<String> events) {
+        Register(String... events) {
+            this("register", List.of(events));
+        }
     }
 
     public WebSocketManager(FreeboxOsSession session) throws FreeboxException {
