@@ -5,8 +5,7 @@
 
 	<type>voice</type>
 	<name>Rustpotter Keyword Spotter</name>
-	<description>This voice service allows you to use the open source library Rustpotter as your keyword spotter in
-		openHAB.</description>
+	<description>This voice service allows using the open source project Rustpotter as your keyword spotter in openHAB.</description>
 	<connection>none</connection>
 
 	<service-id>org.openhab.voice.rustpotterks</service-id>
