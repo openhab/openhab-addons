@@ -40,7 +40,7 @@ public class SignalStrength {
      * <li>RSSI <= -100: returns 0
      * <li>-100 < RSSI < -50: returns a value between 0 and 1 (linearly distributed)
      * <li>RSSI >= -50: returns 1
-     * <ul>
+     * </ul>
      *
      * @return a value between 0 and 1. 0 being worst strength and 1
      *         being best strength.

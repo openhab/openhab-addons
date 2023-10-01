@@ -407,7 +407,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
      * Enable resources runtime value notifications.
      *
      * @param resourceIdList List of resource Identifiers.
-     * @return True is connection successfully opened.
      */
     public void enableRuntimeValueNotifications(Set<Integer> resourceIdList) throws IhcExecption {
         // @formatter:off
@@ -444,7 +443,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
      * @param timeoutInSeconds How many seconds to wait notifications.
      * @return List of received runtime value notifications.
      * @throws SocketTimeoutException
-     * @throws IhcTimeoutExecption
+     * @throws IhcExecption
      */
     public List<WSResourceValue> waitResourceValueNotifications(int timeoutInSeconds) throws IhcExecption {
         // @formatter:off

@@ -44,7 +44,7 @@ public class PHCHelper {
     /**
      * Convert the byte b into a binary String
      *
-     * @param b
+     * @param bytes
      * @return
      */
     public static Object bytesToBinaryString(byte[] bytes) {

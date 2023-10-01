@@ -51,8 +51,6 @@ public class PresetContainer {
 
     /**
      * Returns a Collection of all Presets
-     *
-     * @param operationModeType
      */
     public Collection<ContentItem> getAllPresets() {
         return mapOfPresets.values();

@@ -46,7 +46,8 @@ import com.google.gson.JsonObject;
  * {@link EventHandler} needs to be informed of another event-type, you can use the methods
  * {@link #addSubscribe(String)} or {@link #addSubscribeEvents(List)} to add more than one event-type. To remove a
  * subscribed event you can use the method {@link #removeSubscribe(String, String)}, you also have to change the return
- * of the {@link EventHandler} methods {@link EventHandler#getSupportetEvents()} and
+ * of the {@link org.openhab.binding.digitalstrom.internal.lib.event.EventHandler} methods
+ * {@link EventHandler#getSupportedEvents()} and
  * {@link EventHandler#supportsEvent(String)}.
  * <br>
  * To start and stop the listening you have to call the methods {@link #start()} and {@link #stop()}.

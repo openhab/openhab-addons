@@ -134,7 +134,6 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
     /**
      * Updates offline status off the Bridge when an error occurs.
      *
-     * @param status
      * @param detail
      * @param message
      */

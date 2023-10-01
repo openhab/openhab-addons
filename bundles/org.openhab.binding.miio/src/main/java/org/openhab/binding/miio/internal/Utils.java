@@ -114,7 +114,7 @@ public final class Utils {
      * Saves string to file in userdata folder
      *
      * @param filename
-     * @param string with content
+     * @param data String with content
      * @param logger
      */
     public static void saveToFile(String filename, String data, Logger logger) {
