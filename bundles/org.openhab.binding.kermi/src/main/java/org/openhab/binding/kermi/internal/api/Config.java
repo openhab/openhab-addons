@@ -21,6 +21,9 @@ public class Config {
     @SerializedName("Unit")
     private String unit;
 
+    @SerializedName("DatapointType")
+    private int datapointType;
+
     @SerializedName("PossibleValues")
     private Map<String, String> possibleValues;
 
@@ -62,6 +65,14 @@ public class Config {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public int getDatapointType() {
+        return datapointType;
+    }
+
+    public void setDatapointType(int datapointType) {
+        this.datapointType = datapointType;
     }
 
     public Map<String, String> getPossibleValues() {

@@ -20,10 +20,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.kermi.internal.api.KermiHttpUtil;
+import org.openhab.binding.kermi.internal.handler.KermiBaseThingHandler;
 import org.openhab.binding.kermi.internal.handler.KermiBridgeHandler;
-import org.openhab.binding.kermi.internal.handler.KermiDrinkingWaterHeatingThingHandler;
-import org.openhab.binding.kermi.internal.handler.KermiHeatpumpManagerThingHandler;
-import org.openhab.binding.kermi.internal.handler.KermiHeatpumpThingHandler;
 import org.openhab.binding.kermi.internal.model.KermiSiteInfo;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -37,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
  * The {@link KermiHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author marco@descher.at - Initial contribution
+ * @author Marco Descher - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.kermi", service = ThingHandlerFactory.class)
@@ -75,11 +73,15 @@ public class KermiHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
             return new KermiBridgeHandler((Bridge) thing, httpUtil, kermiSiteInfo);
         } else if (thingTypeUID.equals(THING_TYPE_HEATPUMP_MANAGER)) {
-            return new KermiHeatpumpManagerThingHandler(thing, httpUtil, kermiSiteInfo);
+            KermiBaseThingHandler heatpumpManagerHandler = new KermiBaseThingHandler(thing, httpUtil, kermiSiteInfo);
+            heatpumpManagerHandler.setDeviceId(DEVICE_ID_HEATPUMP_MANAGER);
+            return heatpumpManagerHandler;
         } else if (thingTypeUID.equals(THING_TYPE_DRINKINGWATER_HEATING)) {
-            return new KermiDrinkingWaterHeatingThingHandler(thing, httpUtil, kermiSiteInfo);
+            return new KermiBaseThingHandler(thing, httpUtil, kermiSiteInfo);
         } else if (thingTypeUID.equals(THING_TYPE_HEATPUMP)) {
-            return new KermiHeatpumpThingHandler(thing, httpUtil, kermiSiteInfo);
+            return new KermiBaseThingHandler(thing, httpUtil, kermiSiteInfo);
+        } else if (thingTypeUID.equals(THING_TYPE_ROOM_HEATING)) {
+            return new KermiBaseThingHandler(thing, httpUtil, kermiSiteInfo);
         }
 
         return null;

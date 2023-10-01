@@ -18,10 +18,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.openhab.binding.kermi.internal.KermiBindingConstants;
 import org.openhab.binding.kermi.internal.KermiCommunicationException;
@@ -43,42 +44,24 @@ public class KermiHttpUtil {
 
     private String hostname = "";
     private String password = "";
-    private HttpUtil httpUtil;
     private Properties httpHeaders;
     private Gson gson;
-
-    private Map<String, DeviceInfo> deviceInfo;
 
     public KermiHttpUtil() {
         httpHeaders = new Properties();
         gson = new Gson();
-        httpUtil = new HttpUtil();
     }
 
-    public void executeCheckBridgeOnline() throws KermiCommunicationException {
-        executeUrl("GET", "http://" + hostname, null, null);
+    private String getBaseApiUrl() {
+        return "http://" + hostname + "/api/";
     }
 
-    public GetDevicesResponse getDevicesByFilter() throws KermiCommunicationException {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("WithDetails", Boolean.FALSE);
-        jsonObject.addProperty("WithChildDevices", Boolean.FALSE);
-        jsonObject.addProperty("Recursive", Boolean.FALSE);
-        jsonObject.add("DeviceTypes", new JsonArray());
-        jsonObject.add("MenuEntries", new JsonArray());
-        String executeUrl = executeUrl("POST", parseUrl(KermiBindingConstants.HPM_GETDEVICESBYFILTER_URL, hostname),
-                jsonObject.toString(), CONTENT_TYPE);
-        return gson.fromJson(executeUrl, GetDevicesResponse.class);
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 
-    public GetDeviceResponse getDeviceInfoByDeviceId(String deviceId) throws KermiCommunicationException {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("DeviceId", deviceId);
-        jsonObject.addProperty("WithDetails", Boolean.TRUE);
-        jsonObject.addProperty("Recursive", Boolean.TRUE);
-        String executeUrl = executeUrl("POST", parseUrl(KermiBindingConstants.HPM_GETDEVICE_URL, hostname),
-                jsonObject.toString(), CONTENT_TYPE);
-        return gson.fromJson(executeUrl, GetDeviceResponse.class);
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**
@@ -89,6 +72,7 @@ public class KermiHttpUtil {
      * @return the response body
      * @throws KermiCommunicationException when the request execution failed or interrupted
      */
+    @SuppressWarnings("null")
     public synchronized String executeUrl(String httpMethod, String url, String content, String contentType)
             throws KermiCommunicationException {
 
@@ -156,20 +140,47 @@ public class KermiHttpUtil {
         executeUrl("POST", getBaseApiUrl() + "Security/Login", jsonObject.toString(), CONTENT_TYPE);
     }
 
-    private String getBaseApiUrl() {
-        return "http://" + hostname + "/api/";
+    public GetDevicesResponse getAllDevices() throws KermiCommunicationException {
+        String response = executeUrl("GET", parseUrl(KermiBindingConstants.HPM_DEVICE_GETALLDEVICES_URL, hostname),
+                null, null);
+        return gson.fromJson(response, GetDevicesResponse.class);
     }
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
+    public MenuGetChildEntriesResponse getMenuChildEntries(String deviceId, @NonNull String parentMenuEntryId)
+            throws KermiCommunicationException {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("DeviceId", deviceId);
+        jsonObject.addProperty("ParentMenuEntryId", parentMenuEntryId);
+        jsonObject.addProperty("WithDetails", Boolean.TRUE);
+
+        String response = executeUrl("POST", parseUrl(KermiBindingConstants.HPM_MENU_GETCHILDENTRIES_URL, hostname),
+                jsonObject.toString(), CONTENT_TYPE);
+        return gson.fromJson(response, MenuGetChildEntriesResponse.class);
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    /**
+     * Fetch update datapoint values for the given idTuples
+     *
+     * @param idTuples with [0] being the DeviceId, and [1] being the DatapointConfigId
+     * @return
+     * @throws KermiCommunicationException
+     */
+    public DatapointReadValuesResponse getDatapointReadValues(Set<String[]> idTuples)
+            throws KermiCommunicationException {
 
-    public void setDeviceInfo(Map<String, DeviceInfo> deviceInfo) {
-        this.deviceInfo = deviceInfo;
+        JsonObject jsonObject = new JsonObject();
+        JsonArray datapointValues = new JsonArray(idTuples.size());
+        jsonObject.add("DatapointValues", datapointValues);
+        idTuples.forEach(idt -> {
+            JsonObject _entryObject = new JsonObject();
+            _entryObject.addProperty("DeviceId", idt[0]);
+            _entryObject.addProperty("DatapointConfigId", idt[1]);
+            datapointValues.add(_entryObject);
+        });
+
+        String response = executeUrl("POST", parseUrl(KermiBindingConstants.HPM_DATAPOINT_READVALUES_URL, hostname),
+                jsonObject.toString(), CONTENT_TYPE);
+        return gson.fromJson(response, DatapointReadValuesResponse.class);
     }
 
 }

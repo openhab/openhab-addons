@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.kermi.internal;
 
+import java.io.File;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link KermiBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author marco@descher.at - Initial contribution
+ * @author Marco Descher - Initial contribution
  */
 @NonNullByDefault
 public class KermiBindingConstants {
@@ -45,13 +48,24 @@ public class KermiBindingConstants {
     public static final String WELL_KNOWN_NAME_FS_HEAT_TEMP_ACT = "BufferSystem_HeatingTemperatureActual";
     public static final String WELL_KNOWN_NAME_COMB_HEATPUMP_STATE = "Rubin_CombinedHeatpumpState";
     public static final String WELL_KNOWN_NAME_COMB_HEATPUMP_CURR_COP = "Rubin_CurrentCOP";
+    public static final String WELL_KNOWN_NAME_CURR_OUT_CAP = "Rubin_CurrentOutputCapacity";
+    public static final String WELL_KNOWN_NAME_HEAT_AIR_TEMPERATORE = "LuftTemperatur";
 
     // All Urls
-    public static final String HPM_GETDEVICESBYFILTER_URL = "http://%IP%/api/Device/GetDevicesByFilter/00000000-0000-0000-0000-000000000000";
-    public static final String HPM_GETDEVICE_URL = "http://%IP%/api/Device/GetDevice/00000000-0000-0000-0000-000000000000";
+    public static final String HPM_DEVICE_GETDEVICESBYFILTER_URL = "http://%IP%/api/Device/GetDevicesByFilter/00000000-0000-0000-0000-000000000000";
+    public static final String HPM_DEVICE_GETDEVICE_URL = "http://%IP%/api/Device/GetDevice/00000000-0000-0000-0000-000000000000";
+    public static final String HPM_DEVICE_GETALLDEVICES_URL = "http://%IP%/api/Device/GetAllDevices/00000000-0000-0000-0000-000000000000";
+    public static final String HPM_MENU_GETCHILDENTRIES_URL = "http://%IP%/api/Menu/GetChildEntries/00000000-0000-0000-0000-000000000000";
+    public static final String HPM_DATAPOINT_READVALUES_URL = "http://%IP%/api/Datapoint/ReadValues/00000000-0000-0000-0000-000000000000";
 
     public static String parseUrl(String url, String ip) {
-        return url.replace("%IP%", ip == null ? "" : ip.trim());
+        return url.replace("%IP%", ip.trim());
+    }
+
+    public static File getKermiUserDataFolder() {
+        File kermiUserDataFolder = new File(OpenHAB.getUserDataFolder(), "binding.kermi");
+        kermiUserDataFolder.mkdir();
+        return kermiUserDataFolder;
     }
 
 }

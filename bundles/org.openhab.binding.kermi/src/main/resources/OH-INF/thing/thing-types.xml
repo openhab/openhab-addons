@@ -31,7 +31,6 @@
 				<default>51</default>
 			</parameter>
 		</config-description>
-
 	</thing-type>
 
 	<!-- heatpump -->
@@ -50,6 +49,29 @@
 				<label>Address ID</label>
 				<description>Specific device identifier</description>
 				<default>40</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- room-heating -->
+	<thing-type id="room-heating">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Room Heating</label>
+		
+		  <channels>
+            <channel id="Rubin_CombinedHeatpumpState" typeId="combinedHeatpumpState" />
+            <channel id="BufferSystem_CoolingTemperatureActual" typeId="temperature" />
+            <channel id="BufferSystem_HeatingTemperatureActual" typeId="temperature" />
+            <channel id="LuftTemperatur" typeId="temperature" />
+        </channels>
+
+		<config-description>
+			<parameter name="address" type="integer">
+				<label>Address ID</label>
+				<description>Specific device identifier</description>
+				<default>50</default>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -1,14 +1,20 @@
 package org.openhab.binding.kermi.internal.handler;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.kermi.internal.KermiBridgeConfiguration;
 import org.openhab.binding.kermi.internal.KermiCommunicationException;
+import org.openhab.binding.kermi.internal.api.DeviceInfo;
+import org.openhab.binding.kermi.internal.api.GetDevicesResponse;
 import org.openhab.binding.kermi.internal.api.KermiHttpUtil;
 import org.openhab.binding.kermi.internal.model.KermiSiteInfo;
 import org.openhab.core.thing.Bridge;
@@ -65,6 +71,7 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
         if (validConfig) {
             httpUtil.setHostname(config.hostname);
             httpUtil.setPassword(config.password);
+
             startAutomaticRefresh();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
@@ -81,7 +88,6 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        System.out.println("hallo");
     }
 
     @Override
@@ -102,21 +108,30 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    @SuppressWarnings("null")
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
             final KermiBridgeConfiguration config = getConfigAs(KermiBridgeConfiguration.class);
             Runnable runnable = () -> {
                 try {
-                    checkBridgeOnline(config);
+                    for (KermiBaseThingHandler service : services) {
+                        String deviceId = service.getDeviceId();
+                        if (deviceId != null) {
+                            service.getThing().getChannels().stream().map(channel -> channel.getUID().getId())
+                                    .forEach(channelId -> kermiSiteInfo.putRefreshBinding(channelId, deviceId));
+                        }
+                    }
+                    updateData();
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
                     }
                     for (KermiBaseThingHandler service : services) {
-                        service.refresh(config);
+                        service.refresh();
                     }
                 } catch (KermiCommunicationException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                     kermiSiteInfo.clearSiteInfo();
+                    logger.error("Communication error", e);
                 }
             };
 
@@ -126,8 +141,15 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
 
     }
 
-    private void checkBridgeOnline(KermiBridgeConfiguration config) throws KermiCommunicationException {
-        httpUtil.executeCheckBridgeOnline();
+    private void updateData() throws KermiCommunicationException {
+        if (!kermiSiteInfo.isInitialized()) {
+            GetDevicesResponse getDevicesResponse = httpUtil.getAllDevices();
+            List<DeviceInfo> deviceInfo = getDevicesResponse.getResponseData();
+            Map<String, DeviceInfo> _deviceInfo = deviceInfo.stream()
+                    .collect(Collectors.toMap(DeviceInfo::getDeviceId, Function.identity()));
+            kermiSiteInfo.initializeSiteInfo(httpUtil, _deviceInfo);
+        }
+        kermiSiteInfo.updateStateValues(httpUtil);
     }
 
 }

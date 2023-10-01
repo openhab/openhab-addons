@@ -1,103 +1,62 @@
-# Notes
+# Kermi Binding
 
-https://www.kermi.com/en/de/indoor-climate/products/heat-pumps-and-storage/x-center-controller/
+This binding connects to [Kermi x-center controller](https://www.kermi.com/en/de/indoor-climate/products/heat-pumps-and-storage/x-center-controller/ "x-center-controller") for heat pumps.
 
 # Kermi Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+Current support is developed and tested on 
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+* a franchised version of the Kermi heatpump, namely the
+[Heizbösch MOZART13AC-RW60](https://www.boesch.at/produkte/heizen/waermepumpe/luft/modulierende-luft-wasser-waermepumpe-mozart-aussenaufstellung~495589) heatpump manager version  _1.6.0.118_ .
 
-_Put each sentence in a separate line to improve readability of diffs._
+No official documentation could be found or gathered. This plug-in is based
+on reverse engineering the protocol.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The x-center consists of a heat-pump manager that provides the communication bridge. 
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+- `bridge`: The communication bridge, provided by the heat pump manager
+- `drinkingwater-heating`: The storage module responsible for heating the drinking water (Default bus address = 51)
+- `room-heating`: The storage module responsible for heating rooms (Default bus address = 50)
+- `heatpump-manager`: As thing
+- `heatpump`: The heatpump element itself (Default bus address = 40)
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+There is no obvious way to get a listing of all Datapoints for a given Device. Due to this, on first
+connection to a site, the API for the UI User Interface is used, to iterate over all menu entries to
+collect the datapoints - which may take a while.
+
+The gathered data is then stored in `OH_USERDATA/binding.kermi` and loaded on subsequent binding lifecycle
+changes. The cache data is bound to the device-uuid and its serial number. If these values change,
+the datapoints are automatically re-initialized.
+
+
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
+The following samples are provided, representing the current state of my usage.
 
 ```
-# Configuration for the Kermi Binding
-#
-# Default secret key for the pairing of the Kermi Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
+// kermi.things
+Bridge kermi:bridge:heatpumpbridge [hostname="xcenter-url",password="password",refreshInterval=60] {
+    Thing drinkingwater-heating dwheating [ address=51 ]
+    Thing room-heating rheating [ address=50 ]
+    Thing heatpump heatpump [ address=40 ]
+}
+
 ```
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
+The plugin is configured to collect all `WellKnownName` datapoints, so generally
+all of them should be supported. At the moment I only test the following items in read-only mode.
 
-_If your binding does not offer any generic configurations, you can remove this section completely._
-
-## Thing Configuration
-
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-### `sample` Thing Configuration
-
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
-
-## Channels
-
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
-
-## Full Example
-
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
-
-### Thing Configuration
-
-```java
-Example thing configuration goes here.
 ```
-### Item Configuration
+// kermi.items
+Number:Temperature Drinking_water_temperature  {channel="kermi:drinkingwater-heating:heatpumpbridge:dwheating:BufferSystem_TweTemperatureActual"}
 
-```java
-Example item configuration goes here.
+Number:Temperature Heating_current_temperature_buffer {channel="kermi:room-heating:heatpumpbridge:rheating:BufferSystem_HeatingTemperatureActual"}
+Number:Temperature Cooling_current_temperature_buffer {channel="kermi:room-heating:heatpumpbridge:rheating:BufferSystem_CoolingTemperatureActual"}
+
+String Combined_Heatpump_State {channel="kermi:room-heating:heatpumpbridge:hpmanager:Rubin_CombinedHeatpumpState"}
 ```
-
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
-
-# NOTES
-
-1. Bridge init - check socket connection to host
-2. heatpump-manager - get devices

@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.kermi.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.openhab.binding.kermi.internal.KermiBridgeConfiguration;
+import java.util.Map;
+
+import org.openhab.binding.kermi.internal.KermiBaseDeviceConfiguration;
 import org.openhab.binding.kermi.internal.KermiCommunicationException;
-import org.openhab.binding.kermi.internal.api.BaseResponse;
+import org.openhab.binding.kermi.internal.api.DeviceInfo;
 import org.openhab.binding.kermi.internal.api.KermiHttpUtil;
 import org.openhab.binding.kermi.internal.model.KermiSiteInfo;
 import org.openhab.core.thing.Bridge;
@@ -32,25 +33,18 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+public class KermiBaseThingHandler extends BaseThingHandler {
 
-public abstract class KermiBaseThingHandler extends BaseThingHandler {
-
-    private static final int API_TIMEOUT = 5000;
     private final Logger logger = LoggerFactory.getLogger(KermiBaseThingHandler.class);
-    private final String serviceDescription;
-    private KermiBaseThingHandler bridgeHandler;
-    private final Gson gson;
     private final KermiHttpUtil httpUtil;
     private final KermiSiteInfo kermiSiteInfo;
+    private String busAddress;
+    private String deviceId;
 
     public KermiBaseThingHandler(Thing thing, KermiHttpUtil httpUtil, KermiSiteInfo kermiSiteInfo) {
         super(thing);
         this.httpUtil = httpUtil;
         this.kermiSiteInfo = kermiSiteInfo;
-        gson = new Gson();
-        serviceDescription = getDescription();
     }
 
     public KermiHttpUtil getHttpUtil() {
@@ -62,6 +56,12 @@ public abstract class KermiBaseThingHandler extends BaseThingHandler {
     }
 
     @Override
+    public void channelLinked(ChannelUID channelUID) {
+        logger.info("channelLinked " + channelUID);
+        super.channelLinked(channelUID);
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateChannel(channelUID.getId());
@@ -70,7 +70,12 @@ public abstract class KermiBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing {} Service", serviceDescription);
+        KermiBaseDeviceConfiguration config = getConfigAs(KermiBaseDeviceConfiguration.class);
+        if (config.address != null) {
+            // null for heatpump-manager
+            busAddress = config.address.toString();
+        }
+        logger.debug("Initializing busAddress {}", busAddress);
         // this is important so FroniusBridgeHandler::childHandlerInitialized gets called
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null) {
@@ -82,6 +87,10 @@ public abstract class KermiBaseThingHandler extends BaseThingHandler {
         }
     }
 
+    public String getBusAddress() {
+        return busAddress;
+    }
+
     /**
      * Update all Channels
      */
@@ -91,13 +100,23 @@ public abstract class KermiBaseThingHandler extends BaseThingHandler {
         }
     }
 
+    public void updateProperties(DeviceInfo deviceInfo) {
+        if (deviceInfo == null) {
+            return;
+        }
+
+        Map<String, String> properties = editProperties();
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, deviceInfo.getSerial());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, deviceInfo.getSoftwareVersion());
+        updateProperties(properties);
+    }
+
     /**
      * Update the channel from the last data
      *
      * @param channelId the id identifying the channel to be updated
      */
     protected void updateChannel(String channelId) {
-        System.out.println(channelId);
         if (!isLinked(channelId)) {
             return;
         }
@@ -114,29 +133,36 @@ public abstract class KermiBaseThingHandler extends BaseThingHandler {
         updateState(channelId, state);
     }
 
-    /**
-     * return an internal description for logging
-     *
-     * @return the description of the thing
-     */
-    protected abstract String getDescription();
+    public String getDeviceId() {
+        return deviceId;
+    }
 
-    /**
-     * get the "new" associated value for a channelId
-     *
-     * @param channelId the id identifying the channel
-     * @return the "new" associated value
-     */
-    protected abstract State getValue(String channelId);
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    protected State getValue(String channelId) {
+        if (getDeviceId() == null) {
+            return null;
+        }
+
+        final String[] fields = channelId.split("#");
+        if (fields.length < 1) {
+            return null;
+        }
+
+        final String fieldName = fields[0];
+        return getKermiSiteInfo().getStateByWellKnownName(fieldName, getDeviceId());
+    }
 
     /**
      * Called by the bridge to fetch data and update channels
      *
      * @param bridgeConfiguration the connected bridge configuration
      */
-    public void refresh(KermiBridgeConfiguration bridgeConfiguration) {
+    public void refresh() {
         try {
-            handleRefresh(bridgeConfiguration);
+            handleRefresh();
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -146,63 +172,18 @@ public abstract class KermiBaseThingHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * This method should be overridden to do whatever a thing must do to update its channels
-     * this function is called from the bridge in a given interval
-     *
-     * @param bridgeConfiguration the connected bridge configuration
-     */
-    protected abstract void handleRefresh(KermiBridgeConfiguration bridgeConfiguration)
-            throws KermiCommunicationException;
-
-    /**
-     *
-     * @param type response class type
-     * @param url to request
-     * @return the object representation of the json response
-     */
-    protected @NonNull <T extends BaseResponse> T collectDataFromUrl(Class<T> type, String url)
-            throws KermiCommunicationException {
-        try {
-            int attempts = 1;
-            while (true) {
-                logger.trace("Fetching URL = {}", url);
-                // String response = KermiHttpUtil.executeUrl(url, API_TIMEOUT);
-                // logger.trace("aqiResponse = {}", response);
-
-                // T result = gson.fromJson(response, type);
-                // if (result == null) {
-                // throw new KermiCommunicationException("Empty json result");
-                // }
-
-                // HeadStatus status = result.getHead().getStatus();
-                // if (status.getCode() == 0) {
-                // return result;
-                // }
-
-                // Sometimes Fronius would return a HTTP status 200 with a proper JSON data
-                // with Reason: Transfer timeout.
-                //
-                // "Status" : {
-                // "Code" : 8,
-                // "Reason" : "Transfer timeout.",
-                // "UserMessage" : ""
-                // },
-                // logger.debug("Error from Fronius attempt #{}: {} - {}", attempts, status.getCode(),
-                // status.getReason());
-                // if (attempts >= 3) {
-                // throw new KermiCommunicationException(status.getReason());
-                // }
-                Thread.sleep(500 * attempts);
-                attempts++;
+    protected void handleRefresh() throws KermiCommunicationException {
+        if (getDeviceId() == null) {
+            DeviceInfo deviceInfo = getKermiSiteInfo().getDeviceInfoByAddress(getBusAddress());
+            if (deviceInfo != null) {
+                setDeviceId(deviceInfo.getDeviceId());
+                updateProperties(deviceInfo);
+            } else {
+                throw new KermiCommunicationException("Not yet initialized");
             }
-
-        } catch (JsonSyntaxException | NumberFormatException e) {
-            logger.debug("Received Invalid JSON Data", e);
-            throw new KermiCommunicationException("Invalid JSON data received", e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new KermiCommunicationException("Data collection interrupted", e);
         }
-    }
+
+        updateChannels();
+    };
+
 }
