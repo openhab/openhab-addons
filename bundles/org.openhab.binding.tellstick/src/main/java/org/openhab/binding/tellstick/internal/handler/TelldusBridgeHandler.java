@@ -51,7 +51,7 @@ public interface TelldusBridgeHandler {
     /**
      * Get a sensor from the bridgehandler.
      *
-     * @param serialNumber
+     * @param deviceUUId
      * @return
      */
     Device getSensor(String deviceUUId);

@@ -25,7 +25,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link RadioThermostatBinding} class defines common constants, which are
+ * The {@link RadioThermostatBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Michael Lobstein - Initial contribution

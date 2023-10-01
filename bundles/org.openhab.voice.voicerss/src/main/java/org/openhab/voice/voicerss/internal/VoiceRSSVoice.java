@@ -75,7 +75,7 @@ public class VoiceRSSVoice implements Voice {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Locale getLocale() {

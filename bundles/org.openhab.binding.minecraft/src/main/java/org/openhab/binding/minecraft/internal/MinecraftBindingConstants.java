@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link MinecraftBinding} class defines common constants, which are
+ * The {@link MinecraftBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Mattias Markehed - Initial contribution

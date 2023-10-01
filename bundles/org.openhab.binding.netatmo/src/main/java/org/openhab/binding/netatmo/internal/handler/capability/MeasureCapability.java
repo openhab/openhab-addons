@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -42,26 +43,17 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class MeasureCapability extends RestCapability<WeatherApi> {
+public class MeasureCapability extends CacheWeatherCapability {
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();
 
     public MeasureCapability(CommonInterface handler, List<ChannelHelper> helpers) {
-        super(handler, WeatherApi.class);
+        super(handler, Duration.ofMinutes(30));
         MeasuresChannelHelper measureChannelHelper = (MeasuresChannelHelper) helpers.stream()
                 .filter(c -> c instanceof MeasuresChannelHelper).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         "MeasureCapability must find a MeasuresChannelHelper, please file a bug report."));
         measureChannelHelper.setMeasures(measures);
-    }
-
-    @Override
-    public List<NAObject> updateReadings(WeatherApi api) {
-        String bridgeId = handler.getBridgeId();
-        String deviceId = bridgeId != null ? bridgeId : handler.getId();
-        String moduleId = bridgeId != null ? handler.getId() : null;
-        updateMeasures(api, deviceId, moduleId);
-        return List.of();
     }
 
     private void updateMeasures(WeatherApi api, String deviceId, @Nullable String moduleId) {
@@ -82,12 +74,21 @@ public class MeasureCapability extends RestCapability<WeatherApi> {
                         MeasureClass.AS_SET.stream().filter(mc -> mc.apiDescriptor.equals(descriptor))
                                 .reduce((first, second) -> second)
                                 .ifPresent(mc -> measures.put(channel.getUID().getIdWithoutGroup(),
-                                        result instanceof ZonedDateTime ? toDateTimeType((ZonedDateTime) result)
+                                        result instanceof ZonedDateTime zonedDateTime ? toDateTimeType(zonedDateTime)
                                                 : result instanceof Double ? toQuantityType((Double) result, mc)
                                                         : UnDefType.UNDEF));
                     } catch (NetatmoException e) {
                         logger.warn("Error getting measures for channel {}, check configuration", channel.getLabel());
                     }
                 });
+    }
+
+    @Override
+    protected List<NAObject> getFreshData(WeatherApi api) {
+        String bridgeId = handler.getBridgeId();
+        String deviceId = bridgeId != null ? bridgeId : handler.getId();
+        String moduleId = bridgeId != null ? handler.getId() : null;
+        updateMeasures(api, deviceId, moduleId);
+        return List.of();
     }
 }

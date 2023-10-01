@@ -268,13 +268,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(OpenWebNetDeviceDiscoveryService.class);
+        return Set.of(OpenWebNetDeviceDiscoveryService.class);
     }
 
     /**
      * Search for devices connected to this bridge handler's gateway
-     *
-     * @param listener to receive device found notifications
      */
     public synchronized void searchDevices() {
         scanIsActive = true;
@@ -505,8 +503,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return; // we ignore ACKS/NACKS
         }
         // GATEWAY MANAGEMENT
-        if (msg instanceof GatewayMgmt) {
-            GatewayMgmt gwMsg = (GatewayMgmt) msg;
+        if (msg instanceof GatewayMgmt gwMsg) {
             if (dateTimeSynch && GatewayMgmt.DimGatewayMgmt.DATETIME.equals(gwMsg.getDim())) {
                 checkDateTimeDiff(gwMsg);
             }
@@ -573,9 +570,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.warn("received onConnected() but gateway is null");
             return;
         }
-        if (gw instanceof USBGateway) {
+        if (gw instanceof USBGateway usbGateway) {
             logger.info("---- CONNECTED to Zigbee USB gateway bridge '{}' (serialPort: {})", thing.getUID(),
-                    ((USBGateway) gw).getSerialPortName());
+                    usbGateway.getSerialPortName());
         } else {
             logger.info("---- CONNECTED to BUS gateway bridge '{}' ({}:{})", thing.getUID(),
                     ((BUSGateway) gw).getHost(), ((BUSGateway) gw).getPort());
@@ -736,8 +733,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      */
     public String normalizeWhere(Where where) {
         String str = where.value();
-        if (where instanceof WhereZigBee) {
-            str = ((WhereZigBee) where).valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
+        if (where instanceof WhereZigBee whereZigBee) {
+            str = whereZigBee.valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
         } else {
             if (str.indexOf("#4#") == -1) { // skip APL#4#bus case
                 if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z,

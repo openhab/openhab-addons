@@ -82,8 +82,7 @@ public interface SmartherAccountHandler extends ThingHandler {
      *
      * @return the list of registered subscriptions, or an empty {@link List} in case of no subscriptions found
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API
+     * @throws SmartherGatewayException in case of communication issues with the Smarther API
      */
     List<Subscription> getSubscriptions() throws SmartherGatewayException;
 
@@ -97,8 +96,7 @@ public interface SmartherAccountHandler extends ThingHandler {
      *
      * @return the identifier this subscription has been registered under
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API
+     * @throws SmartherGatewayException in case of communication issues with the Smarther API
      */
     String subscribePlant(String plantId, String notificationUrl) throws SmartherGatewayException;
 
@@ -110,10 +108,7 @@ public interface SmartherAccountHandler extends ThingHandler {
      * @param subscriptionId
      *            the identifier of the subscription to be removed for the given plant
      *
-     * @return {@code true} if the plant is successfully unsubscribed, {@code false} otherwise
-     *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API
+     * @throws SmartherGatewayException in case of communication issues with the Smarther API
      */
     void unsubscribePlant(String plantId, String subscriptionId) throws SmartherGatewayException;
 
@@ -138,21 +133,19 @@ public interface SmartherAccountHandler extends ThingHandler {
      *
      * @return the current status of the chronothermostat module
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API
+     * @throws SmartherGatewayException in case of communication issues with the Smarther API
      */
     ModuleStatus getModuleStatus(String plantId, String moduleId) throws SmartherGatewayException;
 
     /**
      * Sends new settings to be applied to a given chronothermostat module.
      *
-     * @param settings
+     * @param moduleSettings
      *            the module settings to be applied
      *
      * @return {@code true} if the settings have been successfully applied, {@code false} otherwise
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API
+     * @throws SmartherGatewayException in case of communication issues with the Smarther API
      */
     boolean setModuleStatus(ModuleSettings moduleSettings) throws SmartherGatewayException;
 
@@ -166,8 +159,7 @@ public interface SmartherAccountHandler extends ThingHandler {
      *
      * @return the list of registered programs, or an empty {@link List} in case of no programs found
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API
+     * @throws SmartherGatewayException in case of communication issues with the Smarther API
      */
     List<Program> getModulePrograms(String plantId, String moduleId) throws SmartherGatewayException;
 

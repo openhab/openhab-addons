@@ -39,16 +39,18 @@ public class IhcAuthenticationService extends IhcBaseService {
 
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
-                + " <soapenv:Body>\n"
-                + "  <authenticate1 xmlns=\"utcs\">\n"
-                + "   <password>%s</password>\n"
-                + "   <username>%s</username>\n"
-                + "   <application>%s</application>\n"
-                + "  </authenticate1>\n"
-                + " </soapenv:Body>\n"
-                + "</soapenv:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                 <soapenv:Body>
+                  <authenticate1 xmlns="utcs">
+                   <password>%s</password>
+                   <username>%s</username>
+                   <application>%s</application>
+                  </authenticate1>
+                 </soapenv:Body>
+                </soapenv:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, password, username, application);

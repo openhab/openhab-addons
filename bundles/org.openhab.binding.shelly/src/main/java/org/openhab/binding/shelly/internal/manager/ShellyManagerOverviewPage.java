@@ -126,7 +126,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
 
         properties.clear();
         properties.put("numberDevices", "<span class=\"footerDevices\">" + "Number of devices: " + filteredDevices
-                + " of " + String.valueOf(getThingHandlers().size()) + "&nbsp;</span>");
+                + " of " + getThingHandlers().size() + "&nbsp;</span>");
         properties.put(ATTRIBUTE_CSS_FOOTER, loadHTML(OVERVIEW_FOOTER, properties));
         html += deviceHtml + loadHTML(FOOTER_HTML, properties);
         return new ShellyMgrResponse(fillAttributes(html, properties), HttpStatus.OK_200);

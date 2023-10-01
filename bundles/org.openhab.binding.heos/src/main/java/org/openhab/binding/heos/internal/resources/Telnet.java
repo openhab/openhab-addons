@@ -166,8 +166,8 @@ public class Telnet {
                 throw new ReadException(e);
             } catch (ExecutionException e) {
                 Throwable cause = e.getCause();
-                if (cause instanceof IOException) {
-                    throw (IOException) cause;
+                if (cause instanceof IOException exception) {
+                    throw exception;
                 } else {
                     throw new ReadException(cause);
                 }

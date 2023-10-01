@@ -15,7 +15,7 @@ package org.openhab.binding.fronius.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MeterRealtimeResponse} is responsible for storing
+ * The {@link MeterRealtimeResponseDTO} is responsible for storing
  * the response from the powerflowrealtime api
  *
  * @author Jimmy Tanagra - Initial contribution
