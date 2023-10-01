@@ -100,21 +100,25 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
             URI uri = getUriBuilder().scheme(getUriBuilder().build().getScheme().contains("s") ? "wss" : "ws").build();
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader(ApiHandler.AUTH_HEADER, sessionToken);
-
-            stopReconnect();
-            reconnectJob = Optional.of(scheduler.scheduleWithFixedDelay(() -> {
-                try {
-                    closeSession();
-                    client.start();
-                    client.connect(this, uri, request);
-                    // Update listeners in case we would have lost data while disconnecting / reconnecting
-                    listeners.values().forEach(host -> host
-                            .handleCommand(new ChannelUID(host.getThing().getUID(), REACHABLE), RefreshType.REFRESH));
-                    logger.debug("Websocket manager connected to {}", uri);
-                } catch (Exception e) {
-                    logger.warn("Error connecting websocket client: {}", e.getMessage());
-                }
-            }, 0, reconnectInterval, TimeUnit.MINUTES));
+            try {
+                client.start();
+                stopReconnect();
+                reconnectJob = Optional.of(scheduler.scheduleWithFixedDelay(() -> {
+                    try {
+                        closeSession();
+                        client.connect(this, uri, request);
+                        // Update listeners in case we would have lost data while disconnecting / reconnecting
+                        listeners.values()
+                                .forEach(host -> host.handleCommand(new ChannelUID(host.getThing().getUID(), REACHABLE),
+                                        RefreshType.REFRESH));
+                        logger.debug("Websocket manager connected to {}", uri);
+                    } catch (IOException e) {
+                        logger.warn("Error connecting websocket client: {}", e.getMessage());
+                    }
+                }, 0, reconnectInterval, TimeUnit.MINUTES));
+            } catch (Exception e) {
+                logger.warn("Error starting websocket client: {}", e.getMessage());
+            }
         }
     }
 
@@ -125,12 +129,12 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
 
     public void dispose() {
         stopReconnect();
+        closeSession();
         try {
             client.stop();
         } catch (Exception e) {
             logger.warn("Error stopping websocket client: {}", e.getMessage());
         }
-        closeSession();
     }
 
     private void closeSession() {
@@ -149,7 +153,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         try {
             wsSession.getRemote().sendString(apiHandler.serialize(REGISTRATION));
         } catch (IOException e) {
-            logger.warn("Error connecting to websocket: {}", e.getMessage());
+            logger.warn("Error registering to websocket: {}", e.getMessage());
         }
     }
 
