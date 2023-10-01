@@ -107,9 +107,9 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     /**
      * Initialize CoAP access, send discovery packet and start Status server
      *
-     * @parm thingName Thing name derived from Thing Type/hostname
-     * @parm config ShellyThingConfiguration
-     * @thows ShellyApiException
+     * @param thingName Thing name derived from Thing Type/hostname
+     * @param config ShellyThingConfiguration
+     * @throws ShellyApiException
      */
     public synchronized void start(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
         try {

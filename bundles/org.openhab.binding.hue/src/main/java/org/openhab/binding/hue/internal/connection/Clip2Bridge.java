@@ -98,9 +98,11 @@ import com.google.gson.JsonSyntaxException;
  *
  * It uses the following connection mechanisms:
  *
+ * <ul>
  * <li>The primary communication uses HTTP 2 streams over a shared permanent HTTP 2 session.</li>
  * <li>The 'registerApplicationKey()' method uses HTTP/1.1 over the OH common Jetty client.</li>
  * <li>The 'isClip2Supported()' static method uses HTTP/1.1 over the OH common Jetty client via 'HttpUtil'.</li>
+ * </ul>
  *
  * @author Andrew Fiddian-Green - Initial Contribution
  */

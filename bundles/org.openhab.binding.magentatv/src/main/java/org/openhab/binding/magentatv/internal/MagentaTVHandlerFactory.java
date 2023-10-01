@@ -108,15 +108,6 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    /**
-     * Add a device to the device table
-     *
-     * @param udn UDN for the device
-     * @param deviceId A unique device id
-     * @param ipAddress IP address of the receiver
-     * @param handler The corresponding thing handler
-     */
-
     public void setNotifyServletStatus(boolean newStatus) {
         logger.debug("NotifyServlet started");
         servletInitialized = newStatus;

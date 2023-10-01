@@ -275,7 +275,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * between [] brackets. This to allow for unimplemented commands to be executed
      *
      * @param commandString command to be executed
-     * @param cloud server to be used or empty string for direct sending to the device
+     * @param cloudServer server to be used or empty string for direct sending to the device
      * @return message id
      */
     protected int sendCommand(String commandString, String cloudServer) {
@@ -300,9 +300,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * Sends commands to the {@link MiIoAsyncCommunication} for transmission to the Mi devices or cloud
      *
      * @param command (method) to be queued for execution
-     * @param parameters to be send with the command
-     * @param cloud server to be used or empty string for direct sending to the device
-     * @param sending subdevice or empty string for regular device
+     * @param params to be send with the command
+     * @param cloudServer server to be used or empty string for direct sending to the device
+     * @param sender subdevice or empty string for regular device
      * @return message id
      */
     protected int sendCommand(String command, String params, String cloudServer, String sender) {
