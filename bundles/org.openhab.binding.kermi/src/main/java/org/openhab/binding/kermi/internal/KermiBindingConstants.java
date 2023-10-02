@@ -49,7 +49,7 @@ public class KermiBindingConstants {
     public static final String WELL_KNOWN_NAME_COMB_HEATPUMP_STATE = "Rubin_CombinedHeatpumpState";
     public static final String WELL_KNOWN_NAME_COMB_HEATPUMP_CURR_COP = "Rubin_CurrentCOP";
     public static final String WELL_KNOWN_NAME_CURR_OUT_CAP = "Rubin_CurrentOutputCapacity";
-    public static final String WELL_KNOWN_NAME_HEAT_AIR_TEMPERATORE = "LuftTemperatur";
+    public static final String WELL_KNOWN_NAME_HEAT_AIR_TEMPERATURE = "LuftTemperatur";
 
     // All Urls
     public static final String HPM_DEVICE_GETDEVICESBYFILTER_URL = "http://%IP%/api/Device/GetDevicesByFilter/00000000-0000-0000-0000-000000000000";

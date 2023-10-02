@@ -79,7 +79,6 @@ public class KermiBaseThingHandler extends BaseThingHandler {
             busAddress = config.address.toString();
         }
         logger.debug("Initializing busAddress {}", busAddress);
-        // this is important so FroniusBridgeHandler::childHandlerInitialized gets called
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);

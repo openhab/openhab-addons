@@ -124,7 +124,6 @@ public class KermiHttpUtil {
 
                 if (attemptCount >= 3) {
                     logger.debug("Failed connecting to {} after {} attempts.", url, attemptCount, lastException);
-                    // throw new FroniusCommunicationException("Unable to connect", lastException);
                 }
 
                 logger.debug("HTTP error on attempt #{} {}", attemptCount, url);
