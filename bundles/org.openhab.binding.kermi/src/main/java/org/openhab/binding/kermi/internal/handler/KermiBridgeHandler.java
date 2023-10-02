@@ -1,3 +1,16 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ */
 package org.openhab.binding.kermi.internal.handler;
 
 import java.util.HashSet;
@@ -28,6 +41,9 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Marco Descher - intial implementation
+ */
 @NonNullByDefault
 public class KermiBridgeHandler extends BaseBridgeHandler {
 
@@ -138,7 +154,6 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
             int delay = (config.refreshInterval != null) ? config.refreshInterval.intValue() : DEFAULT_REFRESH_PERIOD;
             refreshJob = scheduler.scheduleWithFixedDelay(runnable, 1, delay, TimeUnit.SECONDS);
         }
-
     }
 
     private void updateData() throws KermiCommunicationException {
@@ -151,5 +166,4 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
         }
         kermiSiteInfo.updateStateValues(httpUtil);
     }
-
 }

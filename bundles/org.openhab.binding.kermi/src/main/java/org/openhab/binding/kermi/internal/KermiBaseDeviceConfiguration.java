@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.kermi.internal;
 
+/**
+ * @author Marco Descher - intial implementation
+ */
 public class KermiBaseDeviceConfiguration {
     public Integer address;
 }

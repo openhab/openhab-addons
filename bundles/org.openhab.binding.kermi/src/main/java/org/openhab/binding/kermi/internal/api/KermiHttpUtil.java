@@ -36,6 +36,9 @@ import com.google.gson.JsonObject;
 
 import io.micrometer.core.instrument.util.StringUtils;
 
+/**
+ * @author Marco Descher - intial implementation
+ */
 public class KermiHttpUtil {
 
     private static final String CONTENT_TYPE = "application/json; charset=utf-8";
@@ -182,5 +185,4 @@ public class KermiHttpUtil {
                 jsonObject.toString(), CONTENT_TYPE);
         return gson.fromJson(response, DatapointReadValuesResponse.class);
     }
-
 }

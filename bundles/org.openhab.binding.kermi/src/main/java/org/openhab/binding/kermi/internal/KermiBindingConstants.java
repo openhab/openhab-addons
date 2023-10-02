@@ -67,5 +67,4 @@ public class KermiBindingConstants {
         kermiUserDataFolder.mkdir();
         return kermiUserDataFolder;
     }
-
 }

@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.kermi.internal.model;
 
 import java.io.File;
@@ -24,6 +36,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.stream.JsonReader;
 
+/**
+ * @author Marco Descher - intial implementation
+ */
 public class KermiSiteInfoUtil {
 
     private static Logger logger = LoggerFactory.getLogger(KermiSiteInfoUtil.class);
@@ -43,7 +58,7 @@ public class KermiSiteInfoUtil {
 
         List<Datapoint> dataPoints = loadDeviceDatapointsCache(deviceInfo);
         if (dataPoints == null) {
-            logger.info("Collecting Datapoints for Device " + deviceInfo.getDeviceId());
+            logger.info("Collecting Datapoints for Device {}", deviceInfo.getDeviceId());
             MenuGetChildEntriesResponse rootResponse = httpUtil.getMenuChildEntries(deviceInfo.getDeviceId(),
                     KermiBindingConstants.DEVICE_ID_HEATPUMP_MANAGER);
             MenuEntryResponse rootChildEntry = rootResponse.getResponseData();
@@ -83,7 +98,7 @@ public class KermiSiteInfoUtil {
                 deviceInfo.getDeviceId() + "-" + deviceInfo.getSerial().trim() + ".json");
         if (file.exists()) {
             try (JsonReader reader = new JsonReader(new FileReader(file, StandardCharsets.UTF_8))) {
-                logger.debug("Loading cached datapoints for device " + deviceInfo.getDeviceId());
+                logger.debug("Loading cached datapoints for device {}", deviceInfo.getDeviceId());
                 ListDatapointCacheFile cacheFile = new Gson().fromJson(reader, ListDatapointCacheFile.class);
                 return cacheFile.getDatapoints();
             } catch (IOException e) {
@@ -112,5 +127,4 @@ public class KermiSiteInfoUtil {
             collectAndTraverse(httpUtil, deviceId, dataPoints, menuChildEntry.getResponseData());
         }
     }
-
 }

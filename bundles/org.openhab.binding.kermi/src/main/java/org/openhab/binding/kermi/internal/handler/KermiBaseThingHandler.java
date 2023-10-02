@@ -33,6 +33,9 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Marco Descher - intial implementation
+ */
 public class KermiBaseThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KermiBaseThingHandler.class);
@@ -57,7 +60,7 @@ public class KermiBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        logger.info("channelLinked " + channelUID);
+        logger.info("channelLinked {}", channelUID);
         super.channelLinked(channelUID);
     }
 
@@ -185,5 +188,4 @@ public class KermiBaseThingHandler extends BaseThingHandler {
 
         updateChannels();
     };
-
 }
