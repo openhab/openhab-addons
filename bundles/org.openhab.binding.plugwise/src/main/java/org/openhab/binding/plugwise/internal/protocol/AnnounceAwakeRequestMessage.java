@@ -45,7 +45,7 @@ public class AnnounceAwakeRequestMessage extends Message {
         WAKEUP_BUTTON(5);
 
         public static AwakeReason forValue(int value) {
-            return Arrays.stream(values()).filter(awakeReason -> awakeReason.id == value).findFirst().get();
+            return Arrays.stream(values()).filter(awakeReason -> awakeReason.id == value).findFirst().orElse(null);
         }
 
         private final int id;
