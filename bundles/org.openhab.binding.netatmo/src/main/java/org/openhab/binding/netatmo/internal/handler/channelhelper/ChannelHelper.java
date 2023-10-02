@@ -65,7 +65,8 @@ public abstract class ChannelHelper {
                 if (result != null) {
                     return result;
                 }
-                if (naThing.getDashboardData() instanceof Dashboard dashboard) {
+                Dashboard dashboard = naThing.getDashboardData();
+                if (dashboard != null) {
                     result = internalGetDashboard(channelId, dashboard);
                     if (result != null) {
                         return result;

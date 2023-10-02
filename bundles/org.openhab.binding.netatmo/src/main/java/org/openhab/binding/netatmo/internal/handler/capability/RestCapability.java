@@ -46,7 +46,8 @@ public abstract class RestCapability<T extends RestManager> extends DeviceCapabi
         super.updateNADevice(newData);
         NAObjectMap<Module> modules = newData.getModules();
         handler.getActiveChildren().forEach(child -> {
-            if (modules.get(child.getId()) instanceof Module childData) {
+            Module childData = modules.get(child.getId());
+            if (childData != null) {
                 child.setNewData(childData);
             }
         });
@@ -65,7 +66,8 @@ public abstract class RestCapability<T extends RestManager> extends DeviceCapabi
 
     protected Optional<T> getApi() {
         if (api.isEmpty()) {
-            if (handler.getAccountHandler() instanceof ApiBridgeHandler bridgeApi) {
+            ApiBridgeHandler bridgeApi = handler.getAccountHandler();
+            if (bridgeApi != null) {
                 api = Optional.ofNullable(bridgeApi.getRestManager(restManagerClass));
             }
         }
