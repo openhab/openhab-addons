@@ -67,9 +67,9 @@ public class AcknowledgementMessage extends Message {
             return TYPES_BY_VALUE.get(value);
         }
 
-        private int identifier;
+        private final int identifier;
 
-        private ExtensionCode(int value) {
+        ExtensionCode(int value) {
             identifier = value;
         }
 

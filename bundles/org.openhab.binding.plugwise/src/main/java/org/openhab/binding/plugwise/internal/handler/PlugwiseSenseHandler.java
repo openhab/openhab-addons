@@ -117,13 +117,13 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
     }
 
     @Override
-    public void handleReponseMessage(Message message) {
+    public void handleResponseMessage(Message message) {
         switch (message.getType()) {
             case SENSE_REPORT_REQUEST:
                 handleSenseReportRequestMessage((SenseReportRequestMessage) message);
                 break;
             default:
-                super.handleReponseMessage(message);
+                super.handleResponseMessage(message);
                 break;
         }
     }

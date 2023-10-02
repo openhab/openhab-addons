@@ -17,7 +17,6 @@ import static org.openhab.binding.plugwise.internal.PlugwiseCommunicationContext
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.Iterator;
 import java.util.TooManyListenersException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -159,9 +158,7 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
         try {
             context.getSentQueueLock().lock();
 
-            Iterator<@Nullable PlugwiseQueuedMessage> messageIterator = context.getSentQueue().iterator();
-            while (messageIterator.hasNext()) {
-                PlugwiseQueuedMessage queuedSentMessage = messageIterator.next();
+            for (PlugwiseQueuedMessage queuedSentMessage : context.getSentQueue()) {
                 if (queuedSentMessage != null
                         && queuedSentMessage.getMessage().getSequenceNumber() == message.getSequenceNumber()) {
                     logger.debug("Removing from sentQueue: {}", queuedSentMessage.getMessage());

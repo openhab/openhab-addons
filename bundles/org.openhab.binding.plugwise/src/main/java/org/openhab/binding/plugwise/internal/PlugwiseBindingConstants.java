@@ -44,7 +44,6 @@ public class PlugwiseBindingConstants {
     // List of all configuration properties
     public static final String CONFIG_PROPERTY_MAC_ADDRESS = "macAddress";
     public static final String CONFIG_PROPERTY_RECALIBRATE = "recalibrate";
-    public static final String CONFIG_PROPERTY_SERIAL_PORT = "serialPort";
     public static final String CONFIG_PROPERTY_UPDATE_CONFIGURATION = "updateConfiguration";
     public static final String CONFIG_PROPERTY_UPDATE_INTERVAL = "updateInterval";
 
