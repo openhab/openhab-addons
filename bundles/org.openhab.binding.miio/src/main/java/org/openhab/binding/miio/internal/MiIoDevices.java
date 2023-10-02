@@ -51,6 +51,7 @@ public enum MiIoDevices {
     CUCO_PLUG_CP1("cuco.plug.cp1", "Gosund Smart Plug", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQ("deerma.humidifier.jsq", "Mi Smart Antibacterial Humidifier", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQ1("deerma.humidifier.jsq1", "Mi S Smart Humidifer ", THING_TYPE_BASIC),
+    DEERMA_HUMIDIFIER_JSQ2W("deerma.humidifier.jsq2w", "Xiaomi Smart Humidifier 2", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQ5("deerma.humidifier.jsq5", "Mi Smart Antibacterial Humidifier", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQS("deerma.humidifier.jsqs", "Mi Smart Humidifer S", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_MJJSQ("deerma.humidifier.mjjsq", "Mi Smart Humidifier", THING_TYPE_BASIC),
