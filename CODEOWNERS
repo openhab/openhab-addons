@@ -230,7 +230,7 @@
 /bundles/org.openhab.binding.mystrom/ @pail23
 /bundles/org.openhab.binding.nanoleaf/ @stefan-hoehn
 /bundles/org.openhab.binding.neato/ @jjlauterbach
-/bundles/org.openhab.binding.neeo/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.neeo/ @morph166955
 /bundles/org.openhab.binding.neohub/ @andrewfg
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.netatmo/ @clinique @lolodomo
@@ -338,7 +338,7 @@
 /bundles/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
 /bundles/org.openhab.binding.surepetcare/ @renescherer @HerzScheisse
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
-/bundles/org.openhab.binding.systeminfo/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.systeminfo/ @mherwege
 /bundles/org.openhab.binding.tacmi/ @twendt @Wolfgang1966 @marvkis
 /bundles/org.openhab.binding.tado/ @dfrommi @andrewfg
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
@@ -397,7 +397,7 @@
 /bundles/org.openhab.io.homekit/ @andylintner @ccutrer @yfre
 /bundles/org.openhab.io.hueemulation/ @digitaldan
 /bundles/org.openhab.io.metrics/ @pravussum
-/bundles/org.openhab.io.neeo/ @openhab/add-ons-maintainers
+/bundles/org.openhab.io.neeo/ @morph166955
 /bundles/org.openhab.io.openhabcloud/ @kaikreuzer
 /bundles/org.openhab.persistence.dynamodb/ @ssalonen
 /bundles/org.openhab.persistence.influxdb/ @lujop
@@ -444,7 +444,7 @@
 /itests/org.openhab.binding.mqtt.homie.tests/ @openhab/add-ons-maintainers
 /itests/org.openhab.binding.mqtt.ruuvigateway.tests/ @ssalonen
 /itests/org.openhab.binding.ntp.tests/ @marcelrv
-/itests/org.openhab.binding.systeminfo.tests/ @openhab/add-ons-maintainers
+/itests/org.openhab.binding.systeminfo.tests/ @mherwege
 /itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
 /itests/org.openhab.binding.wemo.tests/ @hmerk
 /itests/org.openhab.persistence.mapdb.tests/ @openhab/add-ons-maintainers
