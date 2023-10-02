@@ -44,12 +44,12 @@ class UtilsTest {
 
     @Test
     public void testDuration() {
-        assertEquals("11 days, 02:40", Utils.getDurationString(16000), "> eleven days");
-        assertEquals("1 days, 00:14", Utils.getDurationString(24 * 60 + 14), " one day no hour");
-        assertEquals("1 days, 00:00", Utils.getDurationString(24 * 60), "exact one day");
-        assertEquals("02:32", Utils.getDurationString(2 * 60 + 32), "below one day");
-        assertEquals("00:59", Utils.getDurationString(59), "only minutes");
-        assertEquals("00:00", Utils.getDurationString(-1), "negative");
+        assertEquals("-1", Utils.getDurationString(-1), "negative");
+        assertEquals("59m", Utils.getDurationString(59), "only minutes");
+        assertEquals("2h 32m", Utils.getDurationString(2 * 60 + 32), "below one day");
+        assertEquals("1d 0h 0m", Utils.getDurationString(24 * 60), "exact one day");
+        assertEquals("1d 0h 14m", Utils.getDurationString(24 * 60 + 14), " one day no hour");
+        assertEquals("11d 2h 40m", Utils.getDurationString(16000), "> eleven days");
     }
 
     @Test

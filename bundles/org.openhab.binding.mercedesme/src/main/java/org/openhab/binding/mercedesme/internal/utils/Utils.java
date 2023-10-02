@@ -37,7 +37,6 @@ import java.util.TreeMap;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
@@ -85,7 +84,6 @@ public class Utils {
 
     private static int port = 8090;
     private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
-
         @Override
         public ZoneId getTimeZone() {
             return ZoneId.systemDefault();
@@ -444,14 +442,16 @@ public class Utils {
 
     public static String getDurationString(long durationMinutes) {
         if (durationMinutes < 0) {
-            return "00:00";
+            return "-1";
         }
         Duration duration = Duration.ofMinutes(durationMinutes);
-        if (duration.toDays() == 0) {
-            return DurationFormatUtils.formatDuration(duration.toMillis(), "HH:mm", true);
+        if (duration.toDaysPart() > 0) {
+            return String.format("%sd %sh %sm", duration.toDaysPart(), duration.toHoursPart(),
+                    duration.toMinutesPart());
+        } else if (duration.toHoursPart() > 0) {
+            return String.format("%sh %sm", duration.toHoursPart(), duration.toMinutesPart());
         } else {
-            return DurationFormatUtils.formatDuration(duration.toMillis(), "d 'days', HH:mm", true);
-
+            return String.format("%sm", duration.toMinutesPart());
         }
     }
 
