@@ -40,8 +40,7 @@ public class MeasuresChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetOther(String channelId) {
-        Map<String, State> localMeasures = measures;
-        if (localMeasures != null) {
+        if (measures instanceof Map<String, State> localMeasures) {
             return localMeasures.get(channelId);
         }
         throw new IllegalArgumentException("localMeasures should not be null, please file a bug report.");
