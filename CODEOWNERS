@@ -29,7 +29,7 @@
 /bundles/org.openhab.binding.anthem/ @mhilbush
 /bundles/org.openhab.binding.asuswrt/ @wildcs
 /bundles/org.openhab.binding.astro/ @gerrieg
-/bundles/org.openhab.binding.atlona/ @tmrobert8 @mlobstein
+/bundles/org.openhab.binding.atlona/ @mlobstein
 /bundles/org.openhab.binding.autelis/ @digitaldan
 /bundles/org.openhab.binding.automower/ @maxpg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
@@ -230,7 +230,7 @@
 /bundles/org.openhab.binding.mystrom/ @pail23
 /bundles/org.openhab.binding.nanoleaf/ @stefan-hoehn
 /bundles/org.openhab.binding.neato/ @jjlauterbach
-/bundles/org.openhab.binding.neeo/ @tmrobert8
+/bundles/org.openhab.binding.neeo/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.neohub/ @andrewfg
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.netatmo/ @clinique @lolodomo
@@ -296,7 +296,7 @@
 /bundles/org.openhab.binding.robonect/ @reyem
 /bundles/org.openhab.binding.roku/ @mlobstein
 /bundles/org.openhab.binding.rotel/ @lolodomo
-/bundles/org.openhab.binding.russound/ @tmrobert8
+/bundles/org.openhab.binding.russound/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.sagercaster/ @clinique
 /bundles/org.openhab.binding.samsungtv/ @paulianttila
 /bundles/org.openhab.binding.satel/ @druciak
@@ -397,7 +397,7 @@
 /bundles/org.openhab.io.homekit/ @andylintner @ccutrer @yfre
 /bundles/org.openhab.io.hueemulation/ @digitaldan
 /bundles/org.openhab.io.metrics/ @pravussum
-/bundles/org.openhab.io.neeo/ @tmrobert8
+/bundles/org.openhab.io.neeo/ @openhab/add-ons-maintainers
 /bundles/org.openhab.io.openhabcloud/ @kaikreuzer
 /bundles/org.openhab.persistence.dynamodb/ @ssalonen
 /bundles/org.openhab.persistence.influxdb/ @lujop
