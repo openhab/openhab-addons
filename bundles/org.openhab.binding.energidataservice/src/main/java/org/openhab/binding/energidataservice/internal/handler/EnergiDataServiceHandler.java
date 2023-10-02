@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.energidataservice.internal.ApiController;
 import org.openhab.binding.energidataservice.internal.CacheManager;
+import org.openhab.binding.energidataservice.internal.DatahubTariff;
 import org.openhab.binding.energidataservice.internal.action.EnergiDataServiceActions;
 import org.openhab.binding.energidataservice.internal.api.ChargeType;
 import org.openhab.binding.energidataservice.internal.api.ChargeTypeCode;
@@ -170,20 +172,10 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
                 downloadSpotPrices();
             }
 
-            if (isLinked(CHANNEL_NET_TARIFF) || isLinked(CHANNEL_HOURLY_PRICES)) {
-                downloadNetTariffs();
-            }
-
-            if (isLinked(CHANNEL_SYSTEM_TARIFF) || isLinked(CHANNEL_HOURLY_PRICES)) {
-                downloadSystemTariffs();
-            }
-
-            if (isLinked(CHANNEL_ELECTRICITY_TAX) || isLinked(CHANNEL_HOURLY_PRICES)) {
-                downloadElectricityTaxes();
-            }
-
-            if (isLinked(CHANNEL_TRANSMISSION_NET_TARIFF) || isLinked(CHANNEL_HOURLY_PRICES)) {
-                downloadTransmissionNetTariffs();
+            for (DatahubTariff datahubTariff : DatahubTariff.values()) {
+                if (isLinked(datahubTariff.getChannelId()) || isLinked(CHANNEL_HOURLY_PRICES)) {
+                    downloadTariffs(datahubTariff);
+                }
             }
 
             updateStatus(ThingStatus.ONLINE);
@@ -238,60 +230,25 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         updateProperties(properties);
     }
 
-    private void downloadNetTariffs() throws InterruptedException, DataServiceException {
-        if (config.getGridCompanyGLN().isEmpty()) {
-            return;
-        }
-        if (cacheManager.areNetTariffsValidTomorrow()) {
-            logger.debug("Cached net tariffs still valid, skipping download.");
-            cacheManager.updateNetTariffs();
-        } else {
-            DatahubTariffFilter filter = getNetTariffFilter();
-            cacheManager.putNetTariffs(downloadPriceLists(config.getGridCompanyGLN(),
-                    new DatahubTariffFilter(filter, DateQueryParameter.of(filter.getDateQueryParameter(),
-                            Duration.ofHours(-CacheManager.NUMBER_OF_HISTORIC_HOURS)))));
-        }
-    }
-
-    private void downloadSystemTariffs() throws InterruptedException, DataServiceException {
-        GlobalLocationNumber globalLocationNumber = config.getEnerginetGLN();
+    private void downloadTariffs(DatahubTariff datahubTariff) throws InterruptedException, DataServiceException {
+        GlobalLocationNumber globalLocationNumber = switch (datahubTariff) {
+            case NET_TARIFF -> config.getGridCompanyGLN();
+            default -> config.getEnerginetGLN();
+        };
         if (globalLocationNumber.isEmpty()) {
             return;
         }
-        if (cacheManager.areSystemTariffsValidTomorrow()) {
-            logger.debug("Cached system tariffs still valid, skipping download.");
-            cacheManager.updateSystemTariffs();
+        if (cacheManager.areTariffsValidTomorrow(datahubTariff)) {
+            logger.debug("Cached tariffs of type {} still valid, skipping download.", datahubTariff);
+            cacheManager.updateTariffs(datahubTariff);
         } else {
-            cacheManager.putSystemTariffs(
-                    downloadPriceLists(globalLocationNumber, DatahubTariffFilterFactory.getSystemTariff()));
-        }
-    }
-
-    private void downloadElectricityTaxes() throws InterruptedException, DataServiceException {
-        GlobalLocationNumber globalLocationNumber = config.getEnerginetGLN();
-        if (globalLocationNumber.isEmpty()) {
-            return;
-        }
-        if (cacheManager.areElectricityTaxesValidTomorrow()) {
-            logger.debug("Cached electricity taxes still valid, skipping download.");
-            cacheManager.updateElectricityTaxes();
-        } else {
-            cacheManager.putElectricityTaxes(
-                    downloadPriceLists(globalLocationNumber, DatahubTariffFilterFactory.getElectricityTax()));
-        }
-    }
-
-    private void downloadTransmissionNetTariffs() throws InterruptedException, DataServiceException {
-        GlobalLocationNumber globalLocationNumber = config.getEnerginetGLN();
-        if (globalLocationNumber.isEmpty()) {
-            return;
-        }
-        if (cacheManager.areTransmissionNetTariffsValidTomorrow()) {
-            logger.debug("Cached transmission net tariffs still valid, skipping download.");
-            cacheManager.updateTransmissionNetTariffs();
-        } else {
-            cacheManager.putTransmissionNetTariffs(
-                    downloadPriceLists(globalLocationNumber, DatahubTariffFilterFactory.getTransmissionNetTariff()));
+            DatahubTariffFilter filter = switch (datahubTariff) {
+                case NET_TARIFF -> getNetTariffFilter();
+                case SYSTEM_TARIFF -> DatahubTariffFilterFactory.getSystemTariff();
+                case ELECTRICITY_TAX -> DatahubTariffFilterFactory.getElectricityTax();
+                case TRANSMISSION_NET_TARIFF -> DatahubTariffFilterFactory.getTransmissionNetTariff();
+            };
+            cacheManager.putTariffs(datahubTariff, downloadPriceLists(globalLocationNumber, filter));
         }
     }
 
@@ -327,23 +284,26 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
 
         Set<ChargeTypeCode> chargeTypeCodes = datahubPriceConfiguration.getChargeTypeCodes();
         Set<String> notes = datahubPriceConfiguration.getNotes();
+        DatahubTariffFilter filter;
         if (!chargeTypeCodes.isEmpty() || !notes.isEmpty()) {
             // Completely override filter.
-            return new DatahubTariffFilter(chargeTypeCodes, notes, start);
+            filter = new DatahubTariffFilter(chargeTypeCodes, notes, start);
         } else {
             // Only override start date in pre-configured filter.
-            return new DatahubTariffFilter(DatahubTariffFilterFactory.getNetTariffByGLN(config.gridCompanyGLN), start);
+            filter = new DatahubTariffFilter(DatahubTariffFilterFactory.getNetTariffByGLN(config.gridCompanyGLN),
+                    start);
         }
+
+        return new DatahubTariffFilter(filter, DateQueryParameter.of(filter.getDateQueryParameter(),
+                Duration.ofHours(-CacheManager.NUMBER_OF_HISTORIC_HOURS)));
     }
 
     private void updatePrices() {
         cacheManager.cleanup();
 
         updateCurrentSpotPrice();
-        updateCurrentTariff(CHANNEL_NET_TARIFF, cacheManager.getNetTariff());
-        updateCurrentTariff(CHANNEL_SYSTEM_TARIFF, cacheManager.getSystemTariff());
-        updateCurrentTariff(CHANNEL_ELECTRICITY_TAX, cacheManager.getElectricityTax());
-        updateCurrentTariff(CHANNEL_TRANSMISSION_NET_TARIFF, cacheManager.getTransmissionNetTariff());
+        Arrays.stream(DatahubTariff.values())
+                .forEach(tariff -> updateCurrentTariff(tariff.getChannelId(), cacheManager.getTariff(tariff)));
         updateHourlyPrices();
 
         reschedulePriceUpdateJob();
@@ -376,10 +336,10 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         int i = 0;
         for (Entry<Instant, BigDecimal> sourcePrice : sourcePrices) {
             Instant hourStart = sourcePrice.getKey();
-            BigDecimal netTariff = cacheManager.getNetTariff(hourStart);
-            BigDecimal systemTariff = cacheManager.getSystemTariff(hourStart);
-            BigDecimal electricityTax = cacheManager.getElectricityTax(hourStart);
-            BigDecimal transmissionNetTariff = cacheManager.getTransmissionNetTariff(hourStart);
+            BigDecimal netTariff = cacheManager.getTariff(DatahubTariff.NET_TARIFF, hourStart);
+            BigDecimal systemTariff = cacheManager.getTariff(DatahubTariff.SYSTEM_TARIFF, hourStart);
+            BigDecimal electricityTax = cacheManager.getTariff(DatahubTariff.ELECTRICITY_TAX, hourStart);
+            BigDecimal transmissionNetTariff = cacheManager.getTariff(DatahubTariff.TRANSMISSION_NET_TARIFF, hourStart);
             targetPrices[i++] = new Price(hourStart.toString(), sourcePrice.getValue(), config.currencyCode, netTariff,
                     systemTariff, electricityTax, transmissionNetTariff);
         }
@@ -418,91 +378,25 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     }
 
     /**
-     * Get cached net tariffs or try once to download them if not cached
+     * Return cached tariffs or try once to download them if not cached
      * (usually if no items are linked).
      *
-     * @return Map of future net tariffs
+     * @return Map of future tariffs
      */
-    public Map<Instant, BigDecimal> getNetTariffs() {
+    public Map<Instant, BigDecimal> getTariffs(DatahubTariff datahubTariff) {
         try {
-            downloadNetTariffs();
+            downloadTariffs(datahubTariff);
         } catch (DataServiceException e) {
             if (logger.isDebugEnabled()) {
-                logger.warn("Error retrieving net tariffs", e);
+                logger.warn("Error retrieving tariffs", e);
             } else {
-                logger.warn("Error retrieving net tariffs: {}", e.getMessage());
+                logger.warn("Error retrieving tariffs of type {}: {}", datahubTariff, e.getMessage());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        return cacheManager.getNetTariffs();
-    }
-
-    /**
-     * Get cached system tariffs or try once to download them if not cached
-     * (usually if no items are linked).
-     *
-     * @return Map of future system tariffs
-     */
-    public Map<Instant, BigDecimal> getSystemTariffs() {
-        try {
-            downloadSystemTariffs();
-        } catch (DataServiceException e) {
-            if (logger.isDebugEnabled()) {
-                logger.warn("Error retrieving system tariffs", e);
-            } else {
-                logger.warn("Error retrieving system tariffs: {}", e.getMessage());
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        return cacheManager.getSystemTariffs();
-    }
-
-    /**
-     * Get cached electricity taxes or try once to download them if not cached
-     * (usually if no items are linked).
-     *
-     * @return Map of future electricity taxes
-     */
-    public Map<Instant, BigDecimal> getElectricityTaxes() {
-        try {
-            downloadElectricityTaxes();
-        } catch (DataServiceException e) {
-            if (logger.isDebugEnabled()) {
-                logger.warn("Error retrieving electricity taxes", e);
-            } else {
-                logger.warn("Error retrieving electricity taxes: {}", e.getMessage());
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        return cacheManager.getElectricityTaxes();
-    }
-
-    /**
-     * Return cached transmission net tariffs or try once to download them if not cached
-     * (usually if no items are linked).
-     *
-     * @return Map of future transmissions net tariffs
-     */
-    public Map<Instant, BigDecimal> getTransmissionNetTariffs() {
-        try {
-            downloadTransmissionNetTariffs();
-        } catch (DataServiceException e) {
-            if (logger.isDebugEnabled()) {
-                logger.warn("Error retrieving transmission net tariffs", e);
-            } else {
-                logger.warn("Error retrieving transmission net tariffs: {}", e.getMessage());
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        return cacheManager.getTransmissionNetTariffs();
+        return cacheManager.getTariffs(datahubTariff);
     }
 
     private void reschedulePriceUpdateJob() {

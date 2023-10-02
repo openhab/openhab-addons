@@ -18,7 +18,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Filter for the {@link DatahubPricelist} dataset.
+ * Filter for the DatahubPricelist dataset.
  * 
  * @author Jacob Laursen - Initial contribution
  */

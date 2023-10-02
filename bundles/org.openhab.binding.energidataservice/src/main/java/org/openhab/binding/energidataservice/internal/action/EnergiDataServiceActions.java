@@ -33,6 +33,7 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.energidataservice.internal.DatahubTariff;
 import org.openhab.binding.energidataservice.internal.PriceCalculator;
 import org.openhab.binding.energidataservice.internal.exception.MissingPriceException;
 import org.openhab.binding.energidataservice.internal.handler.EnergiDataServiceHandler;
@@ -236,22 +237,23 @@ public class EnergiDataServiceActions implements ThingActions {
         }
 
         if (priceElements.contains(PriceElement.NET_TARIFF)) {
-            Map<Instant, BigDecimal> netTariffMap = handler.getNetTariffs();
+            Map<Instant, BigDecimal> netTariffMap = handler.getTariffs(DatahubTariff.NET_TARIFF);
             mergeMaps(prices, netTariffMap, !spotPricesRequired);
         }
 
         if (priceElements.contains(PriceElement.SYSTEM_TARIFF)) {
-            Map<Instant, BigDecimal> systemTariffMap = handler.getSystemTariffs();
+            Map<Instant, BigDecimal> systemTariffMap = handler.getTariffs(DatahubTariff.SYSTEM_TARIFF);
             mergeMaps(prices, systemTariffMap, !spotPricesRequired);
         }
 
         if (priceElements.contains(PriceElement.ELECTRICITY_TAX)) {
-            Map<Instant, BigDecimal> electricityTaxMap = handler.getElectricityTaxes();
+            Map<Instant, BigDecimal> electricityTaxMap = handler.getTariffs(DatahubTariff.ELECTRICITY_TAX);
             mergeMaps(prices, electricityTaxMap, !spotPricesRequired);
         }
 
         if (priceElements.contains(PriceElement.TRANSMISSION_NET_TARIFF)) {
-            Map<Instant, BigDecimal> transmissionNetTariffMap = handler.getTransmissionNetTariffs();
+            Map<Instant, BigDecimal> transmissionNetTariffMap = handler
+                    .getTariffs(DatahubTariff.TRANSMISSION_NET_TARIFF);
             mergeMaps(prices, transmissionNetTariffMap, !spotPricesRequired);
         }
 
