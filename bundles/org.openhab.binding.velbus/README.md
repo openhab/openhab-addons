@@ -108,7 +108,7 @@ vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, 
 `[CHx="..."]` is optional, and represents the name of channel x, e.g. CH1 specifies the name of channel 1.
 
 
-The `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbel1`, `vmbgp1`, `vmbgp1-2`, `vmbgp2`, `vmbgp2-2`, `vmbgp4`, `vmbgp4-2`, `vmbgp4pir` and `vmbgp4pir-2` thing type also supports 1 subaddress. This subaddress is the Sensor Address. The value "FF" = not configured.
+The `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbel1`, `vmbgp1`, `vmbgp1-2`, `vmbgp2`, `vmbgp2-2`, `vmbgp4`, `vmbgp4-2`, `vmbgp4pir` and `vmbgp4pir-2` thing types require `subaddress1` to be configured in order to access full functionality (such as the thermostat or sensor channels). Setting `subaddress1 = "FF"` disables handling of these additional channels.
 
 ```java
 Thing velbus:vmbel1:<bridgeId>:<thingId> [subaddress1="A1"]
