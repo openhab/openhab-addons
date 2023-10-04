@@ -160,7 +160,7 @@ vmb1dm, vmb1led, vmb4dc, vmbdme, vmbdmi, vmbdmir
 The `vmbdali` thing has 16 virtual light channels. A virtual light combines 3 or 4 VMBDALI module channels into an OpenHAB channel to control RGB or RGBW lights.
 This is because an RGBW DALI light is configured on the VMBDALI module with 4 channels (Red channel, Green channel, Blue channel, White channel).  
 
-The configuration is set like this :
+The configuration is set like this:
 
 ```java
 Thing velbus:vmbdali:<bridgeId>:<thingId> [VL1="R,G,B,W"]
