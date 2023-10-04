@@ -221,7 +221,7 @@ public class VelbusBindingConstants {
     public static final byte COMMAND_MEMORY_DATA = (byte) 0xFE;
     public static final byte COMMAND_MODULE_TYPE = (byte) 0xFF;
 
-    // Usefull values
+    // Useful values
     public static final byte ALL_CHANNELS = (byte) 0xFF;
     public static final byte ALL_DALI_CHANNELS = (byte) 0x51;
     public static final byte SUB_ADDRESS_DISABLED = (byte) 0xFF;
