@@ -31,7 +31,8 @@ public class FrameUtil {
     /**
      * Compute the checksum of the given group line.
      *
-     * @param groupLine group line ("etiquette" <SPACE> "valeur"). Note: the SPACE before the checksum of the group line
+     * @param groupLine group line {@literal ("etiquette" <SPACE> "valeur")}.
+     *            Note: the SPACE before the checksum of the group line
      *            must not include in checksum computation.
      * @return the checksum of the given group line.
      */

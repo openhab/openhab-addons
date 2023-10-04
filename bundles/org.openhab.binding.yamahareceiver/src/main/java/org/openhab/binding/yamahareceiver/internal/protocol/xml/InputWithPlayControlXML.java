@@ -34,7 +34,7 @@ import org.w3c.dom.Node;
  * This class implements the Yamaha Receiver protocol related to navigation functionally. USB, NET_RADIO, IPOD and
  * other inputs are using the same way of playback control.
  * <p>
- * The XML nodes <Play_Info> and <Play_Control> are used.
+ * The XML nodes {@code <Play_Info>} and {@code <Play_Control>} are used.
  * <p>
  * Example:
  * <p>

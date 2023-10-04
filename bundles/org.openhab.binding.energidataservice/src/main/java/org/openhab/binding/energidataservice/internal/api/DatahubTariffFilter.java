@@ -18,7 +18,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Filter for the DatahubPricelist dataset.
+ * Filter for the {@link org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecords}
+ * dataset.
  * 
  * @author Jacob Laursen - Initial contribution
  */

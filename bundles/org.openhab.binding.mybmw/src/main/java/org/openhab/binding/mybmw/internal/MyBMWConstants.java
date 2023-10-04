@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
  */
 @NonNullByDefault
 public class MyBMWConstants {

@@ -51,7 +51,7 @@ public interface HomematicConfigDescriptionProvider extends ConfigDescriptionPro
      * which are excluded by
      * {@link org.openhab.binding.homematic.type.HomematicThingTypeExcluder}
      * 
-     * @param URI config-description-uri
+     * @param uri config-description-uri
      *            e.g. <i>thing-type:homematic:HM-WDS40-TH-I-2</i>
      * @return ConfigDescription that was added to HomematicConfigDescriptionProvider,
      *         identified by its config-description-uri<br>
