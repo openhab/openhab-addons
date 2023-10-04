@@ -346,7 +346,6 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
             byte[] subAddresses = new byte[4];
             System.arraycopy(packet, 8, subAddresses, 0, 4);
 
-            // velbusModule.getModuleAddress().setSubAddresses(subAddresses);
             velbusModule.getModuleAddress().setSubAddresses(subAddresses, subTypeNumber);
 
             for (int i = 0; i < subAddresses.length; i++) {
