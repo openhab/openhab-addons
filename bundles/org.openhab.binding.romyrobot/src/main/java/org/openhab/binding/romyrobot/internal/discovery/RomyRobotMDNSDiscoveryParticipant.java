@@ -111,8 +111,7 @@ public class RomyRobotMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
         try {
             RomyRobotConfiguration config = new RomyRobotConfiguration();
             config.hostname = address;
-            RomyApi romyDevice = apiFactory.getHttpApi(config);
-            // romyDevice.refresh();
+            RomyApi romyDevice = apiFactory.getHttpApi(config);            
             romyDevice.refresh_id();
             romyDevice.refresh_protocol_version();
             robotName = romyDevice.getName();
