@@ -209,7 +209,7 @@ public class GoveeLanHandler extends BaseThingHandler {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not control/query device at IP address "
-                            + thing.getProperties().get(GoveeLanConfiguration.IPADDRESS));
+                            + thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IPADDRESS));
         }
     };
 
@@ -222,7 +222,7 @@ public class GoveeLanHandler extends BaseThingHandler {
         GoveeLanConfiguration goveeLanConfiguration = getConfigAs(GoveeLanConfiguration.class);
         updateStatus(ThingStatus.ONLINE);
 
-        String ipAddress = thing.getProperties().get(GoveeLanConfiguration.IPADDRESS);
+        String ipAddress = thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IPADDRESS).toString();
         if (ipAddress != null) {
             THING_HANDLERS.put(ipAddress, this);
         } else {
@@ -263,7 +263,7 @@ public class GoveeLanHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
 
-        String ipAddress = thing.getProperties().get(GoveeLanConfiguration.IPADDRESS);
+        String ipAddress = thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IPADDRESS).toString();
         triggerStatusJob.cancel(true);
         triggerStatusJob = null;
         THING_HANDLERS.remove(ipAddress);
@@ -309,7 +309,7 @@ public class GoveeLanHandler extends BaseThingHandler {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not control/query device at IP address "
-                            + thing.getProperties().get(GoveeLanConfiguration.IPADDRESS));
+                            + thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IPADDRESS));
         }
     }
 
@@ -342,7 +342,8 @@ public class GoveeLanHandler extends BaseThingHandler {
         socket.setReuseAddress(true);
         byte[] data = message.getBytes();
 
-        final String hostname = thing.getProperties().get(GoveeLanConfiguration.IPADDRESS);
+        final String hostname = thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IPADDRESS)
+                .toString();
         LOGGER.trace("Sending {} to {}", message, hostname);
         InetAddress address = InetAddress.getByName(hostname);
         DatagramPacket packet = new DatagramPacket(data, data.length, address, SENDTODEVICE_PORT);
