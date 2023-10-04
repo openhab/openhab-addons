@@ -165,7 +165,7 @@ The configuration is set like this :
 ```java
 Thing velbus:vmbdali:<bridgeId>:<thingId> [VL1="R,G,B,W"]
 ```
-The white channel is optionnal.
+The white channel is optional.
 
 e.g.:
 ```java
