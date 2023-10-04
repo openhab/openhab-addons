@@ -114,7 +114,7 @@ The `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbel1`, `vmbgp1`, `vmbgp1-2`, `v
 Thing velbus:vmbel1:<bridgeId>:<thingId> [subaddress1="A1"]
 ```
 
-The `vmbelo`, `vmbgpo`, `vmbgpod` and `vmbgpod-2` thing type also supports 4 subaddresses. The subaddress4 is the Sensor Address. The value "FF" = not configured.
+The `vmbelo`, `vmbgpo`, `vmbgpod` and `vmbgpod-2` thing type also requires configuration of 4 subaddresses in order to access full functionality of the module. The `subaddress4` is the address of the thermostat channels. The value "FF" disables handling of the corresponding group of channels.
 
 ```java
 Thing velbus:vmbelo:<bridgeId>:<thingId> [subaddress1="B1", subaddress2="B2", subaddress3="B3", subaddress4="B4"]
