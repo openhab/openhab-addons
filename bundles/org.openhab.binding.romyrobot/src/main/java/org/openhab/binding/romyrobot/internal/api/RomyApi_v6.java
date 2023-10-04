@@ -216,8 +216,6 @@ public class RomyApi_v6 implements RomyApi {
      * @author Florian Schmidt - Reduce visibility of Http communication to Api
      */
     protected class HttpRequestSender {
-        // private static final String USER_AGENT = "Mozilla/5.0";
-
         private final HttpClient httpClient;
 
         public HttpRequestSender(HttpClient httpClient) {
@@ -250,6 +248,9 @@ public class RomyApi_v6 implements RomyApi {
                 throw new Exception("Request to RomyRobot device failed: " + e.getMessage());
             }
             if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
+
+                // forbiden, looks like http interface is locked, try to unlock it
+                // ------------------------------------------------------------------
                 logger.error("url => " + url);
                 URL netUrl = new URL(url);
                 String host = netUrl.getHost();
@@ -257,8 +258,8 @@ public class RomyApi_v6 implements RomyApi {
                 try {
                     logger.info(
                             "looks like http interface is locked, try to unlock it now with password from config...");
-                    String unlock = netUrl.getProtocol() + netUrl.getHost() + ":" + netUrl.getPort()
-                            + "/set/unlock_http?password=" + config.password;
+                    String unlock = netUrl.getProtocol() + "://" + netUrl.getHost() + ":" + netUrl.getPort()
+                            + "/set/unlock_http?pass=" + config.password;
                     logger.error("unlock => " + unlock);
                     response = withGeneralProperties(httpClient.newRequest(unlock))
                             .timeout(config.timeout, TimeUnit.SECONDS).method(HttpMethod.GET).send();
@@ -266,20 +267,21 @@ public class RomyApi_v6 implements RomyApi {
                     throw new Exception("Request to unlock RomyRobot device with password " + config.password
                             + " failed: " + e.getMessage());
                 }
+
+                // send request again after unlocking
+                // -------------------------------------
+                try {
+                    logger.error("location => " + location);
+                    response = withGeneralProperties(httpClient.newRequest(location))
+                            .timeout(config.timeout, TimeUnit.SECONDS).method(HttpMethod.GET).send();
+                } catch (Exception e) {
+                    throw new Exception("Request to RomyRobot device failed: " + e.getMessage());
+                }
             }
             if (response.getStatus() != HttpStatus.OK_200) {
                 throw new Exception(
                         "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
             }
-            /*
-             * String content = response.getContentAsString();
-             * if ("{\"result\":2}".equals(content)) {
-             * throw new Exception(
-             * "Unauthorized, check your robot is unlocked or provide proper password, http content:"
-             * + content);
-             * }
-             * return content;
-             */
             return response.getContentAsString();
         }
 

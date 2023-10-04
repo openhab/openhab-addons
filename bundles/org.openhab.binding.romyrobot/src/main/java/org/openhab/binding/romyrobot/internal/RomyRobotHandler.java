@@ -113,7 +113,8 @@ public class RomyRobotHandler extends BaseThingHandler {
 
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not sync status with RomyRobot, check your robot is unlocked " + e.getMessage());
+                    "Could not sync status with RomyRobot, check your robot is unlocked to unlock it please provide password, you can find it under the dustbin (look for QR Code)"
+                            + e.getMessage());
         }
     }
 
