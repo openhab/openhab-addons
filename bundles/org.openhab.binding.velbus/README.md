@@ -157,7 +157,7 @@ The following thing types support setting the dimspeed:
 vmb1dm, vmb1led, vmb4dc, vmbdme, vmbdmi, vmbdmir
 ```
 
-The `vmbdali` thing has 16 virtual light. A virtual light is created from 4 channels of the DALI module.
+The `vmbdali` thing has 16 virtual light channels. A virtual light combines 3 or 4 VMBDALI module channels into an OpenHAB channel to control RGB or RGBW lights.
 This is because an RGBW DALI light is configured on the VMBDALI module with 4 channels (Red channel, Green channel, Blue channel, White channel).  
 
 The configuration is set like this :
