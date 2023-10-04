@@ -247,7 +247,7 @@ public class VelbusBindingConstants {
     public static final String SUB_ADDRESS = "subaddress";
     public static final String DIMSPEED = "dimspeed";
 
-    // Channels group ids
+    // Channel group ids
     public static final String CHANNEL_GROUP_BRIDGE_CLOCK_ALARM = "bridgeClockAlarm";
     public static final String CHANNEL_GROUP_MODULE_CLOCK_ALARM = "clockAlarm";
     public static final String CHANNEL_GROUP_INPUT = "input";
