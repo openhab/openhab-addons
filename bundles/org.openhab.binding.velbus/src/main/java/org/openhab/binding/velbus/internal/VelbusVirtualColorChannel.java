@@ -94,10 +94,7 @@ public class VelbusVirtualColorChannel extends VelbusColorChannel {
     public boolean isVirtualColorChannel(int channel) {
         byte c = getByteValue(channel);
 
-        if (c == redChannel || c == greenChannel || c == blueChannel || c == whiteChannel) {
-            return true;
-        }
-        return false;
+        return c == redChannel || c == greenChannel || c == blueChannel || c == whiteChannel;
     }
 
     public boolean isColorChannel(int channel) {
