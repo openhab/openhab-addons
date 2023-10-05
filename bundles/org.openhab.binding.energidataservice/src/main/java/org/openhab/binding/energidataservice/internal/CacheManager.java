@@ -50,10 +50,9 @@ public class CacheManager {
     private final Clock clock;
     private final PriceListParser priceListParser = new PriceListParser();
 
-    private Map<DatahubTariff, Collection<DatahubPricelistRecord>> datahubRecordsMap = new HashMap<>();
-
     private Map<Instant, BigDecimal> spotPriceMap = new ConcurrentHashMap<>(SPOT_PRICE_MAX_CACHE_SIZE);
 
+    private Map<DatahubTariff, Collection<DatahubPricelistRecord>> datahubRecordsMap = new HashMap<>();
     private Map<DatahubTariff, Map<Instant, BigDecimal>> tariffsMap = new ConcurrentHashMap<>();
 
     public CacheManager() {
@@ -63,9 +62,9 @@ public class CacheManager {
     public CacheManager(Clock clock) {
         this.clock = clock.withZone(NORD_POOL_TIMEZONE);
 
-        for (DatahubTariff tariff : DatahubTariff.values()) {
-            datahubRecordsMap.put(tariff, new ArrayList<>());
-            tariffsMap.put(tariff, new ConcurrentHashMap<>(TARIFF_MAX_CACHE_SIZE));
+        for (DatahubTariff datahubTariff : DatahubTariff.values()) {
+            datahubRecordsMap.put(datahubTariff, new ArrayList<>());
+            tariffsMap.put(datahubTariff, new ConcurrentHashMap<>(TARIFF_MAX_CACHE_SIZE));
         }
     }
 
@@ -73,9 +72,19 @@ public class CacheManager {
      * Clear all cached data.
      */
     public void clear() {
-        datahubRecordsMap.clear();
         spotPriceMap.clear();
-        tariffsMap.clear();
+
+        for (DatahubTariff datahubTariff : DatahubTariff.values()) {
+            Collection<DatahubPricelistRecord> datahubRecords = datahubRecordsMap.get(datahubTariff);
+            if (datahubRecords != null) {
+                datahubRecords.clear();
+            }
+
+            Map<Instant, BigDecimal> tariffs = tariffsMap.get(datahubTariff);
+            if (tariffs != null) {
+                tariffs.clear();
+            }
+        }
     }
 
     /**
