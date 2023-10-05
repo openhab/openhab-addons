@@ -59,6 +59,9 @@ public class MeasureCapability extends CacheWeatherCapability {
 
     @Override
     protected void updateNADevice(Device newData) {
+        // Resolution of issue #15684 :
+        // Do not transfer newData to superclass - MeasureCapability pulls its own data based on measurement channels
+        // configuration and store them in 'measures' for the channel helper.
     }
 
     private void updateMeasures(WeatherApi api, String deviceId, @Nullable String moduleId) {
