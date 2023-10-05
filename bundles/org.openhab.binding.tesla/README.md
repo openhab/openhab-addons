@@ -139,7 +139,7 @@ Additionally, these advanced channels are available (not all are available on al
 | idealbatteryrange         | Number:Length            | Ideal Battery Range           | Indicates the Battery Range                                                                                      |
 | lefttempdirection         | Number                   | Left Temperature Direction    | Not documented / To be defined                                                                                   |
 | lastautoparkerror         | String                   | Last Autopark Error           | Not documented / To be defined                                                                                   |
-| location" advanced="false | Location                 | Location                      | The actual position of the vehicle                                                                               |
+| location                  | Location                 | Location                      | The actual position of the vehicle                                                                               |
 | leftseatheater            | Switch                   | Left Seat Heater              | Indicates if the left seat heater is switched on                                                                 |
 | leftrearseatheater        | Switch                   | Left Rear Seat Heater         | Indicates if the left rear seat heater is switched on                                                            |
 | leftrearbackseatheater    | Number                   | Left Rear Backseat Heater     | Indicates the level (0, 1, 2, or 3) of the left rear backseat heater                                             |
