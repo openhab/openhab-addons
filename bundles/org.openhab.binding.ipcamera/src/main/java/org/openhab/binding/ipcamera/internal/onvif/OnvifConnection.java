@@ -70,6 +70,7 @@ import io.netty.handler.timeout.IdleStateHandler;
  *
  *
  * @author Matthew Skinner - Initial contribution
+ * @author Kai Kreuzer - Improve handling for certain cameras
  */
 
 @NonNullByDefault
@@ -360,19 +361,44 @@ public class OnvifConnection {
         } else if (message.contains("GetDeviceInformationResponse")) {
             logger.debug("GetDeviceInformationResponse recieved");
         } else if (message.contains("GetSnapshotUriResponse")) {
-            snapshotUri = removeIPfromUrl(Helper.fetchXML(message, ":MediaUri", ":Uri"));
-            logger.debug("GetSnapshotUri:{}", snapshotUri);
-            if (ipCameraHandler.snapshotUri.isEmpty()
-                    && !"ffmpeg".equals(ipCameraHandler.cameraConfig.getSnapshotUrl())) {
-                ipCameraHandler.snapshotUri = snapshotUri;
+            String url = Helper.fetchXML(message, ":MediaUri", ":Uri");
+            if (!url.isBlank()) {
+                snapshotUri = removeIPfromUrl(url);
+                logger.debug("GetSnapshotUri: {}", snapshotUri);
+                if (ipCameraHandler.snapshotUri.isEmpty()
+                        && !"ffmpeg".equals(ipCameraHandler.cameraConfig.getSnapshotUrl())) {
+                    ipCameraHandler.snapshotUri = snapshotUri;
+                }
             }
         } else if (message.contains("GetStreamUriResponse")) {
-            rtspUri = Helper.fetchXML(message, ":MediaUri", ":Uri>");
-            logger.debug("GetStreamUri:{}", rtspUri);
+            rtspUri = unEscapeXml(Helper.fetchXML(message, ":MediaUri", ":Uri>"));
+            logger.debug("GetStreamUri: {}", rtspUri);
             if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
                 ipCameraHandler.rtspUri = rtspUri;
             }
         }
+    }
+
+    /**
+     * Simple method to unescape XML special characters in String.
+     * There are five XML Special characters which needs to be escaped:
+     *
+     * <pre>
+     * & => &amp;
+     * < => &lt;
+     * > => &gt;
+     * " => &quot;
+     * ' => &apos;
+     * </pre>
+     *
+     * @todo This method can be removed once https://github.com/openhab/openhab-core/pull/3738 is merged.
+     *
+     * @param input the input xml as String to unescape, may be null
+     * @return the unescaped xml as String, may be null
+     */
+    public static String unEscapeXml(String str) {
+        return str.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"")
+                .replace("&apos;", "'");
     }
 
     /**
