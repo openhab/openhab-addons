@@ -10,11 +10,11 @@
 		<description>Envoy gateway</description>
 
 		<channel-groups>
-			<channel-group id="production" typeId="envoy-data">
+			<channel-group id="production" typeId="envoy-production">
 				<label>Production</label>
 				<description>Production data from the solar panels</description>
 			</channel-group>
-			<channel-group id="consumption" typeId="envoy-data">
+			<channel-group id="consumption" typeId="envoy-consumption">
 				<label>Consumption</label>
 				<description>Consumption data from the solar panels</description>
 			</channel-group>
@@ -34,14 +34,31 @@
 			</parameter>
 			<parameter name="username" type="text">
 				<label>User Name</label>
-				<description>The user name to the Envoy gateway. Leave empty when using the default user name</description>
+				<description>For versions below version 7, this is the user name to the Envoy gateway. Leave empty when using the
+					default user name. For newer versions this is user name of the Enphase Entrez Cloud Login when using Auto JWT.</description>
 				<default>envoy</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="password" type="text">
 				<context>password</context>
 				<label>Password</label>
-				<description>The password to the Envoy gateway. Leave empty when using the default password</description>
+				<description>For versions below version 7, this is the password to the Envoy gateway. Leave empty when using the
+					default password. For newer versions this is the password of the Enphase Entrez Cloud Login when using Auto JWT.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="siteName" type="text">
+				<label>Site Name</label>
+				<description>The Site Name, which is above the Site Id in Enphase app. Required when using Auto JWT</description>
+			</parameter>
+			<parameter name="jwt" type="text">
+				<label>JWT</label>
+				<description>For versions above version 7, this is the JWT when not using Auto JWT</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="autoJwt" type="boolean">
+				<label>Auto JWT</label>
+				<description>For versions above version 7, this tells the binding whether to attempt an auto-retrieve of the JWT</description>
+				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refresh" type="integer" unit="min">
@@ -52,7 +69,6 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-
 
 	<thing-type id="inverter">
 		<supported-bridge-type-refs>
@@ -128,38 +144,69 @@
 	</thing-type>
 
 	<!-- Envoy gateway channels -->
-	<channel-group-type id="envoy-data">
+	<channel-group-type id="envoy-production">
 		<label>Envoy Data</label>
 		<channels>
-			<channel id="wattHoursToday" typeId="watt-hours-today"/>
-			<channel id="wattHoursSevenDays" typeId="watt-hours-seven-days"/>
-			<channel id="wattHoursLifetime" typeId="watt-hours-lifetime"/>
-			<channel id="wattsNow" typeId="watts-now"/>
+			<channel id="wattHoursToday" typeId="watt-hours-today">
+				<description>Watt hours produced today</description>
+			</channel>
+			<channel id="wattHoursSevenDays" typeId="watt-hours-seven-days">
+				<description>Watt hours produced the last 7 days</description>
+			</channel>
+			<channel id="wattHoursLifetime" typeId="watt-hours-lifetime">
+				<description>Watt hours produced over the lifetime</description>
+			</channel>
+			<channel id="wattsNow" typeId="watts-now">
+				<description>Latest Watt produced</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="envoy-consumption">
+		<label>Envoy Data</label>
+		<channels>
+			<channel id="wattHoursToday" typeId="watt-hours-today">
+				<label>Consumption Today</label>
+				<description>Watt hours consumption today</description>
+			</channel>
+			<channel id="wattHoursSevenDays" typeId="watt-hours-seven-days">
+				<label>Consumption 7 Days</label>
+				<description>Watt hours consumption the last 7 days</description>
+			</channel>
+			<channel id="wattHoursLifetime" typeId="watt-hours-lifetime">
+				<label>Consumption Lifetime</label>
+				<description>Watt hours consumption over the lifetime</description>
+			</channel>
+			<channel id="wattsNow" typeId="watts-now">
+				<label>Latest Consumption Power</label>
+				<description>Latest Watt consumption</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="watt-hours-today">
 		<item-type>Number:Energy</item-type>
 		<label>Produced Today</label>
-		<description>Watt hours produced today</description>
+		<category>energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watt-hours-seven-days">
 		<item-type>Number:Energy</item-type>
 		<label>Produced 7 Days</label>
-		<description>Watt hours produced the last 7 days</description>
+		<category>energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watt-hours-lifetime">
 		<item-type>Number:Energy</item-type>
 		<label>Produced Lifetime</label>
-		<description>Watt hours produced over the lifetime</description>
+		<category>energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watts-now">
 		<item-type>Number:Power</item-type>
-		<label>Latest Power</label>
+		<label>Latest Produced Power</label>
 		<description>Latest watts produced</description>
+		<category>energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -168,18 +215,21 @@
 		<item-type>Number:Power</item-type>
 		<label>Last Report</label>
 		<description>Last reported power delivery</description>
+		<category>energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="max-report-watts">
 		<item-type>Number:Power</item-type>
 		<label>Max Report</label>
 		<description>Maximum reported power</description>
+		<category>energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-report-date">
 		<item-type>DateTime</item-type>
 		<label>Last Report Date</label>
 		<description>Date of last reported power delivery</description>
+		<category>energy</category>
 		<state readOnly="true"/>
 	</channel-type>
 
