@@ -76,7 +76,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
     /**
      * Sets the device transmit power
      *
-     * @param power the current transmitter power in dBm
+     * @param txPower the current transmitter power in dBm
      */
     public void setTxPower(int txPower) {
         this.txPower = txPower;
@@ -104,7 +104,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
     /**
      * Set the serial number of the device
      *
-     * @param model a {@link String} defining the serial number
+     * @param serialNumber a {@link String} defining the serial number
      */
     public void setSerialNumberl(String serialNumber) {
         this.serialNumber = serialNumber;
@@ -113,7 +113,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
     /**
      * Set the hardware revision of the device
      *
-     * @param model a {@link String} defining the hardware revision
+     * @param hardwareRevision a {@link String} defining the hardware revision
      */
     public void setHardwareRevision(String hardwareRevision) {
         this.hardwareRevision = hardwareRevision;
@@ -122,7 +122,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
     /**
      * Set the firmware revision of the device
      *
-     * @param model a {@link String} defining the firmware revision
+     * @param firmwareRevision a {@link String} defining the firmware revision
      */
     public void setFirmwareRevision(String firmwareRevision) {
         this.firmwareRevision = firmwareRevision;
@@ -131,7 +131,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
     /**
      * Set the software revision of the device
      *
-     * @param model a {@link String} defining the software revision
+     * @param softwareRevision a {@link String} defining the software revision
      */
     public void setSoftwareRevision(String softwareRevision) {
         this.softwareRevision = softwareRevision;
@@ -207,8 +207,6 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
 
     /**
      * This merges non-null identity fields from the given device into this snapshot.
-     *
-     * @return true if this snapshot changed as a result of this operation
      */
     public void merge(BluetoothDeviceSnapshot device) {
         Integer txPower = device.getTxPower();

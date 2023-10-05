@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link @MPDActions} defines rule actions for the Music Player Daemon binding.
+ * The {@link MPDActions} defines rule actions for the Music Player Daemon binding.
  *
  * @author Stefan Röllin - Initial contribution
  */

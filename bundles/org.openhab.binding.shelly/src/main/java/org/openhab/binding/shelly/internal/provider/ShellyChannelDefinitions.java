@@ -56,7 +56,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link ShellyCHANNEL_DEFINITIONSDTO} defines channel information for dynamically created channels. Those will be
+ * The {@link #CHANNEL_DEFINITIONS} defines channel information for dynamically created channels. Those will be
  * added on the first thing status update
  *
  * @author Markus Michels - Initial contribution

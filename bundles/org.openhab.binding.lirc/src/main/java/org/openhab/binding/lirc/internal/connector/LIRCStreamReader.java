@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Stream reader to parse LIRC output into messages
  *
- * @author Andrew Nagle
+ * @author Andrew Nagle - Initial contribution
  */
 public class LIRCStreamReader extends Thread {
 

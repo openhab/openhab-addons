@@ -274,7 +274,7 @@ public class JRubyScriptEngineConfiguration {
     /**
      * Configure the optional elements of the Ruby Environment
      * 
-     * @param engine Engine in which to configure environment
+     * @param scriptEngine Engine in which to configure environment
      */
     public void configureRubyEnvironment(ScriptEngine scriptEngine) {
         getConfigurationElements(OptionalConfigurationElement.Type.RUBY_ENVIRONMENT).forEach(configElement -> {

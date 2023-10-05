@@ -16,7 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
 
 /**
- * The {@link FrameUtil} class defines a utility class for {@link FrameCbetmLong}.
+ * The {@link FrameUtil} class defines a utility class for
+ * {@link org.openhab.binding.teleinfo.internal.data.FrameType#CBETM_LONG_BASE}.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */

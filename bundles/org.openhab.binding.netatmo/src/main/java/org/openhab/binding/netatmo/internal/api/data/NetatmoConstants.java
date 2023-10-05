@@ -445,7 +445,7 @@ public class NetatmoConstants {
         COMMAND_INVALID_PARAMS("homestatus-invalid-params"),
         @SerializedName("6")
         UNREACHABLE("device-not-connected"),
-        UNKNOWN("deserialization-unknow");
+        UNKNOWN("deserialization-unknown");
 
         // Associated error message that can be found in properties files
         public final String message;

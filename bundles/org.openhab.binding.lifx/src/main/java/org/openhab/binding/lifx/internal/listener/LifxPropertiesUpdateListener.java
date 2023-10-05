@@ -29,7 +29,7 @@ public interface LifxPropertiesUpdateListener {
     /**
      * Called when the {@link LifxLightPropertiesUpdater} has updated light properties.
      *
-     * @param packet the updated properties
+     * @param properties the updated properties
      */
     void handlePropertiesUpdate(Map<String, String> properties);
 }

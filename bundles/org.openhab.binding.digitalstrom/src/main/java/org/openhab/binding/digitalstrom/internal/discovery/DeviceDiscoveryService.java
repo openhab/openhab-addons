@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * The {@link DeviceDiscoveryService} discovers all digitalSTROM-Devices, of one supported device-color-type. The
  * device-color-type has to be given to the {@link #DeviceDiscoveryService(BridgeHandler, ThingTypeUID)} as
  * {@link ThingTypeUID}. The supported {@link ThingTypeUID} can be found at
- * {@link DeviceHandler#SUPPORTED_THING_TYPES}.
+ * {@link org.openhab.binding.digitalstrom.internal.handler.DeviceHandler#SUPPORTED_THING_TYPES}.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -170,7 +170,8 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Removes the {@link Thing} of the given {@link Device}.
+     * Removes the {@link org.openhab.core.thing.Thing} of the given
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device}.
      *
      * @param device (must not be null)
      */
@@ -184,7 +185,8 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Creates a {@link DiscoveryResult} for the given {@link Device}, if the {@link Device} is supported and the
-     * {@link Device#getOutputMode()} is unequal {@link OutputModeEnum#DISABLED}.
+     * {@link Device#getOutputMode()} is unequal
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum#DISABLED}.
      *
      * @param device (must not be null)
      */

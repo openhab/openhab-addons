@@ -126,7 +126,7 @@ abstract class AbstractDataResponseTransformer {
      * @param targetMap result will be put into this map
      * @param channel channel to assign the value
      * @param value the value to convert
-     * @param unit as string
+     * @param unitAsString unit as string
      */
     protected final void putPowerType(Map<Channel, State> targetMap, @Nullable Channel channel, @Nullable Double value,
             @Nullable String unitAsString) {
@@ -143,7 +143,7 @@ abstract class AbstractDataResponseTransformer {
      * @param targetMap result will be put into this map
      * @param channel channel to assign the value
      * @param value the value to convert
-     * @param unit as string
+     * @param unitAsString as string
      */
     protected final void putEnergyType(Map<Channel, State> targetMap, @Nullable Channel channel, @Nullable Double value,
             @Nullable String unitAsString) {

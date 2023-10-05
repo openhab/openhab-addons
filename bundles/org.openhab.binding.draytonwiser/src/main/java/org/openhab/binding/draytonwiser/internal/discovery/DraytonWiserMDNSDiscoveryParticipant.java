@@ -75,7 +75,6 @@ public class DraytonWiserMDNSDiscoveryParticipant implements MDNSDiscoveryPartic
                             .withRepresentationProperty(PROP_ADDRESS).withLabel("Heat Hub - " + service.getName())
                             .build();
                 }
-
             }
         }
         return null;

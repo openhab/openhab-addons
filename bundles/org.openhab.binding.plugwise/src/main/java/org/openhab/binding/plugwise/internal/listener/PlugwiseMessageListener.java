@@ -23,5 +23,5 @@ import org.openhab.binding.plugwise.internal.protocol.Message;
 @NonNullByDefault
 public interface PlugwiseMessageListener {
 
-    void handleReponseMessage(Message message);
+    void handleResponseMessage(Message message);
 }

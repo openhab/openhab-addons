@@ -26,7 +26,8 @@ public interface DeviceStatusListener {
 
     /**
      * This method is called whenever the state of the given device has changed.
-     * The new state can be obtained by {@link FullLight#getState()}.
+     * The new state can be obtained by {@link TellstickNetDevice#getState()} /
+     * {@link TellstickLocalDeviceDTO#getState()}.
      *
      * @param bridge
      *            The Tellstick bridge the changed device is connected to.

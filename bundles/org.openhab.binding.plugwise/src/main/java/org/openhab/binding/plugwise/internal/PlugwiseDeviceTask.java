@@ -45,22 +45,19 @@ public abstract class PlugwiseDeviceTask {
 
     private @Nullable ScheduledFuture<?> future;
 
-    private Runnable scheduledRunnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                lock.lock();
-                logger.debug("Running '{}' Plugwise task for {} ({})", name, deviceType, macAddress);
-                runTask();
-            } catch (Exception e) {
-                logger.warn("Error while running '{}' Plugwise task for {} ({})", name, deviceType, macAddress, e);
-            } finally {
-                lock.unlock();
-            }
+    private final Runnable scheduledRunnable = () -> {
+        try {
+            lock.lock();
+            logger.debug("Running '{}' Plugwise task for {} ({})", getName(), deviceType, macAddress);
+            runTask();
+        } catch (Exception e) {
+            logger.warn("Error while running '{}' Plugwise task for {} ({})", getName(), deviceType, macAddress, e);
+        } finally {
+            lock.unlock();
         }
     };
 
-    public PlugwiseDeviceTask(String name, ScheduledExecutorService scheduler) {
+    protected PlugwiseDeviceTask(String name, ScheduledExecutorService scheduler) {
         this.name = name;
         this.scheduler = scheduler;
     }
