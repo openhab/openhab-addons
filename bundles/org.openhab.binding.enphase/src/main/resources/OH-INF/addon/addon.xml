@@ -6,6 +6,6 @@
 	<type>binding</type>
 	<name>Enphase Envoy Binding</name>
 	<description>This is the binding for Enphase Envoy solar panels.</description>
-	<connection>local</connection>
+	<connection>hybrid</connection>
 
 </addon:addon>

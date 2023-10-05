@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.enphase.internal.discovery;
 
-import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.*;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.CONFIG_SERIAL_NUMBER;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.THING_TYPE_ENPHASE_INVERTER;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.THING_TYPE_ENPHASE_RELAY;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +23,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.enphase.internal.EnphaseBindingConstants;
 import org.openhab.binding.enphase.internal.EnphaseBindingConstants.EnphaseDeviceType;
 import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO.DeviceDTO;
 import org.openhab.binding.enphase.internal.dto.InverterDTO;
@@ -124,7 +127,7 @@ public class EnphaseDevicesDiscoveryService extends AbstractDiscoveryService
 
     private void discover(final ThingUID bridgeID, final String serialNumber, final ThingTypeUID typeUID,
             final String label) {
-        final String shortSerialNumber = defaultPassword(serialNumber);
+        final String shortSerialNumber = EnphaseBindingConstants.defaultPassword(serialNumber);
         final ThingUID thingUID = new ThingUID(typeUID, bridgeID, shortSerialNumber);
         final Map<String, Object> properties = new HashMap<>(1);
 

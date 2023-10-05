@@ -14,4 +14,17 @@
 
   <name>openHAB Add-ons :: Bundles :: Enphase Binding</name>
 
+  <properties>
+    <jsoup.version>1.15.3</jsoup.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>${jsoup.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
 </project>
