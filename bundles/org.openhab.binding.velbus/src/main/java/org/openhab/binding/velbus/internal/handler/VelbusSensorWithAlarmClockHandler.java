@@ -122,8 +122,6 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
     private int clockAlarmConfigurationMemoryAddress;
     private VelbusClockAlarmConfiguration alarmClockConfiguration = new VelbusClockAlarmConfiguration();
 
-    private volatile boolean disposed = true;
-
     private long lastUpdateAlarm1TimeMillis;
     private long lastUpdateAlarm2TimeMillis;
 
@@ -143,14 +141,6 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
             this.clockAlarmConfigurationMemoryAddress = ALARM_CONFIGURATION_MEMORY_ADDRESSES
                     .get(thing.getThingTypeUID());
         }
-        disposed = false;
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-
-        disposed = true;
     }
 
     @Override
@@ -271,14 +261,10 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        if (disposed) {
-            return;
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
         }
-
-        logger.trace("onPacketReceived() was called");
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -322,6 +308,8 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                 }
             }
         }
+
+        return true;
     }
 
     public Boolean isClockAlarmConfigurationByte(int memoryAddress) {

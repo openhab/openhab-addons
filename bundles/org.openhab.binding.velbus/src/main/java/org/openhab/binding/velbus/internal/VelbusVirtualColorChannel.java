@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velbus.internal;
 
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
+
 import java.util.InvalidPropertiesFormatException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,31 +46,43 @@ public class VelbusVirtualColorChannel extends VelbusColorChannel {
         whiteChannel = getByteValue(w);
     }
 
-    public VelbusVirtualColorChannel(String r, String g, String b, String w) throws NumberFormatException {
-        redChannel = getByteValue(r);
-        greenChannel = getByteValue(g);
-        blueChannel = getByteValue(b);
-        whiteChannel = getByteValue(w);
+    public VelbusVirtualColorChannel(String r, String g, String b, String w)
+            throws InvalidPropertiesFormatException, NumberFormatException {
+        String virtualChannel[] = r.split("^\\s*([a-zA-Z]*)(\\d+)?\\s*$");
+        redChannel = getChannelNumber(virtualChannel[0], virtualChannel[1]);
+        virtualChannel = g.split("^\\s*([a-zA-Z]*)(\\d+)?\\s*$");
+        greenChannel = getChannelNumber(virtualChannel[0], virtualChannel[1]);
+        virtualChannel = b.split("^\\s*([a-zA-Z]*)(\\d+)?\\s*$");
+        blueChannel = getChannelNumber(virtualChannel[0], virtualChannel[1]);
+        virtualChannel = w.split("^\\s*([a-zA-Z]*)(\\d+)?\\s*$");
+        whiteChannel = getChannelNumber(virtualChannel[0], virtualChannel[1]);
     }
 
     public VelbusVirtualColorChannel(String rgbw) throws InvalidPropertiesFormatException, NumberFormatException {
-        String virtualChannels[] = rgbw.split("\\s*,\\s*");
-        if (virtualChannels.length == 4) {
-            redChannel = getByteValue(virtualChannels[0]);
-            greenChannel = getByteValue(virtualChannels[1]);
-            blueChannel = getByteValue(virtualChannels[2]);
-            whiteChannel = getByteValue(virtualChannels[3]);
-        } else if (virtualChannels.length == 3) {
-            redChannel = getByteValue(virtualChannels[0]);
-            greenChannel = getByteValue(virtualChannels[1]);
-            blueChannel = getByteValue(virtualChannels[2]);
+        String virtualChannels[] = rgbw.split(
+                "/^\\s*([a-zA-Z]*)(\\d+)\\s*,\\s*([a-zA-Z]*)(\\d+)\\s*,\\s*([a-zA-Z]*)(\\d+)(?:\\s*,\\s*([a-zA-Z]*)(\\d+))?\\s*$/gm");
+        if (virtualChannels.length == 8) {
+            redChannel = getChannelNumber(virtualChannels[0], virtualChannels[1]);
+            greenChannel = getChannelNumber(virtualChannels[2], virtualChannels[3]);
+            blueChannel = getChannelNumber(virtualChannels[4], virtualChannels[5]);
+            whiteChannel = getChannelNumber(virtualChannels[6], virtualChannels[7]);
+        } else if (virtualChannels.length == 6) {
+            redChannel = getChannelNumber(virtualChannels[0], virtualChannels[1]);
+            greenChannel = getChannelNumber(virtualChannels[2], virtualChannels[3]);
+            blueChannel = getChannelNumber(virtualChannels[4], virtualChannels[5]);
         } else {
-            throw new InvalidPropertiesFormatException("Wrong format");
+            throw new InvalidPropertiesFormatException("Wrong number of channels, must be 3 or 4.");
         }
     }
 
-    private byte getByteValue(String channel) {
-        return Integer.valueOf(channel.substring(2)).byteValue();
+    private byte getChannelNumber(String type, String number)
+            throws InvalidPropertiesFormatException, NumberFormatException {
+        if (DALI_ADDRESS.equals(type.toUpperCase())) {
+            return Integer.valueOf(Integer.valueOf(number) + 1).byteValue();
+        } else if (CHANNEL.equals(type.toUpperCase())) {
+            return Integer.valueOf(number).byteValue();
+        }
+        throw new InvalidPropertiesFormatException("Wrong channel type identifier, must be CH or A.");
     }
 
     private byte getByteValue(int channel) {
@@ -110,17 +124,11 @@ public class VelbusVirtualColorChannel extends VelbusColorChannel {
     }
 
     public boolean isRGBConfigured() {
-        if (redChannel != NOT_CONFIGURED && greenChannel != NOT_CONFIGURED && blueChannel != NOT_CONFIGURED) {
-            return true;
-        }
-        return false;
+        return redChannel != NOT_CONFIGURED && greenChannel != NOT_CONFIGURED && blueChannel != NOT_CONFIGURED;
     }
 
     public boolean isWhiteConfigured() {
-        if (whiteChannel != NOT_CONFIGURED) {
-            return true;
-        }
-        return false;
+        return whiteChannel != NOT_CONFIGURED;
     }
 
     public int getRedColor() {

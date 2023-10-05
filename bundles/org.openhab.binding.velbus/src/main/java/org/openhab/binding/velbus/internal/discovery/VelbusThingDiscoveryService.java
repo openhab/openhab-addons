@@ -85,7 +85,7 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
+    public boolean onPacketReceived(byte[] packet) {
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte address = packet[2];
             byte length = packet[3];
@@ -108,8 +108,10 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
             } else {
                 logger.debug("Unknown command '{}' to address '{}'.", String.format("%02X", command),
                         String.format("%02X", address));
+                return false;
             }
         }
+        return true;
     }
 
     private void handleModuleTypeCommand(byte[] packet, byte address) {

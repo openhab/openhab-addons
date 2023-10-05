@@ -45,8 +45,6 @@ import org.openhab.core.types.RefreshType;
 public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB7IN));
 
-    private volatile boolean disposed = true;
-
     private final ChannelUID counter1Channel = new ChannelUID(thing.getUID(), "counter", "counter1");
     private final ChannelUID counter1ChannelCurrent = new ChannelUID(thing.getUID(), "counter", "counter1Current");
     private final ChannelUID counter2Channel = new ChannelUID(thing.getUID(), "counter", "counter2");
@@ -71,7 +69,6 @@ public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
         super.initialize();
 
         initializeAutomaticRefresh();
-        disposed = false;
     }
 
     private void initializeAutomaticRefresh() {
@@ -89,8 +86,6 @@ public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
             refreshJob.cancel(true);
         }
         super.dispose();
-
-        disposed = true;
     }
 
     private void startAutomaticRefresh(int refreshInterval) {
@@ -137,14 +132,10 @@ public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        if (disposed) {
-            return;
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
         }
-
-        logger.trace("onPacketReceived() was called");
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -185,5 +176,7 @@ public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
                 }
             }
         }
+
+        return true;
     }
 }

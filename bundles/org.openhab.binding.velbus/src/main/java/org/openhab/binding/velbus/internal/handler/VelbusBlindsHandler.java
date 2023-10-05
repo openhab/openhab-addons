@@ -51,24 +51,8 @@ public class VelbusBlindsHandler extends VelbusThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_VMB1BL, THING_TYPE_VMB1BLS, THING_TYPE_VMB2BL, THING_TYPE_VMB2BLE));
 
-    private volatile boolean disposed = true;
-
     public VelbusBlindsHandler(Thing thing) {
         super(thing, 0);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-
-        disposed = false;
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-
-        disposed = true;
     }
 
     @Override
@@ -144,12 +128,10 @@ public class VelbusBlindsHandler extends VelbusThingHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        if (disposed) {
-            return;
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
         }
-
-        logger.trace("onPacketReceived() was called");
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -164,5 +146,7 @@ public class VelbusBlindsHandler extends VelbusThingHandler {
                 updateState(getModuleAddress().getChannelId(velbusChannelIdentifier), state);
             }
         }
+
+        return true;
     }
 }

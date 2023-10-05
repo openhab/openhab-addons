@@ -531,8 +531,9 @@
 			<description>The velbus address of the device</description>
 		</parameter>
 		<parameter name="subaddress1" type="text" required="true">
-			<label>Sensor Address</label>
-			<description>The velbus sub-address of the device (FF = disabled)</description>
+			<label>Channel CH9 Address</label>
+			<description>The velbus sub-address of the device (FF = disabled). In the VelbusLink application it's identified by
+				Sensor or Thermostat.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
@@ -696,23 +697,27 @@
 			<description>The velbus address of the device</description>
 		</parameter>
 		<parameter name="subaddress1" type="text" required="true">
-			<label>Page 3-4 Address</label>
-			<description>The velbus sub-address 1 of the device (FF = disabled)</description>
+			<label>Channel CH9..CH16 Address</label>
+			<description>The velbus sub-address 1 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Page 3-4 or Pushbuttons 9-16.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress2" type="text" required="true">
-			<label>Page 5-6 Address</label>
-			<description>The velbus sub-address 2 of the device (FF = disabled)</description>
+			<label>Channel CH17..CH24 Address</label>
+			<description>The velbus sub-address 2 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Page 5-6 or Pushbuttons 17-24.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress3" type="text" required="true">
-			<label>Page 7-8 Address</label>
-			<description>The velbus sub-address 3 of the device (FF = disabled)</description>
+			<label>Channel CH25..CH32 Address</label>
+			<description>The velbus sub-address 3 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Page 7-8 or Pushbuttons 25-32.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress4" type="text" required="true">
-			<label>Sensor Address</label>
-			<description>The velbus sub-address 4 of the device (FF = disabled)</description>
+			<label>Channel CH33 Address</label>
+			<description>The velbus sub-address 4 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Sensor or Thermostat.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
@@ -924,52 +929,62 @@
 
 	<config-description uri="thing-type:velbus:81channelDevice">
 		<parameter name="address" type="text" required="true">
-			<label>Address (Channel A0...7)</label>
-			<description>The velbus address of the device</description>
+			<label>Address</label>
+			<description>The velbus address of the device. In the VelbusLink application it's identified by DALI Address A0..A7
+				or Channel CH1..CH8.</description>
 		</parameter>
 		<parameter name="subaddress1" type="text" required="true">
-			<label>Channel A8...15</label>
-			<description>The velbus sub-address 1 of the device (FF = disabled)</description>
+			<label>Channel CH9..CH16 Address</label>
+			<description>The velbus sub-address 1 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A8..A15 or Channel CH9..CH16.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress2" type="text" required="true">
-			<label>Channel A16...23</label>
-			<description>The velbus sub-address 2 of the device (FF = disabled)</description>
+			<label>Channel CH17..CH24 Address</label>
+			<description>The velbus sub-address 2 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A16..A23 or Channel CH17..CH24.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress3" type="text" required="true">
-			<label>Channel A24...31</label>
-			<description>The velbus sub-address 3 of the device (FF = disabled)</description>
+			<label>Channel CH25..CH32 Address</label>
+			<description>The velbus sub-address 3 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A24..A31 or Channel CH25..CH32.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress4" type="text" required="true">
-			<label>Channel A32...39</label>
-			<description>The velbus sub-address 4 of the device (FF = disabled)</description>
+			<label>Channel CH33..CH40 Address</label>
+			<description>The velbus sub-address 4 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A32..A39 or Channel CH33..CH40.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress5" type="text" required="true">
-			<label>Channel A40...47</label>
-			<description>The velbus sub-address 5 of the device (FF = disabled)</description>
+			<label>Channel CH41..CH48 Address</label>
+			<description>The velbus sub-address 5 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A40..A47 or Channel CH41..CH48.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress6" type="text" required="true">
-			<label>Channel A48...55</label>
-			<description>The velbus sub-address 6 of the device (FF = disabled)</description>
+			<label>Channel CH49..CH56 Address</label>
+			<description>The velbus sub-address 6 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A48..A55 or Channel CH49..CH56.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress7" type="text" required="true">
-			<label>Channel A56...63</label>
-			<description>The velbus sub-address 7 of the device (FF = disabled)</description>
+			<label>Channel CH57..CH64 Address</label>
+			<description>The velbus sub-address 7 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A56..A63 or Channel CH57..CH64.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress8" type="text" required="true">
-			<label>Group G0...7</label>
-			<description>The velbus sub-address 8 of the device (FF = disabled)</description>
+			<label>Channel CH65..CH72 Address</label>
+			<description>The velbus sub-address 8 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Group G0..G7 or Channel CH65..CH72.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="subaddress9" type="text" required="true">
-			<label>Group G8...15</label>
-			<description>The velbus sub-address 9 of the device (FF = disabled)</description>
+			<label>Channel CH73..CH80 Address</label>
+			<description>The velbus sub-address 9 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Group G8..G15 or Channel CH73..CH80.</description>
 			<default>FF</default>
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">

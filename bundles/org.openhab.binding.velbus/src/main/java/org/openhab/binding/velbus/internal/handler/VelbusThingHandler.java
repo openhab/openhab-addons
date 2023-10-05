@@ -60,6 +60,8 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
 
     private int numberOfSubAddresses;
 
+    private volatile boolean disposed = true;
+
     public VelbusThingHandler(Thing thing, int numberOfSubAddresses) {
         super(thing);
 
@@ -76,6 +78,14 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
         initializeThing(bridge == null ? ThingStatus.OFFLINE : bridge.getStatus());
         initializeChannelNames();
         initializeChannelStates();
+        disposed = false;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        disposed = true;
     }
 
     @Override
@@ -243,5 +253,15 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
         }
 
         return this.velbusBridgeHandler;
+    }
+
+    @Override
+    public boolean onPacketReceived(byte[] packet) {
+        logger.trace("onPacketReceived() was called");
+
+        if (disposed) {
+            return false;
+        }
+        return true;
     }
 }

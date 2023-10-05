@@ -42,26 +42,10 @@ import org.openhab.core.types.RefreshType;
 public class VelbusVMBELOHandler extends VelbusMemoHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMBELO));
 
-    private volatile boolean disposed = true;
-
     private final ChannelUID outputChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_OUTPUT, CHANNEL_OUTPUT);
 
     public VelbusVMBELOHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-
-        disposed = false;
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-
-        disposed = true;
     }
 
     @Override
@@ -96,11 +80,9 @@ public class VelbusVMBELOHandler extends VelbusMemoHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        if (disposed) {
-            return;
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
         }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
@@ -113,5 +95,7 @@ public class VelbusVMBELOHandler extends VelbusMemoHandler {
                 updateState(outputChannel, state);
             }
         }
+
+        return true;
     }
 }

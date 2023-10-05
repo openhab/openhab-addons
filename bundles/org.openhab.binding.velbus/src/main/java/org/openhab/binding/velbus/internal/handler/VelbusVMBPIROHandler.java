@@ -43,28 +43,12 @@ import org.openhab.core.types.RefreshType;
 public class VelbusVMBPIROHandler extends VelbusTemperatureSensorHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMBPIRO));
 
-    private volatile boolean disposed = true;
-
     private ChannelUID illuminanceChannel;
 
     public VelbusVMBPIROHandler(Thing thing) {
         super(thing, 0, new ChannelUID(thing.getUID(), "input", "CH9"));
 
         this.illuminanceChannel = new ChannelUID(thing.getUID(), "input", "LIGHT");
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-
-        disposed = false;
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-
-        disposed = true;
     }
 
     @Override
@@ -89,14 +73,10 @@ public class VelbusVMBPIROHandler extends VelbusTemperatureSensorHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        if (disposed) {
-            return;
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
         }
-
-        logger.trace("onPacketReceived() was called");
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -110,5 +90,7 @@ public class VelbusVMBPIROHandler extends VelbusTemperatureSensorHandler {
                 updateState(illuminanceChannel, lightValueState);
             }
         }
+
+        return true;
     }
 }

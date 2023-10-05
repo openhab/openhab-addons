@@ -40,8 +40,6 @@ public class VelbusVMBGPOHandler extends VelbusMemoHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2));
 
-    private volatile boolean disposed = true;
-
     public static final int MODULESETTINGS_MEMORY_ADDRESS = 0x02F0;
     public static final int LAST_MEMORY_LOCATION_ADDRESS = 0x1A03;
 
@@ -51,20 +49,6 @@ public class VelbusVMBGPOHandler extends VelbusMemoHandler {
 
     public VelbusVMBGPOHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-
-        disposed = false;
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-
-        disposed = true;
     }
 
     @Override
@@ -90,14 +74,10 @@ public class VelbusVMBGPOHandler extends VelbusMemoHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        if (disposed) {
-            return;
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
         }
-
-        logger.trace("onPacketReceived() was called");
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -121,5 +101,7 @@ public class VelbusVMBGPOHandler extends VelbusMemoHandler {
                 }
             }
         }
+
+        return true;
     }
 }

@@ -51,7 +51,7 @@ public class VelbusColorChannel {
      * @param brightnessState the brightness to set
      */
     public void setBrightness(PercentType brightnessState) {
-        this.brightness = brightnessState.intValue();
+        setBrightness(brightnessState.intValue());
     }
 
     /**
@@ -66,8 +66,8 @@ public class VelbusColorChannel {
      */
     public void setBrightness(byte brightness) {
         if (brightness != VALUE_UNCHANGED) {
-            this.brightness = (Byte.toUnsignedInt(brightness) * BRIGHTNESS_MAX_VALUE)
-                    / Byte.toUnsignedInt(DALI_MAX_VALUE);
+            this.brightness = convertFromVelbus(Byte.toUnsignedInt(brightness), Byte.toUnsignedInt(DALI_MAX_VALUE),
+                    BRIGHTNESS_MAX_VALUE);
         }
     }
 
@@ -89,9 +89,7 @@ public class VelbusColorChannel {
      * @return the brightness for velbus packet
      */
     public byte getBrightnessVelbus() {
-        return (this.brightness == BRIGHTNESS_MAX_VALUE) ? DALI_MAX_VALUE
-                : Integer.valueOf((this.brightness * Byte.toUnsignedInt(DALI_MAX_VALUE)) / BRIGHTNESS_MAX_VALUE)
-                        .byteValue();
+        return convertToVelbus(this.brightness, BRIGHTNESS_MAX_VALUE, Byte.toUnsignedInt(DALI_MAX_VALUE));
     }
 
     /**
@@ -112,7 +110,7 @@ public class VelbusColorChannel {
      * @param hsbState the color to set in HSB
      */
     public void setColor(HSBType hsbState) {
-        this.color = ColorUtil.hsbToRgb(hsbState);
+        setColor(ColorUtil.hsbToRgb(hsbState));
     }
 
     /**
@@ -137,7 +135,7 @@ public class VelbusColorChannel {
      */
     public void setRedColor(byte red) {
         if (red != VALUE_UNCHANGED) {
-            this.color[0] = (red == DALI_MAX_VALUE) ? COLOR_MAX_VALUE : Byte.toUnsignedInt(red);
+            this.color[0] = convertFromVelbus(Byte.toUnsignedInt(red), DALI_MAX_VALUE, COLOR_MAX_VALUE);
         }
     }
 
@@ -146,7 +144,7 @@ public class VelbusColorChannel {
      */
     public void setGreenColor(byte green) {
         if (green != VALUE_UNCHANGED) {
-            this.color[1] = (green == DALI_MAX_VALUE) ? COLOR_MAX_VALUE : Byte.toUnsignedInt(green);
+            this.color[1] = convertFromVelbus(Byte.toUnsignedInt(green), DALI_MAX_VALUE, COLOR_MAX_VALUE);
         }
     }
 
@@ -155,7 +153,7 @@ public class VelbusColorChannel {
      */
     public void setBlueColor(byte blue) {
         if (blue != VALUE_UNCHANGED) {
-            this.color[2] = (blue == DALI_MAX_VALUE) ? COLOR_MAX_VALUE : Byte.toUnsignedInt(blue);
+            this.color[2] = convertFromVelbus(Byte.toUnsignedInt(blue), DALI_MAX_VALUE, COLOR_MAX_VALUE);
         }
     }
 
@@ -179,9 +177,10 @@ public class VelbusColorChannel {
     public byte[] getColorVelbus() {
         byte[] rgb = { VALUE_UNCHANGED, VALUE_UNCHANGED, VALUE_UNCHANGED };
 
-        rgb[0] = (this.color[0] == COLOR_MAX_VALUE) ? DALI_MAX_VALUE : Integer.valueOf(this.color[0]).byteValue();
-        rgb[1] = (this.color[1] == COLOR_MAX_VALUE) ? DALI_MAX_VALUE : Integer.valueOf(this.color[1]).byteValue();
-        rgb[2] = (this.color[2] == COLOR_MAX_VALUE) ? DALI_MAX_VALUE : Integer.valueOf(this.color[2]).byteValue();
+        rgb[0] = convertToVelbus(this.color[0], COLOR_MAX_VALUE, DALI_MAX_VALUE);
+        rgb[1] = convertToVelbus(this.color[1], COLOR_MAX_VALUE, DALI_MAX_VALUE);
+        rgb[2] = convertToVelbus(this.color[2], COLOR_MAX_VALUE, DALI_MAX_VALUE);
+
         return rgb;
     }
 
@@ -190,14 +189,14 @@ public class VelbusColorChannel {
      */
     public void setWhite(int white) {
         this.white = (white < WHITE_MIN_VALUE) ? WHITE_MIN_VALUE : white;
-        this.white = (white < WHITE_MAX_VALUE) ? WHITE_MAX_VALUE : white;
+        this.white = (white > WHITE_MAX_VALUE) ? WHITE_MAX_VALUE : white;
     }
 
     /**
      * @param whiteState the white to set
      */
     public void setWhite(PercentType whiteState) {
-        this.white = whiteState.intValue();
+        setWhite(whiteState.intValue());
     }
 
     /**
@@ -205,7 +204,8 @@ public class VelbusColorChannel {
      */
     public void setWhite(byte white) {
         if (white != VALUE_UNCHANGED) {
-            this.white = (Byte.toUnsignedInt(white) * WHITE_MAX_VALUE) / Byte.toUnsignedInt(DALI_MAX_VALUE);
+            this.white = convertFromVelbus(Byte.toUnsignedInt(white), Byte.toUnsignedInt(DALI_MAX_VALUE),
+                    WHITE_MAX_VALUE);
         }
     }
 
@@ -227,7 +227,37 @@ public class VelbusColorChannel {
      * @return the white value for velbus packet
      */
     public byte getWhiteVelbus() {
-        return (this.white == WHITE_MAX_VALUE) ? DALI_MAX_VALUE
-                : Integer.valueOf((this.white * Byte.toUnsignedInt(DALI_MAX_VALUE)) / WHITE_MAX_VALUE).byteValue();
+        return convertToVelbus(this.white, WHITE_MAX_VALUE, Byte.toUnsignedInt(DALI_MAX_VALUE));
+    }
+
+    /**
+     * @param value the value to rescale
+     * @param from_max the maximum value of the first parameter
+     * @param to_max the maximum value supported by the returned value
+     * @return the value rescaled
+     */
+    private int rescale(int value, int from_max, int to_max) {
+        return value * to_max / from_max;
+    }
+
+    /**
+     * @param value the value to convert
+     * @param from_max the maximum value of the first parameter
+     * @param to_max the maximum value supported by the Velbus module
+     * @return the value rescaled for the velbus packet
+     */
+    private byte convertToVelbus(int value, int from_max, int to_max) {
+        return (value >= from_max) ? Integer.valueOf(to_max).byteValue()
+                : Integer.valueOf(rescale(value, from_max, to_max)).byteValue();
+    }
+
+    /**
+     * @param value the value to convert
+     * @param from_max the maximum value supported by the Velbus module
+     * @param to_max the maximum value supported by the returned value
+     * @return the value rescaled from the packet
+     */
+    private int convertFromVelbus(int value, int from_max, int to_max) {
+        return (value >= from_max) ? to_max : rescale(value, from_max, to_max);
     }
 }

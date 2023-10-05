@@ -52,7 +52,6 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMBDALI));
     private @Nullable ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) VelbusSensorConfig sensorConfig;
-    private volatile boolean disposed = true;
 
     private VelbusColorChannel[] colorChannels;
     private VelbusVirtualColorChannel[] virtualColorChannels;
@@ -73,7 +72,6 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
         initializeAutomaticRefresh();
         initializeColorChannel();
         initializeVirtualLight();
-        disposed = false;
         initializeChannelStates();
     }
 
@@ -101,8 +99,8 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                     try {
                         virtualColorChannels[i - 1] = new VelbusVirtualColorChannel(virtualLight);
                     } catch (Exception e) {
-                        logger.error("VMBDALI on address {} : Virtual Light {} has wrong channel format '{}' ",
-                                getModuleAddress().getAddress(), i, virtualLight);
+                        logger.error("VMBDALI on address {} : Virtual Light {} has wrong channel format '{}'. {}",
+                                getModuleAddress().getAddress(), i, virtualLight, e.getMessage());
                     }
                 }
             }
@@ -128,7 +126,6 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
-        disposed = true;
     }
 
     private void startAutomaticRefresh(int refreshInterval) {
@@ -280,11 +277,9 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        if (disposed) {
-            return;
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
         }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 7) {
@@ -380,6 +375,8 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                 }
             }
         }
+
+        return true;
     }
 
     private void updateVirtualLightState(int channel, byte dimVal) {

@@ -41,8 +41,6 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHandler {
-    private volatile boolean disposed = true;
-
     private static final double THERMOSTAT_TEMPERATURE_SETPOINT_RESOLUTION = 0.5;
 
     private static final StringType OPERATING_MODE_HEATING = new StringType("HEATING");
@@ -102,20 +100,6 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
 
     public VelbusThermostatHandler(Thing thing, int numberOfSubAddresses, ChannelUID temperatureChannel) {
         super(thing, numberOfSubAddresses, temperatureChannel);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-
-        disposed = false;
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-
-        disposed = true;
     }
 
     @Override
@@ -181,11 +165,9 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        if (disposed) {
-            return;
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
         }
 
         logger.trace("onPacketReceived() was called");
@@ -300,6 +282,8 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
 
             }
         }
+
+        return true;
     }
 
     private void triggerThermostatChannels(byte outputChannels, String event) {

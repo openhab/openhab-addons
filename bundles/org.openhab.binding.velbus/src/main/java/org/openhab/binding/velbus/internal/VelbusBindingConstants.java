@@ -243,6 +243,7 @@ public class VelbusBindingConstants {
     public static final String MODULE_MEMORY_MAP_VERSION = "memory map version";
     public static final String MODULE_BUILD = "build";
     public static final String CHANNEL = "CH";
+    public static final String DALI_ADDRESS = "A";
     public static final String VIRTUAL_LIGHT = "VL";
     public static final String SUB_ADDRESS = "subaddress";
     public static final String DIMSPEED = "dimspeed";
