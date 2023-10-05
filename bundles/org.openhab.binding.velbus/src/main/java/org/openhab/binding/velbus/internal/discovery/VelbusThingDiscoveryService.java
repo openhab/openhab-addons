@@ -108,7 +108,6 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
             } else {
                 logger.debug("Unknown command '{}' to address '{}'.", String.format("%02X", command),
                         String.format("%02X", address));
-                return false;
             }
         }
         return true;
