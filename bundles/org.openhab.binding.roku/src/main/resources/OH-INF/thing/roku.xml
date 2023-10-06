@@ -28,6 +28,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -68,6 +69,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>

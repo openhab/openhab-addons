@@ -145,14 +145,9 @@ public class RokuHandler extends BaseThingHandler {
                         deviceInfo = communicator.getDeviceInfo();
                         String powerMode = deviceInfo.getPowerMode();
                         updateState(POWER_STATE, new StringType(powerMode));
-                        if (POWERON.equalsIgnoreCase(powerMode)) {
-                            updateState(POWER, OnOffType.ON);
-                        } else {
-                            updateState(POWER, OnOffType.OFF);
-                            return;
-                        }
+                        updateState(POWER, OnOffType.from(POWER_ON.equalsIgnoreCase(powerMode)));
                     } catch (RokuHttpException e) {
-                        logger.debug("Unable to retrieve Roku device-info. Exception: {}", e.getMessage(), e);
+                        logger.debug("Unable to retrieve Roku device-info.", e);
                     }
                 }
 
