@@ -393,7 +393,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     /**
      * Fire Event
      *
-     * @param channelUID chanelUID event belongs to
+     * @param channel chanelUID event belongs to
      * @param event event-name is fired
      */
     protected void fireEvent(String channel, String event) {

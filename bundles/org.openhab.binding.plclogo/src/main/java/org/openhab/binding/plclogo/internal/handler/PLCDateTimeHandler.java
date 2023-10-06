@@ -15,8 +15,8 @@ package org.openhab.binding.plclogo.internal.handler;
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -53,7 +53,7 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCDateTimeHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DATETIME);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DATETIME);
 
     private final Logger logger = LoggerFactory.getLogger(PLCDateTimeHandler.class);
     private AtomicReference<PLCDateTimeConfiguration> config = new AtomicReference<>();
@@ -89,11 +89,11 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
                 } else {
                     logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
-            } else if (command instanceof DateTimeType) {
+            } else if (command instanceof DateTimeType dateTimeCommand) {
                 byte[] buffer = new byte[2];
                 String type = channel.getAcceptedItemType();
                 if (DATE_TIME_ITEM.equalsIgnoreCase(type)) {
-                    ZonedDateTime datetime = ((DateTimeType) command).getZonedDateTime();
+                    ZonedDateTime datetime = dateTimeCommand.getZonedDateTime();
                     if ("Time".equalsIgnoreCase(channelUID.getId())) {
                         buffer[0] = S7.ByteToBCD(datetime.getHour());
                         buffer[1] = S7.ByteToBCD(datetime.getMinute());
@@ -216,14 +216,14 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
             cBuilder.withLabel(name);
             cBuilder.withDescription(text + " block parameter " + name);
-            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
+            cBuilder.withProperties(Map.of(BLOCK_PROPERTY, name));
             tBuilder.withChannel(cBuilder.build());
 
             cBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), VALUE_CHANNEL), ANALOG_ITEM);
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, ANALOG_ITEM.toLowerCase()));
             cBuilder.withLabel(name);
             cBuilder.withDescription(text + " block parameter " + name);
-            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
+            cBuilder.withProperties(Map.of(BLOCK_PROPERTY, name));
             tBuilder.withChannel(cBuilder.build());
             setOldValue(name, null);
 

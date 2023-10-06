@@ -39,8 +39,8 @@ import org.openhab.core.types.State;
 /**
  * Tests for the Astro Channels state
  *
- * @See {@link AstroParametrizedTestCases}
- * @author Petar Valchev - Initial implementation
+ * @see {@link AstroParametrizedTestCases}
+ * @author Petar Valchev - Initial contribution
  * @author Svilen Valkanov - Reworked to plain unit tests
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
  * @author Christoph Weitkamp - Migrated tests to pure Java

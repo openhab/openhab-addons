@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>DanfossAirUnit Binding</name>
-	<description>This is the binding for DanfossAirUnit.</description>
+	<description>This is the binding for Danfoss Air heat recovery ventilation units.</description>
 	<connection>local</connection>
 
 </addon:addon>

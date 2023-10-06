@@ -17,7 +17,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNoti
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
 
 /**
- * The {@link WebsocketInterface} is responsible for interfacing the Websocket.
+ * The {@link Shelly2RpctInterface} is responsible for interfacing the Websocket.
  *
  * @author Markus Michels - Initial contribution
  */

@@ -88,8 +88,8 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
 
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof CaddxBridgeHandler) {
-                this.caddxBridgeHandler = (CaddxBridgeHandler) handler;
+            if (handler instanceof CaddxBridgeHandler bridgeHandler) {
+                this.caddxBridgeHandler = bridgeHandler;
             } else {
                 logger.debug("getCaddxBridgeHandler(): Unable to get bridge handler!");
             }
@@ -102,15 +102,14 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
      * Method to Update a Channel
      *
      * @param channel
-     * @param state
-     * @param description
+     * @param data
      */
     public abstract void updateChannel(ChannelUID channel, String data);
 
     /**
      * Receives Events from the bridge.
      *
-     * @param event.
+     * @param event
      * @param thing
      */
     public abstract void caddxEventReceived(CaddxEvent event, Thing thing);

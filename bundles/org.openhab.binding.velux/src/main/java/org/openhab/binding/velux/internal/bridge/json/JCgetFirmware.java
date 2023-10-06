@@ -156,7 +156,6 @@ class JCgetFirmware extends GetFirmware implements JsonBridgeCommunicationProtoc
      */
     @Override
     public VeluxGwFirmware getFirmware() {
-        VeluxGwFirmware gwFirmware = new VeluxGwFirmware(response.data.version);
-        return gwFirmware;
+        return new VeluxGwFirmware(response.data.version);
     }
 }

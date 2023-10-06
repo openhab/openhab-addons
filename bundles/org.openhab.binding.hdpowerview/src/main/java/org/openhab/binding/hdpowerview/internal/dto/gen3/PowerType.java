@@ -20,5 +20,5 @@ package org.openhab.binding.hdpowerview.internal.dto.gen3;
 public enum PowerType {
     BATTERY,
     HARDWIRED,
-    RECHARGEABLE;
+    RECHARGEABLE
 }

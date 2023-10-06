@@ -149,8 +149,8 @@ public class WebInterface implements AtomicReferenceTrait {
                         tokenRefreshDate = Instant.now();
                         tokenExpiry = tokenRefreshDate.plusSeconds(expiresInSeconds);
 
-                        logger.debug("access token refreshed: {}, expiry: {}", Utils.formatDate(tokenRefreshDate),
-                                Utils.formatDate(tokenExpiry));
+                        logger.debug("access token refreshed: {}, expiry: {}", tokenRefreshDate.toString(),
+                                tokenExpiry.toString());
 
                         bridgeStatusHandler.updateStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                                 STATUS_TOKEN_VALIDATED);
@@ -226,7 +226,7 @@ public class WebInterface implements AtomicReferenceTrait {
             if (now.plus(WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES, ChronoUnit.MINUTES).isAfter(tokenExpiry)
                     || now.isAfter(tokenRefreshDate.plus(WEB_REQUEST_TOKEN_MAX_AGE_MINUTES, ChronoUnit.MINUTES))) {
                 logger.debug("access token needs to be refreshed, last refresh: {}, expiry: {}",
-                        Utils.formatDate(tokenRefreshDate), Utils.formatDate(tokenExpiry));
+                        tokenRefreshDate.toString(), tokenExpiry.toString());
 
                 EaseeCommand refreshCommand = new RefreshToken(handler, accessToken, refreshToken,
                         this::processAuthenticationResult);
@@ -253,8 +253,6 @@ public class WebInterface implements AtomicReferenceTrait {
 
     /**
      * Constructor to set up interface
-     *
-     * @param config Bridge configuration
      */
     public WebInterface(ScheduledExecutorService scheduler, EaseeBridgeHandler handler, HttpClient httpClient,
             StatusHandler bridgeStatusHandler) {

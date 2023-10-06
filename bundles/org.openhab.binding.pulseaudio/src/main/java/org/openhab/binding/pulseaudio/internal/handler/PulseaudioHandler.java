@@ -252,8 +252,8 @@ public class PulseaudioHandler extends BaseThingHandler {
             return null;
         }
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof PulseaudioBridgeHandler) {
-            return (PulseaudioBridgeHandler) handler;
+        if (handler instanceof PulseaudioBridgeHandler pulseaudioBridgeHandler) {
+            return pulseaudioBridgeHandler;
         } else {
             logger.debug("No available bridge handler found for device {} bridge {} .",
                     safeGetDeviceNameOrDescription(), bridge.getUID());
@@ -300,25 +300,22 @@ public class PulseaudioHandler extends BaseThingHandler {
                     briHandler.getClient().setVolumePercent(device, newVolume);
                     updateState = new PercentType(newVolume);
                     savedVolume = newVolume;
-                } else if (command instanceof PercentType) {
-                    DecimalType volume = (DecimalType) command;
+                } else if (command instanceof PercentType volume) {
                     briHandler.getClient().setVolumePercent(device, volume.intValue());
-                    updateState = (PercentType) command;
+                    updateState = volume;
                     savedVolume = volume.intValue();
-                } else if (command instanceof DecimalType) {
-                    // set volume
-                    DecimalType volume = (DecimalType) command;
+                } else if (command instanceof DecimalType volume) {
                     briHandler.getClient().setVolume(device, volume.intValue());
-                    updateState = (DecimalType) command;
+                    updateState = volume;
                     savedVolume = volume.intValue();
                 }
             } else if (channelUID.getId().equals(MUTE_CHANNEL)) {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType onOffCommand) {
                     briHandler.getClient().setMute(device, OnOffType.ON.equals(command));
-                    updateState = (OnOffType) command;
+                    updateState = onOffCommand;
                 }
             } else if (channelUID.getId().equals(SLAVES_CHANNEL)) {
-                if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
+                if (device instanceof Sink sink && sink.isCombinedSink()) {
                     if (command instanceof StringType) {
                         List<Sink> slaves = new ArrayList<>();
                         for (String slaveName : command.toString().split(",")) {
@@ -335,16 +332,16 @@ public class PulseaudioHandler extends BaseThingHandler {
                     logger.warn("{} is no combined sink", device);
                 }
             } else if (channelUID.getId().equals(ROUTE_TO_SINK_CHANNEL)) {
-                if (device instanceof SinkInput) {
+                if (device instanceof SinkInput input) {
                     Sink newSink = null;
-                    if (command instanceof DecimalType) {
-                        newSink = briHandler.getClient().getSink(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        newSink = briHandler.getClient().getSink(decimalCommand.intValue());
                     } else {
                         newSink = briHandler.getClient().getSink(command.toString());
                     }
                     if (newSink != null) {
                         logger.debug("rerouting {} to {}", device, newSink);
-                        briHandler.getClient().moveSinkInput(((SinkInput) device), newSink);
+                        briHandler.getClient().moveSinkInput(input, newSink);
                         updateState = new StringType(newSink.getPaName());
                     } else {
                         logger.warn("no sink {} found", command.toString());
@@ -405,12 +402,12 @@ public class PulseaudioHandler extends BaseThingHandler {
             updateState(MUTE_CHANNEL, OnOffType.from(device.isMuted()));
             org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State state = device.getState();
             updateState(STATE_CHANNEL, state != null ? new StringType(state.toString()) : new StringType("-"));
-            if (device instanceof SinkInput) {
-                updateState(ROUTE_TO_SINK_CHANNEL, new StringType(
-                        Optional.ofNullable(((SinkInput) device).getSink()).map(Sink::getPaName).orElse("-")));
+            if (device instanceof SinkInput input) {
+                updateState(ROUTE_TO_SINK_CHANNEL,
+                        new StringType(Optional.ofNullable(input.getSink()).map(Sink::getPaName).orElse("-")));
             }
-            if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
-                updateState(SLAVES_CHANNEL, new StringType(String.join(",", ((Sink) device).getCombinedSinkNames())));
+            if (device instanceof Sink sink && sink.isCombinedSink()) {
+                updateState(SLAVES_CHANNEL, new StringType(String.join(",", sink.getCombinedSinkNames())));
             }
             audioSinkSetup();
             audioSourceSetup();

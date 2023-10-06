@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingUID;
 /**
  * Interface for listeners to receive messages from LIRC server
  *
- * @author Andrew Nagle
+ * @author Andrew Nagle - Initial contribution
  */
 public interface LIRCMessageListener {
 

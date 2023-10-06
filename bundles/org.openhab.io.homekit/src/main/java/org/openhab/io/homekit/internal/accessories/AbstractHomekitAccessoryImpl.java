@@ -218,7 +218,6 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         } else {
             logger.warn("Mandatory characteristic {} not found at accessory {}. ", characteristic,
                     accessory.getItem().getName());
-
         }
         return Optional.empty();
     }
@@ -333,7 +332,6 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * If the primary service does not yet exist, it won't be added to it. It's the resposibility
      * of the caller to add characteristics when the primary service is created.
      *
-     * @param type
      * @param characteristic
      */
     @NonNullByDefault
@@ -438,7 +436,7 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                         // Need to copy over everything except the current value, which we instead
                         // reach in and get the default value
                         cJson.forEach((k, v) -> {
-                            if (k.equals("value")) {
+                            if ("value".equals(k)) {
                                 Object defaultValue = ((BaseCharacteristic) c).getDefault();
                                 if (defaultValue instanceof Boolean) {
                                     cBuilder.add("value", (boolean) defaultValue);

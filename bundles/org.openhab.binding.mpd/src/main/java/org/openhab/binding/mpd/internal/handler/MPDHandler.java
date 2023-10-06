@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -111,7 +112,7 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MPDActions.class);
+        return Set.of(MPDActions.class);
     }
 
     /**
@@ -232,10 +233,10 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
             } else if (command == OnOffType.OFF) {
                 newValue = 0;
             }
-        } else if (command instanceof DecimalType) {
-            newValue = ((DecimalType) command).intValue();
-        } else if (command instanceof PercentType) {
-            newValue = ((PercentType) command).intValue();
+        } else if (command instanceof DecimalType decimalCommand) {
+            newValue = decimalCommand.intValue();
+        } else if (command instanceof PercentType percentCommand) {
+            newValue = percentCommand.intValue();
         } else {
             logger.debug("Command {} is not supported to change volume", command);
             return;

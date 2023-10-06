@@ -32,7 +32,7 @@ public class PlayerConfig {
     /**
      * Set the player name.
      *
-     * @param player name
+     * @param name player name
      */
     public void setName(String name) {
         this.playerName = name;

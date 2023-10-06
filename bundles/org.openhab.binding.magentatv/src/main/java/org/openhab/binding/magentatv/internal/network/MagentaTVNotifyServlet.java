@@ -82,14 +82,13 @@ public class MagentaTVNotifyServlet extends HttpServlet {
      * STB_playContent> </e:property> </e:propertyset>
      *
      * @param request
-     * @param resp
+     * @param response
      *
      * @throws ServletException, IOException
      */
     @Override
     protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
             throws ServletException, IOException {
-
         String data = inputStreamToString(request);
         try {
             if ((request == null) || (response == null)) {
@@ -118,7 +117,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
                 }
             } else {
                 if (data.contains("STB_")) {
-                    data = data.replaceAll("&quot;", "\"");
+                    data = data.replace("&quot;", "\"");
                     String stbMac = substringBetween(data, "<STB_Mac>", "</STB_Mac>");
                     String stbEvent = "";
                     if (data.contains("<STB_playContent>")) {

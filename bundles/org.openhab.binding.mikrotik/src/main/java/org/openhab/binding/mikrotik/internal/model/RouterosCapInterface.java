@@ -45,19 +45,19 @@ public class RouterosCapInterface extends RouterosInterfaceBase {
     }
 
     public boolean isMaster() {
-        return getProp("slave", "").equals("false");
+        return "false".equals(getProp("slave", ""));
     }
 
     public boolean isDynamic() {
-        return getProp("dynamic", "").equals("true");
+        return "true".equals(getProp("dynamic", ""));
     }
 
     public boolean isBound() {
-        return getProp("bound", "").equals("true");
+        return "true".equals(getProp("bound", ""));
     }
 
     public boolean isActive() {
-        return getProp("inactive", "").equals("false");
+        return "false".equals(getProp("inactive", ""));
     }
 
     public @Nullable String getCurrentState() {

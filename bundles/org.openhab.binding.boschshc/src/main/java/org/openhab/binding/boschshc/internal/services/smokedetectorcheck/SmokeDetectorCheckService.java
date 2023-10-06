@@ -34,15 +34,13 @@ public class SmokeDetectorCheckService extends BoschSHCService<SmokeDetectorChec
 
     @Override
     public SmokeDetectorCheckServiceState handleCommand(Command command) throws BoschSHCException {
-        if (command instanceof StringType) {
-            var stringCommand = (StringType) command;
+        if (command instanceof StringType stringCommand) {
             var state = new SmokeDetectorCheckServiceState();
             state.value = SmokeDetectorCheckState.from(stringCommand.toString());
             return state;
         }
 
-        if (command instanceof PlayPauseType) {
-            var playPauseCommand = (PlayPauseType) command;
+        if (command instanceof PlayPauseType playPauseCommand) {
             if (playPauseCommand.equals(PlayPauseType.PLAY)) {
                 var state = new SmokeDetectorCheckServiceState();
                 state.value = SmokeDetectorCheckState.SMOKE_TEST_REQUESTED;

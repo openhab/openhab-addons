@@ -38,8 +38,8 @@ public class CaddxBridgeActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof CaddxBridgeHandler) {
-            this.handler = (CaddxBridgeHandler) handler;
+        if (handler instanceof CaddxBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 

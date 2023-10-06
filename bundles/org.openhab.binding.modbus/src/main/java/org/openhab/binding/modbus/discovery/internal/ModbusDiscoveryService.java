@@ -135,7 +135,7 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
      * Running bridges have a ModbusThingHandlerDiscoveryService connected
      * which will be responsible for the discovery
      *
-     * @param handler the Modbus bridge handler
+     * @param service discovery service
      */
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     protected void addModbusEndpoint(ModbusThingHandlerDiscoveryService service) {
@@ -146,7 +146,7 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
     /**
      * Remove an already registered thing handler discovery component
      *
-     * @param handler the handler that has been removed
+     * @param service discovery service
      */
     protected void removeModbusEndpoint(ModbusThingHandlerDiscoveryService service) {
         logger.trace("Removed handler: {}", service);

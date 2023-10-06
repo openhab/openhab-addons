@@ -13,8 +13,8 @@
 package org.openhab.binding.modbus.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.discovery.internal.ModbusEndpointDiscoveryService;
@@ -111,6 +111,6 @@ public class ModbusSerialThingHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ModbusEndpointDiscoveryService.class);
+        return Set.of(ModbusEndpointDiscoveryService.class);
     }
 }

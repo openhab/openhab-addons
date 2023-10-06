@@ -48,6 +48,7 @@ public class EchonetDevice extends EchonetObject {
         this.listener = listener;
     }
 
+    @Override
     public void applyProperty(InstanceKey sourceInstanceKey, Esv esv, final int epcCode, final int pdc,
             final ByteBuffer edt) {
         final Epc epc = Epc.lookup(instanceKey().klass.groupCode(), instanceKey().klass.classCode(), epcCode);
@@ -112,6 +113,7 @@ public class EchonetDevice extends EchonetObject {
         return identificationNumber.toString();
     }
 
+    @Override
     public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tidSupplier,
             final long nowMs, InstanceKey managementControllerKey) {
         if (pendingSets.isEmpty()) {
@@ -141,6 +143,7 @@ public class EchonetDevice extends EchonetObject {
         return true;
     }
 
+    @Override
     public void update(String channelId, State state) {
         final Epc epc = epcByChannelId.get(channelId);
         if (null == epc) {
@@ -156,12 +159,14 @@ public class EchonetDevice extends EchonetObject {
         listener.onRemoved();
     }
 
+    @Override
     public void checkTimeouts() {
         if (EchonetLiteBindingConstants.OFFLINE_TIMEOUT_COUNT <= inflightGetRequest.timeoutCount()) {
             listener.onOffline();
         }
     }
 
+    @Override
     public void refreshAll(long nowMs) {
         final EchonetPropertyMap getPropertyMap = this.getPropertyMap;
         if (lastPollMs + pollIntervalMs <= nowMs && null != getPropertyMap) {
