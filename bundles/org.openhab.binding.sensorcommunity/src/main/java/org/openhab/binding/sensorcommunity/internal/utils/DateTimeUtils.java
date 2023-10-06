@@ -35,7 +35,6 @@ public class DateTimeUtils {
     public static synchronized @Nullable LocalDateTime toDate(String dateTime) {
         try {
             return LocalDateTime.from(DTF.parse(dateTime));
-
         } catch (DateTimeParseException e) {
             LOGGER.debug("Unable to parse date {}", dateTime);
             return null;

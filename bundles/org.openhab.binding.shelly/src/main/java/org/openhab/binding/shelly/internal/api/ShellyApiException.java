@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link CarNetException} implements an extension to the standard Exception class. This allows to keep also the
+ * The {@link ShellyApiException} implements an extension to the standard Exception class. This allows to keep also the
  * result of the last API call (e.g. including the http status code in the message).
  *
  * @author Markus Michels - Initial contribution
@@ -83,6 +83,8 @@ public class ShellyApiException extends Exception {
                         string[1]);
             } else if (isMalformedURL()) {
                 message = "Invalid URL: " + url;
+            } else if (isJsonError()) {
+                message = getString(getMessage());
             } else if (isTimeout()) {
                 message = "API Timeout for " + url;
             } else if (!isConnectionError()) {

@@ -104,7 +104,7 @@ public class FireTVStickMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         String macAddress = service.getPropertyString(MDNS_PROPERTY_MAC_ADDRESS);
         if (macAddress != null && !macAddress.isBlank()) {
-            return new ThingUID(THING_TYPE_ANDROID_DEVICE, macAddress.replaceAll(":", "").toLowerCase());
+            return new ThingUID(THING_TYPE_ANDROID_DEVICE, macAddress.replace(":", "").toLowerCase());
         }
         return null;
     }

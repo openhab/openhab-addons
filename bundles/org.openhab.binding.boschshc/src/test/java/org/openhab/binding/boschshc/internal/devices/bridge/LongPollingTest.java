@@ -62,7 +62,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-public class LongPollingTest {
+class LongPollingTest {
 
     /**
      * A dummy implementation of {@link ScheduledFuture}.
@@ -210,13 +210,13 @@ public class LongPollingTest {
 
         Request subscribeRequest = mock(Request.class);
         when(httpClient.createRequest(anyString(), same(HttpMethod.POST),
-                argThat((JsonRpcRequest r) -> r.method.equals("RE/subscribe")))).thenReturn(subscribeRequest);
+                argThat((JsonRpcRequest r) -> "RE/subscribe".equals(r.method)))).thenReturn(subscribeRequest);
         SubscribeResult subscribeResult = new SubscribeResult();
         when(httpClient.sendRequest(any(), same(SubscribeResult.class), any(), any())).thenReturn(subscribeResult);
 
         Request longPollRequest = mock(Request.class);
         when(httpClient.createRequest(anyString(), same(HttpMethod.POST),
-                argThat((JsonRpcRequest r) -> r.method.equals("RE/longPoll")))).thenReturn(longPollRequest);
+                argThat((JsonRpcRequest r) -> "RE/longPoll".equals(r.method)))).thenReturn(longPollRequest);
 
         fixture.start(httpClient);
 
@@ -268,7 +268,7 @@ public class LongPollingTest {
 
         Request longPollRequest = mock(Request.class);
         when(httpClient.createRequest(anyString(), same(HttpMethod.POST),
-                argThat((JsonRpcRequest r) -> r.method.equals("RE/longPoll")))).thenReturn(longPollRequest);
+                argThat((JsonRpcRequest r) -> "RE/longPoll".equals(r.method)))).thenReturn(longPollRequest);
 
         fixture.start(httpClient);
 
@@ -296,13 +296,13 @@ public class LongPollingTest {
 
         Request subscribeRequest = mock(Request.class);
         when(httpClient.createRequest(anyString(), same(HttpMethod.POST),
-                argThat((JsonRpcRequest r) -> r.method.equals("RE/subscribe")))).thenReturn(subscribeRequest);
+                argThat((JsonRpcRequest r) -> "RE/subscribe".equals(r.method)))).thenReturn(subscribeRequest);
         SubscribeResult subscribeResult = new SubscribeResult();
         when(httpClient.sendRequest(any(), same(SubscribeResult.class), any(), any())).thenReturn(subscribeResult);
 
         Request longPollRequest = mock(Request.class);
         when(httpClient.createRequest(anyString(), same(HttpMethod.POST),
-                argThat((JsonRpcRequest r) -> r.method.equals("RE/longPoll")))).thenReturn(longPollRequest);
+                argThat((JsonRpcRequest r) -> "RE/longPoll".equals(r.method)))).thenReturn(longPollRequest);
 
         fixture.start(httpClient);
 

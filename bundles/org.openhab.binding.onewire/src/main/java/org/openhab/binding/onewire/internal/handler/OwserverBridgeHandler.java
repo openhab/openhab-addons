@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
@@ -62,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OwserverBridgeHandler extends BaseBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_OWSERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_OWSERVER);
 
     private final Logger logger = LoggerFactory.getLogger(OwserverBridgeHandler.class);
     protected boolean refreshable = false;
@@ -405,9 +404,9 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
                 State value;
                 try {
                     synchronized (owserverConnection) {
-                        if (channelConfig.acceptedItemType.equals("String")) {
+                        if ("String".equals(channelConfig.acceptedItemType)) {
                             value = new StringType(owserverConnection.readString(channelConfig.path));
-                        } else if (channelConfig.acceptedItemType.equals("Number")) {
+                        } else if ("Number".equals(channelConfig.acceptedItemType)) {
                             value = owserverConnection.readDecimalType(channelConfig.path);
                         } else {
                             logger.debug("mismatched configuration, itemType unknown for channel {}",

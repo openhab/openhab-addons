@@ -36,27 +36,29 @@ public class FanTests extends AbstractComponentTests {
     public void test() throws InterruptedException {
         // @formatter:off
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"availability\": [ " +
-                        "    { " +
-                        "      \"topic\": \"zigbee2mqtt/bridge/state\" " +
-                        "    } " +
-                        "  ], " +
-                        "  \"device\": { " +
-                        "    \"identifiers\": [ " +
-                        "      \"zigbee2mqtt_0x0000000000000000\" " +
-                        "    ], " +
-                        "    \"manufacturer\": \"Fans inc\", " +
-                        "    \"model\": \"Fan\", " +
-                        "    \"name\": \"FanBlower\", " +
-                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
-                        "  }, " +
-                        "  \"name\": \"fan\", " +
-                        "  \"payload_off\": \"OFF_\", " +
-                        "  \"payload_on\": \"ON_\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/fan/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/fan/set/state\" " +
-                        "}");
+                """
+                { \
+                  "availability": [ \
+                    { \
+                      "topic": "zigbee2mqtt/bridge/state" \
+                    } \
+                  ], \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Fans inc", \
+                    "model": "Fan", \
+                    "name": "FanBlower", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "fan", \
+                  "payload_off": "OFF_", \
+                  "payload_on": "ON_", \
+                  "state_topic": "zigbee2mqtt/fan/state", \
+                  "command_topic": "zigbee2mqtt/fan/set/state" \
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));

@@ -50,10 +50,10 @@ public class LocationMessage {
     private String trackerId = "";
 
     /**
-     * Altitude (iOS, Android/integer/meters/optional)
+     * Altitude (iOS, Android/float/meters/optional)
      */
     @SerializedName("alt")
-    private Integer altitude = Integer.MIN_VALUE;
+    private BigDecimal altitude = BigDecimal.ZERO;
 
     /**
      * Latitude (iOS, Android/float/meters/required)
@@ -109,7 +109,8 @@ public class LocationMessage {
      * @return Conversion result
      */
     public State getTrackerLocation() {
-        if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude) && Integer.MIN_VALUE != altitude) {
+        if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude)
+                && !BigDecimal.ZERO.equals(altitude)) {
             return new PointType(new DecimalType(latitude), new DecimalType(longitude), new DecimalType(altitude));
         } else if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude)) {
             return new PointType(new DecimalType(latitude), new DecimalType(longitude));

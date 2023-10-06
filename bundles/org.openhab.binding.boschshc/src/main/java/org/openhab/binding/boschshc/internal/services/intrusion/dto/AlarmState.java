@@ -26,5 +26,5 @@ public enum AlarmState {
     PRE_ALARM,
     ALARM_ON,
     ALARM_MUTED,
-    UNKNOWN;
+    UNKNOWN
 }

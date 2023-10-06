@@ -1485,6 +1485,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 case "84934718":
                     codec = "PCM51";
                     break;
+                case "84934721":
+                    codec = "DTS51";
+                    break;
                 default:
                     codec = "Unknown - " + codec;
             }
@@ -1673,8 +1676,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     /**
      * Save the state (track, position etc) of the Sonos Zone player.
-     *
-     * @return true if no error occurred.
      */
     protected void saveState() {
         synchronized (stateLock) {
@@ -1760,8 +1761,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     /**
      * Restore the state (track, position etc) of the Sonos Zone player.
-     *
-     * @return true if no error occurred.
      */
     protected void restoreState() {
         synchronized (stateLock) {
@@ -1820,8 +1819,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 newValue = "100";
             } else if (command == OnOffType.OFF) {
                 newValue = "0";
-            } else if (command instanceof DecimalType) {
-                newValue = String.valueOf(((DecimalType) command).intValue());
+            } else if (command instanceof DecimalType decimalCommand) {
+                newValue = String.valueOf(decimalCommand.intValue());
             } else {
                 return;
             }
@@ -1877,8 +1876,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             } else if (command == IncreaseDecreaseType.DECREASE && currentValue != null) {
                 int i = Integer.valueOf(currentValue);
                 newValue = String.valueOf(Math.max(minValue, i - 1));
-            } else if (command instanceof DecimalType) {
-                newValue = String.valueOf(((DecimalType) command).intValue());
+            } else if (command instanceof DecimalType decimalCommand) {
+                newValue = String.valueOf(decimalCommand.intValue());
             }
         }
         return newValue;
@@ -2215,7 +2214,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     /**
      * Play music from the line-in of the given Player referenced by the given UDN or name
      *
-     * @param udn or name
+     * @param command udn or name
      */
     public void playLineIn(Command command) {
         if (command instanceof StringType) {
@@ -2314,8 +2313,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             Thing thing = localThingRegistry.get(new ThingUID(supportedThingType, remotePlayerName));
             if (thing != null) {
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof ZonePlayerHandler) {
-                    return (ZonePlayerHandler) handler;
+                if (handler instanceof ZonePlayerHandler zonePlayerHandler) {
+                    return zonePlayerHandler;
                 }
             }
         }
@@ -2323,8 +2322,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             if (SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(aThing.getThingTypeUID())
                     && aThing.getConfiguration().get(ZonePlayerConfiguration.UDN).equals(remotePlayerName)) {
                 ThingHandler handler = aThing.getHandler();
-                if (handler instanceof ZonePlayerHandler) {
-                    return (ZonePlayerHandler) handler;
+                if (handler instanceof ZonePlayerHandler zonePlayerHandler) {
+                    return zonePlayerHandler;
                 }
             }
         }
@@ -2459,8 +2458,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void snoozeAlarm(Command command) {
-        if (isAlarmRunning() && command instanceof DecimalType) {
-            int minutes = ((DecimalType) command).intValue();
+        if (isAlarmRunning() && command instanceof DecimalType decimalCommand) {
+            int minutes = decimalCommand.intValue();
 
             Map<String, String> inputs = new HashMap<>();
 
@@ -2562,7 +2561,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     /**
      * Play a given url to music in one of the music libraries.
      *
-     * @param url
+     * @param command
      *            in the format of //host/folder/filename.mp3
      */
     public void playURI(Command command) {
@@ -2615,7 +2614,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     /**
      * Play a given notification sound
      *
-     * @param url in the format of //host/folder/filename.mp3
+     * @param notificationURL in the format of //host/folder/filename.mp3
      */
     public void playNotificationSoundURI(Command notificationURL) {
         if (notificationURL instanceof StringType) {
@@ -3115,8 +3114,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * This will attempt to match the station string with an entry in the
      * favorites list, this supports both single entries and playlists
      *
-     * @param favorite to match
-     * @return true if a match was found and played.
+     * @param command favorite to match
      */
     public void playFavorite(Command command) {
         if (command instanceof StringType) {
@@ -3161,11 +3159,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void playTrack(Command command) {
-        if (command instanceof DecimalType) {
+        if (command instanceof DecimalType decimalCommand) {
             try {
                 ZonePlayerHandler coordinator = getCoordinatorHandler();
 
-                String trackNumber = String.valueOf(((DecimalType) command).intValue());
+                String trackNumber = String.valueOf(decimalCommand.intValue());
 
                 coordinator.setCurrentURI(QUEUE_URI + coordinator.getUDN() + "#0", "");
 
@@ -3312,9 +3310,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * Use empty String "" to switch the sleep timer off
      */
     public void setSleepTimer(Command command) {
-        if (command instanceof DecimalType) {
+        if (command instanceof DecimalType decimalCommand) {
             this.service.invokeAction(this, SERVICE_AV_TRANSPORT, ACTION_CONFIGURE_SLEEP_TIMER, Map.of("InstanceID",
-                    "0", "NewSleepTimerDuration", sleepSecondsToTimeStr(((DecimalType) command).longValue())));
+                    "0", "NewSleepTimerDuration", sleepSecondsToTimeStr(decimalCommand.longValue())));
         }
     }
 

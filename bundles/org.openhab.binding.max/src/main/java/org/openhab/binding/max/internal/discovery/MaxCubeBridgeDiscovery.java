@@ -136,7 +136,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                     logger.trace("Msg Valid : {}", msgValidid);
                     logger.trace("Msg Type  : {}", requestType);
 
-                    if (requestType.equals("I")) {
+                    if ("I".equals(requestType)) {
                         rfAddress = Utils.getHex(Arrays.copyOfRange(messageBuf, 21, 24)).replace(" ", "").toLowerCase();
                         String firmwareVersion = Utils.getHex(Arrays.copyOfRange(messageBuf, 24, 26)).replace(" ", ".");
                         logger.debug("RF Address: {}", rfAddress);

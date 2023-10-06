@@ -15,7 +15,6 @@ package org.openhab.voice.pollytts.internal.cloudapi;
 import static java.util.stream.Collectors.*;
 import static org.openhab.core.audio.AudioFormat.*;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +28,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.polly.AmazonPolly;
 import com.amazonaws.services.polly.AmazonPollyClientBuilder;
+import com.amazonaws.services.polly.model.AmazonPollyException;
 import com.amazonaws.services.polly.model.DescribeVoicesRequest;
 import com.amazonaws.services.polly.model.OutputFormat;
 import com.amazonaws.services.polly.model.SynthesizeSpeechRequest;
@@ -115,8 +115,7 @@ public class PollyTTSCloudImpl {
      * @param audioFormat
      *            the audio format to use
      * @return an InputStream to the audio data in specified format
-     * @throws IOException
-     *             will be raised if the audio data can not be retrieved from
+     * @throws AmazonPollyException will be raised if the audio data can not be retrieved from
      *             cloud service
      */
     public InputStream getTextToSpeech(String text, String label, String audioFormat) {

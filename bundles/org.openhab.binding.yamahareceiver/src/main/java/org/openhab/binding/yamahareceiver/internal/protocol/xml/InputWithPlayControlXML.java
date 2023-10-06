@@ -45,7 +45,7 @@ import org.w3c.dom.Node;
  * No state will be saved in here, but in {@link PlayInfoState} and
  * {@link PresetInfoState} instead.
  *
- * @author David Graeff
+ * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Spotify support, refactoring
  */
 public class InputWithPlayControlXML extends AbstractInputControlXML implements InputWithPlayControl {
@@ -102,7 +102,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
      * Start the playback of the content which is usually selected by the means of the Navigation control class or
      * which has been stopped by stop().
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void play() throws IOException, ReceivedMessageParseException {
@@ -112,7 +113,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Stop the currently playing content. Use start() to start again.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void stop() throws IOException, ReceivedMessageParseException {
@@ -122,7 +124,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Pause the currently playing content. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void pause() throws IOException, ReceivedMessageParseException {
@@ -132,7 +135,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Skip forward. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void skipFF() throws IOException, ReceivedMessageParseException {
@@ -146,7 +150,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Skip reverse. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void skipREV() throws IOException, ReceivedMessageParseException {
@@ -160,7 +165,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Next track. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void nextTrack() throws IOException, ReceivedMessageParseException {
@@ -170,7 +176,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Previous track. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void previousTrack() throws IOException, ReceivedMessageParseException {
@@ -192,7 +199,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Updates the playback information
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void update() throws IOException, ReceivedMessageParseException {

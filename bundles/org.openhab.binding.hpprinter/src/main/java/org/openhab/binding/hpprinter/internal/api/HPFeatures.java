@@ -39,9 +39,7 @@ public class HPFeatures {
         boolean localScannerStatus = false;
 
         for (Node n = root.getFirstChild(); n != null; n = n.getNextSibling()) {
-            if (n instanceof Element) {
-                Element feature = (Element) n;
-
+            if (n instanceof Element feature) {
                 NodeList resourceType = feature.getElementsByTagName("dd:ResourceType");
 
                 if (resourceType.getLength() > 0) {

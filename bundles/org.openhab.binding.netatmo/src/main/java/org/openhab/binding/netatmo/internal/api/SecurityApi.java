@@ -18,7 +18,6 @@ import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -26,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
 import org.openhab.binding.netatmo.internal.api.dto.Home;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent.NAEventsDataResponse;
@@ -94,7 +94,7 @@ public class SecurityApi extends RestManager {
 
         // Remove unneeded events being before oldestKnown
         return events.stream().filter(event -> freshestEventTime == null || event.getTime().isAfter(freshestEventTime))
-                .sorted(Comparator.comparing(HomeEvent::getTime).reversed()).collect(Collectors.toList());
+                .sorted(Comparator.comparing(HomeEvent::getTime).reversed()).toList();
     }
 
     public List<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
@@ -124,6 +124,12 @@ public class SecurityApi extends RestManager {
     public void changeFloodLightMode(String homeId, String cameraId, FloodLightMode mode) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(PATH_STATE);
         String payload = PAYLOAD_FLOODLIGHT.formatted(homeId, cameraId, mode.name().toLowerCase());
+        post(uriBuilder, ApiResponse.Ok.class, payload);
+    }
+
+    public void changeSirenStatus(String homeId, String moduleId, SirenStatus status) throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder(PATH_STATE);
+        String payload = PAYLOAD_SIREN_PRESENCE.formatted(homeId, moduleId, status.name().toLowerCase());
         post(uriBuilder, ApiResponse.Ok.class, payload);
     }
 

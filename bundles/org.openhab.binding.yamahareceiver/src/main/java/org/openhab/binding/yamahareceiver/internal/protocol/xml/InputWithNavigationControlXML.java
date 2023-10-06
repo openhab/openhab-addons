@@ -43,8 +43,8 @@ import org.w3c.dom.Node;
  * menu.goToPath(menuDir);
  * menu.selectItem(stationName);
  *
+ * @author Dennis Frommknecht - Initial contribution
  * @author David Graeff - Completely refactored class
- * @author Dennis Frommknecht - Initial idea and implementaton
  * @author Tomasz Maruszak - Refactor
  */
 public class InputWithNavigationControlXML extends AbstractInputControlXML implements InputWithNavigationControl {
@@ -88,7 +88,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate back
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void goBack() throws IOException, ReceivedMessageParseException {
@@ -98,7 +99,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate up
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void goUp() throws IOException, ReceivedMessageParseException {
@@ -108,7 +110,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate down
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void goDown() throws IOException, ReceivedMessageParseException {
@@ -118,7 +121,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate left. Not for all zones or functions available.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void goLeft() throws IOException, ReceivedMessageParseException {
@@ -128,7 +132,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate right. Not for all zones or functions available.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void goRight() throws IOException, ReceivedMessageParseException {
@@ -138,7 +143,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Select current item. Not for all zones or functions available.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void selectCurrentItem() throws IOException, ReceivedMessageParseException {
@@ -148,7 +154,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate to root menu
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public boolean goToRoot() throws IOException, ReceivedMessageParseException {
@@ -205,8 +212,7 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
         if (sameMenu) {
             if (!selectItem(selectItemName)) {
                 observer.navigationError("Item '" + selectItemName + "' doesn't exist in menu " + state.menuName
-                        + " at level " + String.valueOf(state.menuLayer) + ". Available options are: "
-                        + state.getAllItemLabels());
+                        + " at level " + state.menuLayer + ". Available options are: " + state.getAllItemLabels());
             }
             return;
         }
@@ -220,8 +226,7 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
         for (String pathElement : pathArr) {
             if (!selectItem(pathElement)) {
                 observer.navigationError("Item '" + pathElement + "' doesn't exist in menu " + state.menuName
-                        + " at level " + String.valueOf(state.menuLayer) + ". Available options are: "
-                        + state.getAllItemLabels());
+                        + " at level " + state.menuLayer + ". Available options are: " + state.getAllItemLabels());
                 return;
             }
         }
@@ -258,8 +263,7 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
 
             int index = findItemOnCurrentPage(name);
             if (index > 0) {
-                com.send(wrInput(
-                        "<List_Control><Direct_Sel>Line_" + String.valueOf(index) + "</Direct_Sel></List_Control>"));
+                com.send(wrInput("<List_Control><Direct_Sel>Line_" + index + "</Direct_Sel></List_Control>"));
                 update();
                 return true;
             }
@@ -273,7 +277,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
      * some time because it retries the request for up to MENU_MAX_WAITING_TIME or the menu state reports
      * "Ready", whatever comes first.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void update() throws IOException, ReceivedMessageParseException {

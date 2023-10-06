@@ -268,8 +268,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
                         break;
                     case CHANNEL_SOURCE:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             connector.sendCommand(OppoCommand.SET_INPUT_SOURCE, String.valueOf(value));
                         }
                         break;
@@ -297,14 +297,14 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
                         break;
                     case CHANNEL_SUB_SHIFT:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             connector.sendCommand(OppoCommand.SET_SUBTITLE_SHIFT, String.valueOf(value));
                         }
                         break;
                     case CHANNEL_OSD_POSITION:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             connector.sendCommand(OppoCommand.SET_OSD_POSITION, String.valueOf(value));
                         }
                         break;
@@ -324,11 +324,11 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
                         break;
                     default:
-                        logger.warn("Unknown Command {} from channel {}", command, channel);
+                        logger.debug("Unknown command {} from channel {}", command, channel);
                         break;
                 }
             } catch (OppoException e) {
-                logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
+                logger.debug("Command {} from channel {} failed: {}", command, channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
                 closeConnection();
                 scheduleReconnectJob();
@@ -366,7 +366,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     /**
      * Handle an event received from the Oppo player
      *
-     * @param event the event to process
+     * @param evt the event to process
      */
     @Override
     public void onNewMessageEvent(OppoMessageEvent evt) {
@@ -492,6 +492,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             updateChannelState(CHANNEL_SUBTITLE_TYPE, UNDEF);
                         }
                         updateChannelState(CHANNEL_PLAY_MODE, playStatus);
+                        updateState(CHANNEL_CONTROL,
+                                PLAY.equals(playStatus) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
                         // ejecting the disc does not produce a UDT message, so clear disc type manually
                         if (OPEN.equals(playStatus) || NO_DISC.equals(playStatus)) {
@@ -716,7 +718,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
 
                     } catch (OppoException | InterruptedException e) {
-                        logger.warn("Polling error: {}", e.getMessage());
+                        logger.debug("Polling error: {}", e.getMessage());
                     }
 
                     // if the last event received was more than 1.25 intervals ago,
@@ -835,7 +837,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 connector.sendCommand(OppoCommand.REWIND);
             }
         } else {
-            logger.warn("Unknown control command: {}", command);
+            logger.debug("Unknown control command: {}", command);
         }
     }
 
@@ -843,7 +845,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         if (model == MODEL83 || model == MODEL103 || model == MODEL105) {
             hdmiModeOptions.add(new StateOption("AUTO", "Auto"));
             hdmiModeOptions.add(new StateOption("SRC", "Source Direct"));
-            if (!(model == MODEL83)) {
+            if (model != MODEL83) {
                 hdmiModeOptions.add(new StateOption("4K2K", "4K*2K"));
             }
             hdmiModeOptions.add(new StateOption("1080P", "1080P"));

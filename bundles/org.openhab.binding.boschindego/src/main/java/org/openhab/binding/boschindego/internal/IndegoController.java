@@ -158,8 +158,8 @@ public class IndegoController {
             throw new IndegoException(e);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException) {
-                Response response = ((HttpResponseException) cause).getResponse();
+            if (cause != null && cause instanceof HttpResponseException httpResponseException) {
+                Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
                      * The service may respond with HTTP code 401 without any "WWW-Authenticate"
@@ -218,8 +218,8 @@ public class IndegoController {
             throw new IndegoException(e);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException) {
-                Response response = ((HttpResponseException) cause).getResponse();
+            if (cause != null && cause instanceof HttpResponseException httpResponseException) {
+                Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
                      * When contextId is not valid, the service will respond with HTTP code 401 without
@@ -261,7 +261,8 @@ public class IndegoController {
     /**
      * Sends a PUT/POST request to the server.
      * 
-     * @param method the type of request ({@link HttpMethod.PUT} or {@link HttpMethod.POST})
+     * @param method the type of request ({@link org.eclipse.jetty.http.HttpMethod.PUT} or
+     *            {@link org.eclipse.jetty.http.HttpMethod.POST})
      * @param path the relative path to which the request should be sent
      * @param requestDto the DTO which should be sent to the server as JSON
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
@@ -316,8 +317,8 @@ public class IndegoController {
             throw new IndegoException(e);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException) {
-                Response response = ((HttpResponseException) cause).getResponse();
+            if (cause != null && cause instanceof HttpResponseException httpResponseException) {
+                Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
                      * When contextId is not valid, the service will respond with HTTP code 401 without

@@ -235,8 +235,8 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             }
             for (Thing thing : getThing().getThings()) {
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof CBusGroupHandler) {
-                    ((CBusGroupHandler) handler).updateStatus();
+                if (handler instanceof CBusGroupHandler groupHandler) {
+                    groupHandler.updateStatus();
                 }
             }
         }
@@ -262,8 +262,8 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             return null;
         }
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof CBusCGateHandler) {
-            return (CBusCGateHandler) handler;
+        if (handler instanceof CBusCGateHandler gateHandler) {
+            return gateHandler;
         } else {
             logger.debug("No available bridge handler found for bridge: {}.", bridge.getUID());
             return null;

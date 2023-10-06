@@ -32,7 +32,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class MotionDetectorHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<MotionDetectorHandler> {
+class MotionDetectorHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<MotionDetectorHandler> {
 
     @Override
     protected MotionDetectorHandler createFixture() {
@@ -50,9 +50,13 @@ public class MotionDetectorHandlerTest extends AbstractBatteryPoweredDeviceHandl
     }
 
     @Test
-    public void testUpdateChannelsLatestMotionService() {
-        JsonElement jsonObject = JsonParser.parseString("{\n" + "   \"@type\": \"latestMotionState\",\n"
-                + "   \"latestMotionDetected\": \"2020-04-03T19:02:19.054Z\"\n" + " }");
+    void testUpdateChannelsLatestMotionService() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "latestMotionState",
+                   "latestMotionDetected": "2020-04-03T19:02:19.054Z"
+                 }\
+                """);
         getFixture().processUpdate("LatestMotion", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_LATEST_MOTION),

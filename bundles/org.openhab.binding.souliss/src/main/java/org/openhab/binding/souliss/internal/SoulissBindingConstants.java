@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SoulissBinding} class defines common constants, which are
+ * The {@link SoulissBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Tonino Fazio - Initial contribution

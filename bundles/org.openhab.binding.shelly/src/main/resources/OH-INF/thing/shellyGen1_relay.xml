@@ -285,13 +285,13 @@
 		<description>@text/thing-type.shelly.shellyix3.description</description>
 		<channel-groups>
 			<channel-group id="status1" typeId="ixChannel">
-				<label>@text/channel-group-type.shelly.ixChannel1.label</label>
+				<label>@text/channel-group-type.shelly.iXChannel1.label</label>
 			</channel-group>
 			<channel-group id="status2" typeId="ixChannel">
-				<label>@text/channel-group-type.shelly.ixChannel2.label</label>
+				<label>@text/channel-group-type.shelly.iXChannel2.label</label>
 			</channel-group>
 			<channel-group id="status3" typeId="ixChannel">
-				<label>@text/channel-group-type.shelly.ixChannel3.label</label>
+				<label>@text/channel-group-type.shelly.iXChannel3.label</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -316,8 +316,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="ixChannel">
-		<label>@text/channel-group-type.shelly.ixChannel.label</label>
-		<description>@text/channel-group-type.shelly.ixChannel.description</description>
+		<label>@text/channel-group-type.shelly.iXChannel.label</label>
+		<description>@text/channel-group-type.shelly.iXChannel.description</description>
 	</channel-group-type>
 
 	<channel-group-type id="rollerControl">
@@ -479,7 +479,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -490,24 +490,36 @@
 		<label>@text/channel-type.shelly.meterAccuWatts.label</label>
 		<description>@text/channel-type.shelly.meterAccuWatts.description</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="meterAccuTotal" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>@text/channel-type.shelly.meterAccuTotal.label</label>
 		<description>@text/channel-type.shelly.meterAccuTotal.description</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="meterAccuReturned" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>@text/channel-type.shelly.meterAccuReturned.label</label>
 		<description>@text/channel-type.shelly.meterAccuReturned.description</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -521,10 +533,14 @@
 	</channel-type>
 
 	<channel-type id="lastPower1" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>@text/channel-type.shelly.lastPower1.label</label>
 		<description>@text/channel-type.shelly.lastPower1.description</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -533,7 +549,6 @@
 		<item-type>Number:Energy</item-type>
 		<label>@text/channel-type.shelly.meterTotal.label</label>
 		<description>@text/channel-type.shelly.meterTotal.description</description>
-		<category>Energy</category>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -543,6 +558,10 @@
 		<label>@text/channel-type.shelly.meterReturned.label</label>
 		<description>@text/channel-type.shelly.meterReturned.description</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -551,6 +570,7 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.shelly.meterVoltage.label</label>
 		<description>@text/channel-type.shelly.meterVoltage.description</description>
+		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -560,13 +580,13 @@
 	</channel-type>
 
 	<channel-type id="meterCurrent">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>@text/channel-type.shelly.meterCurrent.label</label>
 		<description>@text/channel-type.shelly.meterCurrent.description</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>

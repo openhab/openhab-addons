@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum TroubleStatus {
     TROUBLE_STARTED,
-    TROUBLE_RESTORED;
+    TROUBLE_RESTORED
 }

@@ -241,7 +241,7 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="energy" typeId="system.electrical-energy">
+			<channel id="energy" typeId="system.electric-energy">
 				<label>Energy Consumption</label>
 				<description>Accumulated energy consumption.</description>
 			</channel>
@@ -253,7 +253,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>ain</representation-property>
@@ -275,7 +275,7 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="energy" typeId="system.electrical-energy">
+			<channel id="energy" typeId="system.electric-energy">
 				<label>Energy Consumption</label>
 				<description>Accumulated energy consumption.</description>
 			</channel>
@@ -287,7 +287,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>ain</representation-property>
@@ -309,7 +309,7 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="energy" typeId="system.electrical-energy">
+			<channel id="energy" typeId="system.electric-energy">
 				<label>Energy Consumption</label>
 				<description>Accumulated energy consumption.</description>
 			</channel>
@@ -321,7 +321,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>ain</representation-property>
@@ -515,7 +515,7 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="energy" typeId="system.electrical-energy">
+			<channel id="energy" typeId="system.electric-energy">
 				<label>Energy Consumption</label>
 				<description>Accumulated energy consumption.</description>
 			</channel>

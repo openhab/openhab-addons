@@ -63,10 +63,12 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
 
         try {
             socket = new Socket(config.ipAddress, config.portNumber);
-            socket.setSoTimeout(REQUEST_TIMEOUT);
-            outputStream = socket.getOutputStream();
-            inputStream = socket.getInputStream();
-            updateStatus(ThingStatus.ONLINE);
+            if (socket != null) {
+                socket.setSoTimeout(REQUEST_TIMEOUT);
+                outputStream = socket.getOutputStream();
+                inputStream = socket.getInputStream();
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (UnknownHostException e) {
             logger.error("An exception occurred while resolving host {}:{} : '{}'", config.ipAddress, config.portNumber,
                     e.getMessage());
@@ -198,7 +200,6 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                                 }
                             }
                         }
-
                     }
                 } catch (IOException e) {
                     logger.debug("An exception occurred while quering host {}:{} : '{}'", config.ipAddress,

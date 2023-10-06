@@ -44,10 +44,10 @@ import org.slf4j.LoggerFactory;
  * with our own client session bytes included.
  *
  * The response will assign as session bytes that we can use for subsequent commands
- * see {@link MilightV6SessionManager#sid1} and see {@link MilightV6SessionManager#sid2}.
+ * see {@link MilightV6SessionManager#clientSID1} and see {@link MilightV6SessionManager#clientSID2}.
  *
  * We register ourself to the bridge now and finalise the handshake by sending a register command
- * see {@link MilightV6SessionManager#sendRegistration()} to the bridge.
+ * see {@link #sendRegistration(DatagramSocket)} to the bridge.
  *
  * From this point on we are required to send keep alive packets to the bridge every ~10sec
  * to keep the session alive. Because each command we send is confirmed by the bridge, we know if
@@ -64,10 +64,10 @@ public class MilightV6SessionManager implements Runnable, Closeable {
     private int sequenceNo = 0;
 
     // Password bytes 1 and 2
-    public byte pw[] = { 0, 0 };
+    public byte[] pw = { 0, 0 };
 
     // Session bytes 1 and 2
-    public byte sid[] = { 0, 0 };
+    public byte[] sid = { 0, 0 };
 
     // Client session bytes 1 and 2. Those are fixed for now.
     public final byte clientSID1 = (byte) 0xab;
@@ -158,10 +158,8 @@ public class MilightV6SessionManager implements Runnable, Closeable {
      * A session manager for the V6 bridge needs a way to send data (a QueuedSend object), the destination bridge ID, a
      * scheduler for timeout timers and optionally an observer for session state changes.
      *
-     * @param sendQueue A send queue. Never remove or change that object while the session manager is still working.
      * @param bridgeId Destination bridge ID. If the bridge ID for whatever reason changes, you need to create a new
      *            session manager object
-     * @param scheduler A framework scheduler to create timeout events.
      * @param observer Get notifications of state changes
      * @param destIP If you know the bridge IP address, provide it here.
      * @param port The bridge port

@@ -60,7 +60,6 @@ public class TivoStatusProvider {
      * Instantiates a new TivoConfigStatusProvider.
      *
      * @param tivoConfigData {@link TivoConfigData} configuration data for the specific thing.
-     * @param tivoStatusData {@link TivoStatusData} status data for the specific thing.
      * @param tivoHandler {@link TivoHandler} parent handler object for the TivoConfigStatusProvider.
      *
      */
@@ -73,11 +72,10 @@ public class TivoStatusProvider {
     }
 
     /**
-     * {@link statusRefresh} initiates a connection to the TiVo. When a new connection is made and the TiVo is online,
-     * the current channel is always returned. The connection is then closed (allows the socket to be used by other
-     * devices).
+     * {@link #statusRefresh()} initiates a connection to the TiVo. When a new connection is made and the TiVo is
+     * online, the current channel is always returned. The connection is then closed (allows the socket to be used
+     * by other devices).
      *
-     * @return {@link TivoStatusData} object
      * @throws InterruptedException
      */
     public void statusRefresh() throws InterruptedException {
@@ -124,7 +122,7 @@ public class TivoStatusProvider {
         }
         for (int i = 1; i <= repeatCount; i++) {
             // Send the command
-            streamWriter.println(tivoCommand.toString() + "\r");
+            streamWriter.println(tivoCommand + "\r");
             if (streamWriter.checkError()) {
                 logger.debug("TiVo '{}' - called cmdTivoSend and encountered an IO error",
                         tivoConfigData.getCfgIdentifier());

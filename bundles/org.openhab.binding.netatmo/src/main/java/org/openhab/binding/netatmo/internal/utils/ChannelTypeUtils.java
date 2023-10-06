@@ -44,8 +44,8 @@ public class ChannelTypeUtils {
 
     public static @Nullable QuantityType<?> commandToQuantity(Command command, MeasureClass measureClass) {
         Measure measureDef = measureClass.measureDefinition;
-        if (command instanceof QuantityType<?>) {
-            return ((QuantityType<?>) command).toUnit(measureDef.unit);
+        if (command instanceof QuantityType<?> quantityCommand) {
+            return quantityCommand.toUnit(measureDef.unit);
         }
         try {
             double value = Double.parseDouble(command.toString());

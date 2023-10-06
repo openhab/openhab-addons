@@ -32,7 +32,7 @@ public class SignConfig {
     /**
      * Set the sign text to listen for.
      *
-     * @param sign text.
+     * @param name sign text.
      */
     public void setName(String name) {
         this.signName = name;

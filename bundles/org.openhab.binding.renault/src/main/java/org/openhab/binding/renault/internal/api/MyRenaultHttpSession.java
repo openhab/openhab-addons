@@ -192,14 +192,14 @@ public class MyRenaultHttpSession {
         if (responseJson != null) {
             JsonArray accounts = responseJson.getAsJsonArray("accounts");
             for (int i = 0; i < accounts.size(); i++) {
-                if (accounts.get(i).getAsJsonObject().get("accountType").getAsString().equals("MYRENAULT")) {
+                if (accounts.get(i).getAsJsonObject().get("accountType").getAsString().equals(config.accountType)) {
                     kamereonaccountId = accounts.get(i).getAsJsonObject().get("accountId").getAsString();
                     break;
                 }
             }
         }
         if (kamereonaccountId == null) {
-            throw new RenaultException("Can not get Kamereon MyRenault Account ID!");
+            throw new RenaultException("Can not get Kamereon " + config.accountType + " Account ID!");
         }
     }
 
@@ -277,7 +277,6 @@ public class MyRenaultHttpSession {
 
     public void actionPause(boolean mode) throws RenaultForbiddenException, RenaultNotImplementedException,
             RenaultActionException, RenaultAPIGatewayException {
-
         final String apiMode = mode ? "pause" : "resume";
         final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kcm/v1/vehicles/" + config.vin
                 + "/charge/pause-resume?country=" + getCountry(config);
@@ -331,8 +330,8 @@ public class MyRenaultHttpSession {
                         response.getStatus(), response.getReason(), response.getContentAsString());
             }
         } else {
-            logger.warn("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(), response.getStatus(),
-                    response.getReason(), response.getContentAsString());
+            logger.debug("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(),
+                    response.getStatus(), response.getReason(), response.getContentAsString());
         }
     }
 

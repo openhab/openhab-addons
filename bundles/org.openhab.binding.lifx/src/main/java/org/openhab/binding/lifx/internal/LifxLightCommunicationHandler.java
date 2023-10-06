@@ -189,8 +189,7 @@ public class LifxLightCommunicationHandler {
                     new Object[] { logId, packet.getClass().getSimpleName(), address.toString(),
                             packet.getTarget().getHex(), packet.getSequence(), Long.toString(packet.getSource(), 16) });
 
-            if (packet instanceof StateServiceResponse) {
-                StateServiceResponse response = (StateServiceResponse) packet;
+            if (packet instanceof StateServiceResponse response) {
                 MACAddress discoveredAddress = response.getTarget();
                 if (packetFromConfiguredHost && macAddress == null) {
                     macAddress = discoveredAddress;

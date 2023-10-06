@@ -41,13 +41,11 @@ public class SmartthingsDefaultConverter extends SmartthingsConverter {
 
     @Override
     public String convertToSmartthings(ChannelUID channelUid, Command command) {
-        String jsonMsg = defaultConvertToSmartthings(channelUid, command);
-        return jsonMsg;
+        return defaultConvertToSmartthings(channelUid, command);
     }
 
     @Override
     public State convertToOpenHab(@Nullable String acceptedChannelType, SmartthingsStateData dataFromSmartthings) {
-        State state = defaultConvertToOpenHab(acceptedChannelType, dataFromSmartthings);
-        return state;
+        return defaultConvertToOpenHab(acceptedChannelType, dataFromSmartthings);
     }
 }

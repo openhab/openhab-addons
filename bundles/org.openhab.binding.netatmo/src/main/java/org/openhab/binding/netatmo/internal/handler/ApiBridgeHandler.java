@@ -61,6 +61,7 @@ import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
+import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
@@ -301,7 +302,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
             @Nullable String contentType, int retryCount) throws NetatmoException {
         try {
-            logger.trace("executeUri {}  {} ", method.toString(), uri);
+            logger.debug("executeUri {}  {} ", method.toString(), uri);
 
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
@@ -316,6 +317,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
                 try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
                     request.content(inputStreamContentProvider, contentType);
+                    request.header(HttpHeader.ACCEPT, "application/json");
                 }
                 logger.trace(" -with payload : {} ", payload);
             }
@@ -395,17 +397,17 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                                 || h.getFeatures().contains(FeatureArea.WEATHER) && h.getFeatures().size() == 1))
                         .forEach(home -> {
                             action.apply(home, accountUID).ifPresent(homeUID -> {
-                                home.getKnownPersons().forEach(person -> action.apply(person, homeUID));
-
+                                if (home instanceof HomeData.Security securityData) {
+                                    securityData.getKnownPersons().forEach(person -> action.apply(person, homeUID));
+                                }
                                 Map<String, ThingUID> bridgesUids = new HashMap<>();
 
                                 home.getRooms().values().stream().forEach(room -> {
                                     room.getModuleIds().stream().map(id -> home.getModules().get(id))
                                             .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
-                                            .filter(f -> FeatureArea.ENERGY.equals(f)).findAny().ifPresent(f -> {
-                                                action.apply(room, homeUID)
-                                                        .ifPresent(roomUID -> bridgesUids.put(room.getId(), roomUID));
-                                            });
+                                            .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
+                                            .ifPresent(f -> action.apply(room, homeUID)
+                                                    .ifPresent(roomUID -> bridgesUids.put(room.getId(), roomUID)));
                                 });
 
                                 // Creating modules that have no bridge first, avoiding weather station itself

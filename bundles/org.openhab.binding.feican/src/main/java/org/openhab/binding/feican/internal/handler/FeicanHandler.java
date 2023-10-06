@@ -61,14 +61,14 @@ public class FeicanHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (command instanceof OnOffType) {
-                handleOnOff((OnOffType) command);
-            } else if (command instanceof HSBType) {
-                handleColor(channelUID, (HSBType) command);
-            } else if (command instanceof PercentType) {
-                handlePercentage(channelUID, (PercentType) command);
-            } else if (command instanceof StringType) {
-                handleString(channelUID, (StringType) command);
+            if (command instanceof OnOffType onOffCommand) {
+                handleOnOff(onOffCommand);
+            } else if (command instanceof HSBType hsbCommand) {
+                handleColor(channelUID, hsbCommand);
+            } else if (command instanceof PercentType percentCommand) {
+                handlePercentage(channelUID, percentCommand);
+            } else if (command instanceof StringType stringCommand) {
+                handleString(channelUID, stringCommand);
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());

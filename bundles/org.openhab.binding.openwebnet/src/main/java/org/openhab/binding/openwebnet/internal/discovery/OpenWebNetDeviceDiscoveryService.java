@@ -59,6 +59,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
     private @NonNullByDefault({}) OpenWebNetBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
+    private boolean cuFound = false;
+
     public OpenWebNetDeviceDiscoveryService() {
         super(SUPPORTED_THING_TYPES, SEARCH_TIME_SEC);
     }
@@ -72,6 +74,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
     protected void startScan() {
         logger.info("------ SEARCHING for DEVICES on bridge '{}' ({}) ...", bridgeHandler.getThing().getLabel(),
                 bridgeUID);
+        cuFound = false;
         bridgeHandler.searchDevices();
     }
 
@@ -93,7 +96,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
      *
      * @param where the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param message the OWN message received that identified the device
+     * @param baseMsg the OWN message received that identified the device
      *            (optional)
      */
     public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,
@@ -237,26 +240,48 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
         String whereConfig = w.value();
 
-        // remove # from discovered thermo zone/central unit or alarm zone
-        if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE.equals(thingTypeUID)
-                || OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CU.equals(thingTypeUID)) {
-            whereConfig = "" + ((WhereThermo) where).getZone();
-        } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE.equals(thingTypeUID)) {
-            whereConfig = "" + ((WhereAlarm) where).getZone();
+        // remove # from discovered alarm zone
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE.equals(thingTypeUID)) {
+            whereConfig = "" + ((WhereAlarm) w).getZone();
         }
-        if (w instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) where).getUnit())) {
-            logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", where);
+
+        Map<String, Object> properties = new HashMap<>(2);
+
+        // detect Thermo CU type
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CU.equals(thingTypeUID)) {
+            cuFound = true;
+            logger.debug("CU found: {}", w);
+            if (w.value().charAt(0) == '#') { // 99-zone CU
+                thingLabel += " 99-zone";
+                logger.debug("@@@@@ THERMO CU found 99-zone: where={}, ownId={}, whereConfig={}", w, ownId,
+                        whereConfig);
+            } else {
+                thingLabel += " 4-zone";
+                whereConfig = "#" + w.value();
+                logger.debug("@@@@ THERMO CU found 4-zone: where={}, ownId={}, whereConfig={}", w, ownId, whereConfig);
+            }
+        } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE.equals(thingTypeUID)) {
+            if (cuFound) {
+                // set param standalone = false for thermo zone
+                properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE, false);
+            }
+            whereConfig = "" + ((WhereThermo) w).getZone();
+            logger.debug("@@@@@ THERMO ZONE found: where={}, ownId={}, whereConfig={}, standalone={}", w, ownId,
+                    whereConfig, properties.get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE));
+        }
+
+        if (w instanceof WhereZigBee whereZigBee && WhereZigBee.UNIT_02.equals(whereZigBee.getUnit())) {
+            logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", w);
             thingRemoved(thingUID); // remove previously discovered thing
             // re-create thingUID with new type
             thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS;
             thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_ON_OFF_SWITCH_2UNITS;
             thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
-            whereConfig = ((WhereZigBee) w).valueWithUnit(WhereZigBee.UNIT_ALL); // replace unit '02' with '00'
+            whereConfig = whereZigBee.valueWithUnit(WhereZigBee.UNIT_ALL); // replace unit '02' with '00'
             logger.debug("UNIT=02, switching type from {} to {}",
                     OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH,
                     OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS);
         }
-        Map<String, Object> properties = new HashMap<>(2);
         properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, whereConfig);
         properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID, ownId);
         if (OpenWebNetBindingConstants.THING_TYPE_GENERIC_DEVICE.equals(thingTypeUID)) {
@@ -277,9 +302,9 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof OpenWebNetBridgeHandler) {
+        if (handler instanceof OpenWebNetBridgeHandler openWebNetBridgeHandler) {
             logger.debug("attaching {} to handler {} ", this, handler);
-            bridgeHandler = (OpenWebNetBridgeHandler) handler;
+            bridgeHandler = openWebNetBridgeHandler;
             bridgeHandler.deviceDiscoveryService = this;
             bridgeUID = bridgeHandler.getThing().getUID();
         }
