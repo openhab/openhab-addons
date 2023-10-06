@@ -6,5 +6,5 @@
 	<type>binding</type>
 	<name>Govee Lan-API Binding</name>
 	<description>This is the binding for handling Govee Lights via the LAN-API interface.</description>
-
+	<connection>local</connection>
 </addon:addon>

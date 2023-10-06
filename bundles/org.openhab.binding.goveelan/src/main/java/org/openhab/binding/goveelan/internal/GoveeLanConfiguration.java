@@ -21,9 +21,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class GoveeLanConfiguration {
-    public static final String IPADDRESS = "hostname";
-    public static final String MAC_ADDRESS = "macaddress";
-    public static final String DEVICETYPE = "devicetype";
-    public static final String PRODUCTNAME = "productname";
-    public int refreshInterval = 3; // in seconds
+    public static final String IP_ADDRESS = "hostname";
+    public static final String MAC_ADDRESS = "macAddress";
+    public static final String DEVICE_TYPE = "deviceType";
+    public static final String PRODUCT_NAME = "productName";
+    public int refreshInterval = 2; // in seconds
 }

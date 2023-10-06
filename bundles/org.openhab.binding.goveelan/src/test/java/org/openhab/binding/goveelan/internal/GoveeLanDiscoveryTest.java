@@ -33,8 +33,8 @@ public class GoveeLanDiscoveryTest {
         GoveeLanDiscoveryService service = new GoveeLanDiscoveryService();
         Map<String, Object> deviceProperties = service.getDeviceProperties(response);
         assertNotNull(deviceProperties);
-        assertEquals(deviceProperties.get(GoveeLanConfiguration.DEVICETYPE), "H6076");
-        assertEquals(deviceProperties.get(GoveeLanConfiguration.IPADDRESS), "192.168.178.171");
+        assertEquals(deviceProperties.get(GoveeLanConfiguration.DEVICE_TYPE), "H6076");
+        assertEquals(deviceProperties.get(GoveeLanConfiguration.IP_ADDRESS), "192.168.178.171");
         assertEquals(deviceProperties.get(GoveeLanConfiguration.MAC_ADDRESS), "7D:31:C3:35:33:33:44:15");
     }
 }

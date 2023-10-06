@@ -1,6 +1,6 @@
 # Govee Lan-API Binding
 
-![govee](doc/govee.png)
+![govee](doc/govee-lights.png)
 
 This binding integrates Light devices from [Govee](https://www.govee.com/).
 Even though these devices are widely used, they are usually only accessable via the Cloud.
@@ -85,32 +85,30 @@ Discovery is done by scanning the devices in the Thing section.
 The devices _do not_ support the LAN API support out-of-the-box.
 To be able to use the device with the LAN API, the following needs to be done (also see the "Preparations for LAN API Control" section in the [Goveee LAN API Manual](https://app-h5.govee.com/user-manual/wlan-guide)):
 
-- Start the Govee APP and add / discover the device (via bluetooth) as described by the vendor manual
-- Go to the settings page of the device 
++ Start the Govee APP and add / discover the device (via Bluetooth) as described by the vendor manual
+Go to the settings page of the device 
 ![govee device settings](doc/device-settings.png)
-- Note that it may take several(!) minutes until this setting comes up
-- Switch on the LAN-Control setting
-- Now the device can be used with openHAB
-- The easiest way is then to scan the devices via the SCAN button in the thing section of that binding
-
-## Binding Configuration
-
-There is no particular binding configuration needed.
++ Note that it may take several(!) minutes until this setting comes up
++ Switch on the LAN-Control setting
++ Now the device can be used with openHAB
++ The easiest way is then to scan the devices via the SCAN button in the thing section of that binding
 
 ## Thing Configuration
 
 Even though binding configuration is supported via a thing file it should be noted that the IP address is required and there is no easy way to find out the IP address of the device.
 One possibility is to look for the MAC address in the Govee app and then looking the IP address up via 
 
-`arp -a | grep "MAC_ADDRESS"`
+```
+arp -a | grep "MAC_ADDRESS"
+```
 
-### `sample` Thing Configuration
+### Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
 | hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| macaddress      | text    | MAC Address of the device             | N/A     | yes      | no       |
-| devicetype      | text    | The product number of the device      | N/A     | yes      | no       |
+| macAddress      | text    | MAC address of the device             | N/A     | yes      | no       |
+| deviceType      | text    | The product number of the device      | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in sec. | 3       | no       | yes      |
 
 

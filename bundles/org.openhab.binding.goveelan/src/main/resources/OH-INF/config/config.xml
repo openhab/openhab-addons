@@ -4,26 +4,27 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:goveelan:goveeLight">
+	<config-description uri="thing-type:goveelan:govee-light">
 		<parameter name="hostname" type="text" required="true">
+			<context>network-address</context>
 			<label>Hostname / IP Address</label>
 			<description>Hostname or IP Address of the device</description>
 		</parameter>
-		<parameter name="macaddress" type="text" required="true">
+		<parameter name="macAddress" type="text" required="true">
 			<label>MAC Address</label>
 			<description>MAC Address of the device</description>
 		</parameter>
-		<parameter name="devicetype" type="text" required="true">
+		<parameter name="deviceType" type="text" required="true">
 			<label>Device Product Number</label>
 			<description>The product number of the device</description>
 		</parameter>
-		<parameter name="productname" type="text" required="false">
+		<parameter name="productName" type="text" required="false">
 			<label>Device Product Name</label>
 			<description>Description of the device</description>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" unit="s" required="true">
-			<label>Light refresh interval (sec)</label>
-			<description>The amount of time that passes until the device is refreshed</description>
+		<parameter name="refreshInterval" type="integer" unit="s">
+			<label>Light refresh interval</label>
+			<description>The amount of time that passes until the device is refreshed (in seconds)</description>
 			<default>2</default>
 		</parameter>
 	</config-description>

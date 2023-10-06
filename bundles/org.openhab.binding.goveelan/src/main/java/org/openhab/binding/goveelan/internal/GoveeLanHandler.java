@@ -14,8 +14,8 @@ package org.openhab.binding.goveelan.internal;
 
 import static org.openhab.binding.goveelan.internal.GoveeLanBindingConstants.BRIGHTNESS;
 import static org.openhab.binding.goveelan.internal.GoveeLanBindingConstants.COLOR;
+import static org.openhab.binding.goveelan.internal.GoveeLanBindingConstants.COLOR_TEMPERATURE_ABS;
 import static org.openhab.binding.goveelan.internal.GoveeLanBindingConstants.SWITCH;
-import static org.openhab.binding.goveelan.internal.GoveeLanBindingConstants.TEMPERATUR_ABS;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link GoveeLanHandler} is responsible for handling commands, which are
@@ -143,13 +144,15 @@ public class GoveeLanHandler extends BaseThingHandler {
         return refreshJobRunning && THING_HANDLERS.isEmpty();
     }
 
+    public static final Gson GSON = new Gson();
     private static final Runnable REFRESH_STATUS_RECEIVER = () -> {
         final Logger LOGGER = LoggerFactory.getLogger(GoveeLanHandler.class);
-        /**
+        /*
          * This thread receives an answer from any device.
          * Therefore it needs to apply it to the right thing
+         * 
+         * Discovery uses the same response code, so we must not refresh the status during discovery
          */
-        // Discovery uses the same response code, so we must not refresh the status during discovery
         if (GoveeLanDiscoveryService.isDiscoveryActive()) {
             LOGGER.debug("Not running refresh as Scan is currently active");
         }
@@ -161,6 +164,7 @@ public class GoveeLanHandler extends BaseThingHandler {
             return;
         }
 
+        GoveeLanHandler thingHandler = null;
         try (MulticastSocket socket = new MulticastSocket(RECEIVEFROMDEVICE_PORT)) {
             byte[] buffer = new byte[10240];
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -172,7 +176,7 @@ public class GoveeLanHandler extends BaseThingHandler {
             String deviceIPAddress = packet.getAddress().toString().replace("/", "");
             LOGGER.trace("received = {} from {}", response, deviceIPAddress);
 
-            GoveeLanHandler thingHandler = THING_HANDLERS.get(deviceIPAddress);
+            thingHandler = THING_HANDLERS.get(deviceIPAddress);
             if (thingHandler == null) {
                 LOGGER.warn("thing Handler for {} couldn't be found.", deviceIPAddress);
                 return;
@@ -181,15 +185,27 @@ public class GoveeLanHandler extends BaseThingHandler {
             LOGGER.debug("updating status for thing {} ", thingHandler.getThing().getLabel());
             LOGGER.trace("Response from {} = {}", deviceIPAddress, response);
 
-            Gson gson = new Gson();
-            StatusMessage statusMessage = gson.fromJson(response, StatusMessage.class);
-            if (statusMessage != null) {
-                thingHandler.updateDeviceState(statusMessage);
+            if (response != null && !response.isEmpty()) {
+                try {
+                    StatusMessage statusMessage = GSON.fromJson(response, StatusMessage.class);
+                    thingHandler.updateDeviceState(statusMessage);
+                } catch (JsonSyntaxException jse) {
+                    thingHandler.updateStatus(ThingStatus.OFFLINE);
+                }
             } else {
-                LOGGER.warn("status message is null");
+                thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/error.offline.ip-address.emptyResponse");
+            }
+            if (!thingHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                thingHandler.updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
             LOGGER.error("exception when receiving status packet {}", Arrays.toString(e.getStackTrace()));
+            // as we haven't received a packet we also don't know where it should have come from
+            // hence, we don't know which thing put offline.
+            // a way to monitor this would be to keep track in a list, which device answers we expect
+            // and supervise an expected answer within a given time but that will make the whole
+            // mechanism much more complicated and may be added in the future
         } finally {
             refreshJobRunning = false;
         }
@@ -208,8 +224,8 @@ public class GoveeLanHandler extends BaseThingHandler {
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not control/query device at IP address "
-                            + thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IPADDRESS));
+                    "@text/error.couldNotQueryDevice [\""
+                            + thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IP_ADDRESS) + "\"]");
         }
     };
 
@@ -220,31 +236,35 @@ public class GoveeLanHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         GoveeLanConfiguration goveeLanConfiguration = getConfigAs(GoveeLanConfiguration.class);
-        updateStatus(ThingStatus.ONLINE);
 
-        String ipAddress = thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IPADDRESS).toString();
-        if (ipAddress != null) {
-            THING_HANDLERS.put(ipAddress, this);
+        final Object ipAdress = getThing().getConfiguration().getProperties().get(GoveeLanConfiguration.IP_ADDRESS);
+        if (ipAdress != null) {
+            THING_HANDLERS.put(ipAdress.toString(), this);
         } else {
-            LOGGER.warn("Handler for thing {} could not be added to list because ipaddress == null", thing.getLabel());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.offline.ip-address.missing");
         }
-
         if (!THING_HANDLERS.isEmpty()) {
             startRefreshStatusJob();
         }
 
         if (triggerStatusJob == null) {
-            LOGGER.debug("REFRESH: Starting refresh trigger job for thing {} ", thing.getLabel());
-            triggerStatusJob = scheduler.scheduleAtFixedRate(thingRefreshSender, 100,
-                    goveeLanConfiguration.refreshInterval * 1000, TimeUnit.MILLISECONDS);
+            LOGGER.debug("Starting refresh trigger job for thing {} ", thing.getLabel());
+
+            triggerStatusJob = scheduler.scheduleWithFixedDelay(thingRefreshSender, 100,
+                    goveeLanConfiguration.refreshInterval * 1000L, TimeUnit.MILLISECONDS);
         }
+
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     /**
      * Stop the Refresh Status Job, so the same socket can be used for something else (like discovery)
      */
     public static void stopRefreshStatusJob() {
-        refreshStatusJob.cancel(true);
+        if (refreshStatusJob != null) {
+            refreshStatusJob.cancel(true);
+        }
         refreshStatusJob = null;
         refreshJobRunning = false;
     }
@@ -255,7 +275,7 @@ public class GoveeLanHandler extends BaseThingHandler {
     public static void startRefreshStatusJob() {
         if (refreshStatusJob == null) {
             refreshStatusJob = ThreadPoolManager.getScheduledPool("thingHandler")
-                    .scheduleAtFixedRate(REFRESH_STATUS_RECEIVER, 100, 1000, TimeUnit.MILLISECONDS);
+                    .scheduleWithFixedDelay(REFRESH_STATUS_RECEIVER, 100, 1000, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -263,7 +283,8 @@ public class GoveeLanHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
 
-        String ipAddress = thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IPADDRESS).toString();
+        String ipAddress = thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IP_ADDRESS).toString();
+        assert triggerStatusJob != null;
         triggerStatusJob.cancel(true);
         triggerStatusJob = null;
         THING_HANDLERS.remove(ipAddress);
@@ -291,7 +312,7 @@ public class GoveeLanHandler extends BaseThingHandler {
                             send(String.format(GoveeLanHandler.LIGHT_COLOR, rgb[0], rgb[1], rgb[2], 0));
                         }
                         break;
-                    case TEMPERATUR_ABS:
+                    case COLOR_TEMPERATURE_ABS:
                         if (command instanceof QuantityType quantity) {
                             send(String.format(GoveeLanHandler.LIGHT_COLOR, 0, 0, 0, quantity.longValue()));
                         }
@@ -308,8 +329,8 @@ public class GoveeLanHandler extends BaseThingHandler {
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not control/query device at IP address "
-                            + thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IPADDRESS));
+                    "@text/error.couldNotQueryDevice [\""
+                            + thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IP_ADDRESS) + "\"]");
         }
     }
 
@@ -342,7 +363,7 @@ public class GoveeLanHandler extends BaseThingHandler {
         socket.setReuseAddress(true);
         byte[] data = message.getBytes();
 
-        final String hostname = thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IPADDRESS)
+        final String hostname = thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IP_ADDRESS)
                 .toString();
         LOGGER.trace("Sending {} to {}", message, hostname);
         InetAddress address = InetAddress.getByName(hostname);
@@ -351,7 +372,11 @@ public class GoveeLanHandler extends BaseThingHandler {
         socket.close();
     }
 
-    public void updateDeviceState(StatusMessage message) {
+    public void updateDeviceState(@Nullable StatusMessage message) {
+        if (message == null) {
+            return;
+        }
+
         int lastOnOff = message.msg().data().onOff();
         int lastBrightness = message.msg().data().brightness();
         Color lastColor = message.msg().data().color();
@@ -359,7 +384,7 @@ public class GoveeLanHandler extends BaseThingHandler {
 
         updateState(SWITCH, OnOffType.from(lastOnOff == 1));
         updateState(COLOR, ColorUtil.rgbToHsb(new int[] { lastColor.r(), lastColor.g(), lastColor.b() }));
-        updateState(TEMPERATUR_ABS, new QuantityType(lastColorTemperature, Units.KELVIN));
+        updateState(COLOR_TEMPERATURE_ABS, new QuantityType(lastColorTemperature, Units.KELVIN));
         updateState(BRIGHTNESS, new PercentType(lastBrightness));
     }
 }

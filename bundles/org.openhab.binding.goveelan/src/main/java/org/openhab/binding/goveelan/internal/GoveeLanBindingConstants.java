@@ -27,11 +27,11 @@ public class GoveeLanBindingConstants {
     private static final String BINDING_ID = "goveelan";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "goveeLight");
+    public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "govee-light");
 
     // List of all Channel ids
     public static final String SWITCH = "switch";
     public static final String COLOR = "color";
-    public static final String TEMPERATUR_ABS = "colorTemperatureAbs";
+    public static final String COLOR_TEMPERATURE_ABS = "color-temperature-abs";
     public static final String BRIGHTNESS = "brightness";
 }
