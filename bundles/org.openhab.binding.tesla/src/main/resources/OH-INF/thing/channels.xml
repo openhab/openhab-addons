@@ -17,7 +17,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="ar_distancetoarrival">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Distance to arrival</label>
 		<description>Distance to drive to the destination</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
