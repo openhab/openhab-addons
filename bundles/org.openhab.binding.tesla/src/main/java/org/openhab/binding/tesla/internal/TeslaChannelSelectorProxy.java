@@ -46,7 +46,7 @@ public class TeslaChannelSelectorProxy {
 
         API("api_version", "api", DecimalType.class, true),
         AR_DESTINATION("active_route_destination", "destinationname", StringType.class, true),
-        AR_LATITUDE("active_route_latitude", "ar_location", DecimalType.class, false) {
+        AR_LATITUDE("active_route_latitude", "destinationlocation", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 proxy.latitude = s;
