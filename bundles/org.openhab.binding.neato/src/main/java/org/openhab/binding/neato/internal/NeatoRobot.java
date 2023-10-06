@@ -112,7 +112,6 @@ public class NeatoRobot {
             return HttpUtil.executeUrl("POST",
                     "https://nucleo.neatocloud.com:4443/vendors/neato/robots/" + this.serialNumber + "/messages",
                     headers, stream, "text/html; charset=ISO-8859-1", 20000);
-
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new NeatoCommunicationException(e);
         }

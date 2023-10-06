@@ -133,7 +133,7 @@ public abstract class KeypadConfig {
      * @return Concatenated list
      */
     @SafeVarargs
-    protected static final List<KeypadComponent> combinedList(final List<KeypadComponent>... lists) {
+    protected static List<KeypadComponent> combinedList(final List<KeypadComponent>... lists) {
         List<KeypadComponent> newlist = new LinkedList<>();
         for (List<KeypadComponent> list : lists) {
             newlist.addAll(list);

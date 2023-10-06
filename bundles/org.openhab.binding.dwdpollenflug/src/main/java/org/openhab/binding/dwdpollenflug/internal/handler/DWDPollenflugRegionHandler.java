@@ -66,8 +66,7 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof DWDPollenflugBridgeHandler) {
-                DWDPollenflugBridgeHandler bridgeHandler = (DWDPollenflugBridgeHandler) handler;
+            if (handler instanceof DWDPollenflugBridgeHandler bridgeHandler) {
                 return bridgeHandler;
             }
         }

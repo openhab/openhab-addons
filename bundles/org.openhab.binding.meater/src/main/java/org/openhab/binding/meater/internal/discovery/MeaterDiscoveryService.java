@@ -43,10 +43,10 @@ public class MeaterDiscoveryService extends AbstractDiscoveryService implements 
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof MeaterBridgeHandler) {
-            this.handler = (MeaterBridgeHandler) handler;
-            i18nProvider = ((MeaterBridgeHandler) handler).getI18nProvider();
-            localeProvider = ((MeaterBridgeHandler) handler).getLocaleProvider();
+        if (handler instanceof MeaterBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
+            i18nProvider = bridgeHandler.getI18nProvider();
+            localeProvider = bridgeHandler.getLocaleProvider();
         }
     }
 

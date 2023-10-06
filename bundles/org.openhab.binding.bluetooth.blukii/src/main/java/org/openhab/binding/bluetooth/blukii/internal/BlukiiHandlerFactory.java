@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.blukii.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,8 +34,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.blukii")
 public class BlukiiHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(BlukiiBindingConstants.THING_TYPE_BEACON);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(BlukiiBindingConstants.THING_TYPE_BEACON);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

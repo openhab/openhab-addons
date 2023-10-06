@@ -45,8 +45,14 @@ public class RdsBindingConstants {
 
     private static final String API = "https://api.climatixic.com/";
 
-    private static final String ARG_RDS = "?filterId=[" + "{\"asn\":\"RDS110\"}," + "{\"asn\":\"RDS120\"},"
-            + "{\"asn\":\"RDS110.R\"}," + "{\"asn\":\"RDS120.B\"}" + "]";
+    private static final String ARG_RDS = """
+            ?filterId=[\
+            {"asn":"RDS110"},\
+            {"asn":"RDS120"},\
+            {"asn":"RDS110.R"},\
+            {"asn":"RDS120.B"}\
+            ]\
+            """;
 
     private static final String ARG_PARENT = "?parentId=[\"%s\"]&take=100";
     private static final String ARG_POINT = "?filterId=[%s]";

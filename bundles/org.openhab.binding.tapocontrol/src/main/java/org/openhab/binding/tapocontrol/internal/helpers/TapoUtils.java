@@ -82,8 +82,7 @@ public class TapoUtils {
      */
     public static String formatMac(String mac, char newDivisionChar) {
         String unformatedMac = unformatMac(mac);
-        String formatedMac = unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
-        return formatedMac;
+        return unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
     }
 
     /**
@@ -270,7 +269,7 @@ public class TapoUtils {
     /**
      * Return OnOffType from bool
      * 
-     * @param boolVal
+     * @param intVal
      */
     public static OnOffType getOnOffType(Integer intVal) {
         return intVal == 0 ? OnOffType.OFF : OnOffType.ON;

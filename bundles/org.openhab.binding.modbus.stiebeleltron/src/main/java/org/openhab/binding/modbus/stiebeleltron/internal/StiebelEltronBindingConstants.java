@@ -17,7 +17,7 @@ import org.openhab.binding.modbus.ModbusBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link Modbus.StiebelEltronBindingConstants} class defines common
+ * The {@link StiebelEltronBindingConstants} class defines common
  * constants, which are used across the whole binding.
  *
  * @author Paul Frank - Initial contribution

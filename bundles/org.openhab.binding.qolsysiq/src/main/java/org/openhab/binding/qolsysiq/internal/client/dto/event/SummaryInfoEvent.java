@@ -17,7 +17,7 @@ import java.util.List;
 import org.openhab.binding.qolsysiq.internal.client.dto.model.Partition;
 
 /**
- * A {@link InfoEventType.SUMMARY} type of {@link InfoEvent} message sent by the panel
+ * A {@link InfoEventType#SUMMARY} type of {@link InfoEvent} message sent by the panel
  *
  * @author Dan Cunningham - Initial contribution
  */

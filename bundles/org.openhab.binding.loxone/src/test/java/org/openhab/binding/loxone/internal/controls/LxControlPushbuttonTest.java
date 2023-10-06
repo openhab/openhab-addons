@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import java.util.Collections;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class LxControlPushbuttonTest extends LxControlSwitchTest {
     @Override
     @Test
     public void testChannels() {
-        testChannel("Switch", Collections.singleton("Switchable"));
+        testChannel("Switch", Set.of("Switchable"));
     }
 
     @Override

@@ -116,7 +116,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
             return;
         }
         handler.getActiveChildren(FeatureArea.SECURITY).filter(child -> child.getId().equals(objectId))
-                .forEach(child -> child.setNewData(homeEvent.ignoringForThingUpdate()));
+                .forEach(child -> child.setNewData(homeEvent));
     }
 
     @Override

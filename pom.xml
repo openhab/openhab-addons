@@ -69,14 +69,15 @@
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
     <ohc.version>4.1.0-SNAPSHOT</ohc.version>
-    <bnd.version>6.4.0</bnd.version>
+    <bnd.version>7.0.0</bnd.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.2.1</eea.version>
     <jackson.version>2.15.2</jackson.version>
-    <karaf.version>4.4.3</karaf.version>
-    <netty.version>4.1.92.Final</netty.version>
+    <karaf.version>4.4.4</karaf.version>
+    <netty.version>4.1.99.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>
     <sat.version>0.15.0</sat.version>
+    <slf4j.version>2.0.6</slf4j.version>
     <spotless.version>2.38.0</spotless.version>
     <!-- Eclipse Java formatter version 4.26+ does not check test files -->
     <spotless.eclipse.version>4.25</spotless.eclipse.version>

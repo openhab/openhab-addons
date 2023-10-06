@@ -15,8 +15,8 @@ package org.openhab.binding.surepetcare.internal.handler;
 import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -113,7 +113,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SurePetcareDiscoveryService.class);
+        return Set.of(SurePetcareDiscoveryService.class);
     }
 
     @Override

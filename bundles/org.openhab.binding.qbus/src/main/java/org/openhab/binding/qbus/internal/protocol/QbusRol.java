@@ -54,7 +54,7 @@ public final class QbusRol {
     }
 
     /**
-     * This method sets a pointer to the qComm Shutter/Slats of class {@link QbusCommuncation}.
+     * This method sets a pointer to the qComm Shutter/Slats of class {@link QbusCommunication}.
      * This is then used to be able to call back the sendCommand method in this class to send a command to the
      * Qbus IP-interface when..
      *
@@ -67,7 +67,7 @@ public final class QbusRol {
     /**
      * Update the value of the Shutter.
      *
-     * @param Shutter value
+     * @param state Shutter value
      */
     public void updateState(@Nullable Integer state) {
         this.state = state;
@@ -80,7 +80,7 @@ public final class QbusRol {
     /**
      * Update the value of the Slats.
      *
-     * @param Slat value
+     * @param Slats slat value
      */
     public void updateSlats(@Nullable Integer Slats) {
         this.slats = Slats;

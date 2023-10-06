@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link YamahamusiccastHandlerFactory} is responsible for creating things and thing
+ * The {@link YamahaMusiccastHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Lennert Coopman - Initial contribution

@@ -40,8 +40,7 @@ public class SetpointChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetObject(String channelId, NAObject naObject) {
-        if (naObject instanceof Room) {
-            Room room = (Room) naObject;
+        if (naObject instanceof Room room) {
             switch (channelId) {
                 case CHANNEL_SETPOINT_MODE:
                     return toStringType(room.getSetpointMode().name());

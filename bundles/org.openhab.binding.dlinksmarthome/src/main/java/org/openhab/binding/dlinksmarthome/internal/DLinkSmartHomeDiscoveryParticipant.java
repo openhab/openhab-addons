@@ -87,7 +87,7 @@ public class DLinkSmartHomeDiscoveryParticipant implements MDNSDiscoveryParticip
 
         if (model == null) {
             return null;
-        } else if (model.equals("DCH-S150")) {
+        } else if ("DCH-S150".equals(model)) {
             return THING_TYPE_DCHS150;
         } else {
             logger.debug("D-Link HNAP Type: {}", model);

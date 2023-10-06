@@ -82,7 +82,7 @@ public class MPDCommand {
         for (String param : parameters) {
             builder.append(" ");
             builder.append("\"");
-            builder.append(param.replaceAll("\"", "\\\\\"").replaceAll("'", "\\\\'"));
+            builder.append(param.replace("\"", "\\\\\"").replace("'", "\\\\'"));
             builder.append("\"");
         }
 
@@ -100,7 +100,7 @@ public class MPDCommand {
             if ("password".equals(command)) {
                 builder.append(param.replaceAll(".", "."));
             } else {
-                builder.append(param.replaceAll("\"", "\\\\\"").replaceAll("'", "\\\\'"));
+                builder.append(param.replace("\"", "\\\\\"").replace("'", "\\\\'"));
             }
             builder.append("\"");
         }

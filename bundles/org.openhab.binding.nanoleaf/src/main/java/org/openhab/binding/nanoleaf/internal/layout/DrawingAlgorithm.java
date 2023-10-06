@@ -26,5 +26,5 @@ public enum DrawingAlgorithm {
     TRIANGLE,
     HEXAGON,
     CORNER,
-    LINE;
+    LINE
 }

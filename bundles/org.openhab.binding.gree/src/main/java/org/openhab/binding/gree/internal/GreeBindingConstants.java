@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.gree.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +30,7 @@ public class GreeBindingConstants {
     public static final String BINDING_ID = "gree";
 
     public static final ThingTypeUID THING_TYPE_GREEAIRCON = new ThingTypeUID(BINDING_ID, "airconditioner");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GREEAIRCON);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GREEAIRCON);
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID GREE_THING_TYPE = new ThingTypeUID(BINDING_ID, "airconditioner");
@@ -169,7 +168,7 @@ public class GreeBindingConstants {
      * temperature value shown on the device LCD display should match the value shown by this binding when the config
      * parameter currentTemperatureOffset is set to 0.
      *
-     * @See https://github.com/tomikaa87/gree-remote#getting-the-current-temperature-reading-from-the-internal-sensor
+     * @see https://github.com/tomikaa87/gree-remote#getting-the-current-temperature-reading-from-the-internal-sensor
      *      for more details.
      */
     public static final double INTERNAL_TEMP_SENSOR_OFFSET = -40.0;

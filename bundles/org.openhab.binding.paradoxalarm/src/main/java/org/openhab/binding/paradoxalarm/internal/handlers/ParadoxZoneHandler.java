@@ -131,8 +131,7 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
             return null;
         }
 
-        Zone zone = zones.get(index);
-        return zone;
+        return zones.get(index);
     }
 
     private ParadoxIP150BridgeHandler getBridgeHandler() {
