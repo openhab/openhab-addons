@@ -306,7 +306,7 @@ public class OnvifConnection {
     }
 
     public void processReply(String message) {
-        logger.trace("Onvif reply is: {}", message);
+        logger.trace("ONVIF reply is: {}", message);
         if (message.contains("PullMessagesResponse")) {
             eventRecieved(message);
         } else if (message.contains("RenewResponse")) {
