@@ -96,7 +96,7 @@ public class TypeMapping {
                 break;
             case "LevelProperty":
                 if ((propertyMetadata.unit != null)
-                        && propertyMetadata.unit.toLowerCase(Locale.ENGLISH).equals("percent")) {
+                        && "percent".equals(propertyMetadata.unit.toLowerCase(Locale.ENGLISH))) {
                     type = CoreItemFactory.DIMMER;
                 } else {
                     type = CoreItemFactory.NUMBER;

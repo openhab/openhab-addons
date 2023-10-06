@@ -105,8 +105,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Converts the object to a string array.
      */
     protected String[] toOptionList(Object optionList) {
-        if (optionList != null && optionList instanceof Object[]) {
-            Object[] vl = (Object[]) optionList;
+        if (optionList != null && optionList instanceof Object[] vl) {
             String[] stringArray = new String[vl.length];
             for (int i = 0; i < vl.length; i++) {
                 stringArray[i] = vl[i].toString();
@@ -232,9 +231,9 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (value == null || value.isBlank()) {
             return null;
         }
-        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("on")) {
+        if ("true".equalsIgnoreCase(value) || "on".equalsIgnoreCase(value)) {
             return (Boolean.TRUE);
-        } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("off")) {
+        } else if ("false".equalsIgnoreCase(value) || "off".equalsIgnoreCase(value)) {
             return (Boolean.FALSE);
         } else if (value.matches("(-|\\+)?[0-9]+")) {
             return (Integer.valueOf(value));

@@ -33,7 +33,7 @@ public class AfpManager extends ConfigurableRest<AfpManager.Afp, AfpManager.Conf
 
     protected static record Afp(boolean enabled, boolean guestAllow, ServerType serverType, @Nullable String loginName,
             @Nullable String loginPassword) {
-        private static enum ServerType {
+        private enum ServerType {
             POWERBOOK,
             POWERMAC,
             MACMINI,
@@ -45,7 +45,7 @@ public class AfpManager extends ConfigurableRest<AfpManager.Afp, AfpManager.Conf
             APPLETV,
             AIRPORT,
             XSERVE,
-            UNKNOWN;
+            UNKNOWN
         }
     }
 

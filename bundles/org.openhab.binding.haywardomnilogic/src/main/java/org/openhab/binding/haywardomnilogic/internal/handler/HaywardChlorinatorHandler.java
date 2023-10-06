@@ -90,7 +90,7 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                         data = bridgehandler.evaluateXPath("//Chlorinator/@status", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_STATUS, data.get(i));
 
-                        if (data.get(i).equals("0")) {
+                        if ("0".equals(data.get(i))) {
                             updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0");
                             // chlorState is used to set the chlorinator cfgState in the timedPercent command
                             this.chlorState = "2";

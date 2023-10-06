@@ -28,6 +28,7 @@ import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
+import org.openhab.binding.netatmo.internal.api.dto.NAError;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
@@ -63,32 +64,37 @@ public class Capability {
 
     public final @Nullable String setNewData(NAObject newData) {
         beforeNewData();
-        if (newData instanceof HomeData homeData) {
-            updateHomeData(homeData);
-        }
-        if (newData instanceof HomeStatus homeStatus) {
-            updateHomeStatus(homeStatus);
-        }
-        if (newData instanceof HomeStatusModule homeStatusModule) {
-            updateHomeStatusModule(homeStatusModule);
-        }
+        if (newData instanceof NAError error) {
+            updateErrors(error);
+        } else {
+            if (newData instanceof HomeData homeData) {
+                updateHomeData(homeData);
+            }
+            if (newData instanceof HomeStatus homeStatus) {
+                updateHomeStatus(homeStatus);
+            }
+            if (newData instanceof HomeStatusModule homeStatusModule) {
+                updateHomeStatusModule(homeStatusModule);
+            }
 
-        if (newData instanceof HomeEvent homeEvent) {
-            updateHomeEvent(homeEvent);
-        } else if (newData instanceof WebhookEvent webhookEvent && webhookEvent.getEventType().validFor(moduleType)) {
-            updateWebhookEvent(webhookEvent);
-        } else if (newData instanceof Event event) {
-            updateEvent(event);
-        }
+            if (newData instanceof HomeEvent homeEvent) {
+                updateHomeEvent(homeEvent);
+            } else if (newData instanceof WebhookEvent webhookEvent
+                    && webhookEvent.getEventType().validFor(moduleType)) {
+                updateWebhookEvent(webhookEvent);
+            } else if (newData instanceof Event event) {
+                updateEvent(event);
+            }
 
-        if (newData instanceof NAThing naThing) {
-            updateNAThing(naThing);
-        }
-        if (newData instanceof NAMain naMain) {
-            updateNAMain(naMain);
-        }
-        if (newData instanceof Device device) {
-            updateNADevice(device);
+            if (newData instanceof NAThing naThing) {
+                updateNAThing(naThing);
+            }
+            if (newData instanceof NAMain naMain) {
+                updateNAMain(naMain);
+            }
+            if (newData instanceof Device device) {
+                updateNADevice(device);
+            }
         }
         afterNewData(newData);
         return statusReason;
@@ -98,7 +104,7 @@ public class Capability {
         properties = new HashMap<>(thing.getProperties());
         firstLaunch = properties.isEmpty();
         if (firstLaunch) {
-            properties.put(PROPERTY_THING_TYPE_VERSION, Integer.toString(moduleType.thingTypeVersion));
+            properties.put(PROPERTY_THING_TYPE_VERSION, moduleType.thingTypeVersion);
             if (!moduleType.isLogical()) {
                 String name = moduleType.apiName.isBlank() ? moduleType.name() : moduleType.apiName;
                 properties.put(PROPERTY_MODEL_ID, name);
@@ -149,6 +155,10 @@ public class Capability {
     }
 
     protected void updateNADevice(Device newData) {
+        // do nothing by default, can be overridden by subclasses
+    }
+
+    protected void updateErrors(NAError error) {
         // do nothing by default, can be overridden by subclasses
     }
 

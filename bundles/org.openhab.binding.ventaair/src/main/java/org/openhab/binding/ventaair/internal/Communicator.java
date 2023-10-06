@@ -110,7 +110,6 @@ public class Communicator {
                 }
             }
             br.close();
-            socket.close();
         } catch (IOException e) {
             callback.communicationProblem();
         }
@@ -150,7 +149,6 @@ public class Communicator {
             logger.debug("sendingArray: {}", Arrays.toString(dataToSend));
 
             output.write(dataToSend);
-            socket.close();
         }
     }
 

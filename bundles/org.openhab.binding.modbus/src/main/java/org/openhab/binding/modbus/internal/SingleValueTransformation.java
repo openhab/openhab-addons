@@ -168,8 +168,7 @@ public class SingleValueTransformation implements ValueTransformation {
     }
 
     public static Optional<Command> tryConvertToCommand(String transformed) {
-        Optional<Command> transformedCommand = Optional.ofNullable(TypeParser.parseCommand(DEFAULT_TYPES, transformed));
-        return transformedCommand;
+        return Optional.ofNullable(TypeParser.parseCommand(DEFAULT_TYPES, transformed));
     }
 
     @Override

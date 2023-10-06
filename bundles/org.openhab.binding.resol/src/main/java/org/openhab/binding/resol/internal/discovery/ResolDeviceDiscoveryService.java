@@ -110,8 +110,8 @@ public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof ResolBridgeHandler) {
-            resolBridgeHandler = (ResolBridgeHandler) handler;
+        if (handler instanceof ResolBridgeHandler resolBridgeHandler) {
+            this.resolBridgeHandler = resolBridgeHandler;
         }
     }
 

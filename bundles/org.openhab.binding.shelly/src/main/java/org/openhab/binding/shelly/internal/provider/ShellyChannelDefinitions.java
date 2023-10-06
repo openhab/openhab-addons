@@ -56,7 +56,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link ShellyCHANNEL_DEFINITIONSDTO} defines channel information for dynamically created channels. Those will be
+ * The {@link #CHANNEL_DEFINITIONS} defines channel information for dynamically created channels. Those will be
  * added on the first thing status update
  *
  * @author Markus Michels - Initial contribution
@@ -585,7 +585,7 @@ public class ShellyChannelDefinitions {
                         ? new ChannelTypeUID(channelDef.typeId)
                         : new ChannelTypeUID(BINDING_ID, channelDef.typeId);
                 ChannelBuilder builder;
-                if (channelDef.typeId.equalsIgnoreCase("system:button")) {
+                if ("system:button".equalsIgnoreCase(channelDef.typeId)) {
                     builder = ChannelBuilder.create(channelUID, null).withKind(ChannelKind.TRIGGER);
                 } else {
                     builder = ChannelBuilder.create(channelUID, channelDef.itemType);

@@ -66,7 +66,8 @@ public class TapoDeviceHttpApi {
     /**
      * INIT CLASS
      *
-     * @param config TapoControlConfiguration class
+     * @param device
+     * @param bridgeThingHandler
      */
     public TapoDeviceHttpApi(TapoDevice device, TapoBridgeHandler bridgeThingHandler) {
         this.bridge = bridgeThingHandler;
@@ -125,7 +126,7 @@ public class TapoDeviceHttpApi {
     /**
      * handle error
      *
-     * @param te TapoErrorHandler
+     * @param tapoError TapoErrorHandler
      */
     protected void handleError(TapoErrorHandler tapoError) {
     }
@@ -158,7 +159,7 @@ public class TapoDeviceHttpApi {
             String payload = plBuilder.getPayload();
 
             /* send request (create ) */
-            logger.trace("({}) create handhsake with payload: {}", uid, payload.toString());
+            logger.trace("({}) create handhsake with payload: {}", uid, payload);
             ContentResponse response = sendRequest(this.deviceURL, payload);
             if (response != null && getErrorCode(response) == 0) {
                 String encryptedKey = getKeyFromResponse(response);
@@ -308,8 +309,7 @@ public class TapoDeviceHttpApi {
         httpRequest.content(new StringContentProvider(payload, CONTENT_CHARSET), CONTENT_TYPE_JSON);
 
         try {
-            ContentResponse httpResponse = httpRequest.send();
-            return httpResponse;
+            return httpRequest.send();
         } catch (InterruptedException e) {
             logger.debug("({}) sending request interrupted: {}", uid, e.toString());
             handleError(new TapoErrorHandler(e));
@@ -564,7 +564,7 @@ public class TapoDeviceHttpApi {
     /**
      * Set new ipAddress
      *
-     * @param new ipAdress
+     * @param ipAddress new ipAdress
      */
     public void setDeviceURL(String ipAddress) {
         this.ipAddress = ipAddress;
@@ -585,7 +585,6 @@ public class TapoDeviceHttpApi {
     /**
      * Set new token
      *
-     * @param deviceURL
      * @param token
      */
     protected void setToken(String token) {

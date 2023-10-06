@@ -86,7 +86,7 @@ public class MacTTSVoice implements Voice {
             int underscore = token.indexOf('_');
             if (-1 == underscore) {
                 // Check we're dealing with <Label>
-                if (!token.equals("en-scotland")) {
+                if (!"en-scotland".equals(token)) {
                     if (null == this.label) {
                         this.label = token;
                     } else {

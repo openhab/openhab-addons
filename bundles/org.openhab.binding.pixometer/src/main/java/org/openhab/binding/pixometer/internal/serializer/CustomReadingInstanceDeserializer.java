@@ -96,7 +96,7 @@ public class CustomReadingInstanceDeserializer implements JsonDeserializer<Readi
      * @return The wanted string without unnecessary quotation marks
      */
     private String getStringFromJson(JsonObject data, String key) {
-        return data.get(key).toString().replaceAll("\"", "");
+        return data.get(key).toString().replace("\"", "");
     }
 
     /**
@@ -104,6 +104,6 @@ public class CustomReadingInstanceDeserializer implements JsonDeserializer<Readi
      * @return returns true if null values have been found, false otherwise
      */
     private boolean checkStringForNullValues(String s) {
-        return (s == null || s.isEmpty() || s.equals("null"));
+        return (s == null || s.isEmpty() || "null".equals(s));
     }
 }

@@ -45,7 +45,7 @@ public class Iammeter3080THandler extends IammeterBaseHandler {
         JsonObject iammeterData = iammeterDataElement.getAsJsonObject();
         String keyWord = "Datas";
         if (iammeterData.has("Datas") && iammeterData.has("SN")) {
-            String groups[] = { "powerPhaseA", "powerPhaseB", "powerPhaseC" };
+            String[] groups = { "powerPhaseA", "powerPhaseB", "powerPhaseC" };
             for (int row = 0; row < groups.length; row++) {
                 String gpName = groups[row];
                 List<Channel> chnList = getThing().getChannelsOfGroup(gpName);

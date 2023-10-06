@@ -78,8 +78,12 @@ class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Climat
 
     @Test
     void testUpdateChannelsTemperatureLevelService() {
-        JsonElement jsonObject = JsonParser.parseString(
-                "{\n" + "   \"@type\": \"temperatureLevelState\",\n" + "   \"temperature\": 21.5\n" + " }");
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "temperatureLevelState",
+                   "temperature": 21.5
+                 }\
+                """);
         getFixture().processUpdate("TemperatureLevel", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE),
@@ -88,8 +92,12 @@ class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Climat
 
     @Test
     void testUpdateChannelsRoomClimateControlService() {
-        JsonElement jsonObject = JsonParser.parseString(
-                "{\n" + "   \"@type\": \"climateControlState\",\n" + "   \"setpointTemperature\": 21.5\n" + " }");
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "climateControlState",
+                   "setpointTemperature": 21.5
+                 }\
+                """);
         getFixture().processUpdate("RoomClimateControl", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SETPOINT_TEMPERATURE),

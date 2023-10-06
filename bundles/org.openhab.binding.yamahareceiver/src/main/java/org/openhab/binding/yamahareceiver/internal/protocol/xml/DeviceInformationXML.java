@@ -145,8 +145,7 @@ public class DeviceInformationXML implements DeviceInformation {
 
     private boolean isFeatureSupported(Node node, String name) {
         String value = getNodeContentOrEmpty(node, name);
-        boolean supported = "1".equals(value) || "Available".equals(value);
-        return supported;
+        return "1".equals(value) || "Available".equals(value);
     }
 
     private <T> void checkFeature(Node node, String name, T value, Set<T> set) {

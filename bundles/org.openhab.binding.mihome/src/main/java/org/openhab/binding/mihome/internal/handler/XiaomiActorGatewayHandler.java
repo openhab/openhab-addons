@@ -62,8 +62,8 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
     void execute(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
             case CHANNEL_BRIGHTNESS:
-                if (command instanceof PercentType) {
-                    int newBright = ((PercentType) command).intValue();
+                if (command instanceof PercentType percentCommand) {
+                    int newBright = percentCommand.intValue();
                     if (lastBrigthness != newBright) {
                         lastBrigthness = newBright;
                         logger.debug("Set brigthness to {}", lastBrigthness);
@@ -78,16 +78,15 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
                 }
                 break;
             case CHANNEL_COLOR:
-                if (command instanceof HSBType) {
-                    lastColor = ((HSBType) command).getRGB() & 0xffffff;
+                if (command instanceof HSBType hsbCommand) {
+                    lastColor = hsbCommand.getRGB() & 0xffffff;
                     writeBridgeLightColor(lastColor, lastBrigthness);
                     return;
                 }
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
-                if (command instanceof PercentType) {
-                    PercentType colorTemperature = (PercentType) command;
-                    int kelvin = (COLOR_TEMPERATURE_MAX - COLOR_TEMPERATURE_MIN) / 100 * colorTemperature.intValue()
+                if (command instanceof PercentType percentCommand) {
+                    int kelvin = (COLOR_TEMPERATURE_MAX - COLOR_TEMPERATURE_MIN) / 100 * percentCommand.intValue()
                             + COLOR_TEMPERATURE_MIN;
                     int color = ColorUtil.getRGBFromK(kelvin);
                     writeBridgeLightColor(color, lastBrigthness);
@@ -97,23 +96,23 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
                 }
                 break;
             case CHANNEL_GATEWAY_SOUND:
-                if (command instanceof DecimalType) {
-                    writeBridgeRingtone(((DecimalType) command).intValue(), lastVolume);
+                if (command instanceof DecimalType decimalCommand) {
+                    writeBridgeRingtone(decimalCommand.intValue(), lastVolume);
                     updateState(CHANNEL_GATEWAY_SOUND_SWITCH, OnOffType.ON);
                     return;
                 }
                 break;
             case CHANNEL_GATEWAY_SOUND_SWITCH:
-                if (command instanceof OnOffType) {
-                    if (((OnOffType) command) == OnOffType.OFF) {
+                if (command instanceof OnOffType onOffCommand) {
+                    if (onOffCommand == OnOffType.OFF) {
                         stopRingtone();
                     }
                     return;
                 }
                 break;
             case CHANNEL_GATEWAY_VOLUME:
-                if (command instanceof DecimalType) {
-                    updateLastVolume((DecimalType) command);
+                if (command instanceof DecimalType decimalCommand) {
+                    updateLastVolume(decimalCommand);
                 }
                 return;
         }

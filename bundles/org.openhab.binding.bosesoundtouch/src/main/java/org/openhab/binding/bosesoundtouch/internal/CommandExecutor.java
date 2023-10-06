@@ -266,7 +266,7 @@ public class CommandExecutor implements AvailableSources {
     /**
      * Post RemoteKey on the device
      *
-     * @param command the command is Type of RemoteKeyType
+     * @param key the key is Type of RemoteKeyType
      */
     public void postRemoteKey(RemoteKeyType key) {
         sendPostRequestInWebSocket("key", "mainNode=\"keyPress\"",

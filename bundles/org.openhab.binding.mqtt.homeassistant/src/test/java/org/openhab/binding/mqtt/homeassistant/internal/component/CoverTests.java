@@ -37,28 +37,30 @@ public class CoverTests extends AbstractComponentTests {
     public void test() throws InterruptedException {
         // @formatter:off
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"availability\": [ " +
-                        "    { " +
-                        "      \"topic\": \"zigbee2mqtt/bridge/state\" " +
-                        "    } " +
-                        "  ], " +
-                        "  \"device\": { " +
-                        "    \"identifiers\": [ " +
-                        "      \"zigbee2mqtt_0x0000000000000000\" " +
-                        "    ], " +
-                        "    \"manufacturer\": \"Covers inc\", " +
-                        "    \"model\": \"cover v1\", " +
-                        "    \"name\": \"Cover\", " +
-                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
-                        "  }, " +
-                        "  \"name\": \"cover\", " +
-                        "  \"payload_open\": \"OPEN_\", " +
-                        "  \"payload_close\": \"CLOSE_\", " +
-                        "  \"payload_stop\": \"STOP_\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/cover/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/cover/set/state\" " +
-                        "}");
+                """
+                { \
+                  "availability": [ \
+                    { \
+                      "topic": "zigbee2mqtt/bridge/state" \
+                    } \
+                  ], \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Covers inc", \
+                    "model": "cover v1", \
+                    "name": "Cover", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "cover", \
+                  "payload_open": "OPEN_", \
+                  "payload_close": "CLOSE_", \
+                  "payload_stop": "STOP_", \
+                  "state_topic": "zigbee2mqtt/cover/state", \
+                  "command_topic": "zigbee2mqtt/cover/set/state" \
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));

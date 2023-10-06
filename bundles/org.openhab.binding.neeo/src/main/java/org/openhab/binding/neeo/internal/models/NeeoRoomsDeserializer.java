@@ -40,9 +40,9 @@ public class NeeoRoomsDeserializer implements JsonDeserializer<@Nullable NeeoRoo
             @Nullable JsonDeserializationContext context) throws JsonParseException {
         Objects.requireNonNull(jsonElement, "jsonElement cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
-        if (jsonElement instanceof JsonObject) {
+        if (jsonElement instanceof JsonObject jsonObject) {
             final List<NeeoRoom> recipes = new ArrayList<>();
-            for (Map.Entry<String, JsonElement> entry : ((JsonObject) jsonElement).entrySet()) {
+            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 final NeeoRoom room = context.deserialize(entry.getValue(), NeeoRoom.class);
                 recipes.add(room);
             }

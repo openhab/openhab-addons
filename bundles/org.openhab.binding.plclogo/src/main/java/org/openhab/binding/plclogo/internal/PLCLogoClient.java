@@ -102,7 +102,7 @@ public class PLCLogoClient extends S7Client {
             // read first portion directly to data
             result = super.ReadArea(Area, DBNumber, Start, packet, WordLength, Data);
             while ((result == 0) && (offset < Amount)) {
-                byte buffer[] = new byte[Math.min(Amount - offset, packet)];
+                byte[] buffer = new byte[Math.min(Amount - offset, packet)];
                 result = super.ReadArea(Area, DBNumber, offset, buffer.length, WordLength, buffer);
                 System.arraycopy(buffer, 0, Data, offset, buffer.length);
                 offset = offset + buffer.length;
