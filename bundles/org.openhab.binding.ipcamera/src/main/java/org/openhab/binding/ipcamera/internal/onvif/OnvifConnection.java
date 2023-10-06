@@ -643,7 +643,7 @@ public class OnvifConnection {
         }
         String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");
         String dataValue = Helper.fetchXML(eventMessage, "tt:Data", "Value=\"");
-        logger.debug("Onvif Event Topic: {}, Data: {}, Value: {}", topic, dataName, dataValue);
+        logger.debug("ONVIF Event Topic: {}, Data: {}, Value: {}", topic, dataName, dataValue);
         switch (topic) {
             case "RuleEngine/CellMotionDetector/Motion":
                 if ("true".equals(dataValue)) {
