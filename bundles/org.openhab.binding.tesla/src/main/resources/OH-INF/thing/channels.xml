@@ -6,7 +6,7 @@
 
 	<channel-type id="ar_destination">
 		<item-type>String</item-type>
-		<label>Route destination</label>
+		<label>Route Destination</label>
 		<description>Name of the destination</description>
 		<state readOnly="true"></state>
 	</channel-type>
