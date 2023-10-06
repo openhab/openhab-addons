@@ -33,6 +33,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Traffic Delay</label>
 		<description>Delay to arrive at the destination due to traffic</description>
+		<category>Time</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
