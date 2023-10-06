@@ -123,7 +123,6 @@ import io.netty.util.concurrent.GlobalEventExecutor;
  *
  * @author Matthew Skinner - Initial contribution
  */
-
 @NonNullByDefault
 public class IpCameraHandler extends BaseThingHandler {
     public final Logger logger = LoggerFactory.getLogger(getClass());
@@ -245,7 +244,7 @@ public class IpCameraHandler extends BaseThingHandler {
                                         mjpegContentType = contentType;
                                         CameraServlet localServlet = servlet;
                                         if (localServlet != null) {
-                                            logger.debug("Setting Content-Type to:{}", contentType);
+                                            logger.debug("Setting Content-Type to: {}", contentType);
                                             localServlet.openStreams.updateContentType(contentType, boundary);
                                         }
                                     }
@@ -384,7 +383,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return; // don't auto close this as it is for the alarms.
                         }
                     }
-                    logger.debug("Closing an idle channel for camera:{}", cameraConfig.getIp());
+                    logger.debug("Closing an idle channel for camera: {}", cameraConfig.getIp());
                     ctx.close();
                 }
             }
@@ -614,7 +613,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
         if (!basicAuth.isEmpty()) {
             if (useDigestAuth) {
-                logger.warn("Camera at IP:{} had both Basic and Digest set to be used", cameraConfig.getIp());
+                logger.warn("Camera at IP: {} had both Basic and Digest set to be used", cameraConfig.getIp());
                 setBasicAuth(false);
             } else {
                 request.headers().set("Authorization", "Basic " + basicAuth);
@@ -755,7 +754,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     channelTrackingMap.remove(channelTracking.getRequestUrl());
                 }
                 if (channelTracking.getChannel().equals(channel)) {
-                    logger.debug("Open channel to camera is used for URL:{}", channelTracking.getRequestUrl());
+                    logger.debug("Open channel to camera is used for URL: {}", channelTracking.getRequestUrl());
                     oldChannel = false;
                 }
             }
@@ -1423,7 +1422,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Camera refused connection on ONVIF ports.");
             }
-            logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP:{}:{}", cameraConfig.getIp(),
+            logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP: {}:{}", cameraConfig.getIp(),
                     cameraConfig.getOnvifPort());
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
             return;
