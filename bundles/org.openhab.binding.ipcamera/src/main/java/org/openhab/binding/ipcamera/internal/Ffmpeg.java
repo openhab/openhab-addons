@@ -179,7 +179,7 @@ public class Ffmpeg {
                     }
                 }
             } catch (IOException e) {
-                logger.warn("An IO error occured trying to start FFmpeg: {}", e.getMessage());
+                logger.warn("An IO error occurred trying to start FFmpeg: {}", e.getMessage());
             } finally {
                 switch (format) {
                     case GIF:
