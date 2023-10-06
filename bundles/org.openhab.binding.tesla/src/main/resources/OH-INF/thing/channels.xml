@@ -12,7 +12,7 @@
 	</channel-type>
 	<channel-type id="ar_location" advanced="false">
 		<item-type>Location</item-type>
-		<label>Route location</label>
+		<label>Route Location</label>
 		<description>Location of the destination</description>
 		<state readOnly="true"></state>
 	</channel-type>
