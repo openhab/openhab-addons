@@ -90,11 +90,11 @@ Additionally, these advanced channels are available (not all are available on al
 
 | Channel ID                | Item Type                | Label                         | Description                                                                                                      |
 |---------------------------|--------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------|
-| ar_destination            | String                   | Route destination             | Name of the destination                                                                                          |
-| ar_location               | Location                 | Route location                | Location of the destination                                                                                      |
-| ar_distancetoarrival      | Number:Length            | Distance to arrival           | Distance to drive to the destination                                                                             |
-| ar_minutestoarrival       | Number:Time              | Minutes to arrival            | Minutes to drive to the destination                                                                              |
-| ar_trafficminutesdelay    | Number:Time              | Traffic delay                 | Minutes of delay due to traffic                                                                                  |
+| destinationname           | String                   | Route destination             | Name of the destination                                                                                          |
+| destinationlocation       | Location                 | Route location                | Location of the destination                                                                                      |
+| distancetoarrival         | Number:Length            | Distance to arrival           | Distance to drive to the destination                                                                             |
+| minutestoarrival          | Number:Time              | Minutes to arrival            | Minutes to drive to the destination                                                                              |
+| trafficminutesdelay       | Number:Time              | Traffic delay                 | Minutes of delay due to traffic                                                                                  |
 | autoparkstate             | String                   | Autopark State                | Undocumented / To be defined                                                                                     |
 | autoparkstyle             | String                   | Autopark Style                | Undocumented / To be defined                                                                                     |
 | batterycurrent            | Number:ElectricCurrent   | Battery Current               | Current (Ampere) floating into (+) or out (-) of the battery                                                     |
@@ -268,10 +268,10 @@ Number:Temperature  TeslaTemperatureCombined    {channel="account:model3:myaccou
 Number:Temperature  TeslaInsideTemperature      {channel="account:model3:myaccount:mycar:insidetemp"}
 Number:Temperature  TeslaOutsideTemperature     {channel="account:model3:myaccount:mycar:outsidetemp"}
 
-String              TeslaDestinationName        {channel="account:model3:myaccount:mycar:ar_destination"}
-String              TeslaDestinationLocation    {channel="account:model3:myaccount:mycar:ar_location"}
-Number:Time         TeslaMinutesToArrival       {channel="account:model3:myaccount:mycar:ar_minutestoarrival"}
-Number:Length       TeslaDistanceToArrival      {channel="account:model3:myaccount:mycar:ar_distancetoarrival"}
+String              TeslaDestinationName        {channel="account:model3:myaccount:mycar:destinationname"}
+String              TeslaDestinationLocation    {channel="account:model3:myaccount:mycar:destinationlocation"}
+Number:Time         TeslaMinutesToArrival       {channel="account:model3:myaccount:mycar:minutestoarrival"}
+Number:Length       TeslaDistanceToArrival      {channel="account:model3:myaccount:mycar:distancetoarrival"}
 ```
 
 demo.sitemap:

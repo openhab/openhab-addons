@@ -45,7 +45,7 @@ public class TeslaChannelSelectorProxy {
     public enum TeslaChannelSelector {
 
         API("api_version", "api", DecimalType.class, true),
-        AR_DESTINATION("active_route_destination", "ar_destination", StringType.class, true),
+        AR_DESTINATION("active_route_destination", "destinationname", StringType.class, true),
         AR_LATITUDE("active_route_latitude", "ar_location", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -54,7 +54,7 @@ public class TeslaChannelSelectorProxy {
                         new StringType(proxy.elevation));
             }
         },
-        AR_LONGITUDE("active_route_longitude", "ar_location", DecimalType.class, false) {
+        AR_LONGITUDE("active_route_longitude", "destinationlocation", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 proxy.longitude = s;
@@ -62,7 +62,7 @@ public class TeslaChannelSelectorProxy {
                         new StringType(proxy.elevation));
             }
         },
-        AR_DISTANCE_TO_ARRIVAL("active_route_miles_to_arrival", "ar_distancetoarrival", DecimalType.class, true) {
+        AR_DISTANCE_TO_ARRIVAL("active_route_miles_to_arrival", "distancetoarrival", DecimalType.class, true) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
@@ -70,7 +70,7 @@ public class TeslaChannelSelectorProxy {
                 return new QuantityType<>(value, ImperialUnits.MILE);
             }
         },
-        AR_MINUTES_TO_ARRIVAL("active_route_minutes_to_arrival", "ar_minutestoarrival", DecimalType.class, true) {
+        AR_MINUTES_TO_ARRIVAL("active_route_minutes_to_arrival", "minutestoarrival", DecimalType.class, true) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
@@ -78,7 +78,7 @@ public class TeslaChannelSelectorProxy {
                 return new QuantityType<>(value, Units.MINUTE);
             }
         },
-        AR_TRAFFIC_MINUTES_DELAY("active_route_traffic_minutes_delay", "ar_trafficminutesdelay", DecimalType.class,
+        AR_TRAFFIC_MINUTES_DELAY("active_route_traffic_minutes_delay", "trafficminutesdelay", DecimalType.class,
                 false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
