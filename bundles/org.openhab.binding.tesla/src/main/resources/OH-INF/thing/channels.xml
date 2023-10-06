@@ -26,6 +26,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Minutes To Arrival</label>
 		<description>Minutes to drive to the destination</description>
+		<category>Time</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="ar_trafficminutesdelay">
