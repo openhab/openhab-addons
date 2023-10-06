@@ -69,7 +69,7 @@ public class OnvifCodec extends ChannelDuplexHandler {
             onvifConnection.setIsConnected(false);
             ctx.close();
         } else {
-            logger.trace("Other ONVIF netty channel event occured: {}", evt);
+            logger.trace("Other ONVIF netty channel event occurred: {}", evt);
         }
     }
 
