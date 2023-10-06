@@ -269,7 +269,7 @@ Number:Temperature  TeslaInsideTemperature      {channel="account:model3:myaccou
 Number:Temperature  TeslaOutsideTemperature     {channel="account:model3:myaccount:mycar:outsidetemp"}
 
 String              TeslaDestinationName        {channel="account:model3:myaccount:mycar:destinationname"}
-String              TeslaDestinationLocation    {channel="account:model3:myaccount:mycar:destinationlocation"}
+Location            TeslaDestinationLocation    {channel="account:model3:myaccount:mycar:destinationlocation"}
 Number:Time         TeslaMinutesToArrival       {channel="account:model3:myaccount:mycar:minutestoarrival"}
 Number:Length       TeslaDistanceToArrival      {channel="account:model3:myaccount:mycar:distancetoarrival"}
 ```
