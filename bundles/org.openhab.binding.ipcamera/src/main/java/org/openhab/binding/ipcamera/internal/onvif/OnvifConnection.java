@@ -615,7 +615,7 @@ public class OnvifConnection {
         } else {// 192.168.1.1
             ipAddress = url;
             deviceXAddr = "http://" + ipAddress + "/onvif/device_service";
-            logger.debug("No Onvif Port found when parsing: {}", url);
+            logger.debug("No ONVIF Port found when parsing: {}", url);
             return;
         }
         deviceXAddr = "http://" + ipAddress + ":" + onvifPort + "/onvif/device_service";
