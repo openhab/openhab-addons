@@ -574,7 +574,7 @@ public class OnvifConnection {
                         connectError = false;
                         Channel ch = future.channel();
                         ch.writeAndFlush(request);
-                    } else { // an error occured
+                    } else { // an error occurred
                         if (future.isDone() && !future.isCancelled()) {
                             Throwable cause = future.cause();
                             String msg = cause.getMessage();
