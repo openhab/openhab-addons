@@ -26,7 +26,6 @@ Import-Package: \
 # done
 #
 -runbundles: \
-	biz.aQute.tester.junit-platform;version='[6.4.0,6.4.1)',\
 	com.google.dagger;version='[2.27.0,2.27.1)',\
 	com.h2database.mvstore;version='[1.4.199,1.4.200)',\
 	com.zaxxer.HikariCP;version='[2.4.7,2.4.8)',\
@@ -115,4 +114,5 @@ Import-Package: \
 	io.netty.transport;version='[4.1.99,4.1.100)',\
 	io.netty.transport-native-unix-common;version='[4.1.99,4.1.100)',\
 	io.reactivex.rxjava2.rxjava;version='[2.2.21,2.2.22)',\
-	reactive-streams;version='[1.0.4,1.0.5)'
+	reactive-streams;version='[1.0.4,1.0.5)',\
+	biz.aQute.tester.junit-platform;version='[7.0.0,7.0.1)'
