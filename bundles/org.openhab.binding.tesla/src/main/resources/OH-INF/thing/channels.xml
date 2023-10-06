@@ -4,6 +4,37 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<channel-type id="ar_destination">
+		<item-type>String</item-type>
+		<label>Route destination</label>
+		<description>Name of the destination</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ar_location" advanced="false">
+		<item-type>Location</item-type>
+		<label>Route location</label>
+		<description>Location of the destination</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ar_distancetoarrival">
+		<item-type>Number</item-type>
+		<label>Distance to arrival</label>
+		<description>Distance to drive to the destination</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ar_minutestoarrival">
+		<item-type>Number:Time</item-type>
+		<label>Minutes to arrival</label>
+		<description>Minutes to drive to the destination</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ar_trafficminutesdelay">
+		<item-type>Number:Time</item-type>
+		<label>Traffic Delay</label>
+		<description>Delay to arrive at the destination due to traffic</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="autoconditioning">
 		<item-type>Switch</item-type>
 		<label>Auto Conditioning</label>

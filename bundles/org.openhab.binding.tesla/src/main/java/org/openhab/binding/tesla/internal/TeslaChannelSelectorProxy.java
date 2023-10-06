@@ -45,6 +45,27 @@ public class TeslaChannelSelectorProxy {
     public enum TeslaChannelSelector {
 
         API("api_version", "api", DecimalType.class, true),
+        AR_DESTINATION("active_route_destination", "ar_destination", StringType.class, true),
+        AR_LATITUDE("active_route_latitude", "ar_location", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                proxy.latitude = s;
+                return new PointType(new StringType(proxy.latitude), new StringType(proxy.longitude),
+                        new StringType(proxy.elevation));
+            }
+        },
+        AR_LONGITUDE("active_route_longitude", "ar_location", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                proxy.longitude = s;
+                return new PointType(new StringType(proxy.latitude), new StringType(proxy.longitude),
+                        new StringType(proxy.elevation));
+            }
+        },
+        AR_DISTANCE_TO_ARRIVAL("active_route_miles_to_arrival", "ar_distancetoarrival", DecimalType.class, true),
+        AR_MINUTES_TO_ARRIVAL("active_route_minutes_to_arrival", "ar_minutestoarrival", DecimalType.class, true),
+        AR_TRAFFIC_MINUTES_DELAY("active_route_traffic_minutes_delay", "ar_trafficminutesdelay", DecimalType.class,
+                false),
         AUTO_COND("is_auto_conditioning_on", "autoconditioning", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {

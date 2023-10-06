@@ -90,6 +90,11 @@ Additionally, these advanced channels are available (not all are available on al
 
 | Channel ID                | Item Type                | Label                         | Description                                                                                                      |
 |---------------------------|--------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------|
+| ar_destination            | String                   | Route destination             | Name of the destination                                                                                          |
+| ar_location               | Location                 | Route location                | Location of the destination                                                                                      |
+| ar_distancetoarrival      | Number                   | Distance to arrival           | Distance to drive to the destination                                                                             |
+| ar_minutestoarrival       | Number:Time              | Minutes to arrival            | Minutes to drive to the destination                                                                              |
+| ar_trafficminutesdelay    | Number:Time              | Traffic delay                 | Minutes of delay due to traffic                                                                                  |
 | autoparkstate             | String                   | Autopark State                | Undocumented / To be defined                                                                                     |
 | autoparkstyle             | String                   | Autopark Style                | Undocumented / To be defined                                                                                     |
 | batterycurrent            | Number:ElectricCurrent   | Battery Current               | Current (Ampere) floating into (+) or out (-) of the battery                                                     |
@@ -200,7 +205,6 @@ demo.Things:
 Bridge tesla:account:myaccount "My Tesla Account" [ refreshToken="xxxx" ] {
     model3 mycar "My favorite car" [ vin="5YJSA7H25FFP53736"]
 }
-```
 
 demo.items:
 
@@ -263,6 +267,11 @@ Number:Temperature  TeslaTemperature            {channel="account:model3:myaccou
 Number:Temperature  TeslaTemperatureCombined    {channel="account:model3:myaccount:mycar:combinedtemp"}
 Number:Temperature  TeslaInsideTemperature      {channel="account:model3:myaccount:mycar:insidetemp"}
 Number:Temperature  TeslaOutsideTemperature     {channel="account:model3:myaccount:mycar:outsidetemp"}
+
+String              TeslaDestinationName        {channel="account:model3:myaccount:mycar:ar_destination"}
+String              TeslaDestinationLocation    {channel="account:model3:myaccount:mycar:ar_location"}
+Number              TeslaMinutesToArrival       {channel="account:model3:myaccount:mycar:ar_minutestoarrival"}
+Number              TeslaDistanceToArrival      {channel="account:model3:myaccount:mycar:ar_distancetoarrival"}
 ```
 
 demo.sitemap:
@@ -338,6 +347,13 @@ sitemap main label="Main"
         Frame
         {
             Mapview item=TeslaLocation height=10
+        }
+        Frame
+        {
+            String item=TeslaDestinationName
+            Number item=TeslaMinutesToArrival
+            Number item=TeslaDistanceToArrival
+            Mapview item=TeslaDestinationLocation height=10
         }
     }
 }
