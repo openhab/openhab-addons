@@ -87,6 +87,8 @@
 			<channel id="last_clean_duration" typeId="last_clean_duration"/>
 			<channel id="last_clean_error" typeId="last_clean_error"/>
 			<channel id="last_clean_finish" typeId="last_clean_finish"/>
+			<channel id="last_clean_finish_reason" typeId="last_clean_finish_reason"/>
+			<channel id="last_clean_dustcollection_status" typeId="last_clean_dustcollection_status"/>
 			<channel id="last_clean_record" typeId="last_clean_record"/>
 			<channel id="map" typeId="map"/>
 		</channels>
@@ -375,6 +377,16 @@
 	<channel-type id="last_clean_finish">
 		<item-type>Number</item-type>
 		<label>Cleaning Finished</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_finish_reason">
+		<item-type>Number</item-type>
+		<label>Cleaning Finished Reason</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_dustcollection_status">
+		<item-type>Number</item-type>
+		<label>Dust Collection Status</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_record" advanced="true">

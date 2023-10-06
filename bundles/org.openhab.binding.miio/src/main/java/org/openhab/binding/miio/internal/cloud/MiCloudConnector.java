@@ -201,6 +201,25 @@ public class MiCloudConnector {
         return request("/home/rpc/" + id, country, command);
     }
 
+    public JsonObject getHomeList(String country) {
+        String response = "";
+        try {
+            response = request("/homeroom/gethome", country,
+                    "{\"fg\":false,\"fetch_share\":true,\"fetch_share_dev\":true,\"limit\":300,\"app_ver\":7,\"fetch_cariot\":true}");
+            logger.trace("gethome response: {}", response);
+            final JsonElement resp = JsonParser.parseString(response);
+            if (resp.isJsonObject() && resp.getAsJsonObject().has("result")) {
+                return resp.getAsJsonObject().get("result").getAsJsonObject();
+            }
+        } catch (JsonParseException e) {
+            logger.info("{} error while parsing rooms: '{}'", e.getMessage(), response);
+        } catch (MiCloudException e) {
+            logger.info("{}", e.getMessage());
+            loginFailedCounter++;
+        }
+        return new JsonObject();
+    }
+
     public List<CloudDeviceDTO> getDevices(String country) {
         final String response = getDeviceString(country);
         List<CloudDeviceDTO> devicesList = new ArrayList<>();
