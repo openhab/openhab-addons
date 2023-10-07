@@ -231,7 +231,7 @@ public class GoveeLanHandler extends BaseThingHandler {
         goveeLanConfiguration = getConfigAs(GoveeLanConfiguration.class);
 
         final String ipAddress = goveeLanConfiguration.hostname;
-        if (ipAddress.isEmpty()) {
+        if (!ipAddress.isEmpty()) {
             THING_HANDLERS.put(ipAddress, this);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
