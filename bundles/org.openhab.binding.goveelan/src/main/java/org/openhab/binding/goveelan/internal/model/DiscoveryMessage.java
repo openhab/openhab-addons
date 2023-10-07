@@ -13,11 +13,17 @@
  */
 package org.openhab.binding.goveelan.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Govee Message
  * @ param msg
  *
  * @author Stefan Höhn - Initial contribution
  */
+@NonNullByDefault
 public record DiscoveryMessage(DiscoveryMsg msg) {
+    public DiscoveryMessage() {
+        this(new DiscoveryMsg());
+    }
 }

@@ -16,16 +16,15 @@ package org.openhab.binding.goveelan.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Govee Message
- * 
+ * Generic Govee Data
+ *
+ * can hold different types of data with the command
+ *
  * @param cmd
  * @param data
  *
  * @author Stefan Höhn - Initial contribution
  */
 @NonNullByDefault
-public record DiscoveryMsg(String cmd, DiscoveryData data) {
-    public DiscoveryMsg() {
-        this("", new DiscoveryData());
-    }
+public record GenericGoveeMsg(String cmd, GenericGoveeData data) {
 }

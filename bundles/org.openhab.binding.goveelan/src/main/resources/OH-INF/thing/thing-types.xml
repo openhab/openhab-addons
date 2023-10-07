@@ -14,7 +14,7 @@
 			<channel id="color-temperature-abs" typeId="colortemperatureabs"/>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
-		<config-description-ref uri="thing-type:goveelan:govee-light"/>
+		<config-description-ref uri="thing-type:goveelan:goveelight"/>
 	</thing-type>
 
 	<channel-type id="colortemperatureabs">

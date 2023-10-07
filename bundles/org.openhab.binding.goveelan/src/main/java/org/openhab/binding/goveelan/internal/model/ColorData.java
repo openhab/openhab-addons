@@ -16,16 +16,13 @@ package org.openhab.binding.goveelan.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Govee Message
+ * Color Data
  * 
- * @param cmd
- * @param data
+ * @param color
+ * @param colorTemInKelvin
  *
  * @author Stefan Höhn - Initial contribution
  */
 @NonNullByDefault
-public record DiscoveryMsg(String cmd, DiscoveryData data) {
-    public DiscoveryMsg() {
-        this("", new DiscoveryData());
-    }
+public record ColorData(Color color, int colorTemInKelvin) implements GenericGoveeData {
 }

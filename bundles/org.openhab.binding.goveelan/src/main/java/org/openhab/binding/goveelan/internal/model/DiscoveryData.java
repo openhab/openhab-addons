@@ -13,6 +13,8 @@
  */
 package org.openhab.binding.goveelan.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Govee Message - Device information
  *
@@ -26,6 +28,10 @@ package org.openhab.binding.goveelan.internal.model;
  *
  * @author Stefan Höhn - Initial contribution
  */
+@NonNullByDefault
 public record DiscoveryData(String ip, String device, String sku, String bleVersionHard, String bleVersionSoft,
         String wifiVersionHard, String wifiVersionSoft) {
+    public DiscoveryData() {
+        this("", "", "", "", "", "", "");
+    }
 }

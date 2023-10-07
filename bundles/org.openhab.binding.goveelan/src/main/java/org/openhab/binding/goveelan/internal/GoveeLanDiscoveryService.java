@@ -16,11 +16,11 @@ package org.openhab.binding.goveelan.internal;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -34,11 +34,10 @@ import org.openhab.binding.goveelan.internal.model.DiscoveryMessage;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -101,11 +100,9 @@ public class GoveeLanDiscoveryService extends AbstractDiscoveryService {
             .of(GoveeLanBindingConstants.THING_TYPE_LIGHT);
 
     @Activate
-    public GoveeLanDiscoveryService(@Reference TranslationProvider i18nProvider,
-            @Reference LocaleProvider localeProvider) throws IllegalArgumentException {
+    public GoveeLanDiscoveryService(@Reference TranslationProvider i18nProvider) throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, 0, false);
         this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
     }
 
     // for test purposes only
@@ -116,7 +113,6 @@ public class GoveeLanDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("starting Scan");
-        BundleContext bundleContext = FrameworkUtil.getBundle(GoveeLanDiscoveryService.class).getBundleContext();
 
         try {
             discoveryActive = true;
@@ -126,76 +122,114 @@ public class GoveeLanDiscoveryService extends AbstractDiscoveryService {
             while (GoveeLanHandler.isRefreshJobRunning()) {
                 GoveeLanHandler.stopRefreshStatusJob();
                 Thread.sleep(1000);
+                logger.debug("Waiting for device status request finish its task to be able to start discovery");
             }
-
-            InetAddress multicastAddress = InetAddress.getByName(DISCOVERY_MULTICAST_ADDRESS);
 
             getLocalNetworkInterfaces().forEach(localNetworkInterface -> {
                 logger.debug("Discovering Govee Devices on {} ...", localNetworkInterface);
-                try (MulticastSocket socket = new MulticastSocket();
-                        MulticastSocket rSocket = new MulticastSocket(DISCOVERY_RESPONSE_PORT)) {
-                    socket.setSoTimeout(INTERFACE_TIMEOUT_SEC * MILLIS_PER_SEC);
-                    rSocket.setSoTimeout(INTERFACE_TIMEOUT_SEC * MILLIS_PER_SEC);
-                    socket.setBroadcast(true);
-                    socket.setTimeToLive(2);
+                try (MulticastSocket sendSocket = new MulticastSocket();
+                        MulticastSocket receiveSocket = new MulticastSocket(DISCOVERY_RESPONSE_PORT)) {
+                    sendSocket.setSoTimeout(INTERFACE_TIMEOUT_SEC * MILLIS_PER_SEC);
+                    sendSocket.setBroadcast(true);
+                    sendSocket.setTimeToLive(2);
+                    InetAddress broadcastAddress = InetAddress.getByName(DISCOVERY_MULTICAST_ADDRESS);
+                    sendSocket.joinGroup(new InetSocketAddress(broadcastAddress, DISCOVERY_RESPONSE_PORT),
+                            localNetworkInterface);
 
-                    byte[] requestData = DISCOVER_REQUEST.getBytes();
-                    DatagramPacket request = new DatagramPacket(requestData, requestData.length, multicastAddress,
-                            DISCOVERY_PORT);
-                    socket.send(request);
-
-                    do {
-                        byte[] rxbuf = new byte[10240];
-                        DatagramPacket packet = new DatagramPacket(rxbuf, rxbuf.length);
-                        rSocket.setReuseAddress(true);
-                        rSocket.receive(packet);
-
-                        String response = new String(packet.getData()).trim();
-                        logger.trace("Govee Device Response: {}", response);
-
-                        Map<String, Object> properties = getDeviceProperties(response);
-                        final String sku = properties.get(GoveeLanConfiguration.DEVICE_TYPE).toString();
-                        final String skuLabel = "discovery.goveelan.govee-light." + sku;
-                        String productName = i18nProvider.getText(bundleContext.getBundle(), skuLabel, sku,
-                                Locale.getDefault());
-                        properties.put(GoveeLanConfiguration.PRODUCT_NAME, (productName != null) ? productName : sku);
-                        ThingUID thingUid = new ThingUID(GoveeLanBindingConstants.THING_TYPE_LIGHT,
-                                properties.get(GoveeLanConfiguration.MAC_ADDRESS).toString().replace(":", "_"));
-
-                        DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid)
-                                .withProperties(properties)
-                                .withRepresentationProperty(GoveeLanConfiguration.MAC_ADDRESS).withLabel(
-                                        "Govee " + productName + " " + properties.get(GoveeLanConfiguration.DEVICE_TYPE)
-                                                + " (" + properties.get(GoveeLanConfiguration.IP_ADDRESS) + ")");
-
-                        thingDiscovered(discoveryResult.build());
-                    } while (true); // left by SocketTimeoutException
-                } catch (SocketTimeoutException ste) {
-                    // done with scanning
+                    sendBroadcastToDiscoverThing(sendSocket, receiveSocket, broadcastAddress);
                 } catch (IOException e) {
                     logger.warn("Discovery with IO exception: {}", e.getMessage());
                 }
             });
-        } catch (UnknownHostException e) {
-            logger.warn("Discovery failed: {}", e.getMessage());
         } catch (InterruptedException e) {
+            // don't care
         } finally {
             discoveryActive = false;
         }
     }
 
+    private void sendBroadcastToDiscoverThing(MulticastSocket sendSocket, MulticastSocket receiveSocket,
+            InetAddress broadcastAddress) throws IOException {
+        byte[] requestData = DISCOVER_REQUEST.getBytes();
+
+        DatagramPacket request = new DatagramPacket(requestData, requestData.length, broadcastAddress, DISCOVERY_PORT);
+
+        try {
+            sendSocket.send(request);
+        } catch (SocketTimeoutException ste) {
+            // done with scanning
+        }
+
+        receiveSocket.setSoTimeout(INTERFACE_TIMEOUT_SEC * MILLIS_PER_SEC);
+        receiveSocket.setReuseAddress(true);
+        do {
+            byte[] rxbuf = new byte[10240];
+            DatagramPacket packet = new DatagramPacket(rxbuf, rxbuf.length);
+            receiveSocket.receive(packet);
+
+            String response = new String(packet.getData()).trim();
+            logger.trace("Govee Device Response: {}", response);
+
+            final Map<String, Object> properties = getDeviceProperties(response);
+            final Object product = properties.get(GoveeLanBindingConstants.PRODUCT_NAME);
+            final String productName = (product != null) ? product.toString() : "unknown";
+            final Object mac = properties.get(GoveeLanBindingConstants.MAC_ADDRESS);
+            final String macAddress = (mac != null) ? mac.toString() : "unknown";
+
+            ThingUID thingUid = new ThingUID(GoveeLanBindingConstants.THING_TYPE_LIGHT, macAddress.replace(":", "_"));
+
+            DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid).withProperties(properties)
+                    .withRepresentationProperty(GoveeLanBindingConstants.MAC_ADDRESS)
+                    .withLabel("Govee " + productName + " " + properties.get(GoveeLanBindingConstants.DEVICE_TYPE)
+                            + " (" + properties.get(GoveeLanBindingConstants.IP_ADDRESS) + ")");
+
+            thingDiscovered(discoveryResult.build());
+        } while (true); // left by SocketTimeoutException
+    }
+
     public Map<String, Object> getDeviceProperties(String response) {
+        Bundle bundle = FrameworkUtil.getBundle(GoveeLanDiscoveryService.class);
         Gson gson = new Gson();
 
         DiscoveryMessage message = gson.fromJson(response, DiscoveryMessage.class);
-        String ipAddress = message.msg().data().ip();
-        String deviceType = message.msg().data().sku();
-        String macAddress = message.msg().data().device();
+        String ipAddress = "";
+        String sku = "";
+        String macAddress = "";
+        String productName = "";
+
+        if (message != null) {
+            ipAddress = message.msg().data().ip();
+            sku = message.msg().data().sku();
+            macAddress = message.msg().data().device();
+
+            if (ipAddress.isEmpty()) {
+                ipAddress = "unknown";
+                logger.warn("Empty IP Address received during discovery - device may not work");
+            }
+
+            productName = "unknown";
+            if (!sku.isEmpty()) {
+                final String skuLabel = "discovery.goveelan.govee-light." + sku;
+                if (bundle != null) {
+                    productName = i18nProvider.getText(bundle, skuLabel, sku, Locale.getDefault());
+                }
+            } else {
+                sku = "unknown";
+                productName = "unknown";
+                logger.warn("Empty SKU (product name) received during discovery - device may not work");
+            }
+
+            if (macAddress.isEmpty()) {
+                macAddress = "unknown";
+                logger.warn("Empty Mac Address received during discovery - device may not work");
+            }
+        }
 
         Map<String, Object> properties = new HashMap<>(3);
-        properties.put(GoveeLanConfiguration.IP_ADDRESS, ipAddress);
-        properties.put(GoveeLanConfiguration.DEVICE_TYPE, deviceType);
-        properties.put(GoveeLanConfiguration.MAC_ADDRESS, macAddress);
+        properties.put(GoveeLanBindingConstants.IP_ADDRESS, ipAddress);
+        properties.put(GoveeLanBindingConstants.DEVICE_TYPE, sku);
+        properties.put(GoveeLanBindingConstants.MAC_ADDRESS, macAddress);
+        properties.put(GoveeLanBindingConstants.PRODUCT_NAME, (productName != null) ? productName : sku);
 
         return properties;
     }

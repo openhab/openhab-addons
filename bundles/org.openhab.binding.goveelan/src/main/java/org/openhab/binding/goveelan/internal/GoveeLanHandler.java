@@ -31,7 +31,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.goveelan.internal.model.Color;
+import org.openhab.binding.goveelan.internal.model.ColorData;
+import org.openhab.binding.goveelan.internal.model.GenericGoveeMessage;
+import org.openhab.binding.goveelan.internal.model.GenericGoveeMsg;
 import org.openhab.binding.goveelan.internal.model.StatusMessage;
+import org.openhab.binding.goveelan.internal.model.ValueData;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -80,26 +84,15 @@ public class GoveeLanHandler extends BaseThingHandler {
     /*
      * Messages to be sent to the Govee Devices
      */
-    private static final String LIGHT_OFF = "{\"msg\": {\"cmd\": \"turn\", \"data\": {\"value\": \"0\"}}}";
+    private static final Gson GSON = new Gson();
+
+    private static final String LIGHT_OFF = GSON
+            .toJson(new GenericGoveeMessage(new GenericGoveeMsg("turn", new ValueData(0))));
+
     // turning on via cmd-turn and value = 1 doesn't work, so let's use the brightness command
-    private static final String LIGHT_ON = """
-            {"msg": {"cmd": "brightness", "data": {"value": "100"}}}
-            """;
-    private static final String LIGHT_COLOR = """
-            {
-              "msg" : {
-                "cmd":"colorwc",
-                "data": {
-                  "color" : {
-                    "r" : %d,
-                    "g" : %d,
-                    "b":  %d
-                  },
-                  "colorTemInKelvin" : %d
-                }
-              }
-            }
-            """;
+    private static final String LIGHT_ON = GSON
+            .toJson(new GenericGoveeMessage(new GenericGoveeMsg("brightness", new ValueData(100))));
+
     private static final String LIGHT_BRIGHTNESS = """
             {
               "msg":{
@@ -136,6 +129,7 @@ public class GoveeLanHandler extends BaseThingHandler {
     private static ScheduledFuture<?> refreshStatusJob; // device response receiver job
     @Nullable
     private ScheduledFuture<?> triggerStatusJob; // send device status update job
+    private GoveeLanConfiguration goveeLanConfiguration = new GoveeLanConfiguration();
 
     /*
      * Common Receiver job for the status answers of the devices
@@ -144,7 +138,6 @@ public class GoveeLanHandler extends BaseThingHandler {
         return refreshJobRunning && THING_HANDLERS.isEmpty();
     }
 
-    public static final Gson GSON = new Gson();
     private static final Runnable REFRESH_STATUS_RECEIVER = () -> {
         final Logger LOGGER = LoggerFactory.getLogger(GoveeLanHandler.class);
         /*
@@ -164,7 +157,7 @@ public class GoveeLanHandler extends BaseThingHandler {
             return;
         }
 
-        GoveeLanHandler thingHandler = null;
+        GoveeLanHandler thingHandler;
         try (MulticastSocket socket = new MulticastSocket(RECEIVEFROMDEVICE_PORT)) {
             byte[] buffer = new byte[10240];
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -185,16 +178,17 @@ public class GoveeLanHandler extends BaseThingHandler {
             LOGGER.debug("updating status for thing {} ", thingHandler.getThing().getLabel());
             LOGGER.trace("Response from {} = {}", deviceIPAddress, response);
 
-            if (response != null && !response.isEmpty()) {
+            if (!response.isEmpty()) {
                 try {
                     StatusMessage statusMessage = GSON.fromJson(response, StatusMessage.class);
                     thingHandler.updateDeviceState(statusMessage);
                 } catch (JsonSyntaxException jse) {
-                    thingHandler.updateStatus(ThingStatus.OFFLINE);
+                    thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            jse.getMessage());
                 }
             } else {
-                thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/error.offline.ip-address.emptyResponse");
+                thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/error.offline.communication-error.empty-response");
             }
             if (!thingHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 thingHandler.updateStatus(ThingStatus.ONLINE);
@@ -224,8 +218,7 @@ public class GoveeLanHandler extends BaseThingHandler {
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.couldNotQueryDevice [\""
-                            + thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IP_ADDRESS) + "\"]");
+                    "@text/error.could-not-query-device [\"" + goveeLanConfiguration.hostname + "\"]");
         }
     };
 
@@ -235,14 +228,15 @@ public class GoveeLanHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        GoveeLanConfiguration goveeLanConfiguration = getConfigAs(GoveeLanConfiguration.class);
+        goveeLanConfiguration = getConfigAs(GoveeLanConfiguration.class);
 
-        final Object ipAdress = getThing().getConfiguration().getProperties().get(GoveeLanConfiguration.IP_ADDRESS);
-        if (ipAdress != null) {
-            THING_HANDLERS.put(ipAdress.toString(), this);
+        final String ipAddress = goveeLanConfiguration.hostname;
+        if (ipAddress.isEmpty()) {
+            THING_HANDLERS.put(ipAddress, this);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.offline.ip-address.missing");
+            return;
         }
         if (!THING_HANDLERS.isEmpty()) {
             startRefreshStatusJob();
@@ -274,7 +268,7 @@ public class GoveeLanHandler extends BaseThingHandler {
      */
     public static void startRefreshStatusJob() {
         if (refreshStatusJob == null) {
-            refreshStatusJob = ThreadPoolManager.getScheduledPool("thingHandler")
+            refreshStatusJob = ThreadPoolManager.getScheduledPool("goveeThingHandler")
                     .scheduleWithFixedDelay(REFRESH_STATUS_RECEIVER, 100, 1000, TimeUnit.MILLISECONDS);
         }
     }
@@ -283,11 +277,14 @@ public class GoveeLanHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
 
-        String ipAddress = thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IP_ADDRESS).toString();
-        assert triggerStatusJob != null;
-        triggerStatusJob.cancel(true);
-        triggerStatusJob = null;
-        THING_HANDLERS.remove(ipAddress);
+        if (triggerStatusJob != null) {
+            triggerStatusJob.cancel(true);
+            triggerStatusJob = null;
+        }
+        if (!goveeLanConfiguration.hostname.isEmpty()) {
+            THING_HANDLERS.remove(goveeLanConfiguration.hostname);
+        }
+
         if (THING_HANDLERS.isEmpty()) {
             stopRefreshStatusJob();
         }
@@ -309,12 +306,16 @@ public class GoveeLanHandler extends BaseThingHandler {
                     case COLOR:
                         if (command instanceof HSBType hsbCommand) {
                             int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
-                            send(String.format(GoveeLanHandler.LIGHT_COLOR, rgb[0], rgb[1], rgb[2], 0));
+                            GenericGoveeMsg lightColor = new GenericGoveeMsg("colorwc",
+                                    new ColorData(new Color(rgb[0], rgb[1], rgb[2]), 0));
+                            send(GSON.toJson(lightColor));
                         }
                         break;
                     case COLOR_TEMPERATURE_ABS:
                         if (command instanceof QuantityType quantity) {
-                            send(String.format(GoveeLanHandler.LIGHT_COLOR, 0, 0, 0, quantity.longValue()));
+                            GenericGoveeMsg lightColor = new GenericGoveeMsg("colorwc",
+                                    new ColorData(new Color(0, 0, 0), quantity.intValue()));
+                            send(GSON.toJson(lightColor));
                         }
                         break;
                     case BRIGHTNESS:
@@ -329,8 +330,7 @@ public class GoveeLanHandler extends BaseThingHandler {
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.couldNotQueryDevice [\""
-                            + thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IP_ADDRESS) + "\"]");
+                    "@text/error.could-not-query-device [\"" + goveeLanConfiguration.hostname + "\"]");
         }
     }
 
@@ -363,10 +363,8 @@ public class GoveeLanHandler extends BaseThingHandler {
         socket.setReuseAddress(true);
         byte[] data = message.getBytes();
 
-        final String hostname = thing.getConfiguration().getProperties().get(GoveeLanConfiguration.IP_ADDRESS)
-                .toString();
-        LOGGER.trace("Sending {} to {}", message, hostname);
-        InetAddress address = InetAddress.getByName(hostname);
+        InetAddress address = InetAddress.getByName(goveeLanConfiguration.hostname);
+        LOGGER.trace("Sending {} to {}", message, goveeLanConfiguration.hostname);
         DatagramPacket packet = new DatagramPacket(data, data.length, address, SENDTODEVICE_PORT);
         socket.send(packet);
         socket.close();

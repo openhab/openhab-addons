@@ -88,9 +88,9 @@ To be able to use the device with the LAN API, the following needs to be done (a
 + Start the Govee APP and add / discover the device (via Bluetooth) as described by the vendor manual
 Go to the settings page of the device 
 ![govee device settings](doc/device-settings.png)
-+ Note that it may take several(!) minutes until this setting comes up
-+ Switch on the LAN-Control setting
-+ Now the device can be used with openHAB
++ Note that it may take several(!) minutes until this setting comes up.
++ Switch on the LAN-Control setting.
++ Now the device can be used with openHAB.
 + The easiest way is then to scan the devices via the SCAN button in the thing section of that binding
 
 ## Thing Configuration
@@ -101,8 +101,6 @@ One possibility is to look for the MAC address in the Govee app and then looking
 ```
 arp -a | grep "MAC_ADDRESS"
 ```
-
-### Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|

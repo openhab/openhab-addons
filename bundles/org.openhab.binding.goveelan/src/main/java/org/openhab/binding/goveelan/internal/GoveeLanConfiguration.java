@@ -15,15 +15,13 @@ package org.openhab.binding.goveelan.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link GoveeLanConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link GoveeLanConfiguration} contains thing values that are used by the Thing Handler
  *
  * @author Stefan Höhn - Initial contribution
  */
 @NonNullByDefault
 public class GoveeLanConfiguration {
-    public static final String IP_ADDRESS = "hostname";
-    public static final String MAC_ADDRESS = "macAddress";
-    public static final String DEVICE_TYPE = "deviceType";
-    public static final String PRODUCT_NAME = "productName";
+
+    public String hostname = "";
     public int refreshInterval = 2; // in seconds
 }
