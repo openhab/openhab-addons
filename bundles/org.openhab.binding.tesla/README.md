@@ -92,7 +92,7 @@ Additionally, these advanced channels are available (not all are available on al
 |---------------------------|--------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------|
 | destinationname           | String                   | Route destination             | Name of the destination                                                                                          |
 | destinationlocation       | Location                 | Route location                | Location of the destination                                                                                      |
-| distancetoarrival         | Number:Length            | Distance to arrival           | Distance to drive to the destination                                                                             |
+| distancetoarrival         | Number:Length            | Distance to arrival           | Distance to drive to the destination (in miles)                                                                  |
 | minutestoarrival          | Number:Time              | Minutes to arrival            | Minutes to drive to the destination                                                                              |
 | trafficminutesdelay       | Number:Time              | Traffic delay                 | Minutes of delay due to traffic                                                                                  |
 | autoparkstate             | String                   | Autopark State                | Undocumented / To be defined                                                                                     |
