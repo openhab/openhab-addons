@@ -50,7 +50,7 @@ The following channels are available:
 | programDescription | String               | The description of the current TV program (ReadOnly).                                                                                                           |
 | programRating      | String               | The TV parental guideline rating of the current TV program (ReadOnly).                                                                                          |
 | power              | Switch               | Controls the power for the TV.                                                                                                                                  |
-| powerState         | String               | The current power state for the TV.                                                                                                                             |
+| powerState         | String               | The current power state for the TV. (ReadOnly - ie PowerOn, DisplayOff, Ready, etc.)                                                                            |
 
 Some Notes:
 

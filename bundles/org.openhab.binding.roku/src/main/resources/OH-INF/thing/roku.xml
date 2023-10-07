@@ -231,10 +231,16 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="powerState">
+	<channel-type id="powerState" advanced="true">
 		<item-type>String</item-type>
 		<label>Power State</label>
 		<description>Power State of the TV</description>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="PowerOn">Power On</option>
+				<option value="DisplayOff">Display Off</option>
+				<option value="Ready">Ready</option>
+			</options>
+		</state>
 	</channel-type>
 </thing:thing-descriptions>
