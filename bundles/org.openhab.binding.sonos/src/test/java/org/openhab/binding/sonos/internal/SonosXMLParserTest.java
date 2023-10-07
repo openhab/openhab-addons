@@ -104,16 +104,16 @@ public class SonosXMLParserTest {
         SonosEntry sonosEntry = new SonosEntry("1", "Can't Buy Me Love", "0", "A Hard Day's Night", "", "",
                 "&gt;object.item.audioItem.musicTrack&lt;", "");
         String expected = """
-                <DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/"
-                           xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"
-                           xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/"
-                           xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">
-                    <item id="1" parentID="0" restricted="true">
-                        <dc:title>Can&apos;t Buy Me Love</dc:title>
-                        <upnp:class>&gt;object.item.audioItem.musicTrack&lt;</upnp:class>
-                        <desc id="cdudn" nameSpace="urn:schemas-rinconnetworks-com:metadata-1-0/">RINCON_AssociatedZPUDN</desc>
-                    </item>
-                </DIDL-Lite>
+                <DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" \
+                xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" \
+                xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/" \
+                xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">\
+                <item id="1" parentID="0" restricted="true">\
+                <dc:title>Can&apos;t Buy Me Love</dc:title>\
+                <upnp:class>&gt;object.item.audioItem.musicTrack&lt;</upnp:class>\
+                <desc id="cdudn" nameSpace="urn:schemas-rinconnetworks-com:metadata-1-0/">RINCON_AssociatedZPUDN</desc>\
+                </item>\
+                </DIDL-Lite>\
                 """;
         String actual = SonosXMLParser.compileMetadataString(sonosEntry);
         assertEquals(expected, actual);

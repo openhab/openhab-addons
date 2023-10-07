@@ -51,16 +51,16 @@ public class SonosXMLParser {
     static final Logger LOGGER = LoggerFactory.getLogger(SonosXMLParser.class);
 
     private static final String METADATA_FORMAT_PATTERN = """
-            <DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/"
-                       xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"
-                       xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/"
-                       xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">
-                <item id="{0}" parentID="{1}" restricted="true">
-                    <dc:title>{2}</dc:title>
-                    <upnp:class>{3}</upnp:class>
-                    <desc id="cdudn" nameSpace="urn:schemas-rinconnetworks-com:metadata-1-0/">{4}</desc>
-                </item>
-            </DIDL-Lite>
+            <DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" \
+            xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" \
+            xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/" \
+            xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">\
+            <item id="{0}" parentID="{1}" restricted="true">\
+            <dc:title>{2}</dc:title>\
+            <upnp:class>{3}</upnp:class>\
+            <desc id="cdudn" nameSpace="urn:schemas-rinconnetworks-com:metadata-1-0/">{4}</desc>\
+            </item>\
+            </DIDL-Lite>\
             """;
 
     private enum Element {
