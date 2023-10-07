@@ -194,7 +194,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     /**
      * send multiple "set_device_info" commands to device
      *
-     * @param map HashMap<String, Object> (name, value of parameter)
+     * @param map {@code HashMap<String, Object> (name, value of parameter)}
      */
     public void sendDeviceCommands(HashMap<String, Object> map) {
         sendDeviceCommands(DEVICE_CMD_SETINFO, map);
@@ -204,7 +204,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      * send multiple commands to device
      *
      * @param method Method command belongs to
-     * @param map HashMap<String, Object> (name, value of parameter)
+     * @param map {@code HashMap<String, Object> (name, value of parameter)}
      */
     public void sendDeviceCommands(String method, HashMap<String, Object> map) {
         long now = System.currentTimeMillis();

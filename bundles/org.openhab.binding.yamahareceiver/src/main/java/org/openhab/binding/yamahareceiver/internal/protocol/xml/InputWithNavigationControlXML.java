@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
  * other inputs are using the same way of navigating through menus. A menu on Yamaha AVRs
  * is hierarchically organised. Entries are divided into pages with 8 elements per page.
  *
- * The XML nodes <List_Control> and <List_Info> are used.
+ * The XML nodes {@code <List_Control>} and {@code <List_Info>} are used.
  *
  * In contrast to other protocol classes an object of this type will store state information,
  * because it caches the received XML information of the updateNavigationState(). This may change
