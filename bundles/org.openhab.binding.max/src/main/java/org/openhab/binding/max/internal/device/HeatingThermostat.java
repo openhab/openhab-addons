@@ -20,7 +20,7 @@ import java.util.Date;
 /**
  * MAX! Heating thermostat and Heating thermostat+ .
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  */
 public class HeatingThermostat extends Device {

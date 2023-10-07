@@ -21,7 +21,7 @@ import org.openhab.binding.max.internal.device.ThermostatModeType;
 /**
  * {@link SCommand} for setting MAX! thermostat temperature and mode.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 update + simplification
  */
 @NonNullByDefault
