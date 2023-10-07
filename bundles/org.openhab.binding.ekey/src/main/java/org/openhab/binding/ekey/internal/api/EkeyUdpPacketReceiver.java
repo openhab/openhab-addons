@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This Class provides the DatagramSocket that listens for eKey packets on the network
- * This will run in a thread and can be interrupted by calling <code>stopListener()<code>
+ * This will run in a thread and can be interrupted by calling <code>stopListener()</code>
  * Before starting the thread initialization is required (mode, ip, port and deliminator)
  *
  * @author Hans-Jörg Merk - Initial contribution

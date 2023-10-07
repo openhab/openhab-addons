@@ -51,7 +51,7 @@ public class ExpiringCacheAsync<V> {
      *
      * @param expiry the duration in milliseconds for how long the value stays valid. Must be greater than 0.
      * @param cacheUpdater The cache will use this callback if a new value is needed. Must not be null.
-     * @throws IllegalArgumentException For an expire value <=0 or a null cacheUpdater.
+     * @throws IllegalArgumentException For an expire value {@literal <=0} or a null cacheUpdater.
      */
     public ExpiringCacheAsync(long expiry, @Nullable ExpiringCacheUpdate cacheUpdater) throws IllegalArgumentException {
         if (expiry <= 0) {

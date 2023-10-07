@@ -33,7 +33,7 @@ public interface NhcThermostatEvent {
      * @param setpoint the setpoint temperature in 0.1°C multiples
      * @param mode thermostat mode 0 = day, 1 = night, 2 = eco, 3 = off, 4 = cool, 5 = prog1, 6 = prog2, 7 = prog3
      * @param overrule the overrule temperature in 0.1°C multiples
-     * @param demand 0 if no demand, > 0 if heating, < 0 if cooling
+     * @param demand 0 if no demand, > 0 if heating, &lt; 0 if cooling
      */
     void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand);
 

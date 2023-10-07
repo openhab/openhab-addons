@@ -271,7 +271,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
      * {@inheritDoc}
      *
      * Stops the discovery scan. We set {@link #scanning} to false (allowing the listening threads to end naturally
-     * within {@link #TIMEOUT) * 5 time then shutdown the {@link #executorService}
+     * within {@link #TIMEOUT_MS} * 5 time then shutdown the {@link #executorService}
      */
     @Override
     protected synchronized void stopScan() {
