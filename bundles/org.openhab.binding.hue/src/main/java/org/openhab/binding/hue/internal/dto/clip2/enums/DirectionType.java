@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum DirectionType {
     CLOCK_WISE,
-    COUNTER_CLOCK_WISE;
+    COUNTER_CLOCK_WISE
 }

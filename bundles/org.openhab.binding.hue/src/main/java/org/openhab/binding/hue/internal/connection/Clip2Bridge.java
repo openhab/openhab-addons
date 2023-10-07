@@ -341,7 +341,7 @@ public class Clip2Bridge implements Closeable {
         RESET,
         IDLE,
         GO_AWAY,
-        UNAUTHORIZED;
+        UNAUTHORIZED
     }
 
     /**
@@ -447,7 +447,7 @@ public class Clip2Bridge implements Closeable {
     /**
      * Enum showing the online state of the session connection.
      */
-    private static enum State {
+    private enum State {
         /**
          * Session closed
          */
@@ -459,7 +459,7 @@ public class Clip2Bridge implements Closeable {
         /**
          * Session open for HTTP calls and actively receiving SSE events
          */
-        ACTIVE;
+        ACTIVE
     }
 
     /**
