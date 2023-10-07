@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Container class for enums related to Daikin Airbase A/C systems
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
- * @author Paul Smedley <paul@smedley.id.au> - Mods for Daikin Airbase Units
+ * @author Tim Waterhouse - Initial contribution
+ * @author Paul Smedley - Mods for Daikin Airbase Units
  *
  */
 @NonNullByDefault

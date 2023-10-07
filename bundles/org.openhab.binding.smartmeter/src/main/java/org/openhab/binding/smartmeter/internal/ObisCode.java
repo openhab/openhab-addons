@@ -23,7 +23,8 @@ import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 /**
  * Represents an OBIS code.
  *
- * @see For more information see https://de.wikipedia.org/wiki/OBIS-Kennzahlen
+ * @see <a href="https://de.wikipedia.org/wiki/OBIS-Kennzahlen">https://de.wikipedia.org/wiki/OBIS-Kennzahlen</a> for
+ *      more information
  * @author Matthias Steigenberger - Initial contribution
  *
  */

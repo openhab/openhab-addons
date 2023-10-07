@@ -213,7 +213,7 @@ public class GreeAirDevice {
 
     /**
      * SwingLfRig: controls the swing mode of the horizontal air blades (available on limited number of devices, e.g.
-     * some Cooper & Hunter units - thanks to mvmn)
+     * some Cooper and Hunter units - thanks to mvmn)
      *
      * 0: default
      * 1: full swing

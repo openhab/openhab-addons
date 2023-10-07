@@ -15,8 +15,10 @@ package org.openhab.binding.volumio.internal.mapping;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @see https://github.com/volumio/Volumio2-UI/blob/master/src/app/services/player.service.js
- * @see https://github.com/volumio/Volumio2/blob/master/app/plugins/user_interface/websocket/index.js
+ * @see <a href="https://github.com/volumio/Volumio2-UI/blob/master/src/app/services/player.service.js">
+ *      https://github.com/volumio/Volumio2-UI/blob/master/src/app/services/player.service.js</a>
+ * @see <a href="https://github.com/volumio/Volumio2/blob/master/app/plugins/user_interface/websocket/index.js">
+ *      https://github.com/volumio/Volumio2/blob/master/app/plugins/user_interface/websocket/index.js</a>
  *
  * @author Patrick Sernetz - Initial Contribution
  * @author Chris Wohlbrecht - Adaption for openHAB 3

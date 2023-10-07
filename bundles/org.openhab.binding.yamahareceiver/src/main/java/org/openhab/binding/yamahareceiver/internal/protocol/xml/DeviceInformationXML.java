@@ -55,6 +55,9 @@ public class DeviceInformationXML implements DeviceInformation {
      * We need that called only once. Will give us name, id, version and zone information.
      *
      * Example:
+     * 
+     * <pre>
+     * {@code
      * <Feature_Existence>
      * <Main_Zone>1</Main_Zone>
      * <Zone_2>1</Zone_2>
@@ -77,6 +80,8 @@ public class DeviceInformationXML implements DeviceInformation {
      * <iPod_USB>1</iPod_USB>
      * <AirPlay>1</AirPlay>
      * </Feature_Existence>
+     * }
+     * </pre>
      *
      * @throws IOException
      */

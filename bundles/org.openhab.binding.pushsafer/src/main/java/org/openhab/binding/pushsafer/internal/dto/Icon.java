@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.core.ParameterOption;
 
 /**
- * The {@link Icons} is the Java class used to map the JSON response to a Pushsafer API request..
+ * The {@link Icon}s is the Java class used to map the JSON response to a Pushsafer API request.
  *
  * @author Kevin Siml - Initial contribution, forked from Christoph Weitkamp
  */

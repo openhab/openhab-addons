@@ -129,7 +129,7 @@ import com.google.gson.stream.MalformedJsonException;
  * <pre>
  * {
  *     &#64;code
- *     RuntimeTypeAdapterFactory<Shape> shapeAdapterFactory = RuntimeTypeAdapterFactory.of(Shape.class, "type");
+ *     RuntimeTypeAdapterFactory&lt;Shape> shapeAdapterFactory = RuntimeTypeAdapterFactory.of(Shape.class, "type");
  * }
  * </pre>
  *
@@ -159,7 +159,7 @@ import com.google.gson.stream.MalformedJsonException;
  * <pre>
  * {
  *     &#64;code
- *     RuntimeTypeAdapterFactory<Shape> shapeAdapterFactory = RuntimeTypeAdapterFactory.of(Shape.class)
+ *     RuntimeTypeAdapterFactory&lt;Shape> shapeAdapterFactory = RuntimeTypeAdapterFactory.of(Shape.class)
  *             .registerSubtype(Rectangle.class).registerSubtype(Circle.class).registerSubtype(Diamond.class);
  * }
  * </pre>

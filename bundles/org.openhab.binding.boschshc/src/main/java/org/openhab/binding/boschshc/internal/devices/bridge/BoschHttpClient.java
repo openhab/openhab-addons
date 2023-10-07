@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * HTTP client using own context with private & Bosch Certs
+ * HTTP client using own context with private and Bosch Certs
  * to pair and connect to the Bosch Smart Home Controller.
  *
  * @author Gerd Zanker - Initial contribution

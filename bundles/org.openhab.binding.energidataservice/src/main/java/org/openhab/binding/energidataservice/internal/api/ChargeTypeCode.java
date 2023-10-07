@@ -16,10 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Charge type code for DatahubPricelist dataset.
- * See {@link https://www.energidataservice.dk/tso-electricity/DatahubPricelist#metadata-info}}
+ *
  * These codes are defined by the individual grid companies.
  * For example, N1 uses "CD" for "Nettarif C" and "CD R" for "Rabat på nettarif N1 A/S".
  *
+ * @see <a href="https://www.energidataservice.dk/tso-electricity/DatahubPricelist#metadata-info">
+ *      https://www.energidataservice.dk/tso-electricity/DatahubPricelist#metadata-info</a>
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault

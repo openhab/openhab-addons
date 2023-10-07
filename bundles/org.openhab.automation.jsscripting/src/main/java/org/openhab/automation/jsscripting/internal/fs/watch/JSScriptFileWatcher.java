@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Monitors <openHAB-conf>/automation/js for Javascript files, but not libraries
+ * Monitors {@code <openHAB-conf>/automation/js} for Javascript files, but not libraries
  *
  * @author Jonathan Gilbert - Initial contribution
  * @author Jan N. Klug - Refactored to new WatchService

@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Encrypts communication between openhab & xiaomi bridge (required by xiaomi).
+ * Encrypts communication between openhab and xiaomi bridge (required by xiaomi).
  *
  * @author Ondřej Pečta - Initial contribution to Xiaomi MiHome Binding for OH 1.x
  * @author Dieter Schmidt - Refactor logger

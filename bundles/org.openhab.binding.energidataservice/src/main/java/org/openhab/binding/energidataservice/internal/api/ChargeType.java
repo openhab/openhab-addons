@@ -16,8 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Charge type for DatahubPricelist dataset.
- * See {@link https://www.energidataservice.dk/tso-electricity/DatahubPricelist#metadata-info}}
- * 
+ *
+ * @see <a href="https://www.energidataservice.dk/tso-electricity/DatahubPricelist#metadata-info">
+ *      https://www.energidataservice.dk/tso-electricity/DatahubPricelist#metadata-info</a>
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault

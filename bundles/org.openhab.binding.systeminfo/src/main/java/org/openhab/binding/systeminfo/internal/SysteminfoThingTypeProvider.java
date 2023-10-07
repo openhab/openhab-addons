@@ -240,7 +240,8 @@ public class SysteminfoThingTypeProvider extends AbstractStorageBasedTypeProvide
     /**
      * Store the channel configurations for a thing, to be able to restore them later when the thing handler for the
      * same thing gets recreated with a new thing type. This is necessary because the
-     * {@link BaseThingHandler##changeThingType()} method reverts channel configurations to their defaults.
+     * {@link org.openhab.core.thing.binding.BaseThingHandler#changeThingType()} method reverts channel configurations
+     * to their defaults.
      *
      * @param thing
      */

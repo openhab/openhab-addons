@@ -19,7 +19,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 import org.openhab.core.library.types.StringType;
 
 /**
- * StringType <-> WSEnumValue converter.
+ * StringType {@literal <->} WSEnumValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

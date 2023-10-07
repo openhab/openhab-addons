@@ -31,6 +31,7 @@ public class AbstractHueOSGiTestParent extends JavaOSGiTest {
      *
      * @param thing the thing
      * @param clazz type of thing handler
+     * @param <T> a ThingHandler or subtype
      * @return the thing handler
      */
     protected <T extends ThingHandler> T getThingHandler(Thing thing, Class<T> clazz) {

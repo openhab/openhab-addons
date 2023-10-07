@@ -206,7 +206,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     /**
      * Stop scheduler
      *
-     * @param scheduler ScheduledFeature<?> which schould be stopped
+     * @param scheduler {@code ScheduledFeature<?>} which schould be stopped
      */
     protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
         if (scheduler != null) {

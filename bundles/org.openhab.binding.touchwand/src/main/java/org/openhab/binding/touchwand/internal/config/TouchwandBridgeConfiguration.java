@@ -15,7 +15,7 @@ package org.openhab.binding.touchwand.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration class for {@link TouchWandBridgeHandler}.
+ * Configuration class for {@link org.openhab.binding.touchwand.internal.TouchWandBridgeHandler}.
  *
  * @author Roie Geron - Initial contribution
  */

@@ -17,7 +17,7 @@ package org.openhab.binding.max.internal.exceptions;
  * but the processor is not yet ready to handle new lines because there is already a message that
  * has be pulled before.
  *
- * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
+ * @author Christian Rockrohr - Initial contribution
  */
 public class MessageIsWaitingException extends Exception {
 

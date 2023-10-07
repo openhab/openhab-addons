@@ -62,13 +62,13 @@ import org.xml.sax.InputSource;
  * binding allows openHAB to both monitor and control a pool system through
  * these controllers.
  *
- * @see <a href="http://Autelis.com">http://autelis.com</a>
- * @see <a href="http://www.autelis.com/wiki/index.php?title=Pool_Control_HTTP_Command_Reference"</a> for Jandy API
- * @see <a href="http://www.autelis.com/wiki/index.php?title=Pool_Control_(PI)_HTTP_Command_Reference"</a> for Pentair
- *      API
+ * The {@link AutelisHandler} is responsible for handling commands, which
+ * are sent to one of the channels.
  *
- *      The {@link AutelisHandler} is responsible for handling commands, which
- *      are sent to one of the channels.
+ * @see <a href="http://Autelis.com">http://autelis.com</a>
+ * @see <a href="http://www.autelis.com/wiki/index.php?title=Pool_Control_HTTP_Command_Reference">for Jandy API</a>
+ * @see <a href="http://www.autelis.com/wiki/index.php?title=Pool_Control_(PI)_HTTP_Command_Reference">for Pentair
+ *      API</a>
  *
  * @author Dan Cunningham - Initial contribution
  * @author Svilen Valkanov - Replaced Apache HttpClient with Jetty

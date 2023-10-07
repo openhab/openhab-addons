@@ -20,7 +20,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
  * DTO that contains an API reference element.
  *
  * The V2 API is set up in such a way that all resources of the same type are grouped together under the
- * /resource/<resourcetype> endpoint, but all those resources commonly reference each other, which is done in a
+ * {@code /resource/<resourcetype>} endpoint, but all those resources commonly reference each other, which is done in a
  * standardized way by indicating the resource type (rtype) and resource id (rid).
  *
  * A typical usage is in a single physical device that hosts multiple services. An existing example is the Philips Hue

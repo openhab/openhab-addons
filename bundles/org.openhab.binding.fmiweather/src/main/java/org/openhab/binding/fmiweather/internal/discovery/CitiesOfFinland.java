@@ -21,9 +21,9 @@ import org.openhab.binding.fmiweather.internal.client.Location;
 /**
  * Cities of Finland
  *
- * Originally parsed from (not available any more)
- * https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::hirlam::surface::cities::multipointcoverage
- * 
+ * Originally parsed from <a href=
+ * "https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::hirlam::surface::cities::multipointcoverage">
+ * (not available any more)</a>
  *
  * Using piece of code similar to below:
  *

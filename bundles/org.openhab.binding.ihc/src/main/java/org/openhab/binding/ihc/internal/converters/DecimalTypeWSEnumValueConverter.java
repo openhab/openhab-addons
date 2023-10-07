@@ -18,7 +18,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 import org.openhab.core.library.types.DecimalType;
 
 /**
- * DecimalType <-> WSEnumValue converter.
+ * DecimalType {@literal <->} WSEnumValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

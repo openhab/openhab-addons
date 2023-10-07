@@ -177,7 +177,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     /**
      * Stops a scheduler.
      *
-     * @param scheduler ScheduledFeature<?> which should be stopped
+     * @param scheduler {@code ScheduledFeature<?>} which should be stopped
      */
     protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
         if (scheduler != null) {

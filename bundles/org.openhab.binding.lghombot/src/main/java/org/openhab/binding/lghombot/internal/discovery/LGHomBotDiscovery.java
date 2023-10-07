@@ -268,7 +268,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * {@inheritDoc}
      *
      * Stops the discovery scan. We set {@link #scanning} to false (allowing the listening threads to end naturally
-     * within {@link #TIMEOUT_MS) * {@link #SCAN_THREADS} time then shutdown the {@link #executorService}
+     * within {@link #TIMEOUT_MS} * {@link #SCAN_THREADS} time then shutdown the {@link #executorService}
      */
     @Override
     protected synchronized void stopScan() {

@@ -37,7 +37,8 @@ import jcifs.netbios.NbtAddress;
 import jcifs.smb.SmbFile;
 
 /**
- * Autodiscovery for AirVisual Node by searching for a host advertised with the NetBIOS name 'AVISUAL-<SerialNumber>'.
+ * Autodiscovery for AirVisual Node by searching for a host advertised with the NetBIOS name
+ * {@code 'AVISUAL-<SerialNumber>'}.
  *
  * @author Victor Antonovich - Initial contribution
  */

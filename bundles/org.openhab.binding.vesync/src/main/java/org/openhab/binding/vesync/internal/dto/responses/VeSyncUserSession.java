@@ -18,7 +18,7 @@ import com.google.gson.annotations.SerializedName;
  * Contains data about the logged in user - including the accountID and token's used
  * for authenticating other payload's.
  *
- * @see unit test - Result may not be in respone if not authenticated
+ * @implNote See unit test - Result may not be in respone if not authenticated
  *
  * @author David Goodyear - Initial contribution
  */

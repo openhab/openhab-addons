@@ -225,7 +225,7 @@ public class IAqualinkClient {
      * @param sessionID
      * @param auxID
      * @param lightValue
-     * @param subtype
+     * @param subType
      * @return
      * @throws IOException
      * @throws NotAuthorizedException
@@ -244,10 +244,10 @@ public class IAqualinkClient {
     /**
      * Sends an Auxiliary dimmer command
      *
-     * @param serialNumber
-     * @param sessionId
-     * @param auxId
-     * @param lightValue
+     * @param serial
+     * @param sessionID
+     * @param auxID
+     * @param level
      * @return
      * @throws IOException
      * @throws NotAuthorizedException

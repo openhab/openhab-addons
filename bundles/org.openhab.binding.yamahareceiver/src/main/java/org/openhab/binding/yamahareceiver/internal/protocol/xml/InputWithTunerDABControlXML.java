@@ -36,7 +36,7 @@ import org.w3c.dom.Node;
  *
  * Note that yamaha maintains separate presets for each band.
  *
- * The XML nodes <DAB><Play_Control><Band>FM</Band></Play_Control></DAB> are used.
+ * The XML nodes {@code <DAB><Play_Control><Band>FM</Band></Play_Control></DAB>} are used.
  *
  * No state will be saved in here, but in {@link DabBandState}, {@link PresetInfoState} and {@link PlayInfoState}
  * instead.

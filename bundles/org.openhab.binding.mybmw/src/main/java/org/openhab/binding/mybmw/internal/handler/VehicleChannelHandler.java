@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * The {@link VehicleChannelHandler} handles Channel updates
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
  */
 @NonNullByDefault
 public abstract class VehicleChannelHandler extends BaseThingHandler {

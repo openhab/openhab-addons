@@ -35,9 +35,9 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Christoph Weitkamp - Introduced UoM
- * @see based on the calculations of
- *      http://www.computus.de/mondphase/mondphase.htm azimuth/elevation and
- *      zodiac based on http://lexikon.astronomie.info/java/sunmoon/
+ * @implNote based on the calculations of
+ *           http://www.computus.de/mondphase/mondphase.htm azimuth/elevation and
+ *           zodiac based on http://lexikon.astronomie.info/java/sunmoon/
  */
 public class MoonCalc {
     private static final double NEW_MOON = 0;

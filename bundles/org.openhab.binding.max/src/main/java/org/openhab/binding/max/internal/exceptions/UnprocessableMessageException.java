@@ -16,7 +16,7 @@ package org.openhab.binding.max.internal.exceptions;
  * Will be thrown when there is an attempt to put a new message line into the message processor,
  * the processor detects a known message indicator, but the message could not be parsed correctly.
  *
- * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
+ * @author Christian Rockrohr - Initial contribution
  */
 public class UnprocessableMessageException extends Exception {
 

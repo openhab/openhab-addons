@@ -146,7 +146,7 @@ public class OwDiscoveryItem {
     }
 
     /**
-     * get Label "<thingtype> (<id>)"
+     * get Label {@code "<thingtype> (<id>)"}
      *
      * @return the thing label
      */

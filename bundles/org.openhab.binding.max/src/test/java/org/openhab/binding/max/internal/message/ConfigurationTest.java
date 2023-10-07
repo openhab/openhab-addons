@@ -24,7 +24,7 @@ import org.openhab.binding.max.internal.device.DeviceType;
 /**
  * Tests cases for {@link DeviceConfiguration}.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 Version and updates
  */
 @NonNullByDefault

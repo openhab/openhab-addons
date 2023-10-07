@@ -104,7 +104,7 @@ public class XMLConnection extends AbstractConnection {
     /**
      * Post the given xml message
      *
-     * @param message XML formatted message excluding < ?xml > or <YAMAHA_AV> tags.
+     * @param message XML formatted message excluding {@code <?xml>} or {@code <YAMAHA_AV>} tags.
      * @throws IOException
      */
     @Override
@@ -115,7 +115,7 @@ public class XMLConnection extends AbstractConnection {
     /**
      * Post the given xml message and return the response as string.
      *
-     * @param message XML formatted message excluding <?xml> or <YAMAHA_AV> tags.
+     * @param message XML formatted message excluding {@code <?xml>} or {@code <YAMAHA_AV>} tags.
      * @return Return the response as text or throws an exception if the connection failed.
      * @throws IOException
      */

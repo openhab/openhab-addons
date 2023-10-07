@@ -19,7 +19,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * pilight configuration object
  *
- * {@link http://www.pilight.org/development/api/#controller}
+ * @see <a href="https://manual.pilight.org/development/socket/index.html">
+ *      https://manual.pilight.org/development/socket/index.html</a>
  *
  * @author Jeroen Idserda - Initial contribution
  * @author Stefan Röllin - Port to openHAB 2 pilight binding

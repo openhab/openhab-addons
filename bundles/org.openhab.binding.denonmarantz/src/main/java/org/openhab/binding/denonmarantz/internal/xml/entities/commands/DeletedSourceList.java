@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Used to unmarshall <list> items of the <functiondelete> CommandRX.
+ * Used to unmarshall {@code <list>} items of the {@code <functiondelete>} CommandRX.
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  */

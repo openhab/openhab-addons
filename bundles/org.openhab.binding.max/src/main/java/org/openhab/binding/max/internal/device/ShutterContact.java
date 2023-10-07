@@ -17,7 +17,7 @@ import org.openhab.core.library.types.OpenClosedType;
 /**
  * MAX! Shutter contact device.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  */
 public class ShutterContact extends Device {

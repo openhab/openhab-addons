@@ -13,7 +13,6 @@
 package org.openhab.binding.ihc.internal.ws.services;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -442,7 +441,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
      *
      * @param timeoutInSeconds How many seconds to wait notifications.
      * @return List of received runtime value notifications.
-     * @throws SocketTimeoutException
      * @throws IhcExecption
      */
     public List<WSResourceValue> waitResourceValueNotifications(int timeoutInSeconds) throws IhcExecption {

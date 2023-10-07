@@ -21,7 +21,7 @@ import org.openhab.binding.max.internal.message.Message;
 /**
  * Base class for configuration provided by the MAX! Cube C Message.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  */
 public final class DeviceConfiguration {
 

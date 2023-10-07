@@ -47,7 +47,8 @@ import org.slf4j.LoggerFactory;
  *
  * Visonic does not provide a specification of the RS232 protocol and, thus,
  * the binding uses the available protocol specification given at the ​domoticaforum
- * http://www.domoticaforum.eu/viewtopic.php?f=68&t=6581
+ * <a href="http://www.domoticaforum.eu/viewtopic.php?f=68&t=6581">
+ * http://www.domoticaforum.eu/viewtopic.php?f=68&amp;t=6581</a>
  *
  * @author Laurent Garnier - Initial contribution
  */
@@ -122,7 +123,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * Constructor for TCP connection
      *
      * @param ip the IP address
-     * @param port TCP port number; default port is used if value <= 0
+     * @param port TCP port number; default port is used if value {@code <= 0}
      * @param panelType the panel type to be used when in standard mode
      * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
      * @param autoSyncTime true for automatic sync time

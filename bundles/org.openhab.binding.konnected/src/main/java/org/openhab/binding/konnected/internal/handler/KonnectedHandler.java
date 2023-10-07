@@ -104,8 +104,8 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     /**
-     * Process a {@link WebHookEvent} that has been received by the Servlet from a Konnected module with respect to a
-     * sensor event or status update request
+     * Process a {@link KonnectedModuleGson} that has been received by the Servlet from a Konnected module with respect
+     * to a sensor event or status update request
      *
      * @param event the {@link KonnectedModuleGson} event that contains the state and pin information to be processed
      */

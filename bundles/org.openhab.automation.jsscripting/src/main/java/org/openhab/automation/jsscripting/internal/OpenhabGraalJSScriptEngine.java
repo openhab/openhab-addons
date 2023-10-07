@@ -66,7 +66,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  * @author Dan Cunningham - Script injections
  * @author Florian Hotze - Create lock object for multi-thread synchronization; Inject the {@link JSRuntimeFeatures}
  *         into the JS context; Fix memory leak caused by HostObject by making HostAccess reference static; Switch to
- *         {@link Lock} for multi-thread synchronization; globals & openhab-js injection code caching
+ *         {@link Lock} for multi-thread synchronization; globals and openhab-js injection code caching
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
@@ -142,8 +142,8 @@ public class OpenhabGraalJSScriptEngine
     private final boolean injectionCachingEnabled;
 
     /**
-     * Creates an implementation of ScriptEngine (& Invocable), wrapping the contained engine, that tracks the script
-     * lifecycle and provides hooks for scripts to do so too.
+     * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
+     * that tracks the script lifecycle and provides hooks for scripts to do so too.
      */
     public OpenhabGraalJSScriptEngine(boolean injectionEnabled, boolean injectionCachingEnabled,
             JSScriptServiceUtil jsScriptServiceUtil, JSDependencyTracker jsDependencyTracker) {

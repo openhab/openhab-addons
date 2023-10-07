@@ -154,7 +154,7 @@ public class McdBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Should be used by C&S binding's things to obtain the bridge's access token
+     * Should be used by C&amp;S binding's things to obtain the bridge's access token
      * 
      * @return returns the access token as String
      */

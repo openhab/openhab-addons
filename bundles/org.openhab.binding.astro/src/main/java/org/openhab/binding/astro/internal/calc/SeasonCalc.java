@@ -22,7 +22,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * Calculates the seasons of the year.
  *
  * @author Gerhard Riegler - Initial contribution
- * @see based on the calculations of http://stellafane.org/misc/equinox.html
+ * @implNote based on the calculations of http://stellafane.org/misc/equinox.html
  */
 public class SeasonCalc {
     private int currentYear;

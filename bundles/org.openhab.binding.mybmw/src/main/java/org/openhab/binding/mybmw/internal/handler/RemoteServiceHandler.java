@@ -38,10 +38,11 @@ import com.google.gson.JsonSyntaxException;
 /**
  * The {@link RemoteServiceHandler} handles executions of remote services towards your Vehicle
  *
- * @see https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/remote_services.py
+ * @see <a href="https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/remote_services.py">
+ *      https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/remote_services.py</a>
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
  */
 @NonNullByDefault
 public class RemoteServiceHandler implements StringResponseCallback {

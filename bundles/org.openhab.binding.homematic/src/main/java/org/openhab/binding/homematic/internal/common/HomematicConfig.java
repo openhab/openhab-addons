@@ -360,7 +360,7 @@ public class HomematicConfig {
     }
 
     /**
-     * Returns the encoding that is suitable on requests to & responds from the Homematic gateway.
+     * Returns the encoding that is suitable on requests to and responds from the Homematic gateway.
      */
     public Charset getEncoding() {
         if (gatewayInfo != null && gatewayInfo.isHomegear()) {

@@ -18,7 +18,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 import org.openhab.core.library.types.DecimalType;
 
 /**
- * DecimalType <-> WSBooleanValue converter.
+ * DecimalType {@literal <->} WSBooleanValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

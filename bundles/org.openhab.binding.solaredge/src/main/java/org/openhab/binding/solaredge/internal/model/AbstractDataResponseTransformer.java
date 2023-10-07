@@ -120,8 +120,8 @@ abstract class AbstractDataResponseTransformer {
     }
 
     /**
-     * converts the value to QuantityType<Power> and puts it into the targetMap. If no value or unit is provided
-     * UnDefType.UNDEF will be used
+     * converts the value to {@code QuantityType<Power>} and puts it into the targetMap. If no value or unit is
+     * provided, UnDefType.UNDEF will be used
      *
      * @param targetMap result will be put into this map
      * @param channel channel to assign the value
@@ -137,8 +137,8 @@ abstract class AbstractDataResponseTransformer {
     }
 
     /**
-     * converts the value to QuantityType<Energy> and puts it into the targetMap. If no value or unit is provided
-     * UnDefType.UNDEF will be used
+     * converts the value to {@code QuantityType<Energy>} and puts it into the targetMap. If no value or unit is
+     * provided UnDefType.UNDEF will be used
      *
      * @param targetMap result will be put into this map
      * @param channel channel to assign the value
@@ -154,8 +154,8 @@ abstract class AbstractDataResponseTransformer {
     }
 
     /**
-     * converts the value to QuantityType<Energy> and puts it into the targetMap. If no value or unit is provided
-     * UnDefType.UNDEF will be used
+     * converts the value to {@code QuantityType<Energy>} and puts it into the targetMap. If no value or unit is
+     * provided, UnDefType.UNDEF will be used
      *
      * @param targetMap result will be put into this map
      * @param channel channel to assign the value
@@ -166,8 +166,8 @@ abstract class AbstractDataResponseTransformer {
     }
 
     /**
-     * converts the meter value to QuantityType<Energy> and puts it into the targetMap. If multiple meter value are
-     * provided a sum will be calculated. If no
+     * converts the meter value to {@code QuantityType<Energy>} and puts it into the targetMap. If multiple meter value
+     * are provided a sum will be calculated. If no
      * unit can be determined UnDefType.UNDEF will be used
      *
      * @param targetMap result will be put into this map

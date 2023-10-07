@@ -24,8 +24,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link DaikinBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Tim Waterhouse - Initial contribution
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  */
 @NonNullByDefault
 public class DaikinBindingConstants {

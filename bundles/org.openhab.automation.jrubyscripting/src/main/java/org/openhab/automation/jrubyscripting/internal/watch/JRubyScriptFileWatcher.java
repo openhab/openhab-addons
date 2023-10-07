@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Monitors <openHAB-conf>/automation/ruby for Ruby files, but not libraries in lib or gems
+ * Monitors {@code <openHAB-conf>/automation/ruby} for Ruby files, but not libraries in lib or gems
  *
  * @author Cody Cutrer - Initial contribution
  * @author Jan N. Klug - Refactored to new WatchService

@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ZoneHandler} is responsible for handling wired zones (i.e. REL & EXP messages).
+ * The {@link ZoneHandler} is responsible for handling wired zones (i.e. REL &amp; EXP messages).
  *
  * @author Bob Adair - Initial contribution
  * @author Bill Forsyth - Initial contribution

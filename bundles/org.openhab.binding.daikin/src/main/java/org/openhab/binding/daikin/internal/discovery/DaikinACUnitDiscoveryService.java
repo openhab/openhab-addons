@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Discovery service for Daikin AC units.
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Tim Waterhouse - Initial contribution
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  *
  */
 @Component(service = DiscoveryService.class, configurationPid = "discovery.daikin")

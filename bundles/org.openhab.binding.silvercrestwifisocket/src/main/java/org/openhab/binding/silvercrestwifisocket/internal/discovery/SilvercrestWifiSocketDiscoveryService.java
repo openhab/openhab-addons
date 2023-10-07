@@ -67,7 +67,7 @@ public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryServ
     /**
      * Constructor of the discovery service.
      *
-     * @throws IllegalArgumentException if the timeout < 0
+     * @throws IllegalArgumentException if the timeout {@literal < 0}
      */
     public SilvercrestWifiSocketDiscoveryService() throws IllegalArgumentException {
         super(SilvercrestWifiSocketBindingConstants.SUPPORTED_THING_TYPES_UIDS,

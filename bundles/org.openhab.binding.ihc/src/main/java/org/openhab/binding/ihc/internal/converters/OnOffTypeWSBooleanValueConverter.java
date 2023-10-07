@@ -18,7 +18,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 import org.openhab.core.library.types.OnOffType;
 
 /**
- * OnOffType <-> WSBooleanValue converter.
+ * OnOffType {@literal <->} WSBooleanValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

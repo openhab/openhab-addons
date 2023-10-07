@@ -116,7 +116,7 @@ public final class DateUtil {
      *
      * @return a string representing the local date and time object
      *
-     * @throws DateTimeException if an error occurs during printing
+     * @throws DateTimeParseException if an error occurs during printing
      */
     public static String format(LocalDateTime date, String pattern) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
@@ -133,7 +133,7 @@ public final class DateUtil {
      *
      * @return a string representing the date and time with timezone object
      *
-     * @throws DateTimeException if an error occurs during printing
+     * @throws DateTimeParseException if an error occurs during printing
      */
     public static String format(ZonedDateTime date, String pattern) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
@@ -153,7 +153,7 @@ public final class DateUtil {
      *
      * @return a string representing the range between the two local date and time objects
      *
-     * @throws DateTimeException if an error occurs during printing
+     * @throws DateTimeParseException if an error occurs during printing
      */
     public static String formatRange(LocalDateTime date1, LocalDateTime date2, String pattern) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
@@ -174,7 +174,7 @@ public final class DateUtil {
      *
      * @return a string representing the range between the two date and time with timezone objects
      *
-     * @throws DateTimeException if an error occurs during printing
+     * @throws DateTimeParseException if an error occurs during printing
      */
     public static String formatRange(ZonedDateTime date1, ZonedDateTime date2, String pattern) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);

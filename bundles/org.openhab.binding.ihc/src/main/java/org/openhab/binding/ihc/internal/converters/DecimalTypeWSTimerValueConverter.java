@@ -18,7 +18,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimerValue;
 import org.openhab.core.library.types.DecimalType;
 
 /**
- * DecimalType <-> WSTimerValue converter.
+ * DecimalType {@literal <->} WSTimerValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

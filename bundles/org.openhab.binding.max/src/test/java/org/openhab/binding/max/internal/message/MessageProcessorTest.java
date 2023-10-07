@@ -24,7 +24,7 @@ import org.openhab.binding.max.internal.exceptions.UnprocessableMessageException
 import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeException;
 
 /**
- * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
+ * @author Christian Rockrohr - Initial contribution
  */
 @NonNullByDefault
 public class MessageProcessorTest {

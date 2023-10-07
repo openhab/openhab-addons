@@ -71,7 +71,7 @@ public interface SmartherAccountHandler extends ThingHandler {
      *
      * @return the list of registered plants, or an empty {@link List} in case of no plants found
      *
-     * @throws {@link SmartherGatewayException}
+     * @throws SmartherGatewayException
      *             in case of communication issues with the Smarther API
      */
     List<Plant> getPlants() throws SmartherGatewayException;

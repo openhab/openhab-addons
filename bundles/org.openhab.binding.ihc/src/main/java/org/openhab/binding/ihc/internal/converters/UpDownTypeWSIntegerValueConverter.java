@@ -18,7 +18,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 import org.openhab.core.library.types.UpDownType;
 
 /**
- * UpDownType <-> WSIntegerValue converter.
+ * UpDownType {@literal <->} WSIntegerValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

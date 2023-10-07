@@ -17,8 +17,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link ShellyDeviceListener} can register on the
- * {@link org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler} to be informed about details about
+ * {@link ShellyDeviceListener} can register on the {@link ShellyBaseHandler} to be informed about details about
  * devices.
  *
  * @author Markus Michels - Initial contribution

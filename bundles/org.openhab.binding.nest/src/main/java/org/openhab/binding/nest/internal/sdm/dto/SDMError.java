@@ -17,7 +17,8 @@ package org.openhab.binding.nest.internal.sdm.dto;
  *
  * @author Wouter Born - Initial contribution
  *
- * @see https://developers.google.com/nest/device-access/reference/errors/api
+ * @see <a href="https://developers.google.com/nest/device-access/reference/errors/api">
+ *      https://developers.google.com/nest/device-access/reference/errors/api</a>
  */
 public class SDMError {
 

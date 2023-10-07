@@ -187,7 +187,9 @@ public class XMLUtils {
 
     /**
      * Wraps the XML message with the zone tags. Example with zone=Main_Zone:
-     * <Main_Zone>message</Main_Zone>.
+     * {@code
+     * <Main_Zone>message</Main_Zone>
+     * }.
      *
      * @param message XML message
      * @return

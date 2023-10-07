@@ -291,7 +291,7 @@ public class ShellyChannelDefinitions {
     /**
      * Auto-create relay channels depending on relay type/mode
      *
-     * @return ArrayList<Channel> of channels to be added to the thing
+     * @return {@code ArrayList<Channel>} of channels to be added to the thing
      */
     public static Map<String, Channel> createDeviceChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsStatus status) {
@@ -337,7 +337,7 @@ public class ShellyChannelDefinitions {
     /**
      * Auto-create relay channels depending on relay type/mode
      *
-     * @return ArrayList<Channel> of channels to be added to the thing
+     * @return {@code ArrayList<Channel>} of channels to be added to the thing
      */
     public static Map<String, Channel> createRelayChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsRelay rstatus, int idx) {
