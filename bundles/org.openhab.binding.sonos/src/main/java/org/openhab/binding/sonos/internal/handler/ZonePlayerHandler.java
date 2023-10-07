@@ -1471,7 +1471,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     codec = "dolbyAtmos";
                     break;
                 case "33554434":
+                case "33554488":
                     codec = "DD20";
+                    break;
+                case "33554490":
+                    codec = "DDPlus20";
                     break;
                 case "33554494":
                     codec = "PCM20";
