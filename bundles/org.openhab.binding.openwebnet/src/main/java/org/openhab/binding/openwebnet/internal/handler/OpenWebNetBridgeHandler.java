@@ -31,6 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.internal.actions.OpenWebNetBridgeActions;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetLightingHandler.LightAutomHandlersMap;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetBusBridgeConfig;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetZigBeeBridgeConfig;
 import org.openhab.binding.openwebnet.internal.serial.SerialPortProviderAdapter;
@@ -66,6 +67,7 @@ import org.openwebnet4j.message.Scenario;
 import org.openwebnet4j.message.Thermoregulation;
 import org.openwebnet4j.message.What;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereLightAutom;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
@@ -107,6 +109,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     // WHO.WHERE
     private Map<String, @Nullable OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
     private Map<String, Long> discoveringDevices = new ConcurrentHashMap<>();
+
+    protected @Nullable LightAutomHandlersMap lightsMap; // a static map of lights handlers organised by AREA they
+                                                         // belong to
 
     protected @Nullable OpenGateway gateway;
     private boolean isBusGateway = false;
@@ -401,7 +406,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Register a device ThingHandler to this BridgHandler
      *
-     * @param ownId the device OpenWebNet id
+     * @param ownId        the device OpenWebNet id
      * @param thingHandler the thing handler to be registered
      */
     protected void registerDevice(String ownId, OpenWebNetThingHandler thingHandler) {
@@ -525,7 +530,20 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return;
         }
 
+        // LIGHTING multiple messages
+        if (msg instanceof Lighting lmsg) {
+            WhereLightAutom w = (WhereLightAutom) lmsg.getWhere();
+            LightAutomHandlersMap lm = lightsMap;
+            if (w.isMultiple() && lm != null && !lm.isEmpty()) {
+                OpenWebNetLightingHandler lh = (OpenWebNetLightingHandler) lm.getOne();
+                if (lh != null) {
+                    lh.handleMultipleMessage(lmsg);
+                }
+            }
+        }
+
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
+
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
                 || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Auxiliary
@@ -692,7 +710,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Return a ownId string (=WHO.WHERE) from the device Where address and handler
      *
-     * @param where the Where address (to be normalized)
+     * @param where   the Where address (to be normalized)
      * @param handler the device handler
      * @return the ownId String
      */
@@ -703,7 +721,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Returns a ownId string (=WHO.WHERE) from a Who and Where address
      *
-     * @param who the Who
+     * @param who   the Who
      * @param where the Where address (to be normalized)
      * @return the ownId String
      */

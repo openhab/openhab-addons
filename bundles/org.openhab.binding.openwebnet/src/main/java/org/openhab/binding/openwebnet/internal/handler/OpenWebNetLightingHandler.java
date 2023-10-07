@@ -14,7 +14,11 @@ package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,12 +50,122 @@ import org.slf4j.LoggerFactory;
  * commands/messages for a Lighting OpenWebNet device.
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution. Added LightAutomHandlersMap.
  */
 @NonNullByDefault
 public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetLightingHandler.class);
+
+    protected class LightAutomHandlersMap {
+
+        private Map<Integer, Map<String, OpenWebNetThingHandler>> hndlrsMap;
+        private @Nullable OpenWebNetThingHandler oneHandler = null;
+
+        protected LightAutomHandlersMap() {
+            hndlrsMap = new ConcurrentHashMap<>();
+        }
+
+        protected void add(int area, OpenWebNetThingHandler h) {
+            if (!hndlrsMap.containsKey(area)) {
+                hndlrsMap.put(area, new ConcurrentHashMap<>());
+            }
+            Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
+            final String oId = h.ownId;
+            if (oId != null) {
+                areaHndlrs.put(oId, h);
+                if (oneHandler == null) {
+                    oneHandler = h;
+                }
+                logger.warn("/////////////////////// Added handler {} to Area {}", oId, area);
+                logger.warn(this.toString());
+            }
+
+        }
+
+        protected void remove(int area, OpenWebNetThingHandler h) {
+            if (hndlrsMap.containsKey(area)) {
+                Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
+                if (areaHndlrs != null) {
+                    boolean removed = areaHndlrs.remove(h.ownId, h);
+                    if (removed && oneHandler == h) {
+                        oneHandler = getFirst();
+                    }
+                    logger.warn("/////////////////////// ^^^^^^^^^^^^ Removed handler {} from Area {}", h.ownId, area);
+                    logger.warn(this.toString());
+                }
+            }
+        }
+
+        protected @Nullable List<OpenWebNetThingHandler> getAreaHandlers(int area) {
+            Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(area);
+            if (areaHndlrs != null) {
+                List<OpenWebNetThingHandler> list = new ArrayList<OpenWebNetThingHandler>(areaHndlrs.values());
+                return list;
+            } else {
+                return null;
+            }
+        }
+
+        protected @Nullable List<OpenWebNetThingHandler> getAllHandlers() {
+            List<OpenWebNetThingHandler> list = new ArrayList<OpenWebNetThingHandler>();
+            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
+                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
+                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
+                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
+                    if (hndlr != null) {
+                        list.add(hndlr);
+                    }
+                }
+            }
+            return list;
+        }
+
+        protected boolean isEmpty() {
+            return oneHandler == null;
+        }
+
+        protected @Nullable OpenWebNetThingHandler getOne() {
+            if (oneHandler == null) {
+                oneHandler = getFirst();
+            }
+            return oneHandler;
+        }
+
+        private @Nullable OpenWebNetThingHandler getFirst() {
+            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
+                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
+                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
+                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
+                    if (hndlr != null) {
+                        return hndlr;
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            String log = "\n---- LightAutomHandlersMap ----";
+            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
+                log += "\n- Area: " + entry.getKey() + "\n   -";
+                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
+                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
+                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
+                    if (hndlr != null) {
+                        log += " " + hndlr.ownId;
+                    }
+                }
+            }
+            log += "\n# getAllHandlers: ";
+            for (OpenWebNetThingHandler e : getAllHandlers()) {
+                log += " " + e.ownId;
+            }
+            log += "\n# oneH = " + (oneHandler == null ? "null" : oneHandler.ownId);
+            return log;
+        }
+    }
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.LIGHTING_SUPPORTED_THING_TYPES;
 
@@ -65,17 +179,35 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     private static final int UNKNOWN_STATE = 1000;
 
     private long lastBrightnessChangeSentTS = 0; // timestamp when last brightness change was sent to the device
-
     private long lastStatusRequestSentTS = 0; // timestamp when last status request was sent to the device
-
     private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
-
     private int brightness = UNKNOWN_STATE; // current brightness percent value for this device
-
     private int brightnessBeforeOff = UNKNOWN_STATE; // latest brightness before device was set to off
+
+    /**
+     * Reference to {@link OpenWebNetBridgeHandler#lightsMap}
+     */
+    private @Nullable LightAutomHandlersMap lightsMap;
 
     public OpenWebNetLightingHandler(Thing thing) {
         super(thing);
+
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        Where w = deviceWhere;
+        OpenWebNetBridgeHandler bridge = bridgeHandler;
+        if (w != null && bridge != null) {
+            if (bridge.lightsMap == null) {
+                bridge.lightsMap = new LightAutomHandlersMap();
+            }
+            lightsMap = bridge.lightsMap;
+
+            int area = ((WhereLightAutom) w).getArea();
+            lightsMap.add(area, this);
+        }
     }
 
     @Override
@@ -223,7 +355,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     lastBrightnessChangeSentTS = System.currentTimeMillis();
                     send(Lighting.requestDimTo(w.value(), newBrightnessWhat));
                 } catch (OWNException e) {
-                    logger.warn("Exception while sending dimTo request for command {}: {}", command, e.getMessage());
+                    logger.warn("Exception while sending dimTo request for command {}: {}", command,
+                            e.getMessage());
                 }
             }
         } else {
@@ -238,6 +371,24 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     @Override
     protected String ownIdPrefix() {
         return Who.LIGHTING.value().toString();
+    }
+
+    protected void handleMultipleMessage(Lighting msg) {
+        WhereLightAutom w = (WhereLightAutom) msg.getWhere();
+        LightAutomHandlersMap map = lightsMap;
+        if (map != null) {
+            List<OpenWebNetThingHandler> l = null;
+            if (w.isGeneral()) {
+                l = map.getAllHandlers();
+            } else if (w.getArea() > 0) {
+                l = map.getAreaHandlers(w.getArea());
+            }
+            if (l != null) {
+                for (OpenWebNetThingHandler hndlr : l) {
+                    hndlr.handleMessage(msg);
+                }
+            }
+        }
     }
 
     @Override
@@ -306,7 +457,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     }
                     brightness = newBrightness;
                 } else {
-                    logger.warn("updateBrightness() Cannot handle message {} for thing {}", msg, getThing().getUID());
+                    logger.warn("updateBrightness() Cannot handle message {} for thing {}", msg,
+                            getThing().getUID());
                     return;
                 }
             }
@@ -368,7 +520,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 }
                 updateState(channelId, OnOffType.from(msg.isOn()));
             } else {
-                logger.debug("updateOnOffState() Ignoring unsupported WHAT for thing {}. Frame={}", getThing().getUID(),
+                logger.debug("updateOnOffState() Ignoring unsupported WHAT for thing {}. Frame={}",
+                        getThing().getUID(),
                         msg.getFrameValue());
                 return;
             }
@@ -401,4 +554,16 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         }
         throw new OWNException("Cannot select channel from WHERE " + w);
     }
+
+    @Override
+    public void dispose() {
+        Where w = deviceWhere;
+        if (w != null) {
+            int area = ((WhereLightAutom) w).getArea();
+            lightsMap.remove(area, this);
+            logger.debug("Light.dispose() - removed APL {}", w);
+        }
+        super.dispose();
+    }
+
 }
