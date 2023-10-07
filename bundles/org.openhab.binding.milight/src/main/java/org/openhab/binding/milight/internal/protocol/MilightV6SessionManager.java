@@ -367,6 +367,9 @@ public class MilightV6SessionManager implements Runnable, Closeable {
      * The session ID, password and sequence number is automatically inserted from this object.
      *
      * Produces data like:
+     * 
+     * <pre>
+     * {@code
      * SN: Sequence number
      * S1: SessionID1
      * S2: SessionID2
@@ -376,13 +379,15 @@ public class MilightV6SessionManager implements Runnable, Closeable {
      * CK: Checksum
      *
      * #zone 1 on
-     * @ 80 00 00 00 11 84 00 00 0c 00 31 00 00 08 04 01 00 00 00 01 00 3f
+     * &#64; 80 00 00 00 11 84 00 00 0c 00 31 00 00 08 04 01 00 00 00 01 00 3f
      *
      * Colors:
      * CC: Color value (hue)
      * 80 00 00 00 11 S1 S2 SN SN 00 31 P1 P2 WB 01 CC CC CC CC ZN 00 CK
      *
      * 80 00 00 00 11 D4 00 00 12 00 31 00 00 08 01 FF FF FF FF 01 00 38
+     * }
+     * </pre>
      *
      * @return
      */

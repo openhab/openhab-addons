@@ -15,7 +15,7 @@ package org.openhab.binding.intesis.internal.enums;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link IntesisModeEnum) contains informations for translating device modes into internally used numbers.
+ * The {@link IntesisHomeModeEnum} contains informations for translating device modes into internally used numbers.
  *
  * @author Hans-Jörg Merk - Initial contribution
  */

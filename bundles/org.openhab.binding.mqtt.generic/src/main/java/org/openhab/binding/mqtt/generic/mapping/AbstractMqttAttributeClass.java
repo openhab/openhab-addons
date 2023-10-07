@@ -272,10 +272,12 @@ public abstract class AbstractMqttAttributeClass implements SubscribeFieldToMQTT
      * </p>
      *
      * <pre>
+     * {@code
      * void attributeChanged(..., boolean allMandatoryFieldsReceived) {
      *   if (allMandatoryFieldsReceived && !attributes.isComplete()) {
      *      // The attribute class is now complete but wasn't before...
      *   }
+     * }
      * }
      * </pre>
      */

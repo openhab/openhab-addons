@@ -252,7 +252,7 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
      * {@inheritDoc}
      *
      * Stops the discovery scan. We set {@link #scanning} to false (allowing the listening threads to end naturally
-     * within {@link #TIMEOUT) * 5 time then shutdown the {@link #executorService}
+     * within {@link #TIMEOUT} * 5 time then shutdown the {@link ExecutorService}
      */
     @Override
     protected synchronized void stopScan() {
