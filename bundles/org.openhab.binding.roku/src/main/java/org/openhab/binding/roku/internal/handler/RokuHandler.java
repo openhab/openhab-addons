@@ -345,7 +345,7 @@ public class RokuHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
-        } else if (channelUID.getId().equals(POWER)) {
+        } else if (POWER.equals(channelUID.getId())) {
             synchronized (sequenceLock) {
                 if (command instanceof OnOffType) {
                     try {
