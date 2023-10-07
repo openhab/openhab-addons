@@ -58,6 +58,7 @@
 				<option value="DD20">Dolby Digital 2.0</option>
 				<option value="PCM20">Dolby Multichannel PCM 2.0</option>
 				<option value="DD51">Dolby Digital 5.1</option>
+				<option value="DDPlus20">Dolby Digital Plus 2.0</option>
 				<option value="DDPlus51">Dolby Digital Plus 5.1</option>
 				<option value="PCM51">Dolby Multichannel PCM 5.1</option>
 				<option value="DTS51">DTS Surround 5.1</option>
