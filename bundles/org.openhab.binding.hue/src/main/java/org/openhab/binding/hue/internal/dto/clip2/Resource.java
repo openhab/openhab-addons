@@ -203,7 +203,7 @@ public class Resource {
 
     /**
      * Get the color as an HSBType. This returns an HSB that is based on an amalgamation of the color xy, dimming, and
-     * on/off JSON elements. It takes its 'H' & 'S' parts from the 'ColorXy' JSON element, and its 'B' part from the
+     * on/off JSON elements. It takes its 'H' and 'S' parts from the 'ColorXy' JSON element, and its 'B' part from the
      * on/off resp. dimming JSON elements. If off the B part is 0, otherwise it is the dimming element value. Note: this
      * method is only to be used on cached state DTOs which already have a defined color gamut.
      *

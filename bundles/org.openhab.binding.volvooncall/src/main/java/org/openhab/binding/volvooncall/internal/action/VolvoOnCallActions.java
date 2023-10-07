@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@VehicleAction } class is responsible to call corresponding
+ * The {@link VolvoOnCallActions} class is responsible to call corresponding
  * action on Vehicle Handler
  *
  * @author Gaël L'hopital - Initial contribution

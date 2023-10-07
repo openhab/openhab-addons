@@ -15,7 +15,7 @@ package org.openhab.binding.max.internal.device;
 /**
  * Unsupported devices.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  */
 

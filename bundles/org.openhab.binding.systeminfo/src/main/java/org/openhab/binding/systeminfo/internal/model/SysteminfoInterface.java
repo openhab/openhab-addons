@@ -457,7 +457,7 @@ public interface SysteminfoInterface {
      *
      * @param pid - the PID of the process
      * @return memory size
-     * @throws DeviceNotFoundException- thrown if process with this PID can not be found
+     * @throws DeviceNotFoundException thrown if process with this PID can not be found
      */
     @Nullable
     QuantityType<DataAmount> getProcessMemoryUsage(int pid) throws DeviceNotFoundException;

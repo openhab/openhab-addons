@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * Handles communicating with a Daikin Airbase wifi adapter.
  *
  * @author Tim Waterhouse - Initial Contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Jimmy Tanagra - Support Airside and auto fan levels, DynamicStateDescription
  *
  */
