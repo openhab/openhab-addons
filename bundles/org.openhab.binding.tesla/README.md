@@ -350,9 +350,9 @@ sitemap main label="Main"
         }
         Frame
         {
-            String item=TeslaDestinationName
-            Number item=TeslaMinutesToArrival
-            Number item=TeslaDistanceToArrival
+            Default item=TeslaDestinationName
+            Default item=TeslaMinutesToArrival
+            Default item=TeslaDistanceToArrival
             Mapview item=TeslaDestinationLocation height=10
         }
     }
