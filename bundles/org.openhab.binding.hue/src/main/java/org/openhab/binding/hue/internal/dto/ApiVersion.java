@@ -41,8 +41,7 @@ public class ApiVersion {
             String microString = matcher.group(4);
             int micro = Integer.parseInt(microString == null ? "0" : microString);
 
-            ApiVersion apiVersion = new ApiVersion(major, minor, micro);
-            return apiVersion;
+            return new ApiVersion(major, minor, micro);
         }
 
         throw new IllegalArgumentException("Version \"" + version + "\" is not valid");
