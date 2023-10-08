@@ -101,7 +101,7 @@ public class AwtrixActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "Show Notification", description = "Shows a notification")
+    @RuleAction(label = "Show Notification", description = "Shows a default notification with an icon")
     public void showNotification(String message, String icon) {
         AwtrixLightBridgeHandler localHandler = this.handler;
         if (localHandler != null) {
@@ -109,6 +109,15 @@ public class AwtrixActions implements ThingActions {
             params.put("text", message);
             params.put("icon", icon);
             localHandler.showNotification(false, false, true, "", "", false, params);
+        }
+    }
+
+    @RuleAction(label = "Show Custom Notification", description = "Shows a notification with specified options")
+    public void showCustomNotification(Map<String, Object> appParams, boolean hold, boolean wakeUp, boolean stack,
+            String rtttl, String sound, boolean loopSound) {
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.showNotification(hold, wakeUp, stack, rtttl, sound, loopSound, appParams);
         }
     }
 }
