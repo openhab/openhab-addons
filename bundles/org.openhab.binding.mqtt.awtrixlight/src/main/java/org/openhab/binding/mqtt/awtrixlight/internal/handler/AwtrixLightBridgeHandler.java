@@ -370,6 +370,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             boolean loopSound, Map<String, Object> params) {
         AwtrixNotification notification = new AwtrixNotification();
         notification.updateFields(params);
+        notification.setHold(hold);
         notification.setWakeUp(wakeUp);
         notification.setStack(stack);
         notification.setRtttl(rtttl);

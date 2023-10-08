@@ -89,11 +89,13 @@ public class AwtrixLightBridgeDiscoveryService extends AbstractDiscoveryService 
     }
 
     void publishApp(ThingUID connectionBridgeUid, String bridgeHardwareId, String basetopic, String appName) {
-        String appId = bridgeHardwareId + "-" + appName;
-        thingDiscovered(DiscoveryResultBuilder
-                .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_APP), connectionBridgeUid, appName))
-                .withBridge(connectionBridgeUid).withProperty(PROP_APPID, appId)
-                .withProperty(PROP_APP_CONTROLLABLE, false).withProperty(PROP_APPNAME, appName)
-                .withRepresentationProperty(PROP_APPID).withLabel("Awtrix App " + appName).build());
+        if (!"Notification".equals(appName)) {
+            String appId = bridgeHardwareId + "-" + appName;
+            thingDiscovered(DiscoveryResultBuilder
+                    .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_APP), connectionBridgeUid, appName))
+                    .withBridge(connectionBridgeUid).withProperty(PROP_APPID, appId)
+                    .withProperty(PROP_APP_CONTROLLABLE, false).withProperty(PROP_APPNAME, appName)
+                    .withRepresentationProperty(PROP_APPID).withLabel("Awtrix App " + appName).build());
+        }
     }
 }
