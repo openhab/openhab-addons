@@ -122,7 +122,7 @@
 /bundles/org.openhab.binding.generacmobilelink/ @digitaldan
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.goecharger/ @SamuelBrucksch
-/bundles/org.openhab.binding.goveelan/ @stefan-hoehn
+/bundles/org.openhab.binding.govee/ @stefan-hoehn
 /bundles/org.openhab.binding.gpio/ @nils-bauer
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.gree/ @markus7017

@@ -603,7 +603,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.goveelan</artifactId>
+      <artifactId>org.openhab.binding.govee</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
