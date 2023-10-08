@@ -30,7 +30,7 @@ It can be extended with different channels.
 
 _Note:_ Optional "no" means that you have to configure a value unless a default is provided, and you are ok with that setting.
 
-*Note:* The `BASIC_PREEMPTIVE` mode adds basic authentication headers even if the server did not request authentication.
+_Note:_ The `BASIC_PREEMPTIVE` mode adds basic authentication headers even if the server did not request authentication.
 This is dangerous and might be misused.
 The option exists to be able to authenticate when the server is not sending the proper 401/Unauthorized code.
 Authentication might fail if redirections are involved as headers are stripper prior to redirection.
