@@ -141,10 +141,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             rpcSocket.addMessageHandler(this);
             initialized = true;
         } else {
-            if (rpcSocket.isConnected()) {
-                logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
-                disconnect();
-            }
+            logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
+            disconnect();
         }
     }
 
@@ -1217,9 +1215,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void disconnect() {
-        if (rpcSocket.isConnected()) {
-            rpcSocket.disconnect();
-        }
+        rpcSocket.disconnect();
     }
 
     public Shelly2RpctInterface getRpcHandler() {
