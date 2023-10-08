@@ -34,6 +34,7 @@ public class FreeboxOsConfiguration {
     public String appToken = "";
     public boolean discoverNetDevice;
     public int discoveryInterval = 10;
+    public int wsReconnectInterval = 60;
 
     private int httpsPort = 15682;
     private boolean httpsAvailable;
