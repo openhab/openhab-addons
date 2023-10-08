@@ -28,7 +28,7 @@ It can be extended with different channels.
 | `strictErrorHandling` | no   |  false  | If set to true, thing status is changed depending on last request result (failed = `OFFLINE`). Failed requests result in `UNDEF` for channel values. |
 | `userAgent`       | yes      |  (yes ) | Sets a custom user agent (default is "Jetty/version", e.g. "Jetty/9.4.20.v20190813"). |
 
-*Note:* Optional "no" means that you have to configure a value unless a default is provided, and you are ok with that setting.
+_Note:_ Optional "no" means that you have to configure a value unless a default is provided, and you are ok with that setting.
 
 *Note:* The `BASIC_PREEMPTIVE` mode adds basic authentication headers even if the server did not request authentication.
 This is dangerous and might be misused.
