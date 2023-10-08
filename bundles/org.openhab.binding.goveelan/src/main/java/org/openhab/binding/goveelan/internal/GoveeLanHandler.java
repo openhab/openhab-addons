@@ -366,7 +366,7 @@ public class GoveeLanHandler extends BaseThingHandler {
         updateState(COLOR_TEMPERATURE_ABS, new QuantityType(lastColorTemperature, Units.KELVIN));
         LOGGER.debug("setting BRIGHTNESS to ONOFF {}", OnOffType.from(lastOnOff == 1));
         updateState(BRIGHTNESS, OnOffType.from(lastOnOff == 1));
-        LOGGER.debug("setting BRIGHTNESS to PercentType", new PercentType(lastBrightness));
+        LOGGER.debug("setting BRIGHTNESS to PercentType {}", new PercentType(lastBrightness));
         updateState(BRIGHTNESS, new PercentType(lastBrightness));
     }
 }

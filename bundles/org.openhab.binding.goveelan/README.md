@@ -101,6 +101,7 @@ One possibility is to look for the MAC address in the Govee app and then looking
 ```shell
 arp -a | grep "MAC_ADDRESS"
 ```
+
 ### `govee-light` Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
