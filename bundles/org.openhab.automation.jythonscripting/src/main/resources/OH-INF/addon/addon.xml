@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>automation</type>
-	<name>Jython Scripting</name>
+	<name>Jython Scripting (DEPRECATED)</name>
 	<description>This adds a Jython script engine.</description>
 	<connection>none</connection>
 
