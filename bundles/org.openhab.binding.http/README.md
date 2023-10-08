@@ -81,7 +81,7 @@ Here are a few examples to unwrap an incoming value via `stateTransformation` fr
 Transformations can be chained by separating them with the mathematical intersection character "∩".
 Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
 
-The same mechanism works for commands (`commandTransformation`) for outgoing values. 
+The same mechanism works for commands (`commandTransformation`) for outgoing values.
 
 ### `color`
 
