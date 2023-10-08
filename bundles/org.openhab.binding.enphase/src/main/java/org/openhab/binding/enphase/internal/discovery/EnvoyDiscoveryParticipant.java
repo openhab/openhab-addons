@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.enphase.internal.discovery;
 
-import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.*;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.CONFIG_HOSTNAME;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.CONFIG_SERIAL_NUMBER;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.DISCOVERY_SERIAL;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.DISCOVERY_VERSION;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.PROPERTY_VERSION;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.THING_TYPE_ENPHASE_ENVOY;
 
 import java.net.Inet4Address;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -39,8 +43,7 @@ import org.slf4j.LoggerFactory;
 /**
  * MDNS discovery participant for discovering Envoy gateways.
  * This service also keeps track of any discovered Envoys host name to provide this information for existing Envoy
- * bridges
- * so the bridge cat get the host name/ip address if that is unknown.
+ * bridges so the bridge cat get the host name/ip address if that is unknown.
  *
  * @author Thomas Hentschel - Initial contribution
  * @author Hilbrand Bouwkamp - Initial contribution
@@ -56,7 +59,7 @@ public class EnvoyDiscoveryParticipant implements MDNSDiscoveryParticipant, Envo
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(EnphaseBindingConstants.THING_TYPE_ENPHASE_ENVOY);
+        return Set.of(THING_TYPE_ENPHASE_ENVOY);
     }
 
     @Override
@@ -102,7 +105,7 @@ public class EnvoyDiscoveryParticipant implements MDNSDiscoveryParticipant, Envo
         properties.put(PROPERTY_VERSION, version);
         return DiscoveryResultBuilder.create(uid).withProperties(properties)
                 .withRepresentationProperty(CONFIG_SERIAL_NUMBER)
-                .withLabel("Enphase Envoy " + defaultPassword(serialNumber)).build();
+                .withLabel("Enphase Envoy " + EnphaseBindingConstants.defaultPassword(serialNumber)).build();
     }
 
     @Override

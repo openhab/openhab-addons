@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.ruuvitag.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,8 +32,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.ruuvitag")
 public class RuuviTagHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(RuuviTagBindingConstants.THING_TYPE_BEACON);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(RuuviTagBindingConstants.THING_TYPE_BEACON);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -55,7 +55,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthResponse;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2ConfigParms;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DeviceConfigSta;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
@@ -81,6 +81,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptRe
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -99,7 +100,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     protected boolean initialized = false;
     private boolean discovery = false;
     private Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket();
-    private Shelly2AuthResponse authInfo = new Shelly2AuthResponse();
+    private @Nullable Shelly2AuthChallenge authInfo;
 
     /**
      * Regular constructor - called by Thing handler
@@ -203,6 +204,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         ShellySettingsDevice device = getDeviceInfo();
         profile.settings.device = device;
+        if (!getString(device.fw).isEmpty()) {
+            profile.fwDate = substringBefore(device.fw, "/");
+            profile.fwVersion = profile.status.update.oldVersion = "v" + substringAfter(device.fw, "/");
+        }
+
         profile.hostname = device.hostname;
         profile.deviceType = device.type;
         profile.mac = device.mac;
@@ -306,7 +312,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         if (dc.led != null) {
             profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
-            profile.settings.ledPowerDisable = getString(dc.led.powerLed).equals("off");
+            profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
         profile.initialized = true;
@@ -388,6 +394,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 if (ourId != -1) {
                     startScript(ourId, false);
                     enableScript(script, false);
+                    deleteScript(ourId);
                     logger.debug("{}: Script {} was disabledd, id={}", thingName, script, ourId);
                 }
                 return;
@@ -439,8 +446,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
             if (upload && ourId != -1) {
                 // Delete existing script
-                logger.debug("{}: Delete existing script", thingName);
-                apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_DELETE).withId(ourId));
+                deleteScript(ourId);
             }
 
             if (upload) {
@@ -479,10 +485,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
             if (!running) {
                 running = startScript(ourId, true);
-            }
-            if (!discovery) {
-                logger.info("{}: Script {} {}", thingName, script,
-                        running ? "was successfully (re)started" : "failed to start");
+                logger.debug("{}: Script {} {}", thingName, script,
+                        running ? "was successfully started" : "failed to start");
             }
         } catch (ShellyApiException e) {
             ShellyApiResult res = e.getApiResult();
@@ -515,8 +519,23 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             apiRequest(SHELLYRPC_METHOD_SCRIPT_SETCONFIG, params, String.class);
             return true;
         } catch (ShellyApiException e) {
+            logger.debug("{}: Unable to enable script {}", thingName, script, e);
             return false;
         }
+    }
+
+    private boolean deleteScript(int id) {
+        if (id == -1) {
+            throw new IllegalArgumentException("Invalid Script Id");
+        }
+        try {
+            logger.debug("{}: Delete existing script with id{}", thingName, id);
+            apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_DELETE).withId(id));
+            return true;
+        } catch (ShellyApiException e) {
+            logger.debug("{}: Unable to delete script with id {}", thingName, id);
+        }
+        return false;
     }
 
     @Override
@@ -550,7 +569,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (message.error != null) {
                 if (message.error.code == HttpStatus.UNAUTHORIZED_401 && !getString(message.error.message).isEmpty()) {
                     // Save nonce for notification
-                    Shelly2AuthResponse auth = gson.fromJson(message.error.message, Shelly2AuthResponse.class);
+                    Shelly2AuthChallenge auth = gson.fromJson(message.error.message, Shelly2AuthChallenge.class);
                     if (auth != null && auth.realm == null) {
                         logger.debug("{}: Authentication data received: {}", thingName, message.error.message);
                         authInfo = auth;
@@ -757,13 +776,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             status.update.hasUpdate = ds.sys.availableUpdates.stable != null;
             if (ds.sys.availableUpdates.stable != null) {
                 status.update.newVersion = "v" + getString(ds.sys.availableUpdates.stable.version);
+                status.hasUpdate = new ShellyVersionDTO().compare(profile.fwVersion, status.update.newVersion) < 0;
             }
             if (ds.sys.availableUpdates.beta != null) {
                 status.update.betaVersion = "v" + getString(ds.sys.availableUpdates.beta.version);
+                status.hasUpdate = new ShellyVersionDTO().compare(profile.fwVersion, status.update.betaVersion) < 0;
             }
         }
 
-        if (ds.sys.wakeUpReason != null && ds.sys.wakeUpReason.boot != null) {
+        if (ds.sys.wakeUpReason != null && ds.sys.wakeUpReason.boot != null)
+
+        {
             List<Object> values = new ArrayList<>();
             String boot = getString(ds.sys.wakeUpReason.boot);
             String cause = getString(ds.sys.wakeUpReason.cause);
@@ -793,7 +816,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return relayStatus;
     }
 
-    @SuppressWarnings("null")
     @Override
     public void setRelayTurn(int id, String turnMode) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
@@ -1128,35 +1150,32 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         Shelly2RpcBaseMessage req = buildRequest(method, params);
         try {
             reconnect(); // make sure WS is connected
-
-            if (authInfo.realm != null) {
-                req.auth = buildAuthRequest(authInfo, config.userId, config.serviceName, config.password);
-            }
             json = rpcPost(gson.toJson(req));
         } catch (ShellyApiException e) {
             ShellyApiResult res = e.getApiResult();
-            String auth = getString(res.authResponse);
+            String auth = getString(res.authChallenge);
             if (res.isHttpAccessUnauthorized() && !auth.isEmpty()) {
                 String[] options = auth.split(",");
+                authInfo = new Shelly2AuthChallenge();
                 for (String o : options) {
                     String key = substringBefore(o, "=").stripLeading().trim();
-                    String value = substringAfter(o, "=").replaceAll("\"", "").trim();
+                    String value = substringAfter(o, "=").replace("\"", "").trim();
                     switch (key) {
                         case "Digest qop":
+                            authInfo.authType = SHELLY2_AUTHTTYPE_DIGEST;
                             break;
                         case "realm":
                             authInfo.realm = value;
                             break;
                         case "nonce":
-                            authInfo.nonce = Long.parseLong(value, 16);
+                            // authInfo.nonce = Long.parseLong(value, 16);
+                            authInfo.nonce = value;
                             break;
                         case "algorithm":
                             authInfo.algorithm = value;
                             break;
                     }
                 }
-                authInfo.nc = 1;
-                req.auth = buildAuthRequest(authInfo, config.userId, authInfo.realm, config.password);
                 json = rpcPost(gson.toJson(req));
             } else {
                 throw e;
@@ -1170,7 +1189,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             // return sub element result as requested class type
             json = gson.toJson(gson.fromJson(json, Shelly2RpcBaseMessage.class).result);
             boolean isString = response.result instanceof String;
-            return fromJson(gson, isString && ((String) response.result).equalsIgnoreCase("null") ? "{}" : json,
+            return fromJson(gson, isString && "null".equalsIgnoreCase(((String) response.result)) ? "{}" : json,
                     classOfT);
         } else {
             // return direct format
@@ -1187,7 +1206,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private String rpcPost(String postData) throws ShellyApiException {
-        return httpPost("/rpc", postData);
+        return httpPost(authInfo, postData);
     }
 
     private void reconnect() throws ShellyApiException {

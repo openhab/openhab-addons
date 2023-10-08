@@ -65,7 +65,6 @@ public final class RefreshService implements AutoCloseable {
      *
      * @param config Configuration of the bridge
      * @param httpClient HTTP client
-     * @param updateService Service to update the thermostat in the cloud
      */
     public RefreshService(OJElectronicsBridgeConfiguration config, HttpClient httpClient) {
         this.config = config;
@@ -78,7 +77,7 @@ public final class RefreshService implements AutoCloseable {
      *
      * @param sessionId Session-Id
      * @param refreshDone This method is called if refreshing is done.
-     * @param connectionLosed This method is called if no connection could established.
+     * @param connectionLost This method is called if no connection could established.
      * @param unauthorized This method is called if the result is unauthorized.
      */
     public void start(String sessionId,
@@ -196,9 +195,8 @@ public final class RefreshService implements AutoCloseable {
     }
 
     private Request createRequest() {
-        Request request = httpClient.newRequest(config.getRestApiUrl() + "/Group/GroupContents")
-                .param("sessionid", sessionId).param("apiKey", config.apiKey).method(HttpMethod.GET);
-        return request;
+        return httpClient.newRequest(config.getRestApiUrl() + "/Group/GroupContents").param("sessionid", sessionId)
+                .param("apiKey", config.apiKey).method(HttpMethod.GET);
     }
 
     private void initializationDone(String responseBody) {

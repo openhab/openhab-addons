@@ -93,8 +93,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     /**
-     * @param SoulissNode
-     *            the SoulissNodeID to get
+     * @return the SoulissNodeID
      */
     public int getNode() {
         return iNode;

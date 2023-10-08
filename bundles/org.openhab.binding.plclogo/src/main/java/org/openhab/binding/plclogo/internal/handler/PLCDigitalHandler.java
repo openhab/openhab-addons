@@ -55,7 +55,7 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCDigitalHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIGITAL);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DIGITAL);
 
     private final Logger logger = LoggerFactory.getLogger(PLCDigitalHandler.class);
     private AtomicReference<PLCDigitalConfiguration> config = new AtomicReference<>();
@@ -187,9 +187,8 @@ public class PLCDigitalHandler extends PLCCommonHandler {
     protected void updateState(ChannelUID channelUID, State state) {
         super.updateState(channelUID, state);
         DecimalType value = state.as(DecimalType.class);
-        if (state instanceof OpenClosedType) {
-            OpenClosedType type = (OpenClosedType) state;
-            value = new DecimalType(type == OpenClosedType.CLOSED ? 1 : 0);
+        if (state instanceof OpenClosedType openClosedState) {
+            value = new DecimalType(openClosedState == OpenClosedType.CLOSED ? 1 : 0);
         }
 
         Channel channel = thing.getChannel(channelUID.getId());
@@ -272,7 +271,7 @@ public class PLCDigitalHandler extends PLCCommonHandler {
                 cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
                 cBuilder.withLabel(name);
                 cBuilder.withDescription("Digital " + text + " block " + name);
-                cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
+                cBuilder.withProperties(Map.of(BLOCK_PROPERTY, name));
                 tBuilder.withChannel(cBuilder.build());
                 setOldValue(name, null);
             }

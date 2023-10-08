@@ -114,7 +114,7 @@ public class Shelly2RpcSocket {
         try {
             disconnect(); // for safety
 
-            URI uri = new URI("ws://" + deviceIp + "/rpc");
+            URI uri = new URI("ws://" + deviceIp + SHELLYRPC_ENDPOINT);
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader(HttpHeaders.HOST, deviceIp);
             request.setHeader("Origin", "http://" + deviceIp);
@@ -259,7 +259,7 @@ public class Shelly2RpcSocket {
                         } else {
                             for (Shelly2NotifyEvent e : events.params.events) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                                    String address = getString(e.data.addr).replaceAll(":", "");
+                                    String address = getString(e.data.addr).replace(":", "");
                                     if (thingTable != null && thingTable.findThing(address) != null) {
                                         if (thingTable != null) { // known device
                                             ShellyThingInterface thing = thingTable.getThing(address);
@@ -276,6 +276,8 @@ public class Shelly2RpcSocket {
                                                     e.event, e.data.name);
                                         }
                                     }
+                                } else {
+                                    handler.onNotifyEvent(fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class));
                                 }
                             }
                         }

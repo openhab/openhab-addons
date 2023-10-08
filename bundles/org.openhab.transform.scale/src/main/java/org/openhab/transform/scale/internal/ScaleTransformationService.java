@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * The implementation of {@link TransformationService} which transforms the
  * input by matching it between limits of ranges in a scale file
  *
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  * @author Markus Rathgeb - drop usage of Guava
  */
 @Component(service = { TransformationService.class, ConfigOptionProvider.class }, property = {
@@ -211,8 +211,8 @@ public class ScaleTransformationService
                     final String value = properties.getProperty(entry);
                     final Matcher matcher = LIMITS_PATTERN.matcher(entry);
                     if (matcher.matches() && (matcher.groupCount() == 4)) {
-                        final boolean lowerInclusive = matcher.group(1).equals("[");
-                        final boolean upperInclusive = matcher.group(4).equals("]");
+                        final boolean lowerInclusive = "[".equals(matcher.group(1));
+                        final boolean upperInclusive = "]".equals(matcher.group(4));
 
                         final String lowLimit = matcher.group(2);
                         final String highLimit = matcher.group(3);

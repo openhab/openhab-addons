@@ -30,7 +30,7 @@ public class ChangerX2Entry {
     public static final String NUMBER_MAX = "max";
     public static final String NUMBER_STEP = "step";
 
-    static enum OptionType {
+    enum OptionType {
         NUMBER,
         SELECT,
     }

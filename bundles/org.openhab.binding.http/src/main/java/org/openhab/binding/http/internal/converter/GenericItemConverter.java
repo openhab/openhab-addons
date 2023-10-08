@@ -40,6 +40,7 @@ public class GenericItemConverter extends AbstractTransformingItemConverter {
         this.toState = toState;
     }
 
+    @Override
     protected State toState(String value) {
         try {
             return toState.apply(value);
@@ -53,6 +54,7 @@ public class GenericItemConverter extends AbstractTransformingItemConverter {
         return null;
     }
 
+    @Override
     protected String toString(Command command) {
         return command.toString();
     }

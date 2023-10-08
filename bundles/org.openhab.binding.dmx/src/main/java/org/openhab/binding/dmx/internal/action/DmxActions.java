@@ -73,8 +73,8 @@ public class DmxActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DmxBridgeHandler) {
-            this.handler = (DmxBridgeHandler) handler;
+        if (handler instanceof DmxBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 

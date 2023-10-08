@@ -28,6 +28,7 @@
 			<description>Global Location Number of the grid company.</description>
 			<limitToOptions>false</limitToOptions>
 			<options>
+				<option value="5790001095451">Aal Elnet</option>
 				<option value="5790000705184">Cerius</option>
 				<option value="5790000610099">Dinel</option>
 				<option value="5790002502699">El-net Kongerslev</option>

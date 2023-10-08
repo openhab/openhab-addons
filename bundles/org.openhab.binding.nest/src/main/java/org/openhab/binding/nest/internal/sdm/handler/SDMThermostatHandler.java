@@ -98,8 +98,8 @@ public class SDMThermostatHandler extends SDMBaseHandler {
                     delayedRefresh();
                 }
             } else if (CHANNEL_FAN_TIMER_MODE.equals(channelUID.getId())) {
-                if (command instanceof OnOffType) {
-                    if ((OnOffType) command == OnOffType.ON) {
+                if (command instanceof OnOffType onOffCommand) {
+                    if (onOffCommand == OnOffType.ON) {
                         executeDeviceCommand(new SDMSetFanTimerRequest(SDMFanTimerMode.ON, getFanTimerDuration()));
                     } else {
                         executeDeviceCommand(new SDMSetFanTimerRequest(SDMFanTimerMode.OFF));
@@ -107,9 +107,8 @@ public class SDMThermostatHandler extends SDMBaseHandler {
                     delayedRefresh();
                 }
             } else if (CHANNEL_FAN_TIMER_TIMEOUT.equals(channelUID.getId())) {
-                if (command instanceof DateTimeType) {
-                    Duration duration = Duration.between(ZonedDateTime.now(),
-                            ((DateTimeType) command).getZonedDateTime());
+                if (command instanceof DateTimeType dateTimeCommand) {
+                    Duration duration = Duration.between(ZonedDateTime.now(), dateTimeCommand.getZonedDateTime());
                     executeDeviceCommand(new SDMSetFanTimerRequest(SDMFanTimerMode.ON, duration));
                     delayedRefresh();
                 }
@@ -202,8 +201,8 @@ public class SDMThermostatHandler extends SDMBaseHandler {
         if (channel != null) {
             Configuration configuration = channel.getConfiguration();
             Object fanTimerDuration = configuration.get(SDMBindingConstants.CONFIG_PROPERTY_FAN_TIMER_DURATION);
-            if (fanTimerDuration instanceof BigDecimal) {
-                seconds = ((BigDecimal) fanTimerDuration).longValue();
+            if (fanTimerDuration instanceof BigDecimal decimalValue) {
+                seconds = decimalValue.longValue();
             }
         }
 

@@ -58,7 +58,8 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     /**
      * INIT CLASS
      *
-     * @param config TapoControlConfiguration class
+     * @param device
+     * @param bridgeThingHandler
      */
     public TapoDeviceConnector(TapoDevice device, TapoBridgeHandler bridgeThingHandler) {
         super(device, bridgeThingHandler);
@@ -111,7 +112,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     /**
      * send custom command to device
      *
-     * @param plBuilder Payloadbuilder with unencrypted payload
+     * @param queryMethod query method
      */
     public void sendCustomQuery(String queryMethod) {
         /* create payload */
@@ -193,7 +194,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     /**
      * send multiple "set_device_info" commands to device
      *
-     * @param map HashMap<String, Object> (name, value of parameter)
+     * @param map {@code HashMap<String, Object> (name, value of parameter)}
      */
     public void sendDeviceCommands(HashMap<String, Object> map) {
         sendDeviceCommands(DEVICE_CMD_SETINFO, map);
@@ -203,7 +204,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      * send multiple commands to device
      *
      * @param method Method command belongs to
-     * @param map HashMap<String, Object> (name, value of parameter)
+     * @param map {@code HashMap<String, Object> (name, value of parameter)}
      */
     public void sendDeviceCommands(String method, HashMap<String, Object> map) {
         long now = System.currentTimeMillis();
@@ -390,7 +391,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     /**
      * handle error
      *
-     * @param te TapoErrorHandler
+     * @param tapoError TapoErrorHandler
      */
     @Override
     protected void handleError(TapoErrorHandler tapoError) {

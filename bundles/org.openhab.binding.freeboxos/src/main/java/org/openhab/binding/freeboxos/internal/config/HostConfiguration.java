@@ -20,7 +20,6 @@ import inet.ipaddr.mac.MACAddress;
 /**
  * The {@link HostConfiguration} is responsible for holding
  * configuration informations associated to a Freebox Network Device
- * thing type
  *
  * @author Gaël L'hopital - Initial contribution
  */

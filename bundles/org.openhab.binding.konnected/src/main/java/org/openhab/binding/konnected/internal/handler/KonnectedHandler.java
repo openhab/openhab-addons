@@ -65,10 +65,7 @@ public class KonnectedHandler extends BaseThingHandler {
      * This is the constructor of the Konnected Handler.
      *
      * @param thing the instance of the Konnected thing
-     * @param webHookServlet the instance of the callback servlet that is running for communication with the Konnected
-     *            Module
-     * @param hostAddress the webaddress of the openHAB server instance obtained by the runtime
-     * @param port the port on which the openHAB instance is running that was obtained by the runtime.
+     * @param callbackUrl the webaddress of the openHAB server instance obtained by the runtime
      */
     public KonnectedHandler(Thing thing, String callbackUrl) {
         super(thing);
@@ -88,11 +85,11 @@ public class KonnectedHandler extends BaseThingHandler {
         String zone = zoneConfig.zone;
         logger.debug("The channelUID is: {} and the zone is : {}", channelUID.getAsString(), zone);
         // if the command is OnOfftype
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType onOffCommand) {
             if (channelType.contains(CHANNEL_SWITCH)) {
                 logger.debug("A command was sent to a sensor type so we are ignoring the command");
             } else {
-                sendActuatorCommand((OnOffType) command, zone, channelUID);
+                sendActuatorCommand(onOffCommand, zone, channelUID);
             }
         } else if (command instanceof RefreshType) {
             // check to see if handler has been initialized before attempting to get state of pin, else wait one minute
@@ -107,8 +104,8 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     /**
-     * Process a {@link WebHookEvent} that has been received by the Servlet from a Konnected module with respect to a
-     * sensor event or status update request
+     * Process a {@link KonnectedModuleGson} that has been received by the Servlet from a Konnected module with respect
+     * to a sensor event or status update request
      *
      * @param event the {@link KonnectedModuleGson} event that contains the state and pin information to be processed
      */
@@ -227,7 +224,7 @@ public class KonnectedHandler extends BaseThingHandler {
             // https://github.com/eclipse/smarthome/issues/3484 has been implemented in the framework
             String[] cfg = configurationParameter.getKey().split("_");
             if ("controller".equals(cfg[0])) {
-                if (cfg[1].equals("softreset") && value instanceof Boolean && (Boolean) value) {
+                if ("softreset".equals(cfg[1]) && value instanceof Boolean bool && bool) {
                     scheduler.execute(() -> {
                         try {
                             http.doGet(baseUrl + "/settings?restart=true", null, retryCount);
@@ -235,7 +232,7 @@ public class KonnectedHandler extends BaseThingHandler {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     });
-                } else if (cfg[1].equals("removewifi") && value instanceof Boolean && (Boolean) value) {
+                } else if ("removewifi".equals(cfg[1]) && value instanceof Boolean bool && bool) {
                     scheduler.execute(() -> {
                         try {
                             http.doGet(baseUrl + "/settings?restore=true", null, retryCount);
@@ -243,7 +240,7 @@ public class KonnectedHandler extends BaseThingHandler {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     });
-                } else if (cfg[1].equals("sendConfig") && value instanceof Boolean && (Boolean) value) {
+                } else if ("sendConfig".equals(cfg[1]) && value instanceof Boolean bool && bool) {
                     scheduler.execute(() -> {
                         try {
                             String response = updateKonnectedModule();
@@ -444,7 +441,7 @@ public class KonnectedHandler extends BaseThingHandler {
 
     private void getSwitchState(String zone, ChannelUID channelId) {
         Channel channel = getThing().getChannel(channelId.getId());
-        if (!(channel == null)) {
+        if (channel != null) {
             logger.debug("getasstring: {} getID: {} getGroupId: {} toString:{}", channelId.getAsString(),
                     channelId.getId(), channelId.getGroupId(), channelId);
             KonnectedModuleGson payload = new KonnectedModuleGson();

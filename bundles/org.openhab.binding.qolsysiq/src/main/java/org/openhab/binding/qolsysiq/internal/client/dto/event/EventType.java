@@ -22,5 +22,5 @@ public enum EventType {
     ARMING,
     ERROR,
     INFO,
-    ZONE_EVENT;
+    ZONE_EVENT
 }

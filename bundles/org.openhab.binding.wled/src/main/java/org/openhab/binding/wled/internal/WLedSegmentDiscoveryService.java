@@ -84,8 +84,8 @@ public class WLedSegmentDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof WLedBridgeHandler) {
-            bridgeHandler = (WLedBridgeHandler) handler;
+        if (handler instanceof WLedBridgeHandler wLedBridgeHandler) {
+            bridgeHandler = wLedBridgeHandler;
             bridgeUID = bridgeHandler.getThing().getUID();
         }
     }

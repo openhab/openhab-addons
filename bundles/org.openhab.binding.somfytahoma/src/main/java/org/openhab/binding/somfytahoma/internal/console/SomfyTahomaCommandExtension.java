@@ -62,8 +62,8 @@ public class SomfyTahomaCommandExtension extends AbstractConsoleCommandExtension
             SomfyTahomaBridgeHandler bridgeHandler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof SomfyTahomaBridgeHandler) {
-                    bridgeHandler = (SomfyTahomaBridgeHandler) thingHandler;
+                if (thingHandler instanceof SomfyTahomaBridgeHandler tahomaBridgeHandler) {
+                    bridgeHandler = tahomaBridgeHandler;
                 }
             }
             if (thing == null) {

@@ -69,8 +69,8 @@ Device things support some of the following channels:
 | dynamics              | Number:Time        | Sets the duration of dynamic transitions between light states. (Advanced)                                           |
 | alert                 | String             | Allows setting an alert on a light e.g. flashing them. (Advanced)                                                   |
 | effect                | String             | Allows setting an effect on a light e.g. 'candle' effect. (Advanced)                                                |
-| button-last-event     | Number             | Informs which button was last pressed in the device. (Trigger Channel)                                              |
-| rotary-steps          | Number             | Informs about the number of rotary steps of the last rotary dial movement. (Trigger Channel)                        |
+| button-last-event     | (String)           | Informs which button was last pressed in the device. (Trigger Channel)                                              |
+| rotary-steps          | (String)           | Informs about the number of rotary steps of the last rotary dial movement. (Trigger Channel)                        |
 | motion                | Switch             | Shows if motion has been detected by the sensor. (Read Only)                                                        |
 | motion-enabled        | Switch             | Supports enabling / disabling the motion sensor. (Advanced)                                                         |
 | light-level           | Number:Illuminance | Shows the current light level measured by the sensor. (Read Only)                                                   |

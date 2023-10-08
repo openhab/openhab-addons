@@ -31,10 +31,16 @@
     <mariadb.version>3.0.8</mariadb.version>
     <mysql.version>8.0.33</mysql.version>
     <postgresql.version>42.4.3</postgresql.version>
-    <sqlite.version>3.40.0.0</sqlite.version>
+    <sqlite.version>3.42.0.0</sqlite.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>commons-dbutils</groupId>
       <artifactId>commons-dbutils</artifactId>

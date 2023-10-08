@@ -15,7 +15,7 @@ package org.openhab.binding.modbus.stiebeleltron.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Modbus.StiebelEltronConfiguration} class contains fields mapping
+ * The {@link StiebelEltronConfiguration} class contains fields mapping
  * thing configuration parameters.
  *
  * @author Paul Frank - Initial contribution
