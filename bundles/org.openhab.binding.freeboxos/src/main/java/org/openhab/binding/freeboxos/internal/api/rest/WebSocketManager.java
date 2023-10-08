@@ -12,12 +12,18 @@
  */
 package org.openhab.binding.freeboxos.internal.api.rest;
 
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,8 +36,12 @@ import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 import org.openhab.binding.freeboxos.internal.api.rest.VmManager.VirtualMachine;
+import org.openhab.binding.freeboxos.internal.handler.ApiConsumerHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
 import org.openhab.binding.freeboxos.internal.handler.VmHandler;
+import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,30 +59,33 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     private static final String HOST_UNREACHABLE = "lan_host_l3addr_unreachable";
     private static final String HOST_REACHABLE = "lan_host_l3addr_reachable";
     private static final String VM_CHANGED = "vm_state_changed";
-    private static final Register REGISTRATION = new Register("register",
-            List.of(VM_CHANGED, HOST_REACHABLE, HOST_UNREACHABLE));
+    private static final Register REGISTRATION = new Register(VM_CHANGED, HOST_REACHABLE, HOST_UNREACHABLE);
     private static final String WS_PATH = "ws/event";
 
     private final Logger logger = LoggerFactory.getLogger(WebSocketManager.class);
-    private final Map<MACAddress, HostHandler> lanHosts = new HashMap<>();
-    private final Map<Integer, VmHandler> vms = new HashMap<>();
+    private final Map<MACAddress, ApiConsumerHandler> listeners = new HashMap<>();
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
     private final ApiHandler apiHandler;
-
+    private final WebSocketClient client;
+    private Optional<ScheduledFuture<?>> reconnectJob = Optional.empty();
     private volatile @Nullable Session wsSession;
 
     private record Register(String action, List<String> events) {
-
+        Register(String... events) {
+            this("register", List.of(events));
+        }
     }
 
     public WebSocketManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(WS_PATH));
         this.apiHandler = session.getApiHandler();
+        this.client = new WebSocketClient(apiHandler.getHttpClient());
     }
 
-    private static enum Action {
+    private enum Action {
         REGISTER,
         NOTIFICATION,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private static record WebSocketResponse(boolean success, Action action, String event, String source,
@@ -82,25 +95,54 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         }
     }
 
-    public void openSession(@Nullable String sessionToken) throws FreeboxException {
-        WebSocketClient client = new WebSocketClient(apiHandler.getHttpClient());
-        URI uri = getUriBuilder().scheme(getUriBuilder().build().getScheme().contains("s") ? "wss" : "ws").build();
-        ClientUpgradeRequest request = new ClientUpgradeRequest();
-        request.setHeader(ApiHandler.AUTH_HEADER, sessionToken);
-
-        try {
-            client.start();
-            client.connect(this, uri, request);
-        } catch (Exception e) {
-            throw new FreeboxException(e, "Exception connecting websocket client");
+    public void openSession(@Nullable String sessionToken, int reconnectInterval) {
+        if (reconnectInterval > 0) {
+            URI uri = getUriBuilder().scheme(getUriBuilder().build().getScheme().contains("s") ? "wss" : "ws").build();
+            ClientUpgradeRequest request = new ClientUpgradeRequest();
+            request.setHeader(ApiHandler.AUTH_HEADER, sessionToken);
+            try {
+                client.start();
+                stopReconnect();
+                reconnectJob = Optional.of(scheduler.scheduleWithFixedDelay(() -> {
+                    try {
+                        closeSession();
+                        client.connect(this, uri, request);
+                        // Update listeners in case we would have lost data while disconnecting / reconnecting
+                        listeners.values()
+                                .forEach(host -> host.handleCommand(new ChannelUID(host.getThing().getUID(), REACHABLE),
+                                        RefreshType.REFRESH));
+                        logger.debug("Websocket manager connected to {}", uri);
+                    } catch (IOException e) {
+                        logger.warn("Error connecting websocket client: {}", e.getMessage());
+                    }
+                }, 0, reconnectInterval, TimeUnit.MINUTES));
+            } catch (Exception e) {
+                logger.warn("Error starting websocket client: {}", e.getMessage());
+            }
         }
     }
 
-    public void closeSession() {
+    private void stopReconnect() {
+        reconnectJob.ifPresent(job -> job.cancel(true));
+        reconnectJob = Optional.empty();
+    }
+
+    public void dispose() {
+        stopReconnect();
+        closeSession();
+        try {
+            client.stop();
+        } catch (Exception e) {
+            logger.warn("Error stopping websocket client: {}", e.getMessage());
+        }
+    }
+
+    private void closeSession() {
         logger.debug("Awaiting closure from remote");
         Session localSession = wsSession;
         if (localSession != null) {
             localSession.close();
+            wsSession = null;
         }
     }
 
@@ -111,7 +153,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         try {
             wsSession.getRemote().sendString(apiHandler.serialize(REGISTRATION));
         } catch (IOException e) {
-            logger.warn("Error connecting to websocket: {}", e.getMessage());
+            logger.warn("Error registering to websocket: {}", e.getMessage());
         }
     }
 
@@ -138,29 +180,27 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         }
     }
 
-    private void handleNotification(WebSocketResponse result) {
-        JsonElement json = result.result;
+    private void handleNotification(WebSocketResponse response) {
+        JsonElement json = response.result;
         if (json != null) {
-            switch (result.getEvent()) {
+            switch (response.getEvent()) {
                 case VM_CHANGED:
                     VirtualMachine vm = apiHandler.deserialize(VirtualMachine.class, json.toString());
                     logger.debug("Received notification for VM {}", vm.id());
-                    VmHandler vmHandler = vms.get(vm.id());
-                    if (vmHandler != null) {
+                    ApiConsumerHandler handler = listeners.get(vm.mac());
+                    if (handler instanceof VmHandler vmHandler) {
                         vmHandler.updateVmChannels(vm);
                     }
                     break;
                 case HOST_UNREACHABLE, HOST_REACHABLE:
                     LanHost host = apiHandler.deserialize(LanHost.class, json.toString());
-                    MACAddress mac = host.getMac();
-                    logger.debug("Received notification for LanHost {}", mac.toColonDelimitedString());
-                    HostHandler hostHandler = lanHosts.get(mac);
-                    if (hostHandler != null) {
+                    ApiConsumerHandler handler2 = listeners.get(host.getMac());
+                    if (handler2 instanceof HostHandler hostHandler) {
                         hostHandler.updateConnectivityChannels(host);
                     }
                     break;
                 default:
-                    logger.warn("Unhandled event received: {}", result.getEvent());
+                    logger.warn("Unhandled event received: {}", response.getEvent());
             }
         } else {
             logger.warn("Empty json element in notification");
@@ -183,19 +223,15 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         /* do nothing */
     }
 
-    public void registerListener(MACAddress mac, HostHandler hostHandler) {
-        lanHosts.put(mac, hostHandler);
+    public boolean registerListener(MACAddress mac, ApiConsumerHandler hostHandler) {
+        if (wsSession != null) {
+            listeners.put(mac, hostHandler);
+            return true;
+        }
+        return false;
     }
 
     public void unregisterListener(MACAddress mac) {
-        lanHosts.remove(mac);
-    }
-
-    public void registerVm(int clientId, VmHandler vmHandler) {
-        vms.put(clientId, vmHandler);
-    }
-
-    public void unregisterVm(int clientId) {
-        vms.remove(clientId);
+        listeners.remove(mac);
     }
 }

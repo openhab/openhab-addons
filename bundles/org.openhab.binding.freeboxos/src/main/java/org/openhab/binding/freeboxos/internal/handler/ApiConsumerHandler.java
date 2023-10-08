@@ -63,7 +63,7 @@ import inet.ipaddr.IPAddress;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsumerIntf {
+public abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsumerIntf {
     private final Logger logger = LoggerFactory.getLogger(ApiConsumerHandler.class);
     private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
 
@@ -141,12 +141,16 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType || getThing().getStatus() != ThingStatus.ONLINE) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
             return;
         }
         try {
-            if (checkBridgeHandler() == null || !internalHandleCommand(channelUID.getIdWithoutGroup(), command)) {
-                logger.debug("Unexpected command {} on channel {}", command, channelUID.getId());
+            if (checkBridgeHandler() != null) {
+                if (command instanceof RefreshType) {
+                    internalPoll();
+                } else if (!internalHandleCommand(channelUID.getIdWithoutGroup(), command)) {
+                    logger.debug("Unexpected command {} on channel {}", command, channelUID.getId());
+                }
             }
         } catch (FreeboxException e) {
             logger.warn("Error handling command: {}", e.getMessage());
