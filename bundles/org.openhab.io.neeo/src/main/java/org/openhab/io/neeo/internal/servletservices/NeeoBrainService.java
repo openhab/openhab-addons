@@ -21,11 +21,11 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
@@ -114,7 +114,7 @@ public class NeeoBrainService extends DefaultServletService {
      * @param api the non-null api
      * @param context the non-null context
      */
-    public NeeoBrainService(NeeoApi api, ServiceContext context, ClientBuilder clientBuilder) {
+    public NeeoBrainService(NeeoApi api, ServiceContext context, HttpClient httpClient) {
         Objects.requireNonNull(api, "api cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
 
@@ -125,7 +125,7 @@ public class NeeoBrainService extends DefaultServletService {
         scheduler.execute(() -> {
             resendState();
         });
-        request = new HttpRequest(clientBuilder);
+        request = new HttpRequest(httpClient);
     }
 
     /**

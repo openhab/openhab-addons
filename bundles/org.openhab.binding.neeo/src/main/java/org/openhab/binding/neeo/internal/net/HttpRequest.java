@@ -16,18 +16,19 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.openhab.binding.neeo.internal.NeeoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,17 +45,13 @@ public class HttpRequest implements AutoCloseable {
     private final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
 
     /** The client to use */
-    private final Client client;
+    private final HttpClient httpClient;
 
     /**
      * Instantiates a new request
      */
-    public HttpRequest(ClientBuilder clientBuilder) {
-        client = clientBuilder.build();
-
-        if (logger.isDebugEnabled()) {
-            client.register(new LoggingFilter(new Slf4LoggingAdapter(logger), true));
-        }
+    public HttpRequest(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     /**
@@ -66,17 +63,17 @@ public class HttpRequest implements AutoCloseable {
     public HttpResponse sendGetCommand(String uri) {
         NeeoUtil.requireNotEmpty(uri, "uri cannot be empty");
         try {
-            final Builder request = client.target(uri).request();
-
-            final Response content = request.get();
-
-            try {
-                return new HttpResponse(content);
-            } finally {
-                content.close();
-            }
+            final org.eclipse.jetty.client.api.Request request = httpClient.newRequest(uri);
+            request.method(HttpMethod.GET);
+            request.timeout(10, TimeUnit.SECONDS);
+            ContentResponse refreshResponse = request.send();
+            return new HttpResponse(refreshResponse);
         } catch (IOException | IllegalStateException e) {
             return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, e.getMessage());
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.debug("An exception occurred while invoking a HTTP request: '{}'", e.getMessage());
+            String message = e.getMessage();
+            return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, message != null ? message : "");
         }
     }
 
@@ -99,26 +96,27 @@ public class HttpRequest implements AutoCloseable {
                 logger.warn("Absolute URI required but provided URI '{}' is non-absolute. ", uriString);
                 return new HttpResponse(HttpStatus.NOT_ACCEPTABLE_406, "Absolute URI required");
             }
-            final Builder request = client.target(targetUri).request(MediaType.APPLICATION_JSON);
-
-            final Response content = request.post(Entity.entity(body, MediaType.APPLICATION_JSON));
-
-            try {
-                return new HttpResponse(content);
-            } finally {
-                content.close();
-            }
+            final org.eclipse.jetty.client.api.Request request = httpClient.newRequest(targetUri);
+            request.content(new StringContentProvider(body));
+            request.header(HttpHeader.CONTENT_TYPE, "application/json");
+            request.method(HttpMethod.POST);
+            request.timeout(10, TimeUnit.SECONDS);
+            ContentResponse refreshResponse = request.send();
+            return new HttpResponse(refreshResponse);
             // IllegalArgumentException/ProcessingException catches issues with the URI being invalid
             // as well
         } catch (IOException | IllegalStateException | IllegalArgumentException | ProcessingException e) {
             return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, e.getMessage());
         } catch (URISyntaxException e) {
             return new HttpResponse(HttpStatus.NOT_ACCEPTABLE_406, e.getMessage());
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.debug("An exception occurred while invoking a HTTP request: '{}'", e.getMessage());
+            String message = e.getMessage();
+            return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, message != null ? message : "");
         }
     }
 
     @Override
     public void close() {
-        client.close();
     }
 }
