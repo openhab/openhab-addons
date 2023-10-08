@@ -126,7 +126,10 @@ public class ShellyDeviceProfile {
         initFromThingType(thingType);
 
         String json = jsonIn;
-        if (json.contains("\"ext_temperature\":{\"0\":[{")) {
+        // It is not guaranteed, that the array entries are in order. Check all
+        // possible variants. See openhab#15514.
+        if (json.contains("\"ext_temperature\":{\"0\":[{") || json.contains("\"ext_temperature\":{\"1\":[{")
+                || json.contains("\"ext_temperature\":{\"2\":[{")) {
             // Shelly UNI uses ext_temperature array, reformat to avoid GSON exception
             json = json.replace("ext_temperature", "ext_temperature_array");
         }
