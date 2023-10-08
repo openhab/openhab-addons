@@ -35,7 +35,7 @@ This is dangerous and might be misused.
 The option exists to be able to authenticate when the server is not sending the proper 401/Unauthorized code.
 Authentication might fail if redirections are involved as headers are stripper prior to redirection.
 
-*Note:* If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
+_Note:_ If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
 
 **Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) should not use escaping (e.g. `%22` instead of `"` or `%2c` instead of `,`).
 URLs are properly escaped by the binding itself before the request is sent.
