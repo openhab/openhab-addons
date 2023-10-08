@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.goveelan.internal.model.Color;
 import org.openhab.binding.goveelan.internal.model.ColorData;
+import org.openhab.binding.goveelan.internal.model.EmptyValueQueryStatusData;
 import org.openhab.binding.goveelan.internal.model.GenericGoveeMessage;
 import org.openhab.binding.goveelan.internal.model.GenericGoveeMsg;
 import org.openhab.binding.goveelan.internal.model.ValueData;
@@ -35,6 +36,7 @@ public class GoveeLanSerializeTest {
     private final String lightOnJsonString = "{\"msg\":{\"cmd\":\"brightness\",\"data\":{\"value\":100}}}";
     private final String lightColorJsonString = "{\"msg\":{\"cmd\":\"colorwc\",\"data\":{\"color\":{\"r\":0,\"g\":1,\"b\":2},\"colorTemInKelvin\":3}}}";
     private final String lightBrightnessJsonString = "{\"msg\":{\"cmd\":\"brightness\",\"data\":{\"value\":99}}}";
+    private static final String lightQueryJsonString = "{\"msg\":{\"cmd\":\"devStatus\",\"data\":{}}}";
 
     @Test
     public void testSerializeMessage() {
@@ -48,5 +50,8 @@ public class GoveeLanSerializeTest {
         GenericGoveeMessage lightBrightness = new GenericGoveeMessage(
                 new GenericGoveeMsg("brightness", new ValueData(99)));
         assertEquals(lightBrightnessJsonString, GSON.toJson(lightBrightness));
+        GenericGoveeMessage lightQuery = new GenericGoveeMessage(
+                new GenericGoveeMsg("devStatus", new EmptyValueQueryStatusData()));
+        assertEquals(lightQueryJsonString, GSON.toJson(lightQuery));
     }
 }

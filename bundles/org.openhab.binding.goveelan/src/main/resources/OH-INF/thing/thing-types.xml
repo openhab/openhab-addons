@@ -9,10 +9,9 @@
 		<description>Govee light controllable via LAN API</description>
 
 		<channels>
-			<channel id="switch" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color-temperature-abs" typeId="colortemperatureabs"/>
-			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 		<config-description-ref uri="thing-type:goveelan:goveelight"/>
 	</thing-type>

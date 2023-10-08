@@ -16,13 +16,11 @@ package org.openhab.binding.goveelan.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Simple Govee Value Data
- * typically used for On / Off
- * 
- * @param value
+ * Empty Govee Value Data
+ * Used to query device data
  *
  * @author Stefan Höhn - Initial contribution
  */
 @NonNullByDefault
-public record ValueData(int value) implements GenericGoveeData {
+public record EmptyValueQueryStatusData() implements GenericGoveeData {
 }

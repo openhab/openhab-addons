@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class GoveeLanConfiguration {
 
     public String hostname = "";
-    public int refreshInterval = 2; // in seconds
+    public int refreshInterval = 5; // in seconds
 }

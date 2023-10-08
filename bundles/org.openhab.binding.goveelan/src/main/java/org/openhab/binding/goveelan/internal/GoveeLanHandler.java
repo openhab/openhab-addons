@@ -15,7 +15,6 @@ package org.openhab.binding.goveelan.internal;
 import static org.openhab.binding.goveelan.internal.GoveeLanBindingConstants.BRIGHTNESS;
 import static org.openhab.binding.goveelan.internal.GoveeLanBindingConstants.COLOR;
 import static org.openhab.binding.goveelan.internal.GoveeLanBindingConstants.COLOR_TEMPERATURE_ABS;
-import static org.openhab.binding.goveelan.internal.GoveeLanBindingConstants.SWITCH;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -32,6 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.goveelan.internal.model.Color;
 import org.openhab.binding.goveelan.internal.model.ColorData;
+import org.openhab.binding.goveelan.internal.model.EmptyValueQueryStatusData;
 import org.openhab.binding.goveelan.internal.model.GenericGoveeMessage;
 import org.openhab.binding.goveelan.internal.model.GenericGoveeMsg;
 import org.openhab.binding.goveelan.internal.model.StatusMessage;
@@ -85,34 +85,6 @@ public class GoveeLanHandler extends BaseThingHandler {
      * Messages to be sent to the Govee Devices
      */
     private static final Gson GSON = new Gson();
-
-    private static final String LIGHT_OFF = GSON
-            .toJson(new GenericGoveeMessage(new GenericGoveeMsg("turn", new ValueData(0))));
-
-    // turning on via cmd-turn and value = 1 doesn't work, so let's use the brightness command
-    private static final String LIGHT_ON = GSON
-            .toJson(new GenericGoveeMessage(new GenericGoveeMsg("brightness", new ValueData(100))));
-
-    private static final String LIGHT_BRIGHTNESS = """
-            {
-              "msg":{
-                "cmd":"brightness",
-                "data":{
-                  "value": %d
-                }
-              }
-            }
-            """;
-
-    private static final String QUERY_STATUS = """
-            {
-              "msg":{
-                "cmd":"devStatus",
-                "data":{
-                }
-              }
-            }
-            """;
 
     // Holds a list of all thing handlers to send them thing updates via the receiver-Thread
     private static final Map<String, GoveeLanHandler> THING_HANDLERS = new HashMap<>();
@@ -298,11 +270,6 @@ public class GoveeLanHandler extends BaseThingHandler {
                 triggerDeviceStatusRefresh();
             } else {
                 switch (channelUID.getId()) {
-                    case SWITCH:
-                        if (command instanceof OnOffType) {
-                            send(command.equals(OnOffType.ON) ? LIGHT_ON : LIGHT_OFF);
-                        }
-                        break;
                     case COLOR:
                         if (command instanceof HSBType hsbCommand) {
                             int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
@@ -320,7 +287,19 @@ public class GoveeLanHandler extends BaseThingHandler {
                         break;
                     case BRIGHTNESS:
                         if (command instanceof PercentType percent) {
-                            send(String.format(GoveeLanHandler.LIGHT_BRIGHTNESS, percent.intValue()));
+                            GenericGoveeMessage lightBrightness = new GenericGoveeMessage(
+                                    new GenericGoveeMsg("brightness", new ValueData(percent.intValue())));
+                            send(GSON.toJson(lightBrightness));
+                        } else if (command instanceof OnOffType) {
+                            if (command.equals(OnOffType.ON)) {
+                                GenericGoveeMessage lightOn = new GenericGoveeMessage(
+                                        new GenericGoveeMsg("brightness", new ValueData(100)));
+                                send(GSON.toJson(lightOn));
+                            } else {
+                                GenericGoveeMessage lightOff = new GenericGoveeMessage(
+                                        new GenericGoveeMsg("turn", new ValueData(0)));
+                                send(GSON.toJson(lightOff));
+                            }
                         }
                         break;
                 }
@@ -351,7 +330,9 @@ public class GoveeLanHandler extends BaseThingHandler {
         LOGGER.debug("trigger Refresh Status of device {}", thing.getLabel());
 
         try {
-            send(QUERY_STATUS);
+            GenericGoveeMessage lightQuery = new GenericGoveeMessage(
+                    new GenericGoveeMsg("devStatus", new EmptyValueQueryStatusData()));
+            send(GSON.toJson(lightQuery));
         } finally {
             refreshRunning = false;
         }
@@ -380,9 +361,9 @@ public class GoveeLanHandler extends BaseThingHandler {
         Color lastColor = message.msg().data().color();
         int lastColorTemperature = message.msg().data().colorTemInKelvin();
 
-        updateState(SWITCH, OnOffType.from(lastOnOff == 1));
         updateState(COLOR, ColorUtil.rgbToHsb(new int[] { lastColor.r(), lastColor.g(), lastColor.b() }));
         updateState(COLOR_TEMPERATURE_ABS, new QuantityType(lastColorTemperature, Units.KELVIN));
         updateState(BRIGHTNESS, new PercentType(lastBrightness));
+        updateState(BRIGHTNESS, OnOffType.from(lastOnOff == 1));
     }
 }

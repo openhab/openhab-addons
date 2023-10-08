@@ -25,7 +25,7 @@
 		<parameter name="refreshInterval" type="integer" unit="s">
 			<label>Light refresh interval</label>
 			<description>The amount of time that passes until the device is refreshed (in seconds)</description>
-			<default>2</default>
+			<default>5</default>
 		</parameter>
 	</config-description>
 

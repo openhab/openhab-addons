@@ -114,10 +114,11 @@ arp -a | grep "MAC_ADDRESS"
 
 | Channel             | Type              | Read/Write | Description         |
 |---------------------|-------------------|------------|---------------------|
-| switch              | Switch            | RW         | Power On / OFF      |
+| brightness          | Percentage        | RW         |                     |
+|                     | Switch            | RW         | Power On / OFF      |
 | color               | Color HSB Type    | RW         |                     |
 | colorTemperatureAbs | Color Temperature | RW         | in 2000-9000 Kelvin |
-| brightness          | Percentage        | RW         |                     |
+
 
 Note: you may have to add "%.0f K" as the state description when creating a colorTemperatureAbs item.
 
