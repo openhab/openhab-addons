@@ -62,7 +62,6 @@ public class AwtrixLightBindingConstants {
     public static final String TOPIC_INDICATOR1 = "/indicator1";
     public static final String TOPIC_INDICATOR2 = "/indicator2";
     public static final String TOPIC_INDICATOR3 = "/indicator3";
-    // TODO: Implement notifications
     public static final String TOPIC_NOTIFY = "/notify";
     public static final String TOPIC_POWER = "/power";
     public static final String TOPIC_REBOOT = "/reboot";

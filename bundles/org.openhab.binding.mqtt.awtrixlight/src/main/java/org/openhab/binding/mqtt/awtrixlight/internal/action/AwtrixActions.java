@@ -13,6 +13,9 @@
 
 package org.openhab.binding.mqtt.awtrixlight.internal.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.awtrixlight.internal.handler.AwtrixLightBridgeHandler;
@@ -95,6 +98,17 @@ public class AwtrixActions implements ThingActions {
         AwtrixLightBridgeHandler localHandler = this.handler;
         if (localHandler != null) {
             localHandler.playSound(melody);
+        }
+    }
+
+    @RuleAction(label = "Show Notification", description = "Shows a notification")
+    public void showNotification(String message, String icon) {
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("text", message);
+            params.put("icon", icon);
+            localHandler.showNotification(false, false, true, "", "", false, params);
         }
     }
 }

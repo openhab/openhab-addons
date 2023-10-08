@@ -120,7 +120,7 @@ public class AwtrixApp {
         this.effectBlend = getBoolValue(params, "effectBlend", DEFAULT_EFFECTBLEND);
     }
 
-    public String getAppConfig() {
+    protected Map<String, Object> getAppParams() {
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("text", this.text);
         fields.put("textCase", this.textCase);
@@ -140,6 +140,11 @@ public class AwtrixApp {
             fields.put("scrollSpeed", this.scrollSpeed);
         }
         fields.putAll(getEffectConfig());
+        return fields;
+    }
+
+    public String getAppConfig() {
+        Map<String, Object> fields = getAppParams();
         return Helper.encodeJson(fields);
     }
 

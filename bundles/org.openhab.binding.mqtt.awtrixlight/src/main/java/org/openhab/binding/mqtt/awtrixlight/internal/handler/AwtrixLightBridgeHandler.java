@@ -63,6 +63,7 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_INDICATOR1;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_INDICATOR2;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_INDICATOR3;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_NOTIFY;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_POWER;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_REBOOT;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_SCREEN;
@@ -92,6 +93,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.awtrixlight.internal.BridgeConfigOptions;
 import org.openhab.binding.mqtt.awtrixlight.internal.Helper;
 import org.openhab.binding.mqtt.awtrixlight.internal.action.AwtrixActions;
+import org.openhab.binding.mqtt.awtrixlight.internal.app.AwtrixNotification;
 import org.openhab.binding.mqtt.awtrixlight.internal.discovery.AwtrixLightBridgeDiscoveryService;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -362,6 +364,19 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
 
     public void upgrade() {
         this.sendMQTT(this.basetopic + TOPIC_UPGRADE, "", false);
+    }
+
+    public void showNotification(boolean hold, boolean wakeUp, boolean stack, String rtttl, String sound,
+            boolean loopSound, Map<String, Object> params) {
+        AwtrixNotification notification = new AwtrixNotification();
+        notification.updateFields(params);
+        notification.setWakeUp(wakeUp);
+        notification.setStack(stack);
+        notification.setRtttl(rtttl);
+        notification.setSound(sound);
+        notification.setLoopSound(loopSound);
+        String notificationMessage = notification.getNotificationConfig();
+        this.sendMQTT(this.basetopic + TOPIC_NOTIFY, notificationMessage, false);
     }
 
     public void setAppDiscoveryCallback(AwtrixLightBridgeDiscoveryService awtrixLightBridgeDiscoveryService) {
