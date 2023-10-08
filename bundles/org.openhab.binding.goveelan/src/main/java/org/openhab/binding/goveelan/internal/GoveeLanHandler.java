@@ -102,6 +102,7 @@ public class GoveeLanHandler extends BaseThingHandler {
     @Nullable
     private ScheduledFuture<?> triggerStatusJob; // send device status update job
     private GoveeLanConfiguration goveeLanConfiguration = new GoveeLanConfiguration();
+    private int lastBrightness;
 
     /*
      * Common Receiver job for the status answers of the devices
@@ -155,7 +156,7 @@ public class GoveeLanHandler extends BaseThingHandler {
                     StatusMessage statusMessage = GSON.fromJson(response, StatusMessage.class);
                     thingHandler.updateDeviceState(statusMessage);
                 } catch (JsonSyntaxException jse) {
-                    thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             jse.getMessage());
                 }
             } else {
@@ -293,7 +294,7 @@ public class GoveeLanHandler extends BaseThingHandler {
                         } else if (command instanceof OnOffType) {
                             if (command.equals(OnOffType.ON)) {
                                 GenericGoveeMessage lightOn = new GenericGoveeMessage(
-                                        new GenericGoveeMsg("brightness", new ValueData(100)));
+                                        new GenericGoveeMsg("brightness", new ValueData(lastBrightness)));
                                 send(GSON.toJson(lightOn));
                             } else {
                                 GenericGoveeMessage lightOff = new GenericGoveeMessage(
@@ -357,13 +358,15 @@ public class GoveeLanHandler extends BaseThingHandler {
         }
 
         int lastOnOff = message.msg().data().onOff();
-        int lastBrightness = message.msg().data().brightness();
+        lastBrightness = message.msg().data().brightness();
         Color lastColor = message.msg().data().color();
         int lastColorTemperature = message.msg().data().colorTemInKelvin();
 
         updateState(COLOR, ColorUtil.rgbToHsb(new int[] { lastColor.r(), lastColor.g(), lastColor.b() }));
         updateState(COLOR_TEMPERATURE_ABS, new QuantityType(lastColorTemperature, Units.KELVIN));
-        updateState(BRIGHTNESS, new PercentType(lastBrightness));
+        LOGGER.debug("setting BRIGHTNESS to ONOFF {}", OnOffType.from(lastOnOff == 1));
         updateState(BRIGHTNESS, OnOffType.from(lastOnOff == 1));
+        LOGGER.debug("setting BRIGHTNESS to PercentType", new PercentType(lastBrightness));
+        updateState(BRIGHTNESS, new PercentType(lastBrightness));
     }
 }

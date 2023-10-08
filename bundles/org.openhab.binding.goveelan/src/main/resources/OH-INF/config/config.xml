@@ -7,8 +7,8 @@
 	<config-description uri="thing-type:goveelan:govee-light">
 		<parameter name="hostname" type="text" required="true">
 			<context>network-address</context>
-			<label>Hostname / IP Address</label>
-			<description>Hostname or IP Address of the device</description>
+			<label>Hostname/IP Address</label>
+			<description>Hostname or IP address of the device</description>
 		</parameter>
 		<parameter name="macAddress" type="text" required="true">
 			<label>MAC Address</label>
@@ -23,7 +23,7 @@
 			<description>Description of the device</description>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" unit="s">
-			<label>Light refresh interval</label>
+			<label>Light Refresh Interval</label>
 			<description>The amount of time that passes until the device is refreshed (in seconds)</description>
 			<default>5</default>
 		</parameter>

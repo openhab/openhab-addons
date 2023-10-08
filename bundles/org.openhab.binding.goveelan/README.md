@@ -89,25 +89,26 @@ To be able to use the device with the LAN API, the following needs to be done (a
 Go to the settings page of the device 
 ![govee device settings](doc/device-settings.png)
 + Note that it may take several(!) minutes until this setting comes up.
-+ Switch on the LAN-Control setting.
++ Switch on the LAN Control setting.
 + Now the device can be used with openHAB.
 + The easiest way is then to scan the devices via the SCAN button in the thing section of that binding
 
 ## Thing Configuration
 
 Even though binding configuration is supported via a thing file it should be noted that the IP address is required and there is no easy way to find out the IP address of the device.
-One possibility is to look for the MAC address in the Govee app and then looking the IP address up via 
+One possibility is to look for the MAC address in the Govee app and then looking the IP address up via: 
 
-```
+```shell
 arp -a | grep "MAC_ADDRESS"
 ```
+### `govee-light` Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
 | hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
 | macAddress      | text    | MAC address of the device             | N/A     | yes      | no       |
 | deviceType      | text    | The product number of the device      | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 3       | no       | yes      |
+| refreshInterval | integer | Interval the device is polled in sec. | 5       | no       | yes      |
 
 
 ## Channels
@@ -120,7 +121,7 @@ arp -a | grep "MAC_ADDRESS"
 | colorTemperatureAbs | Color Temperature | RW         | in 2000-9000 Kelvin |
 
 
-Note: you may have to add "%.0f K" as the state description when creating a colorTemperatureAbs item.
+Note: you may have to add "%.0f K" as the state description when creating a color-temperature-abs item.
 
 ## Additional Information
 

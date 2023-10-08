@@ -25,8 +25,8 @@ import org.openhab.core.thing.ThingTypeUID;
 public class GoveeLanBindingConstants {
 
     // Thing properties
-    public static final String IP_ADDRESS = "hostname";
     public static final String MAC_ADDRESS = "macAddress";
+    public static final String IP_ADDRESS = "hostname";
     public static final String DEVICE_TYPE = "deviceType";
     public static final String PRODUCT_NAME = "productName";
     private static final String BINDING_ID = "goveelan";

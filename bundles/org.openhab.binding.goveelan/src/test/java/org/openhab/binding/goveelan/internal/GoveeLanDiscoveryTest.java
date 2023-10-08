@@ -26,7 +26,22 @@ import org.junit.jupiter.api.Test;
 @NonNullByDefault
 public class GoveeLanDiscoveryTest {
 
-    String response = "{\"msg\":{\"cmd\":\"scan\",\"data\":{\"ip\":\"192.168.178.171\",\"device\":\"7D:31:C3:35:33:33:44:15\",\"sku\":\"H6076\",\"bleVersionHard\":\"3.01.01\",\"bleVersionSoft\":\"1.04.04\",\"wifiVersionHard\":\"1.00.10\",\"wifiVersionSoft\":\"1.02.11\"}}}";
+    String response = """
+             {
+                "msg":{
+                   "cmd":"scan",
+                   "data":{
+                      "ip":"192.168.178.171",
+                      "device":"7D:31:C3:35:33:33:44:15",
+                      "sku":"H6076",
+                      "bleVersionHard":"3.01.01",
+                      "bleVersionSoft":"1.04.04",
+                      "wifiVersionHard":"1.00.10",
+                      "wifiVersionSoft":"1.02.11"
+                   }
+                }
+            }
+             """;
 
     @Test
     public void testProcessScanMessage() {
