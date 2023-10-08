@@ -36,7 +36,7 @@ public class GoveeLanSerializeTest {
     private final String lightOnJsonString = "{\"msg\":{\"cmd\":\"brightness\",\"data\":{\"value\":100}}}";
     private final String lightColorJsonString = "{\"msg\":{\"cmd\":\"colorwc\",\"data\":{\"color\":{\"r\":0,\"g\":1,\"b\":2},\"colorTemInKelvin\":3}}}";
     private final String lightBrightnessJsonString = "{\"msg\":{\"cmd\":\"brightness\",\"data\":{\"value\":99}}}";
-    private static final String lightQueryJsonString = "{\"msg\":{\"cmd\":\"devStatus\",\"data\":{}}}";
+    private final String lightQueryJsonString = "{\"msg\":{\"cmd\":\"devStatus\",\"data\":{}}}";
 
     @Test
     public void testSerializeMessage() {
