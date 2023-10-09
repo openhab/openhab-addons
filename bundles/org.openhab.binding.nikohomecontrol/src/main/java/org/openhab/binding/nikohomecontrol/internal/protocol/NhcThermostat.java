@@ -73,7 +73,7 @@ public abstract class NhcThermostat {
      * @param overrule the overrule temperature in 0.1°C multiples
      * @param overruletime in minutes
      * @param ecosave
-     * @param demand 0 if no demand, > 0 if heating, < 0 if cooling
+     * @param demand 0 if no demand, > 0 if heating, &lt; 0 if cooling
      */
     public void updateState(int measured, int setpoint, int mode, int overrule, int overruletime, int ecosave,
             int demand) {

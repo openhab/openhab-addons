@@ -26,8 +26,9 @@ public interface DeviceStatusListener {
 
     /**
      * This method is called whenever the state of the given device has changed.
-     * The new state can be obtained by {@link TellstickNetDevice#getState()} /
-     * {@link TellstickLocalDeviceDTO#getState()}.
+     * The new state can be obtained by
+     * {@link org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice#getState()} /
+     * {@link org.openhab.binding.tellstick.internal.local.dto.TellstickLocalDeviceDTO#getState()}.
      *
      * @param bridge
      *            The Tellstick bridge the changed device is connected to.
