@@ -30,6 +30,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.util.ColorUtil;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
@@ -334,7 +335,29 @@ class DPTTest {
     }
 
     @Test
-    public void dpt252EncoderTest() {
+    public void dpt251White() {
+        // input data: color white
+        byte[] data = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x00, 0x00, 0x0e };
+        HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
+
+        assertNotNull(hsbType);
+        assertEquals(0, hsbType.getHue().doubleValue(), 0.5);
+        assertEquals(0, hsbType.getSaturation().doubleValue(), 0.5);
+        assertEquals(100, hsbType.getBrightness().doubleValue(), 0.5);
+
+        String enc = ValueEncoder.encode(hsbType, "251.600");
+        // white should be "100 100 100 - %", but expect small deviation due to rounding
+        assertNotNull(enc);
+        String[] parts = enc.split(" ");
+        assertEquals(5, parts.length);
+        int[] rgb = ColorUtil.hsbToRgb(hsbType);
+        assertEquals(rgb[0] * 100d / 255, Double.valueOf(parts[0].replace(',', '.')), 1);
+        assertEquals(rgb[1] * 100d / 255, Double.valueOf(parts[1].replace(',', '.')), 1);
+        assertEquals(rgb[2] * 100d / 255, Double.valueOf(parts[2].replace(',', '.')), 1);
+    }
+
+    @Test
+    public void dpt251Value() {
         // input data
         byte[] data = new byte[] { 0x26, 0x2b, 0x31, 0x00, 0x00, 0x0e };
         HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
@@ -343,6 +366,16 @@ class DPTTest {
         assertEquals(207, hsbType.getHue().doubleValue(), 0.5);
         assertEquals(23, hsbType.getSaturation().doubleValue(), 0.5);
         assertEquals(19, hsbType.getBrightness().doubleValue(), 0.5);
+
+        String enc = ValueEncoder.encode(hsbType, "251.600");
+        // white should be "100 100 100 - %", but expect small deviation due to rounding
+        assertNotNull(enc);
+        String[] parts = enc.split(" ");
+        assertEquals(5, parts.length);
+        int[] rgb = ColorUtil.hsbToRgb(hsbType);
+        assertEquals(rgb[0] * 100d / 255, Double.valueOf(parts[0].replace(',', '.')), 1);
+        assertEquals(rgb[1] * 100d / 255, Double.valueOf(parts[1].replace(',', '.')), 1);
+        assertEquals(rgb[2] * 100d / 255, Double.valueOf(parts[2].replace(',', '.')), 1);
     }
 
     // This test checks all our overrides for units. It allows to detect unnecessary overrides when we
