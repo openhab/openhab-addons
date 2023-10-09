@@ -163,7 +163,7 @@ public class ValueEncoder {
                 return String.format("(%,.4f %,.4f) %,.1f %%", xyY[0], xyY[1], xyY[2] * 100.0);
             case "251.600":
                 PercentType[] rgbw = ColorUtil.hsbToRgbPercent(hsb);
-                return String.format("%,.1f %,.1f %,.1f - %%", rgbw[0].doubleValue(), rgbw[1].doubleValue(), 
+                return String.format("%,.1f %,.1f %,.1f - %%", rgbw[0].doubleValue(), rgbw[1].doubleValue(),
                         rgbw[2].doubleValue());
             case "5.003":
                 return hsb.getHue().toString();
