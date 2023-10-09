@@ -117,9 +117,9 @@ public class AwtrixLightBindingConstants {
     public static final String[] DEFAULT_APPS = { "Time", "Date", "Temperature", "Humidity", "Battery" };
 
     // Common Channels
-    public static final String CHANNEL_BUTLEFT = "buttonLeft";
-    public static final String CHANNEL_BUTRIGHT = "buttonRight";
-    public static final String CHANNEL_BUTSELECT = "buttonSelect";
+    public static final String CHANNEL_BUTLEFT = "buttonleft";
+    public static final String CHANNEL_BUTRIGHT = "buttonright";
+    public static final String CHANNEL_BUTSELECT = "buttonselect";
 
     // Clock Channels
     public static final String CHANNEL_APP = "app";
