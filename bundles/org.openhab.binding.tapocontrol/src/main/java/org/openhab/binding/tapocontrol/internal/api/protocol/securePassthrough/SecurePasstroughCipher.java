@@ -10,7 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.helpers;
+package org.openhab.binding.tapocontrol.internal.api.protocol.securePassthrough;
+
+import static java.util.Base64.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -21,6 +24,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
+import org.openhab.binding.tapocontrol.internal.helpers.TapoKeyPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +36,8 @@ import org.slf4j.LoggerFactory;
  * @author Christian Wild - Initial Initial contribution
  */
 @NonNullByDefault
-public class TapoCipher {
-    private final Logger logger = LoggerFactory.getLogger(TapoCipher.class);
+public class SecurePasstroughCipher {
+    private final Logger logger = LoggerFactory.getLogger(SecurePasstroughCipher.class);
     protected static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
     protected static final String CIPHER_ALGORITHM = "AES";
     protected static final String CIPHER_CHARSET = "UTF-8";
@@ -44,23 +49,22 @@ public class TapoCipher {
     private Cipher encodeCipher;
     @NonNullByDefault({})
     private Cipher decodeCipher;
-    @NonNullByDefault({})
-    private MimeEncode mimeEncode;
 
     /**
      * CREATE NEW EMPTY CIPHER
      */
-    public TapoCipher() {
+    public SecurePasstroughCipher() {
     }
 
     /**
      * CREATE NEW CIPHER WITH KEY AND CREDENTIALS
      * 
      * @param handshakeKey Key from Handshake-Request
-     * @param credentials TapoCredentials
+     * @param TapoKeyPair keyPair
+     * @throws Exception
      */
-    public TapoCipher(String handshakeKey, TapoCredentials credentials) {
-        setKey(handshakeKey, credentials);
+    public SecurePasstroughCipher(String handshakeKey, TapoKeyPair keyPair) throws TapoErrorHandler {
+        setKey(handshakeKey, keyPair);
     }
 
     /**
@@ -69,12 +73,11 @@ public class TapoCipher {
      * @param handshakeKey
      * @param credentials
      */
-    public void setKey(String handshakeKey, TapoCredentials credentials) {
-        logger.trace("Init TapoCipher with key: {} ", handshakeKey);
-        MimeEncode mimeEncode = new MimeEncode();
+    public void setKey(String handshakeKey, TapoKeyPair keyPair) throws TapoErrorHandler {
+        logger.trace("Init passtroughCipher with key: {} ", handshakeKey);
         try {
-            byte[] decode = mimeEncode.decode(handshakeKey.getBytes(HANDSHAKE_CHARSET));
-            byte[] decode2 = mimeEncode.decode(credentials.getPrivateKeyBytes());
+            byte[] decode = getMimeDecoder().decode(handshakeKey.getBytes(HANDSHAKE_CHARSET));
+            byte[] decode2 = getMimeDecoder().decode(keyPair.getPrivateKeyBytes());
             Cipher instance = Cipher.getInstance(HANDSHAKE_TRANSFORMATION);
             KeyFactory kf = KeyFactory.getInstance(HANDSHAKE_ALGORITHM);
             PrivateKey p = kf.generatePrivate(new PKCS8EncodedKeySpec(decode2));
@@ -85,8 +88,9 @@ public class TapoCipher {
             System.arraycopy(doFinal, 0, bArr, 0, 16);
             System.arraycopy(doFinal, 16, bArr2, 0, 16);
             initCipher(bArr, bArr2);
-        } catch (Exception ex) {
-            logger.warn("Something went wrong: {}", ex.getMessage());
+        } catch (Exception e) {
+            logger.warn("handshake Failed: {}", e.getMessage());
+            throw new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED, e.getMessage());
         }
     }
 
@@ -99,17 +103,16 @@ public class TapoCipher {
      */
     protected void initCipher(byte[] bArr, byte[] bArr2) throws Exception {
         try {
-            mimeEncode = new MimeEncode();
             SecretKeySpec secretKeySpec = new SecretKeySpec(bArr, CIPHER_ALGORITHM);
             IvParameterSpec ivParameterSpec = new IvParameterSpec(bArr2);
-            this.encodeCipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-            this.decodeCipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-            this.encodeCipher.init(1, secretKeySpec, ivParameterSpec);
-            this.decodeCipher.init(2, secretKeySpec, ivParameterSpec);
+            encodeCipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
+            decodeCipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
+            encodeCipher.init(1, secretKeySpec, ivParameterSpec);
+            decodeCipher.init(2, secretKeySpec, ivParameterSpec);
         } catch (Exception e) {
             logger.warn("initChiper failed: {}", e.getMessage());
-            this.encodeCipher = null;
-            this.decodeCipher = null;
+            encodeCipher = null;
+            decodeCipher = null;
         }
     }
 
@@ -122,8 +125,8 @@ public class TapoCipher {
      */
     public String encode(String str) throws Exception {
         byte[] doFinal;
-        doFinal = this.encodeCipher.doFinal(str.getBytes(CIPHER_CHARSET));
-        String encrypted = mimeEncode.encodeToString(doFinal);
+        doFinal = encodeCipher.doFinal(str.getBytes(CIPHER_CHARSET));
+        String encrypted = getMimeEncoder().encodeToString(doFinal);
         return encrypted.replace("\r\n", "");
     }
 
@@ -135,9 +138,9 @@ public class TapoCipher {
      * @throws Exception
      */
     public String decode(String str) throws Exception {
-        byte[] data = mimeEncode.decode(str.getBytes(CIPHER_CHARSET));
+        byte[] data = getMimeDecoder().decode(str.getBytes(CIPHER_CHARSET));
         byte[] doFinal;
-        doFinal = this.decodeCipher.doFinal(data);
+        doFinal = decodeCipher.doFinal(data);
         return new String(doFinal);
     }
 }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.structures;
+package org.openhab.binding.tapocontrol.internal.devices.bridge;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

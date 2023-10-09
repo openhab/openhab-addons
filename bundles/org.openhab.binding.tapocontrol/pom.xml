@@ -14,4 +14,12 @@
 
   <name>openHAB Add-ons :: Bundles :: TapoControl Binding</name>
 
+  <dependencies>
+    <!-- keep until core pom is equal or newer - for support of gson-records as needed -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+  </dependencies>
 </project>

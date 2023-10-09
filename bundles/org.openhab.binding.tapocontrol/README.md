@@ -6,20 +6,24 @@ This binding adds support to control Tapo (Copyright © TP-Link Corporation Limi
 
 The following Tapo-Devices are supported. For precise channel-description look at `channels-table` below
 
-| DeviceType                         | ThingType   | Description                                 |
-|------------------------------------|-------------|---------------------------------------------|
-| SmartPlug (Wi-Fi)                  | P100        | Smart Socket                                |
-|                                    | P105        | Smart Mini Socket                           |
-| EnergyMonitoring SmartPlug (Wi-Fi) | P110        | Energy Monitoring Smart Socket              |
-|                                    | P115        | Energy Monitoring Mini Smart Socket         |
-| Power Strip (Wi-Fi)                | P300        | Smart Wi-Fi Power Strip - 3 sockets         |
-| Dimmable SmartBulb (Wi-Fi)         | L510        | Dimmable White-Light Smart-Bulb (E27)       |
-|                                    | L610        | Dimmable White-Light Smart-Spot (GU10)      |
-| MultiColor SmartBulb (Wi-Fi)       | L530        | Multicolor Smart-Bulb (E27)                 |
-|                                    | L630        | Multicolor Smart-Spot (GU10)                |
-| MultiColor LightStrip (Wi-Fi)      | L900        | Multicolor RGB Dimmable LightStrip (5m)     |
-|                                    | L920        | Multicolor RGB-IC ColorZone LightStrip (5m) |
-|                                    | L930        | Multicolor RGBW-IC 50-Zone LightStrip (5m)  |
+| DeviceType                         | ThingType   | Description                                  |
+|------------------------------------|-------------|----------------------------------------------|
+| SmartPlug (Wi-Fi)                  | P100        | Smart Socket                                 |
+|                                    | P105        | Smart Mini Socket                            |
+| EnergyMonitoring SmartPlug (Wi-Fi) | P110        | Energy Monitoring Smart Socket               |
+|                                    | P115        | Energy Monitoring Mini Smart Socket          |
+| Power Strip (Wi-Fi)                | P300        | Smart Wi-Fi Power Strip - 3 sockets          |
+| Dimmable SmartBulb (Wi-Fi)         | L510        | Dimmable White-Light Smart-Bulb (E27)        |
+|                                    | L610        | Dimmable White-Light Smart-Spot (GU10)       |
+| MultiColor SmartBulb (Wi-Fi)       | L530        | Multicolor Smart-Bulb (E27)                  |
+|                                    | L630        | Multicolor Smart-Spot (GU10)                 |
+| MultiColor LightStrip (Wi-Fi)      | L900        | Multicolor RGB Dimmable LightStrip (5m)      |
+|                                    | L920        | Multicolor RGB-IC ColorZone LightStrip (5m)  |
+|                                    | L930        | Multicolor RGBW-IC 50-Zone LightStrip (5m)   |
+| Smart Hub (Wi-Fi / RF)             | H100        | Smart Hub with Chime to control Child Devices|
+| Smart Contact Sensor (RF)          | T110        | Window/Door Smart Contact Sensor             |
+| Smart Temperature Sensor (RF)      | T310        | Temperature and Humidity Sensor              |
+|                                    | T315        | Temperature and Humidity Sensor with Display |
 
 ## Prerequisites
 
@@ -32,9 +36,11 @@ To satisfy this requirement while keeping the device isolated, your router shoul
 
 ## Discovery
 
-Discovery is done by connecting to the Tapo-Cloud Service.
+For Wi-Fi-Devices Discovery is done by connecting to the Tapo-Cloud Service.
 All devices stored in your cloud account will be detected even if they are not in your network.
-You need to know the IP-Adress of your device. This must be set manually in the thing configuration
+You need to know the IP-Adress of your device. This must be set manually in the thing configuration.
+
+RF-Devices will be discovered by the hub they are connected to. You can discover them manually or use ´backgroundDiscovery´ 
 
 ## Bridge Configuration
 
@@ -48,16 +54,20 @@ The thing has the following configuration parameters:
 | username           | Username (eMail) of your Tapo-Cloud                                  |
 | password           | Password of your Tapo-Cloud                                          |
 
-## Thing Configuration
+## Thing Configurations
 
-The thing needs to be configured with `ipAddress`.
+WiFi-Things needs to be configured with `ipAddress`.
+RF-Things need a Hub (WiFi-Device) to operate. 
 
-The thing has the following configuration parameters:
+The things has the following configuration parameters:
 
-| Parameter          | Description                                                          |
-|--------------------|----------------------------------------------------------------------|
-| ipAddress          | IP Address of the device.                                            |
-| pollingInterval    | Refresh interval in seconds. Optional. The default is 30 seconds     |
+| Parameter          | Description                                                           | Things supporting parameter |
+|--------------------|-----------------------------------------------------------------------|-----------------------------|
+| ipAddress          | IP Address of the device.                                             | Any Wi-Fi-Device            |
+| pollingInterval    | [optional] Refresh interval in seconds. The default is 30 seconds     | Any Wi-Fi-Device            |
+| httpPort           | [optional] HTTP-Communication Port. Default is 80                     | Any Wi-Fi-Device            |
+| backgroundDiscovery| [optional] RF-Devices will be discovered after every polling request  | SmartHub                    |
+
 
 ## Channels
 
@@ -72,12 +82,20 @@ All devices support some of the following channels:
 |           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900, L920                               |
 |           | colorTemperature | Number                 | White-Color-Temp 2500-6500K         | L510, L530, L610, L630, L900, L920                               |
 |           | color            | Color                  | Color                               | L530, L630, L900, L920                                           |
+| sensor    | isOpen           | Switch                 | Contact (Door/Window) is Open       | T110                                                             |
+|           | currentTemp      | Number:Temperature     | Current Temperature                 | T310, T315                                                       |
+|           | currentHumidity  | Number:Dimensionless   | Current relative humidity in %      | T310, T315                                                       |
 | effects   | fxName           | String                 | Active lightning effect             | L530                                                             |
 | device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
 |           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930             |
+|           | signalStrength   | Number                 | RF-quality-level                    | T110                                                             |
+|           | isOnline         | Switch                 | Device is Online                    | T110                                                             |
+|           | batteryLow       | Switch                 | Battery of device is low            | T110                                                             |
 | energy    | actualPower      | Number:Power           | actual Power (Watt)                 | P110, P115                                                       |
 |           | todayEnergyUsage | Number:Energy          | used energy today (Wh)              | P110, P115                                                       |
 |           | todayRuntime     | Number:Time            | seconds output was on today         | P110, P115                                                       |
+| alarm     | alarmActive      | Switch                 | Alarm is currntly active            | H100                                                             |
+|           | alarmSource      | String                 | Source causes active alarm          | H100                                                             |
 
 ## Channel Refresh
 
@@ -90,10 +108,10 @@ To minimize network traffic the default refresh-rate is set to 30 seconds. This 
 
 ```java
 tapocontrol:bridge:myTapoBridge                 "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
-tapocontrol:P100:myTapoBridge:mySocket          "My-Socket"     (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.150", pollingInterval=30 ]
-tapocontrol:L510:myTapoBridge:whiteBulb         "white-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.151", pollingInterval=30 ]
-tapocontrol:L530:myTapoBridge:colorBulb         "color-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.152", pollingInterval=30 ]
-tapocontrol:L900:myTapoBridge:myLightStrip      "light-strip"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.153", pollingInterval=30 ]
+tapocontrol:P100:myTapoBridge:mySocket          "My-Socket"     (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.150" ]
+tapocontrol:L510:myTapoBridge:whiteBulb         "white-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.151", httpPort=80, pollingInterval=30, protocol="securePassthrough" ]
+tapocontrol:L530:myTapoBridge:colorBulb         "color-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.152", pollingInterval=30, protocol="klap" ]
+tapocontrol:L900:myTapoBridge:myLightStrip      "light-strip"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.153", pollingInterval=30, protocol="passthrough" ]
 
 Bridge tapocontrol:bridge:secondBridgeExample            "Cloud-Login"        [ username="youtoo@anyprovider.com", password="verysecret" ] {
    Thing P110 mySocket   "My-Socket"          [ ipAddress="192.168.101.51", pollingInterval=30 ]

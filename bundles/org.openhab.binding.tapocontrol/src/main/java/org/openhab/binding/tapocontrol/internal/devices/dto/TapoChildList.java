@@ -10,11 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.structures;
+package org.openhab.binding.tapocontrol.internal.devices.dto;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Tapo-Child Structure Class
@@ -22,10 +25,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class TapoChildData {
+public class TapoChildList {
+    @Expose
+    @SerializedName("start_index")
     private int startIndex = 0;
+
+    @Expose
     private int sum = 0;
-    private List<TapoChild> childDeviceList = List.of();
+
+    @Expose
+    @SerializedName("child_device_list")
+    private List<TapoChildDeviceData> childDeviceList = List.of();
+
+    /***********************************
+     *
+     * GET VALUES
+     *
+     ************************************/
 
     public int getStartIndex() {
         return startIndex;
@@ -35,7 +51,7 @@ public class TapoChildData {
         return sum;
     }
 
-    public List<TapoChild> getChildDeviceList() {
+    public List<TapoChildDeviceData> getChildDeviceList() {
         return childDeviceList;
     }
 }

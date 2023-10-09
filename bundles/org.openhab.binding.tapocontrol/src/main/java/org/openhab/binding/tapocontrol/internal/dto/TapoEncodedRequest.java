@@ -10,33 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.helpers;
-
-import static java.util.Base64.*;
+package org.openhab.binding.tapocontrol.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.Expose;
+
 /**
- * MimeEncoder
+ * {@TapoEncodedRequest} holds encoded data sent to device
  *
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
-public class MimeEncode {
+public record TapoEncodedRequest(@Expose String method, @Expose Object params, @Expose long requestTimeMils) {
 
-    public byte[] encode(byte[] src) {
-        return getMimeEncoder().encode(src);
-    }
-
-    public String encodeToString(byte[] src) {
-        return getMimeEncoder().encodeToString(src);
-    }
-
-    public byte[] decode(byte[] src) {
-        return getMimeDecoder().decode(src);
-    }
-
-    public byte[] decode(String src) {
-        return getMimeDecoder().decode(src);
+    /**
+     * Create request with command (method) and data (params) sent to device
+     */
+    public TapoEncodedRequest(Object params) {
+        this("securePassthrough", "{request:'" + params.toString() + "'}", System.currentTimeMillis());
     }
 }

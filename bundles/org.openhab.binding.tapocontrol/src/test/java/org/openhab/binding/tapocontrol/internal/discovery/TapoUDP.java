@@ -25,7 +25,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +46,8 @@ public class TapoUDP {
     private static final String DISCOVERY_MESSAGE_KEY = "rsa_key";
     private static final String DISCOVERY_MESSAGE_START_BYTES = "0200000101e5110001cb8c577dd7deb8";
     private static final Integer BUFFER_SIZE = 501;
-    private TapoCredentials credentials;
 
-    public TapoUDP(TapoCredentials credentials) {
-        this.credentials = credentials; // new TapoCredentials();
+    public TapoUDP() {
     }
 
     public JsonArray udpScan() {
@@ -60,7 +57,7 @@ public class TapoUDP {
             udpSocket.setBroadcast(true);
 
             /* create payload for handshake */
-            String publicKey = credentials.getPublicKey();
+            String publicKey = "";// credentials.getPublicKey();
             publicKey = generateOwnRSAKey(); // credentials.getPublicKey();
             JsonObject parameters = new JsonObject();
             JsonObject messageObject = new JsonObject();

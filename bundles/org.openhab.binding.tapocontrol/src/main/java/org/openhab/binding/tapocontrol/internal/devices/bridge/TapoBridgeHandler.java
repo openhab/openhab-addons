@@ -10,10 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.device;
+package org.openhab.binding.tapocontrol.internal.devices.bridge;
+
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -22,9 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.TapoDiscoveryService;
 import org.openhab.binding.tapocontrol.internal.api.TapoCloudConnector;
+import org.openhab.binding.tapocontrol.internal.devices.bridge.dto.TapoCloudDeviceList;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
-import org.openhab.binding.tapocontrol.internal.structures.TapoBridgeConfiguration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -36,8 +38,6 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonArray;
 
 /**
  * The {@link TapoBridgeHandler} is responsible for handling commands, which are
@@ -63,9 +63,9 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     public TapoBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         Thing thing = getThing();
-        this.cloudConnector = new TapoCloudConnector(this, httpClient);
-        this.credentials = new TapoCredentials();
-        this.uid = thing.getUID().toString();
+        cloudConnector = new TapoCloudConnector(this);
+        credentials = new TapoCredentials();
+        uid = thing.getUID().toString();
         this.httpClient = httpClient;
     }
 
@@ -114,7 +114,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(TapoDiscoveryService.class);
+        return Collections.singleton(TapoDiscoveryService.class);
     }
 
     /**
@@ -177,7 +177,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     /**
      * Stop scheduler
      * 
-     * @param scheduler {@code ScheduledFeature<?>} which schould be stopped
+     * @param scheduler ScheduledFeature<?> which schould be stopped
      */
     protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
         if (scheduler != null) {
@@ -191,13 +191,14 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * ERROR HANDLER
      *
      ************************************/
+
     /**
      * return device Error
      * 
      * @return
      */
-    public TapoErrorHandler getError() {
-        return this.bridgeError;
+    public TapoErrorHandler getErrorHandler() {
+        return bridgeError;
     }
 
     /**
@@ -206,7 +207,8 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * @param tapoError TapoErrorHandler-Object
      */
     public void setError(TapoErrorHandler tapoError) {
-        this.bridgeError.set(tapoError);
+        bridgeError.set(tapoError);
+        handleConnectionState();
     }
 
     /***********************************
@@ -222,18 +224,40 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      */
     public boolean loginCloud() {
         bridgeError.reset(); // reset ErrorHandler
-        if (!config.username.isBlank() && !config.password.isBlank()) {
-            logger.debug("{} login with user {}", this.uid, config.username);
-            if (cloudConnector.login(config.username, config.password)) {
-                updateStatus(ThingStatus.ONLINE);
-                return true;
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, bridgeError.getMessage());
+        if (credentials.areSet()) {
+            try {
+                logger.trace("{} login with user {}", this.uid, credentials.username());
+                cloudConnector.login(credentials);
+                handleConnectionState();
+                return cloudConnector.isLoggedIn();
+            } catch (Exception e) {
+                logger.debug("{} login with user failed {}", this.uid, config.username);
+                bridgeError.raiseError(e, "LOGIN FAILED");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "credentials not set");
+            bridgeError.raiseError(ERR_BINDING_CREDENTIALS, "credentials not set");
         }
+        handleConnectionState();
         return false;
+    }
+
+    private void handleConnectionState() {
+        if (cloudConnector.isLoggedIn() & !bridgeError.hasError()) {
+            updateStatus(ThingStatus.ONLINE);
+        } else if (bridgeError.hasError()) {
+            switch (bridgeError.getType()) {
+                case COMMUNICATION_ERROR:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, bridgeError.getMessage());
+                    break;
+                case CONFIGURATION_ERROR:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                    break;
+                default:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, bridgeError.getMessage());
+            }
+        } else {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
+        }
     }
 
     /***********************************
@@ -246,7 +270,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * START DEVICE DISCOVERY
      */
     public void discoverDevices() {
-        this.discoveryService.startScan();
+        discoveryService.startScan();
     }
 
     /**
@@ -254,31 +278,31 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * 
      * @return devicelist
      */
-    public JsonArray getDeviceList() {
-        JsonArray deviceList = new JsonArray();
+    public void startDeviceScan() {
         if (config.cloudDiscovery) {
             logger.trace("{} discover devicelist from cloud", this.uid);
-            deviceList = getDeviceListCloud();
+            queryDeviceListCloud();
         } else {
             logger.info("{} Discovery disabled in bridge settings ", this.uid);
         }
-        return deviceList;
     }
 
     /**
-     * GET DEVICELIST FROM CLOUD
-     * returns all devices stored in cloud
-     * 
-     * @return deviceList from cloud
+     * query deviceList from Cloud
      */
-    private JsonArray getDeviceListCloud() {
+    private void queryDeviceListCloud() {
         logger.trace("{} getDeviceList from cloud", this.uid);
         bridgeError.reset(); // reset ErrorHandler
-        JsonArray deviceList = new JsonArray();
         if (loginCloud()) {
-            deviceList = this.cloudConnector.getDeviceList();
+            cloudConnector.getDeviceList();
         }
-        return deviceList;
+    }
+
+    /*
+     * handle Scan results
+     */
+    public void handleScanResults(TapoCloudDeviceList deviceList) {
+        discoveryService.handleScanResults(deviceList);
     }
 
     /***********************************

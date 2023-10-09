@@ -22,11 +22,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.tapocontrol.internal.device.TapoBridgeHandler;
-import org.openhab.binding.tapocontrol.internal.device.TapoLightStrip;
-import org.openhab.binding.tapocontrol.internal.device.TapoSmartBulb;
-import org.openhab.binding.tapocontrol.internal.device.TapoSmartPlug;
-import org.openhab.binding.tapocontrol.internal.device.TapoUniversalDevice;
+import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
+import org.openhab.binding.tapocontrol.internal.devices.rf.smartcontact.TapoSmartContactHandler;
+import org.openhab.binding.tapocontrol.internal.devices.rf.wheatersensor.TapoWheaterSensorHandler;
+import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoUniversalDeviceHandler;
+import org.openhab.binding.tapocontrol.internal.devices.wifi.bulb.TapoBulbHandler;
+import org.openhab.binding.tapocontrol.internal.devices.wifi.hub.TapoHubHandler;
+import org.openhab.binding.tapocontrol.internal.devices.wifi.lightstrip.TapoLightStripHandler;
+import org.openhab.binding.tapocontrol.internal.devices.wifi.socket.TapoSocketHandler;
+import org.openhab.binding.tapocontrol.internal.devices.wifi.socket.TapoSocketStripHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -43,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ThingHandler} is responsible for handling commands, which are
+ * The {@link TapoControlHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Christian Wild - Initial contribution
@@ -102,16 +106,24 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
             TapoBridgeHandler bridgeHandler = new TapoBridgeHandler((Bridge) thing, httpClient);
             accountHandlers.add(bridgeHandler);
             return bridgeHandler;
-        } else if (SUPPORTED_SMART_PLUG_UIDS.contains(thingTypeUID)) {
-            return new TapoSmartPlug(thing);
+        } else if (SUPPORTED_HUB_UIDS.contains(thingTypeUID)) {
+            return new TapoHubHandler(thing);
+        } else if (SUPPORTED_SOCKET_UIDS.contains(thingTypeUID)) {
+            return new TapoSocketHandler(thing);
+        } else if (SUPPORTED_SOCKET_STRIP_UIDS.contains(thingTypeUID)) {
+            return new TapoSocketStripHandler(thing);
         } else if (SUPPORTED_WHITE_BULB_UIDS.contains(thingTypeUID)) {
-            return new TapoSmartBulb(thing);
+            return new TapoBulbHandler(thing);
         } else if (SUPPORTED_COLOR_BULB_UIDS.contains(thingTypeUID)) {
-            return new TapoSmartBulb(thing);
+            return new TapoBulbHandler(thing);
         } else if (SUPPORTED_LIGHT_STRIP_UIDS.contains(thingTypeUID)) {
-            return new TapoLightStrip(thing);
+            return new TapoLightStripHandler(thing);
+        } else if (SUPPORTED_SMART_CONTACTS.contains(thingTypeUID)) {
+            return new TapoSmartContactHandler(thing);
+        } else if (SUPPORTED_WHEATHER_SENSORS.contains(thingTypeUID)) {
+            return new TapoWheaterSensorHandler(thing);
         } else if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
-            return new TapoUniversalDevice(thing);
+            return new TapoUniversalDeviceHandler(thing);
         }
         return null;
     }

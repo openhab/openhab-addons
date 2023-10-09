@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.tapocontrol.internal.helpers;
 
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
+
+import java.io.ByteArrayOutputStream;
+
 import javax.measure.Unit;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
+import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,6 +63,38 @@ public class TapoUtils {
         return value;
     }
 
+    /**
+     * Truncate Byte Array
+     * 
+     * @param bytes full byteArray
+     * @param srcPos startindex
+     * @param newLength
+     */
+    public static byte[] truncateByteArray(byte[] bytes, int srcPos, int newLength) {
+        if (bytes.length < newLength) {
+            return bytes;
+        } else {
+            byte[] truncated = new byte[newLength];
+            System.arraycopy(bytes, srcPos, truncated, 0, newLength);
+            return truncated;
+        }
+    }
+
+    /**
+     * Concat Byte Arrays
+     */
+    public static byte[] concatBytes(byte[]... bytes) throws TapoErrorHandler {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            for (byte[] b : bytes) {
+                outputStream.write(b);
+            }
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw new TapoErrorHandler(ERR_DATA_TRANSORMATION);
+        }
+    }
+
     /************************************
      * FORMAT UTILS
      ***********************************/
@@ -82,7 +119,8 @@ public class TapoUtils {
      */
     public static String formatMac(String mac, char newDivisionChar) {
         String unformatedMac = unformatMac(mac);
-        return unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
+        String formatedMac = unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
+        return formatedMac;
     }
 
     /**
@@ -111,6 +149,27 @@ public class TapoUtils {
         } catch (Exception e) {
         }
         return data;
+    }
+
+    /**
+     * byte to hex-string
+     */
+    public static String byteToHex(byte num) {
+        char[] hexDigits = new char[2];
+        hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
+        hexDigits[1] = Character.forDigit((num & 0xF), 16);
+        return new String(hexDigits);
+    }
+
+    /**
+     * byteArray to hex-string
+     */
+    public static String encodeHexString(byte[] byteArray) {
+        StringBuffer hexStringBuffer = new StringBuffer();
+        for (int i = 0; i < byteArray.length; i++) {
+            hexStringBuffer.append(byteToHex(byteArray[i]));
+        }
+        return hexStringBuffer.toString();
     }
 
     /**
@@ -269,7 +328,7 @@ public class TapoUtils {
     /**
      * Return OnOffType from bool
      * 
-     * @param intVal
+     * @param boolVal
      */
     public static OnOffType getOnOffType(Integer intVal) {
         return OnOffType.from(intVal != 0);
@@ -340,8 +399,8 @@ public class TapoUtils {
      * Return QuantityType with Time
      * 
      * @param numVal Number with value
-     * @param unit TimeUnit ({@code Unit<Time>})
-     * @return {@code QuantityType<Time>}
+     * @param unit TimeUnit (Unit<Time>)
+     * @return QuantityType<Time>
      */
     public static QuantityType<Time> getTimeType(@Nullable Number numVal, Unit<Time> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
@@ -351,8 +410,8 @@ public class TapoUtils {
      * Return QuantityType with Power
      * 
      * @param numVal Number with value
-     * @param unit PowerUnit ({@code Unit<Power>})
-     * @return {@code QuantityType<Power>}
+     * @param unit PowerUnit (Unit<Power>)
+     * @return QuantityType<Power>
      */
     public static QuantityType<Power> getPowerType(@Nullable Number numVal, Unit<Power> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
@@ -362,10 +421,21 @@ public class TapoUtils {
      * Return QuantityType with Energy
      * 
      * @param numVal Number with value
-     * @param unit PowerUnit ({@code Unit<Power>})
-     * @return {@code QuantityType<Energy>}
+     * @param unit PowerUnit (Unit<Power>)
+     * @return QuantityType<Energy>
      */
     public static QuantityType<Energy> getEnergyType(@Nullable Number numVal, Unit<Energy> unit) {
+        return new QuantityType<>((numVal != null ? numVal : 0), unit);
+    }
+
+    /**
+     * Return QuantityType with Temperature
+     * 
+     * @param numVal Number with value
+     * @param unit TemperatureUnit (Unit<Temperature>)
+     * @return QuantityType<Temperature>
+     */
+    public static QuantityType<Temperature> getTemperatureType(@Nullable Number numVal, Unit<Temperature> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
     }
 }
