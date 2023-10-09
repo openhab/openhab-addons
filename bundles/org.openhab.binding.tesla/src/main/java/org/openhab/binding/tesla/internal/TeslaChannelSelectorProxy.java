@@ -45,7 +45,7 @@ public class TeslaChannelSelectorProxy {
     public enum TeslaChannelSelector {
 
         API("api_version", "api", DecimalType.class, true),
-        AR_DESTINATION("active_route_destination", "destinationname", StringType.class, true),
+        AR_DESTINATION("active_route_destination", "destinationname", StringType.class, false),
         AR_LATITUDE("active_route_latitude", "destinationlocation", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -62,7 +62,7 @@ public class TeslaChannelSelectorProxy {
                         new StringType(proxy.elevation));
             }
         },
-        AR_DISTANCE_TO_ARRIVAL("active_route_miles_to_arrival", "distancetoarrival", DecimalType.class, true) {
+        AR_DISTANCE_TO_ARRIVAL("active_route_miles_to_arrival", "distancetoarrival", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
@@ -70,7 +70,7 @@ public class TeslaChannelSelectorProxy {
                 return new QuantityType<>(value, ImperialUnits.MILE);
             }
         },
-        AR_MINUTES_TO_ARRIVAL("active_route_minutes_to_arrival", "minutestoarrival", DecimalType.class, true) {
+        AR_MINUTES_TO_ARRIVAL("active_route_minutes_to_arrival", "minutestoarrival", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
