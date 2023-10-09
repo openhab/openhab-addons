@@ -37,7 +37,8 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
 
     private final JRubyEngine engine;
 
-    private final String CONTEXT_VAR_NAME = "$ctx";
+    private final String CONTEXT_VAR_NAME = "ctx";
+    private final String GLOBAL_VAR_NAME = "$" + CONTEXT_VAR_NAME;
 
     JRubyEngineWrapper(JRubyEngine engine) {
         this.engine = engine;
@@ -55,97 +56,97 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
 
     @Override
     public Object eval(String script, ScriptContext context) throws ScriptException {
-        Object ctx = context.getBindings(ScriptContext.ENGINE_SCOPE).get("ctx");
+        Object ctx = context.getBindings(ScriptContext.ENGINE_SCOPE).get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
             return engine.eval(script, context);
         }
 
-        context.setAttribute(CONTEXT_VAR_NAME, ctx, ScriptContext.ENGINE_SCOPE);
+        context.setAttribute(GLOBAL_VAR_NAME, ctx, ScriptContext.ENGINE_SCOPE);
         try {
             return engine.eval(script, context);
         } finally {
-            context.removeAttribute(CONTEXT_VAR_NAME, ScriptContext.ENGINE_SCOPE);
+            context.removeAttribute(GLOBAL_VAR_NAME, ScriptContext.ENGINE_SCOPE);
         }
     }
 
     @Override
     public Object eval(Reader reader, ScriptContext context) throws ScriptException {
-        Object ctx = context.getBindings(ScriptContext.ENGINE_SCOPE).get("ctx");
+        Object ctx = context.getBindings(ScriptContext.ENGINE_SCOPE).get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
             return engine.eval(reader, context);
         }
 
-        context.setAttribute(CONTEXT_VAR_NAME, ctx, ScriptContext.ENGINE_SCOPE);
+        context.setAttribute(GLOBAL_VAR_NAME, ctx, ScriptContext.ENGINE_SCOPE);
         try {
             return engine.eval(reader, context);
         } finally {
-            context.removeAttribute(CONTEXT_VAR_NAME, ScriptContext.ENGINE_SCOPE);
+            context.removeAttribute(GLOBAL_VAR_NAME, ScriptContext.ENGINE_SCOPE);
         }
     }
 
     @Override
     public Object eval(String script, Bindings bindings) throws ScriptException {
-        Object ctx = bindings.get("ctx");
+        Object ctx = bindings.get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
             return engine.eval(script, bindings);
         }
 
-        bindings.put(CONTEXT_VAR_NAME, ctx);
+        bindings.put(GLOBAL_VAR_NAME, ctx);
         try {
             return engine.eval(script, bindings);
         } finally {
-            bindings.remove(CONTEXT_VAR_NAME);
+            bindings.remove(GLOBAL_VAR_NAME);
         }
     }
 
     @Override
     public Object eval(Reader reader, Bindings bindings) throws ScriptException {
-        Object ctx = bindings.get("ctx");
+        Object ctx = bindings.get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
             return engine.eval(reader, bindings);
         }
 
-        bindings.put(CONTEXT_VAR_NAME, ctx);
+        bindings.put(GLOBAL_VAR_NAME, ctx);
         try {
             return engine.eval(reader, bindings);
         } finally {
-            bindings.remove(CONTEXT_VAR_NAME);
+            bindings.remove(GLOBAL_VAR_NAME);
         }
     }
 
     @Override
     public Object eval(String script) throws ScriptException {
-        Object ctx = getBindings(ScriptContext.ENGINE_SCOPE).get("ctx");
+        Object ctx = getBindings(ScriptContext.ENGINE_SCOPE).get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
             return engine.eval(script);
         }
 
-        getContext().setAttribute(CONTEXT_VAR_NAME, ctx, ScriptContext.ENGINE_SCOPE);
+        getContext().setAttribute(GLOBAL_VAR_NAME, ctx, ScriptContext.ENGINE_SCOPE);
         try {
             return engine.eval(script);
         } finally {
-            getContext().removeAttribute(CONTEXT_VAR_NAME, ScriptContext.ENGINE_SCOPE);
+            getContext().removeAttribute(GLOBAL_VAR_NAME, ScriptContext.ENGINE_SCOPE);
         }
     }
 
     @Override
     public Object eval(Reader reader) throws ScriptException {
-        Object ctx = getBindings(ScriptContext.ENGINE_SCOPE).get("ctx");
+        Object ctx = getBindings(ScriptContext.ENGINE_SCOPE).get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
             return engine.eval(reader);
         }
 
-        getContext().setAttribute(CONTEXT_VAR_NAME, ctx, ScriptContext.ENGINE_SCOPE);
+        getContext().setAttribute(GLOBAL_VAR_NAME, ctx, ScriptContext.ENGINE_SCOPE);
         try {
             return engine.eval(reader);
         } finally {
-            getContext().removeAttribute(CONTEXT_VAR_NAME, ScriptContext.ENGINE_SCOPE);
+            getContext().removeAttribute(GLOBAL_VAR_NAME, ScriptContext.ENGINE_SCOPE);
         }
     }
 
