@@ -294,7 +294,7 @@ public class LightStateConverter {
      *            <li>{@value #ALERT_MODE_NONE}.
      *            <li>{@value #ALERT_MODE_SELECT}.
      *            <li>{@value #ALERT_MODE_LONG_SELECT}.
-     *            <ul>
+     *            </ul>
      * @return light state containing the {@link AlertMode} or <b><code>null </code></b> if the provided
      *         {@link StringType} represents unsupported mode.
      */

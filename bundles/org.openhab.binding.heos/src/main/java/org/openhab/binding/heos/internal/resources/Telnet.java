@@ -132,7 +132,7 @@ public class Telnet {
      * @return A list with all read commands
      * @throws ReadException
      * @throws IOException
-     * @see Telnet.readLine(int timeOut).
+     * @see #readLine(int timeOut)
      */
     public String readLine() throws ReadException, IOException {
         return readLine(READ_TIMEOUT);

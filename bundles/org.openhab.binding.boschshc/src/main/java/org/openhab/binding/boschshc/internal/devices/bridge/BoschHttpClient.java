@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * HTTP client using own context with private & Bosch Certs
+ * HTTP client using own context with private and Bosch Certs
  * to pair and connect to the Bosch Smart Home Controller.
  *
  * @author Gerd Zanker - Initial contribution
@@ -103,7 +103,7 @@ public class BoschHttpClient extends HttpClient {
     }
 
     /**
-     * Returns a SmartHome URL for the endpoint - shortcut of {@link BoschSslUtil::getBoschShcUrl()}
+     * Returns a SmartHome URL for the endpoint - shortcut of {@link #getBoschShcUrl(String)}
      *
      * @param endpoint an endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
      * @return SmartHome URL for passed endpoint

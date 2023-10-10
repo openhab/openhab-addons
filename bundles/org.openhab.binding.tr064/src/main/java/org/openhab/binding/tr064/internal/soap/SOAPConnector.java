@@ -153,8 +153,8 @@ public class SOAPConnector {
             return soapMessage;
         } catch (IllegalArgumentException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof Tr064CommunicationException) {
-                throw (Tr064CommunicationException) cause;
+            if (cause instanceof Tr064CommunicationException tr064CommunicationException) {
+                throw tr064CommunicationException;
             } else {
                 throw e;
             }

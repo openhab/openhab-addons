@@ -24,7 +24,7 @@ public interface PacketCapturingHandler {
     /**
      * Callback method to handle a captured packet.
      *
-     * @param macAddress The mac address which sent the packet
+     * @param sourceMacAddress The mac address which sent the packet
      */
     void packetCaptured(MacAddress sourceMacAddress);
 }

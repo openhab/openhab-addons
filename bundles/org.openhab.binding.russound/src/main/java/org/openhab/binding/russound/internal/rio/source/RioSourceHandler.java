@@ -198,7 +198,8 @@ public class RioSourceHandler extends AbstractThingHandler<RioSourceProtocol> im
 
     /**
      * Initializes the bridge. Confirms the configuration is valid and that our parent bridge is a
-     * {@link RioSystemHandler}. Once validated, a {@link RioSystemProtocol} is set via
+     * {@link RioSystemHandler}. Once validated, a
+     * {@link org.openhab.binding.russound.internal.rio.system.RioSystemProtocol} is set via
      * {@link #setProtocolHandler(RioSystemProtocol)} and the bridge comes online.
      */
     @Override

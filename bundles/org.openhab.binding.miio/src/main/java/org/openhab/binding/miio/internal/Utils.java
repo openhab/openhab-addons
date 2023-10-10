@@ -91,10 +91,9 @@ public final class Utils {
 
     public static String obfuscateToken(String tokenString) {
         if (tokenString.length() > 8) {
-            String tokenText = tokenString.substring(0, 8)
+            return tokenString.substring(0, 8)
                     .concat((tokenString.length() < 24) ? tokenString.substring(8).replaceAll(".", "X")
                             : tokenString.substring(8, 24).replaceAll(".", "X").concat(tokenString.substring(24)));
-            return tokenText;
         } else {
             return tokenString;
         }
@@ -115,7 +114,7 @@ public final class Utils {
      * Saves string to file in userdata folder
      *
      * @param filename
-     * @param string with content
+     * @param data String with content
      * @param logger
      */
     public static void saveToFile(String filename, String data, Logger logger) {

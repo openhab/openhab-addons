@@ -198,7 +198,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     /**
      * Forwards a push update to a device
      *
-     * @param the {@link BPUPUpdate object}
+     * @param pushUpdate the {@link BPUPUpdate object}
      */
     public void forwardUpdateToThing(BPUPUpdate pushUpdate) {
         updateStatus(ThingStatus.ONLINE);

@@ -58,8 +58,8 @@ public class TPLinkSmartHomeActions implements ThingActions, ThingHandlerService
 
     @Override
     public void setThingHandler(final ThingHandler handler) {
-        if (handler instanceof SmartHomeHandler) {
-            this.handler = (SmartHomeHandler) handler;
+        if (handler instanceof SmartHomeHandler smartHomeHandler) {
+            this.handler = smartHomeHandler;
         }
     }
 

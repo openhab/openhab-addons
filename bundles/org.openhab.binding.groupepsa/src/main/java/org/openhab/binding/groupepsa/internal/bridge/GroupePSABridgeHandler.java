@@ -217,7 +217,7 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * @param id The id of the mower to query
+     * @param vin The VIN to query
      * @return A detailed status of the mower with the specified id
      * @throws GroupePSACommunicationException In case the query cannot be executed
      *             successfully

@@ -35,8 +35,8 @@ public class YamahaReceiverBindingConstants {
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "yamahaAV");
     public static final ThingTypeUID ZONE_THING_TYPE = new ThingTypeUID(BINDING_ID, "zone");
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
-    public static final Set<ThingTypeUID> ZONE_THING_TYPES_UIDS = Collections.singleton(ZONE_THING_TYPE);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> ZONE_THING_TYPES_UIDS = Set.of(ZONE_THING_TYPE);
 
     // List of channel IDs for zone control (except power which is also a non-zone/bridge channel)
     public static final String CHANNEL_POWER = "power";

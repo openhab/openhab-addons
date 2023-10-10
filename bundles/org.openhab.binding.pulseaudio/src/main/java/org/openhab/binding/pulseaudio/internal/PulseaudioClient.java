@@ -264,7 +264,7 @@ public class PulseaudioClient {
      * retrieves an {@link AbstractAudioDeviceConfig} by its identifier
      * If several devices correspond to the deviceIdentifier, returns the first one (aphabetical order)
      *
-     * @param The device identifier to match against
+     * @param deviceIdentifier The device identifier to match against
      * @return the corresponding {@link AbstractAudioDeviceConfig} to the given <code>name</code>
      */
     public @Nullable AbstractAudioDeviceConfig getGenericAudioItem(DeviceIdentifier deviceIdentifier) {

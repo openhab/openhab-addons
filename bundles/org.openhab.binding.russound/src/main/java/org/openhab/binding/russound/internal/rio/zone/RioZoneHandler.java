@@ -398,7 +398,7 @@ public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
     /**
      * Initializes the bridge. Confirms the configuration is valid and that our parent bridge is a
      * {@link RioControllerHandler}. Once validated, a {@link RioZoneProtocol} is set via
-     * {@link #setProtocolHandler(RioZoneProtocol)} and the bridge comes online.
+     * {@link #setProtocolHandler(AbstractRioProtocol)} and the bridge comes online.
      */
     @Override
     public void initialize() {

@@ -16,9 +16,9 @@ import static org.openhab.binding.wolfsmartset.internal.WolfSmartsetBindingConst
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -77,7 +77,7 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(WolfSmartsetSystemDiscoveryService.class);
+        return Set.of(WolfSmartsetSystemDiscoveryService.class);
     }
 
     @Override

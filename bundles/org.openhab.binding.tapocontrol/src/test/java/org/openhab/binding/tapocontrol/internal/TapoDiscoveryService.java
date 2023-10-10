@@ -84,8 +84,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TapoBridgeHandler) {
-            TapoBridgeHandler tapoBridge = (TapoBridgeHandler) handler;
+        if (handler instanceof TapoBridgeHandler tapoBridge) {
             tapoBridge.setDiscoveryService(this);
             this.bridge = tapoBridge;
         }

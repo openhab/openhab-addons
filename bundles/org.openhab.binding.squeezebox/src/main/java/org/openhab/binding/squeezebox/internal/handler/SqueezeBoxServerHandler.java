@@ -305,7 +305,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     /**
      * Send a generic command to a given player
      *
-     * @param playerId
+     * @param mac
      * @param command
      */
     public void playerCommand(String mac, String command) {

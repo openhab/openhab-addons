@@ -84,10 +84,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link LivisiBridgeHandler} is responsible for handling the LIVISI SmartHome controller including the connection
  * to the LIVISI SmartHome backend for all communications with the LIVISI SmartHome {@link DeviceDTO}s.
- * <p/>
+ * <p>
  * It implements the {@link AccessTokenRefreshListener} to handle updates of the oauth2 tokens and the
  * {@link EventListener} to handle {@link EventDTO}s, that are received by the {@link LivisiWebSocket}.
- * <p/>
+ * <p>
  * The {@link DeviceDTO}s are organized by the {@link DeviceStructureManager}, which is also responsible for the
  * connection
  * to the LIVISI SmartHome webservice via the {@link LivisiClient}.

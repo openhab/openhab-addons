@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.venstarthermostat.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link VenstarThermostatBinding} class defines common constants, which are
+ * The {@link VenstarThermostatBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author William Welliver - Initial contribution
@@ -34,7 +33,7 @@ public class VenstarThermostatBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_COLOR_TOUCH = new ThingTypeUID(BINDING_ID, "colorTouchThermostat");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_COLOR_TOUCH);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_COLOR_TOUCH);
     // List of all Channel ids
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";

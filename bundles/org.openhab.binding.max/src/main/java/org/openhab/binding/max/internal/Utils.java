@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Utility class for common tasks within the MAX! binding package.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  *
  */

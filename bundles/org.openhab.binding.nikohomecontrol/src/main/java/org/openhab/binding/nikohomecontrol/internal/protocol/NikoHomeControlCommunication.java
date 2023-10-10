@@ -150,7 +150,7 @@ public abstract class NikoHomeControlCommunication {
     /**
      * Return all actions in the Niko Home Control Controller.
      *
-     * @return <code>Map&ltString, {@link NhcAction}></code>
+     * @return <code>Map&lt;String, {@link NhcAction}></code>
      */
     public Map<String, NhcAction> getActions() {
         return actions;
@@ -159,7 +159,7 @@ public abstract class NikoHomeControlCommunication {
     /**
      * Return all thermostats in the Niko Home Control Controller.
      *
-     * @return <code>Map&ltString, {@link NhcThermostat}></code>
+     * @return <code>Map&lt;String, {@link NhcThermostat}></code>
      */
     public Map<String, NhcThermostat> getThermostats() {
         return thermostats;
@@ -168,7 +168,7 @@ public abstract class NikoHomeControlCommunication {
     /**
      * Return all energyMeters meters in the Niko Home Control Controller.
      *
-     * @return <code>Map&ltString, {@link NhcEnergyMeter}></code>
+     * @return <code>Map&lt;String, {@link NhcEnergyMeter}></code>
      */
     public Map<String, NhcEnergyMeter> getEnergyMeters() {
         return energyMeters;
