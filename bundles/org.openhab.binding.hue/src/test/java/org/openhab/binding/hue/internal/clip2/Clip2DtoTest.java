@@ -18,6 +18,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -27,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.dto.clip2.ActionEntry;
 import org.openhab.binding.hue.internal.dto.clip2.Alerts;
 import org.openhab.binding.hue.internal.dto.clip2.Button;
+import org.openhab.binding.hue.internal.dto.clip2.ContactReport;
 import org.openhab.binding.hue.internal.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.dto.clip2.Event;
 import org.openhab.binding.hue.internal.dto.clip2.LightLevel;
@@ -41,6 +45,7 @@ import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.dto.clip2.Rotation;
 import org.openhab.binding.hue.internal.dto.clip2.RotationEvent;
+import org.openhab.binding.hue.internal.dto.clip2.TamperReport;
 import org.openhab.binding.hue.internal.dto.clip2.Temperature;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.Archetype;
@@ -51,9 +56,11 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RotationEventType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.dto.clip2.helper.Setters;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -596,5 +603,54 @@ class Clip2DtoTest {
         assertNotNull(service);
         assertEquals("db4fd630-3798-40de-b642-c1ef464bf770", service.getId());
         assertEquals(ResourceType.GROUPED_LIGHT, service.getType());
+    }
+
+    @Test
+    void testSecurityContact() {
+        Resource resource = new Resource(ResourceType.CONTACT);
+        assertEquals(UnDefType.NULL, resource.getContactState());
+        assertEquals(UnDefType.NULL, resource.getContactLastUpdatedState(ZoneId.systemDefault()));
+        resource.setContactReport(new ContactReport().setLastChanged(Instant.now()).setContactState("contact"));
+        assertEquals(OpenClosedType.CLOSED, resource.getContactState());
+        assertTrue(resource.getContactLastUpdatedState(ZoneId.systemDefault()) instanceof DateTimeType);
+        resource.setContactReport(new ContactReport().setLastChanged(Instant.now()).setContactState("no_contact"));
+        assertEquals(OpenClosedType.OPEN, resource.getContactState());
+    }
+
+    @Test
+    void testSecurityTamper() {
+        Resource resource = new Resource(ResourceType.CONTACT);
+        assertEquals(UnDefType.NULL, resource.getTamperState());
+
+        Instant start = Instant.now();
+        List<TamperReport> tamperReports;
+        State state;
+
+        tamperReports = new ArrayList<>();
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
+        resource.setTamperReports(tamperReports);
+        assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
+        state = resource.getTamperLastUpdatedState(ZoneId.systemDefault());
+        assertTrue(state instanceof DateTimeType);
+        assertEquals(start, ((DateTimeType) state).getInstant());
+
+        tamperReports = new ArrayList<>();
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
+        tamperReports.add(new TamperReport().setTamperState("tampered").setLastChanged(start.plusSeconds(1)));
+        resource.setTamperReports(tamperReports);
+        assertEquals(OpenClosedType.OPEN, resource.getTamperState());
+        state = resource.getTamperLastUpdatedState(ZoneId.systemDefault());
+        assertTrue(state instanceof DateTimeType);
+        assertEquals(start.plusSeconds(1), ((DateTimeType) state).getInstant());
+
+        tamperReports = new ArrayList<>();
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
+        tamperReports.add(new TamperReport().setTamperState("tampered").setLastChanged(start.plusSeconds(1)));
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start.plusSeconds(2)));
+        resource.setTamperReports(tamperReports);
+        assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
+        state = resource.getTamperLastUpdatedState(ZoneId.systemDefault());
+        assertTrue(state instanceof DateTimeType);
+        assertEquals(start.plusSeconds(2), ((DateTimeType) state).getInstant());
     }
 }

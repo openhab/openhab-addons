@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -311,10 +310,9 @@ public class Resource {
 
     public State getContactState() {
         ContactReport contactReport = this.contactReport;
-        return Objects.nonNull(contactReport) ? ContactStateType.CONTACT == contactReport.getContactState()
-                // TODO check opened/closed vs contact/no_contact polarity
-                ? OpenClosedType.CLOSED
-                : OpenClosedType.OPEN : UnDefType.NULL;
+        return Objects.isNull(contactReport) ? UnDefType.NULL
+                : ContactStateType.CONTACT == contactReport.getContactState() ? OpenClosedType.CLOSED
+                        : OpenClosedType.OPEN;
     }
 
     public int getControlId() {
@@ -528,23 +526,29 @@ public class Resource {
     }
 
     public State getTamperLastUpdatedState(ZoneId zoneId) {
-        List<TamperReport> tamperReports = this.tamperReports;
-        if (Objects.nonNull(tamperReports)) {
-            // TODO check sorted() sort order; most recent event will be either the first or the last entry
-            List<Instant> changes = tamperReports.stream().map(t -> t.getLastChanged()).sorted().toList();
-            return changes.isEmpty() ? UnDefType.UNDEF
-                    : new DateTimeType(ZonedDateTime.ofInstant(changes.get(changes.size() - 1), zoneId));
-        }
-        return UnDefType.NULL;
+        TamperReport report = getTamperReportsLatest();
+        return Objects.nonNull(report) ? new DateTimeType(ZonedDateTime.ofInstant(report.getLastChanged(), zoneId))
+                : UnDefType.NULL;
+    }
+
+    /**
+     * The the Hue bridge could return its raw list of tamper reports in any order, so sort the list (latest entry
+     * first) according to the respective 'changed' instant and return the first entry i.e. the latest changed entry.
+     *
+     * @return the latest changed tamper report
+     */
+    private @Nullable TamperReport getTamperReportsLatest() {
+        List<TamperReport> reports = this.tamperReports;
+        return Objects.nonNull(reports)
+                ? reports.stream().sorted((e1, e2) -> e2.getLastChanged().compareTo(e1.getLastChanged())).findFirst()
+                        .orElse(null)
+                : null;
     }
 
     public State getTamperState() {
-        List<TamperReport> tamperReports = this.tamperReports;
-        return Objects.nonNull(tamperReports)
-                ? tamperReports.stream().anyMatch(t -> TamperStateType.TAMPERED == t.getTamperState())
-                        // TODO check opened/closed vs. tamper/no-tamper polarity
-                        ? OpenClosedType.OPEN
-                        : OpenClosedType.CLOSED
+        TamperReport report = getTamperReportsLatest();
+        return Objects.nonNull(report)
+                ? TamperStateType.TAMPERED == report.getTamperState() ? OpenClosedType.OPEN : OpenClosedType.CLOSED
                 : UnDefType.NULL;
     }
 
@@ -609,6 +613,11 @@ public class Resource {
 
     public Resource setColorXy(ColorXy color) {
         this.color = color;
+        return this;
+    }
+
+    public Resource setContactReport(ContactReport contactReport) {
+        this.contactReport = contactReport;
         return this;
     }
 
@@ -682,6 +691,11 @@ public class Resource {
     public Resource setRecallDuration(Duration recallDuration) {
         Recall recall = this.recall;
         this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setDuration(recallDuration);
+        return this;
+    }
+
+    public Resource setTamperReports(List<TamperReport> tamperReports) {
+        this.tamperReports = tamperReports;
         return this;
     }
 

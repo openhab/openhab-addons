@@ -52,7 +52,7 @@
 			</channel>
 			<channel id="security-tamper" typeId="security-tamper">
 				<label>Security Tamper Contact</label>
-				<description>Tamper or no tamper state of the contact.</description>
+				<description>Tamper or no tamper state of the sensor.</description>
 			</channel>
 			<channel id="security-tamper-last-updated" typeId="last-updated-v2">
 				<label>Tamper Contact Last Updated</label>

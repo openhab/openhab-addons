@@ -84,9 +84,9 @@ Device things support some of the following channels:
 | dimming-only          | Dimmer             | Allows access to the `dimming` parameter of the light(s) only. Has no impact on `color-xy` or `on-off` parameters.  |
 | on-off-only           | Switch             | Allows access to the `on-off` parameter of the light(s) only. Has no impact on `color-xy` or `dimming` parameters.  |
 | security-contact      | Contact            | Indicates whether a security contact has been triggered. (Read Only)                                                |
-| security-contact-last-updated | DateTime   | Indicates the last time when the security contact was triggered. (Read Only)                                        |
-| security-tamper       | Contact            | Indicates whether a security tamper switch has been triggered. (Read Only)                                          |
-| security-tamper-last-updated  | DateTime   | Indicates the last time when the security tamper switc was triggered. (Read Only)                                   |
+| security-contact-last-updated | DateTime   | Indicates the last time when the security contact was triggered. (Read Only, Advanced)                              |
+| security-tamper       | Contact            | Indicates whether a security tamper contact has been triggered. `Open` means tampering detected. (Read Only)        |
+| security-tamper-last-updated  | DateTime   | Indicates the last time when the security tamper contact was triggered. (Read Only, Advanced)                       |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.

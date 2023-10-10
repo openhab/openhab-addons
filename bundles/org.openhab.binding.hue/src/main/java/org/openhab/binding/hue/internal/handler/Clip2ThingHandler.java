@@ -155,7 +155,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Clip2StateDescriptionProvider stateDescriptionProvider;
-    private @NonNullByDefault({}) TimeZoneProvider timeZoneProvider; // TODO FIX THIS FROM PR #15552 !!!
+    private @NonNullByDefault({}) TimeZoneProvider timeZoneProvider; // TODO FIX MERGE CONFLICT DUE TO PR #15552 !!!
 
     private String resourceId = "?";
     private Resource thisResource;
