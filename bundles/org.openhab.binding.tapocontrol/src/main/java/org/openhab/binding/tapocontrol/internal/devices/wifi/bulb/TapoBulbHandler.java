@@ -64,6 +64,10 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
         }
     }
 
+    /*****************************
+     * HANDLE COMMANDS
+     *****************************/
+
     /**
      * handle command sent to device
      * 
@@ -78,28 +82,19 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
         } else {
             switch (channel) {
                 case CHANNEL_OUTPUT:
-                    switchOnOff(command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE);
+                    handleOnOffCommand(command);
                     break;
                 case CHANNEL_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        Float percent = ((PercentType) command).floatValue();
-                        setBrightness(percent.intValue()); // 0..100% = 0..100
-                    } else if (command instanceof DecimalType) {
-                        setBrightness(((DecimalType) command).intValue());
-                    }
+                    handleBrightnessCommand(command);
                     break;
                 case CHANNEL_COLOR_TEMP:
-                    if (command instanceof DecimalType) {
-                        setColorTemp(((DecimalType) command).intValue());
-                    }
+                    handleColorTempCommand(command);
                     break;
                 case CHANNEL_COLOR:
-                    if (command instanceof HSBType) {
-                        setColor((HSBType) command);
-                    }
+                    handleColorCommand(command);
                     break;
                 case CHANNEL_FX_NAME:
-                    setLightEffect(command.toString());
+                    handleLightFx(command);
                     break;
                 default:
                     logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command,
@@ -107,6 +102,39 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
             }
         }
     }
+
+    private void handleOnOffCommand(Command command) {
+        switchOnOff(command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE);
+    }
+
+    private void handleBrightnessCommand(Command command) {
+        if (command instanceof PercentType percentCommand) {
+            Float percent = percentCommand.floatValue();
+            setBrightness(percent.intValue()); // 0..100% = 0..100
+        } else if (command instanceof DecimalType decimalCommand) {
+            setBrightness(decimalCommand.intValue());
+        }
+    }
+
+    private void handleColorCommand(Command command) {
+        if (command instanceof HSBType hsbCommand) {
+            setColor(hsbCommand);
+        }
+    }
+
+    private void handleColorTempCommand(Command command) {
+        if (command instanceof DecimalType decimalCommand) {
+            setColorTemp(decimalCommand.intValue());
+        }
+    }
+
+    private void handleLightFx(Command command) {
+        setLightEffect(command.toString());
+    }
+
+    /*****************************
+     * SEND COMMANDS
+     *****************************/
 
     /**
      * Switch device On or Off
@@ -120,7 +148,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * SET BRIGHTNESS
+     * Set Britghtness of device
      * 
      * @param newBrightness percentage 0-100 of new brightness
      */
@@ -137,7 +165,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * SET COLOR
+     * Set Color of Device
      * 
      * @param command HSBType
      */
@@ -151,7 +179,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * SET COLORTEMP
+     * Set ColorTemp
      * 
      * @param colorTemp (Integer) in Kelvin
      */
@@ -172,9 +200,10 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
         queryDeviceData();
     }
 
-    /**
-     * Update Channels
-     */
+    /*****************************
+     * UPDATE CHANNELS
+     *****************************/
+
     protected void updateChannels(TapoBulbData deviceData) {
         updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT), getOnOffType(deviceData.isOn()));
         updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_BRIGHTNESS),
@@ -192,9 +221,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * Set light effect channels
-     * 
-     * @param lightEffect
+     * Update light effect channels
      */
     protected void updateLightEffectChannels(TapoBulbData deviceData) {
         String fxId = "";

@@ -82,6 +82,17 @@ public class TapoSocketStripHandler extends TapoBaseDeviceHandler {
     }
 
     /**
+     * Get ChildData by position (index)
+     */
+    private Optional<TapoChildDeviceData> getChildData(int position) {
+        return tapoChildList.getChildDeviceList().stream().filter(child -> child.getPosition() == position).findFirst();
+    }
+
+    /*****************************
+     * HANDLE COMMANDS
+     *****************************/
+
+    /**
      * handle command sent to device
      *
      * @param channelUID channelUID command is sent to
@@ -89,21 +100,28 @@ public class TapoSocketStripHandler extends TapoBaseDeviceHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String id = channelUID.getIdWithoutGroup();
-
         /* perform actions */
         if (command instanceof RefreshType) {
             queryDeviceData();
         } else if (command instanceof OnOffType) {
-            Boolean targetState = command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE;
-            if (id.startsWith(CHANNEL_OUTPUT)) { // Command is sent to a child's device output
-                Integer index = Integer.valueOf(id.replace(CHANNEL_OUTPUT, ""));
-                switchOnOff(targetState, index);
-            }
+            handleOnOffCommand(channelUID, command);
         } else {
             logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command, channelUID.getId());
         }
     }
+
+    private void handleOnOffCommand(ChannelUID channelUID, Command command) {
+        String id = channelUID.getIdWithoutGroup();
+        Boolean targetState = command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE;
+        if (id.startsWith(CHANNEL_OUTPUT)) { // Command is sent to a child's device output
+            Integer index = Integer.valueOf(id.replace(CHANNEL_OUTPUT, ""));
+            switchOnOff(targetState, index);
+        }
+    }
+
+    /*****************************
+     * SEND COMMANDS
+     *****************************/
 
     /**
      * Switch child On or Off
@@ -116,17 +134,14 @@ public class TapoSocketStripHandler extends TapoBaseDeviceHandler {
 
         getChildData(index).ifPresent(child -> {
             child.setDeviceOn(on);
-            connector.sendChildCommand(child);
+            connector.sendChildCommand(child, true);
         });
         queryDeviceData();
     }
 
-    /**
-     * Get ChildData by position (index)
-     */
-    private Optional<TapoChildDeviceData> getChildData(int position) {
-        return tapoChildList.getChildDeviceList().stream().filter(child -> child.getPosition() == position).findFirst();
-    }
+    /*****************************
+     * UPDATE CHANNELS
+     *****************************/
 
     /**
      * Set Device Child data to device
@@ -139,7 +154,7 @@ public class TapoSocketStripHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * Upate Channels
+     * Update Channels
      */
     protected void updateChannels(TapoSocketData deviceData) {
         updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_WIFI_STRENGTH),

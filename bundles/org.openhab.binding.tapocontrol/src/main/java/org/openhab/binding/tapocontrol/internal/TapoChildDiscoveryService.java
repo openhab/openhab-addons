@@ -72,8 +72,8 @@ public class TapoChildDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TapoHubHandler) {
-            TapoHubHandler tapoHub = (TapoHubHandler) handler;
+        if (handler instanceof TapoHubHandler hubHandler) {
+            TapoHubHandler tapoHub = hubHandler;
             tapoHub.setDiscoveryService(this);
             hub = tapoHub;
             uid = hub.getUID().toString();

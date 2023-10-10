@@ -89,6 +89,10 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
         }
     }
 
+    /*****************************
+     * HANDLE COMMANDS
+     *****************************/
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("({}) handleCommand '{}' for channelUID {}", uid, command, channelUID.getId());
@@ -110,41 +114,22 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
      */
     private void handleStandardCommands(ChannelUID channelUID, Command command) {
         String channel = channelUID.getIdWithoutGroup();
-        boolean refreshInfo = false;
 
         switch (channel) {
             case CHANNEL_OUTPUT:
-                switchOnOff(command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE);
-                refreshInfo = true;
+                handleOnOffCommand(command);
                 break;
             case CHANNEL_BRIGHTNESS:
-                if (command instanceof PercentType) {
-                    Float percent = ((PercentType) command).floatValue();
-                    setBrightness(percent.intValue()); // 0..100% = 0..100
-                    refreshInfo = true;
-                } else if (command instanceof DecimalType) {
-                    setBrightness(((DecimalType) command).intValue());
-                    refreshInfo = true;
-                }
+                handleBrightnessCommand(command);
                 break;
             case CHANNEL_COLOR_TEMP:
-                if (command instanceof DecimalType) {
-                    setColorTemp(((DecimalType) command).intValue());
-                    refreshInfo = true;
-                }
+                handleColorTempCommand(command);
                 break;
             case CHANNEL_COLOR:
-                if (command instanceof HSBType) {
-                    setColor((HSBType) command);
-                    refreshInfo = true;
-                }
+                handleColorCommand(command);
                 break;
             default:
                 logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command, channelUID.getId());
-        }
-        /* refreshInfo */
-        if (refreshInfo) {
-            queryDeviceData();
         }
     }
 
@@ -175,6 +160,9 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
                         connector.sendRawCommand(manualRequest);
                     }
                     break;
+                default:
+                    logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command,
+                            channelUID.getId());
             }
 
         } else {
@@ -183,6 +171,35 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
             }
         }
     }
+
+    private void handleOnOffCommand(Command command) {
+        switchOnOff(command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE);
+    }
+
+    private void handleBrightnessCommand(Command command) {
+        if (command instanceof PercentType percentCommand) {
+            Float percent = percentCommand.floatValue();
+            setBrightness(percent.intValue()); // 0..100% = 0..100
+        } else if (command instanceof DecimalType decimalCommand) {
+            setBrightness(decimalCommand.intValue());
+        }
+    }
+
+    private void handleColorCommand(Command command) {
+        if (command instanceof HSBType hsbCommand) {
+            setColor(hsbCommand);
+        }
+    }
+
+    private void handleColorTempCommand(Command command) {
+        if (command instanceof DecimalType decimalCommand) {
+            setColorTemp(decimalCommand.intValue());
+        }
+    }
+
+    /*****************************
+     * SEND COMMANDS
+     *****************************/
 
     /**
      * Switch device On or Off

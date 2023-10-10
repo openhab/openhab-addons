@@ -64,6 +64,10 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
         }
     }
 
+    /*****************************
+     * HANDLE COMMANDS
+     *****************************/
+
     /**
      * handle command sent to device
      * 
@@ -77,29 +81,20 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
         if (command instanceof RefreshType) {
             queryDeviceData();
         } else if (CHANNEL_GROUP_EFFECTS.equals(group)) {
-            setLightEffect(channel, command);
+            handleLightFx(channel, command);
         } else {
             switch (channel) {
                 case CHANNEL_OUTPUT:
-                    switchOnOff(command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE);
+                    handleOnOffCommand(command);
                     break;
                 case CHANNEL_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        Float percent = ((PercentType) command).floatValue();
-                        setBrightness(percent.intValue()); // 0..100% = 0..100
-                    } else if (command instanceof DecimalType) {
-                        setBrightness(((DecimalType) command).intValue());
-                    }
+                    handleBrightnessCommand(command);
                     break;
                 case CHANNEL_COLOR_TEMP:
-                    if (command instanceof DecimalType) {
-                        setColorTemp(((DecimalType) command).intValue());
-                    }
+                    handleColorTempCommand(command);
                     break;
                 case CHANNEL_COLOR:
-                    if (command instanceof HSBType) {
-                        setColor((HSBType) command);
-                    }
+                    handleColorCommand(command);
                     break;
                 default:
                     logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command,
@@ -107,6 +102,55 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
             }
         }
     }
+
+    private void handleOnOffCommand(Command command) {
+        switchOnOff(command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE);
+    }
+
+    private void handleBrightnessCommand(Command command) {
+        if (command instanceof PercentType percentCommand) {
+            Float percent = percentCommand.floatValue();
+            setBrightness(percent.intValue()); // 0..100% = 0..100
+        } else if (command instanceof DecimalType decimalCommand) {
+            setBrightness(decimalCommand.intValue());
+        }
+    }
+
+    private void handleColorCommand(Command command) {
+        if (command instanceof HSBType hsbCommand) {
+            setColor(hsbCommand);
+        }
+    }
+
+    private void handleColorTempCommand(Command command) {
+        if (command instanceof DecimalType decimalCommand) {
+            setColorTemp(decimalCommand.intValue());
+        }
+    }
+
+    private void handleLightFx(String channel, Command command) {
+        TapoLightEffectData lightEffect = lightStripData.getLightEffect();
+        switch (channel) {
+            case CHANNEL_FX_BRIGHTNESS:
+                if (command instanceof PercentType percentCommand) {
+                    Float percent = percentCommand.floatValue();
+                    lightEffect.setBrightness(percent.intValue()); // 0..100% = 0..100
+                } else if (command instanceof DecimalType decimalCommand) {
+                    lightEffect.setBrightness(decimalCommand.intValue());
+                }
+                break;
+            case CHANNEL_FX_NAME:
+                lightEffect.setId(command.toString());
+                break;
+            default:
+                logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command, channel);
+        }
+        setLightEffect(lightEffect);
+    }
+
+    /*****************************
+     * SEND COMMANDS
+     *****************************/
 
     /**
      * Switch device On or Off
@@ -120,7 +164,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * SET BRIGHTNESS
+     * Set Britghtness of device
      * 
      * @param newBrightness percentage 0-100 of new brightness
      */
@@ -137,7 +181,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * SET COLOR
+     * Set Color of Device
      * 
      * @param command HSBType
      */
@@ -151,7 +195,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * SET COLORTEMP
+     * Set ColorTemp
      * 
      * @param colorTemp (Integer) in Kelvin
      */
@@ -163,52 +207,40 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * set Light Effect from channel/command
+     * Set light effect
      * 
-     * @param channel channel (effect) to set
-     * @param command command (value) to set
+     * @param fxName (String) id of LightEffect
      */
-    protected void setLightEffect(String channel, Command command) {
-        TapoLightEffectData lightEffect = lightStripData.getLightEffect();
-        switch (channel) {
-            case CHANNEL_FX_BRIGHTNESS:
-                if (command instanceof PercentType) {
-                    Float percent = ((PercentType) command).floatValue();
-                    lightEffect.setBrightness(percent.intValue()); // 0..100% = 0..100
-                } else if (command instanceof DecimalType) {
-                    lightEffect.setBrightness(((DecimalType) command).intValue());
-                }
-                break;
-            case CHANNEL_FX_COLORS:
-                // comming soon
-                break;
-            case CHANNEL_FX_NAME:
-                lightEffect.setId(command.toString());
-                break;
-        }
+    protected void setLightEffect(TapoLightEffectData lightEffect) {
         connector.sendDeviceCommand(DEVICE_CMD_SET_LIGHT_FX, lightEffect);
         queryDeviceData();
     }
 
-    /**
-     * UPDATE PROPERTIES
-     * 
-     * @param TapoDeviceInfo
-     */
-    protected void updateChannels(TapoLightStripData deviceInfo) {
-        TapoLightEffectData lightEffect = deviceInfo.getLightEffect();
-        updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT), getOnOffType(deviceInfo.isOn()));
+    /*****************************
+     * UPDATE CHANNELS
+     *****************************/
+
+    protected void updateChannels(TapoLightStripData deviceData) {
+        updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT), getOnOffType(deviceData.isOn()));
         updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_BRIGHTNESS),
-                getPercentType(deviceInfo.getBrightness()));
+                getPercentType(deviceData.getBrightness()));
         updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_COLOR_TEMP),
-                getDecimalType(deviceInfo.getColorTemp()));
-        updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_COLOR), deviceInfo.getHSB());
+                getDecimalType(deviceData.getColorTemp()));
+        updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_COLOR), deviceData.getHSB());
         updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_WIFI_STRENGTH),
-                getDecimalType(deviceInfo.getSignalLevel()));
+                getDecimalType(deviceData.getSignalLevel()));
         updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_ONTIME),
-                getTimeType(deviceInfo.getOnTime(), Units.SECOND));
-        updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_OVERHEAT), getOnOffType(deviceInfo.isOverheated()));
-        // light effect
+                getTimeType(deviceData.getOnTime(), Units.SECOND));
+        updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_OVERHEAT), getOnOffType(deviceData.isOverheated()));
+
+        updateLightEffectChannels(deviceData);
+    }
+
+    /**
+     * Update light effect channels
+     */
+    protected void updateLightEffectChannels(TapoLightStripData deviceData) {
+        TapoLightEffectData lightEffect = deviceData.getLightEffect();
         updateState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_BRIGHTNESS),
                 getPercentType(lightEffect.getBrightness()));
         updateState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_NAME), getStringType(lightEffect.getName()));

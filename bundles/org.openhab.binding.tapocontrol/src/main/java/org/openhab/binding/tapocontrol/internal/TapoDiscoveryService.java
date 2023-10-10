@@ -76,8 +76,8 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
         super.initialize();
 =======
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TapoBridgeHandler) {
-            TapoBridgeHandler tapoBridge = (TapoBridgeHandler) handler;
+        if (handler instanceof TapoBridgeHandler bridgeHandler) {
+            TapoBridgeHandler tapoBridge = bridgeHandler;
             tapoBridge.setDiscoveryService(this);
             this.bridge = tapoBridge;
         }

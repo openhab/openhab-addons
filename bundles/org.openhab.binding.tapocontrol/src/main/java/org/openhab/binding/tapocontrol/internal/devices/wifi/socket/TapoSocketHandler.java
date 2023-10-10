@@ -66,6 +66,10 @@ public class TapoSocketHandler extends TapoBaseDeviceHandler {
         }
     }
 
+    /*****************************
+     * HANDLE COMMANDS
+     *****************************/
+
     /**
      * handle command sent to device
      *
@@ -78,11 +82,19 @@ public class TapoSocketHandler extends TapoBaseDeviceHandler {
         if (command instanceof RefreshType) {
             queryDeviceData();
         } else if (command instanceof OnOffType) {
-            switchOnOff(command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE);
+            handleOnOffCommand(command);
         } else {
             logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command, channelUID.getId());
         }
     }
+
+    private void handleOnOffCommand(Command command) {
+        switchOnOff(command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE);
+    }
+
+    /*****************************
+     * SEND COMMANDS
+     *****************************/
 
     /**
      * Switch device On or Off
@@ -95,9 +107,10 @@ public class TapoSocketHandler extends TapoBaseDeviceHandler {
         queryDeviceData();
     }
 
-    /**
-     * Upate Channels
-     */
+    /*****************************
+     * UPDATE CHANNELS
+     *****************************/
+
     protected void updateChannels(TapoSocketData deviceData) {
         updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT), getOnOffType(deviceData.isOn()));
         updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_WIFI_STRENGTH),

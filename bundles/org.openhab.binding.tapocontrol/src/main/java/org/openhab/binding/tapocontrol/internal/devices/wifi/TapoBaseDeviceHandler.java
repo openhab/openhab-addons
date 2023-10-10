@@ -75,9 +75,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     }
 
     /***********************************
-     *
      * INIT AND SETTINGS
-     *
      ************************************/
 
     /**
@@ -186,9 +184,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     }
 
     /***********************************
-     *
      * SCHEDULER
-     *
      ************************************/
     /**
      * delayed OneTime StartupJob
@@ -238,14 +234,10 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     }
 
     /***********************************
-     *
      * ERROR HANDLER
-     *
      ************************************/
     /**
      * return device Error
-     *
-     * @return
      */
     public TapoErrorHandler getErrorHandler() {
         return deviceError;
@@ -266,9 +258,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     }
 
     /***********************************
-     *
      * THING
-     *
      ************************************/
 
     /***
@@ -335,9 +325,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     }
 
     /***********************************
-     *
      * DEVICE PROPERTIES
-     *
      ************************************/
 
     /**
@@ -499,9 +487,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     }
 
     /***********************************
-     *
      * CHANNELS
-     *
      ************************************/
 
     /**

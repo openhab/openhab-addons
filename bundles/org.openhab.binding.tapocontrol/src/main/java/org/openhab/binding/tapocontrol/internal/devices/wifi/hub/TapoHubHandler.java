@@ -123,11 +123,9 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
         this.discoveryService = discoveryService;
     }
 
-    /***********************************
-     *
+    /****************************
      * PUBLIC FUNCTIONS
-     *
-     ************************************/
+     ****************************/
 
     /**
      * Check Device Configuration
@@ -179,23 +177,9 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
         }
     }
 
-    /**
-     * Update channels of childdevices
-     */
-    protected void updateChildDevices(TapoChildList childList) {
-        tapoChildsList = childList;
-        if (discoveryService.isBackgroundDiscoveryEnabled()) {
-            discoveryService.thingsDiscovered(childList.getChildDeviceList());
-        }
-        /* update children */
-        updateChildThings();
-    }
-
-    /***********************************
-     *
+    /****************************
      * CHILD THINGS
-     *
-     ************************************/
+     ****************************/
 
     /**
      * Update all Child-Things
@@ -267,11 +251,9 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
         }
     }
 
-    /***********************************
-     *
-     * HUB CHANNELS
-     *
-     ************************************/
+    /****************************
+     * UPDATE HUB CHANNELS
+     ****************************/
 
     /**
      * Update Channels
@@ -284,11 +266,21 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
         updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_OVERHEAT), getOnOffType(hubData.isOverheated()));
     }
 
-    /***********************************
-     *
+    /**
+     * Update channels of childdevices
+     */
+    protected void updateChildDevices(TapoChildList childList) {
+        tapoChildsList = childList;
+        if (discoveryService.isBackgroundDiscoveryEnabled()) {
+            discoveryService.thingsDiscovered(childList.getChildDeviceList());
+        }
+        /* update children */
+        updateChildThings();
+    }
+
+    /****************************
      * HUB GETTERS
-     *
-     ************************************/
+     ****************************/
 
     public ThingUID getUID() {
         return getThing().getUID();
