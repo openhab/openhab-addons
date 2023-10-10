@@ -140,7 +140,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
                 }
                 break;
             case CHANNEL_FX_NAME:
-                lightEffect.setId(command.toString());
+                lightEffect.setName(command.toString());
                 break;
             default:
                 logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command, channel);

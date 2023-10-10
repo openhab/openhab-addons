@@ -14,7 +14,6 @@ package org.openhab.binding.tapocontrol.internal.devices.dto;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 
-import java.awt.Color;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,9 +29,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class TapoLightEffectData {
     @Expose(serialize = true, deserialize = true)
-    private boolean enable = false;
+    private int enable = 0;
 
-    @Expose(serialize = true, deserialize = true)
+    @Expose(serialize = false, deserialize = true)
     private String id = "";
 
     @Expose(serialize = false, deserialize = true)
@@ -46,18 +45,18 @@ public class TapoLightEffectData {
 
     @SerializedName("display_colors")
     @Expose(serialize = false, deserialize = true)
-    private List<Color> displayColors = List.of();
+    private List<int[]> displayColors = List.of();
 
     /**
      * Init class with effect id
      */
     public TapoLightEffectData(boolean enable, String fxId) {
-        this.enable = enable;
+        setEnable(enable);
         id = fxId;
     }
 
     public TapoLightEffectData(String fxId) {
-        enable = (fxId.length() > 0 && !fxId.equals(JSON_KEY_LIGHTNING_EFFECT_OFF));
+        setEnable((fxId.length() > 0 && !fxId.equals(JSON_KEY_LIGHTNING_EFFECT_OFF)));
         id = fxId;
     }
 
@@ -71,11 +70,15 @@ public class TapoLightEffectData {
      ************************************/
 
     public void setEnable(boolean enable) {
-        this.enable = enable;
+        this.enable = (enable) ? 1 : 0;
     }
 
     public void setId(String value) {
         id = value;
+    }
+
+    public void setName(String value) {
+        name = value;
     }
 
     public void setCustom(int value) {
@@ -93,7 +96,7 @@ public class TapoLightEffectData {
      ************************************/
 
     public boolean isEnabled() {
-        return enable;
+        return enable == 1;
     }
 
     public String getId() {
@@ -112,7 +115,7 @@ public class TapoLightEffectData {
         return brightness;
     }
 
-    public List<Color> getDisplayColors() {
+    public List<int[]> getDisplayColors() {
         return displayColors;
     }
 }

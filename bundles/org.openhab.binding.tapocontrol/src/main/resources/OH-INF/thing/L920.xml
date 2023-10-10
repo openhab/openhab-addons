@@ -14,6 +14,7 @@
 		<description>Tapo Smart Multicolor LED-Lightstrip</description>
 		<channel-groups>
 			<channel-group id="actuator" typeId="lightStrip"/>
+			<channel-group id="effects" typeId="lightEffectL920"/>
 			<channel-group id="device" typeId="deviceState"/>
 		</channel-groups>
 		<representation-property>macAddress</representation-property>
@@ -28,10 +29,6 @@
 		<channels>
 			<channel id="fxBrightness" typeId="dimmerChannel"/>
 			<channel id="fxName" typeId="l920fxList"/>
-			<channel id="fxColor1" typeId="colorChannel"/>
-			<channel id="fxColor2" typeId="colorChannel"/>
-			<channel id="fxColor3" typeId="colorChannel"/>
-			<channel id="fxColor4" typeId="colorChannel"/>
 		</channels>
 	</channel-group-type>
 
@@ -40,7 +37,7 @@
 		<item-type>String</item-type>
 		<label>Light Effect Theme</label>
 		<description>Name of lightning effect</description>
-		<state readOnly="false">
+		<state readOnly="true">
 			<options>
 				<option value="">None (No FX)</option>
 				<option value="aurora">Aurora</option>

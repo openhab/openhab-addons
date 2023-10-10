@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.tapocontrol.internal.devices.wifi.lightstrip;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightEffectData;
@@ -52,9 +50,17 @@ public class TapoLightStripData extends TapoBaseDeviceData {
     @Expose(serialize = false, deserialize = true)
     private long onTime = 0;
 
+    @SerializedName("music_rhythm_enable")
+    @Expose(serialize = true, deserialize = true)
+    private boolean musicRythmEnable = false;
+
+    @SerializedName("music_rhythm_mode")
+    @Expose(serialize = true, deserialize = true)
+    private String musicRythmMode = "";
+
     @SerializedName("lighting_effect")
     @Expose(serialize = false, deserialize = true)
-    private List<TapoLightEffectData> lightingEffect = List.of();
+    private TapoLightEffectData lightingEffect = new TapoLightEffectData();
 
     /***********************************
      *
@@ -115,7 +121,7 @@ public class TapoLightStripData extends TapoBaseDeviceData {
     }
 
     public TapoLightEffectData getLightEffect() {
-        return lightingEffect.get(0);
+        return lightingEffect;
     }
 
     public boolean isOff() {
