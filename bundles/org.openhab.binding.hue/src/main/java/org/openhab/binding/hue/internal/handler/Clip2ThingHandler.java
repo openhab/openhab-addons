@@ -301,18 +301,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command commandParam) {
         if (RefreshType.REFRESH.equals(commandParam)) {
             if ((thing.getStatus() == ThingStatus.ONLINE) && updateDependenciesDone) {
-                Future<?> task = updateServiceContributorsTask;
-                if (Objects.isNull(task) || !task.isDone()) {
-                    cancelTask(updateServiceContributorsTask, false);
-                    updateServiceContributorsTask = scheduler.schedule(() -> {
-                        try {
-                            updateServiceContributors();
-                        } catch (ApiException | AssetNotLoadedException e) {
-                            logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
-                        } catch (InterruptedException e) {
-                        }
-                    }, 3, TimeUnit.SECONDS);
-                }
+                cancelTask(updateServiceContributorsTask, false);
+                updateServiceContributorsTask = scheduler.schedule(() -> {
+                    try {
+                        updateServiceContributors();
+                    } catch (ApiException | AssetNotLoadedException e) {
+                        logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
+                    } catch (InterruptedException e) {
+                    }
+                }, 3, TimeUnit.SECONDS);
             }
             return;
         }
