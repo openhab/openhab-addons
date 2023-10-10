@@ -120,13 +120,15 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
 
         for (Channel channel : getThing().getChannels()) {
             KNXChannel knxChannel = KNXChannelFactory.createKnxChannel(channel);
-            knxChannels.put(channel.getUID(), knxChannel);
-            groupAddresses.addAll(knxChannel.getAllGroupAddresses());
 
             if (knxChannel.getChannelType().startsWith("number")) {
                 // check if we need to update the accepted item-type
                 List<InboundSpec> inboundSpecs = knxChannel.getAllGroupAddresses().stream()
                         .map(knxChannel::getListenSpec).filter(Objects::nonNull).map(Objects::requireNonNull).toList();
+                if (inboundSpecs.isEmpty()) {
+                    logger.warn("Skipping {}: configuring a DPT is mandatory on 'number' channels!", channel.getUID());
+                    continue;
+                }
 
                 String dpt = inboundSpecs.get(0).getDPT(); // there can be only one DPT on number channels
                 Unit<?> unit = UnitUtils.parseUnit(DPTUnits.getUnitForDpt(dpt));
@@ -149,6 +151,10 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     modified = true;
                 }
             }
+
+            // add chanels only if they could be successfully processed
+            knxChannels.put(channel.getUID(), knxChannel);
+            groupAddresses.addAll(knxChannel.getAllGroupAddresses());
         }
 
         if (modified) {

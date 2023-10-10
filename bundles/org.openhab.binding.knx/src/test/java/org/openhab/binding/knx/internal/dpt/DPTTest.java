@@ -14,6 +14,7 @@ package org.openhab.binding.knx.internal.dpt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.stream.IntStream;
@@ -391,16 +392,20 @@ class DPTTest {
         assertNotEquals(DPTXlator64BitSigned.DPT_REACTIVE_ENERGY.getUnit(), Units.VAR_HOUR.toString());
     }
 
-    private static Stream<String> unitProvider() {
+    private static Stream<Map.Entry<String, String>> unitProvider() {
         return DPTUnits.getAllUnitStrings();
     }
 
     @ParameterizedTest
     @MethodSource("unitProvider")
-    public void unitsValid(String unit) {
-        String valueStr = "1 " + unit;
-        QuantityType<?> value = new QuantityType<>(valueStr);
-        Assertions.assertNotNull(value);
+    public void unitsValid(Map.Entry<String, String> unit) {
+        String valueStr = "1 " + unit.getValue();
+        try {
+            QuantityType<?> value = new QuantityType<>(valueStr);
+            Assertions.assertNotNull(value, "Failed to parse " + unit + "(result null)");
+        } catch (Exception e) {
+            fail("Failed to parse " + unit + ": " + e.getMessage());
+        }
     }
 
     private static Stream<byte[]> rgbValueProvider() {
