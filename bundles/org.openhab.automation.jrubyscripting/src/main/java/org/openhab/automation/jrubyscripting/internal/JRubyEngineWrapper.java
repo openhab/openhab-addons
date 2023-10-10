@@ -13,6 +13,7 @@
 package org.openhab.automation.jrubyscripting.internal;
 
 import java.io.Reader;
+import java.util.Objects;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -23,6 +24,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jruby.embed.jsr223.JRubyEngine;
 
 /**
@@ -33,30 +36,31 @@ import org.jruby.embed.jsr223.JRubyEngine;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
+@NonNullByDefault
 public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
 
     private final JRubyEngine engine;
 
-    private final String CONTEXT_VAR_NAME = "ctx";
-    private final String GLOBAL_VAR_NAME = "$" + CONTEXT_VAR_NAME;
+    private static final String CONTEXT_VAR_NAME = "ctx";
+    private static final String GLOBAL_VAR_NAME = "$" + CONTEXT_VAR_NAME;
 
     JRubyEngineWrapper(JRubyEngine engine) {
-        this.engine = engine;
+        this.engine = Objects.requireNonNull(engine);
     }
 
     @Override
-    public CompiledScript compile(String script) throws ScriptException {
+    public CompiledScript compile(@Nullable String script) throws ScriptException {
         return engine.compile(script);
     }
 
     @Override
-    public CompiledScript compile(Reader reader) throws ScriptException {
+    public CompiledScript compile(@Nullable Reader reader) throws ScriptException {
         return engine.compile(reader);
     }
 
     @Override
-    public Object eval(String script, ScriptContext context) throws ScriptException {
-        Object ctx = context.getBindings(ScriptContext.ENGINE_SCOPE).get(CONTEXT_VAR_NAME);
+    public Object eval(@Nullable String script, @Nullable ScriptContext context) throws ScriptException {
+        Object ctx = Objects.requireNonNull(context).getBindings(ScriptContext.ENGINE_SCOPE).get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
             return engine.eval(script, context);
@@ -71,8 +75,8 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
     }
 
     @Override
-    public Object eval(Reader reader, ScriptContext context) throws ScriptException {
-        Object ctx = context.getBindings(ScriptContext.ENGINE_SCOPE).get(CONTEXT_VAR_NAME);
+    public Object eval(@Nullable Reader reader, @Nullable ScriptContext context) throws ScriptException {
+        Object ctx = Objects.requireNonNull(context).getBindings(ScriptContext.ENGINE_SCOPE).get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
             return engine.eval(reader, context);
@@ -87,8 +91,8 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
     }
 
     @Override
-    public Object eval(String script, Bindings bindings) throws ScriptException {
-        Object ctx = bindings.get(CONTEXT_VAR_NAME);
+    public Object eval(@Nullable String script, @Nullable Bindings bindings) throws ScriptException {
+        Object ctx = Objects.requireNonNull(bindings).get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
             return engine.eval(script, bindings);
@@ -103,8 +107,8 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
     }
 
     @Override
-    public Object eval(Reader reader, Bindings bindings) throws ScriptException {
-        Object ctx = bindings.get(CONTEXT_VAR_NAME);
+    public Object eval(@Nullable Reader reader, @Nullable Bindings bindings) throws ScriptException {
+        Object ctx = Objects.requireNonNull(bindings).get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
             return engine.eval(reader, bindings);
@@ -119,7 +123,7 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
     }
 
     @Override
-    public Object eval(String script) throws ScriptException {
+    public Object eval(@Nullable String script) throws ScriptException {
         Object ctx = getBindings(ScriptContext.ENGINE_SCOPE).get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
@@ -135,7 +139,7 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
     }
 
     @Override
-    public Object eval(Reader reader) throws ScriptException {
+    public Object eval(@Nullable Reader reader) throws ScriptException {
         Object ctx = getBindings(ScriptContext.ENGINE_SCOPE).get(CONTEXT_VAR_NAME);
 
         if (ctx == null) {
@@ -151,12 +155,12 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
     }
 
     @Override
-    public Object get(String key) {
+    public Object get(@Nullable String key) {
         return engine.get(key);
     }
 
     @Override
-    public void put(String key, Object value) {
+    public void put(@Nullable String key, @Nullable Object value) {
         engine.put(key, value);
     }
 
@@ -166,7 +170,7 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
     }
 
     @Override
-    public void setBindings(Bindings bindings, int scope) {
+    public void setBindings(@Nullable Bindings bindings, int scope) {
         engine.setBindings(bindings, scope);
     }
 
@@ -181,7 +185,7 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
     }
 
     @Override
-    public void setContext(ScriptContext context) {
+    public void setContext(@Nullable ScriptContext context) {
         engine.setContext(context);
     }
 
@@ -191,23 +195,24 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
     }
 
     @Override
-    public Object invokeMethod(Object receiver, String method, Object... args)
+    public Object invokeMethod(@Nullable Object receiver, @Nullable String method, Object @Nullable... args)
             throws ScriptException, NoSuchMethodException {
         return engine.invokeMethod(receiver, method, args);
     }
 
     @Override
-    public Object invokeFunction(String method, Object... args) throws ScriptException, NoSuchMethodException {
+    public Object invokeFunction(@Nullable String method, Object @Nullable... args)
+            throws ScriptException, NoSuchMethodException {
         return engine.invokeFunction(method, args);
     }
 
     @Override
-    public <T> T getInterface(Class<T> returnType) {
+    public <T> T getInterface(@Nullable Class<T> returnType) {
         return engine.getInterface(returnType);
     }
 
     @Override
-    public <T> T getInterface(Object receiver, Class<T> returnType) {
+    public <T> T getInterface(@Nullable Object receiver, @Nullable Class<T> returnType) {
         return engine.getInterface(receiver, returnType);
     }
 }
