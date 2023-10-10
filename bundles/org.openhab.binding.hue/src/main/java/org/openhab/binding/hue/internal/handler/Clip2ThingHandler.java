@@ -167,7 +167,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private Resource thisResource;
     private Duration dynamicsDuration = Duration.ZERO;
     private Instant dynamicsExpireTime = Instant.MIN;
-    private Instant lastUpdated = Instant.MIN;
+    private Instant buttonGroupLastUpdated = Instant.MIN;
 
     private boolean disposing;
     private boolean hasConnectivityIssue;
@@ -844,11 +844,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 State buttonLastUpdatedState = resource.getButtonLastUpdatedState(timeZoneProvider.getTimeZone());
                 if (buttonLastUpdatedState instanceof DateTimeType) {
                     Instant buttonLastUpdatedInstant = ((DateTimeType) buttonLastUpdatedState).getInstant();
-                    if (buttonLastUpdatedInstant.isAfter(lastUpdated)) {
+                    if (buttonLastUpdatedInstant.isAfter(buttonGroupLastUpdated)) {
                         updateState(CHANNEL_2_BUTTON_LAST_UPDATED, buttonLastUpdatedState, fullUpdate);
-                        lastUpdated = buttonLastUpdatedInstant;
+                        buttonGroupLastUpdated = buttonLastUpdatedInstant;
                     }
-                } else if (Instant.MIN.equals(lastUpdated)) {
+                } else if (Instant.MIN.equals(buttonGroupLastUpdated)) {
                     updateState(CHANNEL_2_BUTTON_LAST_UPDATED, buttonLastUpdatedState, fullUpdate);
                 }
                 break;
