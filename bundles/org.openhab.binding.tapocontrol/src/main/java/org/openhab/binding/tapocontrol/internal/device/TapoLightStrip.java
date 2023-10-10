@@ -76,24 +76,24 @@ public class TapoLightStrip extends TapoDevice {
                     refreshInfo = true;
                     break;
                 case CHANNEL_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        Float percent = ((PercentType) command).floatValue();
+                    if (command instanceof PercentType percentCommand) {
+                        Float percent = percentCommand.floatValue();
                         setBrightness(percent.intValue()); // 0..100% = 0..100
                         refreshInfo = true;
-                    } else if (command instanceof DecimalType) {
-                        setBrightness(((DecimalType) command).intValue());
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        setBrightness(decimalCommand.intValue());
                         refreshInfo = true;
                     }
                     break;
                 case CHANNEL_COLOR_TEMP:
-                    if (command instanceof DecimalType) {
-                        setColorTemp(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        setColorTemp(decimalCommand.intValue());
                         refreshInfo = true;
                     }
                     break;
                 case CHANNEL_COLOR:
-                    if (command instanceof HSBType) {
-                        setColor((HSBType) command);
+                    if (command instanceof HSBType hsbCommand) {
+                        setColor(hsbCommand);
                         refreshInfo = true;
                     }
                     break;
@@ -163,11 +163,11 @@ public class TapoLightStrip extends TapoDevice {
         TapoLightEffect lightEffect = deviceInfo.getLightEffect();
         switch (channel) {
             case CHANNEL_FX_BRIGHTNESS:
-                if (command instanceof PercentType) {
-                    Float percent = ((PercentType) command).floatValue();
+                if (command instanceof PercentType percentCommand) {
+                    Float percent = percentCommand.floatValue();
                     lightEffect.setBrightness(percent.intValue()); // 0..100% = 0..100
-                } else if (command instanceof DecimalType) {
-                    lightEffect.setBrightness(((DecimalType) command).intValue());
+                } else if (command instanceof DecimalType decimalCommand) {
+                    lightEffect.setBrightness(decimalCommand.intValue());
                 }
                 break;
             case CHANNEL_FX_COLORS:
@@ -200,7 +200,7 @@ public class TapoLightStrip extends TapoDevice {
     /**
      * UPDATE PROPERTIES
      * 
-     * @param TapoDeviceInfo
+     * @param deviceInfo TapoDeviceInfo
      */
     @Override
     protected void devicePropertiesChanged(TapoDeviceInfo deviceInfo) {

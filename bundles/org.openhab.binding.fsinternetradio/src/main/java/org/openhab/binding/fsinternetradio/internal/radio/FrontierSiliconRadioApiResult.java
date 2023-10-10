@@ -34,9 +34,11 @@ import org.xml.sax.SAXException;
  * this:
  *
  * <pre>
+ * {@code
  * <xmp>
  *   <fsapiResponse> <status>FS_OK</status> <value><u8>1</u8></value> </fsapiResponse>
  * </xmp>
+ * }
  * </pre>
  *
  * This class parses this XML data and provides functions for reading and casting typical fields.

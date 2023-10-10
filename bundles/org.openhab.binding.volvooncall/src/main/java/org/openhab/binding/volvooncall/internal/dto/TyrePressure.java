@@ -30,7 +30,7 @@ public class TyrePressure {
         NORMAL,
         @SerializedName("LowSoft")
         LOW_SOFT,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public PressureLevel frontLeftTyrePressure = PressureLevel.UNKNOWN;

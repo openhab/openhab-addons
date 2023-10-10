@@ -81,8 +81,8 @@ public class XmlTVDiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof XmlTVHandler) {
-            this.handler = (XmlTVHandler) handler;
+        if (handler instanceof XmlTVHandler tvHandler) {
+            this.handler = tvHandler;
         }
     }
 

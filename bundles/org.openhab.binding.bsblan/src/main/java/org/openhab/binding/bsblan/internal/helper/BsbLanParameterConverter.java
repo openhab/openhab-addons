@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.unbescape.html.HtmlEscape;
 
 /**
- * The {@link BsbLanParameterHandler} is responsible for updating the data, which are
+ * The {@link BsbLanParameterConverter} is responsible for updating the data, which are
  * sent to one of the channels.
  *
  * @author Peter Schraffl - Initial contribution

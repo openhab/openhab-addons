@@ -57,8 +57,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  *
- * @see https://cloud.google.com/pubsub/docs/reference/rest
- * @see https://developers.google.com/nest/device-access/api/events
+ * @see <a href="https://cloud.google.com/pubsub/docs/reference/rest">
+ *      https://cloud.google.com/pubsub/docs/reference/rest</a>
+ * @see <a href="https://developers.google.com/nest/device-access/api/events">
+ *      https://developers.google.com/nest/device-access/api/events</a>
  */
 @NonNullByDefault
 public class PubSubAPI {

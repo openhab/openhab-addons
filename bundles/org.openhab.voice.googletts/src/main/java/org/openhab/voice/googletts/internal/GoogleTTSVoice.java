@@ -84,7 +84,7 @@ public class GoogleTTSVoice implements Voice {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Locale getLocale() {

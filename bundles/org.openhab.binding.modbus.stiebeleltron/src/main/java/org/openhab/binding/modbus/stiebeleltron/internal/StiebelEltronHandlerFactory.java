@@ -27,7 +27,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link Modbus.StiebelEltronHandlerFactory} is responsible for creating things and thing
+ * The {@link StiebelEltronHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Paul Frank - Initial contribution

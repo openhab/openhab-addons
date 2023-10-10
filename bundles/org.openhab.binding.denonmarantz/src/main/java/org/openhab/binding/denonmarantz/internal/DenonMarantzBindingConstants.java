@@ -21,7 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link DenonMarantzBinding} class defines common constants, which are
+ * The {@link DenonMarantzBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Jan-Willem Veldhuis - Initial contribution

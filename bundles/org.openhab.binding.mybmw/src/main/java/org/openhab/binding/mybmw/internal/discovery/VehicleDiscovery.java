@@ -202,7 +202,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
      * Get all field names from a DTO with a specific value
      * Used to get e.g. all services which are "ACTIVATED"
      *
-     * @param DTO Object
+     * @param dto Object
      * @param compare String which needs to map with the value
      * @return String with all field names matching this value separated with Spaces
      */

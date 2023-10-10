@@ -203,8 +203,7 @@ public class TouchWandRestClient {
     }
 
     private String buildUrl(String command) {
-        String url = "http://" + touchWandIpAddr + ":" + touchWandPort + COMMAND_MAP.get(command);
-        return url;
+        return "http://" + touchWandIpAddr + ":" + touchWandPort + COMMAND_MAP.get(command);
     }
 
     private synchronized String sendCommand(String command, HttpMethod method, String content) {

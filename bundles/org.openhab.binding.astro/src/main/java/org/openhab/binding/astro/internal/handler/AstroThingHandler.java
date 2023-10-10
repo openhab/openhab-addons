@@ -294,8 +294,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     /**
      * Adds the provided {@link Job} to the queue (cannot be {@code null})
-     *
-     * @return {@code true} if the {@code job} is added to the queue, otherwise {@code false}
      */
     public void schedule(Job job, Calendar eventAt) {
         long sleepTime;

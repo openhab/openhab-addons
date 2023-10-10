@@ -67,7 +67,6 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Override
     public @Nullable Object get(String scriptIdentifier, String type) throws IllegalArgumentException {
-
         Map<String, Object> forScript = idToTypes.computeIfAbsent(scriptIdentifier, k -> new HashMap<>());
         return forScript.computeIfAbsent(type,
                 k -> Objects.nonNull(types.get(k)) ? types.get(k).apply(scriptIdentifier) : null);
