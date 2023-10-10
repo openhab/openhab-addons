@@ -15,7 +15,6 @@ package org.openhab.binding.hue.internal.dto.clip2;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * DTO for CLIP 2 temperature sensor report.
@@ -24,13 +23,13 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class TemperatureReport {
-    private @Nullable Instant changed;
+    private @NonNullByDefault({}) Instant changed;
     private float temperature;
 
     /**
      * @return last time the value of this property is changed.
      */
-    public @Nullable Instant getLastChanged() {
+    public Instant getLastChanged() {
         return changed;
     }
 

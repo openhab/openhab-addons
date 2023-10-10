@@ -222,7 +222,7 @@ public class Resource {
             return UnDefType.UNDEF;
         }
         Instant lastChanged = buttonReport.getLastChanged();
-        if (lastChanged == null || Instant.EPOCH.equals(lastChanged)) {
+        if (Instant.EPOCH.equals(lastChanged)) {
             return UnDefType.UNDEF;
         }
         return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
@@ -435,7 +435,7 @@ public class Resource {
             return UnDefType.UNDEF;
         }
         Instant lastChanged = lightLevelReport.getLastChanged();
-        if (lastChanged == null) {
+        if (Instant.EPOCH.equals(lastChanged)) {
             return UnDefType.UNDEF;
         }
         return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
@@ -481,7 +481,7 @@ public class Resource {
             return UnDefType.UNDEF;
         }
         Instant lastChanged = motionReport.getLastChanged();
-        if (lastChanged == null) {
+        if (Instant.EPOCH.equals(lastChanged)) {
             return UnDefType.UNDEF;
         }
         return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
@@ -573,7 +573,7 @@ public class Resource {
             return UnDefType.UNDEF;
         }
         Instant lastChanged = rotaryReport.getLastChanged();
-        if (lastChanged == null || Instant.EPOCH.equals(lastChanged)) {
+        if (Instant.EPOCH.equals(lastChanged)) {
             return UnDefType.UNDEF;
         }
         return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
@@ -675,7 +675,7 @@ public class Resource {
             return UnDefType.UNDEF;
         }
         Instant lastChanged = temperatureReport.getLastChanged();
-        if (lastChanged == null) {
+        if (Instant.EPOCH.equals(lastChanged)) {
             return UnDefType.UNDEF;
         }
         return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));

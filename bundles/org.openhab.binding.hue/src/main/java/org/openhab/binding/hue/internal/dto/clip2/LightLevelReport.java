@@ -15,7 +15,6 @@ package org.openhab.binding.hue.internal.dto.clip2;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,13 +25,13 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class LightLevelReport {
-    private @Nullable Instant changed;
+    private @NonNullByDefault({}) Instant changed;
     private @SerializedName("light_level") int lightLevel;
 
     /**
      * @return last time the value of this property is changed.
      */
-    public @Nullable Instant getLastChanged() {
+    public Instant getLastChanged() {
         return changed;
     }
 

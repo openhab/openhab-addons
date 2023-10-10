@@ -25,13 +25,13 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ButtonEventType;
  */
 @NonNullByDefault
 public class ButtonReport {
-    private @Nullable Instant updated;
+    private @NonNullByDefault({}) Instant updated;
     private @Nullable String event;
 
     /**
      * @return last time the value of this property is updated.
      */
-    public @Nullable Instant getLastChanged() {
+    public Instant getLastChanged() {
         return updated;
     }
 

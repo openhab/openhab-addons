@@ -25,14 +25,14 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.RotationEventType;
  */
 @NonNullByDefault
 public class RotaryReport {
-    private @Nullable Instant updated;
+    private @NonNullByDefault({}) Instant updated;
     private @Nullable String action;
     private @Nullable Rotation rotation;
 
     /**
      * @return last time the value of this property is changed.
      */
-    public @Nullable Instant getLastChanged() {
+    public Instant getLastChanged() {
         return updated;
     }
 
