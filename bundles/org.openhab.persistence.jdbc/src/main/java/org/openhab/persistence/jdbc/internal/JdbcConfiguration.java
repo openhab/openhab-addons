@@ -321,7 +321,7 @@ public class JdbcConfiguration {
                         warn += "\tDerby:     version >= 10.14.2.0 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
                         break;
                     case "h2":
-                        warn += "\tH2:        version >= 1.4.189 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
+                        warn += "\tH2:        version >= 2.2.224 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
                         break;
                     case "hsqldb":
                         warn += "\tHSQLDB:    version >= 2.3.3 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
