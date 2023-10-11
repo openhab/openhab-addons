@@ -44,7 +44,7 @@ public class TSmartDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(TSmartDiscoveryService.class);
 
     public TSmartDiscoveryService() {
-        super(Collections.unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_T_SMART))), 60, false);
+        super(Set.of(THING_TYPE_T_SMART), 60, false);
     }
 
     /**
