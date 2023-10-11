@@ -75,13 +75,13 @@ public class TSmartHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_SETPOINT:
-                    if (command instanceof QuantityType) {
-                        setSetpoint((QuantityType<?>) command);
+                    if (command instanceof QuantityType<?> quantityCommand) {
+                        setSetpoint(quantityCommand);
                     }
                     break;
                 case CHANNEL_MODE:
-                    if (command instanceof StringType) {
-                        setMode((StringType) command);
+                    if (command instanceof StringType stringCommand) {
+                        setMode(stringCommand);
                     }
                     break;
             }
@@ -152,7 +152,6 @@ public class TSmartHandler extends BaseThingHandler {
     }
 
     private void requestStatusRefresh() {
-
         sendUDPPacket(new byte[] { (byte) 0xF1, (byte) 0x00, (byte) 0x00 });
 
         unRespondedRequests++;
@@ -162,7 +161,6 @@ public class TSmartHandler extends BaseThingHandler {
     }
 
     private QuantityType<Temperature> getTemperature(byte firstByte, byte secondByte) {
-
         ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(firstByte);
@@ -181,7 +179,6 @@ public class TSmartHandler extends BaseThingHandler {
         } else if (b == 0x21) {
             return new StringType("Limited");
         } else if (b == 0x22) {
-
             return new StringType("Critical");
         } else {
             return UnDefType.UNDEF;

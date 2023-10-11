@@ -80,7 +80,6 @@ public class TSmartDiscoveryService extends AbstractDiscoveryService {
      * @param buffer Packet bytes
      */
     public void handleDiscoveryResponse(InetAddress addr, byte[] buffer) {
-
         String name = new String(Arrays.copyOfRange(buffer, 9, 20));
         String id = String.format("%02X%02X%02X%02X", buffer[8], buffer[7], buffer[6], buffer[5]);
 
