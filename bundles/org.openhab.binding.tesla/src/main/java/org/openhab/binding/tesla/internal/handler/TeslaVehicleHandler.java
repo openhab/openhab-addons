@@ -283,9 +283,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             }
                         }
                         if (amps != null) {
-                            if (amps < 5 || amps > 32) {
-                                logger.warn("Charging amps can only be set in a range of 5-32A, but not to {}A.", amps);
+                            if (amps > 32) {
+                                logger.warn("Charging amps cannot be set higher than 32A, {}A was requested", amps);
                                 return;
+                            }
+                            if (amps < 5) {
+                                logger.info("Charging amps should be set higher than 5A to avoid excessive losses.");
                             }
                             setChargingAmps(amps);
                         }
