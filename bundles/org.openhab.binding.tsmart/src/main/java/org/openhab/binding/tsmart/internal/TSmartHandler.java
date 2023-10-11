@@ -39,8 +39,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TSmartHandler} is responsible for handling commands, which are
@@ -50,8 +48,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TSmartHandler extends BaseThingHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(TSmartHandler.class);
 
     private @Nullable TSmartConfiguration config;
 
