@@ -117,11 +117,12 @@ public class TSmartUDPListener implements Runnable {
 
                     TSmartHandler handler = handlerAddressMap.get(response.getAddress());
 
-                    if (buffer[0] == (byte) 0xF1) {
+                    if (handler != null && buffer[0] == (byte) 0xF1) {
                         handler.updateStatusHandler(buffer);
                     }
-                } else if (discoService != null) {
-                    if (buffer[0] == (byte) 0x01 && buffer[3] != (byte) 0x54) {
+                } else {
+                    TSmartDiscoveryService discoService = TSmartUDPListener.discoService;
+                    if (discoService != null && buffer[0] == (byte) 0x01 && buffer[3] != (byte) 0x54) {
                         discoService.handleDiscoveryResponse(response.getAddress(), buffer);
                     }
                 }
