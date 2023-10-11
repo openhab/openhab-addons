@@ -33,6 +33,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -95,6 +96,14 @@ public class TSmartHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(TSmartConfiguration.class);
+        if (config.hostname.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        } else {
+            scheduler.schedule(this::startup, 0, TimeUnit.SECONDS);
+        }
+    }
+
+    private void startup() {
         try {
             InetAddress destination = InetAddress.getByName(config.hostname);
 
@@ -107,7 +116,7 @@ public class TSmartHandler extends BaseThingHandler {
             statusRefreshJob = scheduler.scheduleWithFixedDelay(this::requestStatusRefresh, 0, config.refreshInterval,
                     TimeUnit.SECONDS);
         } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -121,8 +130,10 @@ public class TSmartHandler extends BaseThingHandler {
         if (destination != null) {
             TSmartUDPListener.removeHandler(destination);
         }
+        ScheduledFuture<?> statusRefreshJob = this.statusRefreshJob;
         if (statusRefreshJob != null) {
             statusRefreshJob.cancel(true);
+            this.statusRefreshJob = null;
         }
     }
 
@@ -133,7 +144,6 @@ public class TSmartHandler extends BaseThingHandler {
      * @param buffer UDP Packet
      */
     public void updateStatusHandler(byte[] buffer) {
-
         unRespondedRequests = 0;
         updateStatus(ThingStatus.ONLINE);
         QuantityType<Temperature> high = getTemperature(buffer[7], buffer[8]);
@@ -175,7 +185,6 @@ public class TSmartHandler extends BaseThingHandler {
 
         if (MODES.size() > i) {
             return new StringType(MODES.get(i));
-
         } else if (b == 0x21) {
             return new StringType("Limited");
         } else if (b == 0x22) {
