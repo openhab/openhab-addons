@@ -17,10 +17,9 @@ import static org.openhab.binding.tsmart.internal.TSmartBindingConstants.THING_T
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
