@@ -80,7 +80,8 @@ public class Setters {
      * (if any).
      *
      * @param target the target resource.
-     * @param command the new state command should be a QuantityType<Temperature> (but it can also handle DecimalType).
+     * @param command the new state command should be a {@code QuantityType<Temperature>} (but it can also handle
+     *            {@code DecimalType}).
      * @param source another resource containing the MirekSchema.
      *
      * @return the target resource.

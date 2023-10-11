@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Waterhouse - Initial Contribution
  * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Lukas Agethen - Added support for Energy Year reading, compressor frequency and powerful mode
- * @author Wouter Denayer - Added to support for weekly & daily energy reading
+ * @author Wouter Denayer - Added to support for weekly and daily energy reading
  *
  */
 @NonNullByDefault

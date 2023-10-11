@@ -24,12 +24,17 @@ public class StringUtils {
 
     /**
      * Simple method to escape XML special characters in String.
-     * There are five XML Special characters which needs to be escaped :
+     * There are five XML Special characters which needs to be escaped:
+     *
+     * <pre>
+     * {@code
      * & - &amp;
      * < - &lt;
      * > - &gt;
      * " - &quot;
      * ' - &apos;
+     * }
+     * </pre>
      */
     public static String escapeXml(String xml) {
         xml = xml.replace("&", "&amp;");
@@ -43,11 +48,16 @@ public class StringUtils {
     /**
      * Simple method to un escape XML special characters in String.
      * There are five XML Special characters which needs to be escaped :
+     *
+     * <pre>
+     * {@code
      * & - &amp;
      * < - &lt;
      * > - &gt;
      * " - &quot;
      * ' - &apos;
+     * }
+     * </pre>
      */
     public static String unEscapeXml(String xml) {
         xml = xml.replace("&amp;", "&");

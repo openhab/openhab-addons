@@ -57,7 +57,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *
      * {@inheritDoc}
      *
-     * @implSpec
+     * @implNote
      *           This implementation returns a new HeritableFuture instance that uses
      *           the current instance as a parent. Cancellation of the child will result in
      *           cancellation of the parent.
@@ -85,7 +85,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *
      * {@inheritDoc}
      *
-     * @implSpec
+     * @implNote
      *           This implementation cancels this future first, then cancels the parent future.
      */
     @Override
@@ -107,7 +107,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *
      * {@inheritDoc}
      *
-     * @implSpec
+     * @implNote
      *           This implementation will treat the future returned by the function as a parent future.
      */
     @Override
@@ -120,7 +120,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *
      * {@inheritDoc}
      *
-     * @implSpec
+     * @implNote
      *           This implementation will treat the future returned by the function as a parent future.
      */
     @Override
@@ -133,7 +133,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *
      * {@inheritDoc}
      *
-     * @implSpec
+     * @implNote
      *           This implementation will treat the future returned by the function as a parent future.
      */
     @Override

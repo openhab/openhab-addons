@@ -44,7 +44,7 @@ import com.google.gson.Gson;
 
 /***
  * The{@link ShellyComponents} implements updates for supplemental components
- * Meter will be used by Relay + Light; Sensor is part of H&T, Flood, Door Window, Sense
+ * Meter will be used by Relay + Light; Sensor is part of H&amp;T, Flood, Door Window, Sense
  *
  * @author Markus Michels - Initial contribution
  */
