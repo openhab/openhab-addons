@@ -10,23 +10,23 @@
 		<description>Tesla T-Smart Immersion Heater Thermostat</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="temperature" typeId="temperature">
 				<label>Temperature</label>
 				<description>Measured temperature across the sensors</description>
 			</channel>
-			<channel id="temperatureHigh" typeId="temperature">
+			<channel id="temperature-high" typeId="temperature">
 				<label>High Temperature</label>
 				<description>Measured temperature on the High sensor</description>
 			</channel>
-			<channel id="temperatureLow" typeId="temperature">
+			<channel id="temperature-low" typeId="temperature">
 				<label>Low Temperature</label>
 				<description>Measured temperature on the Low sensor</description>
 			</channel>
-			<channel id="setpoint" typeId="setpoint"/>
+			<channel id="setpoint" typeId="temperature-setpoint"/>
 			<channel id="mode" typeId="mode"/>
-			<channel id="smartMode" typeId="smartMode"/>
-			<channel id="relay" typeId="relayState"/>
+			<channel id="smart-mode" typeId="smart-mode"/>
+			<channel id="relay" typeId="relay-state"/>
 		</channels>
 
 		<config-description>
@@ -43,12 +43,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-	</channel-type>
-
-	<channel-type id="relayState">
+	<channel-type id="relay-state">
 		<item-type>Switch</item-type>
 		<label>Relay State</label>
 	</channel-type>
@@ -58,14 +53,22 @@
 		<label>Temperature</label>
 		<description>Temperature of water in cylinder sensed by thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
-	<channel-type id="setpoint">
+	<channel-type id="temperature-setpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
 		<description>Setpoint currently set on device</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="15" max="70" step="5" readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -85,7 +88,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="smartMode">
+	<channel-type id="smart-mode">
 		<item-type>String</item-type>
 		<label>Smart Mode</label>
 		<description>The mode of the thermostat&apos;s smart capability</description>

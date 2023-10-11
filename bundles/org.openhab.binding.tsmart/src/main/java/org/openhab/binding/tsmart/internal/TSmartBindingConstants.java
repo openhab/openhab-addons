@@ -34,11 +34,11 @@ public class TSmartBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_TEMPERATURE = "temperature";
-    public static final String CHANNEL_TEMPERATURE_HIGH = "temperatureHigh";
-    public static final String CHANNEL_TEMPERATURE_LOW = "temperatureLow";
+    public static final String CHANNEL_TEMPERATURE_HIGH = "temperature-high";
+    public static final String CHANNEL_TEMPERATURE_LOW = "temperature-low";
     public static final String CHANNEL_SETPOINT = "setpoint";
     public static final String CHANNEL_MODE = "mode";
-    public static final String CHANNEL_SMART_STATE = "smartState";
+    public static final String CHANNEL_SMART_STATE = "smart-state";
     public static final String CHANNEL_RELAY = "relay";
 
     // UDP port used by the t-smart device
