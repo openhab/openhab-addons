@@ -58,7 +58,7 @@ public class TSmartDiscoveryService extends AbstractDiscoveryService {
             new TSmartUDPUtils().sendUDPPacket(InetAddress.getByName("255.255.255.255"),
                     new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00 });
         } catch (UnknownHostException e) {
-
+            logger.debug("Unknown host: {}", e.getMessage());
         }
     }
 
