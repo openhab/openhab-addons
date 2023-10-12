@@ -32,7 +32,7 @@ public abstract class NeoHubSocketBase implements Closeable {
     protected final NeoHubConfiguration config;
     protected final String hubId;
 
-    private static final int REQUEST_INTERVAL_MILLISECS = 100;
+    private static final int REQUEST_INTERVAL_MILLISECS = 1000;
     private Optional<Instant> lastRequestTime = Optional.empty();
 
     public NeoHubSocketBase(NeoHubConfiguration config, String hubId) {
@@ -53,8 +53,8 @@ public abstract class NeoHubSocketBase implements Closeable {
     /**
      * Method for throttling requests to prevent overloading the hub.
      * <p>
-     * The NeoHub can get confused if it receives too many requests in a short period of time, so this method throttles
-     * the requests to a maximum of one per REQUEST_INTERVAL_MILLISECS.
+     * The NeoHub can get confused if, while it is uploading data to the cloud, it also receives too many local
+     * requests, so this method throttles the requests to one per REQUEST_INTERVAL_MILLISECS maximum.
      *
      * @throws NeoHubException if the wait is interrupted
      */
