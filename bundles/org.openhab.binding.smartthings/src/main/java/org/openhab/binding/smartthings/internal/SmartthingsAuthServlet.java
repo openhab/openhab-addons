@@ -83,7 +83,7 @@ public class SmartthingsAuthServlet extends HttpServlet {
         final Map<String, String> replaceMap = new HashMap<>();
 
         String servletBaseURLSecure = servletBaseURL.replace("http://", "https://").replace("8080", "8443");
-        handleSpotifyRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
+        handleSmartthingsRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
         resp.setContentType(CONTENT_TYPE);
         SmartthingsAccountHandler accountHandler = smartthingsAuthService.getSmartthingsAccountHandler();
 
@@ -103,7 +103,7 @@ public class SmartthingsAuthServlet extends HttpServlet {
      * @param servletBaseURL the servlet base, which should be used as the Spotify redirect_uri value
      * @param queryString the query part of the GET request this servlet is processing
      */
-    private void handleSpotifyRedirect(Map<String, String> replaceMap, String servletBaseURL,
+    private void handleSmartthingsRedirect(Map<String, String> replaceMap, String servletBaseURL,
             @Nullable String queryString) {
         replaceMap.put(KEY_AUTHORIZED_USER, "");
         replaceMap.put(KEY_ERROR, "");
