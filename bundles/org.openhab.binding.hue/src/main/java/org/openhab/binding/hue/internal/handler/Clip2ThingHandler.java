@@ -300,16 +300,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command commandParam) {
         if (RefreshType.REFRESH.equals(commandParam)) {
-            if ((thing.getStatus() == ThingStatus.ONLINE) && updateDependenciesDone) {
-                cancelTask(updateServiceContributorsTask, false);
-                updateServiceContributorsTask = scheduler.schedule(() -> {
-                    try {
-                        updateServiceContributors();
-                    } catch (ApiException | AssetNotLoadedException e) {
-                        logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
-                    } catch (InterruptedException e) {
-                    }
-                }, 3, TimeUnit.SECONDS);
+            if (thing.getStatus() == ThingStatus.ONLINE) {
+                refreshAllChannels();
             }
             return;
         }
@@ -519,6 +511,21 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
         } catch (InterruptedException e) {
         }
+    }
+
+    private void refreshAllChannels() {
+        if (!updateDependenciesDone) {
+            return;
+        }
+        cancelTask(updateServiceContributorsTask, false);
+        updateServiceContributorsTask = scheduler.schedule(() -> {
+            try {
+                updateServiceContributors();
+            } catch (ApiException | AssetNotLoadedException e) {
+                logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
+            } catch (InterruptedException e) {
+            }
+        }, 3, TimeUnit.SECONDS);
     }
 
     /**
@@ -896,11 +903,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
             } else if (thing.getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
-                // issue REFRESH command to update all channels
-                Channel lastUpdateChannel = thing.getChannel(CHANNEL_2_LAST_UPDATED);
-                if (Objects.nonNull(lastUpdateChannel)) {
-                    handleCommand(lastUpdateChannel.getUID(), RefreshType.REFRESH);
-                }
+                refreshAllChannels();
             }
         }
     }
