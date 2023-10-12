@@ -1,0 +1,48 @@
+{
+    "id": "bulb",
+    "version": 1,
+    "status": "dead",
+    "name": "Bulb",
+    "ephemeral": false,
+    "attributes": {
+        "switch": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "SwitchState",
+                        "type": "string",
+                        "enum": [
+                            "on",
+                            "off"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": [
+                {
+                    "command": "off",
+                    "value": "off"
+                },
+                {
+                    "command": "on",
+                    "value": "on"
+                }
+            ]
+        }
+    },
+    "commands": {
+        "off": {
+            "name": "off",
+            "arguments": []
+        },
+        "on": {
+            "name": "on",
+            "arguments": []
+        }
+    }
+}

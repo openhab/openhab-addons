@@ -1,0 +1,100 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{temperatureAlarm.value}}",
+                "alternatives": [
+                    {
+                        "key": "cleared",
+                        "value": "{{i18n.attributes.temperatureAlarm.i18n.value.cleared.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "heat",
+                        "value": "{{i18n.attributes.temperatureAlarm.i18n.value.heat.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "freeze",
+                        "value": "{{i18n.attributes.temperatureAlarm.i18n.value.freeze.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "rateOfRise",
+                        "value": "{{i18n.attributes.temperatureAlarm.i18n.value.rateOfRise.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{temperatureAlarm.value}}",
+                "alternatives": [
+                    {
+                        "key": "cleared",
+                        "value": "{{i18n.attributes.temperatureAlarm.i18n.value.cleared.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "heat",
+                        "value": "{{i18n.attributes.temperatureAlarm.i18n.value.heat.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "freeze",
+                        "value": "{{i18n.attributes.temperatureAlarm.i18n.value.freeze.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "rateOfRise",
+                        "value": "{{i18n.attributes.temperatureAlarm.i18n.value.rateOfRise.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "cleared",
+                            "value": "{{i18n.attributes.temperatureAlarm.i18n.value.cleared.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "heat",
+                            "value": "{{i18n.attributes.temperatureAlarm.i18n.value.heat.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "freeze",
+                            "value": "{{i18n.attributes.temperatureAlarm.i18n.value.freeze.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "rateOfRise",
+                            "value": "{{i18n.attributes.temperatureAlarm.i18n.value.rateOfRise.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "temperatureAlarm.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "temperatureAlarm",
+    "version": 1
+}

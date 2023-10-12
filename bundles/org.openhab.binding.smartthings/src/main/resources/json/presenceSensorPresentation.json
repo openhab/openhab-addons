@@ -1,0 +1,70 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{presence.value}}",
+                "alternatives": [
+                    {
+                        "key": "not present",
+                        "value": "{{i18n.attributes.presence.i18n.value.not present.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "present",
+                        "value": "{{i18n.attributes.presence.i18n.value.present.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{presence.value}}",
+                "alternatives": [
+                    {
+                        "key": "not present",
+                        "value": "{{i18n.attributes.presence.i18n.value.not present.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "present",
+                        "value": "{{i18n.attributes.presence.i18n.value.present.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "not present",
+                            "value": "{{i18n.attributes.presence.i18n.value.not present.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "present",
+                            "value": "{{i18n.attributes.presence.i18n.value.present.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "presence.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "presenceSensor",
+    "version": 1
+}

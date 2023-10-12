@@ -1,0 +1,33 @@
+{
+    "detailView": [
+        {
+            "label": "Stateless Robot Cleaner Toggle Button",
+            "displayType": "pushButton",
+            "pushButton": {
+                "command": "setButton",
+                "argument": "actionToggle"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "Stateless Robot Cleaner Toggle Button",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "actionToggle",
+                            "value": "Action toggle",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setButton"
+                }
+            }
+        ]
+    },
+    "id": "statelessRobotCleanerToggleButton",
+    "version": 1
+}

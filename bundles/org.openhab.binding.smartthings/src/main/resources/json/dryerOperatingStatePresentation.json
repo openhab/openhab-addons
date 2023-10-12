@@ -1,0 +1,312 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{dryerJobState.value}}",
+                "alternatives": [
+                    {
+                        "key": "cooling",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.cooling.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "delayWash",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.delayWash.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "drying",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.drying.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "finished",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.finished.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "none",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.none.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "weightSensing",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.weightSensing.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "wrinklePrevent",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.wrinklePrevent.label}}",
+                        "type": "active"
+                    }
+                ]
+            },
+            {
+                "label": "{{machineState.value}}",
+                "alternatives": [
+                    {
+                        "key": "pause",
+                        "value": "{{i18n.attributes.machineState.i18n.value.pause.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "run",
+                        "value": "{{i18n.attributes.machineState.i18n.value.run.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "stop",
+                        "value": "{{i18n.attributes.machineState.i18n.value.stop.label}}",
+                        "type": "active"
+                    }
+                ]
+            },
+            {
+                "label": "{{completionTime.value}}"
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "playPause",
+                "playPause": {
+                    "command": {
+                        "name": "setMachineState",
+                        "play": "run",
+                        "pause": "pause",
+                        "argumentType": "string"
+                    },
+                    "state": {
+                        "value": "machineState.value",
+                        "valueType": "string",
+                        "play": "run",
+                        "pause": "pause"
+                    }
+                }
+            },
+            {
+                "displayType": "playStop",
+                "playStop": {
+                    "command": {
+                        "name": "setMachineState",
+                        "play": "run",
+                        "stop": "stop",
+                        "argumentType": "string"
+                    },
+                    "state": {
+                        "value": "machineState.value",
+                        "play": "run",
+                        "stop": "stop",
+                        "valueType": "string"
+                    }
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{dryerJobState.value}}",
+                "alternatives": [
+                    {
+                        "key": "cooling",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.cooling.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "delayWash",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.delayWash.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "drying",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.drying.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "finished",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.finished.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "none",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.none.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "weightSensing",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.weightSensing.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "wrinklePrevent",
+                        "value": "{{i18n.attributes.dryerJobState.i18n.value.wrinklePrevent.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "{{i18n.attributes.machineState.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setMachineState",
+                    "alternatives": [
+                        {
+                            "key": "pause",
+                            "value": "{{i18n.commands.setMachineState.arguments.state.i18n.pause.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "run",
+                            "value": "{{i18n.commands.setMachineState.arguments.state.i18n.run.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.commands.setMachineState.arguments.state.i18n.stop.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "argumentType": "string",
+                    "supportedValues": "supportedMachineStates.value"
+                },
+                "state": {
+                    "value": "machineState.value",
+                    "valueType": "string",
+                    "alternatives": [
+                        {
+                            "key": "pause",
+                            "value": "{{i18n.attributes.machineState.i18n.value.pause.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "run",
+                            "value": "{{i18n.attributes.machineState.i18n.value.run.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.attributes.machineState.i18n.value.stop.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{completionTime.value}}"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.attributes.machineState.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "pause",
+                            "value": "{{i18n.attributes.machineState.i18n.value.pause.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "run",
+                            "value": "{{i18n.attributes.machineState.i18n.value.run.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.attributes.machineState.i18n.value.stop.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "machineState.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            },
+            {
+                "label": "{{i18n.attributes.dryerJobState.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "cooling",
+                            "value": "{{i18n.attributes.dryerJobState.i18n.value.cooling.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "delayWash",
+                            "value": "{{i18n.attributes.dryerJobState.i18n.value.delayWash.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "drying",
+                            "value": "{{i18n.attributes.dryerJobState.i18n.value.drying.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "finished",
+                            "value": "{{i18n.attributes.dryerJobState.i18n.value.finished.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "none",
+                            "value": "{{i18n.attributes.dryerJobState.i18n.value.none.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "weightSensing",
+                            "value": "{{i18n.attributes.dryerJobState.i18n.value.weightSensing.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "wrinklePrevent",
+                            "value": "{{i18n.attributes.dryerJobState.i18n.value.wrinklePrevent.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "dryerJobState.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.attributes.machineState.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "pause",
+                            "value": "{{i18n.commands.setMachineState.arguments.state.i18n.pause.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "run",
+                            "value": "{{i18n.commands.setMachineState.arguments.state.i18n.run.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.commands.setMachineState.arguments.state.i18n.stop.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setMachineState",
+                    "argumentType": "string"
+                }
+            }
+        ]
+    },
+    "id": "dryerOperatingState",
+    "version": 1
+}

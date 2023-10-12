@@ -1,0 +1,34 @@
+{
+    "id": "radonHealthConcern",
+    "version": 1,
+    "status": "proposed",
+    "name": "Radon Health Concern",
+    "ephemeral": false,
+    "attributes": {
+        "radonHealthConcern": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "AirQualityHealthConcern",
+                        "type": "string",
+                        "enum": [
+                            "good",
+                            "moderate",
+                            "slightlyUnhealthy",
+                            "unhealthy",
+                            "veryUnhealthy",
+                            "hazardous"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

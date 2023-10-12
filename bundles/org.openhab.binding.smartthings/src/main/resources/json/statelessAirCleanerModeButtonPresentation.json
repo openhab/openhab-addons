@@ -1,0 +1,33 @@
+{
+    "detailView": [
+        {
+            "label": "Stateless Air Cleaner Mode Button",
+            "displayType": "pushButton",
+            "pushButton": {
+                "command": "setButton",
+                "argument": "changeMode"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "Stateless Air Cleaner Mode Button",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "changeMode",
+                            "value": "Change mode",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setButton"
+                }
+            }
+        ]
+    },
+    "id": "statelessAirCleanerModeButton",
+    "version": 1
+}

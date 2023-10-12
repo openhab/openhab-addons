@@ -1,0 +1,16 @@
+{
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "textField",
+                "textField": {
+                    "command": "execute"
+                }
+            }
+        ]
+    },
+    "id": "cameraPreset",
+    "version": 1
+}

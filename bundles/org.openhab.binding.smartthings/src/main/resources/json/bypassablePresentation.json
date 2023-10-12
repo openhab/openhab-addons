@@ -1,0 +1,86 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{bypassStatus.value}}",
+                "alternatives": [
+                    {
+                        "key": "ready",
+                        "value": "{{i18n.attributes.bypassStatus.i18n.value.ready.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "notReady",
+                        "value": "{{i18n.attributes.bypassStatus.i18n.value.notReady.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "bypassed",
+                        "value": "{{i18n.attributes.bypassStatus.i18n.value.bypassed.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{bypassStatus.value}}",
+                "alternatives": [
+                    {
+                        "key": "ready",
+                        "value": "{{i18n.attributes.bypassStatus.i18n.value.ready.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "notReady",
+                        "value": "{{i18n.attributes.bypassStatus.i18n.value.notReady.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "bypassed",
+                        "value": "{{i18n.attributes.bypassStatus.i18n.value.bypassed.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "ready",
+                            "value": "{{i18n.attributes.bypassStatus.i18n.value.ready.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "notReady",
+                            "value": "{{i18n.attributes.bypassStatus.i18n.value.notReady.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "bypassed",
+                            "value": "{{i18n.attributes.bypassStatus.i18n.value.bypassed.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "bypassStatus.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "bypassable",
+    "version": 1
+}

@@ -1,0 +1,37 @@
+{
+    "id": "thermostatSetpoint",
+    "version": 1,
+    "status": "deprecated",
+    "name": "Thermostat Setpoint",
+    "ephemeral": false,
+    "attributes": {
+        "thermostatSetpoint": {
+            "schema": {
+                "title": "Temperature",
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "TemperatureValue",
+                        "type": "number",
+                        "minimum": -460,
+                        "maximum": 10000
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "F",
+                            "C"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value",
+                    "unit"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

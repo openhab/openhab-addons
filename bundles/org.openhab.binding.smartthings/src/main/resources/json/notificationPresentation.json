@@ -1,0 +1,25 @@
+{
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "textField",
+            "textField": {
+                "command": "deviceNotification"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "textField",
+                "textField": {
+                    "command": "deviceNotification"
+                }
+            }
+        ]
+    },
+    "id": "notification",
+    "version": 1
+}

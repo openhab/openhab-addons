@@ -1,0 +1,99 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{rapidCooling.value}}",
+                "alternatives": [
+                    {
+                        "key": "on",
+                        "value": "{{i18n.attributes.rapidCooling.i18n.value.on.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "off",
+                        "value": "{{i18n.attributes.rapidCooling.i18n.value.off.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "switch",
+            "switch": {
+                "command": {
+                    "name": "setRapidCooling",
+                    "on": "on",
+                    "off": "off"
+                },
+                "state": {
+                    "value": "rapidCooling.value",
+                    "on": "on",
+                    "off": "off",
+                    "alternatives": [
+                        {
+                            "key": "on",
+                            "value": "{{i18n.attributes.rapidCooling.i18n.value.on.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.attributes.rapidCooling.i18n.value.off.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "on",
+                            "value": "{{i18n.attributes.rapidCooling.i18n.value.on.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.attributes.rapidCooling.i18n.value.off.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "value": "rapidCooling.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "on",
+                            "value": "{{i18n.commands.setRapidCooling.arguments.rapidCooling.i18n.on.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.commands.setRapidCooling.arguments.rapidCooling.i18n.off.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "command": "setRapidCooling"
+                }
+            }
+        ]
+    },
+    "id": "rapidCooling",
+    "version": 1
+}

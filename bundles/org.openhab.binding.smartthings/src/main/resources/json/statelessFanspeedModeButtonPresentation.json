@@ -1,0 +1,33 @@
+{
+    "detailView": [
+        {
+            "label": "Stateless Fan Speed Mode button",
+            "displayType": "pushButton",
+            "pushButton": {
+                "command": "setButton",
+                "argument": "changeMode"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "Stateless Fan Speed Mode button",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "changeMode",
+                            "value": "Change mode",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setButton"
+                }
+            }
+        ]
+    },
+    "id": "statelessFanspeedModeButton",
+    "version": 1
+}

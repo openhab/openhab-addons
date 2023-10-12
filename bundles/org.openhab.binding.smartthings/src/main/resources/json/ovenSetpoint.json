@@ -1,0 +1,43 @@
+{
+    "id": "ovenSetpoint",
+    "version": 1,
+    "status": "proposed",
+    "name": "Oven Setpoint",
+    "ephemeral": false,
+    "attributes": {
+        "ovenSetpoint": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "PositiveInteger",
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "setter": "setOvenSetpoint",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setOvenSetpoint": {
+            "name": "setOvenSetpoint",
+            "arguments": [
+                {
+                    "name": "setpoint",
+                    "optional": false,
+                    "schema": {
+                        "title": "PositiveInteger",
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                }
+            ]
+        }
+    }
+}

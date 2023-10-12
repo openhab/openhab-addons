@@ -1,0 +1,143 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{engineState.value}}",
+                "alternatives": [
+                    {
+                        "key": "starting",
+                        "value": "{{i18n.attributes.engineState.i18n.value.starting.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "running",
+                        "value": "{{i18n.attributes.engineState.i18n.value.running.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "unknown",
+                        "value": "{{i18n.attributes.engineState.i18n.value.unknown.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "off",
+                        "value": "{{i18n.attributes.engineState.i18n.value.off.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "standbyPowerSwitch",
+                "standbyPowerSwitch": {
+                    "command": {
+                        "on": "startEngine",
+                        "off": "stopEngine"
+                    },
+                    "state": {
+                        "value": "engineState.value",
+                        "on": "running",
+                        "off": "off"
+                    }
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "standbyPowerSwitch",
+            "standbyPowerSwitch": {
+                "command": {
+                    "on": "startEngine",
+                    "off": "stopEngine"
+                },
+                "state": {
+                    "value": "engineState.value",
+                    "on": "running",
+                    "off": "off",
+                    "label": "{{engineState.value}}",
+                    "alternatives": [
+                        {
+                            "key": "starting",
+                            "value": "{{i18n.attributes.engineState.i18n.value.starting.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "running",
+                            "value": "{{i18n.attributes.engineState.i18n.value.running.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "unknown",
+                            "value": "{{i18n.attributes.engineState.i18n.value.unknown.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.attributes.engineState.i18n.value.off.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "starting",
+                            "value": "{{i18n.attributes.engineState.i18n.value.starting.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "running",
+                            "value": "{{i18n.attributes.engineState.i18n.value.running.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "unknown",
+                            "value": "{{i18n.attributes.engineState.i18n.value.unknown.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.attributes.engineState.i18n.value.off.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "value": "engineState.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "startEngine",
+                            "value": "{{i18n.commands.startEngine.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stopEngine",
+                            "value": "{{i18n.commands.stopEngine.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "vehicleEngine",
+    "version": 1
+}

@@ -1,0 +1,132 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{playbackRepeatMode.value}}",
+                "alternatives": [
+                    {
+                        "key": "all",
+                        "value": "{{i18n.attributes.playbackRepeatMode.i18n.value.all.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "off",
+                        "value": "{{i18n.attributes.playbackRepeatMode.i18n.value.off.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "one",
+                        "value": "{{i18n.attributes.playbackRepeatMode.i18n.value.one.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setPlaybackRepeatMode",
+                    "alternatives": [
+                        {
+                            "key": "all",
+                            "value": "{{i18n.commands.setPlaybackRepeatMode.arguments.mode.i18n.all.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.commands.setPlaybackRepeatMode.arguments.mode.i18n.off.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "one",
+                            "value": "{{i18n.commands.setPlaybackRepeatMode.arguments.mode.i18n.one.label}}",
+                            "type": "active"
+                        }
+                    ]
+                },
+                "state": {
+                    "value": "playbackRepeatMode.value",
+                    "alternatives": [
+                        {
+                            "key": "all",
+                            "value": "{{i18n.attributes.playbackRepeatMode.i18n.value.all.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.attributes.playbackRepeatMode.i18n.value.off.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "one",
+                            "value": "{{i18n.attributes.playbackRepeatMode.i18n.value.one.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "all",
+                            "value": "{{i18n.attributes.playbackRepeatMode.i18n.value.all.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.attributes.playbackRepeatMode.i18n.value.off.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "one",
+                            "value": "{{i18n.attributes.playbackRepeatMode.i18n.value.one.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "playbackRepeatMode.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "all",
+                            "value": "{{i18n.commands.setPlaybackRepeatMode.arguments.mode.i18n.all.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.commands.setPlaybackRepeatMode.arguments.mode.i18n.off.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "one",
+                            "value": "{{i18n.commands.setPlaybackRepeatMode.arguments.mode.i18n.one.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setPlaybackRepeatMode"
+                }
+            }
+        ]
+    },
+    "id": "mediaPlaybackRepeat",
+    "version": 1
+}

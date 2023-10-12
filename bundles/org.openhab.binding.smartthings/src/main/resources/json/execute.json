@@ -1,0 +1,54 @@
+{
+    "id": "execute",
+    "version": 1,
+    "status": "live",
+    "name": "Execute",
+    "ephemeral": false,
+    "attributes": {
+        "data": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "JsonObject",
+                        "type": "object"
+                    },
+                    "data": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "required": []
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "execute": {
+            "name": "execute",
+            "arguments": [
+                {
+                    "name": "command",
+                    "optional": false,
+                    "schema": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                {
+                    "name": "args",
+                    "optional": true,
+                    "schema": {
+                        "title": "JsonObject",
+                        "type": "object"
+                    }
+                }
+            ]
+        }
+    }
+}

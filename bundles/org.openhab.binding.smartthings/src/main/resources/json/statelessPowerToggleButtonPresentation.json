@@ -1,0 +1,48 @@
+{
+    "dashboard": {
+        "states": [],
+        "actions": [
+            {
+                "displayType": "statelessPowerToggle",
+                "statelessPowerToggle": {
+                    "command": "setButton",
+                    "argument": "powerToggle",
+                    "argumentType": "string"
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "pushButton",
+            "pushButton": {
+                "command": "setButton",
+                "argument": "powerToggle",
+                "argumentType": "string"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "{{i18n.commands.setButton.arguments.button.i18n.powerToggle.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "powerToggle",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.powerToggle.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setButton",
+                    "argumentType": "string"
+                }
+            }
+        ]
+    },
+    "id": "statelessPowerToggleButton",
+    "version": 1
+}

@@ -1,0 +1,26 @@
+{
+    "id": "speechRecognition",
+    "version": 1,
+    "status": "proposed",
+    "name": "Speech Recognition",
+    "ephemeral": false,
+    "attributes": {
+        "phraseSpoken": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "maxLength": 1000
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

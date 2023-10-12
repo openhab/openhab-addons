@@ -1,0 +1,85 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{carbonMonoxide.value}}",
+                "alternatives": [
+                    {
+                        "key": "clear",
+                        "value": "{{i18n.attributes.carbonMonoxide.i18n.value.clear.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "detected",
+                        "value": "{{i18n.attributes.carbonMonoxide.i18n.value.detected.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "tested",
+                        "value": "{{i18n.attributes.carbonMonoxide.i18n.value.tested.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{carbonMonoxide.value}}",
+                "alternatives": [
+                    {
+                        "key": "clear",
+                        "value": "{{i18n.attributes.carbonMonoxide.i18n.value.clear.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "detected",
+                        "value": "{{i18n.attributes.carbonMonoxide.i18n.value.detected.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "tested",
+                        "value": "{{i18n.attributes.carbonMonoxide.i18n.value.tested.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "clear",
+                            "value": "{{i18n.attributes.carbonMonoxide.i18n.value.clear.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "detected",
+                            "value": "{{i18n.attributes.carbonMonoxide.i18n.value.detected.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "tested",
+                            "value": "{{i18n.attributes.carbonMonoxide.i18n.value.tested.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "value": "carbonMonoxide.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "carbonMonoxideDetector",
+    "version": 1
+}

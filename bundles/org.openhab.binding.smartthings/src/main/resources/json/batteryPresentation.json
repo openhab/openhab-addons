@@ -1,0 +1,45 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{battery.value}} {{battery.unit}}"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "slider",
+            "slider": {
+                "range": [
+                    0,
+                    100
+                ],
+                "unit": "battery.unit",
+                "value": "battery.value",
+                "valueType": "integer"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "battery.value",
+                    "valueType": "integer",
+                    "unit": "battery.unit",
+                    "range": [
+                        0,
+                        100
+                    ]
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "battery",
+    "version": 1
+}

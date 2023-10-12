@@ -1,0 +1,55 @@
+{
+    "detailView": [
+        {
+            "label": "Channel Button",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setButton",
+                    "alternatives": [
+                        {
+                            "key": "channelUp",
+                            "value": "Channel Up",
+                            "type": "active"
+                        },
+                        {
+                            "key": "channelDown",
+                            "value": "Channel Down",
+                            "type": "active"
+                        }
+                    ],
+                    "argumentType": "string",
+                    "supportedValues": "availableChannelButtons.value"
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "Channel Button",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "channelUp",
+                            "value": "Channel Up",
+                            "type": "active"
+                        },
+                        {
+                            "key": "channelDown",
+                            "value": "Channel Down",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "availableChannelButtons.value",
+                    "command": "setButton",
+                    "argumentType": "string"
+                }
+            }
+        ]
+    },
+    "id": "statelessChannelButton",
+    "version": 1
+}

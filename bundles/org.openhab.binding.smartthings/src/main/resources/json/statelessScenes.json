@@ -1,0 +1,41 @@
+{
+    "id": "statelessScenes",
+    "version": 1,
+    "status": "proposed",
+    "name": "Stateless Scenes",
+    "ephemeral": false,
+    "attributes": {
+        "supportedScenes": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setScene": {
+            "name": "setScene",
+            "arguments": [
+                {
+                    "name": "scene",
+                    "optional": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ]
+        }
+    }
+}

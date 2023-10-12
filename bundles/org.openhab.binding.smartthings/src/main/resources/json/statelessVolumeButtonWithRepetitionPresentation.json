@@ -1,0 +1,59 @@
+{
+    "detailView": [
+        {
+            "label": "Stateless Volume Button With Repetition",
+            "displayType": "numberField",
+            "numberField": {
+                "command": "volumeUp",
+                "argumentType": "integer",
+                "range": [
+                    0,
+                    10
+                ]
+            }
+        },
+        {
+            "label": "Stateless Volume Button With Repetition",
+            "displayType": "numberField",
+            "numberField": {
+                "command": "volumeDown",
+                "argumentType": "integer",
+                "range": [
+                    0,
+                    10
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "Stateless Volume Button With Repetition",
+                "displayType": "numberField",
+                "numberField": {
+                    "command": "volumeUp",
+                    "argumentType": "integer",
+                    "range": [
+                        0,
+                        10
+                    ]
+                }
+            },
+            {
+                "label": "Stateless Volume Button With Repetition",
+                "displayType": "numberField",
+                "numberField": {
+                    "command": "volumeDown",
+                    "argumentType": "integer",
+                    "range": [
+                        0,
+                        10
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "statelessVolumeButtonWithRepetition",
+    "version": 1
+}

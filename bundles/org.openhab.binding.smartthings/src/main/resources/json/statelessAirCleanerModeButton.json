@@ -1,0 +1,45 @@
+{
+    "id": "statelessAirCleanerModeButton",
+    "version": 1,
+    "status": "proposed",
+    "name": "Stateless Air Cleaner Mode Button",
+    "ephemeral": false,
+    "attributes": {
+        "availableAirCleanerModeButtons": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "changeMode"
+                            ]
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setButton": {
+            "name": "setButton",
+            "arguments": [
+                {
+                    "name": "button",
+                    "optional": false,
+                    "schema": {
+                        "type": "string",
+                        "enum": [
+                            "changeMode"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

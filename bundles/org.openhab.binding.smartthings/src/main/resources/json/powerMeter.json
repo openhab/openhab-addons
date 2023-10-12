@@ -1,0 +1,32 @@
+{
+    "id": "powerMeter",
+    "version": 1,
+    "status": "live",
+    "name": "Power Meter",
+    "ephemeral": false,
+    "attributes": {
+        "power": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "W"
+                        ],
+                        "default": "W"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

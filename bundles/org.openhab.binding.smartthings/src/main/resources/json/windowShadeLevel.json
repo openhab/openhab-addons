@@ -1,0 +1,51 @@
+{
+    "id": "windowShadeLevel",
+    "version": 1,
+    "status": "live",
+    "name": "Window Shade Level",
+    "ephemeral": false,
+    "attributes": {
+        "shadeLevel": {
+            "schema": {
+                "title": "IntegerPercent",
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "%"
+                        ],
+                        "default": "%"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "setter": "setShadeLevel",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setShadeLevel": {
+            "name": "setShadeLevel",
+            "arguments": [
+                {
+                    "name": "shadeLevel",
+                    "optional": false,
+                    "schema": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                    }
+                }
+            ]
+        }
+    }
+}

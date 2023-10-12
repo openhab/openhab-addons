@@ -1,0 +1,25 @@
+{
+    "detailView": [
+        {
+            "label": "Set channel by content button",
+            "displayType": "textField",
+            "textField": {
+                "command": "setChannelByContent"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "Set channel by content button",
+                "displayType": "textField",
+                "textField": {
+                    "command": "setChannelByContent"
+                }
+            }
+        ]
+    },
+    "id": "statelessSetChannelByContentButton",
+    "version": 1
+}

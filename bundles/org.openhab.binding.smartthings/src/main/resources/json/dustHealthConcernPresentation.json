@@ -1,0 +1,130 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{dustHealthConcern.value}}",
+                "alternatives": [
+                    {
+                        "key": "good",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.good.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "moderate",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.moderate.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "slightlyUnhealthy",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.slightlyUnhealthy.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "unhealthy",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.unhealthy.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "veryUnhealthy",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.veryUnhealthy.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "hazardous",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.hazardous.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{dustHealthConcern.value}}",
+                "alternatives": [
+                    {
+                        "key": "good",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.good.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "moderate",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.moderate.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "slightlyUnhealthy",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.slightlyUnhealthy.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "unhealthy",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.unhealthy.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "veryUnhealthy",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.veryUnhealthy.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "hazardous",
+                        "value": "{{i18n.attributes.dustHealthConcern.i18n.value.hazardous.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "good",
+                            "value": "{{i18n.attributes.dustHealthConcern.i18n.value.good.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "moderate",
+                            "value": "{{i18n.attributes.dustHealthConcern.i18n.value.moderate.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "slightlyUnhealthy",
+                            "value": "{{i18n.attributes.dustHealthConcern.i18n.value.slightlyUnhealthy.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "unhealthy",
+                            "value": "{{i18n.attributes.dustHealthConcern.i18n.value.unhealthy.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "veryUnhealthy",
+                            "value": "{{i18n.attributes.dustHealthConcern.i18n.value.veryUnhealthy.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "hazardous",
+                            "value": "{{i18n.attributes.dustHealthConcern.i18n.value.hazardous.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "dustHealthConcern.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "dustHealthConcern",
+    "version": 1
+}

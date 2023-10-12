@@ -1,0 +1,47 @@
+{
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "{{i18n.commands.setRapidFreezing.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "on",
+                            "value": "{{i18n.commands.setRapidFreezing.arguments.rapidCooling.i18n.on.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.commands.setRapidFreezing.arguments.rapidCooling.i18n.off.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setRapidFreezing"
+                }
+            },
+            {
+                "label": "{{i18n.commands.setRapidCooling.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "on",
+                            "value": "{{i18n.commands.setRapidCooling.arguments.rapidCooling.i18n.on.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.commands.setRapidCooling.arguments.rapidCooling.i18n.off.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setRapidCooling"
+                }
+            }
+        ]
+    },
+    "id": "refrigeration",
+    "version": 1
+}

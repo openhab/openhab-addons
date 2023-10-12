@@ -1,0 +1,130 @@
+{
+    "id": "vehicleInformation",
+    "version": 1,
+    "status": "proposed",
+    "name": "Vehicle Information",
+    "ephemeral": false,
+    "attributes": {
+        "vehicleColor": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "vehicleYear": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9999
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "vehicleImage": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "URL",
+                        "type": "string",
+                        "pattern": "^(https?):\\\/\\\/((?:[a-zA-Z0-9.-]|%[0-9A-F]{2}){3,})(?::(\\d+))?((?:\\\/(?:[a-zA-Z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})*)*)(?:\\?((?:[a-zA-Z0-9-._~!$&'()*+,;=:\\\/?@]|%[0-9A-F]{2})*))?(?:#((?:[a-zA-Z0-9-._~!$&'()*+,;=:\\\/?@]|%[0-9A-F]{2})*))?$"
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "vehicleTrim": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "vehiclePlate": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "vehicleModel": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "vehicleId": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "vehicleMake": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

@@ -1,0 +1,40 @@
+{
+    "id": "precipitationMeasurement",
+    "version": 1,
+    "status": "proposed",
+    "name": "Precipitation Measurement",
+    "ephemeral": false,
+    "attributes": {
+        "precipitationLevel": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "PositiveNumber",
+                        "type": "number",
+                        "minimum": 0
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "mm",
+                            "in"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value",
+                    "unit"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "resetPrecipitationLevel": {
+            "name": "resetPrecipitationLevel",
+            "arguments": []
+        }
+    }
+}

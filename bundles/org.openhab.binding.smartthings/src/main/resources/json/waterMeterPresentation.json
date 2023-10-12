@@ -1,0 +1,88 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{lastHour.value}} {{lastHour.unit}}"
+            },
+            {
+                "label": "{{lastTwentyFourHours.value}} {{lastTwentyFourHours.unit}}"
+            },
+            {
+                "label": "{{lastSevenDays.value}} {{lastSevenDays.unit}}"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.attributes.lastHour.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{lastHour.value}}",
+                "unit": "lastHour.unit"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.lastTwentyFourHours.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{lastTwentyFourHours.value}}",
+                "unit": "lastTwentyFourHours.unit"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.lastSevenDays.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{lastSevenDays.value}}",
+                "unit": "lastSevenDays.unit"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.attributes.lastHour.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "lastHour.value",
+                    "valueType": "number",
+                    "unit": "lastHour.unit",
+                    "range": [
+                        0,
+                        100000
+                    ]
+                }
+            },
+            {
+                "label": "{{i18n.attributes.lastTwentyFourHours.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "lastTwentyFourHours.value",
+                    "valueType": "number",
+                    "unit": "lastTwentyFourHours.unit",
+                    "range": [
+                        0,
+                        100000
+                    ]
+                }
+            },
+            {
+                "label": "{{i18n.attributes.lastSevenDays.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "lastSevenDays.value",
+                    "valueType": "number",
+                    "unit": "lastSevenDays.unit",
+                    "range": [
+                        0,
+                        100000
+                    ]
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "waterMeter",
+    "version": 1
+}

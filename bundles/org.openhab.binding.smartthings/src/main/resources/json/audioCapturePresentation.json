@@ -1,0 +1,22 @@
+{
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "capture",
+                            "value": "{{i18n.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "audioCapture",
+    "version": 1
+}

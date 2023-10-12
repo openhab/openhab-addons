@@ -1,0 +1,50 @@
+{
+    "id": "doorControl",
+    "version": 1,
+    "status": "live",
+    "name": "Door Control",
+    "ephemeral": false,
+    "attributes": {
+        "door": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "closed",
+                            "closing",
+                            "open",
+                            "opening",
+                            "unknown"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": [
+                {
+                    "command": "close",
+                    "value": "closed"
+                },
+                {
+                    "command": "open",
+                    "value": "open"
+                }
+            ]
+        }
+    },
+    "commands": {
+        "close": {
+            "name": "close",
+            "arguments": []
+        },
+        "open": {
+            "name": "open",
+            "arguments": []
+        }
+    }
+}

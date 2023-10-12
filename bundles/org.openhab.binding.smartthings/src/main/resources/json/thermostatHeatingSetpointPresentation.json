@@ -1,0 +1,78 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{heatingSetpoint.value}} {{heatingSetpoint.unit}}",
+                "alternatives": [
+                    {
+                        "key": "C",
+                        "value": "\u00b0C",
+                        "type": "active"
+                    },
+                    {
+                        "key": "K",
+                        "value": "\u00b0K",
+                        "type": "active"
+                    },
+                    {
+                        "key": "F",
+                        "value": "\u00b0F",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "slider",
+            "slider": {
+                "range": [
+                    0,
+                    40
+                ],
+                "unit": "heatingSetpoint.unit",
+                "command": "setHeatingSetpoint",
+                "argumentType": "number",
+                "value": "heatingSetpoint.value",
+                "valueType": "number"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "heatingSetpoint.value",
+                    "valueType": "number",
+                    "unit": "heatingSetpoint.unit",
+                    "range": [
+                        0,
+                        40
+                    ]
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.commands.setHeatingSetpoint.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "command": "setHeatingSetpoint",
+                    "argumentType": "number",
+                    "unit": "heatingSetpoint.unit",
+                    "range": [
+                        0,
+                        40
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "thermostatHeatingSetpoint",
+    "version": 1
+}

@@ -1,0 +1,55 @@
+{
+    "id": "languageSetting",
+    "version": 1,
+    "status": "proposed",
+    "name": "Language Setting",
+    "ephemeral": false,
+    "attributes": {
+        "supportedLanguages": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "language": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "setter": "setLanguage",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setLanguage": {
+            "name": "setLanguage",
+            "arguments": [
+                {
+                    "name": "language",
+                    "optional": false,
+                    "schema": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                }
+            ]
+        }
+    }
+}

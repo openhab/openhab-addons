@@ -1,0 +1,49 @@
+{
+    "id": "vehicleEngine",
+    "version": 1,
+    "status": "proposed",
+    "name": "Vehicle Engine",
+    "ephemeral": false,
+    "attributes": {
+        "engineState": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "starting",
+                            "running",
+                            "unknown",
+                            "off"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": [
+                {
+                    "command": "startEngine",
+                    "value": "running"
+                },
+                {
+                    "command": "stopEngine",
+                    "value": "off"
+                }
+            ]
+        }
+    },
+    "commands": {
+        "startEngine": {
+            "name": "startEngine",
+            "arguments": []
+        },
+        "stopEngine": {
+            "name": "stopEngine",
+            "arguments": []
+        }
+    }
+}

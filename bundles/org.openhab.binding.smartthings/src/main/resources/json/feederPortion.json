@@ -1,0 +1,71 @@
+{
+    "id": "feederPortion",
+    "version": 1,
+    "status": "proposed",
+    "name": "Feeder Portion",
+    "ephemeral": false,
+    "attributes": {
+        "feedPortion": {
+            "schema": {
+                "title": "FeedPortion",
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 2000
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "g",
+                            "lbs",
+                            "oz",
+                            "servings"
+                        ],
+                        "default": "g"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value",
+                    "unit"
+                ]
+            },
+            "setter": "setPortion",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setPortion": {
+            "name": "setPortion",
+            "arguments": [
+                {
+                    "name": "portion",
+                    "optional": false,
+                    "schema": {
+                        "title": "FeedPortion",
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 2000
+                    }
+                },
+                {
+                    "name": "unit",
+                    "optional": true,
+                    "schema": {
+                        "title": "unit",
+                        "type": "string",
+                        "enum": [
+                            "g",
+                            "lbs",
+                            "oz",
+                            "servings"
+                        ],
+                        "default": "g"
+                    }
+                }
+            ]
+        }
+    }
+}

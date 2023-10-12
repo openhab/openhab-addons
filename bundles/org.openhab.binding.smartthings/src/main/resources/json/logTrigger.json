@@ -1,0 +1,92 @@
+{
+    "id": "logTrigger",
+    "version": 1,
+    "status": "proposed",
+    "name": "Log Trigger",
+    "ephemeral": false,
+    "attributes": {
+        "logState": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "idle",
+                            "inProgress"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "logRequestState": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "idle",
+                            "triggerRequired"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "logInfo": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "JsonObject",
+                        "type": "object"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "triggerLogWithUrl": {
+            "name": "triggerLogWithUrl",
+            "arguments": [
+                {
+                    "name": "url",
+                    "optional": true,
+                    "schema": {
+                        "title": "URL",
+                        "type": "string",
+                        "pattern": "^(https?):\\\/\\\/((?:[a-zA-Z0-9.-]|%[0-9A-F]{2}){3,})(?::(\\d+))?((?:\\\/(?:[a-zA-Z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})*)*)(?:\\?((?:[a-zA-Z0-9-._~!$&'()*+,;=:\\\/?@]|%[0-9A-F]{2})*))?(?:#((?:[a-zA-Z0-9-._~!$&'()*+,;=:\\\/?@]|%[0-9A-F]{2})*))?$"
+                    }
+                }
+            ]
+        },
+        "triggerLogWithLogInfo": {
+            "name": "triggerLogWithLogInfo",
+            "arguments": [
+                {
+                    "name": "logInfo",
+                    "optional": false,
+                    "schema": {
+                        "title": "JsonObject",
+                        "type": "object"
+                    }
+                }
+            ]
+        },
+        "triggerLog": {
+            "name": "triggerLog",
+            "arguments": []
+        }
+    }
+}

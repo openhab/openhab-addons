@@ -1,0 +1,70 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{tirePressureState.value}}",
+                "alternatives": [
+                    {
+                        "key": "normal",
+                        "value": "{{i18n.attributes.tirePressureState.i18n.value.normal.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "warn",
+                        "value": "{{i18n.attributes.tirePressureState.i18n.value.warn.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{tirePressureState.value}}",
+                "alternatives": [
+                    {
+                        "key": "normal",
+                        "value": "{{i18n.attributes.tirePressureState.i18n.value.normal.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "warn",
+                        "value": "{{i18n.attributes.tirePressureState.i18n.value.warn.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "normal",
+                            "value": "{{i18n.attributes.tirePressureState.i18n.value.normal.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "warn",
+                            "value": "{{i18n.attributes.tirePressureState.i18n.value.warn.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "tirePressureState.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "vehicleTirePressureMonitor",
+    "version": 1
+}

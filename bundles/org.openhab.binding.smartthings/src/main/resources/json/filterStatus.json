@@ -1,0 +1,29 @@
+{
+    "id": "filterStatus",
+    "version": 1,
+    "status": "proposed",
+    "name": "Filter Status",
+    "ephemeral": false,
+    "attributes": {
+        "filterStatus": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "normal",
+                            "replace"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

@@ -1,0 +1,47 @@
+{
+    "id": "statelessAudioVolumeButton",
+    "version": 1,
+    "status": "live",
+    "name": "Stateless Audio Volume Button",
+    "ephemeral": false,
+    "attributes": {
+        "availableAudioVolumeButtons": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "volumeUp",
+                                "volumeDown"
+                            ]
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setButton": {
+            "name": "setButton",
+            "arguments": [
+                {
+                    "name": "button",
+                    "optional": false,
+                    "schema": {
+                        "type": "string",
+                        "enum": [
+                            "volumeUp",
+                            "volumeDown"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}
