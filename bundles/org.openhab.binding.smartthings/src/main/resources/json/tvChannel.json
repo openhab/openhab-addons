@@ -1,0 +1,79 @@
+{
+    "id": "tvChannel",
+    "version": 1,
+    "status": "proposed",
+    "name": "Tv Channel",
+    "ephemeral": false,
+    "attributes": {
+        "tvChannel": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "setter": "setTvChannel",
+            "enumCommands": []
+        },
+        "tvChannelName": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "setter": "setTvChannelName",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "channelDown": {
+            "name": "channelDown",
+            "arguments": []
+        },
+        "setTvChannel": {
+            "name": "setTvChannel",
+            "arguments": [
+                {
+                    "name": "tvChannel",
+                    "optional": false,
+                    "schema": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                }
+            ]
+        },
+        "channelUp": {
+            "name": "channelUp",
+            "arguments": []
+        },
+        "setTvChannelName": {
+            "name": "setTvChannelName",
+            "arguments": [
+                {
+                    "name": "tvChannelName",
+                    "optional": true,
+                    "schema": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                }
+            ]
+        }
+    }
+}

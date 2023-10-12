@@ -1,0 +1,30 @@
+{
+    "id": "motionSensor",
+    "version": 1,
+    "status": "live",
+    "name": "Motion Sensor",
+    "ephemeral": false,
+    "attributes": {
+        "motion": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "ActivityState",
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

@@ -1,0 +1,120 @@
+{
+    "id": "mediaInputSource",
+    "version": 1,
+    "status": "live",
+    "name": "Media Input Source",
+    "ephemeral": false,
+    "attributes": {
+        "supportedInputSources": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "items": {
+                            "title": "MediaSource",
+                            "enum": [
+                                "AM",
+                                "CD",
+                                "FM",
+                                "HDMI",
+                                "HDMI1",
+                                "HDMI2",
+                                "HDMI3",
+                                "HDMI4",
+                                "HDMI5",
+                                "HDMI6",
+                                "digitalTv",
+                                "USB",
+                                "YouTube",
+                                "aux",
+                                "bluetooth",
+                                "digital",
+                                "melon",
+                                "wifi"
+                            ],
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        },
+        "inputSource": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "MediaSource",
+                        "enum": [
+                            "AM",
+                            "CD",
+                            "FM",
+                            "HDMI",
+                            "HDMI1",
+                            "HDMI2",
+                            "HDMI3",
+                            "HDMI4",
+                            "HDMI5",
+                            "HDMI6",
+                            "digitalTv",
+                            "USB",
+                            "YouTube",
+                            "aux",
+                            "bluetooth",
+                            "digital",
+                            "melon",
+                            "wifi"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "setter": "setInputSource",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setInputSource": {
+            "name": "setInputSource",
+            "arguments": [
+                {
+                    "name": "mode",
+                    "optional": false,
+                    "schema": {
+                        "title": "MediaSource",
+                        "enum": [
+                            "AM",
+                            "CD",
+                            "FM",
+                            "HDMI",
+                            "HDMI1",
+                            "HDMI2",
+                            "HDMI3",
+                            "HDMI4",
+                            "HDMI5",
+                            "HDMI6",
+                            "digitalTv",
+                            "USB",
+                            "YouTube",
+                            "aux",
+                            "bluetooth",
+                            "digital",
+                            "melon",
+                            "wifi"
+                        ],
+                        "type": "string"
+                    }
+                }
+            ]
+        }
+    }
+}

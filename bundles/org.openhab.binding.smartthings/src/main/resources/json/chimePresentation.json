@@ -1,0 +1,113 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{chime.value}}",
+                "alternatives": [
+                    {
+                        "key": "off",
+                        "value": "{{i18n.attributes.chime.i18n.value.off.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "chime",
+                        "value": "{{i18n.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "toggleSwitch",
+                "toggleSwitch": {
+                    "command": {
+                        "on": "chime",
+                        "off": "off"
+                    },
+                    "state": {
+                        "value": "chime.value",
+                        "on": "chime",
+                        "off": "off"
+                    }
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "switch",
+            "switch": {
+                "command": {
+                    "on": "chime",
+                    "off": "off"
+                },
+                "state": {
+                    "value": "chime.value",
+                    "on": "chime",
+                    "off": "off",
+                    "label": "{{chime.value}}",
+                    "alternatives": [
+                        {
+                            "key": "off",
+                            "value": "{{i18n.attributes.chime.i18n.value.off.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "chime",
+                            "value": "{{i18n.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "off",
+                            "value": "{{i18n.attributes.chime.i18n.value.off.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "chime",
+                            "value": "{{i18n.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "chime.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "off",
+                            "value": "{{i18n.commands.off.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "chime",
+                            "value": "{{i18n.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "chime",
+    "version": 1
+}

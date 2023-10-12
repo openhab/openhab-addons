@@ -1,0 +1,35 @@
+{
+    "id": "bodyWeightMeasurement",
+    "version": 1,
+    "status": "proposed",
+    "name": "Body Weight Measurement",
+    "ephemeral": false,
+    "attributes": {
+        "bodyWeightMeasurement": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "kg",
+                            "lbs",
+                            "\u65a4"
+                        ],
+                        "default": "kg"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value",
+                    "unit"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

@@ -1,0 +1,45 @@
+{
+    "id": "geofences",
+    "version": 1,
+    "status": "deprecated",
+    "name": "Geofences",
+    "ephemeral": false,
+    "attributes": {
+        "geofences": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "title": "Geofence",
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "id": {
+                                    "title": "PositiveInteger",
+                                    "type": "integer",
+                                    "minimum": 0
+                                },
+                                "presence": {
+                                    "title": "PresenceState",
+                                    "type": "string",
+                                    "enum": [
+                                        "present",
+                                        "not present"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

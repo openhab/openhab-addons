@@ -1,0 +1,262 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{ovenJobState.value}}",
+                "alternatives": [
+                    {
+                        "key": "cleaning",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.cleaning.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "cooking",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.cooking.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "cooling",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.cooling.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "draining",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.draining.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "preheat",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.preheat.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "ready",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.ready.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "rinsing",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.rinsing.label}}",
+                        "type": "active"
+                    }
+                ]
+            },
+            {
+                "label": "{{machineState.value}}",
+                "alternatives": [
+                    {
+                        "key": "ready",
+                        "value": "{{i18n.attributes.machineState.i18n.value.ready.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "running",
+                        "value": "{{i18n.attributes.machineState.i18n.value.running.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "paused",
+                        "value": "{{i18n.attributes.machineState.i18n.value.paused.label}}",
+                        "type": "active"
+                    }
+                ]
+            },
+            {
+                "label": "{{completionTime.value}}"
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "pushButton",
+                "pushButton": {
+                    "command": "stop"
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{ovenJobState.value}}",
+                "alternatives": [
+                    {
+                        "key": "cleaning",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.cleaning.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "cooking",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.cooking.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "cooling",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.cooling.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "draining",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.draining.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "preheat",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.preheat.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "ready",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.ready.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "rinsing",
+                        "value": "{{i18n.attributes.ovenJobState.i18n.value.rinsing.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "{{i18n.attributes.machineState.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setMachineState",
+                    "alternatives": [
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.commands.setMachineState.arguments.state.i18n.stop.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "argumentType": "string",
+                    "supportedValues": "supportedMachineStates.value"
+                },
+                "state": {
+                    "value": "machineState.value",
+                    "valueType": "string",
+                    "alternatives": [
+                        {
+                            "key": "ready",
+                            "value": "{{i18n.attributes.machineState.i18n.value.ready.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "running",
+                            "value": "{{i18n.attributes.machineState.i18n.value.running.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "paused",
+                            "value": "{{i18n.attributes.machineState.i18n.value.paused.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{completionTime.value}}"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.attributes.machineState.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "ready",
+                            "value": "{{i18n.attributes.machineState.i18n.value.ready.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "running",
+                            "value": "{{i18n.attributes.machineState.i18n.value.running.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "paused",
+                            "value": "{{i18n.attributes.machineState.i18n.value.paused.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "machineState.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            },
+            {
+                "label": "{{i18n.attributes.ovenJobState.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "cleaning",
+                            "value": "{{i18n.attributes.ovenJobState.i18n.value.cleaning.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "cooking",
+                            "value": "{{i18n.attributes.ovenJobState.i18n.value.cooking.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "cooling",
+                            "value": "{{i18n.attributes.ovenJobState.i18n.value.cooling.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "draining",
+                            "value": "{{i18n.attributes.ovenJobState.i18n.value.draining.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "preheat",
+                            "value": "{{i18n.attributes.ovenJobState.i18n.value.preheat.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "ready",
+                            "value": "{{i18n.attributes.ovenJobState.i18n.value.ready.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "rinsing",
+                            "value": "{{i18n.attributes.ovenJobState.i18n.value.rinsing.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "ovenJobState.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.attributes.machineState.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.commands.setMachineState.arguments.state.i18n.stop.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "ovenOperatingState",
+    "version": 1
+}

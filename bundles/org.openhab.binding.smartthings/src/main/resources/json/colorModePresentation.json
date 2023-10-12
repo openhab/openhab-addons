@@ -1,0 +1,86 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{colorMode.value}}",
+                "alternatives": [
+                    {
+                        "key": "color",
+                        "value": "{{i18n.attributes.colorMode.i18n.value.color.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "colorTemperature",
+                        "value": "{{i18n.attributes.colorMode.i18n.value.colorTemperature.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "other",
+                        "value": "{{i18n.attributes.colorMode.i18n.value.other.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{colorMode.value}}",
+                "alternatives": [
+                    {
+                        "key": "color",
+                        "value": "{{i18n.attributes.colorMode.i18n.value.color.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "colorTemperature",
+                        "value": "{{i18n.attributes.colorMode.i18n.value.colorTemperature.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "other",
+                        "value": "{{i18n.attributes.colorMode.i18n.value.other.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "color",
+                            "value": "{{i18n.attributes.colorMode.i18n.value.color.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "colorTemperature",
+                            "value": "{{i18n.attributes.colorMode.i18n.value.colorTemperature.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "other",
+                            "value": "{{i18n.attributes.colorMode.i18n.value.other.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "colorMode.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "colorMode",
+    "version": 1
+}

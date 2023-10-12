@@ -1,0 +1,239 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{airPurifierFanMode.value}}",
+                "alternatives": [
+                    {
+                        "key": "auto",
+                        "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.auto.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "sleep",
+                        "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.sleep.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "low",
+                        "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.low.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "medium",
+                        "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.medium.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "high",
+                        "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.high.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "quiet",
+                        "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.quiet.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "windFree",
+                        "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.windFree.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setAirPurifierFanMode",
+                    "alternatives": [
+                        {
+                            "key": "auto",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.auto.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "sleep",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.sleep.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "low",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.low.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "medium",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.medium.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "high",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.high.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "quiet",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.quiet.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "windFree",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.windFree.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "argumentType": "string",
+                    "supportedValues": "supportedAirPurifierFanModes.value"
+                },
+                "state": {
+                    "value": "airPurifierFanMode.value",
+                    "valueType": "string",
+                    "alternatives": [
+                        {
+                            "key": "auto",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.auto.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "sleep",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.sleep.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "low",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.low.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "medium",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.medium.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "high",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.high.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "quiet",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.quiet.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "windFree",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.windFree.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "auto",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.auto.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "sleep",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.sleep.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "low",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.low.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "medium",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.medium.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "high",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.high.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "quiet",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.quiet.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "windFree",
+                            "value": "{{i18n.attributes.airPurifierFanMode.i18n.value.windFree.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "supportedAirPurifierFanModes.value",
+                    "value": "airPurifierFanMode.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "auto",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.auto.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "sleep",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.sleep.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "low",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.low.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "medium",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.medium.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "high",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.high.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "quiet",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.quiet.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "windFree",
+                            "value": "{{i18n.commands.setAirPurifierFanMode.arguments.airPurifierFanMode.i18n.windFree.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "supportedAirPurifierFanModes.value",
+                    "command": "setAirPurifierFanMode",
+                    "argumentType": "string"
+                }
+            }
+        ]
+    },
+    "id": "airPurifierFanMode",
+    "version": 1
+}

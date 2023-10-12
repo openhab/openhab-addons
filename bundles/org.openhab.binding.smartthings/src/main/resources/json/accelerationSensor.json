@@ -1,0 +1,51 @@
+{
+    "id": "accelerationSensor",
+    "version": 1,
+    "status": "live",
+    "name": "Acceleration Sensor",
+    "ephemeral": false,
+    "attributes": {
+        "acceleration": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "ActivityState",
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+			"setter": "setSaturation",
+            "enumCommands": []
+        },
+		"acceleration2": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "ActivityState",
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

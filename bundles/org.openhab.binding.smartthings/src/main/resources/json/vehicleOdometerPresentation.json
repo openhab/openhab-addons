@@ -1,0 +1,35 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{odometerReading.value}} {{odometerReading.unit}}"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{odometerReading.value}} {{odometerReading.unit}}"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "odometerReading.value",
+                    "valueType": "number",
+                    "unit": "odometerReading.unit"
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "vehicleOdometer",
+    "version": 1
+}

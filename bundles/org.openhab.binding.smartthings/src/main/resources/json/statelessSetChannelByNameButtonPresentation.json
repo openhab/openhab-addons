@@ -1,0 +1,25 @@
+{
+    "detailView": [
+        {
+            "label": "Set Channel By Name Button",
+            "displayType": "textField",
+            "textField": {
+                "command": "setChannelByName"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "Set Channel By Name Button",
+                "displayType": "textField",
+                "textField": {
+                    "command": "setChannelByName"
+                }
+            }
+        ]
+    },
+    "id": "statelessSetChannelByNameButton",
+    "version": 1
+}

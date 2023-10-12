@@ -1,0 +1,70 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{tamper.value}}",
+                "alternatives": [
+                    {
+                        "key": "detected",
+                        "value": "{{i18n.attributes.tamper.i18n.value.detected.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "clear",
+                        "value": "{{i18n.attributes.tamper.i18n.value.clear.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{tamper.value}}",
+                "alternatives": [
+                    {
+                        "key": "detected",
+                        "value": "{{i18n.attributes.tamper.i18n.value.detected.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "clear",
+                        "value": "{{i18n.attributes.tamper.i18n.value.clear.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "detected",
+                            "value": "{{i18n.attributes.tamper.i18n.value.detected.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "clear",
+                            "value": "{{i18n.attributes.tamper.i18n.value.clear.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "tamper.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "tamperAlert",
+    "version": 1
+}

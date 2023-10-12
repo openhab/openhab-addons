@@ -1,0 +1,9 @@
+{
+    "id": "testCapability",
+    "version": 1,
+    "status": "live",
+    "name": "Test Capability",
+    "ephemeral": false,
+    "attributes": [],
+    "commands": []
+}

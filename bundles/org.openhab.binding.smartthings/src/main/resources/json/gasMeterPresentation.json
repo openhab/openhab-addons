@@ -1,0 +1,142 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{gasMeter.value}} {{gasMeter.unit}}"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{gasMeterVolume.value}}",
+                "unit": "gasMeterVolume.unit"
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{gasMeter.value}}",
+                "unit": "gasMeter.unit"
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{gasMeterCalorific.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{gasMeterConversion.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{gasMeterPrecision.value.volume}}"
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{gasMeterPrecision.value.calorific}}"
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{gasMeterPrecision.value.conversion}}"
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{gasMeterTime.value}}"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "gasMeterVolume.value",
+                    "valueType": "number",
+                    "unit": "gasMeterVolume.unit"
+                }
+            },
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "gasMeter.value",
+                    "valueType": "number",
+                    "unit": "gasMeter.unit"
+                }
+            },
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "gasMeterCalorific.value",
+                    "valueType": "number"
+                }
+            },
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "gasMeterConversion.value",
+                    "valueType": "number"
+                }
+            },
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "gasMeterPrecision.value.volume",
+                    "valueType": "number"
+                }
+            },
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "gasMeterPrecision.value.calorific",
+                    "valueType": "number"
+                }
+            },
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "gasMeterPrecision.value.conversion",
+                    "valueType": "number"
+                }
+            },
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "textField",
+                "textField": {
+                    "value": "gasMeterTime.value"
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "gasMeter",
+    "version": 1
+}

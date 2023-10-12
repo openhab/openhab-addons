@@ -1,0 +1,240 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{soundDetected.value}}",
+                "alternatives": [
+                    {
+                        "key": "noSound",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.noSound.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "babyCrying",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.babyCrying.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "glassBreaking",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.glassBreaking.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "fireAlarm",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.fireAlarm.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "dogBarking",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.dogBarking.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "catMeowing",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.catMeowing.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "doorKnocking",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.doorKnocking.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "siren",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.siren.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "fingerSnapping",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.fingerSnapping.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "snoring",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.snoring.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{soundDetected.value}}",
+                "alternatives": [
+                    {
+                        "key": "noSound",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.noSound.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "babyCrying",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.babyCrying.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "glassBreaking",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.glassBreaking.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "fireAlarm",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.fireAlarm.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "dogBarking",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.dogBarking.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "catMeowing",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.catMeowing.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "doorKnocking",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.doorKnocking.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "siren",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.siren.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "fingerSnapping",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.fingerSnapping.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "snoring",
+                        "value": "{{i18n.attributes.soundDetected.i18n.value.snoring.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "switch",
+            "switch": {
+                "command": {
+                    "on": "enableSoundDetection",
+                    "off": "disableSoundDetection"
+                },
+                "state": {
+                    "value": "soundDetectionState.value",
+                    "valueType": "string",
+                    "on": "enabled",
+                    "off": "disabled",
+                    "label": "{{soundDetectionState.value}}",
+                    "alternatives": [
+                        {
+                            "key": "enabled",
+                            "value": "{{i18n.attributes.soundDetectionState.i18n.value.enabled.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "disabled",
+                            "value": "{{i18n.attributes.soundDetectionState.i18n.value.disabled.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "noSound",
+                            "value": "{{i18n.attributes.soundDetected.i18n.value.noSound.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "babyCrying",
+                            "value": "{{i18n.attributes.soundDetected.i18n.value.babyCrying.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "glassBreaking",
+                            "value": "{{i18n.attributes.soundDetected.i18n.value.glassBreaking.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "fireAlarm",
+                            "value": "{{i18n.attributes.soundDetected.i18n.value.fireAlarm.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "dogBarking",
+                            "value": "{{i18n.attributes.soundDetected.i18n.value.dogBarking.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "catMeowing",
+                            "value": "{{i18n.attributes.soundDetected.i18n.value.catMeowing.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "doorKnocking",
+                            "value": "{{i18n.attributes.soundDetected.i18n.value.doorKnocking.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "siren",
+                            "value": "{{i18n.attributes.soundDetected.i18n.value.siren.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "fingerSnapping",
+                            "value": "{{i18n.attributes.soundDetected.i18n.value.fingerSnapping.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "snoring",
+                            "value": "{{i18n.attributes.soundDetected.i18n.value.snoring.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "supportedSoundTypes.value",
+                    "value": "soundDetected.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "enableSoundDetection",
+                            "value": "{{i18n.commands.enableSoundDetection.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "disableSoundDetection",
+                            "value": "{{i18n.commands.disableSoundDetection.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "soundDetection",
+    "version": 1
+}

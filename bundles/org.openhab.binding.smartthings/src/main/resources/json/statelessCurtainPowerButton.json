@@ -1,0 +1,49 @@
+{
+    "id": "statelessCurtainPowerButton",
+    "version": 1,
+    "status": "proposed",
+    "name": "Stateless Curtain Power Button",
+    "ephemeral": false,
+    "attributes": {
+        "availableCurtainPowerButtons": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "open",
+                                "close",
+                                "pause"
+                            ]
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setButton": {
+            "name": "setButton",
+            "arguments": [
+                {
+                    "name": "button",
+                    "optional": false,
+                    "schema": {
+                        "type": "string",
+                        "enum": [
+                            "open",
+                            "close",
+                            "pause"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

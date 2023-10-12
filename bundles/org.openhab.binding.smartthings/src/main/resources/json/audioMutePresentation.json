@@ -1,0 +1,113 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{mute.value}}",
+                "alternatives": [
+                    {
+                        "key": "muted",
+                        "value": "{{i18n.attributes.mute.i18n.value.muted.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "unmuted",
+                        "value": "{{i18n.attributes.mute.i18n.value.unmuted.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "switch",
+                "switch": {
+                    "command": {
+                        "on": "mute",
+                        "off": "unmute"
+                    },
+                    "state": {
+                        "value": "mute.value",
+                        "on": "muted",
+                        "off": "unmuted"
+                    }
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "toggleSwitch",
+            "toggleSwitch": {
+                "command": {
+                    "on": "mute",
+                    "off": "unmute"
+                },
+                "state": {
+                    "value": "mute.value",
+                    "on": "muted",
+                    "off": "unmuted",
+                    "label": "{{mute.value}}",
+                    "alternatives": [
+                        {
+                            "key": "muted",
+                            "value": "{{i18n.attributes.mute.i18n.value.muted.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "unmuted",
+                            "value": "{{i18n.attributes.mute.i18n.value.unmuted.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "muted",
+                            "value": "{{i18n.attributes.mute.i18n.value.muted.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "unmuted",
+                            "value": "{{i18n.attributes.mute.i18n.value.unmuted.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "value": "mute.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "mute",
+                            "value": "{{i18n.commands.mute.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "unmute",
+                            "value": "{{i18n.commands.unmute.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "audioMute",
+    "version": 1
+}

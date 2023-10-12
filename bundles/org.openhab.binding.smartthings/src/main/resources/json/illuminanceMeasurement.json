@@ -1,0 +1,34 @@
+{
+    "id": "illuminanceMeasurement",
+    "version": 1,
+    "status": "live",
+    "name": "Illuminance Measurement",
+    "ephemeral": false,
+    "attributes": {
+        "illuminance": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100000
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "lux"
+                        ],
+                        "default": "lux"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

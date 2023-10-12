@@ -1,0 +1,60 @@
+{
+    "id": "powerConsumptionReport",
+    "version": 1,
+    "status": "live",
+    "name": "Power Consumption Report",
+    "ephemeral": false,
+    "attributes": {
+        "powerConsumption": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "properties": {
+                            "deltaEnergy": {
+                                "type": "number"
+                            },
+                            "end": {
+                                "pattern": "^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$",
+                                "title": "Iso8601Date",
+                                "type": "string"
+                            },
+                            "start": {
+                                "pattern": "^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$",
+                                "title": "Iso8601Date",
+                                "type": "string"
+                            },
+                            "energySaved": {
+                                "type": "number"
+                            },
+                            "persistedSavedEnergy": {
+                                "type": "number"
+                            },
+                            "energy": {
+                                "type": "number"
+                            },
+                            "power": {
+                                "type": "number"
+                            },
+                            "powerEnergy": {
+                                "type": "number"
+                            },
+                            "persistedEnergy": {
+                                "type": "number"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "title": "PowerConsumption",
+                        "type": "object"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

@@ -1,0 +1,251 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{robotCleanerCleaningMode.value}}",
+                "alternatives": [
+                    {
+                        "key": "auto",
+                        "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.auto.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "part",
+                        "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.part.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "repeat",
+                        "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.repeat.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "manual",
+                        "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.manual.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "stop",
+                        "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.stop.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "map",
+                        "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.map.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "playStop",
+                "playStop": {
+                    "command": {
+                        "name": "setRobotCleanerCleaningMode",
+                        "play": "auto",
+                        "stop": "stop",
+                        "argumentType": "string"
+                    },
+                    "state": {
+                        "value": "robotCleanerCleaningMode.value",
+                        "play": "auto",
+                        "stop": "stop",
+                        "alternatives": [
+                            {
+                                "key": "part",
+                                "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.part.label}}",
+                                "type": "active"
+                            },
+                            {
+                                "key": "repeat",
+                                "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.repeat.label}}",
+                                "type": "active"
+                            },
+                            {
+                                "key": "manual",
+                                "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.manual.label}}",
+                                "type": "active"
+                            },
+                            {
+                                "key": "map",
+                                "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.map.label}}",
+                                "type": "active"
+                            }
+                        ],
+                        "valueType": "string"
+                    }
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setRobotCleanerCleaningMode",
+                    "alternatives": [
+                        {
+                            "key": "auto",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.auto.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "part",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.part.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "repeat",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.repeat.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "manual",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.manual.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.stop.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "map",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.map.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "argumentType": "string"
+                },
+                "state": {
+                    "value": "robotCleanerCleaningMode.value",
+                    "valueType": "string",
+                    "alternatives": [
+                        {
+                            "key": "auto",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.auto.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "part",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.part.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "repeat",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.repeat.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "manual",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.manual.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.stop.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "map",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.map.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "auto",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.auto.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "part",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.part.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "repeat",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.repeat.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "manual",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.manual.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.stop.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "map",
+                            "value": "{{i18n.attributes.robotCleanerCleaningMode.i18n.value.map.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "robotCleanerCleaningMode.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "auto",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.auto.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "part",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.part.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "repeat",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.repeat.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "manual",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.manual.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.stop.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "map",
+                            "value": "{{i18n.commands.setRobotCleanerCleaningMode.arguments.mode.i18n.map.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setRobotCleanerCleaningMode",
+                    "argumentType": "string"
+                }
+            }
+        ]
+    },
+    "id": "robotCleanerCleaningMode",
+    "version": 1
+}

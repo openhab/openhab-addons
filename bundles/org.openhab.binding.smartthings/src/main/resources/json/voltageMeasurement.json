@@ -1,0 +1,33 @@
+{
+    "id": "voltageMeasurement",
+    "version": 1,
+    "status": "live",
+    "name": "Voltage Measurement",
+    "ephemeral": false,
+    "attributes": {
+        "voltage": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "Number",
+                        "type": "number"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "V"
+                        ],
+                        "default": "V"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

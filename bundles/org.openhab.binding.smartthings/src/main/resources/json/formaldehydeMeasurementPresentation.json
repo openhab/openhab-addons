@@ -1,0 +1,40 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{formaldehydeLevel.value}}{{formaldehydeLevel.unit}}"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{formaldehydeLevel.value}}",
+                "unit": "formaldehydeLevel.unit"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "formaldehydeLevel.value",
+                    "valueType": "number",
+                    "unit": "formaldehydeLevel.unit",
+                    "range": [
+                        0,
+                        1000000
+                    ]
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "formaldehydeMeasurement",
+    "version": 1
+}

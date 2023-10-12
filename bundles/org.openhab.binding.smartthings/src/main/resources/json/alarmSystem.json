@@ -1,0 +1,57 @@
+{
+    "id": "alarmSystem",
+    "version": 1,
+    "status": "dead",
+    "name": "Alarm System",
+    "ephemeral": false,
+    "attributes": {
+        "alarmSystemStatus": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "AlarmSystemState",
+                        "type": "string",
+                        "enum": [
+                            "away",
+                            "off",
+                            "stay"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": [
+                {
+                    "command": "sendEvent(alarmSystemStatus,off)",
+                    "value": "off"
+                },
+                {
+                    "command": "sendEvent(alarmSystemStatus,stay)",
+                    "value": "stay"
+                },
+                {
+                    "command": "sendEvent(alarmSystemStatus,away)",
+                    "value": "away"
+                }
+            ]
+        }
+    },
+    "commands": {
+        "sendEvent(alarmSystemStatus,off)": {
+            "name": "sendOffEvent",
+            "arguments": []
+        },
+        "sendEvent(alarmSystemStatus,away)": {
+            "name": "sendAwayEvent",
+            "arguments": []
+        },
+        "sendEvent(alarmSystemStatus,stay)": {
+            "name": "sendStayEvent",
+            "arguments": []
+        }
+    }
+}

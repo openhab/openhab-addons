@@ -1,0 +1,28 @@
+{
+    "id": "colorMode",
+    "version": 1,
+    "status": "proposed",
+    "name": "Color Mode",
+    "ephemeral": false,
+    "attributes": {
+        "colorMode": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "color",
+                            "colorTemperature",
+                            "other"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

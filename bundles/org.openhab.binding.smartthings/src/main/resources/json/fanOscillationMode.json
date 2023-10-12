@@ -1,0 +1,111 @@
+{
+    "id": "fanOscillationMode",
+    "version": 1,
+    "status": "live",
+    "name": "Fan Oscillation Mode",
+    "ephemeral": false,
+    "attributes": {
+        "supportedFanOscillationModes": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "items": {
+                            "title": "FanOscillationMode",
+                            "type": "string",
+                            "enum": [
+                                "off",
+                                "individual",
+                                "fixed",
+                                "vertical",
+                                "horizontal",
+                                "all",
+                                "indirect",
+                                "direct",
+                                "fixedCenter",
+                                "fixedLeft",
+                                "fixedRight",
+                                "far",
+                                "wide",
+                                "mid",
+                                "spot",
+                                "swing"
+                            ]
+                        },
+                        "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        },
+        "fanOscillationMode": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "FanOscillationMode",
+                        "type": "string",
+                        "enum": [
+                            "off",
+                            "individual",
+                            "fixed",
+                            "vertical",
+                            "horizontal",
+                            "all",
+                            "indirect",
+                            "direct",
+                            "fixedCenter",
+                            "fixedLeft",
+                            "fixedRight",
+                            "far",
+                            "wide",
+                            "mid",
+                            "spot",
+                            "swing"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setFanOscillationMode": {
+            "name": "setFanOscillationMode",
+            "arguments": [
+                {
+                    "name": "fanOscillationMode",
+                    "optional": false,
+                    "schema": {
+                        "title": "FanOscillationMode",
+                        "type": "string",
+                        "enum": [
+                            "off",
+                            "individual",
+                            "fixed",
+                            "vertical",
+                            "horizontal",
+                            "all",
+                            "indirect",
+                            "direct",
+                            "fixedCenter",
+                            "fixedLeft",
+                            "fixedRight",
+                            "far",
+                            "wide",
+                            "mid",
+                            "spot",
+                            "swing"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "id": "remoteControlStatus",
+    "version": 1,
+    "status": "live",
+    "name": "Remote Control Status",
+    "ephemeral": false,
+    "attributes": {
+        "remoteControlEnabled": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "false",
+                            "true"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

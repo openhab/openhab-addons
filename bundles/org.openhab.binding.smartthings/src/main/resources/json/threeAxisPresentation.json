@@ -1,0 +1,14 @@
+{
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{threeAxis.value}}",
+                "unit": "threeAxis.unit"
+            }
+        }
+    ],
+    "id": "threeAxis",
+    "version": 1
+}

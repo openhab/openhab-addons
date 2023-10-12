@@ -1,0 +1,55 @@
+{
+    "id": "robotCleanerCleaningMode",
+    "version": 1,
+    "status": "live",
+    "name": "Robot Cleaner Cleaning Mode",
+    "ephemeral": false,
+    "attributes": {
+        "robotCleanerCleaningMode": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "enum": [
+                            "auto",
+                            "part",
+                            "repeat",
+                            "manual",
+                            "stop",
+                            "map"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "setter": "setRobotCleanerCleaningMode",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setRobotCleanerCleaningMode": {
+            "name": "setRobotCleanerCleaningMode",
+            "arguments": [
+                {
+                    "name": "mode",
+                    "optional": false,
+                    "schema": {
+                        "enum": [
+                            "auto",
+                            "part",
+                            "repeat",
+                            "manual",
+                            "stop",
+                            "map"
+                        ],
+                        "type": "string"
+                    }
+                }
+            ]
+        }
+    }
+}

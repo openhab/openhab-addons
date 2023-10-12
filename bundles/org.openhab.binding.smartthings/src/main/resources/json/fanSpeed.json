@@ -1,0 +1,43 @@
+{
+    "id": "fanSpeed",
+    "version": 1,
+    "status": "live",
+    "name": "Fan Speed",
+    "ephemeral": false,
+    "attributes": {
+        "fanSpeed": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "PositiveInteger",
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "setter": "setFanSpeed",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setFanSpeed": {
+            "name": "setFanSpeed",
+            "arguments": [
+                {
+                    "name": "speed",
+                    "optional": false,
+                    "schema": {
+                        "title": "PositiveInteger",
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                }
+            ]
+        }
+    }
+}

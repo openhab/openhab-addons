@@ -1,0 +1,33 @@
+{
+    "detailView": [
+        {
+            "label": "Stateless Robot Cleaner Home Button",
+            "displayType": "pushButton",
+            "pushButton": {
+                "command": "setButton",
+                "argument": "home"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "Stateless Robot Cleaner Home Button",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "home",
+                            "value": "Home",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setButton"
+                }
+            }
+        ]
+    },
+    "id": "statelessRobotCleanerHomeButton",
+    "version": 1
+}

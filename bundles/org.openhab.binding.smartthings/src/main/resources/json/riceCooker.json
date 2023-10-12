@@ -1,0 +1,630 @@
+{
+    "id": "riceCooker",
+    "version": 1,
+    "status": "proposed",
+    "name": "Rice Cooker",
+    "ephemeral": false,
+    "attributes": {
+        "completionTime": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "Iso8601Date",
+                        "type": "string",
+                        "pattern": "^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        },
+        "schedulingEnabled": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        },
+        "scheduledTime": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "Iso8601Date",
+                        "type": "string",
+                        "pattern": "^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        },
+        "cookerState": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "ready",
+                            "running",
+                            "scheduled",
+                            "error"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "supportedCookerModes": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "cooking",
+                                "keepWarm",
+                                "reheating",
+                                "autoClean",
+                                "soakInnerPot"
+                            ]
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "schedulableMenus": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "title": "RiceCookerMenu",
+                            "type": "string",
+                            "enum": [
+                                "stickyPlainRice",
+                                "wellCookedPlainRice",
+                                "frozenPlainRice",
+                                "mixedGrains",
+                                "brownRice100",
+                                "riceWithBeans",
+                                "barleyMixedGrainRice",
+                                "superGrains",
+                                "frozenMixedGrain",
+                                "cauldronRice",
+                                "riceForGimbap",
+                                "plainQuick",
+                                "konjacRice",
+                                "mixedGrainForSalad",
+                                "mixedGrainsQuick",
+                                "nutritiousRiceInHotPot",
+                                "steamedDish",
+                                "nutritiousPorridge",
+                                "scorchedRiceTea",
+                                "bakedEgg",
+                                "sousVide",
+                                "scorchedRice",
+                                "babyFoodStep1",
+                                "babyFoodStep2",
+                                "babyFoodStep3",
+                                "riceWithSeasonedVegetablesInHotPot",
+                                "mixedGrainForSlim",
+                                "mixedGrainForVitality",
+                                "haedeul",
+                                "alchanmi",
+                                "odaemi",
+                                "oatRice",
+                                "chickpeaRice",
+                                "quinoaRice",
+                                "lentilBeanRice",
+                                "steamedSweetPotato",
+                                "galbijjim",
+                                "samgyetang",
+                                "riceWithWebfootOctopusAndSaussureaInHotPot",
+                                "riceWithAbaloneInHotPot",
+                                "riceWithTruffledBulgogiInHotPot",
+                                "riceWithSteakInHotPot",
+                                "riceWithRipeKimchiAndAbaloneInHotPot",
+                                "riceWithBeefAndBeanSproutsInHotPot",
+                                "riceWithAssortedMushrommsInHotPot",
+                                "riceWithBrackenAndSteakInHotPot",
+                                "riceWithBeefAndAssortedMushroomsInHotPot",
+                                "riceWithSpicyWebfootOctopusInHotPot",
+                                "kamutRice",
+                                "mixedGrainForSaladWithLentilBean",
+                                "mixedGrainForSaladWithChickpea(1Cup)",
+                                "mixedGrainForSaladWithQuinoa",
+                                "mixedGrainForSaladWithMillet",
+                                "mixedGrainForSaladWithChickpea(2Cup)",
+                                "mixedGrainForSaladWithBarley",
+                                "mixedGrainForSaladWithBrownRice(1Cup)",
+                                "mixedGrainForSaladWithOatRice",
+                                "mixedGrainForSaladWithBrownRice(2Cup)",
+                                "mixedGrainForSaladWithKamut",
+                                "mixedGrainForSaladWithBrownRice",
+                                "mixedGrainForSaladWithQuinoa(1Cup)",
+                                "mixedGrainForSaladWithChickpea",
+                                "mixedGrainForSaladWithQuinoa(2Cup)",
+                                "mixedGrainForSaladWithAdlay",
+                                "mixedGrainForSaladWithLentilBean(1Cup)",
+                                "plainPorridge",
+                                "mixedGrainForSaladWithLentilBean(2Cup)",
+                                "abalonePorridge",
+                                "pineNutPorridge",
+                                "boiledEgg",
+                                "chicken,SweetPumpkin,Cabbage,StickyRicePorridge",
+                                "chicken,Zucchini,SweetPotato,StickyRicePorridge",
+                                "beef,Apple,BroccoliPorridge",
+                                "chicken,BokChoy,BananaPorridge",
+                                "beef,Zucchini,PearPorridge",
+                                "beef,ShiitakeMushroom,EggPorridge",
+                                "beef,KingTrumpetMushroom,BroccoliPorridge",
+                                "chicken,BeanSprouts,Jujube,StickyRicePorridge",
+                                "cod-Meat,Vitamin,CarrotPorridge",
+                                "chicken,SweetPotato,Beet,BeetPorridge",
+                                "chicken,PineNut,Chestnut,Spinach,SoftBoiledRice",
+                                "beef,Beet,EnokiMushroom,PerillaSeeds,SoftBoiledRice",
+                                "chicken,Cheese,Beet,Eggplant,SoftBoiledRice",
+                                "codFlesh,SweetPumpkin,Mung-BeanSprouts,BlackSesame,SoftBoiledRice",
+                                "beef,Cabbage,WhiteMushroom,Jujube,SoftBoiledRice",
+                                "broccoliPorridge",
+                                "potatoCarrotPorridge",
+                                "yakbab",
+                                "steamedPotato",
+                                "customMenu01",
+                                "customMenu02",
+                                "customMenu03",
+                                "customMenu04",
+                                "customMenu05",
+                                "customMenu06",
+                                "customMenu07",
+                                "customMenu08",
+                                "customMenu09",
+                                "customMenu10",
+                                "customMenu11",
+                                "customMenu12",
+                                "customMenu13",
+                                "customMenu14",
+                                "customMenu15",
+                                "customMenu16",
+                                "customMenu17",
+                                "customMenu18",
+                                "customMenu19",
+                                "customMenu20"
+                            ]
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "startTime": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "Iso8601Date",
+                        "type": "string",
+                        "pattern": "^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        },
+        "cookerMode": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "cooking",
+                            "keepWarm",
+                            "reheating",
+                            "autoClean",
+                            "soakInnerPot"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "setter": "setMode",
+            "enumCommands": []
+        },
+        "menu": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "RiceCookerMenu",
+                        "type": "string",
+                        "enum": [
+                            "stickyPlainRice",
+                            "wellCookedPlainRice",
+                            "frozenPlainRice",
+                            "mixedGrains",
+                            "brownRice100",
+                            "riceWithBeans",
+                            "barleyMixedGrainRice",
+                            "superGrains",
+                            "frozenMixedGrain",
+                            "cauldronRice",
+                            "riceForGimbap",
+                            "plainQuick",
+                            "konjacRice",
+                            "mixedGrainForSalad",
+                            "mixedGrainsQuick",
+                            "nutritiousRiceInHotPot",
+                            "steamedDish",
+                            "nutritiousPorridge",
+                            "scorchedRiceTea",
+                            "bakedEgg",
+                            "sousVide",
+                            "scorchedRice",
+                            "babyFoodStep1",
+                            "babyFoodStep2",
+                            "babyFoodStep3",
+                            "riceWithSeasonedVegetablesInHotPot",
+                            "mixedGrainForSlim",
+                            "mixedGrainForVitality",
+                            "haedeul",
+                            "alchanmi",
+                            "odaemi",
+                            "oatRice",
+                            "chickpeaRice",
+                            "quinoaRice",
+                            "lentilBeanRice",
+                            "steamedSweetPotato",
+                            "galbijjim",
+                            "samgyetang",
+                            "riceWithWebfootOctopusAndSaussureaInHotPot",
+                            "riceWithAbaloneInHotPot",
+                            "riceWithTruffledBulgogiInHotPot",
+                            "riceWithSteakInHotPot",
+                            "riceWithRipeKimchiAndAbaloneInHotPot",
+                            "riceWithBeefAndBeanSproutsInHotPot",
+                            "riceWithAssortedMushrommsInHotPot",
+                            "riceWithBrackenAndSteakInHotPot",
+                            "riceWithBeefAndAssortedMushroomsInHotPot",
+                            "riceWithSpicyWebfootOctopusInHotPot",
+                            "kamutRice",
+                            "mixedGrainForSaladWithLentilBean",
+                            "mixedGrainForSaladWithChickpea(1Cup)",
+                            "mixedGrainForSaladWithQuinoa",
+                            "mixedGrainForSaladWithMillet",
+                            "mixedGrainForSaladWithChickpea(2Cup)",
+                            "mixedGrainForSaladWithBarley",
+                            "mixedGrainForSaladWithBrownRice(1Cup)",
+                            "mixedGrainForSaladWithOatRice",
+                            "mixedGrainForSaladWithBrownRice(2Cup)",
+                            "mixedGrainForSaladWithKamut",
+                            "mixedGrainForSaladWithBrownRice",
+                            "mixedGrainForSaladWithQuinoa(1Cup)",
+                            "mixedGrainForSaladWithChickpea",
+                            "mixedGrainForSaladWithQuinoa(2Cup)",
+                            "mixedGrainForSaladWithAdlay",
+                            "mixedGrainForSaladWithLentilBean(1Cup)",
+                            "plainPorridge",
+                            "mixedGrainForSaladWithLentilBean(2Cup)",
+                            "abalonePorridge",
+                            "pineNutPorridge",
+                            "boiledEgg",
+                            "chicken,SweetPumpkin,Cabbage,StickyRicePorridge",
+                            "chicken,Zucchini,SweetPotato,StickyRicePorridge",
+                            "beef,Apple,BroccoliPorridge",
+                            "chicken,BokChoy,BananaPorridge",
+                            "beef,Zucchini,PearPorridge",
+                            "beef,ShiitakeMushroom,EggPorridge",
+                            "beef,KingTrumpetMushroom,BroccoliPorridge",
+                            "chicken,BeanSprouts,Jujube,StickyRicePorridge",
+                            "cod-Meat,Vitamin,CarrotPorridge",
+                            "chicken,SweetPotato,Beet,BeetPorridge",
+                            "chicken,PineNut,Chestnut,Spinach,SoftBoiledRice",
+                            "beef,Beet,EnokiMushroom,PerillaSeeds,SoftBoiledRice",
+                            "chicken,Cheese,Beet,Eggplant,SoftBoiledRice",
+                            "codFlesh,SweetPumpkin,Mung-BeanSprouts,BlackSesame,SoftBoiledRice",
+                            "beef,Cabbage,WhiteMushroom,Jujube,SoftBoiledRice",
+                            "broccoliPorridge",
+                            "potatoCarrotPorridge",
+                            "yakbab",
+                            "steamedPotato",
+                            "customMenu01",
+                            "customMenu02",
+                            "customMenu03",
+                            "customMenu04",
+                            "customMenu05",
+                            "customMenu06",
+                            "customMenu07",
+                            "customMenu08",
+                            "customMenu09",
+                            "customMenu10",
+                            "customMenu11",
+                            "customMenu12",
+                            "customMenu13",
+                            "customMenu14",
+                            "customMenu15",
+                            "customMenu16",
+                            "customMenu17",
+                            "customMenu18",
+                            "customMenu19",
+                            "customMenu20"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        },
+        "supportedMenus": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "title": "RiceCookerMenu",
+                            "type": "string",
+                            "enum": [
+                                "stickyPlainRice",
+                                "wellCookedPlainRice",
+                                "frozenPlainRice",
+                                "mixedGrains",
+                                "brownRice100",
+                                "riceWithBeans",
+                                "barleyMixedGrainRice",
+                                "superGrains",
+                                "frozenMixedGrain",
+                                "cauldronRice",
+                                "riceForGimbap",
+                                "plainQuick",
+                                "konjacRice",
+                                "mixedGrainForSalad",
+                                "mixedGrainsQuick",
+                                "nutritiousRiceInHotPot",
+                                "steamedDish",
+                                "nutritiousPorridge",
+                                "scorchedRiceTea",
+                                "bakedEgg",
+                                "sousVide",
+                                "scorchedRice",
+                                "babyFoodStep1",
+                                "babyFoodStep2",
+                                "babyFoodStep3",
+                                "riceWithSeasonedVegetablesInHotPot",
+                                "mixedGrainForSlim",
+                                "mixedGrainForVitality",
+                                "haedeul",
+                                "alchanmi",
+                                "odaemi",
+                                "oatRice",
+                                "chickpeaRice",
+                                "quinoaRice",
+                                "lentilBeanRice",
+                                "steamedSweetPotato",
+                                "galbijjim",
+                                "samgyetang",
+                                "riceWithWebfootOctopusAndSaussureaInHotPot",
+                                "riceWithAbaloneInHotPot",
+                                "riceWithTruffledBulgogiInHotPot",
+                                "riceWithSteakInHotPot",
+                                "riceWithRipeKimchiAndAbaloneInHotPot",
+                                "riceWithBeefAndBeanSproutsInHotPot",
+                                "riceWithAssortedMushrommsInHotPot",
+                                "riceWithBrackenAndSteakInHotPot",
+                                "riceWithBeefAndAssortedMushroomsInHotPot",
+                                "riceWithSpicyWebfootOctopusInHotPot",
+                                "kamutRice",
+                                "mixedGrainForSaladWithLentilBean",
+                                "mixedGrainForSaladWithChickpea(1Cup)",
+                                "mixedGrainForSaladWithQuinoa",
+                                "mixedGrainForSaladWithMillet",
+                                "mixedGrainForSaladWithChickpea(2Cup)",
+                                "mixedGrainForSaladWithBarley",
+                                "mixedGrainForSaladWithBrownRice(1Cup)",
+                                "mixedGrainForSaladWithOatRice",
+                                "mixedGrainForSaladWithBrownRice(2Cup)",
+                                "mixedGrainForSaladWithKamut",
+                                "mixedGrainForSaladWithBrownRice",
+                                "mixedGrainForSaladWithQuinoa(1Cup)",
+                                "mixedGrainForSaladWithChickpea",
+                                "mixedGrainForSaladWithQuinoa(2Cup)",
+                                "mixedGrainForSaladWithAdlay",
+                                "mixedGrainForSaladWithLentilBean(1Cup)",
+                                "plainPorridge",
+                                "mixedGrainForSaladWithLentilBean(2Cup)",
+                                "abalonePorridge",
+                                "pineNutPorridge",
+                                "boiledEgg",
+                                "chicken,SweetPumpkin,Cabbage,StickyRicePorridge",
+                                "chicken,Zucchini,SweetPotato,StickyRicePorridge",
+                                "beef,Apple,BroccoliPorridge",
+                                "chicken,BokChoy,BananaPorridge",
+                                "beef,Zucchini,PearPorridge",
+                                "beef,ShiitakeMushroom,EggPorridge",
+                                "beef,KingTrumpetMushroom,BroccoliPorridge",
+                                "chicken,BeanSprouts,Jujube,StickyRicePorridge",
+                                "cod-Meat,Vitamin,CarrotPorridge",
+                                "chicken,SweetPotato,Beet,BeetPorridge",
+                                "chicken,PineNut,Chestnut,Spinach,SoftBoiledRice",
+                                "beef,Beet,EnokiMushroom,PerillaSeeds,SoftBoiledRice",
+                                "chicken,Cheese,Beet,Eggplant,SoftBoiledRice",
+                                "codFlesh,SweetPumpkin,Mung-BeanSprouts,BlackSesame,SoftBoiledRice",
+                                "beef,Cabbage,WhiteMushroom,Jujube,SoftBoiledRice",
+                                "broccoliPorridge",
+                                "potatoCarrotPorridge",
+                                "yakbab",
+                                "steamedPotato",
+                                "customMenu01",
+                                "customMenu02",
+                                "customMenu03",
+                                "customMenu04",
+                                "customMenu05",
+                                "customMenu06",
+                                "customMenu07",
+                                "customMenu08",
+                                "customMenu09",
+                                "customMenu10",
+                                "customMenu11",
+                                "customMenu12",
+                                "customMenu13",
+                                "customMenu14",
+                                "customMenu15",
+                                "customMenu16",
+                                "customMenu17",
+                                "customMenu18",
+                                "customMenu19",
+                                "customMenu20"
+                            ]
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        },
+        "event": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "cookingComplete",
+                            "keepWarmComplete",
+                            "reheatingComplete",
+                            "autoCleanComplete",
+                            "soakInnerPotComplete",
+                            "steamEmission"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        },
+        "supportedEvents": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "cookingComplete",
+                                "keepWarmComplete",
+                                "reheatingComplete",
+                                "autoCleanComplete",
+                                "soakInnerPotComplete",
+                                "steamEmission"
+                            ]
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "stop": {
+            "name": "stop",
+            "arguments": []
+        },
+        "startCooking": {
+            "name": "startCooking",
+            "arguments": [
+                {
+                    "name": "menu",
+                    "optional": false,
+                    "schema": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                }
+            ]
+        },
+        "setMode": {
+            "name": "setMode",
+            "arguments": [
+                {
+                    "name": "mode",
+                    "optional": false,
+                    "schema": {
+                        "title": "cookerMode",
+                        "type": "string",
+                        "enum": [
+                            "keepWarm",
+                            "reheating",
+                            "autoClean",
+                            "soakInnerPot"
+                        ]
+                    }
+                }
+            ]
+        },
+        "scheduleCooking": {
+            "name": "scheduleCooking",
+            "arguments": [
+                {
+                    "name": "time",
+                    "optional": false,
+                    "schema": {
+                        "title": "Iso8601Date",
+                        "type": "string",
+                        "pattern": "^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"
+                    }
+                },
+                {
+                    "name": "menu",
+                    "optional": false,
+                    "schema": {
+                        "title": "String",
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                }
+            ]
+        }
+    }
+}

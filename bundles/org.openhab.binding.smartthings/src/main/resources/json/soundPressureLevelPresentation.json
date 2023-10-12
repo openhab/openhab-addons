@@ -1,0 +1,45 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{soundPressureLevel.value}}{{soundPressureLevel.unit}}"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "slider",
+            "slider": {
+                "range": [
+                    0,
+                    194
+                ],
+                "unit": "soundPressureLevel.unit",
+                "value": "soundPressureLevel.value",
+                "valueType": "number"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "soundPressureLevel.value",
+                    "valueType": "number",
+                    "unit": "soundPressureLevel.unit",
+                    "range": [
+                        0,
+                        194
+                    ]
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "soundPressureLevel",
+    "version": 1
+}

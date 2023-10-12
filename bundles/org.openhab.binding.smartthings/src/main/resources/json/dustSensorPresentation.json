@@ -1,0 +1,53 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "PM2.5 {{fineDustLevel.value}} \u00b5g\/m\u00b3"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.attributes.dustLevel.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{dustLevel.value}}",
+                "unit": "dustLevel.unit"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.fineDustLevel.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{fineDustLevel.value}}",
+                "unit": "fineDustLevel.unit"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.attributes.dustLevel.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "dustLevel.value",
+                    "valueType": "integer",
+                    "unit": "dustLevel.unit"
+                }
+            },
+            {
+                "label": "{{i18n.attributes.fineDustLevel.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "fineDustLevel.value",
+                    "valueType": "integer",
+                    "unit": "fineDustLevel.unit"
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "dustSensor",
+    "version": 1
+}

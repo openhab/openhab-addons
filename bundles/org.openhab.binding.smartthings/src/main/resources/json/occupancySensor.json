@@ -1,0 +1,30 @@
+{
+    "id": "occupancySensor",
+    "version": 1,
+    "status": "live",
+    "name": "Occupancy Sensor",
+    "ephemeral": false,
+    "attributes": {
+        "occupancy": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "OccupancyState",
+                        "enum": [
+                            "occupied",
+                            "unoccupied"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

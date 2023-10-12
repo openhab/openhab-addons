@@ -1,0 +1,35 @@
+{
+    "id": "filterState",
+    "version": 1,
+    "status": "live",
+    "name": "Filter State",
+    "ephemeral": false,
+    "attributes": {
+        "filterLifeRemaining": {
+            "schema": {
+                "title": "IntegerPercent",
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "%"
+                        ],
+                        "default": "%"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}
