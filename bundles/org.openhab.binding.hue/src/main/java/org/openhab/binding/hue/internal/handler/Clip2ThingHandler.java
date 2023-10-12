@@ -900,10 +900,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             } else if (thing.getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
                 // issue REFRESH command to update all channels
-                Channel lastUpdateChannel = thing.getChannel(CHANNEL_2_LAST_UPDATED);
-                if (Objects.nonNull(lastUpdateChannel)) {
-                    handleCommand(lastUpdateChannel.getUID(), RefreshType.REFRESH);
-                }
+                handleCommand(new ChannelUID(thing.getUID(), "dummy"), RefreshType.REFRESH);
             }
         }
     }
