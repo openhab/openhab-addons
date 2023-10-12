@@ -172,6 +172,7 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         responsePending = true;
 
         IOException caughtException = null;
+        throttle();
         try {
             // send the request
             logger.debug("hub '{}' sending characters:{}", hubId, requestOuter.length());
