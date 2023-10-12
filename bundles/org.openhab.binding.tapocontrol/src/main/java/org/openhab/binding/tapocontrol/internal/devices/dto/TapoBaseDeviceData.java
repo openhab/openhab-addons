@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class TapoBaseDeviceData {
     @SerializedName("device_id")
-    @Expose(serialize = true, deserialize = true)
+    @Expose(serialize = false, deserialize = true)
     private String deviceId = "";
 
     @SerializedName("fw_ver")

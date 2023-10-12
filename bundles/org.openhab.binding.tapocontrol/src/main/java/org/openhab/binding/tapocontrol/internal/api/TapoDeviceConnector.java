@@ -17,6 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstant
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,6 +31,8 @@ import org.openhab.binding.tapocontrol.internal.api.protocol.securePassthrough.S
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
+import org.openhab.binding.tapocontrol.internal.dto.TapoBaseRequestInterface;
+import org.openhab.binding.tapocontrol.internal.dto.TapoChildRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoMultipleRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
@@ -217,8 +220,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastSent + TAPO_SEND_MIN_GAP_MS) {
             lastSent = now;
-            TapoRequest request = new TapoRequest(DEVICE_CMD_CONTROL_CHILD, childData);
-            sendAsyncRequest(request);
+            sendAsyncRequest(new TapoChildRequest(childData));
         } else {
             logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
         }
@@ -227,18 +229,18 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     /**
      * send asynchron multi-request
      */
-    public void sendMultipleRequest(TapoMultipleRequest multiRequest) {
-        sendMultipleRequest(multiRequest, false);
+    public void sendMultipleRequest(List<TapoRequest> requests) {
+        sendMultipleRequest(requests, false);
     }
 
     /**
      * send asynchron multi-request igrnoring min-gap
      */
-    public void sendMultipleRequest(TapoMultipleRequest multiRequest, boolean ignoreGap) {
+    public void sendMultipleRequest(List<TapoRequest> requests, boolean ignoreGap) {
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastQuery + TAPO_QUERY_MIN_GAP_MS) {
             lastQuery = now;
-            sendAsyncRequest(new TapoRequest(DEVICE_CMD_MULTIPLE_REQ, multiRequest));
+            sendAsyncRequest(new TapoMultipleRequest(requests));
         } else {
             logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
         }
@@ -247,7 +249,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     /**
      * send asynchron request to protocol handler
      */
-    public void sendAsyncRequest(TapoRequest tapoRequest) {
+    public void sendAsyncRequest(TapoBaseRequestInterface tapoRequest) {
         try {
             protocolHandler.sendAsyncRequest(tapoRequest);
         } catch (TapoErrorHandler tapoError) {

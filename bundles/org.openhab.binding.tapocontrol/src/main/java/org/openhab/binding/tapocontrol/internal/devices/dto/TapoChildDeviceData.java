@@ -87,7 +87,7 @@ public class TapoChildDeviceData extends TapoBaseDeviceData {
     private int reportInterval = 0;
 
     @SerializedName("slot_number")
-    @Expose(serialize = true, deserialize = true)
+    @Expose(serialize = false, deserialize = true)
     private int slotNumber = 0;
 
     @Expose(serialize = false, deserialize = true)

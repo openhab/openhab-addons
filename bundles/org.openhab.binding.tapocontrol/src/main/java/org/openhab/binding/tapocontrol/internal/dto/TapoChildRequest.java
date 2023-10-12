@@ -14,34 +14,35 @@ package org.openhab.binding.tapocontrol.internal.dto;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import io.reactivex.annotations.Nullable;
 
 /**
- * {@TapoMultiRequest} holds multi-request-data sent to device
+ * {@TapoChildRequest} holds child data sent to device
  *
- * @author Christian Wild - Changed SubRequest top MultiRequest
+ * @author Gaël L'hopital - Initial contribution
+ * @author Christian Wild - Code revision
  */
 @NonNullByDefault
-public record TapoMultipleRequest(@Expose String method, @Expose @Nullable Object params,
+public record TapoChildRequest(@Expose String method, @Expose @Nullable Object params,
         @Expose long requestTimeMils) implements TapoBaseRequestInterface {
 
-    public record SubRequest(@Expose List<TapoRequest> requests) {
+    private record ControlRequest(@Expose @SerializedName("device_id") String deviceId, @Expose Object requestData) {
     }
 
-    public TapoMultipleRequest(TapoRequest... requests) {
-        this(DEVICE_CMD_MULTIPLE_REQ, new SubRequest(Arrays.asList(requests)), System.currentTimeMillis());
-    }
-
-    public TapoMultipleRequest(List<TapoRequest> requests) {
-        this(DEVICE_CMD_MULTIPLE_REQ, new SubRequest(requests), System.currentTimeMillis());
+    /**
+     * Create request to control child devices
+     */
+    public TapoChildRequest(TapoChildDeviceData deviceData) {
+        this(DEVICE_CMD_CONTROL_CHILD,
+                new ControlRequest(deviceData.getDeviceId(), new TapoRequest(DEVICE_CMD_SETINFO, deviceData)),
+                System.currentTimeMillis());
     }
 
     /***********************************************

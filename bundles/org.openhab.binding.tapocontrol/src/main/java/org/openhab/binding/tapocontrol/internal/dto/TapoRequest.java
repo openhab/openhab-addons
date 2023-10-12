@@ -25,7 +25,8 @@ import io.reactivex.annotations.Nullable;
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
-public record TapoRequest(@Expose String method, @Expose @Nullable Object params, @Expose long requestTimeMils) {
+public record TapoRequest(@Expose String method, @Expose @Nullable Object params,
+        @Expose long requestTimeMils) implements TapoBaseRequestInterface {
 
     /**
      * Create request with command (method) and data (params) sent to device

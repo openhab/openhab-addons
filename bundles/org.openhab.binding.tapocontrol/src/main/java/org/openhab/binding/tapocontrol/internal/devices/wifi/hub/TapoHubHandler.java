@@ -28,7 +28,6 @@ import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildList;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
 import org.openhab.binding.tapocontrol.internal.discovery.TapoChildDiscoveryService;
-import org.openhab.binding.tapocontrol.internal.dto.TapoMultipleRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
@@ -147,10 +146,10 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
     public void queryDeviceData() {
         deviceError.reset();
         if (isLoggedIn(LOGIN_RETRIES)) {
-            TapoMultipleRequest multiRequest = new TapoMultipleRequest();
-            multiRequest.addRequest(new TapoRequest(DEVICE_CMD_GETINFO));
-            multiRequest.addRequest(new TapoRequest(DEVICE_CMD_GETCHILDDEVICELIST));
-            connector.sendMultipleRequest(multiRequest);
+            List<TapoRequest> requests = new ArrayList<>();
+            requests.add(new TapoRequest(DEVICE_CMD_GETINFO));
+            requests.add(new TapoRequest(DEVICE_CMD_GETCHILDDEVICELIST));
+            connector.sendMultipleRequest(requests);
         }
     }
 

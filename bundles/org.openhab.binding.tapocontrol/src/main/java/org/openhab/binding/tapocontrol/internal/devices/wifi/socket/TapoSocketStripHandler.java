@@ -16,16 +16,17 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstant
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildList;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
-import org.openhab.binding.tapocontrol.internal.dto.TapoMultipleRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -61,9 +62,17 @@ public class TapoSocketStripHandler extends TapoBaseDeviceHandler {
     @Override
     public void newDataResult(String queryCommand) {
         super.newDataResult(queryCommand);
-        if (DEVICE_CMD_GETCHILDDEVICELIST.equals(queryCommand)) {
-            tapoChildList = connector.getResponseData(TapoChildList.class);
-            updateChildDevices(tapoChildList);
+        switch (queryCommand) {
+            case DEVICE_CMD_GETINFO:
+                baseDeviceData = connector.getResponseData(TapoBaseDeviceData.class);
+                updateChannels(baseDeviceData);
+                break;
+            case DEVICE_CMD_GETCHILDDEVICELIST:
+                tapoChildList = connector.getResponseData(TapoChildList.class);
+                updateChildDevices(tapoChildList);
+                break;
+            default:
+                logger.warn("({}) unhandled queryCommand '{}'", uid, queryCommand);
         }
     }
 
@@ -74,10 +83,10 @@ public class TapoSocketStripHandler extends TapoBaseDeviceHandler {
     public void queryDeviceData() {
         deviceError.reset();
         if (isLoggedIn(LOGIN_RETRIES)) {
-            TapoMultipleRequest multiRequest = new TapoMultipleRequest();
-            multiRequest.addRequest(new TapoRequest(DEVICE_CMD_GETINFO));
-            multiRequest.addRequest(new TapoRequest(DEVICE_CMD_GETCHILDDEVICELIST));
-            connector.sendMultipleRequest(multiRequest);
+            List<TapoRequest> requests = new ArrayList<>();
+            requests.add(new TapoRequest(DEVICE_CMD_GETINFO));
+            requests.add(new TapoRequest(DEVICE_CMD_GETCHILDDEVICELIST));
+            connector.sendMultipleRequest(requests);
         }
     }
 
@@ -136,7 +145,6 @@ public class TapoSocketStripHandler extends TapoBaseDeviceHandler {
             child.setDeviceOn(on);
             connector.sendChildCommand(child, true);
         });
-        queryDeviceData();
     }
 
     /*****************************
@@ -144,23 +152,26 @@ public class TapoSocketStripHandler extends TapoBaseDeviceHandler {
      *****************************/
 
     /**
-     * Set Device Child data to device
+     * Set all device Childs data to device
      */
     public void updateChildDevices(TapoChildList hostData) {
         hostData.getChildDeviceList().forEach(child -> {
-            updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT + Integer.toString(child.getPosition())),
-                    getOnOffType(child.isOn()));
+            updateChildDevice(child.getPosition(), child);
         });
+    }
+
+    /**
+     * Set data to child with index (position) x
+     */
+    public void updateChildDevice(int index, TapoChildDeviceData child) {
+        updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT + index), getOnOffType(child.isOn()));
     }
 
     /**
      * Update Channels
      */
-    protected void updateChannels(TapoSocketData deviceData) {
+    protected void updateChannels(TapoBaseDeviceData deviceData) {
         updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_WIFI_STRENGTH),
                 getDecimalType(deviceData.getSignalLevel()));
-        updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_ONTIME),
-                getTimeType(deviceData.getOnTime(), Units.SECOND));
-        updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_OVERHEAT), getOnOffType(deviceData.isOverheated()));
     }
 }

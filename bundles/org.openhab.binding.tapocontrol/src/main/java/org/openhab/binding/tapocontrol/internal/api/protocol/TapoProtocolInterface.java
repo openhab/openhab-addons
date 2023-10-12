@@ -14,6 +14,7 @@ package org.openhab.binding.tapocontrol.internal.api.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.openhab.binding.tapocontrol.internal.dto.TapoBaseRequestInterface;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
@@ -54,7 +55,7 @@ public interface TapoProtocolInterface {
     public void sendRequest(TapoRequest tapoRequest) throws TapoErrorHandler;
 
     /* send asynchron request - response will be handled in [asyncResponseReceived()] function */
-    public void sendAsyncRequest(TapoRequest tapoRequest) throws TapoErrorHandler;
+    public void sendAsyncRequest(TapoBaseRequestInterface tapoRequest) throws TapoErrorHandler;
 
     /************************
      * RESPONSE HANDLERS

@@ -19,6 +19,8 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +32,6 @@ import org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoEnergyData;
-import org.openhab.binding.tapocontrol.internal.dto.TapoMultipleRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
@@ -346,10 +347,10 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
         deviceError.reset();
         if (isLoggedIn(LOGIN_RETRIES)) {
             if (SUPPORTED_ENERGY_DATA_UIDS.contains(getThing().getThingTypeUID())) {
-                TapoMultipleRequest multi = new TapoMultipleRequest();
-                multi.addRequest(new TapoRequest(DEVICE_CMD_GETINFO));
-                multi.addRequest(new TapoRequest(DEVICE_CMD_GETENERGY));
-                connector.sendMultipleRequest(multi, ignoreGap);
+                List<TapoRequest> requests = new ArrayList<>();
+                requests.add(new TapoRequest(DEVICE_CMD_GETINFO));
+                requests.add(new TapoRequest(DEVICE_CMD_GETENERGY));
+                connector.sendMultipleRequest(requests, ignoreGap);
             } else {
                 connector.sendQueryCommand(DEVICE_CMD_GETINFO, ignoreGap);
             }

@@ -30,6 +30,7 @@ import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tapocontrol.internal.api.TapoConnectorInterface;
+import org.openhab.binding.tapocontrol.internal.dto.TapoBaseRequestInterface;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
@@ -116,7 +117,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
      * pushes (decrypted) TapoResponse to [httpDelegator.handleResponse()]-function
      */
     @Override
-    public void sendAsyncRequest(TapoRequest tapoRequest) throws TapoErrorHandler {
+    public void sendAsyncRequest(TapoBaseRequestInterface tapoRequest) throws TapoErrorHandler {
         String url = getUrl();
         String command = tapoRequest.method();
         logger.trace("({}) sendAsync unencrypted request: '{}' to '{}' ", uid, tapoRequest, url);
