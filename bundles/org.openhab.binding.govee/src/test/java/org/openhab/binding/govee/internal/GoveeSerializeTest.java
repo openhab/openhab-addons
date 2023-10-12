@@ -19,8 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.govee.internal.model.Color;
 import org.openhab.binding.govee.internal.model.ColorData;
 import org.openhab.binding.govee.internal.model.EmptyValueQueryStatusData;
-import org.openhab.binding.govee.internal.model.GenericGoveeMessage;
 import org.openhab.binding.govee.internal.model.GenericGoveeMsg;
+import org.openhab.binding.govee.internal.model.GenericGoveeRequest;
 import org.openhab.binding.govee.internal.model.ValueIntData;
 
 import com.google.gson.Gson;
@@ -40,17 +40,17 @@ public class GoveeSerializeTest {
 
     @Test
     public void testSerializeMessage() {
-        GenericGoveeMessage lightOff = new GenericGoveeMessage(new GenericGoveeMsg("turn", new ValueIntData(0)));
+        GenericGoveeRequest lightOff = new GenericGoveeRequest(new GenericGoveeMsg("turn", new ValueIntData(0)));
         assertEquals(lightOffJsonString, GSON.toJson(lightOff));
-        GenericGoveeMessage lightOn = new GenericGoveeMessage(new GenericGoveeMsg("brightness", new ValueIntData(100)));
+        GenericGoveeRequest lightOn = new GenericGoveeRequest(new GenericGoveeMsg("brightness", new ValueIntData(100)));
         assertEquals(lightOnJsonString, GSON.toJson(lightOn));
-        GenericGoveeMessage lightColor = new GenericGoveeMessage(
+        GenericGoveeRequest lightColor = new GenericGoveeRequest(
                 new GenericGoveeMsg("colorwc", new ColorData(new Color(0, 1, 2), 3)));
         assertEquals(lightColorJsonString, GSON.toJson(lightColor));
-        GenericGoveeMessage lightBrightness = new GenericGoveeMessage(
+        GenericGoveeRequest lightBrightness = new GenericGoveeRequest(
                 new GenericGoveeMsg("brightness", new ValueIntData(99)));
         assertEquals(lightBrightnessJsonString, GSON.toJson(lightBrightness));
-        GenericGoveeMessage lightQuery = new GenericGoveeMessage(
+        GenericGoveeRequest lightQuery = new GenericGoveeRequest(
                 new GenericGoveeMsg("devStatus", new EmptyValueQueryStatusData()));
         assertEquals(lightQueryJsonString, GSON.toJson(lightQuery));
     }

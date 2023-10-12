@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.govee.internal.model.DiscoveryMessage;
+import org.openhab.binding.govee.internal.model.DiscoveryResponse;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -197,7 +197,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
         Bundle bundle = FrameworkUtil.getBundle(GoveeDiscoveryService.class);
         Gson gson = new Gson();
 
-        DiscoveryMessage message = gson.fromJson(response, DiscoveryMessage.class);
+        DiscoveryResponse message = gson.fromJson(response, DiscoveryResponse.class);
         String ipAddress = "";
         String sku = "";
         String macAddress = "";

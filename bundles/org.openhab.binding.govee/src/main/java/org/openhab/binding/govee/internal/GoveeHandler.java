@@ -14,7 +14,10 @@ package org.openhab.binding.govee.internal;
 
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.BRIGHTNESS;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR;
+import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE_ABS;
+import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE_MAX_VALUE;
+import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE_MIN_VALUE;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -32,9 +35,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.govee.internal.model.Color;
 import org.openhab.binding.govee.internal.model.ColorData;
 import org.openhab.binding.govee.internal.model.EmptyValueQueryStatusData;
-import org.openhab.binding.govee.internal.model.GenericGoveeMessage;
 import org.openhab.binding.govee.internal.model.GenericGoveeMsg;
-import org.openhab.binding.govee.internal.model.StatusMessage;
+import org.openhab.binding.govee.internal.model.GenericGoveeRequest;
+import org.openhab.binding.govee.internal.model.StatusResponse;
 import org.openhab.binding.govee.internal.model.ValueIntData;
 import org.openhab.binding.govee.internal.model.ValueStringData;
 import org.openhab.core.common.ThreadPoolManager;
@@ -155,7 +158,7 @@ public class GoveeHandler extends BaseThingHandler {
 
             if (!response.isEmpty()) {
                 try {
-                    StatusMessage statusMessage = GSON.fromJson(response, StatusMessage.class);
+                    StatusResponse statusMessage = GSON.fromJson(response, StatusResponse.class);
                     thingHandler.updateDeviceState(statusMessage);
                 } catch (JsonSyntaxException jse) {
                     thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -277,30 +280,39 @@ public class GoveeHandler extends BaseThingHandler {
                     case COLOR:
                         if (command instanceof HSBType hsbCommand) {
                             int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
-                            GenericGoveeMsg lightColor = new GenericGoveeMsg("colorwc",
-                                    new ColorData(new Color(rgb[0], rgb[1], rgb[2]), 0));
+                            GenericGoveeRequest lightColor = new GenericGoveeRequest(new GenericGoveeMsg("colorwc",
+                                    new ColorData(new Color(rgb[0], rgb[1], rgb[2]), 0)));
+                            send(GSON.toJson(lightColor));
+                        }
+                        break;
+                    case COLOR_TEMPERATURE:
+                        if (command instanceof PercentType percent) {
+                            Double brightness = COLOR_TEMPERATURE_MIN_VALUE + percent.floatValue()
+                                    * (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) / 100.0;
+                            GenericGoveeRequest lightColor = new GenericGoveeRequest(new GenericGoveeMsg("colorwc",
+                                    new ColorData(new Color(0, 0, 0), brightness.intValue())));
                             send(GSON.toJson(lightColor));
                         }
                         break;
                     case COLOR_TEMPERATURE_ABS:
                         if (command instanceof QuantityType quantity) {
-                            GenericGoveeMsg lightColor = new GenericGoveeMsg("colorwc",
-                                    new ColorData(new Color(0, 0, 0), quantity.intValue()));
+                            GenericGoveeRequest lightColor = new GenericGoveeRequest(new GenericGoveeMsg("colorwc",
+                                    new ColorData(new Color(0, 0, 0), quantity.intValue())));
                             send(GSON.toJson(lightColor));
                         }
                         break;
                     case BRIGHTNESS:
                         if (command instanceof PercentType percent) {
-                            GenericGoveeMessage lightBrightness = new GenericGoveeMessage(
+                            GenericGoveeRequest lightBrightness = new GenericGoveeRequest(
                                     new GenericGoveeMsg("brightness", new ValueIntData(percent.intValue())));
                             send(GSON.toJson(lightBrightness));
                         } else if (command instanceof OnOffType) {
                             if (command.equals(OnOffType.ON)) {
-                                GenericGoveeMessage lightOn = new GenericGoveeMessage(
+                                GenericGoveeRequest lightOn = new GenericGoveeRequest(
                                         new GenericGoveeMsg("turn", new ValueStringData("on")));
                                 send(GSON.toJson(lightOn));
                             } else {
-                                GenericGoveeMessage lightOff = new GenericGoveeMessage(
+                                GenericGoveeRequest lightOff = new GenericGoveeRequest(
                                         new GenericGoveeMsg("turn", new ValueStringData("off")));
                                 send(GSON.toJson(lightOff));
                             }
@@ -335,7 +347,7 @@ public class GoveeHandler extends BaseThingHandler {
         LOGGER.debug("trigger Refresh Status of device {}", thing.getLabel());
 
         try {
-            GenericGoveeMessage lightQuery = new GenericGoveeMessage(
+            GenericGoveeRequest lightQuery = new GenericGoveeRequest(
                     new GenericGoveeMsg("devStatus", new EmptyValueQueryStatusData()));
             send(GSON.toJson(lightQuery));
         } finally {
@@ -356,7 +368,7 @@ public class GoveeHandler extends BaseThingHandler {
         socket.close();
     }
 
-    public void updateDeviceState(@Nullable StatusMessage message) {
+    public void updateDeviceState(@Nullable StatusResponse message) {
         if (message == null) {
             return;
         }

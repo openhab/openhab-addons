@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Stefan Höhn - Initial contribution
  */
 @NonNullByDefault
-public record DiscoveryMessage(DiscoveryMsg msg) {
-    public DiscoveryMessage() {
+public record DiscoveryResponse(DiscoveryMsg msg) {
+    public DiscoveryResponse() {
         this(new DiscoveryMsg());
     }
 }

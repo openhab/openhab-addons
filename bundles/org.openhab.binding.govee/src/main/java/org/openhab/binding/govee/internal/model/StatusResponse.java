@@ -13,14 +13,11 @@
  */
 package org.openhab.binding.govee.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * Govee Message
  * @ param msg
  *
  * @author Stefan Höhn - Initial contribution
  */
-@NonNullByDefault
-public record GenericGoveeMessage(GenericGoveeMsg msg) {
+public record StatusResponse(StatusMsg msg) {
 }
