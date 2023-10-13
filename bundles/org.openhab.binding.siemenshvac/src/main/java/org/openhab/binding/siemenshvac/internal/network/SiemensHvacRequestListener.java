@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * @author Laurent Arnal - Initial contribution
@@ -89,7 +90,7 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
             logger.trace("response complete: {}", content);
 
             if (result.getResponse().getStatus() != 200) {
-                logger.debug("bad gateway !!!");
+                logger.debug("Error requesting gateway, non success code: {}", result.getResponse().getStatus());
                 hvacConnector.onError(result.getRequest(), callback);
                 return;
             }
@@ -102,7 +103,7 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                     try {
                         Gson gson = SiemensHvacConnectorImpl.getGson();
                         resultObj = gson.fromJson(content, JsonObject.class);
-                    } catch (Exception ex) {
+                    } catch (JsonSyntaxException ex) {
                         logger.debug("error: {}", ex.toString());
                     }
 
@@ -128,16 +129,16 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                                 callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(),
                                         resultObj);
                             } else {
-                                logger.debug("error : {}", subResultObj);
+                                logger.debug("error: {}", subResultObj);
                                 hvacConnector.onError(result.getRequest(), callback);
                             }
                         } else {
-                            logger.debug("error");
+                            logger.debug("error: invalid response from gateway, missing subResultObj:Success entry");
                             hvacConnector.onError(result.getRequest(), callback);
                         }
 
                     } else {
-                        logger.debug("error");
+                        logger.debug("error: invalid response from gateway, missing Result entry");
                         hvacConnector.onError(result.getRequest(), callback);
                     }
 
@@ -148,7 +149,7 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
             callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), content);
             hvacConnector.onComplete(result.getRequest());
         } catch (Exception ex) {
-            logger.debug("error");
+            logger.debug("An error occurred", ex);
         }
     }
 }

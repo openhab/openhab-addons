@@ -16,13 +16,13 @@
 				<context>network-address</context>
 			</parameter>
 			<parameter name="userName" type="text">
-				<description>UserName of the Siemens Hvac gateway</description>
+				<description>User name of the Siemens Hvac gateway</description>
 				<required>false</required>
 				<label>userName</label>
 				<default>Administrator</default>
 			</parameter>
 			<parameter name="userPassword" type="text">
-				<description>UserPassword of the Siemens Hvac gateway</description>
+				<description>User password of the Siemens Hvac gateway</description>
 				<required>false</required>
 				<label>userPassword</label>
 				<default>password</default>
@@ -66,19 +66,19 @@
 		<description>Scheduler</description>
 	</channel-type>
 	<channel-type id="Temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature in degrees celsius</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" min="-100" max="+100" step="0.1">
+		<state readOnly="true" pattern="%.1f %unit%" min="-100" max="+100" step="0.1">
 		</state>
 	</channel-type>
-	<channel-type id="Setpoint">
-		<item-type>Number</item-type>
+	<channel-type id="temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
 		<description>Current setpoint temperature in degrees Celsius</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" min="0" max="+30" step="0.5">
+		<state readOnly="true" pattern="%.1f %unit%" min="0" max="+30" step="0.5">
 		</state>
 	</channel-type>
 	<channel-type id="Regime">
@@ -86,10 +86,10 @@
 		<label>Regime</label>
 		<command>
 			<options>
-				<option value="0">Mode protection</option>
-				<option value="1">Automatique</option>
-				<option value="2">Réduit</option>
-				<option value="3">Confort</option>
+				<option value="0">Protection mode</option>
+				<option value="1">Automatic mode</option>
+				<option value="2">Reduced mode</option>
+				<option value="3">Comfort mode</option>
 			</options>
 		</command>
 	</channel-type>

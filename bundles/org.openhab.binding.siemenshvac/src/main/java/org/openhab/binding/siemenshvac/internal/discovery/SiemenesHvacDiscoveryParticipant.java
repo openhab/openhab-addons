@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Modified;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class, configurationPid = "discovery.siemensHvac")
+@Component(service = UpnpDiscoveryParticipant.class, configurationPid = "discovery.siemenshvac")
 public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Activate

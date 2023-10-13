@@ -24,8 +24,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -65,8 +63,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private static final Logger logger = LoggerFactory.getLogger(SiemensHvacConnectorImpl.class);
 
-    private final static @NotNull Gson gson;
-    private final static @NotNull Gson gsonWithAdpter;
+    private final static Gson gson;
+    private final static Gson gsonWithAdpter;
 
     private @Nullable String sessionId = null;
     private @Nullable String sessionIdHttp = null;
@@ -182,7 +180,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 executeRequest(retryRequest, cb);
             }
         } catch (Exception ex) {
-            logger.error("exception");
+            logger.debug("Error during gateway request:", ex);
             throw ex;
         }
     }
@@ -206,7 +204,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 lockObj.lock();
                 try {
                     startedRequest++;
-                    logger.info("StartedRequest : {}", startedRequest - completedRequest);
+                    logger.trace("StartedRequest: {}", startedRequest - completedRequest);
 
                 } finally {
                     lockObj.unlock();
@@ -290,7 +288,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                         }
 
                         if (sessionIdHttp == null) {
-                            logger.debug("Session request auth was unsucessfull in _doAuth()");
+                            logger.debug("Session request auth was unsuccessful in _doAuth()");
                         }
                     } else {
                         if (result != null) {
@@ -307,7 +305,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
                                         if (resultObj.has("SessionId")) {
                                             sessionId = resultObj.get("SessionId").getAsString();
-                                            logger.debug("Have new SessionId : {} ", sessionId);
+                                            logger.debug("Have new SessionId: {} ", sessionId);
                                         }
 
                                     }
@@ -318,7 +316,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                             logger.debug("siemensHvac:doAuth:decodeResponse:()");
 
                             if (sessionId == null) {
-                                logger.debug("Session request auth was unsucessfull in _doAuth()");
+                                logger.debug("Session request auth was unsuccessful in _doAuth()");
                             }
 
                         }
@@ -327,7 +325,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 }
             }
 
-            logger.debug("siemensHvac:doAuth:connect()");
+            logger.trace("siemensHvac:doAuth:connect()");
 
         } catch (Exception ex) {
             logger.debug("siemensHvac:doAuth:error() {}", ex.getLocalizedMessage());
@@ -388,8 +386,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 }
             }
         } catch (Exception ex) {
-            logger.error("siemensHvac:DoRequest:Exception by executing Request: {} ; {} ", uri,
-                    ex.getLocalizedMessage());
+            logger.warn("siemensHvac:DoRequest:Exception by executing Request: {}: {} ", uri, ex.getLocalizedMessage());
         } finally {
         }
 
@@ -397,7 +394,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     @Override
-    public @Nullable JsonObject DoRequest(String req, @Nullable SiemensHvacCallback callback) {
+    public @Nullable JsonObject doRequest(String req, @Nullable SiemensHvacCallback callback) {
         try {
             String response = DoBasicRequest(req, callback);
 

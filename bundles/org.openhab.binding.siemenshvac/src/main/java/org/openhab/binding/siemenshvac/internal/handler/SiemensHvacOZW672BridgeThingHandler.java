@@ -29,13 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
- * sent to one of the channels. It implements a KNX/IP Gateway, that either acts a a
- * conduit for other {@link DeviceThingHandler}s, or for Channels that are
- * directly defined on the bridge
+ * The {@link IPBridgeThingHandler} is responsible for handling communication to Siemens Gateway using HTTP API
+ * interface.
  *
- * @author Karel Goderis - Initial contribution
- * @author Simon Kaufmann - Refactoring & cleanup
+ * @author Laurent ARNAL - Initial contribution
  */
 @NonNullByDefault
 public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseThingHandler {

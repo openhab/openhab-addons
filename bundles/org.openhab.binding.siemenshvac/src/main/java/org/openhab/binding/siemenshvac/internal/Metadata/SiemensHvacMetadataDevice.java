@@ -26,7 +26,7 @@ public class SiemensHvacMetadataDevice {
 
     private String addr = "";
 
-    private String type = "unknow";
+    private String type = "unknown";
 
     private String serialNr = "";
 
