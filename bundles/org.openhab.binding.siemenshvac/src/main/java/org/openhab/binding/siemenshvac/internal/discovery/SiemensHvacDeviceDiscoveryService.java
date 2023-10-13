@@ -13,7 +13,6 @@
 package org.openhab.binding.siemenshvac.internal.discovery;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +28,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Arnal - Initial contribution
  */
-// @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.siemenshvac")
 @NonNullByDefault
 public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
@@ -51,8 +50,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
 
     private @Nullable SiemensHvacMetadataRegistry metadataRegistry;
     private @Nullable SiemensHvacBridgeBaseThingHandler siemensHvacBridgeHandler;
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .singleton(SiemensHvacBindingConstants.THING_TYPE_OZW672);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(SiemensHvacBindingConstants.THING_TYPE_OZW672);
 
     private static final int SEARCH_TIME = 10;
 
@@ -127,7 +125,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
                         properties.put("name", name);
                         properties.put("type", type);
                         properties.put("addr", addr);
-                        properties.put("serialNr", serialNr);
+                        properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNr);
 
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                 .withProperties(properties).withBridge(bridgeUID).withLabel(name).build();

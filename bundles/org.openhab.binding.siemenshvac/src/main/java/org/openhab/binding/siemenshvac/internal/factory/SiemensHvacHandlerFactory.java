@@ -74,7 +74,8 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId())) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
-        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the KNX binding.");
+        throw new IllegalArgumentException(
+                "The thing type " + thingTypeUID + " is not supported by the SiemensHvac binding.");
     }
 
     @Override

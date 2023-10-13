@@ -58,7 +58,7 @@ import com.google.gson.JsonObject;
  * @author Laurent ARNAL - Initial contribution
  */
 @NonNullByDefault
-public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensHvacHandler {
+public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
     private Lock lockObj = new ReentrantLock();
 
@@ -78,10 +78,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
         this.hvacConnector = hvacConnector;
         this.metaDataRegistry = metaDataRegistry;
         this.channelTypeRegistry = channelTypeRegistry;
-
-        logger.debug("===========================================================");
-        logger.debug("Siemens HVac");
-        logger.debug("===========================================================");
     }
 
     @Override
@@ -226,7 +222,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
             if (async) {
                 if (lcHvacConnector != null) {
-                    lcHvacConnector.DoRequest(request, new SiemensHvacCallback() {
+                    lcHvacConnector.doRequest(request, new SiemensHvacCallback() {
 
                         @Override
                         public void execute(java.net.URI uri, int status, @Nullable Object response) {
@@ -236,7 +232,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
                                 return;
                             }
 
-                            logger.info("End read : {}", dp);
+                            logger.trace("End read : {}", dp);
 
                             if (response instanceof JsonObject) {
                                 DecodeReadDp((JsonObject) response, uid, dp, type);
@@ -246,15 +242,15 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
                 }
             } else {
                 if (lcHvacConnector != null) {
-                    JsonObject js = lcHvacConnector.DoRequest(request, null);
+                    JsonObject js = lcHvacConnector.doRequest(request, null);
                     DecodeReadDp(js, uid, dp, type);
                 }
             }
         } catch (Exception e) {
-            logger.error("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
+            logger.debug("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
         } finally {
-            logger.debug("End read : {}", dp);
+            logger.trace("End read : {}", dp);
             lockObj.unlock();
         }
     }
@@ -267,7 +263,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
         try {
             lockObj.lock();
-            logger.info("Start write : {}", dp);
+            logger.trace("Start write: {}", dp);
             LastWrite = System.currentTimeMillis();
 
             String valUpdate = "0";
@@ -296,17 +292,17 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
                     type);
 
             if (lcHvacConnector != null) {
-                logger.info("Write request for : {} ", valUpdate);
-                JsonObject response = lcHvacConnector.DoRequest(request, null);
+                logger.trace("Write request for: {} ", valUpdate);
+                JsonObject response = lcHvacConnector.doRequest(request, null);
 
-                logger.info("Write request response : {} ", response);
+                logger.trace("Write request response: {} ", response);
             }
 
         } catch (Exception e) {
-            logger.error("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
+            logger.debug("siemensHvac:ReadDp:Error during dp reading: {}: {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
         } finally {
-            logger.debug("End write : {}", dp);
+            logger.debug("End write: {}", dp);
             lockObj.unlock();
         }
     }

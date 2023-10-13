@@ -158,8 +158,6 @@ public class UidUtils {
             id = String.format("%s", dpt.getDptType());
         }
 
-        // dpt.Display();
-
         return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, id);
     }
 
@@ -176,7 +174,6 @@ public class UidUtils {
      */
     public static ChannelUID generateChannelUID(ThingUID thingUID) {
         return new ChannelUID(thingUID, "");
-        // String.valueOf(dp.getChannel().getNumber()), dp.getName());
     }
 
     /**

@@ -25,7 +25,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public interface SiemensHvacConnector {
 
-    public @Nullable JsonObject DoRequest(String req, @Nullable SiemensHvacCallback callback);
+    @Nullable
+    JsonObject doRequest(String req, @Nullable SiemensHvacCallback callback);
 
     public void WaitAllPendingRequest();
 

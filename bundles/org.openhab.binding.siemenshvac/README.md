@@ -2,29 +2,27 @@
 
 This binding is to support Siemens Hvac controller ecosystem, and the Web Gateway interface OZW672.
 A typical system is composed of:
-
                                                     
 <=== Ethernet ===>   | OZW672 | <====== ¨BSB/LPB BUS ======> | Hvac Controler (RVS41.813/327) | ====== | Internal device in your system : sensors, boiler, external pac unit, ... |
 
-There's a lot of different Hvac controler depending on model in lot of different PAC constructor.
-Mine is a Atlantic Hybrid duo whith a Siemens RVS41.813/327 inside.
+There's a lot of different HVAC controllers depending on model in lot of different PAC constructors.
+Siemens RVS41.813/327 inside a Atlantic Hybrid Duo was used for the developpement, and is fully supported and tested.
 
-Siemens have a complete set of controler reference under the name "Siemens Albatros".
-Here some picture of such device.
-You can also find this device in other type of heating system : boiler or solar based.
+Siemens have a complete set of controller references under the name "Siemens Albatros".
+Here is a picture of such device.
+You can also find this device in other types of heating systems: boiler or solar based.
 
 ![](doc/Albatros.jpg)
 
-You will find some information about the OZW672.01 gateway on siemens web site : 
+You will find some information about the OZW672.01 gateway on the Siemens web site : 
 [OZW 672 Page]
+
 ([https://hit.sbt.siemens.com/RWD/app.aspx?rc=FR&lang=fr&module=Catalog&action=ShowProduct&key=BPZ:OZW672.01)
 
-With this binding, you will be able :
+With this binding, you will be able to:
 
-- To consult the different parameters of your system like temperature, current heating mode, water temperature, and many more.
-- Modify the functionning mode of your device : temperature set point, heating mode, and others.
-
-
+- Consult the different parameters of your system, like temperature, current heating mode, water temperature, and many more.
+- Modify the functioning mode of your device: temperature set point, heating mode, and others.
 
 ## Supported Things
 
@@ -62,9 +60,9 @@ IP should have be discovered automatically via UPNP.
 
 | Parameter       | Required | Default       | Description                                                         |
 |-----------------|----------|---------------|---------------------------------------------------------------------|
-| ipAdress        | yes      |               | The address of the OZW672 devices                                   |
-| userName        | yes      | Administrator | The userName to log into the OZW672                                 | 
-| userPass        | yes      |               | The userPassword to log into the OZW672                             | 
+| baseUrl         | yes      |               | The address of the OZW672 devices                                   |
+| userName        | yes      | Administrator | The user name to log into the OZW672                                | 
+| userPass        | yes      |               | The user password to log into the OZW672                            | 
 
 
 ## Thing Configuration
@@ -116,7 +114,7 @@ Bridge siemenshvac:ozw672:local "Ozw672"@"Chaufferie" [ baseUrl="https://192.168
 Items file `.items`
 
 ```java
-Sring   Chaudiere_Etat_Pompe_ECS    "Etat Pompe ECS [%s]"   { channel = "siemenshvac:RVS41_813_327:local:local:2237#2259_PpeChargeECS"          }       
+String  Chaudiere_Etat_Pompe_ECS    "Etat Pompe ECS [%s]"   { channel = "siemenshvac:RVS41_813_327:local:local:2237#2259_PpeChargeECS"          }       
 Number  Chaudiere_Etat_ECS          "Etat ECS [%s]"         { channel = "siemenshvac:RVS41_813_327:local:local:2032#2035_Etat_ECS"              }
 Number  Temperature_Depart_Reel     "Départ réel [%.1f °C]" { channel = "siemenshvac:RVS41_813_327:local:local:2237#2248_ValReelleTempDep_CC1"  }   
 Number  Temperature_Depart_Consigne "Départ cons [%.1f °C]" { channel = "siemenshvac:RVS41_813_327:local:local:2237#2249_ConsTDepResultCC1"     }   

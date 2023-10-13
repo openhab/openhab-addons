@@ -13,11 +13,12 @@
 package org.openhab.binding.siemenshvac.internal.Metadata;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -66,8 +67,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import io.micrometer.core.instrument.util.IOUtils;
 
 /**
  *
@@ -620,7 +619,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
             JsonObject response = null;
             if (lcHvacConnector != null) {
-                response = lcHvacConnector.DoRequest(request, null);
+                response = lcHvacConnector.doRequest(request, null);
             }
             JsonArray devicesList = null;
             if (response != null) {
@@ -681,7 +680,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
                 String request2 = "api/menutree/device_root.json?TreeName=Web&SerialNumber=" + SerialNr;
                 if (lcHvacConnector != null) {
-                    JsonObject response2 = lcHvacConnector.DoRequest(request2, null);
+                    JsonObject response2 = lcHvacConnector.doRequest(request2, null);
 
                     if (response2 != null && response2.has("TreeItem")) {
                         JsonObject tree = response2.getAsJsonObject("TreeItem");
@@ -710,7 +709,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             }
 
             if (lcHvacConnector != null) {
-                lcHvacConnector.DoRequest(request, new SiemensHvacCallback() {
+                lcHvacConnector.doRequest(request, new SiemensHvacCallback() {
 
                     @Override
                     public void execute(URI uri, int status, @Nullable Object response) {
@@ -885,7 +884,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             }
 
             if (lcHvacConnector != null) {
-                lcHvacConnector.DoRequest(request2, new SiemensHvacCallback() {
+                lcHvacConnector.doRequest(request2, new SiemensHvacCallback() {
 
                     @Override
                     public void execute(URI uri, int status, @Nullable Object response) {
@@ -957,12 +956,12 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 return;
             }
 
-            FileInputStream is = new FileInputStream(file);
-            String js = IOUtils.toString(is);
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            String js = new String(bytes, StandardCharsets.UTF_8);
 
             root = SiemensHvacConnectorImpl.getGsonWithAdapter().fromJson(js, SiemensHvacMetadataMenu.class);
         } catch (IOException ioe) {
-            logger.error("Couldn't write WithingsAccount to file '{}'.", file.getAbsolutePath());
+            logger.warn("Couldn't read Siemens MetaData information from file '{}'.", file.getAbsolutePath());
 
         }
     }
@@ -987,7 +986,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             }
 
         } catch (IOException ioe) {
-            logger.error("Couldn't write WithingsAccount to file '{}'.", file.getAbsolutePath());
+            logger.warn("Couldn't write Siemens MetaData information to file '{}'.", file.getAbsolutePath());
 
         }
     }
@@ -1000,16 +999,16 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
         String request = "api/menutree/datapoint_desc.json?Id=" + dpt.getId();
         if (lcHvacConnector != null) {
-            lcHvacConnector.DoRequest(request, new SiemensHvacCallback() {
+            lcHvacConnector.doRequest(request, new SiemensHvacCallback() {
 
                 @Override
                 public void execute(URI uri, int status, @Nullable Object response) {
                     if (response instanceof JsonObject) {
                         rv.DecreaseResolveCount();
-                        logger.info("siemensHvac:Initialization():ToResolve() {}", rv.getResolveCount());
+                        logger.debug("siemensHvac:Initialization():ToResolve() {}", rv.getResolveCount());
                         dpt.resolveDptDetails((JsonObject) response);
                     } else {
-                        logger.debug("errror");
+                        logger.debug("Invalid response from Siemens gateway, result is not a JsonObject");
                     }
                 }
             });

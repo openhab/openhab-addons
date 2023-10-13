@@ -16,11 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  *
+ * An exception that occurred while operating the binding
+ *
  * @author Laurent Arnal - Initial contribution
  *
- *         An exception that occurred while operating the binding
- *
  */
+
 @NonNullByDefault
 public class SiemensHvacException extends Exception {
     private static final long serialVersionUID = -3398100220952729816L;

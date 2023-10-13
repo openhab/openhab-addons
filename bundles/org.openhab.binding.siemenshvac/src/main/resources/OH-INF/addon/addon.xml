@@ -6,4 +6,5 @@
 	<name>SiemensHvac Binding</name>
 	<description>This is the binding for SiemensHvac.</description>
 
+    <connection>local</connection>  z
 </addon:addon>

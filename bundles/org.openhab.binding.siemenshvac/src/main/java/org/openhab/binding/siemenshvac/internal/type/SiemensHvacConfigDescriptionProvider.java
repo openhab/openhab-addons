@@ -31,7 +31,7 @@ public interface SiemensHvacConfigDescriptionProvider extends ConfigDescriptionP
     /**
      * Adds the ConfigDescription to this provider.
      */
-    public void addConfigDescription(ConfigDescription configDescription);
+    void addConfigDescription(ConfigDescription configDescription);
 
     /**
      * Provides a {@link ConfigDescription} for the given URI.
