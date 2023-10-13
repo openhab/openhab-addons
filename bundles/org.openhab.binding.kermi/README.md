@@ -32,8 +32,6 @@ The gathered data is then stored in `OH_USERDATA/binding.kermi` and loaded on su
 changes. The cache data is bound to the device-uuid and its serial number. If these values change,
 the datapoints are automatically re-initialized.
 
-
-
 ## Binding Configuration
 
 The following samples are provided, representing the current state of my usage.
@@ -59,4 +57,10 @@ Number:Temperature Heating_current_temperature_buffer {channel="kermi:room-heati
 Number:Temperature Cooling_current_temperature_buffer {channel="kermi:room-heating:heatpumpbridge:rheating:BufferSystem_CoolingTemperatureActual"}
 
 Number:Temperature Outside_temperature {channel="kermi:room-heating:heatpumpbridge:rheating:LuftTemperatur"}
+
+Number:Power Current_Power_Inverter {channel="kermi:heatpump:heatpumpbridge:heatpump:Rubin_CurrentPowerInverter"}
 ```
+
+# ToDo / Future Tasks
+
+* Support `DatapointType==0` and `DatapointType>2`

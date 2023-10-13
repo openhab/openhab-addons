@@ -32,19 +32,19 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link KermiHandlerFactory} is responsible for creating things and thing
+ * The {@link KermiThingHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Marco Descher - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.kermi", service = ThingHandlerFactory.class)
-public class KermiHandlerFactory extends BaseThingHandlerFactory {
+public class KermiThingHandlerFactory extends BaseThingHandlerFactory {
 
     private KermiHttpUtil httpUtil;
     private KermiSiteInfo kermiSiteInfo;
 
-    public KermiHandlerFactory() {
+    public KermiThingHandlerFactory() {
         httpUtil = new KermiHttpUtil();
         kermiSiteInfo = new KermiSiteInfo();
     }
@@ -73,9 +73,7 @@ public class KermiHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
             return new KermiBridgeHandler((Bridge) thing, httpUtil, kermiSiteInfo);
         } else if (thingTypeUID.equals(THING_TYPE_HEATPUMP_MANAGER)) {
-            KermiBaseThingHandler heatpumpManagerHandler = new KermiBaseThingHandler(thing, httpUtil, kermiSiteInfo);
-            heatpumpManagerHandler.setDeviceId(DEVICE_ID_HEATPUMP_MANAGER);
-            return heatpumpManagerHandler;
+            return new KermiBaseThingHandler(thing, httpUtil, kermiSiteInfo);
         } else if (thingTypeUID.equals(THING_TYPE_DRINKINGWATER_HEATING)) {
             return new KermiBaseThingHandler(thing, httpUtil, kermiSiteInfo);
         } else if (thingTypeUID.equals(THING_TYPE_HEATPUMP)) {

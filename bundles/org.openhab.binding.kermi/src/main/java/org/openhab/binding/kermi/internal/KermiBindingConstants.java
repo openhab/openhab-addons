@@ -17,6 +17,7 @@ import java.io.File;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link KermiBindingConstants} class defines common constants, which are
@@ -36,6 +37,11 @@ public class KermiBindingConstants {
     public static final ThingTypeUID THING_TYPE_ROOM_HEATING = new ThingTypeUID(BINDING_ID, "room-heating");
     public static final ThingTypeUID THING_TYPE_HEATPUMP = new ThingTypeUID(BINDING_ID, "heatpump");
     public static final ThingTypeUID THING_TYPE_HEATPUMP_MANAGER = new ThingTypeUID(BINDING_ID, "heatpump-manager");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_TEMPERATURE = new ChannelTypeUID(BINDING_ID, "temperature");
+    public static final ChannelTypeUID CHANNEL_TYPE_POWER = new ChannelTypeUID(BINDING_ID, "power");
+    public static final ChannelTypeUID CHANNEL_TYPE_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
+    public static final ChannelTypeUID CHANNEL_TYPE_ONOFF = new ChannelTypeUID(BINDING_ID, "onoff");
 
     // Device Constants
     public static final String DEVICE_ID_HEATPUMP_MANAGER = "00000000-0000-0000-0000-000000000000";

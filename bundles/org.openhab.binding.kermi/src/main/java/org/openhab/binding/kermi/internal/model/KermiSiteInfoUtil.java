@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.openhab.binding.kermi.internal.KermiBindingConstants;
 import org.openhab.binding.kermi.internal.KermiCommunicationException;
 import org.openhab.binding.kermi.internal.api.Datapoint;
@@ -35,6 +37,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.stream.JsonReader;
+
+import tech.units.indriya.unit.Units;
 
 /**
  * @author Marco Descher - intial implementation
@@ -79,6 +83,8 @@ public class KermiSiteInfoUtil {
         ListDatapointCacheFile listDatapointCacheFile = new ListDatapointCacheFile();
         listDatapointCacheFile.setDeviceId(deviceInfo.getDeviceId());
         listDatapointCacheFile.setSerial(deviceInfo.getSerial());
+        listDatapointCacheFile.setAddress(deviceInfo.getAddress());
+        listDatapointCacheFile.setName(deviceInfo.getName());
 
         // clean the values, we don't need them
         List<Datapoint> datapointsWithoutValues = dataPoints.stream().map(dp -> {
@@ -126,5 +132,19 @@ public class KermiSiteInfoUtil {
                     _menuEntry.getMenuEntryId());
             collectAndTraverse(httpUtil, deviceId, dataPoints, menuChildEntry.getResponseData());
         }
+    }
+
+    /**
+     *
+     * @param unitString
+     * @return <code>null</code> if unit could not be determined
+     */
+    public static Unit<?> determineUnitByString(String unitString) {
+        if ("kW".equals(unitString)) {
+            return Units.WATT;
+        } else if ("°C".equals(unitString)) {
+            return Units.CELSIUS;
+        }
+        return null;
     }
 }

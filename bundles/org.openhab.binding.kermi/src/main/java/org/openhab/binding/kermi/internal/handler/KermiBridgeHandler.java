@@ -88,7 +88,14 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
             httpUtil.setHostname(config.hostname);
             httpUtil.setPassword(config.password);
 
-            startAutomaticRefresh();
+            try {
+                initializeKermiSiteInfo();
+
+                startAutomaticRefresh();
+            } catch (KermiCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                logger.error("Communication error", e);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
@@ -130,13 +137,6 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
             final KermiBridgeConfiguration config = getConfigAs(KermiBridgeConfiguration.class);
             Runnable runnable = () -> {
                 try {
-                    for (KermiBaseThingHandler service : services) {
-                        String deviceId = service.getDeviceId();
-                        if (deviceId != null) {
-                            service.getThing().getChannels().stream().map(channel -> channel.getUID().getId())
-                                    .forEach(channelId -> kermiSiteInfo.putRefreshBinding(channelId, deviceId));
-                        }
-                    }
                     updateData();
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
@@ -156,13 +156,17 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private void initializeKermiSiteInfo() throws KermiCommunicationException {
+        GetDevicesResponse getDevicesResponse = httpUtil.getAllDevices();
+        List<DeviceInfo> deviceInfo = getDevicesResponse.getResponseData();
+        Map<String, DeviceInfo> _deviceInfo = deviceInfo.stream()
+                .collect(Collectors.toMap(DeviceInfo::getDeviceId, Function.identity()));
+        kermiSiteInfo.initializeSiteInfo(httpUtil, _deviceInfo);
+    }
+
     private void updateData() throws KermiCommunicationException {
         if (!kermiSiteInfo.isInitialized()) {
-            GetDevicesResponse getDevicesResponse = httpUtil.getAllDevices();
-            List<DeviceInfo> deviceInfo = getDevicesResponse.getResponseData();
-            Map<String, DeviceInfo> _deviceInfo = deviceInfo.stream()
-                    .collect(Collectors.toMap(DeviceInfo::getDeviceId, Function.identity()));
-            kermiSiteInfo.initializeSiteInfo(httpUtil, _deviceInfo);
+            initializeKermiSiteInfo();
         }
         kermiSiteInfo.updateStateValues(httpUtil);
     }

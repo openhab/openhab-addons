@@ -29,6 +29,12 @@ public class ListDatapointCacheFile {
     @SerializedName("Serial")
     private String serial;
 
+    @SerializedName("Address")
+    private String address;
+
+    @SerializedName("Name")
+    private String name;
+
     @SerializedName("Datapoints")
     private List<Datapoint> datapoints;
 
@@ -46,6 +52,22 @@ public class ListDatapointCacheFile {
 
     public void setSerial(String serial) {
         this.serial = serial;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<Datapoint> getDatapoints() {

@@ -18,7 +18,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+
+import javax.measure.Unit;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
@@ -30,16 +33,20 @@ import org.openhab.binding.kermi.internal.api.DatapointReadValuesResponse;
 import org.openhab.binding.kermi.internal.api.DatapointValue;
 import org.openhab.binding.kermi.internal.api.DeviceInfo;
 import org.openhab.binding.kermi.internal.api.KermiHttpUtil;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.State;
+import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tech.units.indriya.unit.Units;
 
 /**
  * @author Marco Descher - intial implementation
  */
+@Component
 public class KermiSiteInfo {
+
+    private Logger logger = LoggerFactory.getLogger(KermiSiteInfo.class);
 
     private Map<String, DeviceInfo> deviceIdToDeviceInfo;
 
@@ -111,6 +118,11 @@ public class KermiSiteInfo {
         wellKnownNameRefreshBinding.add(new String[] { deviceId, datapointConfigId });
     }
 
+    public void removeRefreshBinding(@NonNull String wellKnownId, @NonNull String deviceId) {
+        String datapointConfigId = wellKnownNameToDatapointConfigId.get(wellKnownId);
+        wellKnownNameRefreshBinding.remove(new String[] { deviceId, datapointConfigId });
+    }
+
     public void updateStateValues(@NonNull KermiHttpUtil httpUtil) throws KermiCommunicationException {
         if (wellKnownNameRefreshBinding.isEmpty()) {
             return;
@@ -131,18 +143,35 @@ public class KermiSiteInfo {
         // getDatapoint as resolved in #initializeSiteInfo
         Datapoint datapoint = dataPointConfigIdToDatapoint.get(datapointValue.getDatapointConfigId());
         if (datapoint == null || datapoint.getConfig() == null) {
-            // TODO log?
+            logger.warn("Could not determine datapoint for datapointConfigId {}",
+                    datapointValue.getDatapointConfigId());
             return null;
         }
 
         int datapointType = datapoint.getConfig().getDatapointType();
         if (1 == datapointType) {
-            return new QuantityType<>((double) datapointValue.getValue(), Units.CELSIUS);
+            // Numeric value or "NaN"
+            Object value = datapointValue.getValue();
+            if (Objects.equals("NaN", value)) {
+                return new QuantityType<>();
+            }
+            Unit<?> unit = KermiSiteInfoUtil.determineUnitByString(datapoint.getConfig().getUnit());
+            if (value instanceof Double) {
+                // TODO if kw > multiply with 1000?
+                return new QuantityType<>((double) datapointValue.getValue(), unit);
+            }
         } else if (2 == datapointType) {
-            // boolean
+            // OnOff Type
+            Object value = datapointValue.getValue();
+            if (value instanceof Boolean) {
+                return ((Boolean) value) ? OnOffType.ON : OnOffType.OFF;
+            }
         }
-        LoggerFactory.getLogger(getClass()).warn("Unknown datapointType {} in {}", datapointType,
+
+        logger.warn("Unknown datapointType {} or datapointValue {} ({}) in {}", datapointType,
+                datapointValue.getValue(), datapointValue.getValue().getClass().getName(),
                 datapoint.getConfig().getWellKnownName());
+
         return null;
     }
 

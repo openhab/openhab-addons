@@ -5,6 +5,7 @@
 
 	<type>binding</type>
 	<name>Kermi Binding</name>
-	<description>This is the binding for Kermi.</description>
+	<description>Binding for Kermi x-center Heatpump Manager</description>
+	<connection>local</connection>
 
 </addon:addon>
