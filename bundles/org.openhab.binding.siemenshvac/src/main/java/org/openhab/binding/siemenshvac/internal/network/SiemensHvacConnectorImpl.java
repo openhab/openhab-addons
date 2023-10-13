@@ -112,7 +112,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         ctxFactory.setEndpointIdentificationAlgorithm(null);
 
         this.httpClient = new HttpClient(ctxFactory);
-        this.httpClient.setRemoveIdleDestinations(true);
         this.httpClient.setMaxConnectionsPerDestination(10);
         this.httpClient.setMaxRequestsQueuedPerDestination(1000);
         this.httpClient.setConnectTimeout(10000);
