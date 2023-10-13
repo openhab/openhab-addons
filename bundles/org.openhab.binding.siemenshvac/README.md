@@ -78,7 +78,7 @@ Each channel are strongly typed, so for exemple, for heating mode, openhab will 
 | Channel                   | Description                                                                     | Type     | Unit | Security Access Level | ReadOnly | Advanced |
 | ------------------------- | ------------------------------------------------------------------------------- | -------- | :--: | :-------------------: | :------: | :------: |
 | `controlBoilerApproval`   | Set Boiler Approval (`AUTO`, `OFF`, `ON`)                                       | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlProgram`          | Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`<sup id="a1">[1](#f1)</sup>) | `String` |      |        🔐 W1         |   
+| `controlProgram`          | Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`<sup id="a1">[1](f1)</sup>) | `String` |      |        🔐 W1         |   
 
 | Channel Type ID  | Item Type    | Description                                              |
 |------------------|--------------|----------------------------------------------------------|
