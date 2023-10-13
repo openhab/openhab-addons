@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.mercedesme.internal.dto;
 
-import java.time.Instant;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.Constants;
 
@@ -34,5 +32,4 @@ public class TokenResponse {
     public String tokenType = Constants.NOT_SET;
     @SerializedName("expires_in")
     public int expiresIn;
-    public Instant created = Instant.now();
 }
