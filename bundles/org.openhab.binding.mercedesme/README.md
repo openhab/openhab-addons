@@ -50,6 +50,8 @@ Bridge needs configuration in order to connect properly to your Mercedes Me acco
 | pin             | text    | Mercedes Me Smartphone App PIN          | N/A         | no       | no       |
 | region          | text    | Your region                             | EU          | yes      | no       |
 | refreshInterval | integer | API refresh interval                    | 15          | yes      | no       |
+| callbackIP      | text    | Your region                             | N/A         | yes      | yes      |
+| callbackPort    | integer | API refresh interval                    | N/A         | yes      | yes      |
 
 Set `region` to your location
 
@@ -70,6 +72,8 @@ Commands protected by PIN
 - Open / Ventilate Windows
 - Open / Lift Sunroof
 
+IP `callbackIP` and port `callbackPort` will be auutodetected. 
+If you're running on server with more than one network interface please select manually.
 
 ### Bridge Authorization
 
