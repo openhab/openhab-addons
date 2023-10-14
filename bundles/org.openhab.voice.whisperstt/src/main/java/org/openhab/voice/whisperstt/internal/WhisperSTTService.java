@@ -48,6 +48,7 @@ import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.rest.LocaleService;
+import org.openhab.core.voice.RecognitionStartEvent;
 import org.openhab.core.voice.RecognitionStopEvent;
 import org.openhab.core.voice.STTException;
 import org.openhab.core.voice.STTListener;
@@ -193,6 +194,7 @@ public class WhisperSTTService implements STTService {
             VAD vad = new VAD(VoiceActivityDetector.Mode.valueOf(config.vadMode), WHISPER_SAMPLE_RATE, nSamplesStep,
                     config.vadStep, config.vadSensitivity);
             logger.debug("VAD instance created");
+            sttListener.sttEventReceived(new RecognitionStartEvent());
             backgroundRecognize(whisper, ctx, state, nSamplesStep, locale, sttListener, audioStream, vad, aborted);
         } catch (IOException e) {
             if (ctx != null && !config.preloadModel) {
@@ -506,8 +508,12 @@ public class WhisperSTTService implements STTService {
         AudioInputStream audioInputStreamTemp = new AudioInputStream(new ByteArrayInputStream(buffer.array()),
                 jAudioFormat, samples.length);
         try {
+            var scapedTranscription = transcription.replaceAll("[^a-zA-ZÀ-ú0-9.-]", "_");
+            if (scapedTranscription.length() > 60) {
+                scapedTranscription = scapedTranscription.substring(0, 60);
+            }
             String fileName = new SimpleDateFormat("yyyy-MM-dd.HH.mm.ss.SS").format(new Date()) + "("
-                    + transcription.replaceAll("[^a-zA-Z0-9.-]", "_") + ")";
+                    + scapedTranscription + ")";
             Path audioPath = Path.of(SAMPLES_FOLDER.toString(), fileName + ".wav");
             Path propertiesPath = Path.of(SAMPLES_FOLDER.toString(), fileName + ".props");
             logger.debug("Saving audio file: {}", audioPath);
