@@ -54,6 +54,7 @@ import org.openhab.binding.tesla.internal.protocol.VehicleState;
 import org.openhab.binding.tesla.internal.throttler.QueueChannelThrottler;
 import org.openhab.binding.tesla.internal.throttler.Rate;
 import org.openhab.core.io.net.http.WebSocketFactory;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -834,6 +835,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         try {
             if (request != null && result != null && !"null".equals(result)) {
                 updateStatus(ThingStatus.ONLINE);
+                updateState(CHANNEL_EVENTSTAMP, new DateTimeType());
                 // first, update state objects
                 if ("queryVehicle".equals(request)) {
                     if (vehicle != null) {
@@ -844,8 +846,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         return;
                     }
 
-                    if (vehicle != null && "asleep".equals(vehicle.state)) {
-                        logger.debug("Vehicle is asleep.");
+                    if (vehicle != null && ("asleep".equals(vehicle.state) || "offline".equals(vehicle.state))) {
+                        logger.debug("Vehicle is {}", vehicle.state);
                         return;
                     }
 
