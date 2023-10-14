@@ -10,6 +10,7 @@
 			<channel id="mileage" typeId="mileage-channel"/>
 			<channel id="range-fuel" typeId="range-fuel-channel"/>
 			<channel id="radius-fuel" typeId="radius-fuel-channel"/>
+            <channel id="home-distance" typeId="home-distance-channel"/>
 			<channel id="fuel-level" typeId="fuel-level-channel"/>
 			<channel id="fuel-remain" typeId="fuel-remain-channel"/>
 			<channel id="fuel-open" typeId="fuel-open-channel"/>

@@ -117,9 +117,12 @@ public class UOMObserver {
     }
 
     @Nullable
-    public String getPattern(String group) {
+    public String getPattern(String group, String channel) {
         String pattern = PATTERN_MAP.get(label);
         if (Constants.GROUP_RANGE.equals(group) && pattern != null) {
+            if ("home-distance".equals(channel)) {
+                return pattern.replace("1", "3");
+            }
             return pattern.replace("1", "0");
         }
         return pattern;

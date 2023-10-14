@@ -18,6 +18,11 @@
 		<label>Electric Radius</label>
 		<state pattern="%d km" readOnly="true"/>
 	</channel-type>
+    <channel-type id="home-distance-channel">
+        <item-type>Number:Length</item-type>
+        <label>Distance to Home</label>
+        <state pattern="%.3f km" readOnly="true"/>
+    </channel-type>
 	<channel-type id="soc-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge Level</label>

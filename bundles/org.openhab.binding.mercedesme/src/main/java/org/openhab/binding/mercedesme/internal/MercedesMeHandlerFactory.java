@@ -26,6 +26,7 @@ import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -60,6 +61,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
+    private final LocationProvider locationProvider;
     private final StorageService storageService;
     private final MercedesMeDiscoveryService discoveryService;
     private final MercedesMeCommandOptionProvider mmcop;
@@ -71,12 +73,14 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
-            final @Reference LocaleProvider lp, final @Reference TimeZoneProvider tzp,
-            final @Reference MercedesMeCommandOptionProvider cop, final @Reference MercedesMeStateOptionProvider sop,
+            final @Reference LocaleProvider lp, final @Reference LocationProvider locationP,
+            final @Reference TimeZoneProvider tzp, final @Reference MercedesMeCommandOptionProvider cop,
+            final @Reference MercedesMeStateOptionProvider sop,
             final @Reference MercedesMeDynamicStateDescriptionProvider dsdp, final @Reference UnitProvider up) {
         this.storageService = storageService;
 
         localeProvider = lp;
+        locationProvider = locationP;
         mmcop = cop;
         mmsop = sop;
         mmdsdp = dsdp;
@@ -111,7 +115,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             return new AccountHandler((Bridge) thing, discoveryService, httpClient, localeProvider, storageService);
         } else if (THING_TYPE_BEV.equals(thingTypeUID) || THING_TYPE_COMB.equals(thingTypeUID)
                 || THING_TYPE_HYBRID.equals(thingTypeUID)) {
-            return new VehicleHandler(thing, mmcop, mmsop, mmdsdp);
+            return new VehicleHandler(thing, locationProvider, mmcop, mmsop, mmdsdp);
         }
         return null;
     }
