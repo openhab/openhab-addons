@@ -19,6 +19,7 @@ import java.io.File;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.dto.TokenResponse;
 import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -118,6 +119,13 @@ class UtilsTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void testTokenTransform() {
+        String tokenJson = FileReader.readFileInString("src/test/resources/json/TokenResponse.json");
+        TokenResponse tr = Utils.GSON.fromJson(tokenJson, TokenResponse.class);
+        System.out.println(tr.createdOn);
     }
 
     // @Test

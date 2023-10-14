@@ -1,0 +1,9 @@
+{
+	"accessToken": "Tkn",
+	"tokenType": "Bearer",
+	"expiresIn": 7199,
+	"refreshToken": "RfrshTkn",
+	"scope": "openid email phone profile offline_access ciam-uid",
+	"state": null,
+	"createdOn": "2023-10-04T01:47:08.007038393Z"
+}

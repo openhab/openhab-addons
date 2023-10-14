@@ -29,5 +29,4 @@ public class LocationProviderMock implements LocationProvider {
     public @Nullable PointType getLocation() {
         return new PointType("1.234,9.876");
     }
-
 }

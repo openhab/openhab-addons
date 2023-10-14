@@ -10,7 +10,7 @@
 			<channel id="mileage" typeId="mileage-channel"/>
 			<channel id="range-electric" typeId="range-electric-channel"/>
 			<channel id="radius-electric" typeId="radius-electric-channel"/>
-            <channel id="home-distance" typeId="home-distance-channel"/>
+			<channel id="home-distance" typeId="home-distance-channel"/>
 			<channel id="soc" typeId="soc-channel"/>
 			<channel id="charged" typeId="charged-channel"/>
 			<channel id="uncharged" typeId="uncharged-channel"/>
