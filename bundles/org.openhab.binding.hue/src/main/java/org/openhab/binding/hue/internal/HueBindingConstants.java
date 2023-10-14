@@ -167,7 +167,7 @@ public class HueBindingConstants {
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
-            CHANNEL_2_COLOR_TEMP_PERCENT, CHANNEL_2_COLOR_TEMP_ABSOLUTE, CHANNEL_2_SCENE);
+            CHANNEL_2_COLOR_TEMP_PERCENT, CHANNEL_2_COLOR_TEMP_ABSOLUTE, CHANNEL_2_SCENE, CHANNEL_2_EFFECT);
 
     /*
      * Map of API v1 channel IDs against API v2 channel IDs where, if the v1 channel exists in the system, then we
