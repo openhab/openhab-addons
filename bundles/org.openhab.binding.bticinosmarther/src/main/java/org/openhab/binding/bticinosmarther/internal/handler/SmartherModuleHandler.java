@@ -222,14 +222,14 @@ public class SmartherModuleHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_SETTINGS_PROGRAM:
-                if (command instanceof DecimalType) {
-                    localModuleSettings.setProgram(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    localModuleSettings.setProgram(decimalCommand.intValue());
                     return;
                 }
                 break;
             case CHANNEL_SETTINGS_BOOSTTIME:
-                if (command instanceof DecimalType) {
-                    localModuleSettings.setBoostTime(BoostTime.fromValue(((DecimalType) command).intValue()));
+                if (command instanceof DecimalType decimalCommand) {
+                    localModuleSettings.setBoostTime(BoostTime.fromValue(decimalCommand.intValue()));
                     return;
                 }
                 break;
@@ -324,8 +324,8 @@ public class SmartherModuleHandler extends BaseThingHandler {
      * @return {@code true} if the change succeeded, {@code false} otherwise
      */
     private boolean changeTimeHour(Command command, final ModuleSettings settings) {
-        if (command instanceof DecimalType) {
-            int endHour = ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            int endHour = decimalCommand.intValue();
             if (endHour >= 0 && endHour <= 23) {
                 settings.setEndHour(endHour);
                 return true;
@@ -344,8 +344,8 @@ public class SmartherModuleHandler extends BaseThingHandler {
      * @return {@code true} if the change succeeded, {@code false} otherwise
      */
     private boolean changeTimeMinute(Command command, final ModuleSettings settings) {
-        if (command instanceof DecimalType) {
-            int endMinute = ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            int endMinute = decimalCommand.intValue();
             if (endMinute >= 0 && endMinute <= 59) {
                 // Only 15 min increments are allowed
                 endMinute = Math.round(endMinute / 15) * 15;

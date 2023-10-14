@@ -117,8 +117,8 @@ public abstract class AbstractRioProtocol implements SocketSessionListener {
     }
 
     /**
-     * Implements the {@link SocketSessionListener#responseException(Exception)} to automatically take the thing offline
-     * via {@link RioHandlerCallback#statusChanged(ThingStatus, ThingStatusDetail, String)}
+     * Implements the {@link SocketSessionListener#responseException(IOException)} to automatically take the thing
+     * offline via {@link RioHandlerCallback#statusChanged(ThingStatus, ThingStatusDetail, String)}
      *
      * @param e the exception
      */

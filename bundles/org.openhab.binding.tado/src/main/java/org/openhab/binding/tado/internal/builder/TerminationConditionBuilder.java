@@ -84,8 +84,7 @@ public class TerminationConditionBuilder {
     }
 
     private OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {
-        OverlayTerminationCondition defaultTerminationCondition = zoneHandler.getDefaultTerminationCondition();
-        return defaultTerminationCondition;
+        return zoneHandler.getDefaultTerminationCondition();
     }
 
     private TimerTerminationCondition getCurrentOrDefaultTimerTermination(ZoneStateProvider zoneStateProvider)

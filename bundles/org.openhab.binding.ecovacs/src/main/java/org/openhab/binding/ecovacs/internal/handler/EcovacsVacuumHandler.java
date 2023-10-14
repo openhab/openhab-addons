@@ -18,10 +18,10 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -152,7 +152,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(EcovacsVacuumActions.class);
+        return Set.of(EcovacsVacuumActions.class);
     }
 
     @Override
@@ -171,8 +171,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     device.sendCommand(cmd);
                     return;
                 }
-            } else if (channel.equals(CHANNEL_ID_VOICE_VOLUME) && command instanceof DecimalType) {
-                int volumePercent = ((DecimalType) command).intValue();
+            } else if (channel.equals(CHANNEL_ID_VOICE_VOLUME) && command instanceof DecimalType volume) {
+                int volumePercent = volume.intValue();
                 device.sendCommand(new SetVolumeCommand((volumePercent + 5) / 10));
                 return;
             } else if (channel.equals(CHANNEL_ID_SUCTION_POWER) && command instanceof StringType) {
@@ -191,7 +191,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                 if (command instanceof OnOffType) {
                     device.sendCommand(new SetDustbinAutoEmptyCommand(command == OnOffType.ON));
                     return;
-                } else if (command instanceof StringType && command.toString().equals("trigger")) {
+                } else if (command instanceof StringType && "trigger".equals(command.toString())) {
                     device.sendCommand(new EmptyDustbinCommand());
                     return;
                 }
@@ -201,8 +201,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             } else if (channel.equals(CHANNEL_ID_CONTINUOUS_CLEANING) && command instanceof OnOffType) {
                 device.sendCommand(new SetContinuousCleaningCommand(command == OnOffType.ON));
                 return;
-            } else if (channel.equals(CHANNEL_ID_CLEANING_PASSES) && command instanceof DecimalType) {
-                int passes = ((DecimalType) command).intValue();
+            } else if (channel.equals(CHANNEL_ID_CLEANING_PASSES) && command instanceof DecimalType type) {
+                int passes = type.intValue();
                 device.sendCommand(new SetDefaultCleanPassesCommand(passes));
                 lastDefaultCleaningPasses = passes; // if we get here, the command was executed successfully
                 return;

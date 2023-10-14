@@ -122,7 +122,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void dispose() {
-        if (!server.isEmpty()) {
+        if (server.isPresent()) {
             CallbackServer serv = server.get();
             serv.stop();
             serv.dispose();

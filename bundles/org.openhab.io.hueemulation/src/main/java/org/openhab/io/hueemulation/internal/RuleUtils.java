@@ -82,8 +82,8 @@ public class RuleUtils {
      * Validates a hue http address used in schedules and hue rules.
      *
      * @param ds A hue datastore to verify that referred lights/groups do exist
-     * @param address Relative hue API address. Example: "/api/<username>/groups/1/action" or
-     *            "/api/<username>/lights/1/state"
+     * @param address Relative hue API address. Example: {@code "/api/<username>/groups/1/action"} or
+     *            {@code "/api/<username>/lights/1/state"}
      * @throws IllegalStateException Thrown if address is invalid
      */
     @SuppressWarnings({ "unused", "null" })
@@ -268,8 +268,8 @@ public class RuleUtils {
      * <li>Every weekday given by bbb at given left side time, randomized by right side time. Right side time has to be
      * smaller than 12 hours
      * <li>
-     * <ul>
      * Timers
+     * <ul>
      * <li>PT[hh]:[mm]:[ss] Timer, expiring after given time
      * <li>PT[hh]:[mm]:[ss] Timer, expiring after given time
      * <li>PT[hh]:[mm]:[ss]A[hh]:[mm]:[ss] Timer with random element

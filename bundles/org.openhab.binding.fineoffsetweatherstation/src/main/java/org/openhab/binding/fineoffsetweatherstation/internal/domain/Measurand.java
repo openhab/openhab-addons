@@ -329,13 +329,13 @@ public enum Measurand {
             if (customizations.length == 0) {
                 this.customizations = null;
             } else {
-
                 this.customizations = Collections.unmodifiableMap(
                         Arrays.stream(customizations).collect(Collectors.toMap(ParserCustomization::getType,
                                 customization -> customization, (a, b) -> b, HashMap::new)));
             }
         }
 
+        @Override
         public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
                 @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
             MeasureType measureType = getMeasureType(customizationType);

@@ -15,9 +15,9 @@ package org.openhab.binding.easee.internal.handler;
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -181,7 +181,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(EaseeSiteDiscoveryService.class);
+        return Set.of(EaseeSiteDiscoveryService.class);
     }
 
     public void setDiscoveryService(EaseeSiteDiscoveryService discoveryService) {

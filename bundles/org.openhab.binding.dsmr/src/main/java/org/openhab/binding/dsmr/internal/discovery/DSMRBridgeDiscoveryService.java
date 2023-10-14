@@ -125,9 +125,11 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
                     logger.trace("Possible port to check:{}, owned:{} by:{}", currentScannedPortName,
                             portIdentifier.isCurrentlyOwned(), portIdentifier.getCurrentOwner());
                     if (DSMR_PORT_NAME.equals(portIdentifier.getCurrentOwner())) {
-                        logger.debug("The port {} is owned by this binding. If no DSMR meters will be found it "
-                                + "might indicate the port is locked by an older instance of this binding. "
-                                + "Restart the system to unlock the port.", currentScannedPortName);
+                        logger.debug("""
+                                The port {} is owned by this binding. If no DSMR meters will be found it \
+                                might indicate the port is locked by an older instance of this binding. \
+                                Restart the system to unlock the port.\
+                                """, currentScannedPortName);
                     }
                 } else {
                     logger.debug("Start discovery on serial port: {}", currentScannedPortName);

@@ -69,7 +69,7 @@ public class LampStatesResponse extends PrefixedResponse<List<LampStatesResponse
         Matcher matcher = RESPONSE_PARSING_PATTERN.matcher(responseWithoutPrefix);
         while (matcher.find()) {
             int lampHours = Integer.parseInt(matcher.group("hours"));
-            boolean active = matcher.group("active").equals("1");
+            boolean active = "1".equals(matcher.group("active"));
             result.add(new LampState(active, lampHours));
         }
         return result;

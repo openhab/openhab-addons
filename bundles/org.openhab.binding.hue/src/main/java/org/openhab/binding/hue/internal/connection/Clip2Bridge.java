@@ -98,9 +98,11 @@ import com.google.gson.JsonSyntaxException;
  *
  * It uses the following connection mechanisms:
  *
+ * <ul>
  * <li>The primary communication uses HTTP 2 streams over a shared permanent HTTP 2 session.</li>
  * <li>The 'registerApplicationKey()' method uses HTTP/1.1 over the OH common Jetty client.</li>
  * <li>The 'isClip2Supported()' static method uses HTTP/1.1 over the OH common Jetty client via 'HttpUtil'.</li>
+ * </ul>
  *
  * @author Andrew Fiddian-Green - Initial Contribution
  */
@@ -339,7 +341,7 @@ public class Clip2Bridge implements Closeable {
         RESET,
         IDLE,
         GO_AWAY,
-        UNAUTHORIZED;
+        UNAUTHORIZED
     }
 
     /**
@@ -445,7 +447,7 @@ public class Clip2Bridge implements Closeable {
     /**
      * Enum showing the online state of the session connection.
      */
-    private static enum State {
+    private enum State {
         /**
          * Session closed
          */
@@ -457,7 +459,7 @@ public class Clip2Bridge implements Closeable {
         /**
          * Session open for HTTP calls and actively receiving SSE events
          */
-        ACTIVE;
+        ACTIVE
     }
 
     /**
@@ -1081,10 +1083,11 @@ public class Clip2Bridge implements Closeable {
      * accessing the session while it is being recreated.
      *
      * @param resource the resource to put.
+     * @return the resource, which may contain errors.
      * @throws ApiException if something fails.
      * @throws InterruptedException
      */
-    public void putResource(Resource resource) throws ApiException, InterruptedException {
+    public Resources putResource(Resource resource) throws ApiException, InterruptedException {
         Stream stream = null;
         try (Throttler throttler = new Throttler(MAX_CONCURRENT_STREAMS);
                 SessionSynchronizer sessionSynchronizer = new SessionSynchronizer(false)) {
@@ -1106,17 +1109,17 @@ public class Clip2Bridge implements Closeable {
             String contentType = contentStreamListener.getContentType();
             int status = contentStreamListener.getStatus();
             LOGGER.trace("HTTP/2 {} (Content-Type: {}) << {}", status, contentType, contentJson);
-            if (status != HttpStatus.OK_200) {
+            if (!HttpStatus.isSuccess(status)) {
                 throw new ApiException(String.format("Unexpected HTTP status '%d'", status));
             }
             if (!MediaType.APPLICATION_JSON.equals(contentType)) {
                 throw new ApiException("Unexpected Content-Type: " + contentType);
             }
+            if (contentJson.isEmpty()) {
+                throw new ApiException("Response payload is empty");
+            }
             try {
-                Resources resources = Objects.requireNonNull(jsonParser.fromJson(contentJson, Resources.class));
-                if (LOGGER.isDebugEnabled()) {
-                    resources.getErrors().forEach(error -> LOGGER.debug("putResource() resources error:{}", error));
-                }
+                return Objects.requireNonNull(jsonParser.fromJson(contentJson, Resources.class));
             } catch (JsonParseException e) {
                 LOGGER.debug("putResource() parsing error json:{}", contentJson, e);
                 throw new ApiException("Parsing error", e);

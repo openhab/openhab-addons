@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Waterhouse - Initial Contribution
  * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Lukas Agethen - Added support for Energy Year reading, compressor frequency and powerful mode
- * @author Wouter Denayer - Added to support for weekly & daily energy reading
+ * @author Wouter Denayer - Added to support for weekly and daily energy reading
  *
  */
 @NonNullByDefault
@@ -159,20 +159,20 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             throws DaikinCommunicationException {
         switch (channelUID.getId()) {
             case DaikinBindingConstants.CHANNEL_AC_FAN_DIR:
-                if (command instanceof StringType) {
-                    changeFanDir(((StringType) command).toString());
+                if (command instanceof StringType stringCommand) {
+                    changeFanDir(stringCommand.toString());
                     return true;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AC_SPECIALMODE:
-                if (command instanceof StringType) {
-                    changeSpecialMode(((StringType) command).toString());
+                if (command instanceof StringType stringCommand) {
+                    changeSpecialMode(stringCommand.toString());
                     return true;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AC_STREAMER:
-                if (command instanceof OnOffType) {
-                    changeStreamer(((OnOffType) command).equals(OnOffType.ON));
+                if (command instanceof OnOffType onOffCommand) {
+                    changeStreamer(onOffCommand.equals(OnOffType.ON));
                     return true;
                 }
                 break;

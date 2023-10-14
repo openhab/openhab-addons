@@ -145,15 +145,14 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        if (msg instanceof HttpResponse) {
-            HttpResponse response = (HttpResponse) msg;
+        if (msg instanceof HttpResponse response) {
             if (response.status().code() == 401) {
                 ctx.close();
                 if (!response.headers().isEmpty()) {
                     String authenticate = "";
                     for (CharSequence name : response.headers().names()) {
                         for (CharSequence value : response.headers().getAll(name)) {
-                            if (name.toString().equalsIgnoreCase("WWW-Authenticate")) {
+                            if ("WWW-Authenticate".equalsIgnoreCase(name.toString())) {
                                 authenticate = value.toString();
                             }
                         }

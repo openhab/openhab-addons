@@ -89,7 +89,7 @@ public class GroupMessageStateMachine {
     enum GroupMessage {
         BCAST,
         CLEAN,
-        SUCCESS;
+        SUCCESS
     };
 
     /**

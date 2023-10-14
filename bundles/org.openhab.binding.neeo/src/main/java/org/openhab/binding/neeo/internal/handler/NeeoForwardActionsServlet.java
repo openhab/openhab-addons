@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.neeo.internal.net.HttpRequest;
 import org.openhab.binding.neeo.internal.net.HttpResponse;
@@ -50,8 +50,7 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     /** The forwarding chain */
     private final @Nullable String forwardChain;
 
-    /** The {@link ClientBuilder} to use */
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
 
     /** The scheduler to use to schedule recipe execution */
     private final ScheduledExecutorService scheduler;
@@ -64,13 +63,13 @@ public class NeeoForwardActionsServlet extends HttpServlet {
      * @param forwardChain a possibly null, possibly empty forwarding chain
      */
     NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Consumer<String> callback,
-            @Nullable String forwardChain, ClientBuilder clientBuilder) {
+            @Nullable String forwardChain, HttpClient httpClient) {
         super();
 
         this.scheduler = scheduler;
         this.callback = callback;
         this.forwardChain = forwardChain;
-        this.clientBuilder = clientBuilder;
+        this.httpClient = httpClient;
     }
 
     /**
@@ -92,9 +91,10 @@ public class NeeoForwardActionsServlet extends HttpServlet {
 
         callback.accept(json);
 
+        String forwardChain = this.forwardChain;
         if (forwardChain != null && !forwardChain.isEmpty()) {
             scheduler.execute(() -> {
-                try (final HttpRequest request = new HttpRequest(clientBuilder)) {
+                try (final HttpRequest request = new HttpRequest(httpClient)) {
                     for (final String forwardUrl : forwardChain.split(",")) {
                         if (!forwardUrl.isEmpty()) {
                             final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);

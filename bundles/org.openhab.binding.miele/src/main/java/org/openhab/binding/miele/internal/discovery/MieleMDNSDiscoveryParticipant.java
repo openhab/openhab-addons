@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MieleMDNSDiscoveryParticipant} is responsible for discovering Miele XGW3000 Gateways. It uses the central
- * {@link MDNSDiscoveryService}.
+ * {@link org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService}.
  *
  * @author Karel Goderis - Initial contribution
  * @author Martin Lepsy - Added check for Miele gateway for cleaner discovery
