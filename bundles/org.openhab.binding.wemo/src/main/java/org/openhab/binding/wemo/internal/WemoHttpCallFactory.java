@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 
 /**
- * {@link WemoHttpCallFactory} creates {@WemoHttpCall}s.
+ * {@link WemoHttpCallFactory} creates {@link WemoHttpCall}s.
  *
  * @author Wouter Born - Initial contribution
  */

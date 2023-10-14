@@ -25,7 +25,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * digitalSTROM JSON Parser class. Externalizes code from {@link DeviceImpl}
+ * digitalSTROM JSON Parser class. Externalizes code from
+ * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.impl.DeviceImpl}
  *
  * @author Rouven Schürch - Initial contribution
  *

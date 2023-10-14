@@ -46,7 +46,7 @@ public class AsuswrtIpInfo {
     /**
      * Constructor.
      *
-     * @param interfaceName name of interface
+     * @param ifName name of interface
      * @param jsonObject with ipInfo
      */
     public AsuswrtIpInfo(String ifName, JsonObject jsonObject) {

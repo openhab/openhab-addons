@@ -65,8 +65,8 @@ public class SMSConversationHandler extends BaseThingHandler {
                         thing.getUID(), getRecipient());
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof SMSModemBridgeHandler) {
-                this.bridgeHandler = (SMSModemBridgeHandler) handler;
+            if (handler instanceof SMSModemBridgeHandler smsModemBridgeHandler) {
+                this.bridgeHandler = smsModemBridgeHandler;
             } else {
                 throw new ConfigurationException("No available bridge handler found for SMSConversation {} bridge {} .",
                         thing.getUID(), bridge.getUID());

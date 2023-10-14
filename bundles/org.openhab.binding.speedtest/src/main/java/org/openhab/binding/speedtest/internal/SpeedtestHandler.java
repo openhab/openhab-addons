@@ -210,7 +210,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         if ((versionString != null) && !versionString.isEmpty()) {
             int newLI = versionString.indexOf(System.lineSeparator());
             String versionLine = versionString.substring(0, newLI);
-            if (versionString.indexOf("Speedtest by Ookla") > -1) {
+            if (versionString.contains("Speedtest by Ookla")) {
                 logger.debug("Speedtest Version: {}", versionLine);
                 return true;
             } else {
@@ -285,7 +285,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         ResultContainer tmpCont = doExecuteRequest(" -f json --accept-license --accept-gdpr" + postCommand,
                 ResultContainer.class);
         if (tmpCont != null) {
-            if (tmpCont.getType().equals("result")) {
+            if ("result".equals(tmpCont.getType())) {
                 pingJitter = tmpCont.getPing().getJitter();
                 pingLatency = tmpCont.getPing().getLatency();
                 downloadBandwidth = tmpCont.getDownload().getBandwidth();
@@ -365,15 +365,13 @@ public class SpeedtestHandler extends BaseThingHandler {
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_ELAPSED), newState);
 
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_EXTERNALIP),
-                new StringType(String.valueOf(interfaceExternalIp)));
+                new StringType(interfaceExternalIp));
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_INTERNALIP),
-                new StringType(String.valueOf(interfaceInternalIp)));
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.ISP),
-                new StringType(String.valueOf(isp)));
+                new StringType(interfaceInternalIp));
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.ISP), new StringType(isp));
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_URL),
-                new StringType(String.valueOf(resultUrl)));
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.SERVER),
-                new StringType(String.valueOf(server)));
+                new StringType(resultUrl));
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.SERVER), new StringType(server));
     }
 
     /**
@@ -489,8 +487,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         } else {
             logger.debug("Splitting by spaces");
             try {
-                String[] splitCmd = commandLine.split(" ");
-                return splitCmd;
+                return commandLine.split(" ");
             } catch (PatternSyntaxException e) {
                 logger.warn("An exception occurred while splitting '{}': '{}'", commandLine, e.getMessage());
                 return new String[] {};

@@ -86,8 +86,8 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TradfriGatewayHandler) {
-            this.handler = (TradfriGatewayHandler) handler;
+        if (handler instanceof TradfriGatewayHandler gatewayHandler) {
+            this.handler = gatewayHandler;
         }
     }
 

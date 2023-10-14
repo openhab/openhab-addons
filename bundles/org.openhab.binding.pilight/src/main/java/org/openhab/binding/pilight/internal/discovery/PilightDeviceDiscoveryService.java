@@ -165,12 +165,9 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService impl
 
     @Override
     public void setThingHandler(final ThingHandler handler) {
-        if (handler instanceof PilightBridgeHandler) {
-            this.pilightBridgeHandler = (PilightBridgeHandler) handler;
-            final @Nullable PilightBridgeHandler pilightBridgeHandler = this.pilightBridgeHandler;
-            if (pilightBridgeHandler != null) {
-                bridgeUID = pilightBridgeHandler.getThing().getUID();
-            }
+        if (handler instanceof PilightBridgeHandler pilightBridgeHandler) {
+            this.pilightBridgeHandler = pilightBridgeHandler;
+            bridgeUID = pilightBridgeHandler.getThing().getUID();
         }
     }
 

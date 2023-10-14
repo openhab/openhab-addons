@@ -49,7 +49,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link VehicleHandler} handles responses from BMW API
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send charge profile
+ * @author Norbert Truchsess - edit and send charge profile
  */
 @NonNullByDefault
 public class VehicleHandler extends VehicleChannelHandler {

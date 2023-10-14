@@ -1096,7 +1096,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Fetch the full list of scenes from the bridge, and call updateSceneContributors(List<Resource> allScenes)
+     * Fetch the full list of scenes from the bridge, and call {@code updateSceneContributors(List<Resource> allScenes)}
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.

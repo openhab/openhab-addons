@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link TadoBinding} class defines common constants, which are
+ * The {@link TadoBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Dennis Frommknecht - Initial contribution
@@ -36,7 +36,7 @@ public class TadoBindingConstants {
     // List of all Channel IDs
     public static final String PROPERTY_HOME_TEMPERATURE_UNIT = "temperatureUnit";
 
-    public static enum TemperatureUnit {
+    public enum TemperatureUnit {
         CELSIUS,
         FAHRENHEIT
     }
@@ -52,7 +52,7 @@ public class TadoBindingConstants {
 
     public static final String CHANNEL_ZONE_HVAC_MODE = "hvacMode";
 
-    public static enum HvacMode {
+    public enum HvacMode {
         OFF,
         HEAT,
         COOL,
@@ -69,7 +69,7 @@ public class TadoBindingConstants {
 
     public static final String CHANNEL_ZONE_FAN_SPEED = "fanspeed";
 
-    public static enum FanSpeed {
+    public enum FanSpeed {
         LOW,
         MIDDLE,
         HIGH,
@@ -78,7 +78,7 @@ public class TadoBindingConstants {
 
     public static final String CHANNEL_ZONE_FAN_LEVEL = "fanLevel";
 
-    public static enum FanLevel {
+    public enum FanLevel {
         SILENT,
         LEVEL1,
         LEVEL2,
@@ -90,7 +90,7 @@ public class TadoBindingConstants {
 
     public static final String CHANNEL_ZONE_HORIZONTAL_SWING = "horizontalSwing";
 
-    public static enum HorizontalSwing {
+    public enum HorizontalSwing {
         OFF,
         ON,
         LEFT,
@@ -103,7 +103,7 @@ public class TadoBindingConstants {
 
     public static final String CHANNEL_ZONE_VERTICAL_SWING = "verticalSwing";
 
-    public static enum VerticalSwing {
+    public enum VerticalSwing {
         OFF,
         ON,
         UP,
@@ -116,7 +116,7 @@ public class TadoBindingConstants {
 
     public static final String CHANNEL_ZONE_OPERATION_MODE = "operationMode";
 
-    public static enum OperationMode {
+    public enum OperationMode {
         SCHEDULE,
         TIMER,
         MANUAL,
@@ -141,7 +141,7 @@ public class TadoBindingConstants {
     public static final String PROPERTY_ZONE_NAME = "name";
     public static final String PROPERTY_ZONE_TYPE = "type";
 
-    public static enum ZoneType {
+    public enum ZoneType {
         HEATING,
         AIR_CONDITIONING,
         HOT_WATER

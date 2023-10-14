@@ -472,7 +472,7 @@ public class JdbcBaseDAO {
         }
         // we already retrieve the unit here once as it is a very costly operation
         String itemName = item.getName();
-        Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
+        Unit<? extends Quantity<?>> unit = item instanceof NumberItem numberItem ? numberItem.getUnit() : null;
         return m.stream()
                 .map(o -> new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsZonedDateTime(o[0])))
                 .collect(Collectors.<HistoricItem> toList());
@@ -588,10 +588,10 @@ public class JdbcBaseDAO {
                 break;
             case "NUMBERITEM":
                 State convertedState = itemState;
-                if (item instanceof NumberItem && itemState instanceof QuantityType) {
-                    Unit<? extends Quantity<?>> unit = ((NumberItem) item).getUnit();
+                if (item instanceof NumberItem numberItem && itemState instanceof QuantityType<?> quantityState) {
+                    Unit<? extends Quantity<?>> unit = numberItem.getUnit();
                     if (unit != null && !Units.ONE.equals(unit)) {
-                        convertedState = ((QuantityType<?>) itemState).toUnit(unit);
+                        convertedState = quantityState.toUnit(unit);
                         if (convertedState == null) {
                             logger.warn(
                                     "JDBC::storeItemValueProvider: Failed to convert state '{}' to unit '{}'. Please check your item definition for correctness.",
@@ -667,14 +667,14 @@ public class JdbcBaseDAO {
                 throw new UnsupportedOperationException("No SQL type defined for item type NUMBERITEM");
             }
             if (it.toUpperCase().contains("DOUBLE")) {
-                return unit == null ? new DecimalType(((Number) v).doubleValue())
-                        : QuantityType.valueOf(((Number) v).doubleValue(), unit);
+                return unit == null ? new DecimalType(objectAsNumber(v).doubleValue())
+                        : QuantityType.valueOf(objectAsNumber(v).doubleValue(), unit);
             } else if (it.toUpperCase().contains("DECIMAL") || it.toUpperCase().contains("NUMERIC")) {
-                return unit == null ? new DecimalType((BigDecimal) v)
-                        : QuantityType.valueOf(((BigDecimal) v).doubleValue(), unit);
+                return unit == null ? new DecimalType(objectAsBigDecimal(v))
+                        : QuantityType.valueOf(objectAsBigDecimal(v).doubleValue(), unit);
             } else if (it.toUpperCase().contains("INT")) {
                 return unit == null ? new DecimalType(objectAsInteger(v))
-                        : QuantityType.valueOf(((Integer) v).doubleValue(), unit);
+                        : QuantityType.valueOf(objectAsInteger(v).doubleValue(), unit);
             }
             return unit == null ? DecimalType.valueOf(objectAsString(v)) : QuantityType.valueOf(objectAsString(v));
         } else if (item instanceof DateTimeItem) {
@@ -686,13 +686,17 @@ public class JdbcBaseDAO {
         } else if (item instanceof ImageItem) {
             return RawType.valueOf(objectAsString(v));
         } else if (item instanceof ContactItem || item instanceof PlayerItem || item instanceof SwitchItem) {
-            State state = TypeParser.parseState(item.getAcceptedDataTypes(), ((String) v).trim());
+            State state = TypeParser.parseState(item.getAcceptedDataTypes(), objectAsString(v).trim());
             if (state == null) {
                 throw new UnsupportedOperationException("Unable to parse state for item " + item.toString());
             }
             return state;
         } else {
-            State state = TypeParser.parseState(item.getAcceptedDataTypes(), ((String) v));
+            if (!(v instanceof String objectAsString)) {
+                throw new UnsupportedOperationException(
+                        "Type '" + v.getClass().getName() + "' is not supported for item " + item.toString());
+            }
+            State state = TypeParser.parseState(item.getAcceptedDataTypes(), objectAsString);
             if (state == null) {
                 throw new UnsupportedOperationException("Unable to parse state for item " + item.toString());
             }
@@ -703,46 +707,65 @@ public class JdbcBaseDAO {
     protected ZonedDateTime objectAsZonedDateTime(Object v) {
         if (v instanceof Long) {
             return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((Number) v).longValue()), ZoneId.systemDefault());
-        } else if (v instanceof java.sql.Date) {
-            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((java.sql.Date) v).getTime()), ZoneId.systemDefault());
-        } else if (v instanceof LocalDateTime) {
-            return ((LocalDateTime) v).atZone(ZoneId.systemDefault());
-        } else if (v instanceof Instant) {
-            return ((Instant) v).atZone(ZoneId.systemDefault());
-        } else if (v instanceof java.sql.Timestamp) {
-            return ((java.sql.Timestamp) v).toInstant().atZone(ZoneId.systemDefault());
-        } else if (v instanceof java.lang.String) {
-            return ZonedDateTime.ofInstant(java.sql.Timestamp.valueOf(v.toString()).toInstant(),
+        } else if (v instanceof java.sql.Date objectAsDate) {
+            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(objectAsDate.getTime()), ZoneId.systemDefault());
+        } else if (v instanceof LocalDateTime objectAsLocalDateTime) {
+            return objectAsLocalDateTime.atZone(ZoneId.systemDefault());
+        } else if (v instanceof Instant objectAsInstant) {
+            return objectAsInstant.atZone(ZoneId.systemDefault());
+        } else if (v instanceof java.sql.Timestamp objectAsTimestamp) {
+            return objectAsTimestamp.toInstant().atZone(ZoneId.systemDefault());
+        } else if (v instanceof java.lang.String objectAsString) {
+            return ZonedDateTime.ofInstant(java.sql.Timestamp.valueOf(objectAsString).toInstant(),
                     ZoneId.systemDefault());
         }
-        throw new UnsupportedOperationException("Date of type " + v.getClass().getName() + " is not supported");
+        throw new UnsupportedOperationException("Date of type '" + v.getClass().getName() + "' is not supported");
     }
 
     protected Integer objectAsInteger(Object v) {
         if (v instanceof Byte) {
             return ((Byte) v).intValue();
+        } else if (v instanceof Integer) {
+            return (Integer) v;
         }
-        return ((Integer) v).intValue();
+        throw new UnsupportedOperationException("Integer of type '" + v.getClass().getName() + "' is not supported");
+    }
+
+    protected Number objectAsNumber(Object value) {
+        if (value instanceof Number valueAsNumber) {
+            return valueAsNumber;
+        }
+        throw new UnsupportedOperationException("Number of type '" + value.getClass().getName() + "' is not supported");
+    }
+
+    protected BigDecimal objectAsBigDecimal(Object value) {
+        if (value instanceof BigDecimal valueAsBigDecimal) {
+            return valueAsBigDecimal;
+        }
+        throw new UnsupportedOperationException(
+                "BigDecimal of type '" + value.getClass().getName() + "' is not supported");
     }
 
     protected String objectAsString(Object v) {
-        if (v instanceof byte[]) {
-            return new String((byte[]) v);
+        if (v instanceof byte[] objectAsBytes) {
+            return new String(objectAsBytes);
+        } else if (v instanceof String objectAsString) {
+            return objectAsString;
         }
-        return ((String) v);
+        throw new UnsupportedOperationException("String of type '" + v.getClass().getName() + "' is not supported");
     }
 
     public String getItemType(Item i) {
         Item item = i;
         String def = "STRINGITEM";
-        if (i instanceof GroupItem) {
-            item = ((GroupItem) i).getBaseItem();
+        if (i instanceof GroupItem groupItem) {
+            item = groupItem.getBaseItem();
             if (item == null) {
                 // if GroupItem:<ItemType> is not defined in *.items using StringType
                 logger.debug(
                         "JDBC::getItemType: Cannot detect ItemType for {} because the GroupItems' base type isn't set in *.items File.",
                         i.getName());
-                Iterator<Item> iterator = ((GroupItem) i).getMembers().iterator();
+                Iterator<Item> iterator = groupItem.getMembers().iterator();
                 if (!iterator.hasNext()) {
                     logger.debug(
                             "JDBC::getItemType: No Child-Members of GroupItem {}, use ItemType for STRINGITEM as Fallback",

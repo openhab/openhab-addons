@@ -79,8 +79,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
-        if (handler instanceof SomfyTahomaBridgeHandler) {
-            bridgeHandler = (SomfyTahomaBridgeHandler) handler;
+        if (handler instanceof SomfyTahomaBridgeHandler tahomaBridgeHandler) {
+            bridgeHandler = tahomaBridgeHandler;
         }
     }
 
@@ -287,6 +287,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                     // widget: RelativeHumiditySensor
                     deviceDiscovered(device, THING_TYPE_HUMIDITYSENSOR, place);
                 }
+                break;
             case CLASS_DOOR_LOCK:
                 // widget: UnlockDoorLockWithUnknownPosition
                 deviceDiscovered(device, THING_TYPE_DOOR_LOCK, place);
@@ -364,10 +365,21 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 } else {
                     logUnsupportedDevice(device);
                 }
+                break;
+            case CLASS_CARBON_DIOXIDE_SENSOR:
+                // widget: CO2Sensor
+                deviceDiscovered(device, THING_TYPE_CARBON_DIOXIDE_SENSOR, place);
+                break;
+            case CLASS_NOISE_SENSOR:
+                // widget: NoiseSensor
+                deviceDiscovered(device, THING_TYPE_NOISE_SENSOR, place);
+                break;
             case THING_PROTOCOL_GATEWAY:
             case THING_REMOTE_CONTROLLER:
                 // widget: AlarmRemoteController
             case THING_NETWORK_COMPONENT:
+            case THING_CONFIGURATION_COMPONENT:
+                // widget: NetatmoHome
             case THING_GENERIC:
                 // widget: unknown
                 break;
