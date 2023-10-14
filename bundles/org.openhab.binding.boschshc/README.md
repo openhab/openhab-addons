@@ -228,6 +228,13 @@ This certificate is used for pairing between the Bridge and the Bosch Smart Home
 
 _Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing_.
 
+### Supported Channels
+
+| Channel Type ID    | Item Type            | Writable | Description                                                        |
+|--------------------| -------------------- |:--------:|--------------------------------------------------------------------|
+| triggered-scenario | String               | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex) |
+
+
 ## Getting the device IDs
 
 Bosch IDs for found devices are displayed in the openHAB log on bootup (`OPENHAB_FOLDER/userdata/logs/openhab.log`)
