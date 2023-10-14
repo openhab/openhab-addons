@@ -632,7 +632,6 @@ public class VehicleHandler extends BaseThingHandler {
                 }
                 double distance = Utils.distance(homePoint.getLatitude().doubleValue(), lat,
                         homePoint.getLongitude().doubleValue(), lon, 0.0, 0.0);
-                System.out.println("Home: " + homePoint + " Car: " + pt + " Distance, " + distance / 1000);
                 updateChannel(new ChannelStateMap("home-distance", Constants.GROUP_RANGE, pt, observer));
             } else {
                 if (fullUpdate) {
