@@ -15,7 +15,7 @@ package org.openhab.binding.lutron.internal.protocol.leap.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * LEAP Project Object
+ * LEAP ProjectTimestamp Object
  *
  * @author Peter Wojciechowski - Initial contribution
  */

@@ -187,6 +187,7 @@ public class LeapMessageParser {
                     break;
                 case "OneDeviceDefinition":
                     parseOneDeviceDefinition(body);
+                    break;
                 case "MultipleAreaDefinition":
                     parseMultipleAreaDefinition(body);
                     break;
