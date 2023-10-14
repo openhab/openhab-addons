@@ -252,7 +252,9 @@ public class Setters {
         if (Objects.isNull(targetDimming) && Objects.nonNull(sourceDimming)) {
             target.setDimming(sourceDimming);
             targetDimming = target.getDimming();
-        } // minimum dimming level
+        }
+
+        // minimum dimming level
         if (Objects.nonNull(targetDimming)) {
             Double sourceMinDimLevel = Objects.isNull(sourceDimming) ? null : sourceDimming.getMinimumDimmingLevel();
             if (Objects.nonNull(sourceMinDimLevel)) {
@@ -266,7 +268,9 @@ public class Setters {
         if (Objects.isNull(targetColor) && Objects.nonNull(sourceColor)) {
             target.setColorXy(sourceColor);
             targetColor = target.getColorXy();
-        } // color gamut
+        }
+
+        // color gamut
         Gamut sourceGamut = Objects.isNull(sourceColor) ? null : sourceColor.getGamut();
         if (Objects.nonNull(targetColor) && Objects.nonNull(sourceGamut)) {
             targetColor.setGamut(sourceGamut);
@@ -278,7 +282,9 @@ public class Setters {
         if (Objects.isNull(targetColorTemp) && Objects.nonNull(sourceColorTemp)) {
             target.setColorTemperature(sourceColorTemp);
             targetColorTemp = target.getColorTemperature();
-        } // mirek schema
+        }
+
+        // mirek schema
         if (Objects.nonNull(targetColorTemp)) {
             MirekSchema sourceMirekSchema = Objects.isNull(sourceColorTemp) ? null : sourceColorTemp.getMirekSchema();
             if (Objects.nonNull(sourceMirekSchema)) {
@@ -306,7 +312,9 @@ public class Setters {
         if (Objects.isNull(targetFixedEffects) && Objects.nonNull(sourceFixedEffects)) {
             target.setFixedEffects(sourceFixedEffects);
             targetFixedEffects = target.getFixedEffects();
-        } // fixed effects allowed values
+        }
+
+        // fixed effects allowed values
         if (Objects.nonNull(targetFixedEffects)) {
             List<String> values = Objects.isNull(sourceFixedEffects) ? List.of() : sourceFixedEffects.getStatusValues();
             if (!values.isEmpty()) {
@@ -320,7 +328,9 @@ public class Setters {
         if (Objects.isNull(targetTimedEffects) && Objects.nonNull(sourceTimedEffects)) {
             target.setTimedEffects(sourceTimedEffects);
             targetTimedEffects = target.getTimedEffects();
-        } // timed effects allowed values and duration
+        }
+
+        // timed effects allowed values and duration
         if (Objects.nonNull(targetTimedEffects)) {
             List<String> values = Objects.isNull(sourceTimedEffects) ? List.of() : sourceTimedEffects.getStatusValues();
             if (!values.isEmpty()) {

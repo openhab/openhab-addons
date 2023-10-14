@@ -87,7 +87,13 @@ Device things support some of the following channels:
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
 
-The channels `color-xy-only`,  `dimming-only` and `on-off-only` are *advanced* channels - see [below](###advanced-channels-for-devices-,-rooms-and-zones) for more details.
+The channels `color-xy-only`, `dimming-only` and `on-off-only` are *advanced* channels - see [below](#advanced-channels-for-devices-rooms-and-zones) for more details.
+
+The `effect` channel is an amalgamation of 'normal' and 'timed' effects.
+To activate a 'normal' effect, the binding sends a single command to activate the respective effect.
+To activate a 'timed' effect, the binding sends a first command to set the timing followed a second command to activate the effect.
+You can explicitly send the timing command via the [dynamics channel](#the-dynamics-channel) before you send the effect command.
+Or otherwise the binding will send a default timing command of 15 minutes.
 
 The `button-last-event` channel is a trigger channel.
 When the button is pressed the channel receives a number as calculated by the following formula:

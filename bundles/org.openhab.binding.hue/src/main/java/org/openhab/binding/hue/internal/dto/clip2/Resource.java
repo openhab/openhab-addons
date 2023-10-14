@@ -340,11 +340,11 @@ public class Resource {
             return UnDefType.NULL;
         }
         EffectType effect = Objects.nonNull(effects) ? effects.getStatus() : null;
-        if (Objects.nonNull(effect) && (effect != EffectType.NO_EFFECT)) {
+        if (Objects.nonNull(effect) && effect != EffectType.NO_EFFECT) {
             return new StringType(effect.name());
         }
         EffectType timedEffect = Objects.nonNull(timedEffects) ? timedEffects.getStatus() : null;
-        if (Objects.nonNull(timedEffect) && (timedEffect != EffectType.NO_EFFECT)) {
+        if (Objects.nonNull(timedEffect) && timedEffect != EffectType.NO_EFFECT) {
             return new StringType(timedEffect.name());
         }
         return new StringType(EffectType.NO_EFFECT.name());

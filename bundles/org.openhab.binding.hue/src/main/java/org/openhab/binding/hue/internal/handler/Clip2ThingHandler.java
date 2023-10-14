@@ -499,7 +499,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     && !dynamicsDuration.isNegative()) {
                 if (ResourceType.SCENE == putResource.getType()) {
                     putResource.setRecallDuration(dynamicsDuration);
-                } else if (channelId == CHANNEL_2_EFFECT) {
+                } else if (CHANNEL_2_EFFECT == channelId) {
                     putResource.setTimedEffectsDuration(dynamicsDuration);
                 } else {
                     putResource.setDynamicsDuration(dynamicsDuration);
