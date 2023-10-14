@@ -74,7 +74,7 @@ public class ValueConverter extends Converter {
     /**
      * Converts a human readable value into LCN native value.
      *
-     * @param humanReadable value to convert
+     * @param quantityType value to convert
      * @return the native LCN value
      * @throws LcnException when the value could not be converted to the base unit
      */
@@ -103,10 +103,10 @@ public class ValueConverter extends Converter {
      */
     @Override
     public State onStateUpdateFromHandler(State state) throws LcnException {
-        if (state instanceof DecimalType) {
+        if (state instanceof DecimalType decimalValue) {
             Unit<?> localUnit = unit;
             if (localUnit != null) {
-                return QuantityType.valueOf(toHumanReadable(((DecimalType) state).longValue()), localUnit);
+                return QuantityType.valueOf(toHumanReadable(decimalValue.longValue()), localUnit);
             }
 
             return state;

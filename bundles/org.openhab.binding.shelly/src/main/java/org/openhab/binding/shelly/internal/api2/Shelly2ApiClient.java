@@ -52,8 +52,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorBat;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorHum;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthRequest;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthResponse;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthRsp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigSwitch;
@@ -92,7 +91,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected final ShellyStatusSensor sensorData = new ShellyStatusSensor();
     protected final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
     protected @Nullable ShellyThingInterface thing;
-    protected @Nullable Shelly2AuthRequest authReq;
+    protected @Nullable Shelly2AuthRsp authReq;
 
     public Shelly2ApiClient(String thingName, ShellyThingInterface thing) {
         super(thingName, thing);
@@ -158,7 +157,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         addRelaySettings(relays, dc.switch2);
         addRelaySettings(relays, dc.switch3);
         addRelaySettings(relays, dc.switch100);
-        return relays.size() > 0 ? relays : null;
+        return !relays.isEmpty() ? relays : null;
     }
 
     private void addRelaySettings(ArrayList<@Nullable ShellySettingsRelay> relays,
@@ -497,7 +496,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
                 fav.name = fav.pos + "%";
                 profile.settings.favorites.add(fav);
             }
-            profile.settings.favoritesEnabled = profile.settings.favorites.size() > 0;
+            profile.settings.favoritesEnabled = !profile.settings.favorites.isEmpty();
             logger.debug("{}: Roller Favorites loaded: {}", thingName,
                     profile.settings.favoritesEnabled ? profile.settings.favorites.size() : "none");
         }
@@ -791,23 +790,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         request.params = params;
         request.auth = authReq;
         return request;
-    }
-
-    protected Shelly2AuthRequest buildAuthRequest(Shelly2AuthResponse authParm, String user, String realm,
-            String password) throws ShellyApiException {
-        Shelly2AuthRequest authReq = new Shelly2AuthRequest();
-        authReq.username = "admin";
-        authReq.realm = realm;
-        authReq.nonce = authParm.nonce;
-        authReq.cnonce = (long) Math.floor(Math.random() * 10e8);
-        authReq.nc = authParm.nc != null ? authParm.nc : 1;
-        authReq.authType = SHELLY2_AUTHTTYPE_DIGEST;
-        authReq.algorithm = SHELLY2_AUTHALG_SHA256;
-        String ha1 = sha256(authReq.username + ":" + authReq.realm + ":" + password);
-        String ha2 = SHELLY2_AUTH_NOISE;
-        authReq.response = sha256(
-                ha1 + ":" + authReq.nonce + ":" + authReq.nc + ":" + authReq.cnonce + ":" + "auth" + ":" + ha2);
-        return authReq;
     }
 
     protected String mapValue(Map<String, String> map, @Nullable String key) {

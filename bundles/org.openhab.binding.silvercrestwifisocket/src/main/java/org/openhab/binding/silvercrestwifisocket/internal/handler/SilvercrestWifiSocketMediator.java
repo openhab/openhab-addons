@@ -53,7 +53,7 @@ public interface SilvercrestWifiSocketMediator {
     /**
      * Returns all the {@link Thing} registered.
      *
-     * @returns all the {@link Thing}.
+     * @return all the {@link Thing}.
      */
     Set<Thing> getAllThingsRegistred();
 

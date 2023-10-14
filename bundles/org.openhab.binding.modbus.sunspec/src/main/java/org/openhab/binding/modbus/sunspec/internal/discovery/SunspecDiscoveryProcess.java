@@ -142,7 +142,6 @@ public class SunspecDiscoveryProcess {
     /**
      * Start model detection
      *
-     * @param uid the thing type to look for
      * @throws EndpointNotInitializedException
      */
     public void detectModel() {
@@ -171,7 +170,7 @@ public class SunspecDiscoveryProcess {
 
         Optional<DecimalType> id = ModbusBitUtilities.extractStateFromRegisters(registers, 0, ValueType.UINT32);
 
-        if (!id.isPresent() || id.get().longValue() != SUNSPEC_ID) {
+        if (id.isEmpty() || id.get().longValue() != SUNSPEC_ID) {
             logger.debug("Could not find SunSpec DID at address {}, received: {}, expected: {}", baseAddress, id,
                     SUNSPEC_ID);
             detectModel();
@@ -207,7 +206,7 @@ public class SunspecDiscoveryProcess {
         Optional<DecimalType> blockLength = ModbusBitUtilities.extractStateFromRegisters(registers, 1,
                 ValueType.UINT16);
 
-        if (!moduleID.isPresent() || !blockLength.isPresent()) {
+        if (moduleID.isEmpty() || blockLength.isEmpty()) {
             logger.info("Could not find valid module id or block length field.");
             parsingFinished();
             return;

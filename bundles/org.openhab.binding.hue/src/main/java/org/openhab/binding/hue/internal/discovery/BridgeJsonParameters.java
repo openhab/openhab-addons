@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.hue.internal.discovery;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,15 +25,17 @@ import com.google.gson.annotations.SerializedName;
  * @author Awelkiyar Wehabrebi - Initial contribution and API
  * @author Christoph Knauf - Refactorings
  */
+@NonNullByDefault
 public class BridgeJsonParameters {
 
-    private String id;
+    private @Nullable String id;
     @SerializedName("internalipaddress")
-    private String internalIpAddress;
+    private @Nullable String internalIpAddress;
     @SerializedName("macaddress")
-    private String macAddress;
-    private String name;
+    private @Nullable String macAddress;
+    private @Nullable String name;
 
+    @SuppressWarnings("unused")
     private BridgeJsonParameters() {
         // This no arguments constructor is required for Gson deserialization
     }
@@ -42,19 +47,19 @@ public class BridgeJsonParameters {
         this.name = name;
     }
 
-    public String getInternalIpAddress() {
+    public @Nullable String getInternalIpAddress() {
         return internalIpAddress;
     }
 
-    public String getId() {
+    public @Nullable String getId() {
         return id;
     }
 
-    public String getMacAddress() {
+    public @Nullable String getMacAddress() {
         return macAddress;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 }

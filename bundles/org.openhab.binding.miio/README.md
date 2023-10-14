@@ -206,7 +206,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 340 different models.
+Currently the miio binding supports more than 360 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -236,6 +236,7 @@ Currently the miio binding supports more than 340 different models.
 | Gosund Smart Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes          |            |
 | Mi Smart Antibacterial Humidifier  | miio:basic       | [deerma.humidifier.jsq](#deerma-humidifier-jsq) | Yes          |            |
 | Mi S Smart Humidifer               | miio:basic       | [deerma.humidifier.jsq1](#deerma-humidifier-jsq1) | Yes          |            |
+| Xiaomi Smart Humidifier 2          | miio:basic       | [deerma.humidifier.jsq2w](#deerma-humidifier-jsq2w) | Yes          |            |
 | Mi Smart Antibacterial Humidifier  | miio:basic       | [deerma.humidifier.jsq5](#deerma-humidifier-jsq5) | Yes          |            |
 | Mi Smart Humidifer S               | miio:basic       | [deerma.humidifier.jsqs](#deerma-humidifier-jsqs) | Yes          |            |
 | Mi Smart Humidifier                | miio:basic       | [deerma.humidifier.mjjsq](#deerma-humidifier-mjjsq) | Yes          |            |
@@ -259,6 +260,7 @@ Currently the miio binding supports more than 340 different models.
 | MOVA Z500 Robot Vacuum and Mop Cleaner | miio:basic       | [dreame.vacuum.p2156o](#dreame-vacuum-p2156o) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MOVA L600 Robot Vacuum and Mop Cleaner | miio:basic       | [dreame.vacuum.p2157](#dreame-vacuum-p2157) | Yes          |            |
 | Dreame Bot D9 Max                  | miio:basic       | [dreame.vacuum.p2259](#dreame-vacuum-p2259) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| DreameBot L10s Ultra               | miio:basic       | [dreame.vacuum.r2228o](#dreame-vacuum-r2228o) | Yes          |            |
 | HUIZUO ARIES For Bedroom           | miio:basic       | [huayi.light.ari013](#huayi-light-ari013) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO ARIES For Living Room       | miio:basic       | [huayi.light.aries](#huayi-light-aries) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO Fan Light                   | miio:basic       | [huayi.light.fanwy](#huayi-light-fanwy) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -378,8 +380,19 @@ Currently the miio binding supports more than 340 different models.
 | Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#roborock-vacuum-a38) | Yes          |            |
 | Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#roborock-vacuum-a40) | Yes          |            |
 | Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#roborock-vacuum-a46) | Yes          |            |
+| Roborock S8                        | miio:vacuum      | [roborock.vacuum.a51](#roborock-vacuum-a51) | Yes          |            |
 | Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#roborock-vacuum-a52) | Yes          |            |
 | Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-a62) | Yes          |            |
+| Roborock G10S Pure                 | miio:vacuum      | [roborock.vacuum.a64](#roborock-vacuum-a64) | Yes          |            |
+| Roborock S7 Max Ultra              | miio:vacuum      | [roborock.vacuum.a65](#roborock-vacuum-a65) | Yes          |            |
+| Roborock G10 Plus                  | miio:vacuum      | [roborock.vacuum.a66](#roborock-vacuum-a66) | Yes          |            |
+| Roborock G20                       | miio:vacuum      | [roborock.vacuum.a69](#roborock-vacuum-a69) | Yes          |            |
+| Roborock S8 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a70](#roborock-vacuum-a70) | Yes          |            |
+| Roborock Q5 Pro                    | miio:vacuum      | [roborock.vacuum.a72](#roborock-vacuum-a72) | Yes          |            |
+| Roborock Q8 Max                    | miio:vacuum      | [roborock.vacuum.a73](#roborock-vacuum-a73) | Yes          |            |
+| Roborock P10                       | miio:vacuum      | [roborock.vacuum.a74](#roborock-vacuum-a74) | Yes          |            |
+| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a75](#roborock-vacuum-a75) | Yes          |            |
+| Roborock G10S Auto                 | miio:vacuum      | [roborock.vacuum.a76](#roborock-vacuum-a76) | Yes          |            |
 | Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes          |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No           |            |
 | Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes          |            |
@@ -871,6 +884,28 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | sound                | Switch               | Notification Sounds                      |            |
 | watertankstatus      | Number               | Watertank Status                         |            |
 | wet_and_protect      | Switch               | Wet and Protect                          |            |
+
+### Xiaomi Smart Humidifier 2 (<a name="deerma-humidifier-jsq2w">deerma.humidifier.jsq2w</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| on                   | Switch               | Humidifier - Switch Status               |            |
+| fault                | Number               | Humidifier - Device Fault                | Value mapping `["0"="No Faults","1"="Insufficient Water","2"="Water Separation"]` |
+| fan_level            | Number               | Humidifier - Fan Level                   | Value mapping `["1"="Level1","2"="Level2","3"="Level3","4"="Humidity"]` |
+| target_humidity      | Number:Dimensionless | Humidifier - Target Humidity             |            |
+| status               | Number               | Status                                   | Value mapping `["1"="Idle","2"="Busy"]` |
+| mode                 | Number               | Mode                                     | Value mapping `["0"="None","1"="Constant Humidity"]` |
+| relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| alarm                | Switch               | Alarm - Alarm                            |            |
+| on1                  | Switch               | Indicator Light - Switch Status          |            |
+| tank_filed           | Switch               | Tank Filed                               |            |
+| water_shortage_fault | Switch               | Water Shortage Fault                     |            |
+| humi_sensor_fault    | Switch               | Humi-Sensor Fault                        |            |
+| temp_sensor_fault    | Switch               | Temp-Sensor Fault                        |            |
+| overwet_protect      | Switch               | Overwet Protect                          |            |
+| overwet_protect_on   | Switch               | Overwet Protect On                       |            |
+| overtop_humidity     | Switch               | Overtop Humidity                         |            |
 
 ### Mi Smart Antibacterial Humidifier (<a name="deerma-humidifier-jsq5">deerma.humidifier.jsq5</a>) Channels
 
@@ -1524,7 +1559,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | work_mode            | Number               | Vacuum Extend - Work Mode                |            |
 | cleaning_time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
 | cleaning_area        | Number:Area          | Vacuum Extend - Cleaning Area            |            |
-| cleaning_mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="mode 0","1"="mode 1","2"="mode 2","3"="mode 3"]` |
+| cleaning_mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
 | mop_mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="low water","2"="medium water","3"="high water"]` |
 | waterbox_status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Status 0","1"="Status 1"]` |
 | task_status          | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"]` |
@@ -1552,6 +1587,81 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | total_clean_time     | Number:Time          | Clean Logs - Total Clean Time            |            |
 | total_clean_times    | Number               | Clean Logs - Total Clean Times           |            |
 | total_clean_area     | Number               | Clean Logs - Total Clean Area            |            |
+
+### DreameBot L10s Ultra (<a name="dreame-vacuum-r2228o">dreame.vacuum.r2228o</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","vacuum-start-room-sweep"="Vacuum Start Room Sweep","battery-start-charge"="Battery Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer","collect-dust-start-collect"="Collect Dust Start Collect","sensor-reset-sensor-life"="Sensor Reset Sensor Life","mop-reset-mop-life"="Mop Reset Mop Life","silver-ion-reset-silverion-life"="Silver Ion Reset Silverion Life"]` |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","8"="Drying","9"="Washing","7"="Mopping","10"="Go Washing","11"="Building","12"="Sweeping and Mopping","13"="Charging Completed","14"="Upgrading"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             |            |
+| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"]` |
+| battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
+| brush_left_time      | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
+| brush_life_level     | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
+| brush_left_time1     | Number:Time          | Brush Cleaner - Brush Left Time          |            |
+| brush_life_level1    | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
+| filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_left_time     | Number:Time          | Filter - Filter Left Time                |            |
+| work_mode            | Number               | Vacuum Extend - Work Mode                |            |
+| cleaning_time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
+| cleaning_area        | Number:Area          | Vacuum Extend - Cleaning Area            |            |
+| cleaning_mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| mop_mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="Low","2"="Middle","3"="Height"]` |
+| waterbox_status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="No","1"="Yes"]` |
+| task_status          | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Notask","1"="AutoClean","2"="CustomClean","3"="SelectAreanClean","4"="SpotArea"]` |
+| clean_extend_data    | String               | Vacuum Extend - Clean Extend Data        |            |
+| break_point_restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Close","1"="Open"]` |
+| carpet_press         | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="Close","1"="Open"]` |
+| serial_number        | String               | Vacuum Extend - Serial Number            |            |
+| remote_state         | String               | Vacuum Extend - Remote State             |            |
+| clean_rags_tip       | Number:Time          | Vacuum Extend - Clean Rags Tip           |            |
+| keep_sweeper_time    | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
+| faults               | String               | Vacuum Extend - Faults                   |            |
+| nation_matched       | String               | Vacuum Extend - Nation Matched           |            |
+| relocation_status    | Number               | Vacuum Extend - Relocation Status        |            |
+| laser_switch         | Number               | Vacuum Extend - Laser Switch             | Value mapping `["0"="Close","1"="Open"]` |
+| ai_switch            | Number               | Vacuum Extend - Ai Switch                |            |
+| clean_setting        | Number               | Vacuum Extend - Clean Setting            |            |
+| mop_status           | Number               | Vacuum Extend - Mop Status               |            |
+| custom_enable        | Number               | Vacuum Extend - Custom Enable            | Value mapping `["0"="Close","1"="Open"]` |
+| child_lock           | Number               | Vacuum Extend - Child Lock               | Value mapping `["0"="Close","1"="Open"]` |
+| sensitivity          | Number               | Vacuum Extend - Sensitivity              |            |
+| mop_way              | Number               | Vacuum Extend - Mop Way                  |            |
+| clean_cancel         | Number               | Vacuum Extend - Clean Cancel             |            |
+| carpet_distinguish   | Number               | Vacuum Extend - Carpet Distinguish       | Value mapping `["0"="Close","1"="Open"]` |
+| autowash_switch      | Number               | Vacuum Extend - Autowash Switch          | Value mapping `["0"="Close","1"="Open"]` |
+| warn_status          | Number               | Vacuum Extend - Warn Status              |            |
+| carpet_clean         | Number               | Vacuum Extend - Carpet Clean             |            |
+| auto_add_detergent   | Number               | Vacuum Extend - Auto Add Detergent       |            |
+| dry_time             | Number               | Vacuum Extend - Dry Time                 |            |
+| nowater_tips         | Number               | Vacuum Extend - Nowater Tips             |            |
+| enable               | Switch               | Do Not Disturb - Enable                  |            |
+| start_time           | String               | Do Not Disturb - Start Time              |            |
+| end_time             | String               | Do Not Disturb - End Time                |            |
+| frame_info           | String               | Map - Frame Info                         |            |
+| map_extend_data      | String               | Map - Map Extend Data                    |            |
+| mult_map_state       | Number               | Map - Mult Map State                     | Value mapping `["0"="Close","1"="Open"]` |
+| mult_map_info        | String               | Map - Mult Map Info                      |            |
+| volume               | Number:Dimensionless | Audio - Volume                           |            |
+| voice_packet_id      | String               | Audio - Voice Packet Id                  |            |
+| voice_change_state   | String               | Audio - Voice Change State               |            |
+| set_voice            | String               | Audio - Set Voice                        |            |
+| time_zone            | String               | Time - Time Zone                         |            |
+| timer_clean          | String               | Time - Timer Clean                       |            |
+| first_clean_time     | Number               | Clean Logs - First Clean Time            |            |
+| total_clean_time     | Number:Time          | Clean Logs - Total Clean Time            |            |
+| total_clean_times    | Number               | Clean Logs - Total Clean Times           |            |
+| total_clean_area     | Number               | Clean Logs - Total Clean Area            |            |
+| auto_collect         | Number               | Collect Dust - Auto Collect              | Value mapping `["0"="Close-auto-collect","1"="Open-auto-collect"]` |
+| clean_times          | Number               | Collect Dust - Clean Times               |            |
+| dust_enable          | Number               | Collect Dust - Dust Enable               | Value mapping `["0"="Disable","1"="Enable"]` |
+| dust_status          | Number               | Collect Dust - Dust Status               |            |
+| mop_life_level       | Number:Dimensionless | Mop - Mop Life Level                     |            |
+| mop_left_time        | Number:Time          | Mop - Mop Left Time                      |            |
+| silverion_life_time  | Number:Time          | Silver Ion - Silverion Life Time         |            |
+| silverion_life_level | Number:Dimensionless | Silver Ion - Silverion Life Level        |            |
 
 ### HUIZUO ARIES For Bedroom (<a name="huayi-light-ari013">huayi.light.ari013</a>) Channels
 
@@ -6358,6 +6468,31 @@ Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:hu
 Switch wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:humidifier:wet_and_protect"}
 ```
 
+### Xiaomi Smart Humidifier 2 (deerma.humidifier.jsq2w) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_humidifier "Xiaomi Smart Humidifier 2" <status>
+Switch on "Humidifier - Switch Status" (G_humidifier) {channel="miio:basic:humidifier:on"}
+Number fault "Humidifier - Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number fan_level "Humidifier - Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
+Number:Dimensionless target_humidity "Humidifier - Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number status "Status" (G_humidifier) {channel="miio:basic:humidifier:status"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_humidifier) {channel="miio:basic:humidifier:relative_humidity"}
+Number:Temperature temperature "Environment - Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch alarm "Alarm - Alarm" (G_humidifier) {channel="miio:basic:humidifier:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_humidifier) {channel="miio:basic:humidifier:on1"}
+Switch tank_filed "Tank Filed" (G_humidifier) {channel="miio:basic:humidifier:tank_filed"}
+Switch water_shortage_fault "Water Shortage Fault" (G_humidifier) {channel="miio:basic:humidifier:water_shortage_fault"}
+Switch humi_sensor_fault "Humi-Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:humi_sensor_fault"}
+Switch temp_sensor_fault "Temp-Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:temp_sensor_fault"}
+Switch overwet_protect "Overwet Protect" (G_humidifier) {channel="miio:basic:humidifier:overwet_protect"}
+Switch overwet_protect_on "Overwet Protect On" (G_humidifier) {channel="miio:basic:humidifier:overwet_protect_on"}
+Switch overtop_humidity "Overtop Humidity" (G_humidifier) {channel="miio:basic:humidifier:overtop_humidity"}
+```
+
 ### Mi Smart Antibacterial Humidifier (deerma.humidifier.jsq5) item file lines
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -7106,6 +7241,84 @@ Number first_clean_time "Clean Logs - First Clean Time" (G_vacuum) {channel="mii
 Number:Time total_clean_time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total_clean_time"}
 Number total_clean_times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total_clean_times"}
 Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total_clean_area"}
+```
+
+### DreameBot L10s Ultra (dreame.vacuum.r2228o) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_vacuum "DreameBot L10s Ultra" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging_state"}
+Number:Time brush_left_time "Main Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time"}
+Number:Dimensionless brush_life_level "Main Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level"}
+Number:Time brush_left_time1 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time1"}
+Number:Dimensionless brush_life_level1 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level1"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
+Number work_mode "Vacuum Extend - Work Mode" (G_vacuum) {channel="miio:basic:vacuum:work_mode"}
+Number:Time cleaning_time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number:Area cleaning_area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Number cleaning_mode "Vacuum Extend - Cleaning Mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning_mode"}
+Number mop_mode "Vacuum Extend - Mop Mode" (G_vacuum) {channel="miio:basic:vacuum:mop_mode"}
+Number waterbox_status "Vacuum Extend - Waterbox Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox_status"}
+Number task_status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task_status"}
+String clean_extend_data "Vacuum Extend - Clean Extend Data" (G_vacuum) {channel="miio:basic:vacuum:clean_extend_data"}
+Number break_point_restart "Vacuum Extend - Break Point Restart" (G_vacuum) {channel="miio:basic:vacuum:break_point_restart"}
+Number carpet_press "Vacuum Extend - Carpet Press" (G_vacuum) {channel="miio:basic:vacuum:carpet_press"}
+String serial_number "Vacuum Extend - Serial Number" (G_vacuum) {channel="miio:basic:vacuum:serial_number"}
+String remote_state "Vacuum Extend - Remote State" (G_vacuum) {channel="miio:basic:vacuum:remote_state"}
+Number:Time clean_rags_tip "Vacuum Extend - Clean Rags Tip" (G_vacuum) {channel="miio:basic:vacuum:clean_rags_tip"}
+Number:Time keep_sweeper_time "Vacuum Extend - Keep Sweeper Time" (G_vacuum) {channel="miio:basic:vacuum:keep_sweeper_time"}
+String faults "Vacuum Extend - Faults" (G_vacuum) {channel="miio:basic:vacuum:faults"}
+String nation_matched "Vacuum Extend - Nation Matched" (G_vacuum) {channel="miio:basic:vacuum:nation_matched"}
+Number relocation_status "Vacuum Extend - Relocation Status" (G_vacuum) {channel="miio:basic:vacuum:relocation_status"}
+Number laser_switch "Vacuum Extend - Laser Switch" (G_vacuum) {channel="miio:basic:vacuum:laser_switch"}
+Number ai_switch "Vacuum Extend - Ai Switch" (G_vacuum) {channel="miio:basic:vacuum:ai_switch"}
+Number clean_setting "Vacuum Extend - Clean Setting" (G_vacuum) {channel="miio:basic:vacuum:clean_setting"}
+Number mop_status "Vacuum Extend - Mop Status" (G_vacuum) {channel="miio:basic:vacuum:mop_status"}
+Number custom_enable "Vacuum Extend - Custom Enable" (G_vacuum) {channel="miio:basic:vacuum:custom_enable"}
+Number child_lock "Vacuum Extend - Child Lock" (G_vacuum) {channel="miio:basic:vacuum:child_lock"}
+Number sensitivity "Vacuum Extend - Sensitivity" (G_vacuum) {channel="miio:basic:vacuum:sensitivity"}
+Number mop_way "Vacuum Extend - Mop Way" (G_vacuum) {channel="miio:basic:vacuum:mop_way"}
+Number clean_cancel "Vacuum Extend - Clean Cancel" (G_vacuum) {channel="miio:basic:vacuum:clean_cancel"}
+Number carpet_distinguish "Vacuum Extend - Carpet Distinguish" (G_vacuum) {channel="miio:basic:vacuum:carpet_distinguish"}
+Number autowash_switch "Vacuum Extend - Autowash Switch" (G_vacuum) {channel="miio:basic:vacuum:autowash_switch"}
+Number warn_status "Vacuum Extend - Warn Status" (G_vacuum) {channel="miio:basic:vacuum:warn_status"}
+Number carpet_clean "Vacuum Extend - Carpet Clean" (G_vacuum) {channel="miio:basic:vacuum:carpet_clean"}
+Number auto_add_detergent "Vacuum Extend - Auto Add Detergent" (G_vacuum) {channel="miio:basic:vacuum:auto_add_detergent"}
+Number dry_time "Vacuum Extend - Dry Time" (G_vacuum) {channel="miio:basic:vacuum:dry_time"}
+Number nowater_tips "Vacuum Extend - Nowater Tips" (G_vacuum) {channel="miio:basic:vacuum:nowater_tips"}
+Switch enable "Do Not Disturb - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
+String start_time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start_time"}
+String end_time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end_time"}
+String frame_info "Map - Frame Info" (G_vacuum) {channel="miio:basic:vacuum:frame_info"}
+String map_extend_data "Map - Map Extend Data" (G_vacuum) {channel="miio:basic:vacuum:map_extend_data"}
+Number mult_map_state "Map - Mult Map State" (G_vacuum) {channel="miio:basic:vacuum:mult_map_state"}
+String mult_map_info "Map - Mult Map Info" (G_vacuum) {channel="miio:basic:vacuum:mult_map_info"}
+Number:Dimensionless volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+String voice_packet_id "Audio - Voice Packet Id" (G_vacuum) {channel="miio:basic:vacuum:voice_packet_id"}
+String voice_change_state "Audio - Voice Change State" (G_vacuum) {channel="miio:basic:vacuum:voice_change_state"}
+String set_voice "Audio - Set Voice" (G_vacuum) {channel="miio:basic:vacuum:set_voice"}
+String time_zone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time_zone"}
+String timer_clean "Time - Timer Clean" (G_vacuum) {channel="miio:basic:vacuum:timer_clean"}
+Number first_clean_time "Clean Logs - First Clean Time" (G_vacuum) {channel="miio:basic:vacuum:first_clean_time"}
+Number:Time total_clean_time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total_clean_time"}
+Number total_clean_times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total_clean_times"}
+Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total_clean_area"}
+Number auto_collect "Collect Dust - Auto Collect" (G_vacuum) {channel="miio:basic:vacuum:auto_collect"}
+Number clean_times "Collect Dust - Clean Times" (G_vacuum) {channel="miio:basic:vacuum:clean_times"}
+Number dust_enable "Collect Dust - Dust Enable" (G_vacuum) {channel="miio:basic:vacuum:dust_enable"}
+Number dust_status "Collect Dust - Dust Status" (G_vacuum) {channel="miio:basic:vacuum:dust_status"}
+Number:Dimensionless mop_life_level "Mop - Mop Life Level" (G_vacuum) {channel="miio:basic:vacuum:mop_life_level"}
+Number:Time mop_left_time "Mop - Mop Left Time" (G_vacuum) {channel="miio:basic:vacuum:mop_left_time"}
+Number:Time silverion_life_time "Silver Ion - Silverion Life Time" (G_vacuum) {channel="miio:basic:vacuum:silverion_life_time"}
+Number:Dimensionless silverion_life_level "Silver Ion - Silverion Life Level" (G_vacuum) {channel="miio:basic:vacuum:silverion_life_level"}
 ```
 
 ### HUIZUO ARIES For Bedroom (huayi.light.ari013) item file lines

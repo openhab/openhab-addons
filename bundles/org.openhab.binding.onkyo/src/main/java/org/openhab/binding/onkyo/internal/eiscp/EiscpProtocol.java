@@ -137,7 +137,7 @@ public class EiscpProtocol {
             // version
             final byte versionChar = stream.readByte();
             if (versionChar != 1) {
-                throw new EiscpException("Unsupported version " + String.valueOf(versionChar));
+                throw new EiscpException("Unsupported version " + versionChar);
             }
 
             // skip 3 reserved bytes

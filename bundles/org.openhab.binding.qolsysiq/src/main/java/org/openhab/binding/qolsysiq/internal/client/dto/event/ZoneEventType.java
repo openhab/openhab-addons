@@ -20,5 +20,5 @@ package org.openhab.binding.qolsysiq.internal.client.dto.event;
 public enum ZoneEventType {
     ZONE_ACTIVE,
     ZONE_ADD,
-    ZONE_UPDATE;
+    ZONE_UPDATE
 }

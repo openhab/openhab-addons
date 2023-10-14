@@ -75,8 +75,8 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     }
 
     public void setState(PrimitiveType state) {
-        if (state instanceof OnOffType) {
-            this.updateState(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL, (OnOffType) state);
+        if (state instanceof OnOffType onOffState) {
+            this.updateState(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL, onOffState);
         } else if (state instanceof StringType) {
             switch (String.valueOf(state)) {
                 case SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL:

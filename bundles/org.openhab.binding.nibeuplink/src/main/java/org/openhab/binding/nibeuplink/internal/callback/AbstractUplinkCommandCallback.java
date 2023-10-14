@@ -135,7 +135,7 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     }
 
     /**
-     * @Nullable wrapper of gson which does not 'understand' nonnull annotations
+     * {@code @Nullable} wrapper of gson which does not 'understand' nonnull annotations
      *
      * @param json
      * @return

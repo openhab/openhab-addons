@@ -98,8 +98,8 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
             return;
         }
 
-        if (command instanceof OnOffType) {
-            boolean state = ((OnOffType) command) == OnOffType.ON;
+        if (command instanceof OnOffType onOffCommand) {
+            boolean state = onOffCommand == OnOffType.ON;
 
             switch (channelUID.getId()) {
                 case EASYTOUCH_POOL:
@@ -154,8 +154,8 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
                     circuitSwitch(18, state);
                     break;
             }
-        } else if (command instanceof DecimalType) {
-            int sp = ((DecimalType) command).intValue();
+        } else if (command instanceof DecimalType decimalCommand) {
+            int sp = decimalCommand.intValue();
 
             switch (channelUID.getId()) {
                 case EASYTOUCH_SPASETPOINT:
@@ -187,7 +187,7 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
     /**
      * Method to set heat point for pool (true) of spa (false)
      *
-     * @param Pool pool=true, spa=false
+     * @param pool pool=true, spa=false
      * @param temp
      */
     public void setPoint(boolean pool, int temp) {

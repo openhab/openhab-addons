@@ -27,7 +27,7 @@ public class VolumeAdapter extends XmlAdapter<String, BigDecimal> {
 
     @Override
     public BigDecimal unmarshal(String v) throws Exception {
-        if (v != null && !v.trim().equals("--")) {
+        if (v != null && !"--".equals(v.trim())) {
             return new BigDecimal(v.trim()).add(DB_OFFSET);
         }
 

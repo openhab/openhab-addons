@@ -34,6 +34,7 @@ import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeStatu
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -110,6 +111,8 @@ public enum KaleidescapeMessageHandler {
             if (matcher.find()) {
                 handler.updateChannel(PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
+
+                handler.updateChannel(CONTROL, "2".equals(matcher.group(1)) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
                 handler.updateChannel(PLAY_SPEED, new StringType(matcher.group(2)));
 
@@ -311,6 +314,9 @@ public enum KaleidescapeMessageHandler {
             if (matcher.find()) {
                 handler.updateChannel(MUSIC_PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
+
+                handler.updateChannel(MUSIC_CONTROL,
+                        "2".equals(matcher.group(1)) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
                 handler.updateChannel(MUSIC_PLAY_SPEED, new StringType(matcher.group(2)));
 

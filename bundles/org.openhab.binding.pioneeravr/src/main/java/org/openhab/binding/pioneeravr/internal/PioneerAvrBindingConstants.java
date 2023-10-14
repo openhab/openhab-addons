@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link PioneerAvrBinding} class defines common constants, which are used across the whole binding.
+ * The {@link PioneerAvrBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Antoine Besnard - Initial contribution
  * @author Leroy Foerster - Listening Mode, Playing Listening Mode

@@ -141,8 +141,8 @@ public class DS2438 extends AbstractOwDevice {
             if (enabledChannels.contains(CHANNEL_CURRENT)) {
                 if (currentSensorType == CurrentSensorType.IBUTTONLINK) {
                     State current = bridgeHandler.readDecimalType(sensorId, voltageParameter);
-                    if (current instanceof DecimalType) {
-                        double currentDouble = ((DecimalType) current).doubleValue();
+                    if (current instanceof DecimalType decimalCommand) {
+                        double currentDouble = decimalCommand.doubleValue();
                         if (currentDouble >= 0.1 || currentDouble <= 3.78) {
                             current = new QuantityType<>(currentDouble * 5.163 + 0.483, Units.AMPERE);
                         }
@@ -168,19 +168,17 @@ public class DS2438 extends AbstractOwDevice {
                 switch (lightSensorType) {
                     case ELABNET_V2:
                         State light = bridgeHandler.readDecimalType(sensorId, currentParamater);
-                        if (light instanceof DecimalType) {
+                        if (light instanceof DecimalType decimalCommand) {
                             light = new QuantityType<>(
-                                    Math.round(Math.pow(10, ((DecimalType) light).doubleValue() / 47 * 1000)),
-                                    Units.LUX);
+                                    Math.round(Math.pow(10, decimalCommand.doubleValue() / 47 * 1000)), Units.LUX);
                             callback.postUpdate(CHANNEL_LIGHT, light);
                         }
                         break;
                     case ELABNET_V1:
                         light = bridgeHandler.readDecimalType(sensorId, currentParamater);
-                        if (light instanceof DecimalType) {
-                            light = new QuantityType<>(Math.round(Math
-                                    .exp(1.059 * Math.log(1000000 * ((DecimalType) light).doubleValue() / (4096 * 390))
-                                            + 4.518)
+                        if (light instanceof DecimalType decimalCommand) {
+                            light = new QuantityType<>(Math.round(Math.exp(
+                                    1.059 * Math.log(1000000 * decimalCommand.doubleValue() / (4096 * 390)) + 4.518)
                                     * 20000), Units.LUX);
                             callback.postUpdate(CHANNEL_LIGHT, light);
                         }

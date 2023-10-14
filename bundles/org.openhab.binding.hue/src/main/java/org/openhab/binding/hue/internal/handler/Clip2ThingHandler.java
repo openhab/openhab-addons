@@ -44,6 +44,7 @@ import org.openhab.binding.hue.internal.dto.clip2.MirekSchema;
 import org.openhab.binding.hue.internal.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
+import org.openhab.binding.hue.internal.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
@@ -97,6 +98,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             THING_TYPE_ZONE);
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
+
+    private static final String LK_WISER_DIMMER_MODEL_ID = "LK Dimmer";
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -163,6 +166,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updateLightPropertiesDone;
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
+    private boolean applyOffTransitionWorkaround;
 
     private @Nullable Future<?> alertResetTask;
     private @Nullable Future<?> dynamicsResetTask;
@@ -402,6 +406,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_SWITCH:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 putResource.setOnOff(command);
+                applyDeviceSpecificWorkArounds(command, putResource);
                 break;
 
             case CHANNEL_2_COLOR_XY_ONLY:
@@ -414,6 +419,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_ON_OFF_ONLY:
                 putResource = new Resource(lightResourceType).setOnOff(command);
+                applyDeviceSpecificWorkArounds(command, putResource);
                 break;
 
             case CHANNEL_2_TEMPERATURE_ENABLED:
@@ -502,7 +508,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
         logger.debug("{} -> handleCommand() put resource {}", resourceId, putResource);
 
         try {
-            getBridgeHandler().putResource(putResource);
+            Resources resources = getBridgeHandler().putResource(putResource);
+            if (resources.hasErrors()) {
+                logger.info("Command '{}' for thing '{}', channel '{}' succeeded with errors: {}", command,
+                        thing.getUID(), channelUID, String.join("; ", resources.getErrors()));
+            }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
@@ -511,6 +521,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         thing.getUID(), channelUID, e.getMessage());
             }
         } catch (InterruptedException e) {
+        }
+    }
+
+    /**
+     * Apply device specific work-arounds needed for given command.
+     *
+     * @param command the handled command.
+     * @param putResource the resource that will be adjusted if needed.
+     */
+    private void applyDeviceSpecificWorkArounds(Command command, Resource putResource) {
+        if (command == OnOffType.OFF && applyOffTransitionWorkaround) {
+            putResource.setDynamicsDuration(dynamicsDuration);
         }
     }
 
@@ -783,9 +805,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (fullUpdate) {
                     addSupportedChannel(CHANNEL_2_BUTTON_LAST_EVENT);
                     controlIds.put(resource.getId(), resource.getControlId());
+                } else {
+                    State buttonState = resource.getButtonEventState(controlIds);
+                    updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
                 }
-                State buttonState = resource.getButtonEventState(controlIds);
-                updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
                 break;
 
             case DEVICE_POWER:
@@ -828,8 +851,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case RELATIVE_ROTARY:
                 if (fullUpdate) {
                     addSupportedChannel(CHANNEL_2_ROTARY_STEPS);
+                } else {
+                    updateState(CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 }
-                updateState(CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 break;
 
             case TEMPERATURE:
@@ -1018,9 +1042,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
             // product data
             ProductData productData = thisResource.getProductData();
             if (Objects.nonNull(productData)) {
+                String modelId = productData.getModelId();
+
                 // standard properties
                 properties.put(PROPERTY_RESOURCE_ID, resourceId);
-                properties.put(Thing.PROPERTY_MODEL_ID, productData.getModelId());
+                properties.put(Thing.PROPERTY_MODEL_ID, modelId);
                 properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
                 properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());
                 String hardwarePlatformType = productData.getHardwarePlatformType();
@@ -1032,6 +1058,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
                 properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
                 properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
+
+                // Check device for needed work-arounds.
+                if (LK_WISER_DIMMER_MODEL_ID.equals(modelId)) {
+                    // Apply transition time as a workaround for LK Wiser Dimmer firmware bug.
+                    // Additional details here: https://techblog.vindvejr.dk/?p=455
+                    applyOffTransitionWorkaround = true;
+                    logger.debug("{} -> enabling work-around for turning off LK Wiser Dimmer", resourceId);
+                }
             }
 
             thing.setProperties(properties);
@@ -1057,7 +1091,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Fetch the full list of scenes from the bridge, and call updateSceneContributors(List<Resource> allScenes)
+     * Fetch the full list of scenes from the bridge, and call {@code updateSceneContributors(List<Resource> allScenes)}
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.

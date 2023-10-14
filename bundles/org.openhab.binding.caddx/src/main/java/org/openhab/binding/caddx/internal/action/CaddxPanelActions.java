@@ -42,8 +42,8 @@ public class CaddxPanelActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ThingHandlerPanel) {
-            this.handler = (ThingHandlerPanel) handler;
+        if (handler instanceof ThingHandlerPanel panelHandler) {
+            this.handler = panelHandler;
         }
     }
 

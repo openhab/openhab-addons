@@ -17,7 +17,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link DeviceUpdateListener} can register on the {@link TradfriGatewayHandler} to be informed about details about
+ * {@link ShellyDeviceListener} can register on the {@link ShellyBaseHandler} to be informed about details about
  * devices.
  *
  * @author Markus Michels - Initial contribution
