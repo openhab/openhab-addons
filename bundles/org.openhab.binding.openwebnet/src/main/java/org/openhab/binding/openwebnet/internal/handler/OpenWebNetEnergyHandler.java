@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * device. It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
- * @author Andrea Conte - Energy management
+ * @author Andrea Conte, Giovanni Fabiani - Energy management
  */
 @NonNullByDefault
 public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
@@ -166,7 +166,11 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         if (powerSchedule != null) {
             ScheduledFuture<?> ns = powerSchedule;
             ns.cancel(false);
-            logger.debug("dispose() scheduler stopped.");
+            logger.debug("dispose() power scheduler stopped.");
+        } else if (energySchedule != null) {
+            ScheduledFuture<?> ns = energySchedule;
+            ns.cancel(false);
+            logger.debug("dispose() energy scheduler stopped.");
         }
         super.dispose();
     }
@@ -257,7 +261,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
      * @throws FrameException
      */
     private void updateCurrentDayTotalizer(BaseOpenMessage msg) {
-        double currentDayEnergy;
+        Double currentDayEnergy;
         try {
             currentDayEnergy = Double.parseDouble(msg.getDimValues()[0]) / 1000d;
             updateState(CHANNEL_POWER_TOTALIZER_DAY, new QuantityType<Energy>(currentDayEnergy, Units.KILOWATT_HOUR));
@@ -274,7 +278,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
      * @throws FrameException
      */
     private void updateCurrentMonthTotalizer(BaseOpenMessage msg) {
-        double currentMonthEnergy;
+        Double currentMonthEnergy;
         try {
             currentMonthEnergy = Double.parseDouble(msg.getDimValues()[0]) / 1000d;
             updateState(CHANNEL_POWER_TOTALIZER_MONTH,

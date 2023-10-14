@@ -348,7 +348,7 @@
 		<label>Current month totalizer</label>
 		<description>Current month totalizer</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="totalizerDay">
