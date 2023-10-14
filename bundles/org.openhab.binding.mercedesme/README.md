@@ -428,6 +428,7 @@ All channels read-only.
 | Channel          | Type                 |  Description                 | bev | hybrid | combustion |
 |------------------|----------------------|------------------------------|-----|--------|------------|
 | mileage          | Number:Length        |  Total mileage               | X   | X      | X          |
+| home-distance    | Number:Length        |  Distance to Home            | X   | X      | X          |
 | soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
 | charged          | Number:Energy        |  Charged Battery Energy      | X   | X      |            |
 | uncharged        | Number:Energy        |  Uncharged Battery Energy    | X   | X      |            |

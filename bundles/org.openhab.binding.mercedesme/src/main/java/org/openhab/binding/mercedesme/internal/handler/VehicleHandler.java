@@ -41,6 +41,7 @@ import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -112,6 +113,7 @@ import com.google.protobuf.Int32Value;
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
+    private final LocationProvider locationProvider;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
@@ -129,10 +131,11 @@ public class VehicleHandler extends BaseThingHandler {
     Optional<AccountHandler> accountHandler = Optional.empty();
     Optional<VehicleConfiguration> config = Optional.empty();
 
-    public VehicleHandler(Thing thing, MercedesMeCommandOptionProvider cop, MercedesMeStateOptionProvider sop,
-            MercedesMeDynamicStateDescriptionProvider dsdp) {
+    public VehicleHandler(Thing thing, LocationProvider lp, MercedesMeCommandOptionProvider cop,
+            MercedesMeStateOptionProvider sop, MercedesMeDynamicStateDescriptionProvider dsdp) {
         super(thing);
         vehicleType = thing.getThingTypeUID().getId();
+        locationProvider = lp;
         mmcop = cop;
         mmsop = sop;
         mmdsdp = dsdp;
@@ -620,6 +623,17 @@ public class VehicleHandler extends BaseThingHandler {
             if (lat != -1 && lon != -1) {
                 PointType pt = new PointType(lat + "," + lon);
                 updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, pt));
+
+                // calculate away from home
+                PointType homePoint = locationProvider.getLocation();
+                UOMObserver observer = new UOMObserver(UOMObserver.LENGTH_KM_UNIT);
+                if (Locale.US.getCountry().equals(Utils.getCountry())) {
+                    observer = new UOMObserver(UOMObserver.LENGTH_MILES_UNIT);
+                }
+                double distance = Utils.distance(homePoint.getLatitude().doubleValue(), lat,
+                        homePoint.getLongitude().doubleValue(), lon, 0.0, 0.0);
+                System.out.println("Home: " + homePoint + " Car: " + pt + " Distance, " + distance / 1000);
+                updateChannel(new ChannelStateMap("home-distance", Constants.GROUP_RANGE, pt, observer));
             } else {
                 if (fullUpdate) {
                     logger.info("Either Latitude {} or Longitude {} attribute nil", lat, lon);
@@ -1073,7 +1087,7 @@ public class VehicleHandler extends BaseThingHandler {
                 change = !storedObserver.equals(deliveredObserver);
             }
             // Channel adaptions for items with configurable units
-            String pattern = deliveredObserver.getPattern(csm.getGroup());
+            String pattern = deliveredObserver.getPattern(csm.getGroup(), csm.getChannel());
             if (pattern.startsWith("%") && change) {
                 logger.trace("Set Pattern for {}#{} to {}", channel, csm.getGroup(), pattern);
                 mmdsdp.setStatePattern(cuid, pattern);

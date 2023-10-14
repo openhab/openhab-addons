@@ -49,8 +49,9 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -68,7 +69,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
-        assertEquals(6, updateListener.getUpdatesForGroup("range"), "Range Update Count");
+        assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -82,8 +83,8 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         MercedesMeDynamicStateDescriptionProviderMock patternMock = new MercedesMeDynamicStateDescriptionProviderMock();
         MercedesMeCommandOptionProviderMock commandOptionMock = new MercedesMeCommandOptionProviderMock();
-        VehicleHandler vh = new VehicleHandler(thingMock, commandOptionMock, mock(MercedesMeStateOptionProvider.class),
-                patternMock);
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
+                mock(MercedesMeStateOptionProvider.class), patternMock);
         AccountHandlerMock ahm = new AccountHandlerMock();
         vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
@@ -102,7 +103,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
-        assertEquals(6, updateListener.getUpdatesForGroup("range"), "Range Update Count");
+        assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -137,8 +138,9 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -156,7 +158,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
-        assertEquals(6, updateListener.getUpdatesForGroup("range"), "Range Update Count");
+        assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -172,8 +174,9 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -197,8 +200,9 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -208,7 +212,7 @@ class VehicleHandlerTest {
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-GPS.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
         vh.distributeContent(update);
-        assertEquals(2, updateListener.updatesReceived.size(), "Update Count");
+        assertEquals(3, updateListener.updatesReceived.size(), "Update Count");
         assertEquals("1.23,4.56", updateListener.updatesReceived.get("test::bev:position#gps").toFullString(),
                 "GPS update");
         assertEquals("41.9 °", updateListener.updatesReceived.get("test::bev:position#heading").toFullString(),
@@ -220,8 +224,9 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -245,8 +250,9 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_HYBRID);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.HYBRID));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -264,7 +270,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Trip Update Count");
         assertEquals(8, updateListener.getUpdatesForGroup("service"), "Trip Update Count");
-        assertEquals(13, updateListener.getUpdatesForGroup("range"), "Update Upadte Count");
+        assertEquals(14, updateListener.getUpdatesForGroup("range"), "Update Upadte Count");
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Update Upadte Count");
         assertEquals(6, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -276,8 +282,9 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_HYBRID);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", "hybrid"));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vehicleConfig.batteryCapacity = (float) 9.2;
@@ -309,8 +316,9 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -330,7 +338,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
-        assertEquals(6, updateListener.getUpdatesForGroup("range"), "Range Update Count");
+        assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -341,8 +349,8 @@ class VehicleHandlerTest {
          * Let's simulate an item ad causing a RefreshType command
          * Shall deliver data immediately
          */
-        assertEquals(82, vh.eventStorage.size());
-        assertEquals(82, updateListener.updatesReceived.size());
+        assertEquals(83, vh.eventStorage.size());
+        assertEquals(83, updateListener.updatesReceived.size());
         updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         ChannelUID mileageChannelUID = new ChannelUID(new ThingUID("test", Constants.BEV), Constants.GROUP_RANGE,
@@ -357,8 +365,9 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -382,8 +391,9 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, mock(MercedesMeCommandOptionProvider.class),
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -414,8 +424,8 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
         AccountHandlerMock ahm = new AccountHandlerMock();
-        VehicleHandler vh = new VehicleHandler(thingMock, commandOptionMock, mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -443,8 +453,8 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
         AccountHandlerMock ahm = new AccountHandlerMock();
-        VehicleHandler vh = new VehicleHandler(thingMock, commandOptionMock, mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -478,8 +488,8 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
         AccountHandlerMock ahm = new AccountHandlerMock();
-        VehicleHandler vh = new VehicleHandler(thingMock, commandOptionMock, mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
