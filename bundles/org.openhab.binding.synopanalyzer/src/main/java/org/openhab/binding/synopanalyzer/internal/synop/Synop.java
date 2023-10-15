@@ -66,7 +66,7 @@ public abstract class Synop {
     private static final int HV_LESS_THAN_10_HP_LIMIT = 96;
     private static final int HV_LESS_THAN_50_HP_LIMIT = 98;
 
-    public static enum HorizontalVisibility {
+    public enum HorizontalVisibility {
         UNDEFINED,
         LESS_THAN_1,
         LESS_THAN_10,

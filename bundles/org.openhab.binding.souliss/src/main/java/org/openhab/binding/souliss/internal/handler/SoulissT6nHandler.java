@@ -40,8 +40,8 @@ public class SoulissT6nHandler extends SoulissGenericHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof DecimalType) {
-            int uu = HalfFloatUtils.fromFloat(((DecimalType) command).floatValue());
+        if (command instanceof DecimalType decimalCommand) {
+            int uu = HalfFloatUtils.fromFloat(decimalCommand.floatValue());
             byte b2 = (byte) (uu >> 8);
             byte b1 = (byte) uu;
             // setpoint command

@@ -14,8 +14,8 @@ package org.openhab.binding.plclogo.internal.handler;
 
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -52,7 +52,7 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCMemoryHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MEMORY);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MEMORY);
 
     private final Logger logger = LoggerFactory.getLogger(PLCMemoryHandler.class);
     private AtomicReference<PLCMemoryConfiguration> config = new AtomicReference<>();
@@ -108,15 +108,15 @@ public class PLCMemoryHandler extends PLCCommonHandler {
                 } else {
                     logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
-            } else if (command instanceof DecimalType) {
+            } else if (command instanceof DecimalType decimalCommand) {
                 int length = MEMORY_BYTE.equalsIgnoreCase(kind) ? 1 : 2;
                 byte[] buffer = new byte[MEMORY_DWORD.equalsIgnoreCase(kind) ? 4 : length];
                 if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
-                    buffer[0] = ((DecimalType) command).byteValue();
+                    buffer[0] = decimalCommand.byteValue();
                 } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_WORD.equalsIgnoreCase(kind)) {
-                    S7.SetShortAt(buffer, 0, ((DecimalType) command).intValue());
+                    S7.SetShortAt(buffer, 0, decimalCommand.intValue());
                 } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_DWORD.equalsIgnoreCase(kind)) {
-                    S7.SetDIntAt(buffer, 0, ((DecimalType) command).intValue());
+                    S7.SetDIntAt(buffer, 0, decimalCommand.intValue());
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
@@ -124,10 +124,10 @@ public class PLCMemoryHandler extends PLCCommonHandler {
                 if (result != 0) {
                     logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                 }
-            } else if (command instanceof OnOffType) {
+            } else if (command instanceof OnOffType onOffCommand) {
                 byte[] buffer = new byte[1];
                 if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
-                    S7.SetBitAt(buffer, 0, 0, ((OnOffType) command) == OnOffType.ON);
+                    S7.SetBitAt(buffer, 0, 0, onOffCommand == OnOffType.ON);
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
@@ -291,7 +291,7 @@ public class PLCMemoryHandler extends PLCCommonHandler {
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
             cBuilder.withLabel(name);
             cBuilder.withDescription(text + " in/output block " + name);
-            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
+            cBuilder.withProperties(Map.of(BLOCK_PROPERTY, name));
             tBuilder.withChannel(cBuilder.build());
             setOldValue(name, null);
 

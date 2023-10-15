@@ -170,8 +170,8 @@ public abstract class MessageHandler {
     protected boolean getBooleanDeviceConfig(String key, boolean def) {
         Object o = feature.getDevice().getDeviceConfigMap().get(key);
         if (o != null) {
-            if (o instanceof Boolean) {
-                return (Boolean) o;
+            if (o instanceof Boolean booleanValue) {
+                return booleanValue;
             } else {
                 logger.warn("{} {}: The value for the '{}' key is not boolean in the device configuration parameter.",
                         nm(), feature.getDevice().getAddress(), key);
@@ -292,7 +292,7 @@ public abstract class MessageHandler {
      * Extract button information from message
      *
      * @param msg the message to extract from
-     * @param the device feature (needed for debug printing)
+     * @param f the device feature (needed for debug printing)
      * @return the button number or -1 if no button found
      */
     protected static int getButtonInfo(Msg msg, DeviceFeature f) {

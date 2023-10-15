@@ -15,8 +15,10 @@ package org.openhab.binding.boschindego.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link} AuthorizationListener} is used for notifying {@link BoschAccountHandler}
- * when authorization state has changed and for notifying {@link BoschIndegoHandler}
+ * {@link AuthorizationListener} is used for notifying
+ * {@link org.openhab.binding.boschindego.internal.handler.BoschAccountHandler}
+ * when authorization state has changed and for notifying
+ * {@link org.openhab.binding.boschindego.internal.handler.BoschIndegoHandler}
  * when authorization flow is completed.
  *
  * @author Jacob Laursen - Initial contribution

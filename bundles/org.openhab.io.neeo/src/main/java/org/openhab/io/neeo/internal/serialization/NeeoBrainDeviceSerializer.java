@@ -203,8 +203,7 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
                         compPath + "/textlabel/actor", new JsonPrimitive(sensorItemName));
 
                 capObj.addProperty("isLabelVisible",
-                        channel instanceof NeeoDeviceChannelText ? ((NeeoDeviceChannelText) channel).isLabelVisible()
-                                : true);
+                        channel instanceof NeeoDeviceChannelText ndct ? ndct.isLabelVisible() : true);
 
                 capabilities.add(capObj);
 

@@ -165,8 +165,8 @@ public class GroupePSAHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof GroupePSABridgeHandler) {
-                return (GroupePSABridgeHandler) handler;
+            if (handler instanceof GroupePSABridgeHandler bridgeHandler) {
+                return bridgeHandler;
             }
         }
         return null;

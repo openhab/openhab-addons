@@ -68,9 +68,9 @@ public class MillheatHomeHandler extends MillheatBaseThingHandler {
                     updateState(channelUID, new QuantityType<>(home.getHolidayTemp(), SIUnits.CELSIUS));
                 } else if (command instanceof QuantityType<?>) {
                     updateVacationModeProperty(home, SetHolidayParameterRequest.PROP_TEMP, command);
-                } else if (command instanceof DecimalType) {
+                } else if (command instanceof DecimalType decimalCommand) {
                     updateVacationModeProperty(home, SetHolidayParameterRequest.PROP_TEMP,
-                            new QuantityType<>((DecimalType) command, SIUnits.CELSIUS));
+                            new QuantityType<>(decimalCommand, SIUnits.CELSIUS));
                 }
             } else if (CHANNEL_HOME_VACATION_MODE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {

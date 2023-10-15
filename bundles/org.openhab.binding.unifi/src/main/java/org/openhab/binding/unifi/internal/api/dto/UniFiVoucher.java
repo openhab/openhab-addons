@@ -107,8 +107,10 @@ public class UniFiVoucher implements HasId {
     @Override
     public String toString() {
         return String.format(
-                "UniFiVoucher{id: '%s', code: '%s', created: '%s', duration: '%s', quota: '%s', used: '%s', qosUsageQuota: '%s', "
-                        + "qosRateMaxUp: '%s', qosRateMaxDown: '%s', qosOverwrite: '%s', note: '%s', status: '%s', site: %s}",
+                """
+                        UniFiVoucher{id: '%s', code: '%s', created: '%s', duration: '%s', quota: '%s', used: '%s', qosUsageQuota: '%s', \
+                        qosRateMaxUp: '%s', qosRateMaxDown: '%s', qosOverwrite: '%s', note: '%s', status: '%s', site: %s}\
+                        """,
                 id, code, createTime, duration, quota, used, qosUsageQuota, qosRateMaxUp, qosRateMaxDown, qosOverwrite,
                 note, status, getSite());
     }

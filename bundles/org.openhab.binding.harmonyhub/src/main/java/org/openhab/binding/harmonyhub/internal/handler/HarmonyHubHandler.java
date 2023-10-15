@@ -126,9 +126,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
         switch (channel.getUID().getId()) {
             case CHANNEL_CURRENT_ACTIVITY:
-                if (command instanceof DecimalType) {
+                if (command instanceof DecimalType decimalCommand) {
                     try {
-                        client.startActivity(((DecimalType) command).intValue());
+                        client.startActivity(decimalCommand.intValue());
                     } catch (Exception e) {
                         logger.warn("Could not start activity", e);
                     }

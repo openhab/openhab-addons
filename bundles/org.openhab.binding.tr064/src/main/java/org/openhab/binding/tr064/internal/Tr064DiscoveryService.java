@@ -53,8 +53,8 @@ public class Tr064DiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof Tr064RootHandler) {
-            this.bridgeHandler = (Tr064RootHandler) thingHandler;
+        if (thingHandler instanceof Tr064RootHandler tr064RootHandler) {
+            this.bridgeHandler = tr064RootHandler;
         }
     }
 

@@ -15,7 +15,7 @@ package org.openhab.binding.qolsysiq.internal.client.dto.event;
 import org.openhab.binding.qolsysiq.internal.client.dto.model.AlarmType;
 
 /**
- * An {@link EventType.ALARM} type of {@link Event} message sent from the panel
+ * An {@link EventType#ALARM} type of {@link Event} message sent from the panel
  *
  * @author Dan Cunningham - Initial contribution
  */

@@ -57,14 +57,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MyBMWProxy} This class holds the important constants for the BMW Connected Drive Authorization.
- * They
- * are taken from the Bimmercode from github {@link https://github.com/bimmerconnected/bimmer_connected}
+ * They are taken from the Bimmercode from github <a href="https://github.com/bimmerconnected/bimmer_connected">
+ * https://github.com/bimmerconnected/bimmer_connected</a>.
  * File defining these constants
- * {@link https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py}
- * https://customer.bmwgroup.com/one/app/oauth.js
+ * <a href="https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py">
+ * https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py</a>
+ * <a href="https://customer.bmwgroup.com/one/app/oauth.js">https://customer.bmwgroup.com/one/app/oauth.js</a>
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
  */
 @NonNullByDefault
 public class MyBMWProxy {
@@ -163,10 +164,10 @@ public class MyBMWProxy {
                     logger.debug("HTTP Error {}", error.toString());
                     callback.onError(error);
                 } else {
-                    if (callback instanceof StringResponseCallback) {
-                        ((StringResponseCallback) callback).onResponse(getContentAsString());
-                    } else if (callback instanceof ByteResponseCallback) {
-                        ((ByteResponseCallback) callback).onResponse(getContent());
+                    if (callback instanceof StringResponseCallback responseCallback) {
+                        responseCallback.onResponse(getContentAsString());
+                    } else if (callback instanceof ByteResponseCallback responseCallback) {
+                        responseCallback.onResponse(getContent());
                     } else {
                         logger.error("unexpected reponse type {}", callback.getClass().getName());
                     }
@@ -425,10 +426,10 @@ public class MyBMWProxy {
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         final StringBuilder codeFound = new StringBuilder();
         tokenMap.forEach((key, value) -> {
-            if (value.size() > 0) {
+            if (!value.isEmpty()) {
                 String val = value.get(0);
                 if (key.endsWith(CODE)) {
-                    codeFound.append(val.toString());
+                    codeFound.append(val);
                 }
             }
         });

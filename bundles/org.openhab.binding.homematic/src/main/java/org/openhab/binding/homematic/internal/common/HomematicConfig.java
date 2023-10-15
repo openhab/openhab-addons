@@ -58,7 +58,6 @@ public class HomematicConfig {
     private int bufferSize = 2048;
 
     private HmGatewayInfo gatewayInfo;
-    private int callbackRegistrationRetries;
     private int callbackRegTimeout;
 
     /**
@@ -361,7 +360,7 @@ public class HomematicConfig {
     }
 
     /**
-     * Returns the encoding that is suitable on requests to & responds from the Homematic gateway.
+     * Returns the encoding that is suitable on requests to and responds from the Homematic gateway.
      */
     public Charset getEncoding() {
         if (gatewayInfo != null && gatewayInfo.isHomegear()) {
@@ -394,12 +393,12 @@ public class HomematicConfig {
 
     @Override
     public String toString() {
-        return String.format(
-                "%s[gatewayAddress=%s,callbackHost=%s,xmlCallbackPort=%d,binCallbackPort=%d,"
-                        + "gatewayType=%s,rfPort=%d,wiredPort=%d,hmIpPort=%d,cuxdPort=%d,groupPort=%d,timeout=%d,"
-                        + "discoveryTimeToLive=%d,installModeDuration=%d,socketMaxAlive=%d]",
-                getClass().getSimpleName(), gatewayAddress, callbackHost, xmlCallbackPort, binCallbackPort, gatewayType,
-                getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout, discoveryTimeToLive,
-                installModeDuration, socketMaxAlive);
+        return String.format("""
+                %s[gatewayAddress=%s,callbackHost=%s,xmlCallbackPort=%d,binCallbackPort=%d,\
+                gatewayType=%s,rfPort=%d,wiredPort=%d,hmIpPort=%d,cuxdPort=%d,groupPort=%d,timeout=%d,\
+                discoveryTimeToLive=%d,installModeDuration=%d,socketMaxAlive=%d]\
+                """, getClass().getSimpleName(), gatewayAddress, callbackHost, xmlCallbackPort, binCallbackPort,
+                gatewayType, getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout,
+                discoveryTimeToLive, installModeDuration, socketMaxAlive);
     }
 }

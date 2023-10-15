@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import java.util.Collections;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +37,6 @@ public class LxControlInfoOnlyAnalogTempTagTest extends LxControlTest {
 
     @Test
     public void testChannels() {
-        testChannel("Number", null, null, null, null, "%.1f", true, null, Collections.singleton("CurrentTemperature"));
+        testChannel("Number", null, null, null, null, "%.1f", true, null, Set.of("CurrentTemperature"));
     }
 }

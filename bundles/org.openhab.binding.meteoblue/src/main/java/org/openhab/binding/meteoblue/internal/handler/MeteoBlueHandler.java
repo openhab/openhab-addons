@@ -230,9 +230,8 @@ public class MeteoBlueHandler extends BaseThingHandler {
 
         // Build a State from this value
         State state = null;
-        if (datapoint instanceof Calendar) {
-            state = new DateTimeType(
-                    ZonedDateTime.ofInstant(((Calendar) datapoint).toInstant(), ZoneId.systemDefault()));
+        if (datapoint instanceof Calendar calendar) {
+            state = new DateTimeType(ZonedDateTime.ofInstant(calendar.toInstant(), ZoneId.systemDefault()));
         } else if (datapoint instanceof Integer) {
             state = getStateForType(channel.getAcceptedItemType(), (Integer) datapoint);
         } else if (datapoint instanceof Number) {
@@ -240,9 +239,9 @@ public class MeteoBlueHandler extends BaseThingHandler {
             state = getStateForType(channel.getAcceptedItemType(), decimalValue);
         } else if (datapoint instanceof String) {
             state = new StringType(datapoint.toString());
-        } else if (datapoint instanceof BufferedImage) {
+        } else if (datapoint instanceof BufferedImage image) {
             ImageItem item = new ImageItem("rain area");
-            state = new RawType(renderImage((BufferedImage) datapoint), "image/png");
+            state = new RawType(renderImage(image), "image/png");
             item.setState(state);
         } else {
             logger.debug("Unsupported value type {}", datapoint.getClass().getSimpleName());
@@ -263,13 +262,13 @@ public class MeteoBlueHandler extends BaseThingHandler {
     private State getStateForType(String type, BigDecimal value) {
         State state = new DecimalType(value);
 
-        if (type.equals("Number:Temperature")) {
+        if ("Number:Temperature".equals(type)) {
             state = new QuantityType<>(value, SIUnits.CELSIUS);
-        } else if (type.equals("Number:Length")) {
+        } else if ("Number:Length".equals(type)) {
             state = new QuantityType<>(value, MILLI(SIUnits.METRE));
-        } else if (type.equals("Number:Pressure")) {
+        } else if ("Number:Pressure".equals(type)) {
             state = new QuantityType<>(value, HECTO(SIUnits.PASCAL));
-        } else if (type.equals("Number:Speed")) {
+        } else if ("Number:Speed".equals(type)) {
             state = new QuantityType<>(value, Units.METRE_PER_SECOND);
         }
 
@@ -335,9 +334,9 @@ public class MeteoBlueHandler extends BaseThingHandler {
 
         String errorMessage = jsonResult.getErrorMessage();
         if (errorMessage != null) {
-            if (errorMessage.equals("MB_REQUEST::DISPATCH: Invalid api key")) {
+            if ("MB_REQUEST::DISPATCH: Invalid api key".equals(errorMessage)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid API Key");
-            } else if (errorMessage.equals("MB_REQUEST::DISPATCH: This datafeed is not authorized for your api key")) {
+            } else if ("MB_REQUEST::DISPATCH: This datafeed is not authorized for your api key".equals(errorMessage)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "API Key not authorized for this datafeed");
             } else {

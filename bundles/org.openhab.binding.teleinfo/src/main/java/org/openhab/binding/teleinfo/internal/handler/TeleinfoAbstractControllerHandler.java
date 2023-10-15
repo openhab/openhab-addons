@@ -13,7 +13,6 @@
 package org.openhab.binding.teleinfo.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -52,6 +51,6 @@ public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandle
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(TeleinfoDiscoveryService.class);
+        return Set.of(TeleinfoDiscoveryService.class);
     }
 }

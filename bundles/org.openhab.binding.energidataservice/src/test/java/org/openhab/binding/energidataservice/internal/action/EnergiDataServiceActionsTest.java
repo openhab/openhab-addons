@@ -40,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.energidataservice.internal.DatahubTariff;
 import org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants;
 import org.openhab.binding.energidataservice.internal.PriceListParser;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecords;
@@ -393,10 +394,10 @@ public class EnergiDataServiceActionsTest {
                 .toHourly(Arrays.stream(datahubRecords.records()).toList());
 
         when(handler.getSpotPrices()).thenReturn(spotPrices);
-        when(handler.getNetTariffs()).thenReturn(netTariffs);
-        when(handler.getSystemTariffs()).thenReturn(systemTariffs);
-        when(handler.getElectricityTaxes()).thenReturn(electricityTaxes);
-        when(handler.getTransmissionNetTariffs()).thenReturn(transmissionNetTariffs);
+        when(handler.getTariffs(DatahubTariff.NET_TARIFF)).thenReturn(netTariffs);
+        when(handler.getTariffs(DatahubTariff.SYSTEM_TARIFF)).thenReturn(systemTariffs);
+        when(handler.getTariffs(DatahubTariff.ELECTRICITY_TAX)).thenReturn(electricityTaxes);
+        when(handler.getTariffs(DatahubTariff.TRANSMISSION_NET_TARIFF)).thenReturn(transmissionNetTariffs);
         when(handler.getCurrency()).thenReturn(EnergiDataServiceBindingConstants.CURRENCY_DKK);
         actions.setThingHandler(handler);
     }

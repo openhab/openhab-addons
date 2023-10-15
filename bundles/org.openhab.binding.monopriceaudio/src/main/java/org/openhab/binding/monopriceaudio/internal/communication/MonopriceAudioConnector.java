@@ -183,7 +183,7 @@ public abstract class MonopriceAudioConnector {
     /**
      * Get the status of a zone
      *
-     * @param zone the zone to query for current status
+     * @param zoneId the zone to query for current status
      *
      * @throws MonopriceAudioException - In case of any problem
      */
@@ -195,7 +195,7 @@ public abstract class MonopriceAudioConnector {
      * Monoprice 31028 and OSD Audio PAM1270 amps do not report treble, bass and balance with the main status inquiry,
      * so we must send three extra commands to retrieve those values
      *
-     * @param zone the zone to query for current treble, bass and balance status
+     * @param zoneId the zone to query for current treble, bass and balance status
      *
      * @throws MonopriceAudioException - In case of any problem
      */

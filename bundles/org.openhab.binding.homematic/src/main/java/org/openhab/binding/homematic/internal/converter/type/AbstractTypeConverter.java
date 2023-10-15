@@ -43,15 +43,15 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
     /**
      * Defines all devices where the state datapoint must be inverted.
      */
-    private static final List<StateInvertInfo> stateInvertDevices = new ArrayList<>(3);
+    private static final List<StateInvertInfo> STATE_INVERT_INFO_LIST = new ArrayList<>(3);
 
     static {
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT));
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT_2));
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_INCLINATION_SENSOR));
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_WIRED_IO_MODULE, 15, 26));
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_MAX_WINDOW_SENSOR));
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT_INTERFACE));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT_2));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_INCLINATION_SENSOR));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_WIRED_IO_MODULE, 15, 26));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_MAX_WINDOW_SENSOR));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT_INTERFACE));
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
      */
     protected boolean isStateInvertDatapoint(HmDatapoint dp) {
         if (DATAPOINT_NAME_STATE.equals(dp.getName())) {
-            for (StateInvertInfo stateInvertInfo : stateInvertDevices) {
+            for (StateInvertInfo stateInvertInfo : STATE_INVERT_INFO_LIST) {
                 if (stateInvertInfo.isToInvert(dp)) {
                     return true;
                 }

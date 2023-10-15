@@ -28,10 +28,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -218,8 +218,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 return;
             }
             try {
-                if (msg instanceof HttpResponse) {
-                    HttpResponse response = (HttpResponse) msg;
+                if (msg instanceof HttpResponse response) {
                     if (response.status().code() == 200) {
                         if (!response.headers().isEmpty()) {
                             for (String name : response.headers().names()) {
@@ -264,8 +263,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         return;
                     }
                 }
-                if (msg instanceof HttpContent) {
-                    HttpContent content = (HttpContent) msg;
+                if (msg instanceof HttpContent content) {
                     if (mjpegUri.equals(requestUrl) && !(content instanceof LastHttpContent)) {
                         // multiple MJPEG stream packets come back as this.
                         byte[] chunkedFrame = new byte[content.content().readableBytes()];
@@ -368,8 +366,7 @@ public class IpCameraHandler extends BaseThingHandler {
             if (ctx == null) {
                 return;
             }
-            if (evt instanceof IdleStateEvent) {
-                IdleStateEvent e = (IdleStateEvent) evt;
+            if (evt instanceof IdleStateEvent e) {
                 // If camera does not use the channel for X amount of time it will close.
                 if (e.state() == IdleState.READER_IDLE) {
                     String urlToKeepOpen = "";
@@ -524,6 +521,12 @@ public class IpCameraHandler extends BaseThingHandler {
             }
             return;// ffmpeg snapshot stream is still alive
         }
+
+        // if ONVIF cam also use connection state which is updated by regular messages to camera
+        if (thing.getThingTypeUID().getId().equals(ONVIF_THING) && snapshotUri.isEmpty() && onvifCamera.isConnected()) {
+            return;
+        }
+
         // Open a HTTP connection without sending any requests as we do not need a snapshot.
         Bootstrap localBootstrap = mainBootstrap;
         if (localBootstrap != null) {
@@ -662,7 +665,7 @@ public class IpCameraHandler extends BaseThingHandler {
                                     break;
                             }
                             ch.writeAndFlush(request);
-                        } else { // an error occured
+                        } else { // an error occurred
                             cameraCommunicationError(
                                     "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
                         }
@@ -1154,9 +1157,9 @@ public class IpCameraHandler extends BaseThingHandler {
                     } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                         ffmpegMotionAlarmEnabled = false;
                         noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                    } else if (command instanceof PercentType) {
+                    } else if (command instanceof PercentType percentCommand) {
                         ffmpegMotionAlarmEnabled = true;
-                        motionThreshold = ((PercentType) command).toBigDecimal();
+                        motionThreshold = percentCommand.toBigDecimal();
                     }
                     setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                     return;
@@ -1420,9 +1423,16 @@ public class IpCameraHandler extends BaseThingHandler {
             return;
         }
         if (cameraConfig.getOnvifPort() > 0 && !onvifCamera.isConnected()) {
+            if (onvifCamera.isConnectError()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Camera is not reachable");
+            } else if (onvifCamera.isRefusedError()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Camera refused connection on ONVIF ports.");
+            }
             logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP:{}:{}", cameraConfig.getIp(),
                     cameraConfig.getOnvifPort());
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
+            return;
         }
         if ("ffmpeg".equals(snapshotUri)) {
             snapshotIsFfmpeg();
@@ -1558,9 +1568,6 @@ public class IpCameraHandler extends BaseThingHandler {
             case ONVIF_THING:
                 if (!snapshotPolling) {
                     checkCameraConnection();
-                }
-                if (!onvifCamera.isConnected()) {
-                    onvifCamera.connect(true);
                 }
                 break;
             case INSTAR_THING:
@@ -1761,6 +1768,9 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     private void tryConnecting() {
+        int firstDelay = 4;
+        int normalDelay = 12; // doesn't make sense to have faster retry than CONNECT_TIMEOUT, which is 10 seconds, if
+                              // camera is off
         if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)
                 && !thing.getThingTypeUID().getId().equals(DOORBIRD_THING) && cameraConfig.getOnvifPort() > 0) {
             onvifCamera = new OnvifConnection(this, cameraConfig.getIp() + ":" + cameraConfig.getOnvifPort(),
@@ -1768,8 +1778,16 @@ public class IpCameraHandler extends BaseThingHandler {
             onvifCamera.setSelectedMediaProfile(cameraConfig.getOnvifMediaProfile());
             // Only use ONVIF events if it is not an API camera.
             onvifCamera.connect(supportsOnvifEvents());
+
+            if (supportsOnvifEvents()) {
+                // it takes some time to try to retrieve the ONVIF snapshot and stream URLs and update internal members
+                // on first connect; if connection lost, doesn't make sense to poll to often
+                firstDelay = 12;
+                normalDelay = 30;
+            }
         }
-        cameraConnectionJob = threadPool.scheduleWithFixedDelay(this::pollingCameraConnection, 4, 8, TimeUnit.SECONDS);
+        cameraConnectionJob = threadPool.scheduleWithFixedDelay(this::pollingCameraConnection, firstDelay, normalDelay,
+                TimeUnit.SECONDS);
     }
 
     private boolean supportsOnvifEvents() {
@@ -1887,6 +1905,6 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(IpCameraActions.class);
+        return Set.of(IpCameraActions.class);
     }
 }

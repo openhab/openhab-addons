@@ -158,7 +158,7 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
      * {@inheritDoc}
      *
      * Stops the discovery scan. We set {@link #scanning} to false (allowing the listening thread to end naturally
-     * within {@link #TIMEOUT) * 5 time then shutdown the {@link #executorService}
+     * within {@link #DISCOVERY_DEFAULT_TIMEOUT_RATE_MS} * 5 time then shutdown the {@link #ExecutorService}
      */
     @Override
     protected synchronized void stopScan() {
@@ -281,7 +281,6 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
             input.close();
             writer.close();
             output.close();
-            socket.close();
         } catch (IOException e) {
             logger.debug("isKaleidescapeDevice() IOException: {}", e.getMessage());
         }

@@ -15,7 +15,7 @@ package org.openhab.binding.mielecloud.internal.util;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants.MIELE_CLOUD_ACCOUNT_LABEL;
 
-import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -78,9 +78,8 @@ public abstract class OpenHabOsgiTest extends JavaOSGiTest {
         Bridge bridge = BridgeBuilder
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
-                .withConfiguration(
-                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
-                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
+                .withConfiguration(new Configuration(Map.of(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                        MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
         assertNotNull(bridge);
 

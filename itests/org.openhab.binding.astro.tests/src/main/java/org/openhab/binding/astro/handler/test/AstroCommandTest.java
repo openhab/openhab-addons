@@ -40,7 +40,7 @@ import org.openhab.core.types.State;
  * <p>
  * This class tests the commands for the astro thing.
  *
- * @author Petar Valchev - Initial implementation
+ * @author Petar Valchev - Initial contribution
  * @author Svilen Valkanov - Reworked to plain unit tests
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */

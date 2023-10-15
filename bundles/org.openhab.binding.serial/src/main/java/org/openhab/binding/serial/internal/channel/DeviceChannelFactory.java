@@ -33,7 +33,7 @@ public class DeviceChannelFactory {
     /**
      * Create a {@link DeviceChannel} for the channel type
      * 
-     * @param bundleContext the bundle context
+     * @param valueTransformationProvider the transformation provider
      * @param channelConfig the channel configuration
      * @param channelTypeID the channel type id
      * @return the DeviceChannel or null if the channel type is not supported.

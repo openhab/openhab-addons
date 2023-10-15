@@ -23,5 +23,5 @@ public enum PartitionStatus {
     ARM_STAY,
     DISARM,
     ENTRY_DELAY,
-    EXIT_DELAY;
+    EXIT_DELAY
 }

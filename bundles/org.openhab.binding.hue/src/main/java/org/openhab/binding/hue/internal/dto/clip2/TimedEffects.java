@@ -25,11 +25,13 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class TimedEffects extends Effects {
+    public static final Duration DEFAULT_DURATION = Duration.ofMinutes(15);
+
     private @Nullable Long duration;
 
     public @Nullable Duration getDuration() {
         Long duration = this.duration;
-        return Objects.nonNull(duration) ? Duration.ofMillis(duration) : Duration.ZERO;
+        return Objects.nonNull(duration) ? Duration.ofMillis(duration) : null;
     }
 
     public TimedEffects setDuration(Duration duration) {
