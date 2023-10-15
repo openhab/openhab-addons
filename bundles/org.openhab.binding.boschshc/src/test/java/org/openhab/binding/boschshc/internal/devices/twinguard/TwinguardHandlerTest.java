@@ -58,8 +58,10 @@ class TwinguardHandlerTest extends AbstractSmokeDetectorHandlerTest<TwinguardHan
     @Test
     void testUpdateChannelsAirQualityLevelService() {
         JsonElement jsonObject = JsonParser.parseString(
-                "{\"temperatureRating\":\"GOOD\",\"humidityRating\":\"MEDIUM\",\"purity\":620,\"@type\":\"airQualityLevelState\",\n"
-                        + "     \"purityRating\":\"GOOD\",\"temperature\":23.77,\"description\":\"LITTLE_DRY\",\"humidity\":32.69,\"combinedRating\":\"MEDIUM\"}");
+                """
+                        {"temperatureRating":"GOOD","humidityRating":"MEDIUM","purity":620,"@type":"airQualityLevelState",
+                             "purityRating":"GOOD","temperature":23.77,"description":"LITTLE_DRY","humidity":32.69,"combinedRating":"MEDIUM"}\
+                        """);
         getFixture().processUpdate("AirQualityLevel", jsonObject);
 
         verify(getCallback()).stateUpdated(

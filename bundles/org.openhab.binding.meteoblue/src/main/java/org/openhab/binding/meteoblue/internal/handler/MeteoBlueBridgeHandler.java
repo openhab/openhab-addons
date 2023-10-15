@@ -14,7 +14,6 @@ package org.openhab.binding.meteoblue.internal.handler;
 
 import static org.openhab.binding.meteoblue.internal.MeteoBlueBindingConstants.THING_TYPE_BRIDGE;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openhab.binding.meteoblue.internal.MeteoBlueBridgeConfig;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Carman - Initial contribution
  */
 public class MeteoBlueBridgeHandler extends BaseBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(MeteoBlueBridgeHandler.class);
 
     private String apiKey;

@@ -51,6 +51,7 @@ public class RouterosPPPoECliInterface extends RouterosInterfaceBase {
         return true;
     }
 
+    @Override
     public @Nullable String getMacAddress() {
         return getProp("ac-mac");
     }

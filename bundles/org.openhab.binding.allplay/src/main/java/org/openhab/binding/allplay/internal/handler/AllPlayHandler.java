@@ -343,8 +343,8 @@ public class AllPlayHandler extends BaseThingHandler
      * @throws SpeakerException Exception if the volume change failed
      */
     public void handleVolumeCommand(Command command) throws SpeakerException {
-        if (command instanceof PercentType) {
-            speaker.volume().setVolume(convertPercentToAbsoluteVolume((PercentType) command));
+        if (command instanceof PercentType percentCommand) {
+            speaker.volume().setVolume(convertPercentToAbsoluteVolume(percentCommand));
         } else if (command instanceof IncreaseDecreaseType) {
             int stepSize = (command == IncreaseDecreaseType.DECREASE ? -getVolumeStepSize() : getVolumeStepSize());
             speaker.volume().adjustVolume(stepSize);

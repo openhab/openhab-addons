@@ -15,7 +15,7 @@ package org.openhab.binding.modbus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ModbusBinding} class defines some constants
+ * The {@link ModbusBindingConstants} class defines some constants
  * public that might be used from other bundles as well.
  *
  * @author Sami Salonen - Initial contribution

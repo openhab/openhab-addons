@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.transform.TransformationException;
 
 /**
- * @author Thomas.Eichstaedt-Engelen
+ * @author Thomas.Eichstaedt-Engelen - Initial contribution
  */
 public class XPathTransformationServiceTest extends AbstractTransformationServiceTest {
 

@@ -35,8 +35,7 @@ public class GroupHandler extends AVMFritzBaseThingHandler {
 
     @Override
     protected void updateProperties(AVMFritzBaseModel device, Map<String, String> editProperties) {
-        if (device instanceof GroupModel) {
-            GroupModel groupModel = (GroupModel) device;
+        if (device instanceof GroupModel groupModel) {
             if (groupModel.getGroupinfo() != null) {
                 editProperties.put(PROPERTY_MASTER, groupModel.getGroupinfo().getMasterdeviceid());
                 editProperties.put(PROPERTY_MEMBERS, groupModel.getGroupinfo().getMembers());

@@ -83,9 +83,7 @@ public class BasicThingHandlerTest extends AbstractThingHandlerTest {
             return;
         }
 
-        Mockito.doAnswer(answer -> {
-            return OwSensorType.DS2401;
-        }).when(secondBridgeHandler).getType(any());
+        Mockito.doAnswer(answer -> OwSensorType.DS2401).when(secondBridgeHandler).getType(any());
 
         thingHandler.initialize();
 
@@ -101,9 +99,7 @@ public class BasicThingHandlerTest extends AbstractThingHandlerTest {
             return;
         }
 
-        Mockito.doAnswer(answer -> {
-            return OwSensorType.DS18B20;
-        }).when(secondBridgeHandler).getType(any());
+        Mockito.doAnswer(answer -> OwSensorType.DS18B20).when(secondBridgeHandler).getType(any());
 
         thingHandler.initialize();
         waitForAssert(() -> assertEquals(ThingStatus.UNKNOWN, thingHandler.getThing().getStatusInfo().getStatus()));
@@ -125,9 +121,7 @@ public class BasicThingHandlerTest extends AbstractThingHandlerTest {
             return;
         }
 
-        Mockito.doAnswer(answer -> {
-            return OwSensorType.DS2408;
-        }).when(secondBridgeHandler).getType(any());
+        Mockito.doAnswer(answer -> OwSensorType.DS2408).when(secondBridgeHandler).getType(any());
 
         thingHandler.initialize();
         waitForAssert(() -> assertEquals(ThingStatus.UNKNOWN, thingHandler.getThing().getStatusInfo().getStatus()));

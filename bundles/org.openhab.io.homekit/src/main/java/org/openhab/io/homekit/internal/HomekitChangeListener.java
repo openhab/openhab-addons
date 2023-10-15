@@ -230,8 +230,8 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         /*
          * if metadata of a group item was changed, mark all group member as dirty.
          */
-        if (item instanceof GroupItem) {
-            ((GroupItem) item).getMembers().forEach(groupMember -> pendingUpdates.add(groupMember.getName()));
+        if (item instanceof GroupItem itemAsGroupItem) {
+            itemAsGroupItem.getMembers().forEach(groupMember -> pendingUpdates.add(groupMember.getName()));
         }
         applyUpdatesDebouncer.call();
     }
@@ -386,10 +386,9 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             @Nullable Map<String, Object> configuration) {
         if (accessoryTypes.size() > 1 && configuration != null) {
             final @Nullable Object value = configuration.get(HomekitTaggedItem.PRIMARY_SERVICE);
-            if (value instanceof String) {
-                return accessoryTypes.stream()
-                        .filter(aType -> ((String) value).equalsIgnoreCase(aType.getKey().getTag())).findAny()
-                        .orElse(accessoryTypes.get(0)).getKey();
+            if (value instanceof String valueAsString) {
+                return accessoryTypes.stream().filter(aType -> valueAsString.equalsIgnoreCase(aType.getKey().getTag()))
+                        .findAny().orElse(accessoryTypes.get(0)).getKey();
             }
         }
         // no primary accessory found or there is only one type, so return the first type from the list
@@ -513,8 +512,8 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         if (value == null) {
             return (instance == 1);
         }
-        if (value instanceof Number) {
-            return (instance == ((Number) value).intValue());
+        if (value instanceof Number valueAsNumber) {
+            return (instance == valueAsNumber.intValue());
         }
         logger.warn("Unrecognized instance tag {} ({}) for item {}; assigning to default instance.", value,
                 value.getClass(), item.getName());

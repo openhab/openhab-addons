@@ -256,8 +256,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
             try {
                 switch (selector) {
                     case CHARGE_LIMIT_SOC: {
-                        if (command instanceof PercentType) {
-                            setChargeLimit(((PercentType) command).intValue());
+                        if (command instanceof PercentType percentCommand) {
+                            setChargeLimit(percentCommand.intValue());
                         } else if (command instanceof OnOffType && command == OnOffType.ON) {
                             setChargeLimit(100);
                         } else if (command instanceof OnOffType && command == OnOffType.OFF) {
@@ -273,19 +273,22 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     }
                     case CHARGE_AMPS:
                         Integer amps = null;
-                        if (command instanceof DecimalType) {
-                            amps = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            amps = decimalCommand.intValue();
                         }
-                        if (command instanceof QuantityType<?>) {
-                            QuantityType<?> qamps = ((QuantityType<?>) command).toUnit(Units.AMPERE);
+                        if (command instanceof QuantityType<?> quantityCommand) {
+                            QuantityType<?> qamps = quantityCommand.toUnit(Units.AMPERE);
                             if (qamps != null) {
                                 amps = qamps.intValue();
                             }
                         }
                         if (amps != null) {
-                            if (amps < 5 || amps > 32) {
-                                logger.warn("Charging amps can only be set in a range of 5-32A, but not to {}A.", amps);
+                            if (amps > 32) {
+                                logger.warn("Charging amps cannot be set higher than 32A, {}A was requested", amps);
                                 return;
+                            }
+                            if (amps < 5) {
+                                logger.info("Charging amps should be set higher than 5A to avoid excessive losses.");
                             }
                             setChargingAmps(amps);
                         }
@@ -324,8 +327,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     case CHARGE_TO_MAX: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 setMaxRangeCharging(true);
                             } else {
                                 setMaxRangeCharging(false);
@@ -334,8 +337,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     case CHARGE: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 charge(true);
                             } else {
                                 charge(false);
@@ -344,32 +347,32 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     case FLASH: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 flashLights();
                             }
                         }
                         break;
                     }
                     case HONK_HORN: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 honkHorn();
                             }
                         }
                         break;
                     }
                     case CHARGEPORT: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 openChargePort();
                             }
                         }
                         break;
                     }
                     case DOOR_LOCK: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 lockDoors(true);
                             } else {
                                 lockDoors(false);
@@ -378,8 +381,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     case AUTO_COND: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 autoConditioning(true);
                             } else {
                                 autoConditioning(false);
@@ -388,24 +391,24 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     case WAKEUP: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 wakeUp();
                             }
                         }
                         break;
                     }
                     case FT: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 openFrunk();
                             }
                         }
                         break;
                     }
                     case RT: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 if (vehicleState.rt == 0) {
                                     openTrunk();
                                 }
@@ -416,9 +419,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     case VALET_MODE: {
-                        if (command instanceof OnOffType) {
+                        if (command instanceof OnOffType onOffCommand) {
                             int valetpin = ((BigDecimal) getConfig().get(VALETPIN)).intValue();
-                            if (((OnOffType) command) == OnOffType.ON) {
+                            if (onOffCommand == OnOffType.ON) {
                                 setValetMode(true, valetpin);
                             } else {
                                 setValetMode(false, valetpin);
@@ -427,16 +430,16 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     case RESET_VALET_PIN: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
+                        if (command instanceof OnOffType onOffCommand) {
+                            if (onOffCommand == OnOffType.ON) {
                                 resetValetPin();
                             }
                         }
                         break;
                     }
                     case STEERINGWHEEL_HEATER: {
-                        if (command instanceof OnOffType) {
-                            boolean commandBooleanValue = ((OnOffType) command) == OnOffType.ON ? true : false;
+                        if (command instanceof OnOffType onOffCommand) {
+                            boolean commandBooleanValue = onOffCommand == OnOffType.ON ? true : false;
                             setSteeringWheelHeater(commandBooleanValue);
                         }
                         break;
@@ -1025,7 +1028,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             case "data:update":
                                 logger.debug("Event : Received an update: '{}'", event.value);
 
-                                String vals[] = event.value.split(",");
+                                String[] vals = event.value.split(",");
                                 long currentTimeStamp = Long.parseLong(vals[0]);
                                 long systemTimeStamp = System.currentTimeMillis();
                                 if (logger.isDebugEnabled()) {

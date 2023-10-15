@@ -252,9 +252,9 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 updateState(channelUID, new StringType(result.get("soundField")));
             }
         }
-        if (command instanceof StringType) {
+        if (command instanceof StringType stringCommand) {
             logger.debug("handleSoundSettings set {}", command);
-            connection.setSoundSettings("soundField", ((StringType) command).toString());
+            connection.setSoundSettings("soundField", stringCommand.toString());
         }
     }
 
@@ -266,9 +266,9 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 updateState(channelUID, new StringType(result.get("nightMode")));
             }
         }
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType onOffCommand) {
             logger.debug("handleNightMode set {}", command);
-            connection.setSoundSettings("nightMode", ((OnOffType) command) == OnOffType.ON ? "on" : "off");
+            connection.setSoundSettings("nightMode", onOffCommand == OnOffType.ON ? "on" : "off");
         }
     }
 
@@ -286,9 +286,9 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 throw new IOException(ex.getCause());
             }
         }
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType onOffCommand) {
             logger.debug("handlePowerCommand set {} {}", zone, command);
-            connection.setPower(((OnOffType) command) == OnOffType.ON, zone);
+            connection.setPower(onOffCommand == OnOffType.ON, zone);
         }
     }
 
@@ -338,18 +338,18 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 throw new IOException(ex.getCause());
             }
         }
-        if (command instanceof PercentType) {
+        if (command instanceof PercentType percentCommand) {
             logger.debug("handleVolumeCommand PercentType set {} {}", zone, command);
-            connection.setVolume(((PercentType) command).intValue(), zone);
+            connection.setVolume(percentCommand.intValue(), zone);
         }
         if (command instanceof IncreaseDecreaseType) {
             logger.debug("handleVolumeCommand IncreaseDecreaseType set {} {}", zone, command);
             String change = command == IncreaseDecreaseType.INCREASE ? "+1" : "-1";
             connection.setVolume(change, zone);
         }
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType onOffCommand) {
             logger.debug("handleVolumeCommand OnOffType set {} {}", zone, command);
-            connection.setMute(((OnOffType) command) == OnOffType.ON, zone);
+            connection.setMute(onOffCommand == OnOffType.ON, zone);
         }
     }
 
@@ -369,9 +369,9 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 throw new IOException(ex.getCause());
             }
         }
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType onOffCommand) {
             logger.debug("handleMuteCommand set {} {}", zone, command);
-            connection.setMute(((OnOffType) command) == OnOffType.ON, zone);
+            connection.setMute(onOffCommand == OnOffType.ON, zone);
         }
     }
 
@@ -382,8 +382,8 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         if (command instanceof RefreshType) {
             updateState(channelUID, new DecimalType(currentRadioStation));
         }
-        if (command instanceof DecimalType) {
-            currentRadioStation = ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            currentRadioStation = decimalCommand.intValue();
             String radioCommand = "radio:fm?contentId=" + currentRadioStation;
 
             for (int i = 1; i <= 4; i++) {
@@ -399,8 +399,8 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         if (command instanceof RefreshType) {
             updateState(channelUID, new StringType(""));
         }
-        if (command instanceof StringType) {
-            switch (((StringType) command).toString()) {
+        if (command instanceof StringType stringCommand) {
+            switch (stringCommand.toString()) {
                 case "fwdSeeking":
                     connection.radioSeekFwd();
                     break;
@@ -420,16 +420,16 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         String path = (String) config.get(SonyAudioBindingConstants.SCALAR_PATH_PARAMETER);
         Object port_o = config.get(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER);
         int port = 10000;
-        if (port_o instanceof BigDecimal) {
-            port = ((BigDecimal) port_o).intValue();
+        if (port_o instanceof BigDecimal decimalValue) {
+            port = decimalValue.intValue();
         } else if (port_o instanceof Integer) {
             port = (int) port_o;
         }
 
         Object refresh_o = config.get(SonyAudioBindingConstants.REFRESHINTERVAL);
         int refresh = 0;
-        if (refresh_o instanceof BigDecimal) {
-            refresh = ((BigDecimal) refresh_o).intValue();
+        if (refresh_o instanceof BigDecimal decimalValue) {
+            refresh = decimalValue.intValue();
         } else if (refresh_o instanceof Integer) {
             refresh = (int) refresh_o;
         }

@@ -18,7 +18,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 import org.openhab.core.library.types.UpDownType;
 
 /**
- * UpDownType <-> WSBooleanValue converter.
+ * UpDownType {@literal <->} WSBooleanValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <b>Note:</b> the given Regular Expression must contain exactly one group!
  *
- * @author Thomas.Eichstaedt-Engelen
+ * @author Thomas.Eichstaedt-Engelen - Initial contribution
  */
 @NonNullByDefault
 @Component(property = { "openhab.transform=REGEX" })
@@ -56,7 +56,7 @@ public class RegExTransformationService implements TransformationService {
             String regex = substMatcher.group(1);
             String substitution = substMatcher.group(2);
             String options = substMatcher.group(3);
-            if (options.equals("g")) {
+            if ("g".equals(options)) {
                 result = source.trim().replaceAll(regex, substitution);
             } else {
                 result = source.trim().replaceFirst(regex, substitution);
