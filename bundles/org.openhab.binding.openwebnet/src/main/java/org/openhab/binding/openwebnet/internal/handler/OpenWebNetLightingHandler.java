@@ -15,6 +15,7 @@ package org.openhab.binding.openwebnet.internal.handler;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,6 +58,11 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetLightingHandler.class);
 
+    /**
+     * A map to store handlers for lights and automations. The map is organised by
+     * AREA.
+     *
+     */
     protected class LightAutomHandlersMap {
 
         private Map<Integer, Map<String, OpenWebNetThingHandler>> hndlrsMap;
@@ -187,6 +193,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      * Reference to {@link OpenWebNetBridgeHandler#lightsMap}
      */
     private @Nullable LightAutomHandlersMap lightsMap;
+
+    Set<String> listOn = new HashSet<String>();
 
     public OpenWebNetLightingHandler(Thing thing) {
         super(thing);
@@ -400,11 +408,52 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         super.handleMessage(msg);
+
+        WhereLightAutom dw = (WhereLightAutom) deviceWhere;
+        if (dw != null && !dw.isAPL()) {
+            Lighting lmsg = (Lighting) msg;
+            if (lmsg.isOn()) {
+                listOn.add(this.bridgeHandler.ownIdFromMessage(lmsg));
+                logger.debug("/////////// listOn for {}: {}", dw, listOn);
+            } else {
+                listOn.remove(this.bridgeHandler.ownIdFromMessage(lmsg));
+                logger.debug("/////////// listOn for {}: {}", dw, listOn);
+                if (listOn.size() > 0) { // some light still on, ignore this OFF msg
+                    logger.debug("/////////// some light still ON in {}... skipping msg {}", dw, msg);
+                    return;
+                }
+            }
+        }
+
         ThingTypeUID thingType = thing.getThingTypeUID();
         if (THING_TYPE_ZB_DIMMER.equals(thingType) || THING_TYPE_BUS_DIMMER.equals(thingType)) {
             updateBrightness((Lighting) msg);
         } else {
             updateOnOffState((Lighting) msg);
+        }
+
+        WhereLightAutom msgWhere = (WhereLightAutom) msg.getWhere();
+        if (msgWhere.isAPL()) {
+            OpenWebNetBridgeHandler brH = this.bridgeHandler;
+            WhereLightAutom w = (WhereLightAutom) deviceWhere;
+            // Propagate APL msg to AREA handler, if exists
+            if (brH != null && w != null && w.isAPL()) {
+                String areaOwnId = this.ownIdPrefix() + "." + w.getArea();
+                OpenWebNetLightingHandler areaHandler = (OpenWebNetLightingHandler) brH.getRegisteredDevice(areaOwnId);
+                if (areaHandler != null) {
+                    logger.debug("//////////////////// Propagating msg {} to AREA handler {}", msg, areaOwnId);
+                    areaHandler.handleMessage(msg);
+                }
+            }
+            // Propagate APL msg to GEN handler, if exists
+            if (brH != null && w != null && w.isAPL()) {
+                String genOwnId = this.ownIdPrefix() + ".0";
+                OpenWebNetLightingHandler genHandler = (OpenWebNetLightingHandler) brH.getRegisteredDevice(genOwnId);
+                if (genHandler != null) {
+                    logger.debug("//////////////////// Propagating msg {} to GEN handler", msg);
+                    genHandler.handleMessage(msg);
+                }
+            }
         }
     }
 
