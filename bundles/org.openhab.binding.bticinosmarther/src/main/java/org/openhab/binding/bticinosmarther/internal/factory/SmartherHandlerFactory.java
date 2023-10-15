@@ -21,6 +21,7 @@ import org.openhab.binding.bticinosmarther.internal.handler.SmartherBridgeHandle
 import org.openhab.binding.bticinosmarther.internal.handler.SmartherDynamicStateDescriptionProvider;
 import org.openhab.binding.bticinosmarther.internal.handler.SmartherModuleHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Bridge;
@@ -51,16 +52,19 @@ public class SmartherHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final CronScheduler cronScheduler;
     private final SmartherDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public SmartherHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference SmartherAccountService authService,
             @Reference HttpClientFactory httpClientFactory, @Reference CronScheduler cronScheduler,
-            @Reference SmartherDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
+            @Reference SmartherDynamicStateDescriptionProvider dynamicStateDescriptionProvider,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.oAuthFactory = oAuthFactory;
         this.authService = authService;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.cronScheduler = cronScheduler;
         this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class SmartherHandlerFactory extends BaseThingHandlerFactory {
             this.authService.addSmartherAccountHandler(handler);
             return handler;
         } else if (SmartherBindingConstants.THING_TYPE_MODULE.equals(thingTypeUID)) {
-            return new SmartherModuleHandler(thing, cronScheduler, dynamicStateDescriptionProvider);
+            return new SmartherModuleHandler(thing, cronScheduler, dynamicStateDescriptionProvider, timeZoneProvider);
         } else {
             logger.debug("Unsupported thing {}", thing.getThingTypeUID());
             return null;
@@ -86,8 +90,8 @@ public class SmartherHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof SmartherBridgeHandler) {
-            authService.removeSmartherAccountHandler((SmartherBridgeHandler) thingHandler);
+        if (thingHandler instanceof SmartherBridgeHandler bridgeHandler) {
+            authService.removeSmartherAccountHandler(bridgeHandler);
         }
     }
 }

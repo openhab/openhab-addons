@@ -103,9 +103,9 @@ public final class PlugwiseUtils {
         final String delimiter = "_";
         StringBuilder upperCamelBuilder = new StringBuilder(text.length());
         for (String str : text.split(delimiter)) {
-            if (upperCamelBuilder.isEmpty() && str.length() > 0) {
+            if (upperCamelBuilder.isEmpty() && !str.isEmpty()) {
                 upperCamelBuilder.append(str.substring(0, 1).toLowerCase());
-            } else if (str.length() > 0) {
+            } else if (!str.isEmpty()) {
                 upperCamelBuilder.append(str.substring(0, 1).toUpperCase());
             }
             if (str.length() > 1) {

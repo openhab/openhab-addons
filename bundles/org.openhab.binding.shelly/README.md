@@ -997,7 +997,6 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 | ------- | --------------- | -------- | --------- | ------------------------------------------------------------------- |
 | sensors | temperature     | Number   | yes       | Current Temperature in °C                                           |
 |         | state           | Contact  | yes       | Valve status: OPEN or CLOSED (position = 0)                         |
-|         | open            | Contact  | yes       | ON: "window is open" was detected, OFF: window is closed            |
 |         | lastUpdate      | DateTime | yes       | Timestamp of the last update (any sensor value changed)             |
 | control | targetTemp      | Number   | no        | Temperature in °C: 4=Low/Min; 5..30=target temperature;31=Hi/Max    |
 |         | position        | Dimmer   | no        | Set valve to manual mode (0..100%) disables auto-temp)              |

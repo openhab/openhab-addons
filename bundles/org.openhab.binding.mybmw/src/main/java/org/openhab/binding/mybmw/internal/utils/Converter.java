@@ -13,6 +13,7 @@
 package org.openhab.binding.mybmw.internal.utils;
 
 import java.lang.reflect.Type;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -251,12 +252,10 @@ public class Converter {
     public static String getRandomString(int size) {
         int leftLimit = 97; // letter 'a'
         int rightLimit = 122; // letter 'z'
-        Random random = new Random();
+        Random random = new SecureRandom();
 
-        String generatedString = random.ints(leftLimit, rightLimit + 1).limit(size)
+        return random.ints(leftLimit, rightLimit + 1).limit(size)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
-
-        return generatedString;
     }
 
     public static State getLockState(boolean lock) {

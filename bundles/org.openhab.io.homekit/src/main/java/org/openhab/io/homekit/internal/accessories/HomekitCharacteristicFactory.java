@@ -151,7 +151,6 @@ import io.github.hapjava.characteristics.impl.windowcovering.CurrentVerticalTilt
 import io.github.hapjava.characteristics.impl.windowcovering.HoldPositionCharacteristic;
 import io.github.hapjava.characteristics.impl.windowcovering.TargetHorizontalTiltAngleCharacteristic;
 import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltAngleCharacteristic;
-import tech.units.indriya.unit.UnitDimension;
 
 /**
  * Creates an optional characteristics .
@@ -160,10 +159,10 @@ import tech.units.indriya.unit.UnitDimension;
  */
 @NonNullByDefault
 public class HomekitCharacteristicFactory {
-    private static final Logger logger = LoggerFactory.getLogger(HomekitCharacteristicFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HomekitCharacteristicFactory.class);
 
     // List of optional characteristics and corresponding method to create them.
-    private static final Map<HomekitCharacteristicType, BiFunction<HomekitTaggedItem, HomekitAccessoryUpdater, Characteristic>> optional = new HashMap<HomekitCharacteristicType, BiFunction<HomekitTaggedItem, HomekitAccessoryUpdater, Characteristic>>() {
+    private static final Map<HomekitCharacteristicType, BiFunction<HomekitTaggedItem, HomekitAccessoryUpdater, Characteristic>> OPTIONAL = new HashMap<HomekitCharacteristicType, BiFunction<HomekitTaggedItem, HomekitAccessoryUpdater, Characteristic>>() {
         {
             put(NAME, HomekitCharacteristicFactory::createNameCharacteristic);
             put(BATTERY_LOW_STATUS, HomekitCharacteristicFactory::createStatusLowBatteryCharacteristic);
@@ -234,9 +233,9 @@ public class HomekitCharacteristicFactory {
     public static @Nullable Characteristic createNullableCharacteristic(HomekitTaggedItem item,
             HomekitAccessoryUpdater updater) {
         final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
-        logger.trace("Create characteristic {}", item);
-        if (optional.containsKey(type)) {
-            return optional.get(type).apply(item, updater);
+        LOGGER.trace("Create characteristic {}", item);
+        if (OPTIONAL.containsKey(type)) {
+            return OPTIONAL.get(type).apply(item, updater);
         }
         return null;
     }
@@ -255,7 +254,7 @@ public class HomekitCharacteristicFactory {
             return characteristic;
         }
         final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
-        logger.warn("Unsupported optional characteristic from item {}. Accessory type {}, characteristic type {}",
+        LOGGER.warn("Unsupported optional characteristic from item {}. Accessory type {}, characteristic type {}",
                 item.getName(), item.getAccessoryType(), type.getTag());
         throw new HomekitException(
                 "Unsupported optional characteristic. Characteristic type \"" + type.getTag() + "\"");
@@ -328,7 +327,7 @@ public class HomekitCharacteristicFactory {
                 }
             });
         }
-        logger.debug("Created {} mapping for item {} ({}): {}", klazz.getSimpleName(), item.getName(),
+        LOGGER.debug("Created {} mapping for item {} ({}): {}", klazz.getSimpleName(), item.getName(),
                 item.getBaseItem().getClass().getSimpleName(), map);
         return map;
     }
@@ -347,7 +346,7 @@ public class HomekitCharacteristicFactory {
      * Takes item state as value and retrieves the key for that value from mapping.
      * E.g. used to map StringItem value to HomeKit Enum
      *
-     * @param characteristicType characteristicType to identify item
+     * @param item item
      * @param mapping mapping
      * @param defaultValue default value if nothing found in mapping
      * @param <T> type of the result derived from
@@ -355,7 +354,7 @@ public class HomekitCharacteristicFactory {
      */
     public static <T> T getKeyFromMapping(HomekitTaggedItem item, Map<T, String> mapping, T defaultValue) {
         final State state = item.getItem().getState();
-        logger.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", item.getAccessoryType().getTag(),
+        LOGGER.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", item.getAccessoryType().getTag(),
                 state, mapping);
 
         String value;
@@ -370,7 +369,7 @@ public class HomekitCharacteristicFactory {
             // We specifically want DecimalType, but _not_ PercentType or HSBType, so don't use instanceof
             value = Integer.toString(((DecimalType) state).intValue());
         } else {
-            logger.warn(
+            LOGGER.warn(
                     "Wrong value type {} ({}) for {} characteristic of the item {}. Expected StringItem, NumberItem, or SwitchItem.",
                     state.toString(), state.getClass().getSimpleName(), item.getAccessoryType().getTag(),
                     item.getName());
@@ -379,7 +378,7 @@ public class HomekitCharacteristicFactory {
 
         return mapping.entrySet().stream().filter(entry -> value.equalsIgnoreCase(entry.getValue())).findAny()
                 .map(Map.Entry::getKey).orElseGet(() -> {
-                    logger.warn(
+                    LOGGER.warn(
                             "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
                             state.toString(), item.getAccessoryType().getTag(), item.getName(), mapping.values(),
                             defaultValue);
@@ -414,15 +413,15 @@ public class HomekitCharacteristicFactory {
     private static int getIntFromItem(HomekitTaggedItem taggedItem, int defaultValue) {
         int value = defaultValue;
         final State state = taggedItem.getItem().getState();
-        if (state instanceof PercentType) {
-            value = ((PercentType) state).intValue();
-        } else if (state instanceof DecimalType) {
-            value = ((DecimalType) state).intValue();
+        if (state instanceof PercentType stateAsPercentType) {
+            value = stateAsPercentType.intValue();
+        } else if (state instanceof DecimalType stateAsDecimalType) {
+            value = stateAsDecimalType.intValue();
         } else if (state instanceof UnDefType) {
-            logger.debug("Item state {} is UNDEF {}. Returning default value {}", state, taggedItem.getName(),
+            LOGGER.debug("Item state {} is UNDEF {}. Returning default value {}", state, taggedItem.getName(),
                     defaultValue);
         } else {
-            logger.warn(
+            LOGGER.warn(
                     "Item state {} is not supported for {}. Only PercentType and DecimalType (0/100) are supported.",
                     state, taggedItem.getName());
         }
@@ -433,8 +432,8 @@ public class HomekitCharacteristicFactory {
     private static int getAngleFromItem(HomekitTaggedItem taggedItem, int defaultValue) {
         int value = defaultValue;
         final State state = taggedItem.getItem().getState();
-        if (state instanceof PercentType) {
-            value = (int) ((((PercentType) state).intValue() * 90.0) / 50.0 - 90.0);
+        if (state instanceof PercentType stateAsPercentType) {
+            value = (int) ((stateAsPercentType.intValue() * 90.0) / 50.0 - 90.0);
         } else {
             value = getIntFromItem(taggedItem, defaultValue);
         }
@@ -451,9 +450,8 @@ public class HomekitCharacteristicFactory {
             return null;
         }
 
-        if (state instanceof QuantityType<?>) {
-            final QuantityType<?> qt = (QuantityType<?>) state;
-            if (qt.getDimension().equals(UnitDimension.TEMPERATURE)) {
+        if (state instanceof QuantityType<?> qt) {
+            if (qt.getDimension().equals(SIUnits.CELSIUS.getDimension())) {
                 return qt.toUnit(SIUnits.CELSIUS).doubleValue();
             }
         }
@@ -488,7 +486,7 @@ public class HomekitCharacteristicFactory {
             if (taggedItem.getBaseItem() instanceof NumberItem) {
                 taggedItem.send(new DecimalType(value));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only NumberItem is supported.",
+                LOGGER.warn("Item type {} is not supported for {}. Only NumberItem is supported.",
                         taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
@@ -501,7 +499,7 @@ public class HomekitCharacteristicFactory {
             } else if (taggedItem.getBaseItem() instanceof DimmerItem) {
                 taggedItem.send(new PercentType(value));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
+                LOGGER.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
                         taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
@@ -515,7 +513,7 @@ public class HomekitCharacteristicFactory {
                 value = (int) (value * 50.0 / 90.0 + 50.0);
                 taggedItem.send(new PercentType(value));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
+                LOGGER.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
                         taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
@@ -526,12 +524,12 @@ public class HomekitCharacteristicFactory {
         return () -> {
             final State state = taggedItem.getItem().getState();
             double value = defaultValue;
-            if (state instanceof PercentType) {
-                value = ((PercentType) state).doubleValue();
-            } else if (state instanceof DecimalType) {
-                value = ((DecimalType) state).doubleValue();
-            } else if (state instanceof QuantityType) {
-                value = ((QuantityType) state).doubleValue();
+            if (state instanceof PercentType stateAsPercentType) {
+                value = stateAsPercentType.doubleValue();
+            } else if (state instanceof DecimalType stateAsDecimalType) {
+                value = stateAsDecimalType.doubleValue();
+            } else if (state instanceof QuantityType stateAsQuantityType) {
+                value = stateAsQuantityType.doubleValue();
             }
             return CompletableFuture.completedFuture(value);
         };
@@ -544,7 +542,7 @@ public class HomekitCharacteristicFactory {
             } else if (taggedItem.getBaseItem() instanceof DimmerItem) {
                 taggedItem.send(new PercentType(value.intValue()));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only Number and Dimmer type are supported.",
+                LOGGER.warn("Item type {} is not supported for {}. Only Number and Dimmer type are supported.",
                         taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
@@ -563,7 +561,7 @@ public class HomekitCharacteristicFactory {
             if (taggedItem.getBaseItem() instanceof NumberItem) {
                 taggedItem.send(new DecimalType(convertFromCelsius(value)));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only Number type is supported.",
+                LOGGER.warn("Item type {} is not supported for {}. Only Number type is supported.",
                         taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
@@ -638,7 +636,7 @@ public class HomekitCharacteristicFactory {
             HomekitAccessoryUpdater updater) {
         final Item item = taggedItem.getBaseItem();
         if (!(item instanceof SwitchItem || item instanceof RollershutterItem)) {
-            logger.warn(
+            LOGGER.warn(
                     "Item {} cannot be used for the HoldPosition characteristic; only SwitchItem and RollershutterItem are supported. Hold requests will be ignored.",
                     item.getName());
         }
@@ -648,10 +646,10 @@ public class HomekitCharacteristicFactory {
                 return;
             }
 
-            if (item instanceof SwitchItem) {
-                ((SwitchItem) item).send(OnOffType.ON);
-            } else if (item instanceof RollershutterItem) {
-                ((RollershutterItem) item).send(StopMoveType.STOP);
+            if (item instanceof SwitchItem switchItem) {
+                switchItem.send(OnOffType.ON);
+            } else if (item instanceof RollershutterItem rollerShutterItem) {
+                rollerShutterItem.send(StopMoveType.STOP);
             }
         });
     }
@@ -743,15 +741,15 @@ public class HomekitCharacteristicFactory {
         return new HueCharacteristic(() -> {
             double value = 0.0;
             State state = taggedItem.getItem().getState();
-            if (state instanceof HSBType) {
-                value = ((HSBType) state).getHue().doubleValue();
+            if (state instanceof HSBType stateAsHSBType) {
+                value = stateAsHSBType.getHue().doubleValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (hue) -> {
             if (taggedItem.getBaseItem() instanceof ColorItem) {
                 taggedItem.sendCommandProxy(HomekitCommandType.HUE_COMMAND, new DecimalType(hue));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only Color type is supported.",
+                LOGGER.warn("Item type {} is not supported for {}. Only Color type is supported.",
                         taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         }, getSubscriber(taggedItem, HUE, updater), getUnsubscriber(taggedItem, HUE, updater));
@@ -762,17 +760,17 @@ public class HomekitCharacteristicFactory {
         return new BrightnessCharacteristic(() -> {
             int value = 0;
             final State state = taggedItem.getItem().getState();
-            if (state instanceof HSBType) {
-                value = ((HSBType) state).getBrightness().intValue();
-            } else if (state instanceof PercentType) {
-                value = ((PercentType) state).intValue();
+            if (state instanceof HSBType stateAsHSBType) {
+                value = stateAsHSBType.getBrightness().intValue();
+            } else if (state instanceof PercentType stateAsPercentType) {
+                value = stateAsPercentType.intValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (brightness) -> {
             if (taggedItem.getBaseItem() instanceof DimmerItem) {
                 taggedItem.sendCommandProxy(HomekitCommandType.BRIGHTNESS_COMMAND, new PercentType(brightness));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only ColorItem and DimmerItem are supported.",
+                LOGGER.warn("Item type {} is not supported for {}. Only ColorItem and DimmerItem are supported.",
                         taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         }, getSubscriber(taggedItem, BRIGHTNESS, updater), getUnsubscriber(taggedItem, BRIGHTNESS, updater));
@@ -783,10 +781,10 @@ public class HomekitCharacteristicFactory {
         return new SaturationCharacteristic(() -> {
             double value = 0.0;
             State state = taggedItem.getItem().getState();
-            if (state instanceof HSBType) {
-                value = ((HSBType) state).getSaturation().doubleValue();
-            } else if (state instanceof PercentType) {
-                value = ((PercentType) state).doubleValue();
+            if (state instanceof HSBType stateAsHSBType) {
+                value = stateAsHSBType.getSaturation().doubleValue();
+            } else if (state instanceof PercentType stateAsPercentType) {
+                value = stateAsPercentType.doubleValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (saturation) -> {
@@ -794,7 +792,7 @@ public class HomekitCharacteristicFactory {
                 taggedItem.sendCommandProxy(HomekitCommandType.SATURATION_COMMAND,
                         new PercentType(saturation.intValue()));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only Color type is supported.",
+                LOGGER.warn("Item type {} is not supported for {}. Only Color type is supported.",
                         taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         }, getSubscriber(taggedItem, SATURATION, updater), getUnsubscriber(taggedItem, SATURATION, updater));
@@ -826,17 +824,16 @@ public class HomekitCharacteristicFactory {
         return new ColorTemperatureCharacteristic(minValue, maxValue, () -> {
             int value = finalMinValue;
             final State state = taggedItem.getItem().getState();
-            if (state instanceof QuantityType<?>) {
+            if (state instanceof QuantityType<?> qt) {
                 // Number:Temperature
-                QuantityType<?> qt = (QuantityType<?>) state;
                 qt = qt.toInvertibleUnit(Units.MIRED);
                 if (qt == null) {
-                    logger.warn("Item {}'s state '{}' is not convertible to mireds.", taggedItem.getName(), state);
+                    LOGGER.warn("Item {}'s state '{}' is not convertible to mireds.", taggedItem.getName(), state);
                 } else {
                     value = qt.intValue();
                 }
-            } else if (state instanceof PercentType) {
-                double percent = ((PercentType) state).doubleValue();
+            } else if (state instanceof PercentType stateAsPercentType) {
+                double percent = stateAsPercentType.doubleValue();
                 // invert so that 0% == coolest
                 if (inverted) {
                     percent = 100.0 - percent;
@@ -845,8 +842,8 @@ public class HomekitCharacteristicFactory {
                 // Dimmer
                 // scale to the originally configured range
                 value = (int) (percent * range / 100) + finalMinValue;
-            } else if (state instanceof DecimalType) {
-                value = ((DecimalType) state).intValue();
+            } else if (state instanceof DecimalType stateAsDecimalType) {
+                value = stateAsDecimalType.intValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (value) -> {
@@ -927,10 +924,10 @@ public class HomekitCharacteristicFactory {
             final @Nullable Map<String, Object> itemConfiguration = taggedItem.getConfiguration();
             if ((value == 0) && (itemConfiguration != null)) { // check for default duration
                 final Object duration = itemConfiguration.get(HomekitValveImpl.CONFIG_DEFAULT_DURATION);
-                if (duration instanceof BigDecimal) {
-                    value = ((BigDecimal) duration).intValue();
-                    if (taggedItem.getItem() instanceof NumberItem) {
-                        ((NumberItem) taggedItem.getItem()).setState(new DecimalType(value));
+                if (duration instanceof BigDecimal durationAsBigDecimal) {
+                    value = durationAsBigDecimal.intValue();
+                    if (taggedItem.getItem() instanceof NumberItem taggedNumberItem) {
+                        taggedNumberItem.setState(new DecimalType(value));
                     }
                 }
             }

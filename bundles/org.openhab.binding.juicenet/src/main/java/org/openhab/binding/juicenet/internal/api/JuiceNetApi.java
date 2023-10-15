@@ -156,8 +156,8 @@ public class JuiceNetApi {
         Map<String, Object> params = new HashMap<>();
 
         params.put("energy_at_plugin", Integer.toString(energy_at_plugin));
-        params.put("override_time", Long.toString(energy_at_plugin));
-        params.put("energy_to_add", Integer.toString(energy_at_plugin));
+        params.put("override_time", Long.toString(override_time));
+        params.put("energy_to_add", Integer.toString(energy_to_add));
 
         postApiCommand(ApiCommand.SET_OVERRIDE, token, params);
     }

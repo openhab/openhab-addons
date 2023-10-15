@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.ruuvitag.internal;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +42,7 @@ public class RuuviTagDiscoveryParticipant implements BluetoothDiscoveryParticipa
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(RuuviTagBindingConstants.THING_TYPE_BEACON);
+        return Set.of(RuuviTagBindingConstants.THING_TYPE_BEACON);
     }
 
     @Override

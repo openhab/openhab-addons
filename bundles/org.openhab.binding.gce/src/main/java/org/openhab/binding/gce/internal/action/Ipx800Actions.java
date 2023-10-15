@@ -41,8 +41,8 @@ public class Ipx800Actions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof Ipx800v3Handler) {
-            this.handler = (Ipx800v3Handler) handler;
+        if (handler instanceof Ipx800v3Handler ipx800v3Handler) {
+            this.handler = ipx800v3Handler;
         }
     }
 

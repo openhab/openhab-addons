@@ -20,10 +20,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -198,7 +198,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MaxDevicesActions.class);
+        return Set.of(MaxDevicesActions.class);
     }
 
     private void sendPropertyUpdate(Map<String, Object> configurationParameters, Map<String, Object> deviceProperties) {
@@ -543,8 +543,8 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 configuration.put(PROPERTY_ROOMNAME, device.getRoomName());
                 config_changed = true;
             }
-            if (getConfig().get(PROPERTY_ROOMID) == null || !(new BigDecimal(device.getRoomId())
-                    .compareTo((BigDecimal) getConfig().get(PROPERTY_ROOMID)) == 0)) {
+            if (getConfig().get(PROPERTY_ROOMID) == null || new BigDecimal(device.getRoomId())
+                    .compareTo((BigDecimal) getConfig().get(PROPERTY_ROOMID)) != 0) {
                 configuration.put(PROPERTY_ROOMID, new BigDecimal(device.getRoomId()));
                 config_changed = true;
             }

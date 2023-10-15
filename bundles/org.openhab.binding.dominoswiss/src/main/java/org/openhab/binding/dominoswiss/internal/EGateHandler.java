@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link EgateHandler} is responsible for handling commands, which are
+ * The {@link EGateHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Frieso Aeschbacher - Initial contribution
@@ -274,7 +274,6 @@ public class EGateHandler extends BaseBridgeHandler {
     private void startAutomaticRefresh() {
         Runnable runnable = () -> {
             try {
-
                 Socket localSocket = egateSocket;
                 if (localSocket == null) {
                     return;

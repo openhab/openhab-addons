@@ -23,16 +23,17 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.ServletException;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.addon.AddonInfoRegistry;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.events.EventSubscriber;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.events.ItemStateChangedEvent;
@@ -95,7 +96,8 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
     private final MDNSClient mdnsClient;
     private final EventPublisher eventPublisher;
     private final NetworkAddressService networkAddressService;
-    private final ClientBuilder clientBuilder;
+    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
 
     /** The main dashboard servlet. Only created in the activate method (and disposed of in the deactivate method) */
     private @Nullable NeeoDashboardServlet dashboardServlet;
@@ -143,7 +145,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
             @Reference AddonInfoRegistry addonInfoRegistry, @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference ThingTypeRegistry thingTypeRegistry, @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
             @Reference MDNSClient mdnsClient, @Reference EventPublisher eventPublisher,
-            @Reference NetworkAddressService networkAddressService, @Reference ClientBuilder clientBuilder) {
+            @Reference NetworkAddressService networkAddressService, @Reference HttpClientFactory httpClientFactory) {
         this.httpService = httpService;
         this.itemRegistry = itemRegistry;
         this.bindingInfoRegistry = addonInfoRegistry;
@@ -154,7 +156,8 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
         this.mdnsClient = mdnsClient;
         this.eventPublisher = eventPublisher;
         this.networkAddressService = networkAddressService;
-        this.clientBuilder = clientBuilder;
+        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
 
         logger.debug("Neeo Service activated");
         final ServiceContext localContext = new ServiceContext(componentContext, validate(httpService, "httpService"),
@@ -165,7 +168,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                 validate(eventPublisher, "eventPublisher"), validate(networkAddressService, "networkAddressService"));
 
         context = localContext;
-        discovery = new MdnsBrainDiscovery(localContext, clientBuilder);
+        discovery = new MdnsBrainDiscovery(localContext, httpClient);
         discovery.addListener(discoveryListener);
 
         try {
@@ -279,7 +282,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                         servletUrl);
                 try {
                     final NeeoBrainServlet newServlet = NeeoBrainServlet.create(localContext, servletUrl,
-                            sysInfo.getHostname(), ipAddress, clientBuilder);
+                            sysInfo.getHostname(), ipAddress, httpClient, httpClientFactory);
                     servlets.add(newServlet);
 
                     Hashtable<Object, Object> initParams = new Hashtable<>();
@@ -407,7 +410,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
      */
     @Override
     public Set<String> getSubscribedEventTypes() {
-        return Collections.singleton(ItemStateChangedEvent.TYPE);
+        return Set.of(ItemStateChangedEvent.TYPE);
     }
 
     @Override
