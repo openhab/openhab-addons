@@ -25,6 +25,7 @@ import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingTypeRegistry;
+import org.openhab.core.util.StringUtils;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
 import org.openhab.io.neeo.internal.util.StringUtils;
 import org.osgi.service.component.ComponentContext;
@@ -238,7 +239,7 @@ public class ServiceContext {
         NeeoUtil.requireNotEmpty(thingType, "thingType cannot be null");
 
         for (int i = 0; i < 100; i++) {
-            final String id = StringUtils.randomAlphanummeric(8);
+            final String id = StringUtils.getRandomAlphanumeric(8);
             final NeeoThingUID uid = new NeeoThingUID(thingType, id);
             if (getThingRegistry().get(uid.asThingUID()) == null) {
                 return uid;

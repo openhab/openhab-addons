@@ -36,18 +36,4 @@ public class StringUtils {
         list.removeAll(Arrays.asList("", null));
         return list.toArray(new String[0]);
     }
-
-    public static String randomString(int length, String charset) {
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            int index = (int) (charset.length() * Math.random());
-            sb.append(charset.charAt(index));
-        }
-
-        return sb.toString();
-    }
-
-    public static String randomAlphanummeric(int length) {
-        return StringUtils.randomString(length, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz");
-    }
 }
