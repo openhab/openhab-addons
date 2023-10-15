@@ -84,7 +84,6 @@ public final class RequestResponseFactory {
      *
      * @param command
      * @param parameter
-     * @param zone
      * @return
      */
     public static ParameterizedCommand getIpControlCommand(ParameterizedCommandType command, String parameter) {

@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * Base class that handles common tasks with a Daikin air conditioning unit.
  *
  * @author Tim Waterhouse - Initial Contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Jimmy Tanagra - Split handler classes, support Airside and DynamicStateDescription
  *
  */

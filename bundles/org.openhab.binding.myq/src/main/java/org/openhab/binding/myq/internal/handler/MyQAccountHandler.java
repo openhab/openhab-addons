@@ -98,8 +98,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
      * MyQ oAuth relate fields
      */
     private static final String CLIENT_SECRET = "VUQ0RFhuS3lQV3EyNUJTdw==";
-    private static final String CLIENT_ID = "IOS_CGI_MYQ";
-    private static final String REDIRECT_URI = "com.myqops://ios";
+    private static final String CLIENT_ID = "ANDROID_CGI_MYQ";
+    private static final String REDIRECT_URI = "com.myqops://android";
     private static final String SCOPE = "MyQ_Residential offline_access";
     /*
      * MyQ authentication API endpoints
@@ -153,7 +153,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         username = config.username;
         password = config.password;
         // MyQ can get picky about blocking user agents apparently
-        userAgent = MyQAccountHandler.randomString(20);
+        userAgent = ""; // no agent string
         needsLogin = true;
         updateStatus(ThingStatus.UNKNOWN);
         restartPolls(false);
@@ -494,6 +494,9 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                     .param("response_type", "code") //
                     .param("scope", SCOPE) //
                     .agent(userAgent).followRedirects(true);
+            request.header("Accept", "\"*/*\"");
+            request.header("Authorization",
+                    "Basic " + Base64.getEncoder().encodeToString((CLIENT_ID + ":").getBytes()));
             logger.debug("Sending {} to {}", request.getMethod(), request.getURI());
             ContentResponse response = request.send();
             logger.debug("Login Code {} Response {}", response.getStatus(), response.getContentAsString());

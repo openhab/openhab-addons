@@ -25,7 +25,9 @@ public class IndegoTypeDatabase {
     /**
      * Return tool name from tool type number.
      *
-     * @see https://www.boschtoolservice.com/gb/en/boschdiy/spareparts/search-results?q=Indego
+     * @see <a href=
+     *      "https://www.boschtoolservice.com/gb/en/boschdiy/spareparts/search-results?q=Indego">
+     *      https://www.boschtoolservice.com/gb/en/boschdiy/spareparts/search-results?q=Indego</a>
      *
      * @param toolTypeNumber condensed tool type number, e.g. "3600HA2200" rather than "3 600 HA2 200".
      * @return tool type name

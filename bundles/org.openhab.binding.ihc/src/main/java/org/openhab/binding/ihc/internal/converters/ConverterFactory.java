@@ -34,7 +34,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Type;
 
 /**
- * IHC / ELKO <-> openHAB data type converter factory.
+ * IHC / ELKO {@literal <->} openHAB data type converter factory.
  *
  * @author Pauli Anttila - Initial contribution
  */

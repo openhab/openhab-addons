@@ -108,7 +108,22 @@ public class Request {
     }
 
     public static String getDevices() {
-        return request(CommuniqueType.READREQUEST, "/device");
+        return getDevices("");
+    }
+
+    public static String getDevices(boolean thisDevice) {
+        String url = String.format("where=IsThisDevice:%s", (thisDevice) ? "true" : "false");
+
+        return getDevices(url);
+    }
+
+    public static String getDevices(String predicate) {
+        String url = "/device";
+        if (!predicate.isEmpty()) {
+            url = String.format("%s?%s", url, predicate);
+        }
+
+        return request(CommuniqueType.READREQUEST, url);
     }
 
     public static String getVirtualButtons() {
@@ -117,6 +132,10 @@ public class Request {
 
     public static String getButtonGroups() {
         return request(CommuniqueType.READREQUEST, BUTTON_GROUP_URL);
+    }
+
+    public static String getProject() {
+        return request(CommuniqueType.READREQUEST, "/project");
     }
 
     public static String getAreas() {
@@ -137,5 +156,9 @@ public class Request {
 
     public static String subscribeOccupancyGroupStatus() {
         return request(CommuniqueType.SUBSCRIBEREQUEST, "/occupancygroup/status");
+    }
+
+    public static String subscribeZoneStatus() {
+        return request(CommuniqueType.SUBSCRIBEREQUEST, "/zone/status");
     }
 }

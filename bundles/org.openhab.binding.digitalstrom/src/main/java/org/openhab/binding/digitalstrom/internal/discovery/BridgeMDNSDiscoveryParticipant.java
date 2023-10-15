@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BridgeMDNSDiscoveryParticipant} is responsible for discovering digitalSTROM-Server. It uses the central
- * {@link MDNSDiscoveryService}.
+ * {@link org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService}.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution

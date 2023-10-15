@@ -41,7 +41,6 @@ public class PowermaxReaderThread extends Thread {
     /**
      * Constructor
      *
-     * @param in the input stream
      * @param connector the object that should handle the received message
      * @param threadName the name of the thread
      */

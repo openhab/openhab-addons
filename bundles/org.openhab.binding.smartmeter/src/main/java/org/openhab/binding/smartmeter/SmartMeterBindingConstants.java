@@ -17,7 +17,7 @@ import org.openhab.binding.smartmeter.internal.ObisCode;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SmlReaderBinding} class defines common constants, which are
+ * The {@link SmartMeterBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Matthias Steigenberger - Initial contribution

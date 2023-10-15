@@ -270,7 +270,6 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler instanceof VeSyncBridgeHandler vesyncBridgeHandler) {
-
             final String configMac = config.macId;
 
             // Try to use the mac directly

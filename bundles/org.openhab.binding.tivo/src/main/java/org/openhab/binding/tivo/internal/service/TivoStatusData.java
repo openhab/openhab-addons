@@ -101,7 +101,7 @@ public class TivoStatusData {
     }
 
     /**
-     * {@link isCmdOK} indicates if the last command executed correctly.
+     * {@link #isCmdOk()} indicates if the last command executed correctly.
      *
      * @return cmdOk boolean true = executed correctly, false = last command failed with error message
      */

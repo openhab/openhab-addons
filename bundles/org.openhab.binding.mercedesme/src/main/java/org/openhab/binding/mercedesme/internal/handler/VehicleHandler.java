@@ -542,7 +542,7 @@ public class VehicleHandler extends BaseThingHandler {
      *
      * This depends also on the roads of a concrete route but this is only a guess without any Route Navigation behind
      *
-     * @param range
+     * @param s
      * @return mapping from air-line distance to "real road" distance
      */
     public static State guessRangeRadius(QuantityType<?> s) {

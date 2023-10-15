@@ -261,7 +261,8 @@ public class IndegoController {
     /**
      * Sends a PUT/POST request to the server.
      * 
-     * @param method the type of request ({@link HttpMethod.PUT} or {@link HttpMethod.POST})
+     * @param method the type of request ({@link org.eclipse.jetty.http.HttpMethod#PUT} or
+     *            {@link org.eclipse.jetty.http.HttpMethod#POST})
      * @param path the relative path to which the request should be sent
      * @param requestDto the DTO which should be sent to the server as JSON
      * @throws IndegoAuthenticationException if request was rejected as unauthorized

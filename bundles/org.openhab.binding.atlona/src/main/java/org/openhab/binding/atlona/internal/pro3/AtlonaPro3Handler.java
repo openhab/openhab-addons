@@ -116,7 +116,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
      * Handles commands to specific channels. This implementation will offload much of its work to the
      * {@link AtlonaPro3PortocolHandler}. Basically we validate the type of command for the channel then call the
      * {@link AtlonaPro3PortocolHandler} to handle the actual protocol. Special use case is the {@link RefreshType}
-     * where we call {{@link #handleRefresh(String)} to handle a refresh of the specific channel (which in turn calls
+     * where we call {{@link #handleRefresh(ChannelUID)} to handle a refresh of the specific channel (which in turn
+     * calls
      * {@link AtlonaPro3PortocolHandler} to handle the actual refresh
      */
     @Override

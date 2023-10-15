@@ -31,7 +31,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link qbusHandlerFactory} is responsible for creating things and thing
+ * The {@link QbusHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Koen Schockaert - Initial Contribution

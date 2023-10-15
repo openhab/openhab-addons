@@ -125,7 +125,7 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
     /**
      * Initializes the bridge. Confirms the configuration is valid and that our parent bridge is a
      * {@link RioSystemHandler}. Once validated, a {@link RioControllerProtocol} is set via
-     * {@link #setProtocolHandler(RioControllerProtocol)} and the bridge comes online.
+     * {@link #setProtocolHandler(AbstractRioProtocol)} and the bridge comes online.
      */
     @Override
     public void initialize() {
@@ -205,7 +205,7 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
     }
 
     /**
-     * Overrides the base to call {@link #childChanged(ThingHandler)} to recreate the zone names
+     * Overrides the base to call {@link #childChanged(ThingHandler, boolean)} to recreate the zone names
      */
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
@@ -213,7 +213,7 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
     }
 
     /**
-     * Overrides the base to call {@link #childChanged(ThingHandler)} to recreate the zone names
+     * Overrides the base to call {@link #childChanged(ThingHandler, boolean)} to recreate the zone names
      */
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {

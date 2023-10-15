@@ -169,7 +169,7 @@ public class BondHttpApi {
      * Executes a device action
      *
      * @param deviceId The ID of the device
-     * @param actionId The Bond action
+     * @param action The Bond action
      * @param argument An additional argument for the actions (such as the fan speed)
      */
     public synchronized void executeDeviceAction(String deviceId, BondDeviceAction action, @Nullable Integer argument) {
