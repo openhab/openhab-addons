@@ -40,6 +40,7 @@ import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -371,34 +372,15 @@ public class OnvifConnection {
                 }
             }
         } else if (message.contains("GetStreamUriResponse")) {
-            rtspUri = unEscapeXml(Helper.fetchXML(message, ":MediaUri", ":Uri>"));
-            logger.debug("GetStreamUri: {}", rtspUri);
-            if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
-                ipCameraHandler.rtspUri = rtspUri;
+            String xml = StringUtils.unEscapeXml(Helper.fetchXML(message, ":MediaUri", ":Uri>"));
+            if (xml != null) {
+                rtspUri = xml;
+                logger.debug("GetStreamUri: {}", rtspUri);
+                if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
+                    ipCameraHandler.rtspUri = rtspUri;
+                }
             }
         }
-    }
-
-    /**
-     * Simple method to unescape XML special characters in String.
-     * There are five XML Special characters which needs to be escaped:
-     *
-     * <pre>
-     * & => &amp;
-     * < => &lt;
-     * > => &gt;
-     * " => &quot;
-     * ' => &apos;
-     * </pre>
-     *
-     * @todo This method can be removed once https://github.com/openhab/openhab-core/pull/3738 is merged.
-     *
-     * @param input the input xml as String to unescape, may be null
-     * @return the unescaped xml as String, may be null
-     */
-    public static String unEscapeXml(String str) {
-        return str.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"")
-                .replace("&apos;", "'");
     }
 
     /**
@@ -590,7 +572,7 @@ public class OnvifConnection {
             });
             bootstrap = localBootstap;
         }
-        if (!mainEventLoopGroup.isShuttingDown()) {
+        if (!mainEventLoopGroup.isShuttingDown() && bootstrap != null) {
             bootstrap.connect(new InetSocketAddress(ipAddress, onvifPort)).addListener(new ChannelFutureListener() {
 
                 @Override
@@ -609,10 +591,12 @@ public class OnvifConnection {
                             if (cause instanceof ConnectTimeoutException) {
                                 logger.debug("Camera is not reachable on IP {}", ipAddress);
                                 connectError = true;
-                            } else if ((cause instanceof ConnectException)
-                                    && cause.getMessage().contains("Connection refused")) {
-                                logger.debug("Camera ONVIF port {} is refused.", onvifPort);
-                                refusedError = true;
+                            } else if (cause instanceof ConnectException) {
+                                String msg = cause.getMessage();
+                                if (msg != null && msg.contains("Connection refused")) {
+                                    logger.debug("Camera ONVIF port {} is refused.", onvifPort);
+                                    refusedError = true;
+                                }
                             }
                         }
                         if (isConnected) {
