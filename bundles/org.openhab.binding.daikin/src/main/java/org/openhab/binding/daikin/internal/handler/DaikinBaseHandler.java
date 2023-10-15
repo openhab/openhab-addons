@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * Base class that handles common tasks with a Daikin air conditioning unit.
  *
  * @author Tim Waterhouse - Initial Contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Jimmy Tanagra - Split handler classes, support Airside and DynamicStateDescription
  *
  */
@@ -102,8 +102,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             }
             switch (channelUID.getId()) {
                 case DaikinBindingConstants.CHANNEL_AC_POWER:
-                    if (command instanceof OnOffType) {
-                        changePower(((OnOffType) command).equals(OnOffType.ON));
+                    if (command instanceof OnOffType onOffCommand) {
+                        changePower(onOffCommand.equals(OnOffType.ON));
                         return;
                     }
                     break;
@@ -114,8 +114,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                     break;
                 case DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED:
                 case DaikinBindingConstants.CHANNEL_AC_FAN_SPEED:
-                    if (command instanceof StringType) {
-                        changeFanSpeed(((StringType) command).toString());
+                    if (command instanceof StringType stringCommand) {
+                        changeFanSpeed(stringCommand.toString());
                         return;
                     }
                     break;
@@ -126,8 +126,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                     }
                     break;
                 case DaikinBindingConstants.CHANNEL_AC_MODE:
-                    if (command instanceof StringType) {
-                        changeMode(((StringType) command).toString());
+                    if (command instanceof StringType stringCommand) {
+                        changeMode(stringCommand.toString());
                         return;
                     }
                     break;
@@ -214,8 +214,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
      */
     private boolean changeSetPoint(Command command) throws DaikinCommunicationException {
         double newTemperature;
-        if (command instanceof DecimalType) {
-            newTemperature = ((DecimalType) command).doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            newTemperature = decimalCommand.doubleValue();
         } else if (command instanceof QuantityType) {
             newTemperature = ((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS).doubleValue();
         } else {

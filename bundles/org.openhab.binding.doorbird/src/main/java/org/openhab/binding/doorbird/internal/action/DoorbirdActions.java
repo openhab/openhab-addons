@@ -41,8 +41,8 @@ public class DoorbirdActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DoorbellHandler) {
-            this.handler = (DoorbellHandler) handler;
+        if (handler instanceof DoorbellHandler doorbellHandler) {
+            this.handler = doorbellHandler;
         }
     }
 

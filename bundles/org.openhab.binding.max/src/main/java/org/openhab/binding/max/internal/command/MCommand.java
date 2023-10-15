@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MCommand} Creates the MAX! Cube the room & device name information update message.
+ * The {@link MCommand} Creates the MAX! Cube the room and device name information update message.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */

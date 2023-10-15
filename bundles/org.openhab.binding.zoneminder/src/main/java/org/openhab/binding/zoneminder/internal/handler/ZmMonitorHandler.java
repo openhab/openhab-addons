@@ -16,8 +16,8 @@ import static org.openhab.binding.zoneminder.internal.ZmBindingConstants.*;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -125,8 +125,8 @@ public class ZmMonitorHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_ENABLE:
-                if (command instanceof OnOffType) {
-                    localHandler.setEnabled(monitorId, (OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    localHandler.setEnabled(monitorId, onOffCommand);
                     logger.debug("Monitor {}: Set monitor enable to {}", monitorId, command);
                 }
                 break;
@@ -147,7 +147,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ZmActions.class);
+        return Set.of(ZmActions.class);
     }
 
     public String getId() {

@@ -81,9 +81,7 @@ public class Influx2Database implements Database {
     @Override
     public CompletableFuture<QueryResult> executeQuery(Query query) {
         try {
-            if (query instanceof Influx2QueryFactory.Influx2Query) {
-                Influx2QueryFactory.Influx2Query influxQuery = (Influx2QueryFactory.Influx2Query) query;
-
+            if (query instanceof Influx2QueryFactory.Influx2Query influxQuery) {
                 CompletableFuture<QueryResult> asyncResult = new CompletableFuture<>();
                 List<FluxRecord> records = new ArrayList<>();
                 client.query(influxQuery.getQuery(), (cancellable, record) -> { // onNext

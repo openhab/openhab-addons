@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * To automatically subscribe to all fields, a call to
  * {@link #subscribeAndReceive(MqttBrokerConnection, ScheduledExecutorService, String, AttributeChanged, int)} is
  * required.
- * Unsubscribe with a call to {@link #unsubscribe(AbstractMqttAttributeClass)}.
+ * Unsubscribe with a call to {@link #unsubscribe()}.
  * </p>
  *
  * <p>
@@ -134,8 +134,6 @@ public abstract class AbstractMqttAttributeClass implements SubscribeFieldToMQTT
     /**
      * Unsubscribe from all topics of the managed object.
      *
-     * @param connection A broker connection to remove the subscriptions from.
-     * @param objectWithFields A bean class
      * @return Returns a future that completes as soon as all unsubscriptions have been performed.
      */
     public CompletableFuture<@Nullable Void> unsubscribe() {
@@ -274,10 +272,12 @@ public abstract class AbstractMqttAttributeClass implements SubscribeFieldToMQTT
      * </p>
      *
      * <pre>
+     * {@code
      * void attributeChanged(..., boolean allMandatoryFieldsReceived) {
      *   if (allMandatoryFieldsReceived && !attributes.isComplete()) {
      *      // The attribute class is now complete but wasn't before...
      *   }
+     * }
      * }
      * </pre>
      */

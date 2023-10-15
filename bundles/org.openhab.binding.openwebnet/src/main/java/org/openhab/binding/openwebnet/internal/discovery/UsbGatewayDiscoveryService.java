@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.openwebnet.internal.discovery;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -78,8 +78,7 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
      */
     @Activate
     public UsbGatewayDiscoveryService(final @Reference SerialPortManager spm) {
-        super(Collections.singleton(OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY), DISCOVERY_TIMEOUT_SECONDS,
-                false);
+        super(Set.of(OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY), DISCOVERY_TIMEOUT_SECONDS, false);
         // Obtain the serial port manager service using an OSGi reference
         serialPortManager = spm;
     }

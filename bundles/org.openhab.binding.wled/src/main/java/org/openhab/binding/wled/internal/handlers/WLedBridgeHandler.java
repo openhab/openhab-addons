@@ -148,12 +148,12 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                 case CHANNEL_GLOBAL_BRIGHTNESS:
                     if (command instanceof OnOffType) {
                         localApi.setGlobalOn(OnOffType.ON.equals(command));
-                    } else if (command instanceof PercentType) {
+                    } else if (command instanceof PercentType percentCommand) {
                         if (PercentType.ZERO.equals(command)) {
                             localApi.setGlobalOn(false);
                             return;
                         }
-                        localApi.setGlobalBrightness((PercentType) command);
+                        localApi.setGlobalBrightness(percentCommand);
                     }
                     break;
                 case CHANNEL_SLEEP:
@@ -163,18 +163,18 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                     localApi.setSleepMode(command.toString());
                     break;
                 case CHANNEL_SLEEP_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        localApi.setSleepTargetBrightness((PercentType) command);
+                    if (command instanceof PercentType percentCommand) {
+                        localApi.setSleepTargetBrightness(percentCommand);
                     }
                     break;
                 case CHANNEL_SLEEP_DURATION:
-                    if (command instanceof QuantityType) {
-                        QuantityType<?> minutes = ((QuantityType<?>) command).toUnit(Units.MINUTE);
+                    if (command instanceof QuantityType quantityCommand) {
+                        QuantityType<?> minutes = quantityCommand.toUnit(Units.MINUTE);
                         if (minutes != null) {
                             localApi.setSleepDuration(new BigDecimal(minutes.intValue()));
                         }
-                    } else if (command instanceof DecimalType) {
-                        localApi.setSleepDuration(new BigDecimal(((DecimalType) command).intValue()));
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        localApi.setSleepDuration(new BigDecimal(decimalCommand.intValue()));
                     }
                     break;
                 case CHANNEL_PLAYLISTS:
@@ -193,26 +193,24 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                     localApi.setPreset(command.toString());
                     break;
                 case CHANNEL_TRANS_TIME:
-                    if (command instanceof QuantityType) {
-                        QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
+                    if (command instanceof QuantityType quantityCommand) {
+                        QuantityType<?> seconds = quantityCommand.toUnit(Units.SECOND);
                         if (seconds != null) {
                             localApi.setTransitionTime(new BigDecimal(seconds.multiply(BigDecimal.TEN).intValue()));
                         }
-                    } else if (command instanceof DecimalType) {
-                        localApi.setTransitionTime(
-                                new BigDecimal(((DecimalType) command).intValue()).multiply(BigDecimal.TEN));
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        localApi.setTransitionTime(new BigDecimal(decimalCommand.intValue()).multiply(BigDecimal.TEN));
                     }
                     break;
                 case CHANNEL_PRESET_DURATION:// ch removed in firmware 0.13.0 and newer
-                    if (command instanceof QuantityType) {
-                        QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
+                    if (command instanceof QuantityType quantityCommand) {
+                        QuantityType<?> seconds = quantityCommand.toUnit(Units.SECOND);
                         if (seconds != null) {
                             BigDecimal bigTemp = new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000));
                             localApi.sendGetRequest("/win&PT=" + bigTemp.intValue());
                         }
-                    } else if (command instanceof DecimalType) {
-                        BigDecimal bigTemp = new BigDecimal(((DecimalType) command).intValue())
-                                .multiply(new BigDecimal(1000));
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        BigDecimal bigTemp = new BigDecimal(decimalCommand.intValue()).multiply(new BigDecimal(1000));
                         localApi.sendGetRequest("/win&PT=" + bigTemp.intValue());
                     }
                     break;

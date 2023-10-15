@@ -19,7 +19,6 @@ import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,8 +105,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     private final Logger logger = LoggerFactory.getLogger(LxServerHandler.class);
     private static AtomicInteger staticDebugId = new AtomicInteger(1);
 
-    static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(LxBindingConstants.THING_TYPE_MINISERVER);
+    static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(LxBindingConstants.THING_TYPE_MINISERVER);
 
     private QueuedThreadPool jettyThreadPool;
 
@@ -324,7 +322,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     @Override
     public String getSetting(String name) {
         Object value = getConfig().get(name);
-        return (value instanceof String) ? (String) value : null;
+        return (value instanceof String s) ? s : null;
     }
 
     /*

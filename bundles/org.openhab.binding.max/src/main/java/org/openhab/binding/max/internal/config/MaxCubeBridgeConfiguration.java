@@ -27,7 +27,8 @@ public class MaxCubeBridgeConfiguration {
 
     /**
      * The port of the MAX! Cube LAN gateway as provided at
-     * http://www.elv.de/controller.aspx?cid=824&detail=10&detail2=3484
+     * <a href="http://www.elv.de/controller.aspx?cid=824&detail=10&detail2=3484">
+     * http://www.elv.de/controller.aspx?cid=824&amp;detail=10&amp;detail2=3484</a>
      */
     public Integer port;
 

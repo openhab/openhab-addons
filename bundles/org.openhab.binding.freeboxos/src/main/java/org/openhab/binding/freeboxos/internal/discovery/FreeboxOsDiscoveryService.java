@@ -126,8 +126,8 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
             try {
                 ThingUID bridgeUID = handler.getThing().getUID();
 
-                List<LanHost> lanHosts = handler.getManager(LanBrowserManager.class).getHosts().stream()
-                        .filter(LanHost::reachable).toList();
+                List<LanHost> lanHosts = new ArrayList<>(handler.getManager(LanBrowserManager.class).getHosts().stream()
+                        .filter(LanHost::reachable).toList());
 
                 discoverServer(handler.getManager(SystemManager.class), bridgeUID);
                 discoverPhone(handler.getManager(PhoneManager.class), bridgeUID);

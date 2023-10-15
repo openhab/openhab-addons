@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.unifiedremote.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,8 +30,7 @@ public class UnifiedRemoteBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_UNIFIED_REMOTE_SERVER = new ThingTypeUID(BINDING_ID, "server");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .singleton(THING_TYPE_UNIFIED_REMOTE_SERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_UNIFIED_REMOTE_SERVER);
 
     // List of all Channel ids
     public static final String MOUSE_CHANNEL = "mouse-move";

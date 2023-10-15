@@ -356,6 +356,7 @@
     <module>org.openhab.binding.solarlog</module>
     <module>org.openhab.binding.solarmax</module>
     <module>org.openhab.binding.solarwatt</module>
+    <module>org.openhab.binding.solax</module>
     <module>org.openhab.binding.somfymylink</module>
     <module>org.openhab.binding.somfytahoma</module>
     <module>org.openhab.binding.somneo</module>
@@ -559,6 +560,7 @@
                   <!-- Apache Karaf -->
                   <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
                   <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
+                  <descriptor>mvn:org.apache.karaf.features/specs/${karaf.version}/xml/features</descriptor>
                   <!-- Current feature under verification -->
                   <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
                 </descriptors>
@@ -605,7 +607,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.6.0</version>
         <executions>
           <execution>
             <id>embed-dependencies</id>

@@ -84,24 +84,16 @@ public class InformationResponseMessage extends Message {
     }
 
     private DeviceType intToDeviceType(int i) {
-        switch (i) {
-            case 0:
-                return DeviceType.STICK;
-            case 1:
-                return DeviceType.CIRCLE_PLUS;
-            case 2:
-                return DeviceType.CIRCLE;
-            case 3:
-                return DeviceType.SWITCH;
-            case 5:
-                return DeviceType.SENSE;
-            case 6:
-                return DeviceType.SCAN;
-            case 9:
-                return DeviceType.STEALTH;
-            default:
-                return null;
-        }
+        return switch (i) {
+            case 0 -> DeviceType.STICK;
+            case 1 -> DeviceType.CIRCLE_PLUS;
+            case 2 -> DeviceType.CIRCLE;
+            case 3 -> DeviceType.SWITCH;
+            case 5 -> DeviceType.SENSE;
+            case 6 -> DeviceType.SCAN;
+            case 9 -> DeviceType.STEALTH;
+            default -> null;
+        };
     }
 
     @Override
@@ -113,7 +105,7 @@ public class InformationResponseMessage extends Message {
             month = Integer.parseInt(matcher.group(3), 16);
             minutes = Integer.parseInt(matcher.group(4), 16);
             logAddress = (Integer.parseInt(matcher.group(5), 16) - 278528) / 32;
-            powerState = (matcher.group(6).equals("01"));
+            powerState = ("01".equals(matcher.group(6)));
             hertz = Integer.parseInt(matcher.group(7), 16);
             hardwareVersion = matcher.group(8).substring(0, 4) + "-" + matcher.group(8).substring(4, 8) + "-"
                     + matcher.group(8).substring(8, 12);

@@ -98,8 +98,8 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable final ThingHandler handler) {
-        if (handler instanceof FoobotAccountHandler) {
-            this.handler = (FoobotAccountHandler) handler;
+        if (handler instanceof FoobotAccountHandler accountHandler) {
+            this.handler = accountHandler;
         }
     }
 
