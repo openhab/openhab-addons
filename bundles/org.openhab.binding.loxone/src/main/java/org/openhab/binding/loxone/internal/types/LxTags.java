@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.loxone.internal.types;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openhab.binding.loxone.internal.controls.LxControl;
@@ -24,8 +23,8 @@ import org.openhab.binding.loxone.internal.controls.LxControl;
  *
  */
 public class LxTags {
-    public static final Set<String> SCENE = Collections.singleton("Scene");
-    public static final Set<String> LIGHTING = Collections.singleton("Lighting");
-    public static final Set<String> SWITCHABLE = Collections.singleton("Switchable");
-    public static final Set<String> TEMPERATURE = Collections.singleton("CurrentTemperature");
+    public static final Set<String> SCENE = Set.of("Scene");
+    public static final Set<String> LIGHTING = Set.of("Lighting");
+    public static final Set<String> SWITCHABLE = Set.of("Switchable");
+    public static final Set<String> TEMPERATURE = Set.of("CurrentTemperature");
 }

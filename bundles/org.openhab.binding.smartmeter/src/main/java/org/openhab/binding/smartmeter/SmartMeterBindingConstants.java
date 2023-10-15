@@ -17,7 +17,7 @@ import org.openhab.binding.smartmeter.internal.ObisCode;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SmlReaderBinding} class defines common constants, which are
+ * The {@link SmartMeterBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Matthias Steigenberger - Initial contribution
@@ -44,7 +44,7 @@ public class SmartMeterBindingConstants {
     public static final String CHANNEL_TYPE_METERREADER_OBIS = "channel-type:" + BINDING_ID + ":obis";
 
     public static String getObisChannelIdPattern(String obis) {
-        return obis.replaceAll("\\.", "-").replaceAll(":|\\*", "_");
+        return obis.replace(".", "-").replaceAll(":|\\*", "_");
     }
 
     public static String getObisChannelId(String obis) {

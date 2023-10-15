@@ -95,7 +95,7 @@ public class VoskSTTService implements STTService {
         try {
             String osName = System.getProperty("os.name", "generic").toLowerCase();
             String osArch = System.getProperty("os.arch", "").toLowerCase();
-            if (osName.contains("linux") && (osArch.equals("arm") || osArch.equals("armv7l"))) {
+            if (osName.contains("linux") && ("arm".equals(osArch) || "armv7l".equals(osArch))) {
                 // workaround for loading required shared libraries
                 loadSharedLibrariesArmv7l();
             }

@@ -47,14 +47,16 @@ public interface OpenSprinklerApi {
     /**
      * Enters the "manual" mode of the device so that API requests are accepted.
      *
-     * @throws Exception
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
      */
     void enterManualMode() throws CommunicationApiException, UnauthorizedApiException;
 
     /**
      * Disables the manual mode, if it is enabled.
      *
-     * @throws Exception
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
      */
     void leaveManualMode() throws CommunicationApiException, UnauthorizedApiException;
 
@@ -63,7 +65,8 @@ public interface OpenSprinklerApi {
      *
      * @param station Index of the station to open starting at 0.
      * @param duration The duration in seconds for how long the station should be turned on.
-     * @throws Exception
+     * @throws CommunicationApiException
+     * @throws GeneralApiException
      */
     void openStation(int station, BigDecimal duration) throws CommunicationApiException, GeneralApiException;
 
@@ -71,7 +74,8 @@ public interface OpenSprinklerApi {
      * Closes a station on the OpenSprinkler device.
      *
      * @param station Index of the station to open starting at 0.
-     * @throws Exception
+     * @throws CommunicationApiException
+     * @throws GeneralApiException
      */
     void closeStation(int station) throws CommunicationApiException, GeneralApiException;
 
@@ -80,7 +84,8 @@ public interface OpenSprinklerApi {
      *
      * @param station Index of the station to open starting at 0.
      * @return True if the station is open, false if it is closed or cannot determine.
-     * @throws Exception
+     * @throws CommunicationApiException
+     * @throws GeneralApiException
      */
     boolean isStationOpen(int station) throws CommunicationApiException, GeneralApiException;
 
@@ -89,7 +94,7 @@ public interface OpenSprinklerApi {
      *
      * @param station Index of the station to request data from
      * @return StationProgram
-     * @throws Exception
+     * @throws CommunicationApiException
      */
     StationProgram retrieveProgram(int station) throws CommunicationApiException;
 
@@ -97,7 +102,6 @@ public interface OpenSprinklerApi {
      * Returns the state of rain detection on the OpenSprinkler device.
      *
      * @return True if rain is detected, false if not or cannot determine.
-     * @throws Exception
      */
     boolean isRainDetected();
 
@@ -161,7 +165,8 @@ public interface OpenSprinklerApi {
      * Returns the firmware version number.
      *
      * @return The firmware version of the OpenSprinkler device as an int.
-     * @throws Exception
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
      */
     int getFirmwareVersion() throws CommunicationApiException, UnauthorizedApiException;
 
@@ -185,21 +190,21 @@ public interface OpenSprinklerApi {
     /**
      * Returns a list of all internal programs as a list of StateOptions.
      *
-     * @return List<StateOption>
+     * @return {@code List<StateOption>}
      */
     List<StateOption> getPrograms();
 
     /**
      * Return a list of all the stations the device has as List of StateOptions
      *
-     * @return List<StateOption>
+     * @return {@code List<StateOption>}
      */
     List<StateOption> getStations();
 
     /**
      * Runs a Program that is setup and stored inside the OpenSprinkler
      *
-     * @param Program index number that you wish to run.
+     * @param command Program index number that you wish to run.
      *
      * @throws CommunicationApiException
      * @throws UnauthorizedApiException
@@ -207,7 +212,7 @@ public interface OpenSprinklerApi {
     void runProgram(Command command) throws CommunicationApiException, UnauthorizedApiException;
 
     /**
-     * Fetch the station names and place them in a list of List<StateOption>.
+     * Fetch the station names and place them in a list of {@code List<StateOption>}.
      * Use getStations() to retrieve this list.
      *
      * @throws CommunicationApiException
@@ -245,7 +250,7 @@ public interface OpenSprinklerApi {
     /**
      * Gets the rain delay in hours from the OpenSprinkler device.
      *
-     * @return QuantityType<Time>
+     * @return {@code QuantityType<Time>}
      */
     QuantityType<Time> getRainDelay();
 }

@@ -32,6 +32,10 @@ public class Resources {
         return errors.stream().map(Error::getDescription).collect(Collectors.toList());
     }
 
+    public boolean hasErrors() {
+        return !errors.isEmpty();
+    }
+
     public List<Resource> getResources() {
         return data;
     }

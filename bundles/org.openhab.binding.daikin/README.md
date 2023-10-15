@@ -1,12 +1,16 @@
 # Daikin Binding
 
 The Daikin binding allows you to control your Daikin air conditioning units with openHAB.
-In order to do so, your Daikin air conditioning unit must have a BRP072A42, BRP072C42 or BRP15B61 WiFi adapter installed.
+
+In order to do so, your Daikin air conditioning unit must have a supported Wi-Fi adapter installed.
+This may work with the older KRP series of wired adapters, but has not been tested with them.
 
 ## Supported Things
 
-Daikin air conditioning units with a BRP069B41, BRP072A42, BRP072C42 or BRP15B61 installed.
-This may work with the older KRP series of wired adapters, but has not been tested with them.
+| Thing             | Daikin Wi-Fi Adapter Model                 |
+| ----------------- | ------------------------------------------ |
+| `ac_unit`         | BRP069A81, BRP069B41, BRP072A42, BRP072C42 |
+| `airbase_ac_unit` | BRP15B61                                   |
 
 ## Discovery
 

@@ -15,7 +15,7 @@ package org.openhab.binding.lirc.internal;
 /**
  * Exceptions thrown from the serial interface.
  *
- * @author Andrew Nagle - Initial contributor
+ * @author Andrew Nagle - Initial contribution
  */
 public class LIRCResponseException extends Exception {
 

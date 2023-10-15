@@ -14,12 +14,4 @@
 
   <name>openHAB Add-ons :: Bundles :: Energi Data Service Binding</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.10.1</version>
-    </dependency>
-  </dependencies>
-
 </project>

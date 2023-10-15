@@ -83,8 +83,8 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
         Map<String, Object> properties = new HashMap<>();
         // All devices need this parameter
         properties.put(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION, uidName);
-        if (device instanceof Sink) {
-            if (((Sink) device).isCombinedSink()) {
+        if (device instanceof Sink sink) {
+            if (sink.isCombinedSink()) {
                 thingType = PulseaudioBindingConstants.COMBINED_SINK_THING_TYPE;
             } else {
                 thingType = PulseaudioBindingConstants.SINK_THING_TYPE;

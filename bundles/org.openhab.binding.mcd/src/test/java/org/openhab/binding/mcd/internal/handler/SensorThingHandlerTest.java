@@ -35,20 +35,48 @@ public class SensorThingHandlerTest {
 
     @Test
     public void getLatestValueFromJsonObjectTest() {
-        String arrayString = "[\n" + "  {\n" + "    \"IdPatient\": 1,\n" + "    \"LastName\": \"Mustermann\",\n"
-                + "    \"FirstName\": \"Max\",\n" + "    \"Devices\": [\n" + "      {\n" + "        \"IdDevice\": 2,\n"
-                + "        \"SerialNumber\": \"001\",\n" + "        \"Name\": \"Test Sitzkissen\",\n"
-                + "        \"Events\": [\n" + "          {\n" + "            \"EventDef\": \"Alarm\",\n"
-                + "            \"DateEntry\": \"2021-11-22T10:17:56.2866667\"\n" + "          }\n" + "        ]\n"
-                + "      }\n" + "    ]\n" + "  }\n" + "]";
+        String arrayString = """
+                [
+                  {
+                    "IdPatient": 1,
+                    "LastName": "Mustermann",
+                    "FirstName": "Max",
+                    "Devices": [
+                      {
+                        "IdDevice": 2,
+                        "SerialNumber": "001",
+                        "Name": "Test Sitzkissen",
+                        "Events": [
+                          {
+                            "EventDef": "Alarm",
+                            "DateEntry": "2021-11-22T10:17:56.2866667"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]\
+                """;
         JsonArray array = gson.fromJson(arrayString, JsonArray.class);
         JsonObject object = SensorThingHandler.getLatestValueFromJsonArray(array);
         String string = object != null ? object.toString() : null;
         assertEquals("{\"EventDef\":\"Alarm\",\"DateEntry\":\"2021-11-22T10:17:56.2866667\"}", string);
-        arrayString = "[\n" + "  {\n" + "    \"IdPatient\": 1,\n" + "    \"LastName\": \"Mustermann\",\n"
-                + "    \"FirstName\": \"Max\",\n" + "    \"Devices\": [\n" + "      {\n" + "        \"IdDevice\": 2,\n"
-                + "        \"SerialNumber\": \"001\",\n" + "        \"Name\": \"Test Sitzkissen\"\n" + "      }\n"
-                + "    ]\n" + "  }\n" + "]";
+        arrayString = """
+                [
+                  {
+                    "IdPatient": 1,
+                    "LastName": "Mustermann",
+                    "FirstName": "Max",
+                    "Devices": [
+                      {
+                        "IdDevice": 2,
+                        "SerialNumber": "001",
+                        "Name": "Test Sitzkissen"
+                      }
+                    ]
+                  }
+                ]\
+                """;
         array = gson.fromJson(arrayString, JsonArray.class);
         assertNull(SensorThingHandler.getLatestValueFromJsonArray(array));
     }

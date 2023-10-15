@@ -41,7 +41,7 @@ public class StringUtilsExt {
      * @param separators Array will be merged to str
      * @return
      */
-    public static final String replaceArrayMerge(String str, String separate, Object[] separators) {
+    public static String replaceArrayMerge(String str, String separate, Object[] separators) {
         String s = str;
         for (int i = 0; i < separators.length; i++) {
             s = s.replaceFirst(separate, (String) separators[i]);
@@ -52,7 +52,7 @@ public class StringUtilsExt {
     /**
      * @see #replaceArrayMerge(String str, String separate, Object[] separators)
      */
-    public static final String replaceArrayMerge(String str, String[] separate, String[] separators) {
+    public static String replaceArrayMerge(String str, String[] separate, String[] separators) {
         String s = str;
         for (int i = 0; i < separators.length; i++) {
             s = s.replaceFirst(separate[i], separators[i]);
@@ -69,6 +69,9 @@ public class StringUtilsExt {
 
     /**
      * <b>JDBC-URI Examples:</b><br/>
+     * 
+     * <pre>
+     * {@code
      * jdbc:dbShortcut:c:/dev/databaseName<br/>
      * jdbc:dbShortcut:scheme:c:/dev/databaseName<br/>
      * jdbc:dbShortcut:scheme:c:\\dev\\databaseName<br/>
@@ -79,7 +82,9 @@ public class StringUtilsExt {
      * jdbc:dbShortcut:./../../path/databaseName<br/>
      * jdbc:dbShortcut:scheme:./path/../path/databaseName;param1=true;<br/>
      * jdbc:dbShortcut://192.168.0.145:3306/databaseName?param1=false&param2=true
-     * <p/>
+     * }
+     * </pre>
+     * <p>
      *
      * @param url JDBC-URI
      * @param def Predefined Properties Object
@@ -115,7 +120,7 @@ public class StringUtilsExt {
             // replace first ; with ?
             url = url.replaceFirst(";", "?");
             // replace other ; with &
-            url = url.replaceAll(";", "&");
+            url = url.replace(";", "&");
         }
 
         if (url.split(":").length < 3 || url.indexOf("/") == -1) {

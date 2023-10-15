@@ -14,9 +14,9 @@ package org.openhab.binding.nikobus.internal.discovery;
 
 import static org.openhab.binding.nikobus.internal.NikobusBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +44,7 @@ public class NikobusDiscoveryService extends AbstractDiscoveryService implements
     private @Nullable NikobusPcLinkHandler bridgeHandler;
 
     public NikobusDiscoveryService() throws IllegalArgumentException {
-        super(Collections.singleton(THING_TYPE_PUSH_BUTTON), 0);
+        super(Set.of(THING_TYPE_PUSH_BUTTON), 0);
     }
 
     @Override
@@ -92,8 +92,8 @@ public class NikobusDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof NikobusPcLinkHandler) {
-            bridgeHandler = (NikobusPcLinkHandler) handler;
+        if (handler instanceof NikobusPcLinkHandler pcLinkHandler) {
+            bridgeHandler = pcLinkHandler;
         }
     }
 

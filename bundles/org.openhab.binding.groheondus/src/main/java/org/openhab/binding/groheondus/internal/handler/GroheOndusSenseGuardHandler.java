@@ -100,7 +100,6 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
                 newState = new QuantityType<>(lastMeasurement.getTemperatureGuard(), SIUnits.CELSIUS);
                 break;
             case CHANNEL_VALVE_OPEN:
-
                 OnOffType valveOpenType = getValveOpenType(appliance);
                 if (valveOpenType != null) {
                     newState = valveOpenType;
@@ -153,7 +152,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             logger.debug("Could not get appliance command", e);
             return null;
         }
-        if (!commandOptional.isPresent()) {
+        if (commandOptional.isEmpty()) {
             return null;
         }
         if (commandOptional.get().getType() != Appliance.TYPE) {

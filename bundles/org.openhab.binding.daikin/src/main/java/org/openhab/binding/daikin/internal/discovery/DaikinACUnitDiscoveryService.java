@@ -18,10 +18,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Discovery service for Daikin AC units.
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Tim Waterhouse - Initial contribution
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  *
  */
 @Component(service = DiscoveryService.class, configurationPid = "discovery.daikin")
@@ -65,7 +65,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
     public DaikinACUnitDiscoveryService() {
-        super(Collections.singleton(DaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
+        super(Set.of(DaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
     }
 
     @Override

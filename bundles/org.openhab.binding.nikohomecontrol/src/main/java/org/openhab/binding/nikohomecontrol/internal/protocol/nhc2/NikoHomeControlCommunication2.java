@@ -92,7 +92,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      * Niko Home Control II Connected Controller.
      *
      * @throws CertificateException when the SSL context for MQTT communication cannot be created
-     * @throws UnknownHostException when the IP address is not provided
+     * @throws java.net.UnknownHostException when the IP address is not provided
      *
      */
     public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId,

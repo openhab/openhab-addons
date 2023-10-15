@@ -38,7 +38,7 @@ public interface RioHandlerCallback {
      * Callback to the bridge/thing to update the state of a channel in the bridge/thing.
      *
      * @param channelId the non-null, non-empty channel id
-     * @param state the new non-null {@State}
+     * @param state the new non-null {@link State}
      */
     void stateChanged(String channelId, State state);
 

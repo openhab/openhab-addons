@@ -41,9 +41,9 @@ public class NeeoDevicesDeserializer implements JsonDeserializer<@Nullable NeeoD
         Objects.requireNonNull(jsonElement, "jsonElement cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
 
-        if (jsonElement instanceof JsonObject) {
+        if (jsonElement instanceof JsonObject jsonObject) {
             final List<NeeoDevice> scenarios = new ArrayList<>();
-            for (Map.Entry<String, JsonElement> entry : ((JsonObject) jsonElement).entrySet()) {
+            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 final NeeoDevice device = context.deserialize(entry.getValue(), NeeoDevice.class);
                 scenarios.add(device);
             }

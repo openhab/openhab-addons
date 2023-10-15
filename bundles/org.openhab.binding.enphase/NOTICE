@@ -11,3 +11,10 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+jsoup
+* License: MIT License
+* Project: https://jsoup.org/
+* Source:  https://github.com/jhy/jsoup

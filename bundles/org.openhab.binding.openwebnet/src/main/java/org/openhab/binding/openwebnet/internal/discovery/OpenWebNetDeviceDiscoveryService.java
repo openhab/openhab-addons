@@ -96,7 +96,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
      *
      * @param where the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param message the OWN message received that identified the device
+     * @param baseMsg the OWN message received that identified the device
      *            (optional)
      */
     public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,
@@ -270,14 +270,14 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                     whereConfig, properties.get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE));
         }
 
-        if (w instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) w).getUnit())) {
+        if (w instanceof WhereZigBee whereZigBee && WhereZigBee.UNIT_02.equals(whereZigBee.getUnit())) {
             logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", w);
             thingRemoved(thingUID); // remove previously discovered thing
             // re-create thingUID with new type
             thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS;
             thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_ON_OFF_SWITCH_2UNITS;
             thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
-            whereConfig = ((WhereZigBee) w).valueWithUnit(WhereZigBee.UNIT_ALL); // replace unit '02' with '00'
+            whereConfig = whereZigBee.valueWithUnit(WhereZigBee.UNIT_ALL); // replace unit '02' with '00'
             logger.debug("UNIT=02, switching type from {} to {}",
                     OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH,
                     OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS);
@@ -302,9 +302,9 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof OpenWebNetBridgeHandler) {
+        if (handler instanceof OpenWebNetBridgeHandler openWebNetBridgeHandler) {
             logger.debug("attaching {} to handler {} ", this, handler);
-            bridgeHandler = (OpenWebNetBridgeHandler) handler;
+            bridgeHandler = openWebNetBridgeHandler;
             bridgeHandler.deviceDiscoveryService = this;
             bridgeUID = bridgeHandler.getThing().getUID();
         }

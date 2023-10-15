@@ -68,7 +68,6 @@ public class LuxomCommunication {
             // IP-interface.
             (new Thread(this::runLuxomEvents,
                     "OH-binding-" + bridgeHandler.getThing().getBridgeUID() + "-listen-for-events")).start();
-
         } catch (IOException | InterruptedException e) {
             throw new LuxomConnectionException(e);
         }

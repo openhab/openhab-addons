@@ -199,8 +199,8 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             AbstractTypedContentProvider contentProvider = null;
             String contentType = "application/vnd.api+json";
             if (content != null) {
-                if (content instanceof Fields) {
-                    contentProvider = new FormContentProvider((Fields) content);
+                if (content instanceof Fields contentAsFields) {
+                    contentProvider = new FormContentProvider(contentAsFields);
                     contentType = "application/x-www-form-urlencoded";
                 } else {
                     contentProvider = new StringContentProvider(gson.toJson(content));

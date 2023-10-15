@@ -181,7 +181,7 @@ public class DeviceState {
         Optional<Integer> targetTemperature = getTargetTemperature(0);
         Optional<Integer> currentTemperature = getTemperature(0);
 
-        if (!targetTemperature.isPresent() || !currentTemperature.isPresent()) {
+        if (targetTemperature.isEmpty() || currentTemperature.isEmpty()) {
             return Optional.empty();
         }
 
@@ -452,7 +452,7 @@ public class DeviceState {
         Optional<Boolean> doorState = getDoorState();
         Optional<Boolean> failure = device.flatMap(Device::getState).flatMap(State::getSignalFailure);
 
-        if (!doorState.isPresent() || !failure.isPresent()) {
+        if (doorState.isEmpty() || failure.isEmpty()) {
             return Optional.empty();
         }
 
