@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import org.openhab.binding.oceanic.internal.SerialOceanicBindingConfiguration;
 import org.openhab.binding.oceanic.internal.Throttler;
-import org.openhab.binding.oceanic.internal.util.StringUtils;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
@@ -33,6 +32,7 @@ import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
