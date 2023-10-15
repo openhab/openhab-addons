@@ -173,7 +173,7 @@ public class Location {
         if (locations == null || locations.isEmpty()) {
             return null;
         }
-        return locations.stream().map(a -> String.valueOf(a.getName())).collect(Collectors.joining(NAME_SEPARATOR));
+        return locations.stream().map(a -> a.getName()).collect(Collectors.joining(NAME_SEPARATOR));
     }
 
     @Override

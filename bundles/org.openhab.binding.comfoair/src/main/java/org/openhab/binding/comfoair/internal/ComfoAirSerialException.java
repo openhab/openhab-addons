@@ -15,7 +15,7 @@ package org.openhab.binding.comfoair.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ConnectException} is thrown on errors relating the serial connection.
+ * The {@link ComfoAirSerialException} is thrown on errors relating the serial connection.
  *
  * @author Hans Böhm - Initial contribution
  */

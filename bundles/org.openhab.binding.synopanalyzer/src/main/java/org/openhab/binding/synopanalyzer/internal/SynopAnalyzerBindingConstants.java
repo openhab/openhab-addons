@@ -25,7 +25,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SynopAnalyzerBinding} class defines common constants used across the whole binding.
+ * The {@link SynopAnalyzerBindingConstants} class defines common constants used across the whole binding.
  *
  * @author Gaël L'hopital - Initial contribution
  */

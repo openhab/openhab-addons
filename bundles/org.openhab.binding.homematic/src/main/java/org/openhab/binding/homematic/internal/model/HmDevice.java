@@ -213,7 +213,7 @@ public class HmDevice {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof HmDevice)) {
+        if (!(obj instanceof HmDevice)) {
             return false;
         }
         HmDevice comp = (HmDevice) obj;

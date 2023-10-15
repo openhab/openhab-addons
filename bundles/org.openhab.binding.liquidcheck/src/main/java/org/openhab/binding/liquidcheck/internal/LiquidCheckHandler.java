@@ -84,7 +84,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
                     if (client != null && client.isConnected()) {
                         String response = client.measureCommand();
                         CommData commandResponse = new Gson().fromJson(response, CommData.class);
-                        if (commandResponse != null && !commandResponse.header.name.equals("")) {
+                        if (commandResponse != null && !"".equals(commandResponse.header.name)) {
                             if (!"success".equals(commandResponse.context.status)) {
                                 logger.warn("Starting the measurement was not successful!");
                             }
@@ -136,7 +136,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
             try {
                 String jsonString = client.pollData();
                 CommData response = new Gson().fromJson(jsonString, CommData.class);
-                if (response != null && !response.header.messageId.equals("")) {
+                if (response != null && !"".equals(response.header.messageId)) {
                     Map<String, String> properties = response.createPropertyMap();
                     if (!oldProps.equals(properties)) {
                         oldProps = properties;

@@ -92,7 +92,7 @@ public class CallbackServer {
 
     public boolean start() {
         LOGGER.debug("Start Callback Server for port {}", config.callbackPort);
-        if (!server.isEmpty()) {
+        if (server.isPresent()) {
             LOGGER.debug("Callback server for port {} already started", config.callbackPort);
             return true;
         }
@@ -115,7 +115,7 @@ public class CallbackServer {
     public void stop() {
         LOGGER.debug("Stop Callback Server");
         try {
-            if (!server.isEmpty()) {
+            if (server.isPresent()) {
                 server.get().stop();
                 server = Optional.empty();
             }

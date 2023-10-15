@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,6 +45,8 @@ import org.openhab.binding.hue.internal.dto.clip2.MirekSchema;
 import org.openhab.binding.hue.internal.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
+import org.openhab.binding.hue.internal.dto.clip2.Resources;
+import org.openhab.binding.hue.internal.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
@@ -97,6 +100,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             THING_TYPE_ZONE);
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
+
+    private static final String LK_WISER_DIMMER_MODEL_ID = "LK Dimmer";
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -163,6 +168,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updateLightPropertiesDone;
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
+    private boolean applyOffTransitionWorkaround;
 
     private @Nullable Future<?> alertResetTask;
     private @Nullable Future<?> dynamicsResetTask;
@@ -296,19 +302,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command commandParam) {
         if (RefreshType.REFRESH.equals(commandParam)) {
-            if ((thing.getStatus() == ThingStatus.ONLINE) && updateDependenciesDone) {
-                Future<?> task = updateServiceContributorsTask;
-                if (Objects.isNull(task) || !task.isDone()) {
-                    cancelTask(updateServiceContributorsTask, false);
-                    updateServiceContributorsTask = scheduler.schedule(() -> {
-                        try {
-                            updateServiceContributors();
-                        } catch (ApiException | AssetNotLoadedException e) {
-                            logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
-                        } catch (InterruptedException e) {
-                        }
-                    }, 3, TimeUnit.SECONDS);
-                }
+            if (thing.getStatus() == ThingStatus.ONLINE) {
+                refreshAllChannels();
             }
             return;
         }
@@ -344,8 +339,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_EFFECT:
-                putResource = Setters.setEffect(new Resource(lightResourceType), command, cache);
-                putResource.setOnOff(OnOffType.ON);
+                putResource = Setters.setEffect(new Resource(lightResourceType), command, cache).setOnOff(OnOffType.ON);
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
@@ -402,6 +396,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_SWITCH:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 putResource.setOnOff(command);
+                applyDeviceSpecificWorkArounds(command, putResource);
                 break;
 
             case CHANNEL_2_COLOR_XY_ONLY:
@@ -414,6 +409,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_ON_OFF_ONLY:
                 putResource = new Resource(lightResourceType).setOnOff(command);
+                applyDeviceSpecificWorkArounds(command, putResource);
                 break;
 
             case CHANNEL_2_TEMPERATURE_ENABLED:
@@ -492,6 +488,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     && !dynamicsDuration.isNegative()) {
                 if (ResourceType.SCENE == putResource.getType()) {
                     putResource.setRecallDuration(dynamicsDuration);
+                } else if (CHANNEL_2_EFFECT == channelId) {
+                    putResource.setTimedEffectsDuration(dynamicsDuration);
                 } else {
                     putResource.setDynamicsDuration(dynamicsDuration);
                 }
@@ -502,7 +500,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
         logger.debug("{} -> handleCommand() put resource {}", resourceId, putResource);
 
         try {
-            getBridgeHandler().putResource(putResource);
+            Resources resources = getBridgeHandler().putResource(putResource);
+            if (resources.hasErrors()) {
+                logger.info("Command '{}' for thing '{}', channel '{}' succeeded with errors: {}", command,
+                        thing.getUID(), channelUID, String.join("; ", resources.getErrors()));
+            }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
@@ -511,6 +513,33 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         thing.getUID(), channelUID, e.getMessage());
             }
         } catch (InterruptedException e) {
+        }
+    }
+
+    private void refreshAllChannels() {
+        if (!updateDependenciesDone) {
+            return;
+        }
+        cancelTask(updateServiceContributorsTask, false);
+        updateServiceContributorsTask = scheduler.schedule(() -> {
+            try {
+                updateServiceContributors();
+            } catch (ApiException | AssetNotLoadedException e) {
+                logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
+            } catch (InterruptedException e) {
+            }
+        }, 3, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Apply device specific work-arounds needed for given command.
+     *
+     * @param command the handled command.
+     * @param putResource the resource that will be adjusted if needed.
+     */
+    private void applyDeviceSpecificWorkArounds(Command command, Resource putResource) {
+        if (command == OnOffType.OFF && applyOffTransitionWorkaround) {
+            putResource.setDynamicsDuration(dynamicsDuration);
         }
     }
 
@@ -877,11 +906,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
             } else if (thing.getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
-                // issue REFRESH command to update all channels
-                Channel lastUpdateChannel = thing.getChannel(CHANNEL_2_LAST_UPDATED);
-                if (Objects.nonNull(lastUpdateChannel)) {
-                    handleCommand(lastUpdateChannel.getUID(), RefreshType.REFRESH);
-                }
+                refreshAllChannels();
             }
         }
     }
@@ -923,21 +948,23 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Process the incoming Resource to initialize the effects channel.
+     * Process the incoming Resource to initialize the fixed resp. timed effects channel.
      *
-     * @param resource a Resource possibly with an Effects element.
+     * @param resource a Resource possibly containing a fixed and/or timed effects element.
      */
     public void updateEffectChannel(Resource resource) {
-        Effects effects = resource.getEffects();
-        if (Objects.nonNull(effects)) {
-            List<StateOption> stateOptions = effects.getStatusValues().stream()
-                    .map(effect -> EffectType.of(effect).name()).map(effectId -> new StateOption(effectId, effectId))
-                    .collect(Collectors.toList());
-            if (!stateOptions.isEmpty()) {
-                stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT),
-                        stateOptions);
-                logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
-            }
+        Effects fixedEffects = resource.getFixedEffects();
+        TimedEffects timedEffects = resource.getTimedEffects();
+        List<StateOption> stateOptions = Stream
+                .concat(Objects.nonNull(fixedEffects) ? fixedEffects.getStatusValues().stream() : Stream.empty(),
+                        Objects.nonNull(timedEffects) ? timedEffects.getStatusValues().stream() : Stream.empty())
+                .map(effect -> {
+                    String effectName = EffectType.of(effect).name();
+                    return new StateOption(effectName, effectName);
+                }).distinct().collect(Collectors.toList());
+        if (!stateOptions.isEmpty()) {
+            stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT), stateOptions);
+            logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
         }
     }
 
@@ -1020,9 +1047,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
             // product data
             ProductData productData = thisResource.getProductData();
             if (Objects.nonNull(productData)) {
+                String modelId = productData.getModelId();
+
                 // standard properties
                 properties.put(PROPERTY_RESOURCE_ID, resourceId);
-                properties.put(Thing.PROPERTY_MODEL_ID, productData.getModelId());
+                properties.put(Thing.PROPERTY_MODEL_ID, modelId);
                 properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
                 properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());
                 String hardwarePlatformType = productData.getHardwarePlatformType();
@@ -1034,6 +1063,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
                 properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
                 properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
+
+                // Check device for needed work-arounds.
+                if (LK_WISER_DIMMER_MODEL_ID.equals(modelId)) {
+                    // Apply transition time as a workaround for LK Wiser Dimmer firmware bug.
+                    // Additional details here: https://techblog.vindvejr.dk/?p=455
+                    applyOffTransitionWorkaround = true;
+                    logger.debug("{} -> enabling work-around for turning off LK Wiser Dimmer", resourceId);
+                }
             }
 
             thing.setProperties(properties);
@@ -1059,7 +1096,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Fetch the full list of scenes from the bridge, and call updateSceneContributors(List<Resource> allScenes)
+     * Fetch the full list of scenes from the bridge, and call {@code updateSceneContributors(List<Resource> allScenes)}
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.

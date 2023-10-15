@@ -15,7 +15,7 @@ package org.openhab.binding.bluetooth.radoneye.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration class for {@link RadoneyeBinding} device.
+ * Configuration class for Radoneye device.
  *
  * @author Peter Obel - Initial contribution
  */

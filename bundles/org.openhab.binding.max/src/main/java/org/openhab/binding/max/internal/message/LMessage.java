@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 /**
  * The L message contains real time information about all MAX! devices.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  *
  */

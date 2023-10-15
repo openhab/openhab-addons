@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
@@ -130,7 +131,7 @@ class MacTTSAudioStream extends FixedLengthAudioStream implements Disposable {
     private String generateOutputFilename() throws AudioException {
         File tempFile;
         try {
-            tempFile = File.createTempFile(Integer.toString(text.hashCode()), ".wav");
+            tempFile = Files.createTempFile(Integer.toString(text.hashCode()), ".wav").toFile();
             tempFile.deleteOnExit();
         } catch (IOException e) {
             throw new AudioException("Unable to create temp file.", e);

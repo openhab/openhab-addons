@@ -21,10 +21,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
@@ -207,8 +207,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler) {
-            return (ModbusEndpointThingHandler) handler;
+        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+            return thingHandler;
         } else {
             logger.debug("Unexpected bridge handler: {}", handler);
             return null;
@@ -319,9 +319,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
             String value = null;
             if (command instanceof OnOffType) {
                 value = command == OnOffType.ON ? "1" : "0";
-            } else if (command instanceof DateTimeType) {
+            } else if (command instanceof DateTimeType dateTimeCommand) {
                 try {
-                    ZonedDateTime d = ((DateTimeType) command).getZonedDateTime();
+                    ZonedDateTime d = dateTimeCommand.getZonedDateTime();
                     if (channelId.equals(HeliosEasyControlsBindingConstants.SYS_DATE)) {
                         setSysDateTime(d);
                     } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_FROM)) {
@@ -329,7 +329,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_TO)) {
                         this.setBypass(false, d.getDayOfMonth(), d.getMonthValue());
                     } else {
-                        value = formatDate(channelId, ((DateTimeType) command).getZonedDateTime());
+                        value = formatDate(channelId, dateTimeCommand.getZonedDateTime());
                     }
                 } catch (InterruptedException e) {
                     logger.debug(
@@ -338,14 +338,13 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                 }
             } else if ((command instanceof DecimalType) || (command instanceof StringType)) {
                 value = command.toString();
-            } else if (command instanceof QuantityType<?>) {
+            } else if (command instanceof QuantityType<?> val) {
                 // convert item's unit to the Helios device's unit
                 Map<String, HeliosVariable> variableMap = this.variableMap;
                 if (variableMap != null) {
                     HeliosVariable v = variableMap.get(channelId);
                     if (v != null) {
                         String unit = v.getUnit();
-                        QuantityType<?> val = (QuantityType<?>) command;
                         if (unit != null) {
                             switch (unit) {
                                 case HeliosVariable.UNIT_DAY:
@@ -406,7 +405,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(HeliosEasyControlsActions.class);
+        return Set.of(HeliosEasyControlsActions.class);
     }
 
     /**
@@ -424,7 +423,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      *
      * @param variableName The variable name
      * @param value The new value
-     * @return The value if the transaction succeeded, <tt>null</tt> otherwise
      * @throws HeliosException Thrown if the variable is read-only or the provided value is out of range
      */
     public void writeValue(String variableName, String value) throws HeliosException, InterruptedException {
@@ -476,7 +474,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * Read a variable from the Helios device
      *
      * @param variableName The variable name
-     * @return The value
      */
     public void readValue(String variableName) {
         Map<String, HeliosVariable> variableMap = this.variableMap;
@@ -855,7 +852,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     switch (itemType) {
                         case "Number":
                             if (((HeliosVariable.TYPE_INTEGER.equals(variableType))
-                                    || (HeliosVariable.TYPE_FLOAT.equals(variableType))) && (!value.equals("-"))) {
+                                    || (HeliosVariable.TYPE_FLOAT.equals(variableType))) && (!"-".equals(value))) {
                                 State state = null;
                                 if (v.getUnit() == null) {
                                     state = DecimalType.valueOf(value);
@@ -880,7 +877,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                             break;
                         case "Switch":
                             if (variableType.equals(HeliosVariable.TYPE_INTEGER)) {
-                                updateState(v.getGroupAndName(), value.equals("1") ? OnOffType.ON : OnOffType.OFF);
+                                updateState(v.getGroupAndName(), "1".equals(value) ? OnOffType.ON : OnOffType.OFF);
                             }
                             break;
                         case "String":

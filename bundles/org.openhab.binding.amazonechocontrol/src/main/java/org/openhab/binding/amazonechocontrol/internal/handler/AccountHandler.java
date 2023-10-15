@@ -821,8 +821,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             // create new id map
             Map<String, SmartHomeBaseDevice> newJsonIdSmartHomeDeviceMapping = new HashMap<>();
             for (Object smartHomeDevice : smartHomeDevices) {
-                if (smartHomeDevice instanceof SmartHomeBaseDevice) {
-                    SmartHomeBaseDevice smartHomeBaseDevice = (SmartHomeBaseDevice) smartHomeDevice;
+                if (smartHomeDevice instanceof SmartHomeBaseDevice smartHomeBaseDevice) {
                     String id = smartHomeBaseDevice.findId();
                     if (id != null) {
                         newJsonIdSmartHomeDeviceMapping.put(id, smartHomeBaseDevice);

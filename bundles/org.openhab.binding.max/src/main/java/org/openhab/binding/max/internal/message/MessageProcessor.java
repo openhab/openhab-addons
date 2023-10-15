@@ -33,7 +33,7 @@ import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeExcepti
  * possible to add additional lines when there is a message ready to be
  * processed.
  *
- * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
+ * @author Christian Rockrohr - Initial contribution
  */
 @NonNullByDefault
 public class MessageProcessor {
@@ -171,7 +171,7 @@ public class MessageProcessor {
                         }
                 }
             } else {
-                if ((!counter.equals(this.numberOfRequiredLines)) || (!(index == this.receivedLines.size()))) {
+                if (!counter.equals(this.numberOfRequiredLines) || index != this.receivedLines.size()) {
                     throw new IncorrectMultilineIndexException();
                 }
 

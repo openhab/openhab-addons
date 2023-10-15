@@ -235,7 +235,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     sensorStatusListener.onSensorRemoved();
                 }
 
-                if (discovery != null && sensor != null) {
+                if (discovery != null) {
                     discovery.removeSensorDiscovery(sensor);
                 }
             });
@@ -295,7 +295,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     lightStatusListener.onLightRemoved();
                 }
 
-                if (discovery != null && light != null) {
+                if (discovery != null) {
                     discovery.removeLightDiscovery(light);
                 }
             });
@@ -385,7 +385,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     groupStatusListener.onGroupRemoved();
                 }
 
-                if (discovery != null && group != null) {
+                if (discovery != null) {
                     discovery.removeGroupDiscovery(group);
                 }
             });
@@ -402,12 +402,11 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         private void setBridgeSceneChannelStateOptions(List<Scene> scenes, Map<String, FullGroup> groups) {
             Map<String, String> groupNames = groups.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getName()));
-            List<StateOption> stateOptions = scenes.stream().map(scene -> scene.toStateOption(groupNames))
-                    .collect(Collectors.toList());
+            List<StateOption> stateOptions = scenes.stream().map(scene -> scene.toStateOption(groupNames)).toList();
             stateDescriptionOptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SCENE),
                     stateOptions);
             consoleScenesList = scenes.stream().map(scene -> "Id is \"" + scene.getId() + "\" for scene \""
-                    + scene.toStateOption(groupNames).getLabel() + "\"").collect(Collectors.toList());
+                    + scene.toStateOption(groupNames).getLabel() + "\"").toList();
         }
     };
 
@@ -800,7 +799,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
      * If there is a user name available, it attempts to re-authenticate. Otherwise new authentication credentials will
      * be requested from the bridge.
      *
-     * @param bridge the Hue Bridge the connection is not authorized
      * @return returns {@code true} if re-authentication was successful, {@code false} otherwise
      */
     public boolean onNotAuthenticated() {

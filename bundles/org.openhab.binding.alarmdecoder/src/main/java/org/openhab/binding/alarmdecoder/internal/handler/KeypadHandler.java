@@ -113,13 +113,13 @@ public class KeypadHandler extends ADThingHandler {
         IntCommandMap intCommandMap = this.intCommandMap;
 
         if (channelUID.getId().equals(CHANNEL_KP_COMMAND)) {
-            if (command instanceof StringType) {
-                String cmd = ((StringType) command).toString();
+            if (command instanceof StringType commandString) {
+                String cmd = commandString.toString();
                 handleKeypadCommand(cmd);
             }
         } else if (channelUID.getId().equals(CHANNEL_KP_INTCOMMAND)) {
-            if (command instanceof Number) {
-                int icmd = ((Number) command).intValue();
+            if (command instanceof Number numberCommand) {
+                int icmd = numberCommand.intValue();
                 if (intCommandMap != null) {
                     String cmd = intCommandMap.getCommand(icmd);
                     if (cmd != null) {

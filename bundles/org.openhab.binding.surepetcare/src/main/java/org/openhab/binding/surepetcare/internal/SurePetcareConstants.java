@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,12 +47,13 @@ public class SurePetcareConstants {
     public static final ThingTypeUID THING_TYPE_FLAP_DEVICE = new ThingTypeUID(BINDING_ID, "flapDevice");
     public static final ThingTypeUID THING_TYPE_FEEDER_DEVICE = new ThingTypeUID(BINDING_ID, "feederDevice");
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_HOUSEHOLD,
             THING_TYPE_PET, THING_TYPE_HUB_DEVICE, THING_TYPE_FLAP_DEVICE, THING_TYPE_FEEDER_DEVICE));
 
     public static final long DEFAULT_REFRESH_INTERVAL_TOPOLOGY = 36000; // 10 hours
     public static final long DEFAULT_REFRESH_INTERVAL_STATUS = 300; // 5 mins
+    public static final int DEFAULT_HTTP_TIMEOUT = 8;
 
     public static final String PROPERTY_NAME_ID = "id";
 
