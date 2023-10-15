@@ -28,7 +28,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
-import org.openhab.binding.max.internal.util.StringUtils;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

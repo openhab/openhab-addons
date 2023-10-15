@@ -44,36 +44,4 @@ public class StringUtils {
         }
         return input;
     }
-
-    public static String[] splitByCharacterType(@Nullable String input) {
-        if (input == null) {
-            return new String[0];
-        }
-        if (input.isBlank()) {
-            return new String[0];
-        }
-        List<String> cache = new ArrayList<>();
-        char[] inputAsCharArray = input.toCharArray();
-        int prevType = Character.getType(inputAsCharArray[0]);
-        int prevTypeStart = 0;
-        for (int i = prevTypeStart + 1; i < inputAsCharArray.length; i++) {
-            int curType = Character.getType(inputAsCharArray[i]);
-            if (prevType == curType) {
-                continue;
-            }
-            if (curType == Character.LOWERCASE_LETTER && prevType == Character.UPPERCASE_LETTER) {
-                int tmpStart = i - 1;
-                if (tmpStart != prevTypeStart) {
-                    cache.add(new String(inputAsCharArray, prevTypeStart, tmpStart - prevTypeStart));
-                    prevTypeStart = tmpStart;
-                }
-            } else {
-                cache.add(new String(inputAsCharArray, prevTypeStart, i - prevTypeStart));
-                prevTypeStart = i;
-            }
-            prevType = curType;
-        }
-        cache.add(new String(inputAsCharArray, prevTypeStart, inputAsCharArray.length - prevTypeStart));
-        return cache.toArray(String[]::new);
-    }
 }
