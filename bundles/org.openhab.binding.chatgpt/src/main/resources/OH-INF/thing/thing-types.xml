@@ -30,7 +30,7 @@
 				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="modelUrl" type="text" required="false">
-				<label>Base URL</label>
+				<label>Model URL</label>
 				<description>The model url where to retrieve the available models from.</description>
 				<default>https://api.openai.com/v1/models</default>
 				<advanced>true</advanced>
