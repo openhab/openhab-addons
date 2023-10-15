@@ -39,7 +39,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
 import org.openhab.binding.irtrans.internal.IrCommand;
-import org.openhab.binding.irtrans.internal.util.StringUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -51,6 +50,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.HexUtils;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
