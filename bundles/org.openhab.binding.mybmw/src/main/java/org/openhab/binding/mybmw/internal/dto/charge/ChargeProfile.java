@@ -18,7 +18,7 @@ import java.util.List;
  * The {@link ChargeProfile} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
  */
 public class ChargeProfile {
     public static final Timer INVALID_TIMER = new Timer();

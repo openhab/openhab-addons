@@ -86,7 +86,7 @@ public class WeatherUtils {
      * Compute the associated scale appreciation of a given humidex index
      * https://www.researchgate.net/figure/The-scale-of-Humidex-and-the-degree-of-comfort_tbl1_335293174
      *
-     * @param Humidex index value
+     * @param humidex index value
      * @return scale between 0 and 4
      */
     public static int humidexScale(double humidex) {

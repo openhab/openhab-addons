@@ -70,24 +70,24 @@ public class TapoUniversalDevice extends TapoDevice {
                     refreshInfo = true;
                     break;
                 case CHANNEL_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        Float percent = ((PercentType) command).floatValue();
+                    if (command instanceof PercentType percentCommand) {
+                        Float percent = percentCommand.floatValue();
                         setBrightness(percent.intValue()); // 0..100% = 0..100
                         refreshInfo = true;
-                    } else if (command instanceof DecimalType) {
-                        setBrightness(((DecimalType) command).intValue());
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        setBrightness(decimalCommand.intValue());
                         refreshInfo = true;
                     }
                     break;
                 case CHANNEL_COLOR_TEMP:
-                    if (command instanceof DecimalType) {
-                        setColorTemp(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        setColorTemp(decimalCommand.intValue());
                         refreshInfo = true;
                     }
                     break;
                 case CHANNEL_COLOR:
-                    if (command instanceof HSBType) {
-                        setColor((HSBType) command);
+                    if (command instanceof HSBType hsbCommand) {
+                        setColor(hsbCommand);
                         refreshInfo = true;
                     }
                     break;
@@ -173,6 +173,7 @@ public class TapoUniversalDevice extends TapoDevice {
      * 
      * @param responseBody
      */
+    @Override
     public void responsePasstrough(String responseBody) {
         logger.info("({}) received response {}", uid, responseBody);
         publishState(getChannelID(CHANNEL_GROUP_DEBUG, CHANNEL_RESPONSE), getStringType(responseBody));
@@ -224,6 +225,7 @@ public class TapoUniversalDevice extends TapoDevice {
      * @param channelID String channelID
      * @return String channel-name
      */
+    @Override
     protected String getChannelFromID(ChannelUID channelID) {
         String channel = channelID.getIdWithoutGroup();
         channel = channel.replace(CHANNEL_GROUP_ACTUATOR + "#", "");

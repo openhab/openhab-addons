@@ -91,7 +91,7 @@ public class XiaomiItemDiscoveryService extends AbstractDiscoveryService impleme
 
     @Override
     public void onItemUpdate(String sid, String command, JsonObject data) {
-        if (command.equals("read_ack") || command.equals("report") || command.equals("heartbeat")) {
+        if ("read_ack".equals(command) || "report".equals(command) || "heartbeat".equals(command)) {
             String model = data.get("model").getAsString();
 
             ThingTypeUID thingType = getThingTypeForModel(model);

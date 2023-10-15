@@ -141,10 +141,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             rpcSocket.addMessageHandler(this);
             initialized = true;
         } else {
-            if (rpcSocket.isConnected()) {
-                logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
-                disconnect();
-            }
+            logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
+            disconnect();
         }
     }
 
@@ -312,7 +310,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         if (dc.led != null) {
             profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
-            profile.settings.ledPowerDisable = getString(dc.led.powerLed).equals("off");
+            profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
         profile.initialized = true;
@@ -1159,7 +1157,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 authInfo = new Shelly2AuthChallenge();
                 for (String o : options) {
                     String key = substringBefore(o, "=").stripLeading().trim();
-                    String value = substringAfter(o, "=").replaceAll("\"", "").trim();
+                    String value = substringAfter(o, "=").replace("\"", "").trim();
                     switch (key) {
                         case "Digest qop":
                             authInfo.authType = SHELLY2_AUTHTTYPE_DIGEST;
@@ -1189,7 +1187,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             // return sub element result as requested class type
             json = gson.toJson(gson.fromJson(json, Shelly2RpcBaseMessage.class).result);
             boolean isString = response.result instanceof String;
-            return fromJson(gson, isString && ((String) response.result).equalsIgnoreCase("null") ? "{}" : json,
+            return fromJson(gson, isString && "null".equalsIgnoreCase(((String) response.result)) ? "{}" : json,
                     classOfT);
         } else {
             // return direct format
@@ -1217,9 +1215,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void disconnect() {
-        if (rpcSocket.isConnected()) {
-            rpcSocket.disconnect();
-        }
+        rpcSocket.disconnect();
     }
 
     public Shelly2RpctInterface getRpcHandler() {

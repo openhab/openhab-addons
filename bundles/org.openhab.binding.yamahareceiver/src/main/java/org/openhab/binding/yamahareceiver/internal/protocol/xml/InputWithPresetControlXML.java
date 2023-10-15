@@ -32,7 +32,7 @@ import org.w3c.dom.Node;
  * This class implements the Yamaha Receiver protocol related to navigation functionally. USB, NET_RADIO, IPOD and
  * other inputs are using the same way of playback control.
  *
- * The XML nodes <Play_Info> and <Play_Control> are used.
+ * The XML nodes {@code <Play_Info>} and {@code <Play_Control>} are used.
  *
  * Example:
  *
@@ -43,7 +43,7 @@ import org.w3c.dom.Node;
  * No state will be saved in here, but in {@link PlayInfoState} and
  * {@link PresetInfoState} instead.
  *
- * @author David Graeff
+ * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Compatibility fixes
  */
 public class InputWithPresetControlXML extends AbstractInputControlXML implements InputWithPresetControl {
@@ -86,8 +86,9 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
 
     /**
      * Updates the preset information
-     *
-     * @throws Exception
+     * 
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void update() throws IOException, ReceivedMessageParseException {
@@ -168,7 +169,8 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
      * Select a preset channel.
      *
      * @param presetChannel The preset position [1,40]
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void selectItemByPresetNumber(int presetChannel) throws IOException, ReceivedMessageParseException {

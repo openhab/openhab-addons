@@ -79,9 +79,9 @@ public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
     @Override
     protected int getStateBitNbr(StateType stateType) {
         int bitNbr = getThingConfig().getId() - 1;
-        if (stateType instanceof TroubleState) {
+        if (stateType instanceof TroubleState troubleState) {
             // for wireless devices we need to correct bit number
-            switch ((TroubleState) stateType) {
+            switch (troubleState) {
                 case DEVICE_LOBATT1:
                 case DEVICE_NOCOMM1:
                 case OUTPUT_NOCOMM1:

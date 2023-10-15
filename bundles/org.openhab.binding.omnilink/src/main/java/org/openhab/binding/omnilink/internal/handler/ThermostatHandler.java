@@ -136,7 +136,7 @@ public class ThermostatHandler extends AbstractOmnilinkStatusHandler<ExtendedThe
         }
         if (bridgeHandler != null) {
             temperatureFormat = bridgeHandler.getTemperatureFormat();
-            if (!temperatureFormat.isPresent()) {
+            if (temperatureFormat.isEmpty()) {
                 logger.warn("Receieved null temperature format!");
                 return;
             }

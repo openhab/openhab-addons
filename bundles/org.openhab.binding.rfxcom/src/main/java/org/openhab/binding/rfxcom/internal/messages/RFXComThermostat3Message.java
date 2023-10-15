@@ -41,7 +41,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Sander Biesenbeek - Initial contribution
  * @author Ruud Beukema - Initial contribution (parallel development)
- * @author Martin van Wingerden - Joined contribution of Sander & Ruud
+ * @author Martin van Wingerden - Joined contribution of Sander and Ruud
  */
 public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComThermostat3Message.SubType> {
     public enum SubType implements ByteEnumWrapper {
@@ -233,8 +233,8 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
                     command = (type == UpDownType.UP ? Commands.UP : Commands.DOWN);
                 } else if (type == StopMoveType.STOP) {
                     command = Commands.STOP;
-                } else if (type instanceof PercentType) {
-                    command = ((PercentType) type).as(UpDownType.class) == UpDownType.UP ? Commands.UP : Commands.DOWN;
+                } else if (type instanceof PercentType percentCommand) {
+                    command = percentCommand.as(UpDownType.class) == UpDownType.UP ? Commands.UP : Commands.DOWN;
                 } else {
                     throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }

@@ -49,7 +49,7 @@ public class Converter {
     /**
      * Converts a human readable value into LCN native value.
      *
-     * @param humanReadable value to convert
+     * @param quantityType value to convert
      * @return the native LCN value
      * @throws LcnException when the value could not be converted to the base unit
      */

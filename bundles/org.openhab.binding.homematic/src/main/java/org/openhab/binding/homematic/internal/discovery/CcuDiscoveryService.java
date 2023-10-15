@@ -19,7 +19,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.openhab.binding.homematic.internal.discovery.eq3udp.Eq3UdpRequest;
@@ -50,7 +50,7 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
     private NetworkAddressService networkAddressService;
 
     public CcuDiscoveryService() {
-        super(Collections.singleton(THING_TYPE_BRIDGE), 5, true);
+        super(Set.of(THING_TYPE_BRIDGE), 5, true);
     }
 
     @Override

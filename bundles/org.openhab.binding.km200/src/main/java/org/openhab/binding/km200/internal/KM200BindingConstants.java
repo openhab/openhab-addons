@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link km200Binding} class defines common constants, which are
+ * The {@link KM200BindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Markus Eckhardt - Initial contribution

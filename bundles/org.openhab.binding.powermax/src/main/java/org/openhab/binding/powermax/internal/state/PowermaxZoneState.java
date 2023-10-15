@@ -39,9 +39,7 @@ public class PowermaxZoneState extends PowermaxStateContainer {
     public StringValue lastMessage = new StringValue(this, ZONE_LAST_MESSAGE);
     public DateTimeValue lastMessageTime = new DateTimeValue(this, ZONE_LAST_MESSAGE_TIME);
 
-    public DynamicValue<Boolean> locked = new DynamicValue<>(this, LOCKED, () -> {
-        return armed.getValue();
-    }, () -> {
+    public DynamicValue<Boolean> locked = new DynamicValue<>(this, LOCKED, () -> armed.getValue(), () -> {
         Boolean isArmed = armed.getValue();
         if (isArmed == null) {
             return UnDefType.NULL;

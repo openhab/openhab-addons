@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Configuration class for {@link LogReaderBinding} binding.
+ * Configuration class for LogReader binding.
  *
  * @author Pauli Anttila - Initial contribution
  */

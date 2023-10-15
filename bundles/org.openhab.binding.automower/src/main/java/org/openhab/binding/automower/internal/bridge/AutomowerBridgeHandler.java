@@ -14,7 +14,6 @@ package org.openhab.binding.automower.internal.bridge;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -49,7 +48,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     private static final String HUSQVARNA_API_TOKEN_URL = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/token";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.HOURS.toSeconds(1);
 
     private final OAuthFactory oAuthFactory;

@@ -15,7 +15,7 @@ package org.openhab.binding.ism8.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ism8Configuration} class contains fields mapping thing configuration parameters.
+ * The {@link Ism8Configuration} class contains fields mapping thing configuration parameters.
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */

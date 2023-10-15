@@ -269,12 +269,12 @@ public class SmartMeterHandler extends BaseThingHandler {
             valueString += " " + value.getUnit();
         }
         State state = TypeParser.parseState(List.of(QuantityType.class, StringType.class), valueString);
-        if (channel != null && state instanceof QuantityType) {
+        if (channel != null && state instanceof QuantityType quantityCommand) {
             state = applyConformity(channel, (QuantityType<Q>) state);
             Number conversionRatio = (Number) channel.getConfiguration()
                     .get(SmartMeterBindingConstants.CONFIGURATION_CONVERSION);
             if (conversionRatio != null) {
-                state = ((QuantityType<?>) state).divide(BigDecimal.valueOf(conversionRatio.doubleValue()));
+                state = quantityCommand.divide(BigDecimal.valueOf(conversionRatio.doubleValue()));
             }
         }
         return state;
