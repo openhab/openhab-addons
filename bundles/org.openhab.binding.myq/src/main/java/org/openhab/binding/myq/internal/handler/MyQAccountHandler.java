@@ -419,7 +419,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         }
 
         Request request = httpClient.newRequest(url).method(method).agent(userAgent)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", authTokenHeader(tokenResponse));
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                .header("Authorization", authTokenHeader(tokenResponse));
         if (content != null & contentType != null) {
             request = request.content(content, contentType);
         }
