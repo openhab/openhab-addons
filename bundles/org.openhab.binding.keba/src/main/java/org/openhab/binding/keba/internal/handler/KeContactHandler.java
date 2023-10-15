@@ -34,7 +34,6 @@ import javax.measure.quantity.Time;
 
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
-import org.openhab.binding.keba.internal.util.StringUtils;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -51,6 +50,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
