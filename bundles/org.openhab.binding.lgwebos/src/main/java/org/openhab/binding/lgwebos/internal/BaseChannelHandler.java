@@ -78,8 +78,7 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
     /**
      * Creates a subscription instance for this device if subscription is supported.
      *
-     * @param device device to which state changes to subscribe to
-     * @param channelID channel ID
+     * @param channelId channel ID
      * @param handler
      * @return an {@code Optional} containing the ServiceSubscription, or an empty {@code Optional} if subscription is
      *         not supported.

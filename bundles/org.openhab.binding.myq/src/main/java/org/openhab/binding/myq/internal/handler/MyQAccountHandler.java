@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -96,8 +96,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
      * MyQ oAuth relate fields
      */
     private static final String CLIENT_SECRET = "VUQ0RFhuS3lQV3EyNUJTdw==";
-    private static final String CLIENT_ID = "IOS_CGI_MYQ";
-    private static final String REDIRECT_URI = "com.myqops://ios";
+    private static final String CLIENT_ID = "ANDROID_CGI_MYQ";
+    private static final String REDIRECT_URI = "com.myqops://android";
     private static final String SCOPE = "MyQ_Residential offline_access";
     /*
      * MyQ authentication API endpoints
@@ -151,7 +151,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         username = config.username;
         password = config.password;
         // MyQ can get picky about blocking user agents apparently
-        userAgent = MyQAccountHandler.randomString(20);
+        userAgent = ""; // no agent string
         needsLogin = true;
         updateStatus(ThingStatus.UNKNOWN);
         restartPolls(false);
@@ -176,17 +176,15 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MyQDiscoveryService.class);
+        return Set.of(MyQDiscoveryService.class);
     }
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         List<DeviceDTO> localDeviceCaches = devicesCache;
-        if (childHandler instanceof MyQDeviceHandler) {
-            MyQDeviceHandler handler = (MyQDeviceHandler) childHandler;
-            localDeviceCaches.stream()
-                    .filter(d -> ((MyQDeviceHandler) childHandler).getSerialNumber().equalsIgnoreCase(d.serialNumber))
-                    .findFirst().ifPresent(handler::handleDeviceUpdate);
+        if (childHandler instanceof MyQDeviceHandler deviceHandler) {
+            localDeviceCaches.stream().filter(d -> deviceHandler.getSerialNumber().equalsIgnoreCase(d.serialNumber))
+                    .findFirst().ifPresent(deviceHandler::handleDeviceUpdate);
         }
     }
 
@@ -493,6 +491,9 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                     .param("response_type", "code") //
                     .param("scope", SCOPE) //
                     .agent(userAgent).followRedirects(true);
+            request.header("Accept", "\"*/*\"");
+            request.header("Authorization",
+                    "Basic " + Base64.getEncoder().encodeToString((CLIENT_ID + ":").getBytes()));
             logger.debug("Sending {} to {}", request.getMethod(), request.getURI());
             ContentResponse response = request.send();
             logger.debug("Login Code {} Response {}", response.getStatus(), response.getContentAsString());

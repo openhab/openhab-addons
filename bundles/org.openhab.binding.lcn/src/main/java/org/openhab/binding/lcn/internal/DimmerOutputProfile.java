@@ -52,8 +52,8 @@ public class DimmerOutputProfile implements StateProfile {
         Optional<Object> outputs12 = getConfig(profileContext, "controlOutputs12");
 
         ramp.ifPresent(b -> {
-            if (b instanceof BigDecimal) {
-                rampMs = (int) (((BigDecimal) b).doubleValue() * 1000);
+            if (b instanceof BigDecimal decimalValue) {
+                rampMs = (int) (decimalValue.doubleValue() * 1000);
             } else {
                 logger.warn("Could not parse 'ramp', unexpected type, should be float: {}", ramp);
             }
@@ -86,10 +86,10 @@ public class DimmerOutputProfile implements StateProfile {
             logger.warn("Unsupported 'ramp' setting. Will be forced to 250ms: {}", rampMs);
         }
         BigDecimal value;
-        if (command instanceof DecimalType) {
-            value = ((DecimalType) command).toBigDecimal();
-        } else if (command instanceof OnOffType) {
-            value = ((OnOffType) command) == OnOffType.ON ? BigDecimal.valueOf(100) : BigDecimal.ZERO;
+        if (command instanceof DecimalType decimalCommand) {
+            value = decimalCommand.toBigDecimal();
+        } else if (command instanceof OnOffType onOffCommand) {
+            value = onOffCommand == OnOffType.ON ? BigDecimal.valueOf(100) : BigDecimal.ZERO;
         } else {
             logger.warn("Unsupported type: {}", command.toFullString());
             return;

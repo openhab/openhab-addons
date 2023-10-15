@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sonos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sonos Move 2 Thing Type -->
+	<thing-type id="Move2" listed="false">
+		<label>Move 2</label>
+		<description>Represents SONOS Move 2 speaker</description>
+
+		<channels>
+			<channel id="add" typeId="add"/>
+			<channel id="alarm" typeId="alarm"/>
+			<channel id="alarmproperties" typeId="alarmproperties"/>
+			<channel id="alarmrunning" typeId="alarmrunning"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="control" typeId="system.media-control"/>
+			<channel id="currentalbum" typeId="currentalbum"/>
+			<channel id="currentalbumart" typeId="currentalbumart"/>
+			<channel id="currentalbumarturl" typeId="currentalbumarturl"/>
+			<channel id="currentartist" typeId="system.media-artist"/>
+			<channel id="currenttitle" typeId="system.media-title"/>
+			<channel id="currenttrack" typeId="currenttrack"/>
+			<channel id="shuffle" typeId="shuffle"/>
+			<channel id="repeat" typeId="repeat"/>
+			<channel id="favorite" typeId="favorite"/>
+			<channel id="led" typeId="led"/>
+			<channel id="localcoordinator" typeId="localcoordinator"/>
+			<channel id="loudness" typeId="loudness"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="notificationsound" typeId="notificationsound"/>
+			<channel id="playlist" typeId="playlist"/>
+			<channel id="clearqueue" typeId="clearqueue"/>
+			<channel id="playlinein" typeId="playlinein"/>
+			<channel id="playqueue" typeId="playqueue"/>
+			<channel id="playtrack" typeId="playtrack"/>
+			<channel id="playuri" typeId="playuri"/>
+			<channel id="publicaddress" typeId="publicaddress"/>
+			<channel id="radio" typeId="radio"/>
+			<channel id="remove" typeId="remove"/>
+			<channel id="restore" typeId="restore"/>
+			<channel id="restoreall" typeId="restoreall"/>
+			<channel id="save" typeId="save"/>
+			<channel id="saveall" typeId="saveall"/>
+			<channel id="snooze" typeId="snooze"/>
+			<channel id="standalone" typeId="standalone"/>
+			<channel id="state" typeId="state"/>
+			<channel id="stop" typeId="stop"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="tuneinstationid" typeId="tuneinstationid"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="zonegroupid" typeId="zonegroupid"/>
+			<channel id="zonename" typeId="zonename"/>
+			<channel id="coordinator" typeId="coordinator"/>
+			<channel id="sleeptimer" typeId="sleeptimer"/>
+			<channel id="currenttransporturi" typeId="currenttransporturi"/>
+			<channel id="currenttrackuri" typeId="currenttrackuri"/>
+			<!-- Extended SONOS channels -->
+			<channel id="batterycharging" typeId="batterycharging"/>
+			<channel id="batterylevel" typeId="system.battery-level"/>
+			<channel id="linein" typeId="linein"/>
+			<channel id="microphone" typeId="microphone"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">SONOS</property>
+			<property name="modelId">Move 2</property>
+		</properties>
+
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:sonos:zoneplayer"/>
+	</thing-type>
+</thing:thing-descriptions>

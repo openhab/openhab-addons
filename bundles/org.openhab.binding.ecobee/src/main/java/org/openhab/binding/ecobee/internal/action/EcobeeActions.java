@@ -69,8 +69,8 @@ public class EcobeeActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof EcobeeThermostatBridgeHandler) {
-            this.handler = (EcobeeThermostatBridgeHandler) handler;
+        if (handler instanceof EcobeeThermostatBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 

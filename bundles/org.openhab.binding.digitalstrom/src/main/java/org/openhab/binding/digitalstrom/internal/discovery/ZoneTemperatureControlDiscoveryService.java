@@ -34,8 +34,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ZoneTemperatureControlDiscoveryService} discovers all digitalSTROM zones which have temperature control
  * configured. The thing-type has to be given to the
- * {@link #ZoneTemperatureControlDiscoveryService(BridgeHandler, ThingTypeUID)} as {@link ThingTypeUID}. The supported
- * {@link ThingTypeUID} can be found at {@link ZoneTemperatureControlHandler#SUPPORTED_THING_TYPES}
+ * {@link #ZoneTemperatureControlDiscoveryService(BridgeHandler, ThingTypeUID)} as
+ * {@link org.openhab.core.thing.ThingTypeUID}. The supported {@link org.openhab.core.thing.ThingTypeUID}
+ * can be found at
+ * {@link org.openhab.binding.digitalstrom.internal.handler.ZoneTemperatureControlHandler#SUPPORTED_THING_TYPES}
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -117,8 +119,7 @@ public class ZoneTemperatureControlDiscoveryService extends AbstractDiscoverySer
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, thingTypeID);
         if (getSupportedThingTypes().contains(thingTypeUID)) {
             String thingID = tempControlStatus.getZoneID().toString();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingID);
-            return thingUID;
+            return new ThingUID(thingTypeUID, bridgeUID, thingID);
         } else {
             return null;
         }

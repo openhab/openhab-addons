@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link InfoBlockCallback} class receives callbacks from modbus poller
+ * The {@link Parser} class receives callbacks from modbus poller
  *
  * @author Bernd Weymann - Initial contribution
  */

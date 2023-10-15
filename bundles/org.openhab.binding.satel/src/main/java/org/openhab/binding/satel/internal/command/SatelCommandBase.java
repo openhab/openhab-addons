@@ -55,7 +55,7 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     /**
      * Creates new instance with specified command code and payload.
      *
-     * @param command command code
+     * @param commandCode command code
      * @param payload command payload
      */
     public SatelCommandBase(byte commandCode, byte[] payload) {
@@ -224,9 +224,8 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     public String getVersion(int offset) {
         // build version string
         final byte[] payload = getResponse().getPayload();
-        String verStr = new String(payload, offset, 1) + "." + new String(payload, offset + 1, 2) + " "
+        return new String(payload, offset, 1) + "." + new String(payload, offset + 1, 2) + " "
                 + new String(payload, offset + 3, 4) + "-" + new String(payload, offset + 7, 2) + "-"
                 + new String(payload, offset + 9, 2);
-        return verStr;
     }
 }

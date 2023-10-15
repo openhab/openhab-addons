@@ -25,8 +25,6 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.impl.airquality.AirQualityCharacteristic;
@@ -70,10 +68,9 @@ import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingSta
  */
 @NonNullByDefault
 public class HomekitMetadataCharacteristicFactory {
-    private static final Logger logger = LoggerFactory.getLogger(HomekitMetadataCharacteristicFactory.class);
 
     // List of optional characteristics that can be set via metadata, and the corresponding method to create them.
-    private static final Map<HomekitCharacteristicType, Function<Object, Characteristic>> optional = new HashMap<>() {
+    private static final Map<HomekitCharacteristicType, Function<Object, Characteristic>> OPTIONAL = new HashMap<>() {
         {
             put(ACTIVE_IDENTIFIER, HomekitMetadataCharacteristicFactory::createActiveIdentifierCharacteristic);
             put(ACTIVE_STATUS, HomekitMetadataCharacteristicFactory::createActiveStatusCharacteristic);
@@ -103,16 +100,16 @@ public class HomekitMetadataCharacteristicFactory {
 
     public static Optional<Characteristic> createCharacteristic(String characteristic, Object value) {
         var type = HomekitCharacteristicType.valueOfTag(characteristic);
-        if (type.isEmpty() || !optional.containsKey(type.get())) {
+        if (type.isEmpty() || !OPTIONAL.containsKey(type.get())) {
             return Optional.empty();
         }
-        return Optional.of(optional.get(type.get()).apply(value));
+        return Optional.of(OPTIONAL.get(type.get()).apply(value));
     }
 
     private static Supplier<CompletableFuture<Integer>> getInteger(Object value) {
         int intValue;
-        if (value instanceof BigDecimal) {
-            intValue = ((BigDecimal) value).intValue();
+        if (value instanceof BigDecimal valueAsBigDecimal) {
+            intValue = valueAsBigDecimal.intValue();
         } else if (value instanceof Float) {
             intValue = ((Float) value).intValue();
         } else if (value instanceof Integer) {

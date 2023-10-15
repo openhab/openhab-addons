@@ -105,7 +105,6 @@ public class MulticastListener {
             beaconFound = true;
             logger.trace("Multicast listener got datagram of length {} from multicast port: {}", msgPacket.getLength(),
                     msgPacket.toString());
-
         } catch (SocketTimeoutException e) {
             beaconFound = false;
         }

@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.transform.TransformationException;
 
 /**
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  */
 public class JSonPathTransformationServiceTest {
 

@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public enum ProcessAction {
     /**
-     * {@StateType} for unknown states.
+     * {@link StateType} for unknown states.
      */
     UNKNOWN,
 

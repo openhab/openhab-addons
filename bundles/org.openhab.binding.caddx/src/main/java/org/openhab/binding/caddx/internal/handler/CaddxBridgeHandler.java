@@ -375,7 +375,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                 switch (caddxMessage.getCaddxMessageType()) {
                     case PARTITIONS_SNAPSHOT_MESSAGE:
                         for (int i = 1; i <= 8; i++) {
-                            if (caddxMessage.getPropertyById("partition_" + i + "_valid").equals("true")) {
+                            if ("true".equals(caddxMessage.getPropertyById("partition_" + i + "_valid"))) {
                                 thing = findThing(CaddxThingType.PARTITION, i, null, null);
                                 if (thing != null) {
                                     continue;

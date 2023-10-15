@@ -387,16 +387,16 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                 case GET_NOW_PLAYING_MEDIA:
                     @Nullable
                     T mediaPayload = responseObject.payload;
-                    if (mediaPayload instanceof Media) {
-                        handleThingMediaUpdate((Media) mediaPayload);
+                    if (mediaPayload instanceof Media media) {
+                        handleThingMediaUpdate(media);
                     }
                     break;
 
                 case GET_PLAYER_INFO:
                     @Nullable
                     T playerPayload = responseObject.payload;
-                    if (playerPayload instanceof Player) {
-                        handlePlayerInfo((Player) playerPayload);
+                    if (playerPayload instanceof Player player) {
+                        handlePlayerInfo(player);
                     }
                     break;
             }

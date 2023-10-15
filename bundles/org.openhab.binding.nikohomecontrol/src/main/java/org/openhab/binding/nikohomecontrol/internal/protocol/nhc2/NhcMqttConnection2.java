@@ -62,7 +62,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private MqttMessageSubscriber messageSubscriber;
     private MqttConnectionObserver connectionObserver;
 
-    private TrustManager trustManagers[];
+    private TrustManager[] trustManagers;
     private String clientId;
 
     private volatile String cocoAddress = "";

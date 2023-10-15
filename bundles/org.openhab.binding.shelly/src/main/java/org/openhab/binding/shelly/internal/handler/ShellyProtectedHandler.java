@@ -30,10 +30,11 @@ public class ShellyProtectedHandler extends ShellyBaseHandler {
      * Constructor
      *
      * @param thing The thing passed by the HandlerFactory
+     * @param translationProvider
      * @param bindingConfig configuration of the binding
-     * @param coapServer coap server instance
-     * @param localIP local IP of the openHAB host
-     * @param httpPort port of the openHAB HTTP API
+     * @param thingTable
+     * @param coapService coap server instance
+     * @param httpClient to connect to the openHAB HTTP API
      */
     public ShellyProtectedHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,

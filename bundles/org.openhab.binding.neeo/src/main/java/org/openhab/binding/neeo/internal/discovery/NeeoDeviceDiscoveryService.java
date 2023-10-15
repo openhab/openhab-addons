@@ -13,7 +13,6 @@
 package org.openhab.binding.neeo.internal.discovery;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -46,8 +45,7 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(NeeoDeviceDiscoveryService.class);
 
     /** The device thing type we support */
-    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
-            .singleton(NeeoConstants.THING_TYPE_DEVICE);
+    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(NeeoConstants.THING_TYPE_DEVICE);
 
     /** The timeout (in seconds) for searching the room */
     private static final int SEARCH_TIME = 10;

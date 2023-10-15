@@ -100,7 +100,6 @@ public class DynamoDBTableNameResolverTest extends BaseIntegrationTest {
         criteria.setItemName(item.getName());
 
         try {
-
             // Old tables do not exit --> resolves to new schema
             assertEquals(ExpectedTableSchema.NEW, resolveMaybeLegacy(legacyService, executor));
 

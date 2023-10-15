@@ -77,8 +77,8 @@ public class RollershutterValue extends Value {
                     return PercentType.HUNDRED;
                 }
             }
-        } else if (command instanceof PercentType) {
-            return (PercentType) command;
+        } else if (command instanceof PercentType percentage) {
+            return percentage;
         } else if (command instanceof StringType) {
             final String updatedValue = command.toString();
             if (updatedValue.equals(upString)) {
@@ -115,13 +115,13 @@ public class RollershutterValue extends Value {
             } else {
                 return ((StopMoveType) command).name();
             }
-        } else if (command instanceof PercentType) {
+        } else if (command instanceof PercentType percentage) {
             if (command.equals(PercentType.HUNDRED) && downString != null) {
                 return downString;
             } else if (command.equals(PercentType.ZERO) && upString != null) {
                 return upString;
             } else {
-                return String.valueOf(((PercentType) command).intValue());
+                return String.valueOf(percentage.intValue());
             }
         } else {
             throw new IllegalArgumentException("Invalid command type for Rollershutter item");

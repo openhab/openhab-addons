@@ -675,8 +675,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
 
         if (channelGroupID.contains(CHANNEL_GROUP_CURRENT_PROCESS)) {
-            int pid = systeminfo.getCurrentProcessID();
-            return pid;
+            return systeminfo.getCurrentProcessID();
         }
 
         // First try to get device index in group id, delete all non-digits from id

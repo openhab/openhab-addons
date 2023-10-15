@@ -68,8 +68,6 @@ public class JsonTcpConnection {
             outToServer.writeBytes(json + System.lineSeparator());
             outToServer.flush();
             response = inFromServer.readLine();
-        } catch (IOException e) {
-            throw e;
         }
         logger.debug("Received: {}", response);
         return response;

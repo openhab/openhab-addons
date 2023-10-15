@@ -67,6 +67,7 @@ public class FullHueObject extends HueObject {
     }
 
     public @Nullable String getNormalizedModelID() {
+        String modelid = this.modelid;
         return modelid != null ? modelid.replaceAll(NORMALIZE_ID_REGEX, "_") : modelid;
     }
 

@@ -39,15 +39,17 @@ public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOp
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        if ("model".equals(param)) {
-            List<ParameterOption> options = new ArrayList<>();
-            if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
-                chatGPTHandler.getModels().forEach(model -> options.add(new ParameterOption(model, model)));
+        String accountParameterUrl = "thing-type:" + ChatGPTBindingConstants.THING_TYPE_ACCOUNT.getAsString();
+        if (accountParameterUrl.equals(uri.toString())) {
+            if ("model".equals(param)) {
+                List<ParameterOption> options = new ArrayList<>();
+                if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
+                    chatGPTHandler.getModels().forEach(model -> options.add(new ParameterOption(model, model)));
+                }
+                return options;
             }
-            return options;
-        } else {
-            return null;
         }
+        return null;
     }
 
     @Override
