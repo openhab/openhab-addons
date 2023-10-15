@@ -72,7 +72,7 @@
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
-		<state pattern="%.1f W" readOnly="true"></state>
+		<state pattern="%.2f W" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="number">

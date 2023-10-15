@@ -40,6 +40,8 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tech.units.indriya.unit.Units;
+
 /**
  * @author Marco Descher - intial implementation
  */
@@ -157,8 +159,11 @@ public class KermiSiteInfo {
             }
             Unit<?> unit = KermiSiteInfoUtil.determineUnitByString(datapoint.getConfig().getUnit());
             if (value instanceof Double) {
-                // TODO if kw > multiply with 1000?
-                return new QuantityType<>((double) datapointValue.getValue(), unit);
+                double _value = (double) datapointValue.getValue();
+                if (Units.WATT.equals(unit)) {
+                    _value *= 1000;
+                }
+                return new QuantityType<>(_value, unit);
             }
         } else if (2 == datapointType) {
             // OnOff Type
