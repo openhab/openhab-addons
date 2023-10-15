@@ -25,6 +25,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.Humidity;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.openhab.binding.plugwise.internal.protocol.field.Temperature;
 import org.openhab.binding.plugwise.internal.util.StringUtils;
+import org.openhab.core.util.StringUtils;
 
 /**
  * The {@link PlugwiseScanConfig} class represents the configuration for a Plugwise Sense.
@@ -36,8 +37,8 @@ public class PlugwiseSenseConfig {
 
     private String macAddress = "";
     private int measurementInterval = 15; // minutes
-    private String boundaryType = StringUtils.upperUnderscoreToLowerCamel(NONE.name());
-    private String boundaryAction = StringUtils.upperUnderscoreToLowerCamel(OFF_BELOW_ON_ABOVE.name());
+    private String boundaryType = StringUtils.capitalizeByUnderscore(NONE.name());
+    private String boundaryAction = StringUtils.capitalizeByUnderscore(OFF_BELOW_ON_ABOVE.name());
     private int temperatureBoundaryMin = 15; // degrees Celsius
     private int temperatureBoundaryMax = 25; // degrees Celsius
     private int humidityBoundaryMin = 45; // relative humidity (RH)
