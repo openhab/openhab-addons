@@ -419,7 +419,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         }
 
         Request request = httpClient.newRequest(url).method(method).agent(userAgent)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.SECONDS).header("Authorization", authTokenHeader(tokenResponse));
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", authTokenHeader(tokenResponse));
         if (content != null & contentType != null) {
             request = request.content(content, contentType);
         }
@@ -534,7 +534,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         fields.add("ReturnUrl", returnURL);
 
         Request request = httpClient.newRequest(url).method(HttpMethod.POST) //
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.SECONDS) //
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS) //
                 .content(new FormContentProvider(fields)) //
                 .agent(userAgent) //
                 .followRedirects(false);
@@ -561,7 +561,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                 location = loc;
                 break;
             }
-            request = httpClient.newRequest(LOGIN_BASE_URL + loc).timeout(REQUEST_TIMEOUT_MS, TimeUnit.SECONDS)
+            request = httpClient.newRequest(LOGIN_BASE_URL + loc).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .agent(userAgent).followRedirects(false);
             setCookies(request);
             response = request.send();
