@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum RotationEventType {
     START,
-    REPEAT;
+    REPEAT
 }

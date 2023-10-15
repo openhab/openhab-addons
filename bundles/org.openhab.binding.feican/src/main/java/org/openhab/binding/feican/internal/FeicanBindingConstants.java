@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.feican.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +31,7 @@ public final class FeicanBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BULB = new ThingTypeUID(BINDING_ID, "bulb");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BULB);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BULB);
 
     // List of all Channel ids
     public static final String CHANNEL_COLOR = "color";

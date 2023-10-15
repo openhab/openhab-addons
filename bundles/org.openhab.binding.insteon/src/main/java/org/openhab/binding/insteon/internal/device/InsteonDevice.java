@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class InsteonDevice {
     private final Logger logger = LoggerFactory.getLogger(InsteonDevice.class);
 
-    public static enum DeviceStatus {
+    public enum DeviceStatus {
         INITIALIZED,
         POLLING
     }
@@ -328,7 +328,7 @@ public class InsteonDevice {
      * @param cmd2
      * @return standard message
      * @throws FieldException
-     * @throws IOException
+     * @throws InvalidMessageTypeException
      */
     public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2)
             throws FieldException, InvalidMessageTypeException {
@@ -344,7 +344,7 @@ public class InsteonDevice {
      * @param group (-1 if not a group message)
      * @return standard message
      * @throws FieldException
-     * @throws IOException
+     * @throws InvalidMessageTypeException
      */
     public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group)
             throws FieldException, InvalidMessageTypeException {
@@ -381,7 +381,7 @@ public class InsteonDevice {
      * @param cmd2
      * @return extended message
      * @throws FieldException
-     * @throws IOException
+     * @throws InvalidMessageTypeException
      */
     public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2)
             throws FieldException, InvalidMessageTypeException {
@@ -397,7 +397,7 @@ public class InsteonDevice {
      * @param data array with userdata
      * @return extended message
      * @throws FieldException
-     * @throws IOException
+     * @throws InvalidMessageTypeException
      */
     public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data)
             throws FieldException, InvalidMessageTypeException {
@@ -420,7 +420,7 @@ public class InsteonDevice {
      * @param data array with user data
      * @return extended message
      * @throws FieldException
-     * @throws IOException
+     * @throws InvalidMessageTypeException
      */
     public Msg makeExtendedMessageCRC2(byte flags, byte cmd1, byte cmd2, byte[] data)
             throws FieldException, InvalidMessageTypeException {
@@ -503,7 +503,7 @@ public class InsteonDevice {
      *
      * @param m message to be sent
      * @param f device feature that sent this message (so we can associate the response message with it)
-     * @param d time (in milliseconds)to delay before enqueuing message
+     * @param delay time (in milliseconds) to delay before enqueuing message
      */
     public void enqueueDelayedMessage(Msg m, DeviceFeature f, long delay) {
         long now = System.currentTimeMillis();

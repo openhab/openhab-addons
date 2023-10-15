@@ -780,7 +780,7 @@ public enum ComfoAirCommandType {
      *
      * @param key
      *            command key
-     * @param value
+     * @param command
      *            new state
      * @return initialized ComfoAirCommand
      */

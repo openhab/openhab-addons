@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.nuki.internal.discovery;
 
-import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -56,7 +56,7 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
     @Activate
     public NukiBridgeDiscoveryService(@Reference final HttpClientFactory httpClientFactory,
             @Reference final ThingRegistry thingRegistry) {
-        super(Collections.singleton(NukiBindingConstants.THING_TYPE_BRIDGE), 30, false);
+        super(Set.of(NukiBindingConstants.THING_TYPE_BRIDGE), 30, false);
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.thingRegistry = thingRegistry;
     }

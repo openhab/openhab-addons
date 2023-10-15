@@ -25,7 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 
 /**
- * The {@link FreeboxBinding} class defines common constants, which are used across the binding.
+ * The {@link FreeboxOsBindingConstants} class defines common constants, which are used across the binding.
  *
  * @author Gaël L'hopital - Initial contribution
  */

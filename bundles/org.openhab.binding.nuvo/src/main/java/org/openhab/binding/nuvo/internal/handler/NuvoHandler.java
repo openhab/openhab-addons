@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -317,7 +316,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
         // Also add any openHAB NuvoNet source favorites to the list
         for (int src = 1; src <= MAX_SRC; src++) {
-            NuvoEnum source = NuvoEnum.valueOf(SOURCE + String.valueOf(src));
+            NuvoEnum source = NuvoEnum.valueOf(SOURCE + src);
             String[] favorites = favoriteMap.get(source);
             if (favorites != null) {
                 for (int fav = 0; fav < favorites.length; fav++) {
@@ -388,7 +387,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(NuvoThingActions.class);
+        return List.of(NuvoThingActions.class);
     }
 
     public void handleRawCommand(String command) {
@@ -435,8 +434,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         }
                         break;
                     case CHANNEL_TYPE_SOURCE:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             if (value >= 1 && value <= MAX_SRC) {
                                 logger.debug("Got source command {} zone {}", value, target);
                                 connector.sendCommand(target, NuvoCommand.SOURCE, String.valueOf(value));
@@ -447,8 +446,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         }
                         break;
                     case CHANNEL_TYPE_FAVORITE:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             if (value >= 1 && value <= MAX_FAV) {
                                 logger.debug("Got favorite command {} zone {}", value, target);
                                 connector.sendCommand(target, NuvoCommand.FAVORITE, String.valueOf(value));
@@ -465,10 +464,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         }
                         break;
                     case CHANNEL_TYPE_VOLUME:
-                        if (command instanceof PercentType) {
+                        if (command instanceof PercentType percentCommand) {
                             int value = (MAX_VOLUME
-                                    - (int) Math.round(
-                                            ((PercentType) command).doubleValue() / 100.0 * (MAX_VOLUME - MIN_VOLUME))
+                                    - (int) Math.round(percentCommand.doubleValue() / 100.0 * (MAX_VOLUME - MIN_VOLUME))
                                     + MIN_VOLUME);
                             logger.debug("Got volume command {} zone {}", value, target);
                             connector.sendCommand(target, NuvoCommand.VOLUME, String.valueOf(value));
@@ -481,8 +479,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         }
                         break;
                     case CHANNEL_TYPE_TREBLE:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             if (value >= MIN_EQ && value <= MAX_EQ) {
                                 // device can only accept even values
                                 if (value % 2 == 1) {
@@ -494,8 +492,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         }
                         break;
                     case CHANNEL_TYPE_BASS:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             if (value >= MIN_EQ && value <= MAX_EQ) {
                                 if (value % 2 == 1) {
                                     value++;
@@ -506,8 +504,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         }
                         break;
                     case CHANNEL_TYPE_BALANCE:
-                        if (command instanceof DecimalType) {
-                            int value = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType decimalCommand) {
+                            int value = decimalCommand.intValue();
                             if (value >= MIN_EQ && value <= MAX_EQ) {
                                 if (value % 2 == 1) {
                                     value++;
@@ -671,7 +669,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     /**
      * Handle an event received from the Nuvo device
      *
-     * @param event the event to process
+     * @param evt the event to process
      */
     @Override
     public void onNewMessageEvent(NuvoMessageEvent evt) {

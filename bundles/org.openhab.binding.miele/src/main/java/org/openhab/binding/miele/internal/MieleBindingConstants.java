@@ -16,11 +16,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link MieleBinding} class defines common constants, which are
+ * The {@link MieleBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Karel Goderis - Initial contribution
- * @author Martin Lepsy - added constants for support of WiFi devices & protocol
+ * @author Martin Lepsy - added constants for support of WiFi devices and protocol
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 @NonNullByDefault

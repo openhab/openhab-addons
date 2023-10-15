@@ -277,7 +277,6 @@ public class MyRenaultHttpSession {
 
     public void actionPause(boolean mode) throws RenaultForbiddenException, RenaultNotImplementedException,
             RenaultActionException, RenaultAPIGatewayException {
-
         final String apiMode = mode ? "pause" : "resume";
         final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kcm/v1/vehicles/" + config.vin
                 + "/charge/pause-resume?country=" + getCountry(config);
@@ -331,8 +330,8 @@ public class MyRenaultHttpSession {
                         response.getStatus(), response.getReason(), response.getContentAsString());
             }
         } else {
-            logger.warn("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(), response.getStatus(),
-                    response.getReason(), response.getContentAsString());
+            logger.debug("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(),
+                    response.getStatus(), response.getReason(), response.getContentAsString());
         }
     }
 

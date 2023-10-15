@@ -21,12 +21,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class EventTextFilter {
-    public static enum Type {
+    public enum Type {
         TEXT,
         REGEX
     }
 
-    public static enum Field {
+    public enum Field {
         SUMMARY,
         DESCRIPTION,
         COMMENT,

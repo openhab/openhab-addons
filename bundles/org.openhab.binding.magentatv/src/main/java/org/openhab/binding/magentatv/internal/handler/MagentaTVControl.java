@@ -102,7 +102,11 @@ public class MagentaTVControl {
      * Retries the device properties. This will result in an Exception if the device
      * is not connected.
      *
+     * <p>
      * Response is returned in XMl format, e.g.:
+     *
+     * <p>
+     * {@code
      * <?xml version="1.0"?> <root xmlns="urn:schemas-upnp-org:device-1-0">
      * <specVersion><major>1</major><minor>0</minor></specVersion> <device>
      * <UDN>uuid:70dff25c-1bdf-5731-a283-XXXXXXXX</UDN>
@@ -115,6 +119,7 @@ public class MagentaTVControl {
      * <service> <serviceType>urn:dial-multiscreen-org:service:dial:1</serviceType>
      * <serviceId>urn:dial-multiscreen-org:service:dial</serviceId> </service>
      * </serviceList> </device> </root>
+     * }
      *
      * @return true: device is online, false: device is offline
      * @throws MagentaTVException
@@ -135,7 +140,7 @@ public class MagentaTVControl {
         if (result.contains("<X_wakeOnLan>")) {
             String wol = substringBetween(result, "<X_wakeOnLan>", "</X_wakeOnLan>");
             config.setWakeOnLAN(wol);
-            logger.debug("{}: Wake-on-LAN is {}", thingId, wol.equals("0") ? "disabled" : "enabled");
+            logger.debug("{}: Wake-on-LAN is {}", thingId, "0".equals(wol) ? "disabled" : "enabled");
         }
         if (result.contains("<productVersionNumber>")) {
             String version;
@@ -171,9 +176,11 @@ public class MagentaTVControl {
      * Subscripbe to event channel a) receive the pairing code b) receive
      * programInfo and playStatus events after successful paring
      *
+     * {@code
      * SUBSCRIBE /upnp/service/X-CTC_RemotePairing/Event HTTP/1.1\r\n HOST:
      * $remote_ip:$remote_port CALLBACK: <http://$local_ip:$local_port/>\r\n // NT:
      * upnp:event\r\n // TIMEOUT: Second-300\r\n // CONNECTION: close\r\n // \r\n
+     * }
      *
      * @throws MagentaTVException
      */
@@ -208,9 +215,14 @@ public class MagentaTVControl {
     /**
      * Send Pairing Request to the Media Receiver. The method waits for the
      * response, but the pairing code will be received via the NOTIFY callback (see
-     * NotifyServlet)
+     * NotifyServlet).
      *
-     * XML format for Pairing Request: <s:Envelope
+     * <p>
+     * XML format for Pairing Request:
+     *
+     * <p>
+     * {@code
+     * <s:Envelope
      * xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"
      * <s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"> <s:Body>\n
      * <u:X-pairingRequest
@@ -218,8 +230,9 @@ public class MagentaTVControl {
      * <pairingDeviceID>$pairingDeviceID</pairingDeviceID>\n
      * <friendlyName>$friendlyName</friendlyName>\n <userID>$userID</userID>\n
      * </u:X-pairingRequest>\n </s:Body> </s:Envelope>
-     *
-     * @returns true: pairing successful
+     * }
+     * 
+     * @return true: pairing successful
      * @throws MagentaTVException
      */
     public boolean sendPairingRequest() throws MagentaTVException {
@@ -240,7 +253,7 @@ public class MagentaTVControl {
         }
 
         String result = substringBetween(response, "<result>", "</result>");
-        if (!result.equals("0")) {
+        if (!"0".equals(result)) {
             throw new MagentaTVException("Pairing failed, result=" + result);
         }
 
@@ -251,7 +264,7 @@ public class MagentaTVControl {
     /**
      * Calculates the verifificationCode to complete pairing. This will be triggered
      * as a result after receiving the pairing code provided by the MR. The
-     * verification code is the MD5 hash of <Pairing Code><Terminal-ID><User ID>
+     * verification code is the MD5 hash of {@code <Pairing Code><Terminal-ID><User ID>}
      *
      * @param pairingCode Pairing code received from the MR
      * @return true: a new code has been generated, false: the code matches a
@@ -295,7 +308,7 @@ public class MagentaTVControl {
         }
 
         String result = getXmlValue(response, "pairingResult");
-        if (!result.equals("0")) {
+        if (!"0".equals(result)) {
             logger.debug("{}: Pairing failed or pairing no longer valid, result={}", thingId, result);
             resetPairing();
             // let the caller decide how to proceed
@@ -333,8 +346,11 @@ public class MagentaTVControl {
      * code (0x.... notation) or with a symbolic namne, which will first be mapped
      * to the key code
      *
-     * XML format for Send Key
+     * <p>
+     * XML format for Send Key:
      *
+     * <p>
+     * {@code
      * <s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"
      * s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"> <s:Body>\n
      * <u:X_CTC_RemoteKey
@@ -342,6 +358,7 @@ public class MagentaTVControl {
      * <InstanceID>0</InstanceID>\n
      * <KeyCode>keyCode=$keyCode^$pairingDeviceID:$verificationCode^userID:$userID</KeyCode>\n
      * </u:X_CTC_RemoteKey>\n </s:Body></s:Envelope>
+     * }
      *
      * @param keyName
      * @return true: successful, false: failed, e.g. unkown key code
@@ -498,9 +515,9 @@ public class MagentaTVControl {
     /**
      * Helper to parse a Xml tag value from string without using a complex XML class
      *
-     * @param xml Input string in the format <tag>value</tag>
+     * @param xml Input string in the format {@code <tag>value</tag>}
      * @param tagName The tag to find
-     * @return Tag value (between <tag> and </tag>)
+     * @return Tag value (between {@code <tag>} and {@code </tag>})
      */
     public static String getXmlValue(String xml, String tagName) {
         String open = "<" + tagName + ">";

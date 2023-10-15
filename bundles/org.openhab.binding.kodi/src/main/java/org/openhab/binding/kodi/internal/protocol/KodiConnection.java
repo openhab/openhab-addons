@@ -58,7 +58,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
- * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
+ * @author Andreas Reinhardt and Christoph Weitkamp - Added channels for thumbnail and fanart
  * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
 public class KodiConnection implements KodiClientSocketEventListener {
@@ -184,9 +184,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private synchronized JsonArray getPlaylistsInternal() {
         String method = "Playlist.GetPlaylists";
         String hash = hostname + '#' + method;
-        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
-            return socket.callMethod(method);
-        });
+        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> socket.callMethod(method));
 
         if (response instanceof JsonArray) {
             return response.getAsJsonArray();

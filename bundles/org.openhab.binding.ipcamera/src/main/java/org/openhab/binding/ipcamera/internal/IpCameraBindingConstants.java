@@ -35,7 +35,7 @@ public class IpCameraBindingConstants {
     public static final String INSTAR_HANDLER = "instarHandler";
     public static final String REOLINK_HANDLER = "reolinkHandler";
 
-    public static enum FFmpegFormat {
+    public enum FFmpegFormat {
         HLS,
         GIF,
         RECORD,

@@ -73,10 +73,10 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     private static final String API_BASE = "https://app.mobilelinkgen.com/api";
     private static final String LOGIN_BASE = "https://generacconnectivity.b2clogin.com/generacconnectivity.onmicrosoft.com/B2C_1A_MobileLink_SignIn";
     private static final Pattern SETTINGS_PATTERN = Pattern.compile("^var SETTINGS = (.*);$", Pattern.MULTILINE);
-    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
-            (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
-                return ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString());
-            }).create();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
+                    jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
+            .create();
     private HttpClient httpClient;
     private GeneracMobileLinkDiscoveryService discoveryService;
     private Map<String, Apparatus> apparatusesCache = new HashMap<String, Apparatus>();
@@ -201,7 +201,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             Optional<Thing> thing = getThing().getThings().stream().filter(
                     t -> t.getConfiguration().as(GeneracMobileLinkGeneratorConfiguration.class).generatorId.equals(id))
                     .findFirst();
-            if (!thing.isPresent()) {
+            if (thing.isEmpty()) {
                 discoveryService.generatorDiscovered(apparatus, getThing().getUID());
             } else {
                 ThingHandler handler = thing.get().getHandler();

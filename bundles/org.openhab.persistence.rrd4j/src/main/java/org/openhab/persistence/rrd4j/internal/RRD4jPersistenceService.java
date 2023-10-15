@@ -209,8 +209,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             }
 
             Object v = config.get(key);
-            if (v instanceof String) {
-                String value = (String) v;
+            if (v instanceof String value) {
                 String name = subkeys[0].toLowerCase();
                 String property = subkeys[1].toLowerCase();
 
@@ -430,10 +429,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         Unit<?> unit = null;
         try {
             item = itemRegistry.getItem(itemName);
-            if (item instanceof NumberItem) {
+            if (item instanceof NumberItem numberItem) {
                 // we already retrieve the unit here once as it is a very costly operation,
                 // see https://github.com/openhab/openhab-addons/issues/8928
-                unit = ((NumberItem) item).getUnit();
+                unit = numberItem.getUnit();
             }
         } catch (ItemNotFoundException e) {
             logger.debug("Could not find item '{}' in registry", itemName);
@@ -566,8 +565,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 if (!isSupportedItemType(item)) {
                     return null;
                 }
-                if (item instanceof NumberItem) {
-                    NumberItem numberItem = (NumberItem) item;
+                if (item instanceof NumberItem numberItem) {
                     useRdc = numberItem.getDimension() != null ? rrdDefs.get(DEFAULT_QUANTIFIABLE)
                             : rrdDefs.get(DEFAULT_NUMERIC);
                 } else {
@@ -608,8 +606,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private State mapToState(double value, @Nullable Item item, @Nullable Unit unit) {
-        if (item instanceof GroupItem) {
-            item = ((GroupItem) item).getBaseItem();
+        if (item instanceof GroupItem groupItem) {
+            item = groupItem.getBaseItem();
         }
 
         if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
@@ -628,8 +626,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     private boolean isSupportedItemType(Item item) {
-        if (item instanceof GroupItem) {
-            final Item baseItem = ((GroupItem) item).getBaseItem();
+        if (item instanceof GroupItem groupItem) {
+            final Item baseItem = groupItem.getBaseItem();
             if (baseItem != null) {
                 item = baseItem;
             }
@@ -720,7 +718,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         public void addArchives(String archivesString) {
-            String splitArchives[] = archivesString.split(":");
+            String[] splitArchives = archivesString.split(":");
             for (String archiveString : splitArchives) {
                 String[] opts = archiveString.split(",");
                 if (opts.length != 4) { // check if correct number of parameters

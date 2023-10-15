@@ -14,7 +14,6 @@ package org.openhab.io.hueemulation.internal.rest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -130,7 +129,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
         List<String> items = new ArrayList<>();
 
         for (Action a : scene.getActions()) {
-            if (!a.getTypeUID().equals("core.ItemCommandAction")) {
+            if (!"core.ItemCommandAction".equals(a.getTypeUID())) {
                 continue;
             }
             ItemCommandActionConfig config = a.getConfiguration().as(ItemCommandActionConfig.class);
@@ -358,8 +357,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
             if (groupItem == null) {
                 return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, "Group does not exist!");
             }
-            List<Action> actions = Collections
-                    .singletonList(actionFromState(cs.mapItemUIDtoHueID(groupItem), groupItem.getState()));
+            List<Action> actions = List.of(actionFromState(cs.mapItemUIDtoHueID(groupItem), groupItem.getState()));
             builder.withActions(actions);
         }
 

@@ -186,15 +186,15 @@ public abstract class AbstractBridgeHandler<E extends AbstractRioProtocol> exten
     }
 
     /**
-     * Overrides the base method to remove any state linked to the {@lin ChannelUID} from the
+     * Overrides the base method to remove any state linked to the {@link ChannelUID} from the
      * {@link StatefulHandlerCallback}
      */
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         // Remove any state when unlinking (that way if it is relinked - we get it)
         final RioHandlerCallback callback = getProtocolHandler().getCallback();
-        if (callback instanceof StatefulHandlerCallback) {
-            ((StatefulHandlerCallback) callback).removeState(channelUID.getId());
+        if (callback instanceof StatefulHandlerCallback handlerCallback) {
+            handlerCallback.removeState(channelUID.getId());
         }
         super.channelUnlinked(channelUID);
     }

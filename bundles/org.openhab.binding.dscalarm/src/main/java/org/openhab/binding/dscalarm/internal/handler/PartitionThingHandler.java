@@ -106,22 +106,22 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
             switch (channelUID.getId()) {
                 case PARTITION_ARM_MODE:
                     int partitionNumber = getPartitionNumber();
-                    if (command.toString().equals("0")) {
+                    if ("0".equals(command.toString())) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionDisarmControl,
                                 String.valueOf(partitionNumber));
-                    } else if (command.toString().equals("1")) {
+                    } else if ("1".equals(command.toString())) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlAway,
                                 String.valueOf(partitionNumber));
-                    } else if (command.toString().equals("2")) {
+                    } else if ("2".equals(command.toString())) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlStay,
                                 String.valueOf(partitionNumber));
-                    } else if (command.toString().equals("3")) {
+                    } else if ("3".equals(command.toString())) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
                                 String.valueOf(partitionNumber));
-                    } else if (command.toString().equals("4")) {
+                    } else if ("4".equals(command.toString())) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
                                 String.valueOf(partitionNumber));
-                    } else if (command.toString().equals("5")) {
+                    } else if ("5".equals(command.toString())) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlWithUserCode,
                                 String.valueOf(partitionNumber));
                     }

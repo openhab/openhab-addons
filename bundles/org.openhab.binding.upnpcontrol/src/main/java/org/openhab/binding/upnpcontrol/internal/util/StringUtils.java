@@ -25,36 +25,46 @@ public class StringUtils {
     /**
      * Simple method to escape XML special characters in String.
      * There are five XML Special characters which needs to be escaped :
+     *
+     * <pre>
+     * {@code
      * & - &amp;
      * < - &lt;
      * > - &gt;
      * " - &quot;
      * ' - &apos;
+     * }
+     * </pre>
      */
     public static String escapeXml(String xml) {
-        xml = xml.replaceAll("&", "&amp;");
-        xml = xml.replaceAll("<", "&lt;");
-        xml = xml.replaceAll(">", "&gt;");
-        xml = xml.replaceAll("\"", "&quot;");
-        xml = xml.replaceAll("'", "&apos;");
+        xml = xml.replace("&", "&amp;");
+        xml = xml.replace("<", "&lt;");
+        xml = xml.replace(">", "&gt;");
+        xml = xml.replace("\"", "&quot;");
+        xml = xml.replace("'", "&apos;");
         return xml;
     }
 
     /**
      * Simple method to un escape XML special characters in String.
      * There are five XML Special characters which needs to be escaped :
+     *
+     * <pre>
+     * {@code
      * & - &amp;
      * < - &lt;
      * > - &gt;
      * " - &quot;
      * ' - &apos;
+     * }
+     * </pre>
      */
     public static String unEscapeXml(String xml) {
-        xml = xml.replaceAll("&amp;", "&");
-        xml = xml.replaceAll("&lt;", "<");
-        xml = xml.replaceAll("&gt;", ">");
-        xml = xml.replaceAll("&quot;", "\"");
-        xml = xml.replaceAll("&apos;", "'");
+        xml = xml.replace("&amp;", "&");
+        xml = xml.replace("&lt;", "<");
+        xml = xml.replace("&gt;", ">");
+        xml = xml.replace("&quot;", "\"");
+        xml = xml.replace("&apos;", "'");
         return xml;
     }
 }

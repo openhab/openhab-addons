@@ -81,8 +81,7 @@ public class JellyfinHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof JellyfinServerHandler) {
-            var serverHandler = (JellyfinServerHandler) thingHandler;
+        if (thingHandler instanceof JellyfinServerHandler serverHandler) {
             unregisterAuthenticationServlet(serverHandler);
         }
         super.removeHandler(thingHandler);

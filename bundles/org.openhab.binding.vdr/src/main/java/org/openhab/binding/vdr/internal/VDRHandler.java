@@ -101,7 +101,7 @@ public class VDRHandler extends BaseThingHandler {
         Map<String, String> properties = editProperties();
         // set vdr version to properties of thing
         String version = client.getSVDRPVersion();
-        properties.put(VDRBindingConstants.PROPERTY_VERSION, version.toString());
+        properties.put(VDRBindingConstants.PROPERTY_VERSION, version);
 
         // persist changes only if there are any changes.
         if (!editProperties().equals(properties)) {

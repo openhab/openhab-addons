@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,8 +57,13 @@ public class NAHomeStatus {
     }
 
     private @Nullable HomeStatus home;
+    private List<NAError> errors = List.of();
 
     public Optional<HomeStatus> getHomeStatus() {
         return Optional.ofNullable(home);
+    }
+
+    public List<NAError> getErrors() {
+        return errors;
     }
 }
