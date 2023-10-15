@@ -124,10 +124,10 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);
-        } else if (command instanceof PercentType && isAnalogOutputChannel(channelUID)) {
+        } else if (command instanceof PercentType percentCommand && isAnalogOutputChannel(channelUID)) {
             VelbusDimmerPacket packet = new VelbusDimmerPacket(
                     new VelbusChannelIdentifier(this.getModuleAddress().getAddress(), channelByte), COMMAND_SET_VALUE,
-                    ((PercentType) command).byteValue(), 0x00, false);
+                    percentCommand.byteValue(), 0x00, false);
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);

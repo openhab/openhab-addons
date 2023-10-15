@@ -11,6 +11,7 @@
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="power" typeId="power-channel"/>
+			<channel id="energy-consumed-since-last-call" typeId="energy-consumed-since-last-call-channel"/>
 			<channel id="temperature" typeId="temperature-channel"/>
 		</channels>
 
@@ -25,6 +26,7 @@
 			<property name="dns"/>
 			<property name="static"/>
 			<property name="connected"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>mac</representation-property>
@@ -156,6 +158,14 @@
 		<description>The current power delivered by the plug</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="energy-consumed-since-last-call-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Consumption</label>
+		<description>Energy consumed since last API call</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
 
 	<channel-type id="temperature-channel">
 		<item-type>Number:Temperature</item-type>

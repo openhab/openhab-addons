@@ -51,7 +51,7 @@ public class Hub {
     }
 
     public static Hub fromH05(String h05) throws NoboDataException {
-        String parts[] = h05.split(" ", 8);
+        String[] parts = h05.split(" ", 8);
 
         if (parts.length != 8) {
             throw new NoboDataException(

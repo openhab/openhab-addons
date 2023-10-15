@@ -72,11 +72,11 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
             switch (channelUID.getId()) {
                 case PET_CHANNEL_LOCATION:
                     logger.debug("Received location update command: {}", command.toString());
-                    if (command instanceof StringType) {
+                    if (command instanceof StringType commandAsStringType) {
                         synchronized (petcareAPI) {
                             SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
                             if (pet != null) {
-                                String newLocationIdStr = ((StringType) command).toString();
+                                String newLocationIdStr = commandAsStringType.toString();
                                 try {
                                     Integer newLocationId = Integer.valueOf(newLocationIdStr);
                                     // Only update if location has changed. (Needed for Group:Switch item)
@@ -103,11 +103,11 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                     break;
                 case PET_CHANNEL_LOCATION_TIMEOFFSET:
                     logger.debug("Received location time offset update command: {}", command.toString());
-                    if (command instanceof StringType) {
+                    if (command instanceof StringType commandAsStringType) {
                         synchronized (petcareAPI) {
                             SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
                             if (pet != null) {
-                                String commandIdStr = ((StringType) command).toString();
+                                String commandIdStr = commandAsStringType.toString();
                                 try {
                                     Integer commandId = Integer.valueOf(commandIdStr);
                                     Integer currentLocation = pet.status.activity.where;

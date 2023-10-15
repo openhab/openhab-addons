@@ -222,8 +222,7 @@ public class TapoCloudConnector {
         httpRequest.content(new StringContentProvider(payload, CONTENT_CHARSET), CONTENT_TYPE_JSON);
 
         try {
-            ContentResponse httpResponse = httpRequest.send();
-            return httpResponse;
+            return httpRequest.send();
         } catch (InterruptedException e) {
             logger.debug("({}) sending request interrupted: {}", uid, e.toString());
             handleError(new TapoErrorHandler(e));

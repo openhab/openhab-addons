@@ -601,8 +601,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 continue;
             }
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof HDPowerViewShadeHandler) {
-                ((HDPowerViewShadeHandler) handler).requestRefreshShadePosition();
+            if (handler instanceof HDPowerViewShadeHandler shadeHandler) {
+                shadeHandler.requestRefreshShadePosition();
             } else {
                 int shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);
@@ -620,8 +620,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 continue;
             }
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof HDPowerViewShadeHandler) {
-                ((HDPowerViewShadeHandler) handler).requestRefreshShadeBatteryLevel();
+            if (handler instanceof HDPowerViewShadeHandler shadeHandler) {
+                shadeHandler.requestRefreshShadeBatteryLevel();
             } else {
                 int shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);

@@ -48,24 +48,34 @@ public class NAObjectTest {
 
     @Test
     public void testWebHookEvent() throws NetatmoException {
-        String event = "{" + "  \"user_id\": \"5c810xxxxxxx45f4\"," + "  \"snapshot_id\": \"5d19bxxxxxx6380342\","
-                + "  \"snapshot_key\": \"f0134210ff83fxxxxxxxf770090a423d9a5\","
-                + "  \"snapshot_url\": \"https://netatmocameraimage.blob.core.windows.net/production/5d1xxxa5\","
-                + "  \"event_type\": \"movement\"," + "  \"camera_id\": \"70:exxxxxdd:a7\","
-                + "  \"device_id\": \"70:exxxxdd:a7\"," + "  \"home_id\": \"5c5d79xxxx08cd594\","
-                + "  \"home_name\": \"Boulogne Billan.\"," + "  \"event_id\": \"5d19baae369359e896380341\","
-                + "  \"message\": \"Boulogne Billan: Movement detected by Indoor Camera\","
-                + "  \"push_type\": \"NACamera-movement\"" + "}";
+        String event = """
+                {\
+                  "user_id": "5c810xxxxxxx45f4",\
+                  "snapshot_id": "5d19bxxxxxx6380342",\
+                  "snapshot_key": "f0134210ff83fxxxxxxxf770090a423d9a5",\
+                  "snapshot_url": "https://netatmocameraimage.blob.core.windows.net/production/5d1xxxa5",\
+                  "event_type": "movement",\
+                  "camera_id": "70:exxxxxdd:a7",\
+                  "device_id": "70:exxxxdd:a7",\
+                  "home_id": "5c5d79xxxx08cd594",\
+                  "home_name": "Boulogne Billan.",\
+                  "event_id": "5d19baae369359e896380341",\
+                  "message": "Boulogne Billan: Movement detected by Indoor Camera",\
+                  "push_type": "NACamera-movement"\
+                }\
+                """;
         WebhookEvent object = gson.deserialize(WebhookEvent.class, event);
         assertEquals(object.getEventType(), EventType.MOVEMENT);
     }
 
     @Test
     public void testDashboardData() throws NetatmoException {
-        String dashboard = "{time_utc:1623160336,Temperature:22.1,CO2:511,"
-                + "Humidity:66,Noise:36,Pressure:1026.1,AbsolutePressure:1009.3,"
-                + "min_temp:20,max_temp:22.4,date_max_temp:1623147932,"
-                + "Sdate_min_temp:1623125249,pressure_trend:\"nonexistent\",temp_trend:\"stable\"}";
+        String dashboard = """
+                {time_utc:1623160336,Temperature:22.1,CO2:511,\
+                Humidity:66,Noise:36,Pressure:1026.1,AbsolutePressure:1009.3,\
+                min_temp:20,max_temp:22.4,date_max_temp:1623147932,\
+                Sdate_min_temp:1623125249,pressure_trend:"nonexistent",temp_trend:"stable"}\
+                """;
         Dashboard object = gson.deserialize(Dashboard.class, dashboard);
         assertEquals(511, object.getCo2(), 0);
         assertEquals(TrendDescription.UNKNOWN, object.getPressureTrend());

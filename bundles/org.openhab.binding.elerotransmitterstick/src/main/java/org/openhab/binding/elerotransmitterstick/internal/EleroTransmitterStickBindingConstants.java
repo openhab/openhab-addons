@@ -15,7 +15,7 @@ package org.openhab.binding.elerotransmitterstick.internal;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link EleroTransmitterStickBinding} class defines common constants, which are
+ * The {@link EleroTransmitterStickBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Volker Bier - Initial contribution

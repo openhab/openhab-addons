@@ -48,7 +48,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     protected static class PlayerResponse extends Response<Player> {
     }
 
-    public static enum DeviceModel {
+    public enum DeviceModel {
         FBX7HD_DELTA, // Freebox Player Devialet
         TBX8AM, // Player Pop
         FBX6HD,
@@ -57,18 +57,18 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         FBX7HD,
         FBX7HD_ONE,
         FBX8AM,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Player(MACAddress mac, StbType stbType, int id, ZonedDateTime lastTimeReachable,
             boolean apiAvailable, String deviceName, DeviceModel deviceModel, boolean reachable, String uid,
             @Nullable String apiVersion, List<String> lanGids) {
-        private static enum StbType {
+        private enum StbType {
             STB_ANDROID,
             STB_V6,
             STB_V7,
             STB_V8,
-            UNKNOWN;
+            UNKNOWN
         }
 
         /**
@@ -83,10 +83,10 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     private static class StatusResponse extends Response<Status> {
     }
 
-    public static enum PowerState {
+    public enum PowerState {
         STANDBY,
         RUNNING,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Status(PowerState powerState, StatusInformation player,
@@ -113,7 +113,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
 
     private enum MediaState {
         READY,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private static record AudioTrack(int bitrate, @SerializedName("channelCount") int channelCount,
@@ -121,10 +121,10 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
             @SerializedName("metadataId") @Nullable String metadataId, int pid, int samplerate, long uid) {
     }
 
-    private static enum Type {
+    private enum Type {
         NORMAL,
         HEARINGIMPAIRED,
-        UNKNOWN;
+        UNKNOWN
     }
 
     protected static record Metadata(@Nullable String album,
@@ -137,10 +137,10 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
             @Nullable String title, @SerializedName("trackNumber") int trackNumber,
             @SerializedName("trackTotal") int trackTotal, @Nullable String url) {
 
-        protected static enum PlaybackState {
+        protected enum PlaybackState {
             PLAY,
             PAUSE,
-            UNKNOWN;
+            UNKNOWN
         }
 
         protected static record SubtitleTrack(@Nullable String codec, @Nullable String language, @Nullable String pid,
@@ -164,14 +164,14 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         }
     }
 
-    private static enum BouquetType {
+    private enum BouquetType {
         ADSL,
-        UNKNOWN;
+        UNKNOWN
     }
 
-    private static enum ChannelType {
+    private enum ChannelType {
         REGULAR,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private static record Service(long id, @Nullable String name,

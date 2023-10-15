@@ -79,8 +79,8 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof FreeboxHandler) {
-            bridgeHandler = (FreeboxHandler) handler;
+        if (handler instanceof FreeboxHandler freeboxHandler) {
+            bridgeHandler = freeboxHandler;
         }
     }
 

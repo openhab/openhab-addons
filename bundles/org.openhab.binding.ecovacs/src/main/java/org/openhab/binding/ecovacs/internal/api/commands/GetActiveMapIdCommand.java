@@ -40,9 +40,8 @@ public class GetActiveMapIdCommand extends IotDeviceCommand<String> {
     @Override
     public String convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            CachedMapInfoReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    CachedMapInfoReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            CachedMapInfoReport resp = jsonResponse.getResponsePayloadAs(gson, CachedMapInfoReport.class);
             return resp.mapInfos.stream().filter(i -> i.used != 0).map(i -> i.mapId).findFirst().orElse("");
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();

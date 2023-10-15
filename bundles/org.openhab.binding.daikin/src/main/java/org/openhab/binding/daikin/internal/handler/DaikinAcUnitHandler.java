@@ -50,12 +50,14 @@ import org.slf4j.LoggerFactory;
  * @author Tim Waterhouse - Initial Contribution
  * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Lukas Agethen - Added support for Energy Year reading, compressor frequency and powerful mode
- * @author Wouter Denayer - Added to support for weekly & daily energy reading
+ * @author Wouter Denayer - Added to support for weekly and daily energy reading
  *
  */
 @NonNullByDefault
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinAcUnitHandler.class);
+
+    private Optional<Integer> autoModeValue = Optional.empty();
 
     public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
             @Nullable HttpClient httpClient) {
@@ -68,6 +70,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         if (!"OK".equals(controlInfo.ret)) {
             throw new DaikinCommunicationException("Invalid response from host");
         }
+
         updateState(DaikinBindingConstants.CHANNEL_AC_POWER, OnOffType.from(controlInfo.power));
         updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
 
@@ -156,20 +159,20 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             throws DaikinCommunicationException {
         switch (channelUID.getId()) {
             case DaikinBindingConstants.CHANNEL_AC_FAN_DIR:
-                if (command instanceof StringType) {
-                    changeFanDir(((StringType) command).toString());
+                if (command instanceof StringType stringCommand) {
+                    changeFanDir(stringCommand.toString());
                     return true;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AC_SPECIALMODE:
-                if (command instanceof StringType) {
-                    changeSpecialMode(((StringType) command).toString());
+                if (command instanceof StringType stringCommand) {
+                    changeSpecialMode(stringCommand.toString());
                     return true;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AC_STREAMER:
-                if (command instanceof OnOffType) {
-                    changeStreamer(((OnOffType) command).equals(OnOffType.ON));
+                if (command instanceof OnOffType onOffCommand) {
+                    changeStreamer(onOffCommand.equals(OnOffType.ON));
                     return true;
                 }
                 break;
@@ -202,7 +205,21 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         }
         ControlInfo info = webTargets.getControlInfo();
         info.mode = newMode;
-        webTargets.setControlInfo(info);
+        if (autoModeValue.isPresent()) {
+            info.autoModeValue = autoModeValue.get();
+        }
+        boolean accepted = webTargets.setControlInfo(info);
+
+        // If mode=0 is not accepted try AUTO1 (mode=1)
+        if (!accepted && newMode == Mode.AUTO && autoModeValue.isEmpty()) {
+            info.autoModeValue = Mode.AUTO1.getValue();
+            if (webTargets.setControlInfo(info)) {
+                autoModeValue = Optional.of(info.autoModeValue);
+                logger.debug("AUTO uses mode={}", info.autoModeValue);
+            } else {
+                logger.warn("AUTO mode not accepted with mode=0 or mode=1");
+            }
+        }
     }
 
     @Override

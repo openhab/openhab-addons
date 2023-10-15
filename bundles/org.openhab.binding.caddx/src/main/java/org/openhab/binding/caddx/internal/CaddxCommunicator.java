@@ -316,7 +316,7 @@ public class CaddxCommunicator implements SerialPortEventListener {
     /**
      * Event handler to receive the data from the serial port
      *
-     * @param SerialPortEvent serialPortEvent The event that occurred on the serial port
+     * @param serialPortEvent The event that occurred on the serial port
      */
     @Override
     public void serialEvent(@Nullable SerialPortEvent serialPortEvent) {

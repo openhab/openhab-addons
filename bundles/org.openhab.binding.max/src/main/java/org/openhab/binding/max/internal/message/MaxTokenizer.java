@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The tokens returned consist of the payload solely, and do not contain the first byte holding the
  * tokens length.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  */
 @NonNullByDefault
 public final class MaxTokenizer implements Enumeration<byte[]> {

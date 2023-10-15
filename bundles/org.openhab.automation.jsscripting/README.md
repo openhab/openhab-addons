@@ -39,13 +39,25 @@ to common openHAB functionality within rules including items, things, actions, l
 ## Configuration
 
 This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports its namespaces onto the global namespace.
+
 This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import them using `require()`.
 This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options.
 
-By default, the injection of the included [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached to improve performance and reduce memory usage.
-If you want to use a different version of openhab-js (installed to the `node_modules` folder) than the included one, you need to disable the usage of the included library.
+By default, the injection of the [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached (using a special mechanism instead of `require()`) to improve performance and reduce memory usage.
 
-![openHAB Rule Configuration](doc/settings.png)
+When configuring the add-on, you should ask yourself these questions:
+
+1. Do I want to have the openhab-js namespaces automatically globally available (`injectionEnabled`)?
+   - Yes: "Use Built-In Variables" (default)
+   - No: "Do Not Use Built-In Variables", which will allow you to decide what to import and really speed up script loading, but you need to manually import the library, which actually will slow down script loading again.
+2. Do I want to have a different version injected other than the included one (`injectionCachingEnabled`)?
+   - Yes: "Do Not Cache Library Injection" and install your version to the `$OPENHAB_CONF/automation/js/node_modules` folder, which will slow down script loading, because the injection is not cached.
+   - No: "Cache Library Injection" (default), which will speed up the initial loading of a script because the library's injection is cached.
+
+Note that in case you disable caching or your code uses `require()` to import the library and there is no installation of the library found in the node_modules folder, the add-on will fallback to its included version.
+
+In general, the first run of a script will take longer than the subsequent runs.
+This is because on the first run both the globals (like `console`) and (if enabled) the library are injected into the script's context.
 
 <!-- Paste the copied docs from openhab-js under this comment. Do NOT forget the table of contents. -->
 
@@ -1319,11 +1331,11 @@ var { ON, OFF, QuantityType } = require("@runtime");
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `State`                 | [`org.openhab.core.types.State`](https://www.openhab.org/javadoc/latest/org/openhab/core/types/state)                                                 |
 | `Command`               | [`org.openhab.core.types.Command`](https://www.openhab.org/javadoc/latest/org/openhab/core/types/command)                                             |
-| `URLEncoder`            | [`java.net.URLEncoder`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URLEncoder.html)                                        |
-| `File`                  | [`java.io.File`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html)                                                      |
-| `Files`                 | [`java.nio.file.Files`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Files.html)                                        |
-| `Path`                  | [`java.nio.file.Path`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Path.html)                                          |
-| `Paths`                 | [`java.nio.file.Paths`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Paths.html)                                        |
+| `URLEncoder`            | [`java.net.URLEncoder`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/URLEncoder.html)                                        |
+| `File`                  | [`java.io.File`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/File.html)                                                      |
+| `Files`                 | [`java.nio.file.Files`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Files.html)                                        |
+| `Path`                  | [`java.nio.file.Path`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html)                                          |
+| `Paths`                 | [`java.nio.file.Paths`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Paths.html)                                        |
 | `IncreaseDecreaseType`  | [`org.openhab.core.library.types.IncreaseDecreaseType`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/types/increasedecreasetype)   |
 | `DECREASE`              | `IncreaseDecreaseType` enum item                                                                                                                      |
 | `INCREASE`              | `IncreaseDecreaseType` enum item                                                                                                                      |
@@ -1367,10 +1379,10 @@ var { ON, OFF, QuantityType } = require("@runtime");
 | `MetricPrefix`          | [`org.openhab.core.library.unit.MetricPrefix`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/metricprefix)                     |
 | `Units`                 | [`org.openhab.core.library.unit.Units`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/units)                                   |
 | `BinaryPrefix`          | [`org.openhab.core.library.unit.BinaryPrefix`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/binaryprefix)                     |
-| `ChronoUnit`            | [`java.time.temporal.ChronoUnit`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/temporal/ChronoUnit.html)                    |
-| `Duration`              | [`java.time.Duration`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html)                                          |
-| `ZoneId`                | [`java.time.ZoneId`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html)                                              |
-| `ZonedDateTime`         | [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZonedDateTime.html)                                |
+| `ChronoUnit`            | [`java.time.temporal.ChronoUnit`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/temporal/ChronoUnit.html)                    |
+| `Duration`              | [`java.time.Duration`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html)                                          |
+| `ZoneId`                | [`java.time.ZoneId`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZoneId.html)                                              |
+| `ZonedDateTime`         | [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZonedDateTime.html)                                |
 
 `require("@runtime")` also defines "services" such as `items`, `things`, `rules`, `events`, `actions`, `ir`, `itemRegistry`.
 You can use these services for backwards compatibility purposes or ease migration from JSR223 scripts.

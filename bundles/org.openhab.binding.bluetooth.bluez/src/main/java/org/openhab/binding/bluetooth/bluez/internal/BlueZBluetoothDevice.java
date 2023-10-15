@@ -77,7 +77,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
      *
      * @param adapter the bridge handler through which this device is connected
      * @param address the Bluetooth address of the device
-     * @param name the name of the device
      */
     public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address) {
         super(adapter, address);
@@ -469,7 +468,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     public CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic) {
         BluetoothDevice dev = device;
-        if (dev == null || !dev.isConnected()) {
+        if (dev == null || !Boolean.TRUE.equals(dev.isConnected())) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
         }

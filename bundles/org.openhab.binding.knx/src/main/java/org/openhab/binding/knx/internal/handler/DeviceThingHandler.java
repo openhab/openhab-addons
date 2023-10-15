@@ -414,9 +414,10 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     if (oldFuture != null) {
                         oldFuture.cancel(true);
                     }
-                    if (value instanceof IncreaseDecreaseType type) {
-                        channelFutures.put(channelUID, scheduler.scheduleWithFixedDelay(
-                                () -> postCommand(channelUID, type), 0, frequency, TimeUnit.MILLISECONDS));
+                    if (value instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                        channelFutures.put(channelUID,
+                                scheduler.scheduleWithFixedDelay(() -> postCommand(channelUID, increaseDecreaseCommand),
+                                        0, frequency, TimeUnit.MILLISECONDS));
                     }
                 } else {
                     if (value instanceof Command command) {
