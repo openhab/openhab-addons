@@ -110,8 +110,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private Map<String, @Nullable OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
     private Map<String, Long> discoveringDevices = new ConcurrentHashMap<>();
 
-    protected @Nullable LightAutomHandlersMap lightsMap; // a static map of lights handlers organised by AREA they
-                                                         // belong to
+    protected @Nullable LightAutomHandlersMap lightsMap; // a LightAutomHandlersMap storing lights handlers organised by
+                                                         // the AREA they belong to
 
     protected @Nullable OpenGateway gateway;
     private boolean isBusGateway = false;
@@ -533,12 +533,15 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         // LIGHTING multiple messages
         if (msg instanceof Lighting lmsg) {
             WhereLightAutom w = (WhereLightAutom) lmsg.getWhere();
-            LightAutomHandlersMap lm = lightsMap;
-            if (w.isMultiple() && lm != null && !lm.isEmpty()) {
-                OpenWebNetLightingHandler lh = (OpenWebNetLightingHandler) lm.getOne();
-                if (lh != null) {
-                    lh.handleMultipleMessage(lmsg);
+            if (w.isGeneral() || w.isArea()) {
+                LightAutomHandlersMap lm = lightsMap;
+                if (lm != null && !lm.isEmpty()) {
+                    OpenWebNetLightingHandler lh = (OpenWebNetLightingHandler) lm.getOne();
+                    if (lh != null) {
+                        lh.handleMultipleMessage(lmsg);
+                    }
                 }
+                return;
             }
         }
 
