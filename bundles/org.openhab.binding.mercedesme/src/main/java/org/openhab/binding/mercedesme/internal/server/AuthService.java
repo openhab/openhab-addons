@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -115,7 +116,7 @@ public class AuthService {
         req.content(new StringContentProvider(Utils.GSON.toJson(pr), "utf-8"));
 
         try {
-            ContentResponse cr = req.send();
+            ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
             if (cr.getStatus() == 200) {
                 return pr.nonce;
             } else {
@@ -150,7 +151,7 @@ public class AuthService {
             req.content(new StringContentProvider(content));
 
             // Send
-            ContentResponse cr = req.send();
+            ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
             if (cr.getStatus() == 200) {
                 String responseString = cr.getContentAsString();
                 saveTokenResponse(responseString);
@@ -181,7 +182,7 @@ public class AuthService {
             req.content(new StringContentProvider(content));
 
             // Send
-            ContentResponse cr = req.send();
+            ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
             if (cr.getStatus() == 200) {
                 saveTokenResponse(cr.getContentAsString());
                 listener.onAccessTokenResponse(token);

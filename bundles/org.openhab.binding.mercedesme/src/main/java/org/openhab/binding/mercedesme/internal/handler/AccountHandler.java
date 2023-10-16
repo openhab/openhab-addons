@@ -344,7 +344,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             capabilitiesRequest.header("X-TrackingId", UUID.randomUUID().toString());
             capabilitiesRequest.header("Authorization", authService.get().getToken());
 
-            ContentResponse capabilitiesResponse = capabilitiesRequest.send();
+            ContentResponse capabilitiesResponse = capabilitiesRequest
+                    .timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
 
             String featureCapabilitiesJsonString = capabilitiesResponse.getContentAsString();
             if (!storage.containsKey(vin + FEATURE_APPENDIX)) {
@@ -379,7 +380,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             commandCapabilitiesRequest.header("X-SessionId", UUID.randomUUID().toString());
             commandCapabilitiesRequest.header("X-TrackingId", UUID.randomUUID().toString());
             commandCapabilitiesRequest.header("Authorization", authService.get().getToken());
-            ContentResponse commandCapabilitiesResponse = commandCapabilitiesRequest.send();
+            ContentResponse commandCapabilitiesResponse = commandCapabilitiesRequest
+                    .timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
 
             String commandCapabilitiesJsonString = commandCapabilitiesResponse.getContentAsString();
             if (!storage.containsKey(vin + COMMAND_APPENDIX)) {
@@ -440,7 +442,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         poiRequest.content(new StringContentProvider(poi.toString(), "utf-8"));
 
         try {
-            ContentResponse cr = poiRequest.send();
+            ContentResponse cr = poiRequest.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
             logger.debug("Send POI Response {} : {}", cr.getStatus(), cr.getContentAsString());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("Error Sending POI {}", e.getMessage());
