@@ -13,14 +13,11 @@
 package org.openhab.binding.mercedesme.internal.utils;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.items.Metadata;
-import org.openhab.core.storage.json.internal.JsonStorage;
 import org.openhab.core.thing.ChannelUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +32,8 @@ public class MetadataAdjuster {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetadataAdjuster.class);
     String baseDir = "";
     Path metadataJsonDatabasePath = Path.of(baseDir, "jsondb", "org.openhab.core.items.Metadata.json");
-    JsonStorage<Metadata> metadataStorage = new JsonStorage<>(metadataJsonDatabasePath.toFile(), null, 5, 0, 0,
-            List.of());
+    // JsonStorage<Metadata> metadataStorage = new JsonStorage<>(metadataJsonDatabasePath.toFile(), null, 5, 0, 0,
+    // List.of());
 
     private static LocaleProvider localeProvider = new LocaleProvider() {
         @Override
