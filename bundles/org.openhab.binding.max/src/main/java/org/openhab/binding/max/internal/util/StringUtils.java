@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.max.internal.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
