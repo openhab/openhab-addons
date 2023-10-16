@@ -89,6 +89,7 @@ public class AwtrixLightBindingConstants {
     public static final String FIELD_BRIDGE_INDICATOR3_COLOR = "indicator3-color";
     public static final String FIELD_BRIDGE_LDR_RAW = "ldr_raw";
     public static final String FIELD_BRIDGE_LUX = "lux";
+    public static final String FIELD_BRIDGE_MATRIX = "matrix";
     public static final String FIELD_BRIDGE_MESSAGES = "messages";
     public static final String FIELD_BRIDGE_RAM = "ram";
     public static final String FIELD_BRIDGE_TEMPERATURE = "temp";

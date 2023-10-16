@@ -42,6 +42,7 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_INDICATOR3;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_LDR_RAW;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_LUX;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_MATRIX;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_MESSAGES;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_RAM;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.FIELD_BRIDGE_SET_AUTO_BRIGHTNESS;
@@ -607,6 +608,10 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     break;
                 case FIELD_BRIDGE_RAM:
                     // Not mapped to channel atm
+                    break;
+                case FIELD_BRIDGE_MATRIX:
+                    updateState(new ChannelUID(channelPrefix + CHANNEL_DISPLAY),
+                            (boolean) value ? OnOffType.ON : OnOffType.OFF);
                     break;
                 case FIELD_BRIDGE_BRIGHTNESS:
                     long brightnessInPercent = Math.round((((BigDecimal) value).doubleValue() / 255) * 100);
