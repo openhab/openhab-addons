@@ -25,8 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.SceneRecallAction;
+import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneState;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
@@ -677,7 +678,13 @@ public class Resource {
         this.on = on;
     }
 
-    public Resource setRecallAction(RecallAction recallAction) {
+    public Resource setRecallAction(SceneRecallAction recallAction) {
+        Recall recall = this.recall;
+        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
+        return this;
+    }
+
+    public Resource setRecallAction(SmartSceneRecallAction recallAction) {
         Recall recall = this.recall;
         this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
         return this;

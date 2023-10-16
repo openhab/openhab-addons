@@ -50,8 +50,9 @@ import org.openhab.binding.hue.internal.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.SceneRecallAction;
+import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
@@ -432,8 +433,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     Resource scene = sceneResourceEntries.get(((StringType) command).toString());
                     if (Objects.nonNull(scene)) {
                         ResourceType putResourceType = scene.getType();
-                        putResource = new Resource(putResourceType).setRecallAction(
-                                putResourceType == ResourceType.SCENE ? RecallAction.ACTIVE : RecallAction.ACTIVATE);
+                        putResource = new Resource(putResourceType);
+                        switch (putResourceType) {
+                            case SCENE:
+                                putResource.setRecallAction(SceneRecallAction.ACTIVE);
+                                break;
+                            case SMART_SCENE:
+                                putResource.setRecallAction(SmartSceneRecallAction.ACTIVATE);
+                                break;
+                            default:
+                                logger.debug("{} -> handleCommand() type '{}' is not a supported scene type",
+                                        resourceId, putResourceType);
+                                return;
+                        }
                         putResourceId = scene.getId();
                     }
                 }
@@ -1106,7 +1118,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Fetch the full list of normal resp. smart scenes from the bridge, and call {@code updateSceneContributors(List<Resource> allScenes)}
+     * Fetch the full list of normal resp. smart scenes from the bridge, and call
+     * {@code updateSceneContributors(List<Resource> allScenes)}
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
