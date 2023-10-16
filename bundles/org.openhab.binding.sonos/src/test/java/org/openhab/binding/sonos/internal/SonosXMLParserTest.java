@@ -102,7 +102,7 @@ public class SonosXMLParserTest {
     @Test
     public void compileMetadataString() {
         SonosEntry sonosEntry = new SonosEntry("1", "Can't Buy Me Love", "0", "A Hard Day's Night", "", "",
-                "&gt;object.item.audioItem.musicTrack&lt;", "");
+                "object.item.audioItem.musicTrack", "");
         String expected = """
                 <DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" \
                 xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" \
@@ -110,7 +110,7 @@ public class SonosXMLParserTest {
                 xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">\
                 <item id="1" parentID="0" restricted="true">\
                 <dc:title>Can&apos;t Buy Me Love</dc:title>\
-                <upnp:class>&gt;object.item.audioItem.musicTrack&lt;</upnp:class>\
+                <upnp:class>object.item.audioItem.musicTrack</upnp:class>\
                 <desc id="cdudn" nameSpace="urn:schemas-rinconnetworks-com:metadata-1-0/">RINCON_AssociatedZPUDN</desc>\
                 </item>\
                 </DIDL-Lite>\
