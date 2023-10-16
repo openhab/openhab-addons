@@ -16,7 +16,7 @@ import java.io.Serializable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sonos.internal.util.StringUtils;
+import org.openhab.core.util.StringUtils;
 
 /**
  * The {@link SonosEntry} is a datastructure to describe
