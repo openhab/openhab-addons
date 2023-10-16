@@ -38,6 +38,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
@@ -68,6 +69,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
+    private final MetadataRegistry metadataRegistry;
+    private final ItemChannelLinkRegistry channelLinkRegistry;
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
     public static String ohVersion = "unknown";
@@ -78,7 +81,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             final @Reference TimeZoneProvider tzp, final @Reference MercedesMeCommandOptionProvider cop,
             final @Reference MercedesMeStateOptionProvider sop,
             final @Reference MercedesMeDynamicStateDescriptionProvider dsdp, final @Reference UnitProvider up,
-            final @Reference MetadataRegistry mdr) {
+            final @Reference MetadataRegistry mdr, final @Reference ItemChannelLinkRegistry iclr) {
         this.storageService = storageService;
 
         localeProvider = lp;
@@ -86,14 +89,13 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         mmcop = cop;
         mmsop = sop;
         mmdsdp = dsdp;
+        metadataRegistry = mdr;
+        channelLinkRegistry = iclr;
 
         Utils.initialze(tzp, lp);
         Mapper.initialze(up);
         httpClient = hcf.getCommonHttpClient();
         discoveryService = new MercedesMeDiscoveryService();
-        mdr.getAll().forEach(md -> {
-            logger.info("{}", md.toString());
-        });
     }
 
     @Override
@@ -120,7 +122,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             return new AccountHandler((Bridge) thing, discoveryService, httpClient, localeProvider, storageService);
         } else if (THING_TYPE_BEV.equals(thingTypeUID) || THING_TYPE_COMB.equals(thingTypeUID)
                 || THING_TYPE_HYBRID.equals(thingTypeUID)) {
-            return new VehicleHandler(thing, locationProvider, mmcop, mmsop, mmdsdp);
+            return new VehicleHandler(thing, locationProvider, mmcop, mmsop, mmdsdp, metadataRegistry,
+                    channelLinkRegistry);
         }
         return null;
     }

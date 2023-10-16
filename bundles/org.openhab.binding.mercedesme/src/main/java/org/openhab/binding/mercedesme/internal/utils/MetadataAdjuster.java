@@ -12,13 +12,20 @@
  */
 package org.openhab.binding.mercedesme.internal.utils;
 
-import java.nio.file.Path;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.core.common.registry.RegistryChangeListener;
+import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataKey;
+import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,35 +35,85 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MetadataAdjuster {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MetadataAdjuster.class);
-    String baseDir = "";
-    Path metadataJsonDatabasePath = Path.of(baseDir, "jsondb", "org.openhab.core.items.Metadata.json");
-    // JsonStorage<Metadata> metadataStorage = new JsonStorage<>(metadataJsonDatabasePath.toFile(), null, 5, 0, 0,
-    // List.of());
+public class MetadataAdjuster implements RegistryChangeListener<ItemChannelLink> {
+    private final Logger logger = LoggerFactory.getLogger(MetadataAdjuster.class);
+    private final MetadataRegistry metadataRegistry;
+    private final ItemChannelLinkRegistry channelLinkRegistry;
+    private final ThingUID thingUID;
 
-    private static LocaleProvider localeProvider = new LocaleProvider() {
-        @Override
-        public Locale getLocale() {
-            return Locale.getDefault();
-        }
-    };
-
-    public static void initialze(TimeZoneProvider tzp, LocaleProvider lp) {
-        localeProvider = lp;
+    public MetadataAdjuster(ThingUID tuid, MetadataRegistry mdr, ItemChannelLinkRegistry iclr) {
+        metadataRegistry = mdr;
+        channelLinkRegistry = iclr;
+        thingUID = tuid;
+        channelLinkRegistry.addRegistryChangeListener(this);
     }
 
-    public static void adjust(ChannelUID cuid) {
-        // ItemChannelLinkRegistry ICLR;
-        // //ICLR.
-        // ItemChannelLink icl;
-        // icl.
-        // Metadata md;
-        // //md.
-        // MetadataRegistry mdr;
-        // mdr.get
-        // mdr.get(AbstractUID.SEGMENT_PATTERN;
-        // MetadataProvider mdpr;
-        // mdpr.
+    /**
+     * Adjust Units to binding defaults
+     */
+    @Override
+    public void added(ItemChannelLink element) {
+        ChannelUID cuid = element.getLinkedUID();
+        String itemName = element.getItemName();
+        if (thingUID.equals(cuid.getThingUID())) {
+            MetadataKey key = new MetadataKey("unit", itemName);
+            switch (cuid.getId()) {
+                case Constants.GROUP_RANGE + "#mileage":
+                case Constants.GROUP_RANGE + "#range-electric":
+                case Constants.GROUP_RANGE + "#radius-electric":
+                case Constants.GROUP_RANGE + "#range-fuel":
+                case Constants.GROUP_RANGE + "#radius-fuel":
+                case Constants.GROUP_RANGE + "#range-hybrid":
+                case Constants.GROUP_RANGE + "#radius-hybrid":
+                case Constants.GROUP_RANGE + "#home-distance":
+                case Constants.GROUP_TRIP + "#distance":
+                case Constants.GROUP_TRIP + "#distance-reset":
+                    if (metadataRegistry.get(key) == null) {
+                        logger.info("{} not found", key);
+                        if (Locale.US.getCountry().equals(Utils.getCountry())) {
+                            metadataRegistry.add(new Metadata(key, ImperialUnits.MILE.getSymbol(), null));
+                        } else {
+                            logger.info("Set {} to {}", key, Constants.KILOMETRE_UNIT.toString());
+                            metadataRegistry.add(new Metadata(key, Constants.KILOMETRE_UNIT.toString(), null));
+                        }
+                    } else {
+                        logger.info("{} already set: {}", key, metadataRegistry.get(key));
+                    }
+                    break;
+                case Constants.GROUP_RANGE + "#soc":
+                case Constants.GROUP_RANGE + "#fuel-level":
+                    if (metadataRegistry.get(key) == null) {
+                        logger.info("{} not found", key);
+                        metadataRegistry.add(new Metadata(key, Units.PERCENT.getSymbol(), null));
+                    } else {
+                        logger.info("{} already set: {}", key, metadataRegistry.get(key));
+                    }
+                    break;
+                case Constants.GROUP_TIRES + "#pressure-front-left":
+                case Constants.GROUP_TIRES + "#pressure-front-right":
+                case Constants.GROUP_TIRES + "#pressure-rear-left":
+                case Constants.GROUP_TIRES + "#pressure-rear-right":
+                    if (metadataRegistry.get(key) == null) {
+                        logger.info("{} not found", key);
+                        if (Locale.US.getCountry().equals(Utils.getCountry())) {
+                            metadataRegistry
+                                    .add(new Metadata(key, ImperialUnits.POUND_FORCE_SQUARE_INCH.getSymbol(), null));
+                        } else {
+                            metadataRegistry.add(new Metadata(key, Units.BAR.getSymbol(), null));
+                        }
+                    } else {
+                        logger.info("{} already set: {}", key, metadataRegistry.get(key));
+                    }
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void removed(ItemChannelLink element) {
+    }
+
+    @Override
+    public void updated(ItemChannelLink oldElement, ItemChannelLink element) {
     }
 }
