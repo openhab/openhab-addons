@@ -39,9 +39,11 @@ import org.openhab.binding.mercedesme.internal.actions.VehicleActions;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
+import org.openhab.binding.mercedesme.internal.utils.MetadataAdjuster;
 import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -58,6 +60,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
@@ -132,13 +135,15 @@ public class VehicleHandler extends BaseThingHandler {
     Optional<VehicleConfiguration> config = Optional.empty();
 
     public VehicleHandler(Thing thing, LocationProvider lp, MercedesMeCommandOptionProvider cop,
-            MercedesMeStateOptionProvider sop, MercedesMeDynamicStateDescriptionProvider dsdp) {
+            MercedesMeStateOptionProvider sop, MercedesMeDynamicStateDescriptionProvider dsdp, MetadataRegistry mdr,
+            ItemChannelLinkRegistry iclr) {
         super(thing);
         vehicleType = thing.getThingTypeUID().getId();
         locationProvider = lp;
         mmcop = cop;
         mmsop = sop;
         mmdsdp = dsdp;
+        MetadataAdjuster mdAdjuster = new MetadataAdjuster(thing.getUID(), mdr, iclr);
     }
 
     @Override
