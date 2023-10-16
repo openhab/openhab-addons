@@ -15,6 +15,7 @@ package org.openhab.binding.plugwise.internal.config;
 import static org.openhab.binding.plugwise.internal.config.PlugwiseRelayConfig.PowerStateChanging.COMMAND_SWITCHING;
 
 import java.time.Duration;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
@@ -37,7 +38,8 @@ public class PlugwiseRelayConfig {
     }
 
     private String macAddress = "";
-    private String powerStateChanging = StringUtils.capitalizeByUnderscore(COMMAND_SWITCHING.name());
+    private String powerStateChanging = Objects
+            .requireNonNull(StringUtils.capitalizeByUnderscore(COMMAND_SWITCHING.name()));
     private boolean suppliesPower = false;
     private int measurementInterval = 60; // minutes
     private boolean temporarilyNotInNetwork = false;

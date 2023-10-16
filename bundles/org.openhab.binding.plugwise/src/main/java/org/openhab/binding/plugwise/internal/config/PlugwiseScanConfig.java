@@ -15,6 +15,7 @@ package org.openhab.binding.plugwise.internal.config;
 import static org.openhab.binding.plugwise.internal.protocol.field.Sensitivity.MEDIUM;
 
 import java.time.Duration;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
@@ -31,7 +32,7 @@ import org.openhab.core.util.StringUtils;
 public class PlugwiseScanConfig {
 
     private String macAddress = "";
-    private String sensitivity = StringUtils.capitalizeByUnderscore(MEDIUM.name());
+    private String sensitivity = Objects.requireNonNull(StringUtils.capitalizeByUnderscore(MEDIUM.name()));
     private int switchOffDelay = 5; // minutes
     private boolean daylightOverride = false;
     private int wakeupInterval = 1440; // minutes (1 day)
