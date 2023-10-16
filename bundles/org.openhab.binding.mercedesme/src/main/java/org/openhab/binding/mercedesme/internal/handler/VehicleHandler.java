@@ -624,15 +624,21 @@ public class VehicleHandler extends BaseThingHandler {
                 PointType pt = new PointType(lat + "," + lon);
                 updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, pt));
 
-                // calculate away from home
+                // calculate distance tp home
                 PointType homePoint = locationProvider.getLocation();
-                UOMObserver observer = new UOMObserver(UOMObserver.LENGTH_KM_UNIT);
-                if (Locale.US.getCountry().equals(Utils.getCountry())) {
-                    observer = new UOMObserver(UOMObserver.LENGTH_MILES_UNIT);
+                if (homePoint != null) {
+                    double distance = Utils.distance(homePoint.getLatitude().doubleValue(), lat,
+                            homePoint.getLongitude().doubleValue(), lon, 0.0, 0.0);
+                    UOMObserver observer = new UOMObserver(UOMObserver.LENGTH_KM_UNIT);
+                    if (Locale.US.getCountry().equals(Utils.getCountry())) {
+                        observer = new UOMObserver(UOMObserver.LENGTH_MILES_UNIT);
+                    }
+                    updateChannel(new ChannelStateMap("home-distance", Constants.GROUP_RANGE,
+                            QuantityType.valueOf(distance / 1000, observer.getUnit().get()), observer));
+                } else {
+                    logger.debug("No kome location found");
                 }
-                double distance = Utils.distance(homePoint.getLatitude().doubleValue(), lat,
-                        homePoint.getLongitude().doubleValue(), lon, 0.0, 0.0);
-                updateChannel(new ChannelStateMap("home-distance", Constants.GROUP_RANGE, pt, observer));
+
             } else {
                 if (fullUpdate) {
                     logger.info("Either Latitude {} or Longitude {} attribute nil", lat, lon);
