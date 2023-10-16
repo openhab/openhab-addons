@@ -79,7 +79,9 @@ public class RMEThingHandler extends SerialThingHandler {
     @Override
     public void onDataReceived(String receivedLine) {
         String line = StringUtils.chomp(receivedLine);
-
+        if (line == null) {
+            line = "";
+        }
         // little hack to overcome Locale limits of the RME Rain Manager
         // note to the attentive reader : should we add support for system
         // locale's in the Type classes? ;-)
