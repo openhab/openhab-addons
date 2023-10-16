@@ -65,7 +65,7 @@
     <dependency>
       <artifactId>json</artifactId>
       <groupId>org.json</groupId>
-      <version>20230618</version>
+      <version>20231013</version>
     </dependency>
     <dependency>
       <artifactId>okhttp</artifactId>
