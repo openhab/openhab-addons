@@ -27,7 +27,6 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.util.StringUtils;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
-import org.openhab.io.neeo.internal.util.StringUtils;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.http.HttpService;
 
