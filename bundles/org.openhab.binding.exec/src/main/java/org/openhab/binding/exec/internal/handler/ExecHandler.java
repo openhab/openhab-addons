@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.IllegalFormatException;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -289,10 +290,10 @@ public class ExecHandler extends BaseThingHandler {
 
             outputBuilder.append(errorBuilder.toString());
 
-            String transformedResponse = StringUtils.chomp(outputBuilder.toString());
+            String transformedResponse = Objects.requireNonNull(StringUtils.chomp(outputBuilder.toString()));
             String transformation = (String) getConfig().get(TRANSFORM);
 
-            if (transformation != null && transformation.length() > 0 && transformedResponse != null) {
+            if (transformation != null && transformation.length() > 0) {
                 transformedResponse = transformResponse(transformedResponse, transformation);
             }
 
