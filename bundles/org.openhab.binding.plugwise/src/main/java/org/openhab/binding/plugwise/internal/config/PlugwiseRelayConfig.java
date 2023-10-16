@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.plugwise.internal.config;
 
-import static org.openhab.binding.plugwise.internal.PlugwiseUtils.*;
 import static org.openhab.binding.plugwise.internal.config.PlugwiseRelayConfig.PowerStateChanging.COMMAND_SWITCHING;
 
 import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
-import org.openhab.binding.plugwise.internal.util.StringUtils;
+import org.openhab.binding.plugwise.internal.util.StringUtil;
 import org.openhab.core.util.StringUtils;
 
 /**
@@ -49,7 +48,7 @@ public class PlugwiseRelayConfig {
     }
 
     public PowerStateChanging getPowerStateChanging() {
-        return PowerStateChanging.valueOf(StringUtils.lowerCamelToUpperUnderscore(powerStateChanging));
+        return PowerStateChanging.valueOf(StringUtil.lowerCamelToUpperUnderscore(powerStateChanging));
     }
 
     public boolean isSuppliesPower() {

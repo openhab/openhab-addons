@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
-public final class StringUtils {
+public final class StringUtil {
 
     public static String lowerCamelToUpperUnderscore(String text) {
         return text.replaceAll("([a-z])([A-Z]+)", "$1_$2").toUpperCase();
