@@ -39,6 +39,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TSmartHandler} is responsible for handling commands, which are
@@ -49,12 +51,14 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class TSmartHandler extends BaseThingHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(TSmartHandler.class);
     private @Nullable TSmartConfiguration config;
 
     private volatile int unRespondedRequests = 0;
     private @Nullable InetAddress destAddr;
 
     private @Nullable ScheduledFuture<?> statusRefreshJob;
+    private boolean propertiesInitializedSuccessfully = false;
 
     public TSmartHandler(Thing thing) {
         super(thing);
@@ -92,28 +96,39 @@ public class TSmartHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(TSmartConfiguration.class);
-        if (config.hostname.isBlank()) {
+        TSmartConfiguration thisConfig = config;
+        if (thisConfig == null || thisConfig.hostname.isBlank() || thisConfig.refreshInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
-            scheduler.schedule(this::startup, 0, TimeUnit.SECONDS);
+            updateStatus(ThingStatus.UNKNOWN);
+            statusRefreshJob = scheduler.scheduleWithFixedDelay(this::requestStatusRefresh, 0,
+                    thisConfig.refreshInterval, TimeUnit.SECONDS);
         }
     }
 
-    private void startup() {
-        try {
-            InetAddress destination = InetAddress.getByName(config.hostname);
-
-            destAddr = destination;
-
-            TSmartUDPListener.addHandler(destination, this);
-
-            updateStatus(ThingStatus.UNKNOWN);
-
-            statusRefreshJob = scheduler.scheduleWithFixedDelay(this::requestStatusRefresh, 0, config.refreshInterval,
-                    TimeUnit.SECONDS);
-        } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+    private synchronized boolean initializeProperties() {
+        if (propertiesInitializedSuccessfully) {
+            return true;
         }
+
+        TSmartConfiguration thisConfig = config;
+        if (thisConfig != null) {
+            try {
+                InetAddress destination = InetAddress.getByName(thisConfig.hostname);
+
+                destAddr = destination;
+
+                TSmartUDPListener.addHandler(destination, this);
+
+                propertiesInitializedSuccessfully = true;
+            } catch (UnknownHostException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        } else {
+            logger.debug("Unexpected missing config");
+        }
+
+        return propertiesInitializedSuccessfully;
     }
 
     /**
@@ -158,6 +173,10 @@ public class TSmartHandler extends BaseThingHandler {
     }
 
     private void requestStatusRefresh() {
+        if (!initializeProperties()) {
+            return;
+        }
+
         sendUDPPacket(new byte[] { (byte) 0xF1, (byte) 0x00, (byte) 0x00 });
 
         unRespondedRequests++;
@@ -209,17 +228,20 @@ public class TSmartHandler extends BaseThingHandler {
 
     private void setSetpoint(QuantityType<?> command) {
         if (command.getDimension().equals(SIUnits.CELSIUS.getDimension())) {
-            short temp10 = (short) (command.toUnit(SIUnits.CELSIUS).floatValue() * 10);
+            QuantityType<?> temp = command.toUnit(SIUnits.CELSIUS);
+            if (temp != null) {
+                short temp10 = (short) (temp.floatValue() * 10);
 
-            ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
-            buffer.order(ByteOrder.LITTLE_ENDIAN);
-            buffer.putShort(temp10);
+                ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
+                buffer.order(ByteOrder.LITTLE_ENDIAN);
+                buffer.putShort(temp10);
 
-            byte zero = 0x00;
-            byte[] controlWrite = new byte[] { (byte) 0xF2, zero, zero, (byte) 0x01, buffer.array()[0],
-                    buffer.array()[1], zero };
+                byte zero = 0x00;
+                byte[] controlWrite = new byte[] { (byte) 0xF2, zero, zero, (byte) 0x01, buffer.array()[0],
+                        buffer.array()[1], zero };
 
-            sendUDPPacket(controlWrite);
+                sendUDPPacket(controlWrite);
+            }
         }
     }
 
