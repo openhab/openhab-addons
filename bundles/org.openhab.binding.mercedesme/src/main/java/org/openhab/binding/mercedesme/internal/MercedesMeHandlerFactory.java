@@ -30,6 +30,7 @@ import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -76,7 +77,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             final @Reference LocaleProvider lp, final @Reference LocationProvider locationP,
             final @Reference TimeZoneProvider tzp, final @Reference MercedesMeCommandOptionProvider cop,
             final @Reference MercedesMeStateOptionProvider sop,
-            final @Reference MercedesMeDynamicStateDescriptionProvider dsdp, final @Reference UnitProvider up) {
+            final @Reference MercedesMeDynamicStateDescriptionProvider dsdp, final @Reference UnitProvider up,
+            final @Reference MetadataRegistry mdr) {
         this.storageService = storageService;
 
         localeProvider = lp;
@@ -89,6 +91,9 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         Mapper.initialze(up);
         httpClient = hcf.getCommonHttpClient();
         discoveryService = new MercedesMeDiscoveryService();
+        mdr.getAll().forEach(md -> {
+            logger.info("{}", md.toString());
+        });
     }
 
     @Override
