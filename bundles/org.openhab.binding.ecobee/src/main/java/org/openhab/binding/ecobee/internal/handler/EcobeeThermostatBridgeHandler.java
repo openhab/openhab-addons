@@ -179,7 +179,8 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             for (Channel channel : thing.getChannelsOfGroup(group)) {
                 if (isLinked(channel.getUID())) {
                     try {
-                        Field field = selection.getClass().getField("include" + StringUtils.capitalizeByWhitespace(group));
+                        Field field = selection.getClass()
+                                .getField("include" + StringUtils.capitalizeByWhitespace(group));
                         logger.trace("ThermostatBridge: Thermostat thing '{}' including object '{}' in selection",
                                 thing.getUID(), field.getName());
                         field.set(selection, Boolean.TRUE);
