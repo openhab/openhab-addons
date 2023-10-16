@@ -78,9 +78,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     oneHandler = h;
                 }
                 logger.warn("/////////////////////// Added handler {} to Area {}", oId, area);
-                logger.warn(this.toString());
+                logger.warn("Map: {}", this.toString());
             }
-
         }
 
         protected void remove(int area, OpenWebNetThingHandler h) {
@@ -88,11 +87,11 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
                 if (areaHndlrs != null) {
                     boolean removed = areaHndlrs.remove(h.ownId, h);
-                    if (removed && oneHandler == h) {
+                    if (removed && oneHandler.equals(h)) {
                         oneHandler = getFirst();
                     }
                     logger.warn("/////////////////////// ^^^^^^^^^^^^ Removed handler {} from Area {}", h.ownId, area);
-                    logger.warn(this.toString());
+                    logger.warn("Map: {}", this.toString());
                 }
             }
         }
@@ -191,7 +190,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     public OpenWebNetLightingHandler(Thing thing) {
         super(thing);
-
     }
 
     @Override
@@ -355,8 +353,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     lastBrightnessChangeSentTS = System.currentTimeMillis();
                     send(Lighting.requestDimTo(w.value(), newBrightnessWhat));
                 } catch (OWNException e) {
-                    logger.warn("Exception while sending dimTo request for command {}: {}", command,
-                            e.getMessage());
+                    logger.warn("Exception while sending dimTo request for command {}: {}", command, e.getMessage());
                 }
             }
         } else {
@@ -381,7 +378,15 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             if (w.isGeneral()) {
                 l = map.getAllHandlers();
             } else if (w.getArea() > 0) {
-                l = map.getAreaHandlers(w.getArea());
+                // l = map.getAreaHandlers(w.getArea());
+
+                try {
+                    send(Lighting.requestStatus(w.getArea() + ""));
+                } catch (OWNException e) {
+                    // Auto-generated catch block
+                    // e.printStackTrace();
+                }
+
             }
             if (l != null) {
                 for (OpenWebNetThingHandler hndlr : l) {
@@ -457,8 +462,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     }
                     brightness = newBrightness;
                 } else {
-                    logger.warn("updateBrightness() Cannot handle message {} for thing {}", msg,
-                            getThing().getUID());
+                    logger.warn("updateBrightness() Cannot handle message {} for thing {}", msg, getThing().getUID());
                     return;
                 }
             }
@@ -520,8 +524,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 }
                 updateState(channelId, OnOffType.from(msg.isOn()));
             } else {
-                logger.debug("updateOnOffState() Ignoring unsupported WHAT for thing {}. Frame={}",
-                        getThing().getUID(),
+                logger.debug("updateOnOffState() Ignoring unsupported WHAT for thing {}. Frame={}", getThing().getUID(),
                         msg.getFrameValue());
                 return;
             }
@@ -565,5 +568,4 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         }
         super.dispose();
     }
-
 }
