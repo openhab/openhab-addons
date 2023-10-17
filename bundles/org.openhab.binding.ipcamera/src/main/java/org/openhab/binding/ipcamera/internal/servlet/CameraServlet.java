@@ -109,7 +109,7 @@ public class CameraServlet extends IpCameraServlet {
                 Ffmpeg localFfmpeg = handler.ffmpegHLS;
                 if (localFfmpeg == null) {
                     handler.setupFfmpegFormat(FFmpegFormat.HLS);
-                } else if (!localFfmpeg.getIsAlive()) {
+                } else if (!localFfmpeg.isAlive()) {
                     localFfmpeg.startConverting();
                 } else {
                     localFfmpeg.setKeepAlive(8);
