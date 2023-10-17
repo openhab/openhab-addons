@@ -18,8 +18,8 @@ import java.time.Duration;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.plugwise.internal.PlugwiseUtils;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
-import org.openhab.binding.plugwise.internal.util.StringUtil;
 import org.openhab.core.util.StringUtils;
 
 /**
@@ -50,7 +50,7 @@ public class PlugwiseRelayConfig {
     }
 
     public PowerStateChanging getPowerStateChanging() {
-        return PowerStateChanging.valueOf(StringUtil.lowerCamelToUpperUnderscore(powerStateChanging));
+        return PowerStateChanging.valueOf(PlugwiseUtils.lowerCamelToUpperUnderscore(powerStateChanging));
     }
 
     public boolean isSuppliesPower() {

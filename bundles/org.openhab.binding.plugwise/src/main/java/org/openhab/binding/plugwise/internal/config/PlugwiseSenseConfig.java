@@ -19,12 +19,12 @@ import java.time.Duration;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.plugwise.internal.PlugwiseUtils;
 import org.openhab.binding.plugwise.internal.protocol.field.BoundaryAction;
 import org.openhab.binding.plugwise.internal.protocol.field.BoundaryType;
 import org.openhab.binding.plugwise.internal.protocol.field.Humidity;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.openhab.binding.plugwise.internal.protocol.field.Temperature;
-import org.openhab.binding.plugwise.internal.util.StringUtil;
 import org.openhab.core.util.StringUtils;
 
 /**
@@ -57,11 +57,11 @@ public class PlugwiseSenseConfig {
     }
 
     public BoundaryType getBoundaryType() {
-        return BoundaryType.valueOf(StringUtil.lowerCamelToUpperUnderscore(boundaryType));
+        return BoundaryType.valueOf(PlugwiseUtils.lowerCamelToUpperUnderscore(boundaryType));
     }
 
     public BoundaryAction getBoundaryAction() {
-        return BoundaryAction.valueOf(StringUtil.lowerCamelToUpperUnderscore(boundaryAction));
+        return BoundaryAction.valueOf(PlugwiseUtils.lowerCamelToUpperUnderscore(boundaryAction));
     }
 
     public Temperature getTemperatureBoundaryMin() {

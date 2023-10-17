@@ -76,6 +76,10 @@ public final class PlugwiseUtils {
         }
     }
 
+    public static String lowerCamelToUpperUnderscore(String text) {
+        return text.replaceAll("([a-z])([A-Z]+)", "$1_$2").toUpperCase();
+    }
+
     public static <T extends Comparable<T>> T minComparable(T first, T second) {
         return first.compareTo(second) <= 0 ? first : second;
     }

@@ -18,9 +18,9 @@ import java.time.Duration;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.plugwise.internal.PlugwiseUtils;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.openhab.binding.plugwise.internal.protocol.field.Sensitivity;
-import org.openhab.binding.plugwise.internal.util.StringUtil;
 import org.openhab.core.util.StringUtils;
 
 /**
@@ -45,7 +45,7 @@ public class PlugwiseScanConfig {
     }
 
     public Sensitivity getSensitivity() {
-        return Sensitivity.valueOf(StringUtil.lowerCamelToUpperUnderscore(sensitivity));
+        return Sensitivity.valueOf(PlugwiseUtils.lowerCamelToUpperUnderscore(sensitivity));
     }
 
     public Duration getSwitchOffDelay() {
