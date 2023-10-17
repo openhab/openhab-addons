@@ -1,0 +1,126 @@
+{
+    "errors": [
+    ],
+    "data": [
+        {
+            "id": "0707ec71-8d7a-4bf8-91ca-71db273ddfe9",
+            "type": "smart_scene",
+            "metadata": {
+                "name": "Natural light",
+                "image": {
+                    "rid": "eb014820-a902-4652-8ca7-6e29c03b87a1",
+                    "rtype": "public_image"
+                }
+            },
+            "group": {
+                "rid": "1166743f-fe3d-47d1-bd7d-b5bb378098cc",
+                "rtype": "room"
+            },
+            "week_timeslots": [
+                {
+                    "timeslots": [
+                        {
+                            "start_time": {
+                                "kind": "time",
+                                "time": {
+                                    "hour": 7,
+                                    "minute": 0,
+                                    "second": 0
+                                }
+                            },
+                            "target": {
+                                "rid": "9c633a2d-f7bf-4bba-b5ee-a4d69ce6e050",
+                                "rtype": "scene"
+                            }
+                        },
+                        {
+                            "start_time": {
+                                "kind": "time",
+                                "time": {
+                                    "hour": 10,
+                                    "minute": 0,
+                                    "second": 0
+                                }
+                            },
+                            "target": {
+                                "rid": "7616d9fe-4889-472b-93bf-5090c19fb902",
+                                "rtype": "scene"
+                            }
+                        },
+                        {
+                            "start_time": {
+                                "kind": "sunset",
+                                "time": {
+                                    "hour": 0,
+                                    "minute": 0,
+                                    "second": 0
+                                }
+                            },
+                            "target": {
+                                "rid": "eeabcfdb-97db-4e4a-a94a-fe1fea8e6c2c",
+                                "rtype": "scene"
+                            }
+                        },
+                        {
+                            "start_time": {
+                                "kind": "time",
+                                "time": {
+                                    "hour": 20,
+                                    "minute": 0,
+                                    "second": 0
+                                }
+                            },
+                            "target": {
+                                "rid": "2f474323-0c6b-4361-a8c7-b52da902cd7b",
+                                "rtype": "scene"
+                            }
+                        },
+                        {
+                            "start_time": {
+                                "kind": "time",
+                                "time": {
+                                    "hour": 22,
+                                    "minute": 0,
+                                    "second": 0
+                                }
+                            },
+                            "target": {
+                                "rid": "6fa2a278-43ec-4586-bdd8-2fe6f4ea5f85",
+                                "rtype": "scene"
+                            }
+                        },
+                        {
+                            "start_time": {
+                                "kind": "time",
+                                "time": {
+                                    "hour": 0,
+                                    "minute": 0,
+                                    "second": 0
+                                }
+                            },
+                            "target": {
+                                "rid": "6ca12be2-c547-4722-8db0-6e12f20688f3",
+                                "rtype": "scene"
+                            }
+                        }
+                    ],
+                    "recurrence": [
+                        "sunday",
+                        "monday",
+                        "tuesday",
+                        "wednesday",
+                        "thursday",
+                        "friday",
+                        "saturday"
+                    ]
+                }
+            ],
+            "transition_duration": 60000,
+            "active_timeslot": {
+                "timeslot_id": 1,
+                "weekday": "wednesday"
+            },
+            "state": "inactive"
+        }
+    ]
+}
