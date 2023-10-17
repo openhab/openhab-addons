@@ -16,7 +16,7 @@ import static org.openhab.binding.plugwise.internal.protocol.field.BoundaryActio
 import static org.openhab.binding.plugwise.internal.protocol.field.BoundaryType.NONE;
 
 import java.time.Duration;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.PlugwiseUtils;
@@ -37,9 +37,9 @@ public class PlugwiseSenseConfig {
 
     private String macAddress = "";
     private int measurementInterval = 15; // minutes
-    private String boundaryType = Optional.ofNullable(StringUtils.capitalizeByUnderscore(NONE.name())).orElse("");
-    private String boundaryAction = Optional.ofNullable(StringUtils.capitalizeByUnderscore(OFF_BELOW_ON_ABOVE.name()))
-            .orElse("");
+    private String boundaryType = Objects.requireNonNull(StringUtils.capitalizeByUnderscore(NONE.name()));
+    private String boundaryAction = Objects
+            .requireNonNull(StringUtils.capitalizeByUnderscore(OFF_BELOW_ON_ABOVE.name()));
     private int temperatureBoundaryMin = 15; // degrees Celsius
     private int temperatureBoundaryMax = 25; // degrees Celsius
     private int humidityBoundaryMin = 45; // relative humidity (RH)
