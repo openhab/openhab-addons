@@ -14,7 +14,6 @@ package org.openhab.binding.lgthinq.lgservices;
 
 import java.util.*;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * The {@link LGThinQWMApiV1ClientServiceImpl}
@@ -98,7 +96,8 @@ public class LGThinQWMApiV1ClientServiceImpl
         }
     }
 
-    private Map<String, Object> prepareCommandV1(CommandDefinition cmdDef, Map<String, Object> snapData)
+    @Override
+    protected Map<String, Object> prepareCommandV1(CommandDefinition cmdDef, Map<String, Object> snapData)
             throws JsonProcessingException {
         // expected map ordered here
         String dataStr = cmdDef.getDataTemplate();
@@ -111,22 +110,8 @@ public class LGThinQWMApiV1ClientServiceImpl
             dataStr = dataStr.replace("{{" + e.getKey() + "}}", value);
         }
         // Keep the order
-        LinkedHashMap<String, Object> cmd = objectMapper.readValue(cmdDef.getRawCommand(), new TypeReference<>() {
-        });
-        cmd.remove("encode"); // remove encode node in the raw command to be similar to LG App.
-
-        logger.debug("Prepare command v1: {}", dataStr);
-        if (cmdDef.isBinary()) {
-            cmd.put("format", "B64");
-            List<Integer> list = objectMapper.readValue(dataStr, new TypeReference<>() {
-            });
-            // convert the list of integer to a bytearray
-            byte[] bytes = ArrayUtils.toPrimitive(list.stream().map(Integer::byteValue).toArray(Byte[]::new));
-            String str_data_encoded = new String(Base64.getEncoder().encode(bytes));
-            cmd.put("data", str_data_encoded);
-        } else {
-            cmd.put("data", dataStr);
-        }
+        LinkedHashMap<String, Object> cmd = completeCommandDataNodeV1(cmdDef, dataStr);
+        cmd.remove("encode");
 
         return cmd;
     }

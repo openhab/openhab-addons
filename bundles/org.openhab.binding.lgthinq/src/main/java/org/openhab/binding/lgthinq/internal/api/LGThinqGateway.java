@@ -135,4 +135,14 @@ public class LGThinqGateway implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return "LGThinqGateway{" + "empBaseUri='" + empBaseUri + '\'' + ", loginBaseUri='" + loginBaseUri + '\''
+                + ", apiRootV1='" + apiRootV1 + '\'' + ", apiRootV2='" + apiRootV2 + '\'' + ", authBase='" + authBase
+                + '\'' + ", language='" + language + '\'' + ", country='" + country + '\'' + ", username='"
+                + (!username.isEmpty() ? "******" : "<blank>") + '\'' + ", password='"
+                + (!password.isEmpty() ? "******" : "<blank>") + '\'' + ", alternativeEmpServer='"
+                + alternativeEmpServer + '\'' + ", accountVersion=" + accountVersion + '}';
+    }
 }

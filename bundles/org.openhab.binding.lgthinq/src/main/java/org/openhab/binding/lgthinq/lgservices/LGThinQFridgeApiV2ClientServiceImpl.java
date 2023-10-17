@@ -12,13 +12,20 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapability;
+
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link LGThinQFridgeApiV2ClientServiceImpl}
@@ -43,5 +50,33 @@ public class LGThinQFridgeApiV2ClientServiceImpl
     public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
             throws LGThinqApiException {
         throw new UnsupportedOperationException("Not implemented yet.");
+    }
+
+    @Override
+    public void setFridgeTemperature(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
+            Integer targetTemperatureIndex, String tempUnit, @Nullable Map<String, Object> snapCmdData)
+            throws LGThinqApiException {
+        setTemperature("fridgeTemp", bridgeId, deviceId, targetTemperatureIndex, tempUnit);
+    }
+
+    @Override
+    public void setFreezerTemperature(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
+            Integer targetTemperatureIndex, String tempUnit, @Nullable Map<String, Object> snapCmdData)
+            throws LGThinqApiException {
+        setTemperature("freezerTemp", bridgeId, deviceId, targetTemperatureIndex, tempUnit);
+    }
+
+    private void setTemperature(String tempFeature, String bridgeId, String deviceId, Integer targetTemperature,
+            String tempUnit) throws LGThinqApiException {
+        ObjectNode dataSetList = JsonNodeFactory.instance.objectNode();
+        ObjectNode nodeData = dataSetList.putObject("dataSetList").putObject("refState");
+        nodeData.put(tempFeature, targetTemperature).put("tempUnit", tempUnit);
+        try {
+            RestResult result = sendCommand(bridgeId, deviceId, "control-sync", "basicCtrl", "Set", null, null,
+                    dataSetList);
+            handleGenericErrorResult(result);
+        } catch (Exception e) {
+            throw new LGThinqApiException("Error sending command", e);
+        }
     }
 }

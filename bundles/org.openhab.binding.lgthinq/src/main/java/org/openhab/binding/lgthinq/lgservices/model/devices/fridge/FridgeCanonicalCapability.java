@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractCapability;
+import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,15 @@ public class FridgeCanonicalCapability extends AbstractCapability<FridgeCanonica
     private final Map<String, String> fridgeTempFMap = new LinkedHashMap<String, String>();
     private final Map<String, String> freezerTempCMap = new LinkedHashMap<String, String>();
     private final Map<String, String> freezerTempFMap = new LinkedHashMap<String, String>();
+    private final Map<String, String> tempUnitMap = new LinkedHashMap<String, String>();
+    private final Map<String, String> icePlusMap = new LinkedHashMap<String, String>();;
+    private final Map<String, String> freshAirFilterMap = new LinkedHashMap<String, String>();;
+    private final Map<String, String> waterFilterMap = new LinkedHashMap<String, String>();;
+    private final Map<String, String> expressModeMap = new LinkedHashMap<String, String>();;
+    private final Map<String, String> smartSavingMap = new LinkedHashMap<String, String>();;
+    private final Map<String, String> activeSavingMap = new LinkedHashMap<String, String>();;
+    private final Map<String, String> atLeastOneDoorOpenMap = new LinkedHashMap<>();
+    private final Map<String, CommandDefinition> commandsDefinition = new LinkedHashMap<>();
 
     public Map<String, String> getFridgeTempCMap() {
         return fridgeTempCMap;
@@ -53,5 +63,49 @@ public class FridgeCanonicalCapability extends AbstractCapability<FridgeCanonica
 
     public Map<String, String> getFreezerTempFMap() {
         return freezerTempFMap;
+    }
+
+    @Override
+    public Map<String, String> getTempUnitMap() {
+        return tempUnitMap;
+    }
+
+    @Override
+    public Map<String, String> getIcePlusMap() {
+        return icePlusMap;
+    }
+
+    @Override
+    public Map<String, String> getFreshAirFilterMap() {
+        return freshAirFilterMap;
+    }
+
+    @Override
+    public Map<String, String> getWaterFilterMap() {
+        return waterFilterMap;
+    }
+
+    @Override
+    public Map<String, String> getExpressModeMap() {
+        return expressModeMap;
+    }
+
+    @Override
+    public Map<String, String> getSmartSavingMap() {
+        return smartSavingMap;
+    }
+
+    @Override
+    public Map<String, String> getActiveSavingMap() {
+        return activeSavingMap;
+    }
+
+    @Override
+    public Map<String, String> getAtLeastOneDoorOpenMap() {
+        return atLeastOneDoorOpenMap;
+    }
+
+    public Map<String, CommandDefinition> getCommandsDefinition() {
+        return commandsDefinition;
     }
 }

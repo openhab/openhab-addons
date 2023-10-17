@@ -41,8 +41,22 @@ public class FridgeCanonicalSnapshot extends AbstractFridgeSnapshot {
     private String tempUnit = TEMP_UNIT_CELSIUS; // celsius as default
 
     private String doorStatus = "";
+    private String waterFilterUsedMonth = "";
+    private String freshAirFilterState = "";
+
+    private String expressMode = "";
+
+    @JsonProperty("expressMode")
+    public String getExpressMode() {
+        return expressMode;
+    }
+
+    public void setExpressMode(String expressMode) {
+        this.expressMode = expressMode;
+    }
 
     @JsonProperty("atLeastOneDoorOpen")
+    @JsonAlias("DoorOpenState")
     public String getDoorStatus() {
         return doorStatus;
     }
@@ -106,6 +120,26 @@ public class FridgeCanonicalSnapshot extends AbstractFridgeSnapshot {
 
     @Override
     public void setPowerStatus(DevicePowerState value) {
+    }
+
+    @JsonAlias({ "WaterFilterUsedMonth" })
+    @JsonProperty("waterFilter")
+    public String getWaterFilterUsedMonth() {
+        return waterFilterUsedMonth;
+    }
+
+    @JsonAlias({ "FreshAirFilter" })
+    @JsonProperty("freshAirFilter")
+    public String getFreshAirFilterState() {
+        return freshAirFilterState;
+    }
+
+    public void setWaterFilterUsedMonth(String waterFilterUsedMonth) {
+        this.waterFilterUsedMonth = waterFilterUsedMonth;
+    }
+
+    public void setFreshAirFilterState(String freshAirFilterState) {
+        this.freshAirFilterState = freshAirFilterState;
     }
 
     @Override

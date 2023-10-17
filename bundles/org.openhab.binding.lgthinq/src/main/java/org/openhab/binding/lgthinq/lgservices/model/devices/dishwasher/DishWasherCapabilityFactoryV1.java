@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
+package org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -19,28 +19,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
-import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
-import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
-import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
-import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
+import org.openhab.binding.lgthinq.lgservices.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * The {@link WasherDryerCapabilityFactoryV1}
+ * The {@link DishWasherCapabilityFactoryV1}
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilityFactory {
-    private static final Logger logger = LoggerFactory.getLogger(WasherDryerCapabilityFactoryV1.class);
+public class DishWasherCapabilityFactoryV1 extends AbstractDishWasherCapabilityFactory {
+    private static final Logger logger = LoggerFactory.getLogger(DishWasherCapabilityFactoryV1.class);
 
     @Override
-    public WasherDryerCapability create(JsonNode rootNode) throws LGThinqException {
-        WasherDryerCapability cap = super.create(rootNode);
+    public DishWasherCapability create(JsonNode rootNode) throws LGThinqException {
+        DishWasherCapability cap = super.create(rootNode);
         cap.setRemoteStartFeatName("RemoteStart");
         cap.setChildLockFeatName("ChildLock");
         cap.setDoorLockFeatName("DoorLock");
@@ -167,8 +163,8 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
     }
 
     @Override
-    public WasherDryerCapability getCapabilityInstance() {
-        return new WasherDryerCapability();
+    public DishWasherCapability getCapabilityInstance() {
+        return new DishWasherCapability();
     }
 
     @Override

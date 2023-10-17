@@ -27,6 +27,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.errors.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,6 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NonNullByDefault
 public class TokenManager {
     private static final int EXPIRICY_TOLERANCE_SEC = 60;
+    private static final Logger logger = LoggerFactory.getLogger(TokenManager.class);
     private final OauthLgEmpAuthenticator oAuthAuthenticator;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<String, TokenResult> tokenCached = new ConcurrentHashMap<>();
@@ -98,16 +101,19 @@ public class TokenManager {
         try {
             preLogin = oAuthAuthenticator.preLoginUser(gw, username, password);
         } catch (Exception ex) {
+            logger.error("Error pre-login with gateway: {}", gw);
             throw new PreLoginException("Error doing pre-login of the user in the Emp LG Server", ex);
         }
         try {
             accountLogin = oAuthAuthenticator.loginUser(gw, preLogin);
         } catch (Exception ex) {
+            logger.error("Error logging with gateway: {}", gw);
             throw new AccountLoginException("Error doing user's account login on the Emp LG Server", ex);
         }
         try {
             token = oAuthAuthenticator.getToken(gw, accountLogin);
         } catch (Exception ex) {
+            logger.error("Error getting token with gateway: {}", gw);
             throw new TokenException("Error getting Token", ex);
         }
         try {

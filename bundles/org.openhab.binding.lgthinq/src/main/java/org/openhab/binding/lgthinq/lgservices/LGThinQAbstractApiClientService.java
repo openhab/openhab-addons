@@ -106,7 +106,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             RestResult resp = RestUtils.getCall(httpClient, builder.build().toURL().toString(), headers, null);
             return handleListAccountDevicesResult(resp);
         } catch (Exception e) {
-            throw new LGThinqApiException("Erros list account devices from LG Server API", e);
+            throw new LGThinqApiException("Error listing account devices from LG Server API", e);
         }
     }
 
@@ -215,11 +215,11 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         if (resp.getStatusCode() != 200) {
             if (resp.getStatusCode() == 400) {
                 logger.warn("Error calling device list from LG Server API. HTTP Status: {}. The reason is: {}",
-                        resp.getStatusCode(), resp.getJsonResponse());
+                        resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
                 return Collections.emptyList();
             }
             logger.error("Error calling device list from LG Server API. HTTP Status: {}. The reason is: {}",
-                    resp.getStatusCode(), resp.getJsonResponse());
+                    resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
             throw new LGThinqApiException(String
                     .format("Error calling device list from LG Server API. The reason is: %s", resp.getJsonResponse()));
         } else {
