@@ -21,8 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link X1HybridG4InverterData} is an implementation of the single phased inverter data interface for X1 Hybrid G4
- * inverter.
+ * The {@link CommonInverterData} is an abstract class that contains the common information, applicable for all
+ * inverters.
  *
  * @author Konstantin Polihronov - Initial contribution
  */

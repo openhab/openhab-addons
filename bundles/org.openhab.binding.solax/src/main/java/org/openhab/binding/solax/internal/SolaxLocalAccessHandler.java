@@ -120,7 +120,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
             } else {
                 cancelSchedule();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Parser for inverter of type " + inverterType.name() + " is not implemented.");
+                        "@text/offline.configuration-error.parser-not-implemented [\"" + inverterType.name() + "\"]");
             }
         } catch (JsonParseException e) {
             logger.debug("Unable to deserialize from JSON.", e);
@@ -284,8 +284,8 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     private void logRemovedChannels(List<Channel> channelsToRemove) {
         List<String> channelsToRemoveForLog = channelsToRemove.stream().map(channel -> channel.getUID().getId())
-                .collect(Collectors.toList());
-        logger.debug("Detected not supported channels for the current i. Channels to be removed:{}",
+                .toList();
+        logger.debug("Detected not supported channels for the current inverter. Channels to be removed:{}",
                 channelsToRemoveForLog);
     }
 

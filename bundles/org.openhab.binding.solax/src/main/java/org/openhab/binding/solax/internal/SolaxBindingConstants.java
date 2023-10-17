@@ -97,7 +97,7 @@ public class SolaxBindingConstants {
     // Today totals
     public static final String TODAY_ENERGY = "today-energy";
     public static final String TODAY_BATTERY_DISCHARGE_ENERGY = "today-battery-discharge-energy";
-    public static final String TODAY_BATTERY_CHARGE_ENERGY = "today9082-battery-charge-energy";
+    public static final String TODAY_BATTERY_CHARGE_ENERGY = "today-battery-charge-energy";
     public static final String TODAY_FEED_IN_ENERGY = "today-feed-in-energy";
     public static final String TODAY_CONSUMPTION = "today-consumption";
 

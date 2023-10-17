@@ -12,7 +12,8 @@ In case the parsed information that comes with the binding out of the box differ
 
 ## Supported Things
 
-Note: Channels may vary depending on the invertor type and the availability of information for parsing the raw data. If you're missing a channel this means that it's not supported for your inverter type.
+Note: Channels may vary depending on the invertor type and the availability of information for parsing the raw data. 
+If you're missing a channel this means that it's not supported for your inverter type.
 
 | Thing                  | Thing Type | Description                                                                         |
 |------------------------|------------|-------------------------------------------------------------------------------------|
