@@ -13,9 +13,9 @@
 package org.openhab.binding.phc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.phc.internal.util.StringUtils;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.StringUtils;
 
 /**
  * The {@link PHCHelper} is responsible for finding the appropriate Thing(UID)
