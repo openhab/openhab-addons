@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
@@ -93,7 +94,8 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                         missingChannels.add(ChannelBuilder
                                 .create(new ChannelUID(getThing().getUID(), channelName + idSuffix), "Number")
                                 .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(), channelName))
-                                .withLabel(StringUtils.capitalize(channelName + labelSuffix)).build());
+                                .withLabel(Objects.requireNonNull(StringUtils.capitalize(channelName + labelSuffix)))
+                                .build());
                     }
                 }
                 missingChannels.addAll(getThing().getChannels());
