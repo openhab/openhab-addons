@@ -109,17 +109,13 @@ public class AppService implements PhilipsTVService {
                 }
             } else if (command instanceof StringType) {
                 String appName = "";
-                if (CHANNEL_APPNAME.equals(channel)) {
-                    appName = command.toString();
-                } else if (CHANNEL_APP.equals(channel)) {
-                    appName = appDNMap.get(command.toString());
-                }
-
-                if (availableApps.containsKey(appName)) {
-                    launchApp(command);
+                if (CHANNEL_APPNAME.equals(channel) && availableApps.containsKey(command.toString())) {
+                    launchApp(command.toString());
+                } else if (CHANNEL_APP.equals(channel) && appDNMap.containsKey(command.toString())) {
+                    launchApp(appDNMap.getOrDefault(command.toString(), ""));
                 } else {
-                    logger.warn("The given App with Name: {} couldn't be found in the local App List from the tv.",
-                            command);
+                    logger.warn("The given App with Name: {} {} couldn't be found in the local App List from the tv.",
+                            command, appName);
                 }
             } else {
                 logger.warn("Unknown command: {} for Channel {}", command, channel);
@@ -141,8 +137,8 @@ public class AppService implements PhilipsTVService {
         return (availableApps == null) || availableApps.isEmpty();
     }
 
-    private void launchApp(Command command) throws IOException {
-        Map.Entry<String, String> app = availableApps.get(command.toString());
+    private void launchApp(String appName) throws IOException {
+        Map.Entry<String, String> app = availableApps.get(appName);
 
         ComponentDto componentDto = new ComponentDto();
         componentDto.setPackageName(app.getKey());
