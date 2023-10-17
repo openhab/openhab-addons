@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 
 /**
  * The {@link FridgeCapability}
@@ -32,4 +33,22 @@ public interface FridgeCapability extends CapabilityDefinition {
     public Map<String, String> getFreezerTempCMap();
 
     public Map<String, String> getFreezerTempFMap();
+
+    public Map<String, String> getTempUnitMap();
+
+    Map<String, String> getIcePlusMap();
+
+    Map<String, String> getFreshAirFilterMap();
+
+    Map<String, String> getWaterFilterMap();
+
+    Map<String, String> getExpressModeMap();
+
+    Map<String, String> getSmartSavingMap();
+
+    Map<String, String> getActiveSavingMap();
+
+    Map<String, String> getAtLeastOneDoorOpenMap();
+
+    Map<String, CommandDefinition> getCommandsDefinition();
 }

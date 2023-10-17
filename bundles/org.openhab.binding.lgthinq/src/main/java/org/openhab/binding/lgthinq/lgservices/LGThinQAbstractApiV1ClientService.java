@@ -14,12 +14,11 @@ package org.openhab.binding.lgthinq.lgservices;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V1_CONTROL_OP;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.ws.rs.core.UriBuilder;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -30,6 +29,7 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractSnapshotDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,5 +154,46 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
             }
         }
         return envelope;
+    }
+
+    /**
+     * Principal method to prepare the command to be sent to V1 Devices mainly when the command is generic,
+     * i.e, you can send a command structure to redefine any changeable feature of the device
+     * 
+     * @param cmdDef command definition with template of the payload and data (binary or not)
+     * @param snapData snapshot data with features to be set in the device
+     * @return return the command structure.
+     * @throws JsonProcessingException
+     */
+    protected Map<String, Object> prepareCommandV1(CommandDefinition cmdDef, Map<String, Object> snapData)
+            throws JsonProcessingException {
+        // expected map ordered here
+        String dataStr = cmdDef.getDataTemplate();
+        // Keep the order
+        for (Map.Entry<String, Object> e : snapData.entrySet()) {
+            String value = String.valueOf(e.getValue());
+            dataStr = dataStr.replace("{{" + e.getKey() + "}}", value);
+        }
+
+        return completeCommandDataNodeV1(cmdDef, dataStr);
+    }
+
+    protected LinkedHashMap<String, Object> completeCommandDataNodeV1(CommandDefinition cmdDef, String dataStr)
+            throws JsonProcessingException {
+        LinkedHashMap<String, Object> data = objectMapper.readValue(cmdDef.getRawCommand(), new TypeReference<>() {
+        });
+        logger.debug("Prepare command v1: {}", dataStr);
+        if (cmdDef.isBinary()) {
+            data.put("format", "B64");
+            List<Integer> list = objectMapper.readValue(dataStr, new TypeReference<>() {
+            });
+            // convert the list of integer to a bytearray
+            byte[] bytes = ArrayUtils.toPrimitive(list.stream().map(Integer::byteValue).toArray(Byte[]::new));
+            String str_data_encoded = new String(Base64.getEncoder().encode(bytes));
+            data.put("data", str_data_encoded);
+        } else {
+            data.put("data", dataStr);
+        }
+        return data;
     }
 }

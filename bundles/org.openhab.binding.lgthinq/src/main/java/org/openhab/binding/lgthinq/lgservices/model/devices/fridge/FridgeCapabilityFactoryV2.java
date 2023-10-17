@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -20,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -36,15 +40,75 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
         return FeatureDefinition.NULL_DEFINITION;
     }
 
-    // TODO - Implement Commands parser
     @Override
     protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) throws LGThinqApiException {
+        // doesn't meter command definition for V2
         return Collections.emptyMap();
+    }
+
+    @Override
+    protected List<LGAPIVerion> getSupportedAPIVersions() {
+        return List.of(LGAPIVerion.V2_0);
     }
 
     @Override
     public FridgeCapability getCapabilityInstance() {
         return new FridgeCanonicalCapability();
+    }
+
+    private void loadGenericFeatNode(JsonNode featNode, Map<String, String> capMap,
+            final Map<String, String> constantsMap) {
+        featNode.fields().forEachRemaining(f -> {
+            // for each node like ' "1": {"index" : 1, "label" : "7", "_comment" : ""} '
+            String translatedValue = constantsMap.get(f.getValue().path("label").asText());
+            translatedValue = translatedValue == null ? f.getValue().path("label").asText() : translatedValue;
+            capMap.put(f.getKey(), translatedValue);
+        });
+    }
+
+    @Override
+    protected void loadTempNode(JsonNode tempNode, Map<String, String> capMap, String unit) {
+        loadGenericFeatNode(tempNode, capMap, Collections.emptyMap());
+    }
+
+    @Override
+    protected void loadTempUnitNode(JsonNode tempUnitNode, Map<String, String> tempUnitMap) {
+        tempUnitMap.putAll(CAP_FR_TEMP_UNIT_V2_MAP);
+    }
+
+    @Override
+    protected void loadIcePlus(JsonNode icePlusNode, Map<String, String> icePlusMap) {
+        // not supported
+    }
+
+    @Override
+    protected void loadFreshAirFilter(JsonNode freshAirFilterNode, Map<String, String> freshAirFilterMap) {
+        loadGenericFeatNode(freshAirFilterNode, freshAirFilterMap, CAP_FR_FRESH_AIR_FILTER_MAP);
+    }
+
+    @Override
+    protected void loadWaterFilter(JsonNode waterFilterNode, Map<String, String> waterFilterMap) {
+        loadGenericFeatNode(waterFilterNode, waterFilterMap, CAP_FR_WATER_FILTER);
+    }
+
+    @Override
+    protected void loadExpressMode(JsonNode expressModeNode, Map<String, String> expressModeMap) {
+        loadGenericFeatNode(expressModeNode, expressModeMap, CAP_FR_WATER_FILTER);
+    }
+
+    @Override
+    protected void loadSmartSavingMode(JsonNode smartSavingModeNode, Map<String, String> smartSavingModeMap) {
+        loadGenericFeatNode(smartSavingModeNode, smartSavingModeMap, CAP_FR_SMART_SAVING_V2_MODE);
+    }
+
+    @Override
+    protected void loadActiveSaving(JsonNode activeSavingNode, Map<String, String> activeSavingMap) {
+        loadGenericFeatNode(activeSavingNode, activeSavingMap, CAP_FR_LABEL_ON_OFF);
+    }
+
+    @Override
+    protected void loadAtLeastOneDoorOpen(JsonNode atLeastOneDoorOpenNode, Map<String, String> atLeastOneDoorOpenMap) {
+        loadGenericFeatNode(atLeastOneDoorOpenNode, atLeastOneDoorOpenMap, CAP_FR_LABEL_CLOSE_OPEN);
     }
 
     @Override
@@ -70,6 +134,44 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
     @Override
     protected String getFreezerTempFNodeName() {
         return "freezerTemp_F";
+    }
+
+    protected String getTempUnitNodeName() {
+        return "tempUnit";
+    }
+
+    protected String getIcePlusNodeName() {
+        return "UNSUPPORTED";
+    }
+
+    @Override
+    protected String getFreshAirFilterNodeName() {
+        return "freshAirFilter";
+    }
+
+    @Override
+    protected String getWaterFilterNodeName() {
+        return "waterFilter";
+    }
+
+    @Override
+    protected String getExpressModeNodeName() {
+        return "expressMode";
+    }
+
+    @Override
+    protected String getSmartSavingModeNodeName() {
+        return "smartSavingMode";
+    }
+
+    @Override
+    protected String getActiveSavingNodeName() {
+        return "activeSaving";
+    }
+
+    @Override
+    protected String getAtLeastOneDoorOpenNodeName() {
+        return "atLeastOneDoorOpen";
     }
 
     @Override

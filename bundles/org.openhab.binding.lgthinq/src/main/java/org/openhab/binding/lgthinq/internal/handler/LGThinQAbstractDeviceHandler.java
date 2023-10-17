@@ -769,13 +769,23 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
         }
     }
 
-    protected Channel createDynChannel(String channelName, ChannelUID chanelUuid, String itemType) {
+    /**
+     * Create Dynamic channel. The channel type <b>must be pre-defined in the thing definition (xml) and with
+     * the same name as the channel.</b>
+     * 
+     * @param channelNameAndTypeName channel name to be created and the same channel type name defined in the channels
+     *            descriptor
+     * @param channelUuid Uid of the channel
+     * @param itemType item type (see openhab documentation)
+     * @return return the new channel created
+     */
+    protected Channel createDynChannel(String channelNameAndTypeName, ChannelUID channelUuid, String itemType) {
         if (getCallback() == null) {
             throw new IllegalStateException("Unexpected behaviour. Callback not ready! Can't create dynamic channels");
         } else {
             // dynamic create channel
-            ChannelBuilder builder = getCallback().createChannelBuilder(chanelUuid,
-                    new ChannelTypeUID(BINDING_ID, channelName));
+            ChannelBuilder builder = getCallback().createChannelBuilder(channelUuid,
+                    new ChannelTypeUID(BINDING_ID, channelNameAndTypeName));
             Channel channel = builder.withKind(ChannelKind.STATE).withAcceptedItemType(itemType).build();
             updateThing(editThing().withChannel(channel).build());
             return channel;

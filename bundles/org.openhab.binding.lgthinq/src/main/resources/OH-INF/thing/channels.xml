@@ -32,28 +32,18 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="water_filter">
+	<channel-type id="fr_water_filter">
 		<item-type>String</item-type>
 		<label>Water Filter</label>
 		<description>Months passed since filter has been changed.</description>
-		<state readOnly="true">
-			<options>
-				<option value="0">0 Months Passed</option>
-				<option value="1">1 Months Passed</option>
-				<option value="2">2 Months Passed</option>
-				<option value="3">3 Months Passed</option>
-				<option value="4">4 Months Passed</option>
-				<option value="5">5 Months Passed</option>
-				<option value="6">6 Months Passed (Replace)</option>
-				<option value="7">7 Months Passed (Replace)</option>
-				<option value="8">8 Months Passed (Replace)</option>
-				<option value="9">9 Months Passed (Replace)</option>
-				<option value="10">10 Months Passed (Replace)</option>
-				<option value="11">11 Months Passed (Replace)</option>
-				<option value="12">12 Months Passed (Replace)</option>
-				<option value="255">Not Available</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fr_fresh_air_filter">
+		<item-type>String</item-type>
+		<label>Fresh Air Filter</label>
+		<description>Fresh Air Filter State.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="extended_info_collector">
@@ -389,4 +379,33 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="fr-express-mode">
+		<item-type>String</item-type>
+		<label>Express Mode</label>
+		<description>Fridge Express Mode</description>
+	</channel-type>
+
+	<channel-type id="fr-ice-plus">
+		<item-type>Switch</item-type>
+		<label>Ice Plus</label>
+		<description>Ice Plus Feature</description>
+	</channel-type>
+
+	<channel-type id="fr-smart-saving-switch">
+		<item-type>Switch</item-type>
+		<label>Smart Saving</label>
+		<description>Smart Saving</description>
+	</channel-type>
+
+	<channel-type id="fr-smart-saving-mode">
+		<item-type>String</item-type>
+		<label>Smart Saving</label>
+		<description>Smart Saving Mode</description>
+	</channel-type>
+
+	<channel-type id="fr-active-saving">
+		<item-type>Switch</item-type>
+		<label>Active Saving</label>
+		<description>Active Saving</description>
+	</channel-type>
 </thing:thing-descriptions>

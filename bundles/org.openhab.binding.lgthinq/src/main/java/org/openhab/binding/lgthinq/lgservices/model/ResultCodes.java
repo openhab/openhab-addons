@@ -16,6 +16,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * The {@link ResultCodes}
  *
@@ -23,7 +28,6 @@ import java.util.Map;
  */
 
 public enum ResultCodes {
-
     DEVICE_OFFLINE("Device Offline", "0106"),
     OK("Success", "0000", "0001"),
     DEVICE_NOT_RESPONSE("Device Not Response", "0111", "0103", "0104", "0106"),
@@ -64,6 +68,7 @@ public enum ResultCodes {
 
     private final String description;
     private final List<String> codes;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public boolean containsResultCode(String code) {
         return codes.contains(code);
@@ -71,6 +76,18 @@ public enum ResultCodes {
 
     public String getDescription() {
         return description;
+    }
+
+    public static String getReasonResponse(String jsonResponse) {
+
+        try {
+            JsonNode devicesResult = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+            });
+            String resultCode = devicesResult.path("resultCode").asText();
+            return String.format("%s - %s", resultCode, fromCode(resultCode).description);
+        } catch (JsonProcessingException e) {
+            return "";
+        }
     }
 
     public List<String> getCodes() {

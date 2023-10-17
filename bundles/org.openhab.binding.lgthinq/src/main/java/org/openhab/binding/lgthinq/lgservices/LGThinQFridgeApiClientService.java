@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapability;
 
@@ -24,5 +28,11 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapabil
 @NonNullByDefault
 public interface LGThinQFridgeApiClientService
         extends LGThinQApiClientService<FridgeCapability, FridgeCanonicalSnapshot> {
+    void setFridgeTemperature(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
+            Integer targetTemperatureIndex, String tempUnit, @Nullable Map<String, Object> snapCmdData)
+            throws LGThinqApiException;
 
+    void setFreezerTemperature(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
+            Integer targetTemperatureIndex, String tempUnit, @Nullable Map<String, Object> snapCmdData)
+            throws LGThinqApiException;
 }
