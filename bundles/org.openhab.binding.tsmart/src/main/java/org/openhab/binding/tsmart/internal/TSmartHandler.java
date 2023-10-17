@@ -95,9 +95,9 @@ public class TSmartHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        config = getConfigAs(TSmartConfiguration.class);
-        TSmartConfiguration thisConfig = config;
-        if (thisConfig == null || thisConfig.hostname.isBlank() || thisConfig.refreshInterval <= 0) {
+        TSmartConfiguration config = getConfigAs(TSmartConfiguration.class);
+        this.config = config;
+        if (thisConfig.hostname.isBlank() || thisConfig.refreshInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
