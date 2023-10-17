@@ -97,12 +97,12 @@ public class TSmartHandler extends BaseThingHandler {
     public void initialize() {
         TSmartConfiguration config = getConfigAs(TSmartConfiguration.class);
         this.config = config;
-        if (thisConfig.hostname.isBlank() || thisConfig.refreshInterval <= 0) {
+        if (config.hostname.isBlank() || config.refreshInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
-            statusRefreshJob = scheduler.scheduleWithFixedDelay(this::requestStatusRefresh, 0,
-                    thisConfig.refreshInterval, TimeUnit.SECONDS);
+            statusRefreshJob = scheduler.scheduleWithFixedDelay(this::requestStatusRefresh, 0, config.refreshInterval,
+                    TimeUnit.SECONDS);
         }
     }
 
