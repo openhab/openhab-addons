@@ -350,7 +350,7 @@ public class RokuHandler extends BaseThingHandler {
                 if (command instanceof OnOffType) {
                     try {
                         if (command.equals(OnOffType.ON)) {
-                            communicator.keyPress("POWERON");
+                            communicator.keyPress(POWER_ON);
                         } else {
                             communicator.keyPress("PowerOff");
                         }

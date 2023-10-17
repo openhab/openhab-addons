@@ -83,5 +83,5 @@ public class RokuBindingConstants {
     public static final String NON_DIGIT_PATTERN = "[^\\d]";
     public static final String TV_APP = "tvinput.dtv";
     public static final String TV_INPUT = "tvinput";
-    public static final String POWER_ON = "PowerOn";
+    public static final String POWER_ON = "POWERON";
 }
