@@ -87,7 +87,7 @@ InputHDMI3
 InputHDMI4  
 InputAV1  
 PowerOff  
-POWERON *NOTE: POWERON needs to be completely capitalized due to a bug with older Roku devices*
+POWERON _(NOTE: POWERON needs to be completely capitalized due to a bug with older Roku devices)_
 
 ## Full Example
 
