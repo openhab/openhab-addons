@@ -58,7 +58,7 @@ public class TSmartHandler extends BaseThingHandler {
     private @Nullable InetAddress destAddr;
 
     private @Nullable ScheduledFuture<?> statusRefreshJob;
-    private boolean propertiesInitializedSuccessfully = false;
+    private boolean listenerInitializedSuccessfully = false;
 
     public TSmartHandler(Thing thing) {
         super(thing);
@@ -106,8 +106,8 @@ public class TSmartHandler extends BaseThingHandler {
         }
     }
 
-    private synchronized boolean initializeProperties() {
-        if (propertiesInitializedSuccessfully) {
+    private synchronized boolean initializeListener() {
+        if (listenerInitializedSuccessfully) {
             return true;
         }
 
@@ -120,7 +120,7 @@ public class TSmartHandler extends BaseThingHandler {
 
                 TSmartUDPListener.addHandler(destination, this);
 
-                propertiesInitializedSuccessfully = true;
+                listenerInitializedSuccessfully = true;
             } catch (UnknownHostException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -128,7 +128,7 @@ public class TSmartHandler extends BaseThingHandler {
             logger.debug("Unexpected missing config");
         }
 
-        return propertiesInitializedSuccessfully;
+        return listenerInitializedSuccessfully;
     }
 
     /**
@@ -173,7 +173,7 @@ public class TSmartHandler extends BaseThingHandler {
     }
 
     private void requestStatusRefresh() {
-        if (!initializeProperties()) {
+        if (!initializeListener()) {
             return;
         }
 
