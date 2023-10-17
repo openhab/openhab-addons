@@ -47,6 +47,7 @@ public enum ResourceType {
     ROOM,
     RELATIVE_ROTARY,
     SCENE,
+    SMART_SCENE,
     TEMPERATURE,
     ZGP_CONNECTIVITY,
     ZIGBEE_CONNECTIVITY,

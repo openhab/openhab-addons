@@ -459,6 +459,28 @@ class Clip2DtoTest {
     }
 
     @Test
+    void testSmartScene() {
+        String json = load(ResourceType.SMART_SCENE.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        ResourceReference group = item.getGroup();
+        assertNotNull(group);
+        String groupId = group.getId();
+        assertNotNull(groupId);
+        assertFalse(groupId.isBlank());
+        ResourceType type = group.getType();
+        assertNotNull(type);
+        assertEquals(ResourceType.ROOM, type);
+        Optional<Boolean> state = item.getSmartSceneActive();
+        assertTrue(state.isPresent());
+        assertFalse(state.get());
+    }
+
+    @Test
     void testSensor2Motion() {
         String json = load(ResourceType.MOTION.name().toLowerCase());
         Resources resources = GSON.fromJson(json, Resources.class);

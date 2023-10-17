@@ -21,12 +21,13 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum RecallAction {
+public enum SceneRecallAction {
     ACTIVE,
     DYNAMIC_PALETTE,
-    STATIC;
+    STATIC,
+    UNKNOWN;
 
-    public static RecallAction of(@Nullable String value) {
+    public static SceneRecallAction of(@Nullable String value) {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());
@@ -34,6 +35,6 @@ public enum RecallAction {
                 // fall through
             }
         }
-        return ACTIVE;
+        return UNKNOWN;
     }
 }
