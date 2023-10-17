@@ -1,7 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"ijai.vacuum.v19"
+			"ijai.vacuum.v3"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 4,
@@ -27,19 +27,19 @@
 						},
 						{
 							"value": "vacuum-start-only-mop",
+							"label": "Start Only Mop"
+						},
+						{
+							"value": "vacuum-start-mop",
 							"label": "Start Mop"
 						},
 						{
-							"value": "vacuum-dock",
-							"label": "Dock"
-						},
-						{
-							"value": "vacuum-stop-sweeping",
-							"label": "Pause"
-						},
-						{
 							"value": "vacuum-start-room-sweep",
-							"label": "Start Room Sweep"
+							"label": "Room Sweep"
+						},
+						{
+							"value": "battery-start-charge",
+							"label": "Start Charge"
 						}
 					]
 				},
@@ -110,14 +110,14 @@
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "vacuum-start-only-mop"
+									"matchValue": "vacuum-start-mop"
 								}
 							]
 						}
 					},
 					{
 						"command": "action",
-						"parameterType": "NUMBER",
+						"parameterType": "UNKNOWN",
 						"parameters": [
 							10.0
 						],
@@ -141,13 +141,13 @@
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "vacuum-dock"
+									"matchValue": "battery-start-charge"
 								}
 							]
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start\",\"vacuum-start-sweep-mop\"\u003d\"Start Sweep+Mop\",\"vacuum-start-only-sweep\"\u003d\"Start Sweep\",\"vacuum-start-only-mop\"\u003d\"Start Mop\",\"vacuum-dock\"\u003d\"Dock\",\"vacuum-stop-sweeping\"\u003d\"Pause\",\"vacuum-start-room-sweep\"\u003d\"Start Room Sweep\"]`"
+				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start\",\"vacuum-start-sweep-mop\"\u003d\"Start Sweep+Mop\",\"vacuum-start-only-sweep\"\u003d\"Start Sweep\",\"vacuum-start-only-mop\"\u003d\"Start Only Mop\",\"vacuum-start-mop\"\u003d\"Start Mop\",\"vacuum-start-room-sweep\"\u003d\"Room Sweep\",\"battery-start-charge\"\u003d\"Start Charge\"]`"
 			},
 			{
 				"property": "",
@@ -158,43 +158,43 @@
 					"options": [
 						{
 							"value": "sweep-reset-consumable",
-							"label": "Sweep Reset Consumable"
+							"label": "Reset Consumable"
 						},
 						{
 							"value": "sweep-set-calibration",
-							"label": "Sweep Set Calibration"
+							"label": "Set Calibration"
 						},
 						{
 							"value": "sweep-set-room-clean",
-							"label": "Sweep Set Room Clean"
+							"label": "Set Room Clean"
 						},
 						{
 							"value": "sweep-set-preference-clean",
-							"label": "Sweep Set Preference Clean"
+							"label": "Set Preference Clean"
 						},
 						{
 							"value": "sweep-get-preference-clean",
-							"label": "Sweep Get Preference Clean"
+							"label": "Get Preference Clean"
 						},
 						{
 							"value": "sweep-set-preference-type",
-							"label": "Sweep Set Preference Type"
+							"label": "Set Preference Type"
 						},
 						{
 							"value": "sweep-set-go-charging",
-							"label": "Sweep Set Go Charging"
+							"label": "Set Go Charging"
 						},
 						{
 							"value": "sweep-erase-preference",
-							"label": "Sweep Erase Preference"
+							"label": "Erase Preference"
 						},
 						{
 							"value": "sweep-set-preference-ii",
-							"label": "Sweep Set Preference Ii"
+							"label": "Set Preference Ii"
 						},
 						{
 							"value": "sweep-get-preference-ii",
-							"label": "Sweep Get Preference Ii"
+							"label": "Get Preference Ii"
 						},
 						{
 							"value": "order-add",
@@ -217,10 +217,6 @@
 							"label": "Order Get Map Order Count"
 						},
 						{
-							"value": "order-add-iii",
-							"label": "Order Add Iii"
-						},
-						{
 							"value": "point-zone-start-point-clean",
 							"label": "Point Zone Start Point Clean"
 						},
@@ -235,10 +231,6 @@
 						{
 							"value": "point-zone-pause-zone-clean",
 							"label": "Point Zone Pause Zone Clean"
-						},
-						{
-							"value": "point-zone-set-beauty-wall",
-							"label": "Point Zone Set Beauty Wall"
 						},
 						{
 							"value": "point-zone-set-virtual-wall",
@@ -617,34 +609,6 @@
 					},
 					{
 						"command": "action",
-						"parameterType": "UNKNOWN",
-						"parameters": [
-							1,
-							2,
-							3,
-							4,
-							5,
-							6,
-							11,
-							12,
-							14,
-							16,
-							17,
-							19.0
-						],
-						"siid": 8,
-						"aiid": 6,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "order-add-iii"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
 						"parameterType": "EMPTY",
 						"siid": 9,
 						"aiid": 1,
@@ -701,23 +665,6 @@
 							"parameters": [
 								{
 									"matchValue": "point-zone-pause-zone-clean"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "UNKNOWN",
-						"parameters": [
-							6.0
-						],
-						"siid": 9,
-						"aiid": 5,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "point-zone-set-beauty-wall"
 								}
 							]
 						}
@@ -1136,7 +1083,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"sweep-reset-consumable\"\u003d\"Sweep Reset Consumable\",\"sweep-set-calibration\"\u003d\"Sweep Set Calibration\",\"sweep-set-room-clean\"\u003d\"Sweep Set Room Clean\",\"sweep-set-preference-clean\"\u003d\"Sweep Set Preference Clean\",\"sweep-get-preference-clean\"\u003d\"Sweep Get Preference Clean\",\"sweep-set-preference-type\"\u003d\"Sweep Set Preference Type\",\"sweep-set-go-charging\"\u003d\"Sweep Set Go Charging\",\"sweep-erase-preference\"\u003d\"Sweep Erase Preference\",\"sweep-set-preference-ii\"\u003d\"Sweep Set Preference Ii\",\"sweep-get-preference-ii\"\u003d\"Sweep Get Preference Ii\",\"order-add\"\u003d\"Order Add\",\"order-del\"\u003d\"Order Del\",\"order-get\"\u003d\"Order Get\",\"order-add-ii\"\u003d\"Order Add Ii\",\"order-get-map-order-count\"\u003d\"Order Get Map Order Count\",\"order-add-iii\"\u003d\"Order Add Iii\",\"point-zone-start-point-clean\"\u003d\"Point Zone Start Point Clean\",\"point-zone-pause-point-clean\"\u003d\"Point Zone Pause Point Clean\",\"point-zone-start-zone-clean\"\u003d\"Point Zone Start Zone Clean\",\"point-zone-pause-zone-clean\"\u003d\"Point Zone Pause Zone Clean\",\"point-zone-set-beauty-wall\"\u003d\"Point Zone Set Beauty Wall\",\"point-zone-set-virtual-wall\"\u003d\"Point Zone Set Virtual Wall\",\"point-zone-set-zone-point\"\u003d\"Point Zone Set Zone Point\",\"point-zone-start-point-clean-ii\"\u003d\"Point Zone Start Point Clean Ii\",\"map-get-map-list\"\u003d\"Map Get Map List\",\"map-upload-by-mapid\"\u003d\"Map Upload By Mapid\",\"map-set-cur-map\"\u003d\"Map Set Cur Map\",\"map-del-map\"\u003d\"Map Del Map\",\"map-rename-map\"\u003d\"Map Rename Map\",\"map-upload-by-maptype\"\u003d\"Map Upload By Maptype\",\"map-rename-room\"\u003d\"Map Rename Room\",\"map-arrange-room\"\u003d\"Map Arrange Room\",\"map-split-room\"\u003d\"Map Split Room\",\"map-reset-map\"\u003d\"Map Reset Map\",\"map-build-new-map\"\u003d\"Map Build New Map\",\"map-get-cur-path\"\u003d\"Map Get Cur Path\",\"map-get-map-room-list\"\u003d\"Map Get Map Room List\",\"map-upload-by-mapid-ii\"\u003d\"Map Upload By Mapid Ii\",\"map-upload-by-maptype-ii\"\u003d\"Map Upload By Maptype Ii\",\"map-reset-map-ii\"\u003d\"Map Reset Map Ii\",\"map-build-map-ii\"\u003d\"Map Build Map Ii\",\"map-set-mijia-room-list\"\u003d\"Map Set Mijia Room List\",\"disturb-set-notdisturb\"\u003d\"Disturb Set Notdisturb\",\"language-download-voice\"\u003d\"Language Download Voice\",\"language-get-download-status\"\u003d\"Language Get Download Status\"]`"
+				"readmeComment": "Value mapping `[\"sweep-reset-consumable\"\u003d\"Reset Consumable\",\"sweep-set-calibration\"\u003d\"Set Calibration\",\"sweep-set-room-clean\"\u003d\"Set Room Clean\",\"sweep-set-preference-clean\"\u003d\"Set Preference Clean\",\"sweep-get-preference-clean\"\u003d\"Get Preference Clean\",\"sweep-set-preference-type\"\u003d\"Set Preference Type\",\"sweep-set-go-charging\"\u003d\"Set Go Charging\",\"sweep-erase-preference\"\u003d\"Erase Preference\",\"sweep-set-preference-ii\"\u003d\"Set Preference Ii\",\"sweep-get-preference-ii\"\u003d\"Get Preference Ii\",\"order-add\"\u003d\"Order Add\",\"order-del\"\u003d\"Order Del\",\"order-get\"\u003d\"Order Get\",\"order-add-ii\"\u003d\"Order Add Ii\",\"order-get-map-order-count\"\u003d\"Order Get Map Order Count\",\"point-zone-start-point-clean\"\u003d\"Point Zone Start Point Clean\",\"point-zone-pause-point-clean\"\u003d\"Point Zone Pause Point Clean\",\"point-zone-start-zone-clean\"\u003d\"Point Zone Start Zone Clean\",\"point-zone-pause-zone-clean\"\u003d\"Point Zone Pause Zone Clean\",\"point-zone-set-virtual-wall\"\u003d\"Point Zone Set Virtual Wall\",\"point-zone-set-zone-point\"\u003d\"Point Zone Set Zone Point\",\"point-zone-start-point-clean-ii\"\u003d\"Point Zone Start Point Clean Ii\",\"map-get-map-list\"\u003d\"Map Get Map List\",\"map-upload-by-mapid\"\u003d\"Map Upload By Mapid\",\"map-set-cur-map\"\u003d\"Map Set Cur Map\",\"map-del-map\"\u003d\"Map Del Map\",\"map-rename-map\"\u003d\"Map Rename Map\",\"map-upload-by-maptype\"\u003d\"Map Upload By Maptype\",\"map-rename-room\"\u003d\"Map Rename Room\",\"map-arrange-room\"\u003d\"Map Arrange Room\",\"map-split-room\"\u003d\"Map Split Room\",\"map-reset-map\"\u003d\"Map Reset Map\",\"map-build-new-map\"\u003d\"Map Build New Map\",\"map-get-cur-path\"\u003d\"Map Get Cur Path\",\"map-get-map-room-list\"\u003d\"Map Get Map Room List\",\"map-upload-by-mapid-ii\"\u003d\"Map Upload By Mapid Ii\",\"map-upload-by-maptype-ii\"\u003d\"Map Upload By Maptype Ii\",\"map-reset-map-ii\"\u003d\"Map Reset Map Ii\",\"map-build-map-ii\"\u003d\"Map Build Map Ii\",\"map-set-mijia-room-list\"\u003d\"Map Set Mijia Room List\",\"disturb-set-notdisturb\"\u003d\"Disturb Set Notdisturb\",\"language-download-voice\"\u003d\"Language Download Voice\",\"language-get-download-status\"\u003d\"Language Get Download Status\"]`"
 			},
 			{
 				"property": "status",
@@ -1314,7 +1261,7 @@
 				"property": "battery-level",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Robot Cleaner - Battery Level",
+				"friendlyName": "Battery - Battery Level",
 				"channel": "battery_level",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
@@ -1332,7 +1279,7 @@
 				"property": "alarm",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Robot Cleaner - Locate",
+				"friendlyName": "Alarm",
 				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
@@ -1347,7 +1294,7 @@
 				"property": "volume",
 				"siid": 4,
 				"piid": 2,
-				"friendlyName": "Robot Cleaner - Locate Volume",
+				"friendlyName": "Locating Volume",
 				"channel": "volume",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
@@ -1753,7 +1700,7 @@
 				"unit": "minutes",
 				"stateDescription": {
 					"minimum": 0,
-					"maximum": 360,
+					"maximum": 120,
 					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
@@ -1779,66 +1726,6 @@
 				"actions": []
 			},
 			{
-				"property": "dirt-recognize",
-				"siid": 7,
-				"piid": 35,
-				"friendlyName": "Sweep - Dirt Recognize",
-				"channel": "dirt_recognize",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFNUMBER"
-					}
-				]
-			},
-			{
-				"property": "pet-recognize",
-				"siid": 7,
-				"piid": 36,
-				"friendlyName": "Sweep - Pet Recognize",
-				"channel": "pet_recognize",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFNUMBER"
-					}
-				]
-			},
-			{
-				"property": "ai-recognize",
-				"siid": 7,
-				"piid": 42,
-				"friendlyName": "Sweep - Ai Recognize",
-				"channel": "ai_recognize",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFNUMBER"
-					}
-				]
-			},
-			{
-				"property": "carpet-booster",
-				"siid": 7,
-				"piid": 44,
-				"friendlyName": "Sweep - Carpet Booster",
-				"channel": "carpet_booster",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFNUMBER"
-					}
-				]
-			},
-			{
 				"property": "multi-prop-vacuum",
 				"siid": 7,
 				"piid": 45,
@@ -1850,21 +1737,6 @@
 				},
 				"refresh": true,
 				"actions": []
-			},
-			{
-				"property": "carpet-avoid",
-				"siid": 7,
-				"piid": 47,
-				"friendlyName": "Sweep - Carpet Avoid",
-				"channel": "carpet_avoid",
-				"type": "Switch",
-				"refresh": false,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFNUMBER"
-					}
-				]
 			},
 			{
 				"property": "tank-shake",
@@ -1914,19 +1786,6 @@
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Mid\",\"3\"\u003d\"High\"]`"
 			},
 			{
-				"property": "map-encrypt",
-				"siid": 7,
-				"piid": 55,
-				"friendlyName": "Sweep - Map Encrypt",
-				"channel": "map_encrypt",
-				"type": "Contact",
-				"stateDescription": {
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": []
-			},
-			{
 				"property": "order-id",
 				"siid": 8,
 				"piid": 1,
@@ -1935,6 +1794,7 @@
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
+					"maximum": 100,
 					"step": 1,
 					"pattern": "%.0f"
 				},
@@ -1942,7 +1802,7 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				]
 			},
@@ -2375,7 +2235,7 @@
 						}
 					]
 				},
-				"refresh": false,
+				"refresh": true,
 				"actions": [],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Build\",\"2\"\u003d\"Clean\"]`"
 			},
@@ -2385,12 +2245,51 @@
 				"piid": 19,
 				"friendlyName": "Map - Has New Map",
 				"channel": "has_new_map",
-				"type": "Contact",
+				"type": "Number",
 				"stateDescription": {
-					"readOnly": true
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Without Map To Save"
+						},
+						{
+							"value": "1",
+							"label": "Wait To Rename Map"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Without Map To Save\",\"1\"\u003d\"Wait To Rename Map\"]`"
+			},
+			{
+				"property": "map-uploads",
+				"siid": 10,
+				"piid": 23,
+				"friendlyName": "Map - Map Uploads",
+				"channel": "map_uploads",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Upload"
+						},
+						{
+							"value": "1",
+							"label": "Do Not Upload"
+						}
+					]
 				},
 				"refresh": false,
-				"actions": []
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Upload\",\"1\"\u003d\"Do Not Upload\"]`"
 			},
 			{
 				"property": "dnd-enable",
