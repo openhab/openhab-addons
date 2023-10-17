@@ -26,14 +26,12 @@ import org.openhab.binding.mercedesme.internal.MercedesMeDynamicStateDescription
 import org.openhab.binding.mercedesme.internal.MercedesMeStateOptionProvider;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
-import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
 
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
@@ -53,8 +51,7 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class), mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -87,8 +84,7 @@ class VehicleHandlerTest {
         MercedesMeDynamicStateDescriptionProviderMock patternMock = new MercedesMeDynamicStateDescriptionProviderMock();
         MercedesMeCommandOptionProviderMock commandOptionMock = new MercedesMeCommandOptionProviderMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
-                mock(MercedesMeStateOptionProvider.class), patternMock, mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeStateOptionProvider.class), patternMock);
 
         AccountHandlerMock ahm = new AccountHandlerMock();
         vh.accountHandler = Optional.of(ahm);
@@ -145,8 +141,7 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class), mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -182,8 +177,7 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class), mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -209,8 +203,7 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class), mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -234,8 +227,7 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class), mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -261,8 +253,7 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.HYBRID));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class), mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -294,8 +285,7 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", "hybrid"));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class), mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vehicleConfig.batteryCapacity = (float) 9.2;
@@ -329,8 +319,7 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class), mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -379,8 +368,7 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class), mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -406,8 +394,7 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class), mock(MetadataRegistry.class),
-                mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeDynamicStateDescriptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -439,8 +426,7 @@ class VehicleHandlerTest {
         MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class),
-                mock(MetadataRegistry.class), mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
 
         vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
@@ -470,8 +456,7 @@ class VehicleHandlerTest {
         MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class),
-                mock(MetadataRegistry.class), mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
 
         vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
@@ -507,8 +492,7 @@ class VehicleHandlerTest {
         MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class),
-                mock(MetadataRegistry.class), mock(ItemChannelLinkRegistry.class));
+                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
 
         vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();

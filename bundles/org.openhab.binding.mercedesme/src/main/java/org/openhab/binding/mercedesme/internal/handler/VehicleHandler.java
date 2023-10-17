@@ -39,11 +39,9 @@ import org.openhab.binding.mercedesme.internal.actions.VehicleActions;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
-import org.openhab.binding.mercedesme.internal.utils.MetadataAdjuster;
 import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -60,7 +58,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
@@ -135,15 +132,13 @@ public class VehicleHandler extends BaseThingHandler {
     Optional<VehicleConfiguration> config = Optional.empty();
 
     public VehicleHandler(Thing thing, LocationProvider lp, MercedesMeCommandOptionProvider cop,
-            MercedesMeStateOptionProvider sop, MercedesMeDynamicStateDescriptionProvider dsdp, MetadataRegistry mdr,
-            ItemChannelLinkRegistry iclr) {
+            MercedesMeStateOptionProvider sop, MercedesMeDynamicStateDescriptionProvider dsdp) {
         super(thing);
         vehicleType = thing.getThingTypeUID().getId();
         locationProvider = lp;
         mmcop = cop;
         mmsop = sop;
         mmdsdp = dsdp;
-        MetadataAdjuster mdAdjuster = new MetadataAdjuster(thing.getUID(), mdr, iclr);
     }
 
     @Override
@@ -619,6 +614,124 @@ public class VehicleHandler extends BaseThingHandler {
         }
 
         Map<String, VehicleAttributeStatus> atts = data.getAttributesMap();
+        /**
+         * handle "simple" values
+         */
+        atts.forEach((key, value) -> {
+            // logger.trace("Distribute {}", key);
+            ChannelStateMap csm = Mapper.getChannelStateMap(key, value);
+            if (csm.isValid()) {
+                /**
+                 * Store some values and UOM Observer
+                 */
+                if (GROUP_HVAC.equals(csm.getGroup())) {
+                    hvacGroupValueStorage.put(csm.getChannel(), csm.getState());
+                }
+
+                /**
+                 * handle some specific channels
+                 */
+                String channel = csm.getChannel();
+                // handle range channels very specific regarding to vehicle type
+                boolean block = false;
+                switch (channel) {
+                    case "range-electric":
+                        if (!Constants.COMBUSTION.equals(vehicleType)) {
+                            ChannelStateMap radiusElectric = new ChannelStateMap("radius-electric", GROUP_RANGE,
+                                    guessRangeRadius((QuantityType<Length>) csm.getState()), csm.getUomObersever());
+                            updateChannel(radiusElectric);
+                        } else {
+                            block = true;
+                        }
+                        break;
+                    case "range-fuel":
+                        if (!Constants.BEV.equals(vehicleType)) {
+                            QuantityType<Length> fuelRangeState = (QuantityType<Length>) csm.getState();
+                            ChannelStateMap radiusFuel = new ChannelStateMap("radius-fuel", GROUP_RANGE,
+                                    guessRangeRadius(fuelRangeState), csm.getUomObersever());
+                            updateChannel(radiusFuel);
+                        } else {
+                            block = true;
+                        }
+                        break;
+                    case "range-hybrid":
+                        if (Constants.HYBRID.equals(vehicleType)) {
+                            QuantityType<Length> hybridRangeState = (QuantityType<Length>) csm.getState();
+                            ChannelStateMap radiusHybrid = new ChannelStateMap("radius-hybrid", GROUP_RANGE,
+                                    guessRangeRadius(hybridRangeState), csm.getUomObersever());
+                            updateChannel(radiusHybrid);
+                        } else {
+                            block = true;
+                        }
+                        break;
+                    case "soc":
+                        if (!Constants.COMBUSTION.equals(vehicleType)) {
+                            if (config.get().batteryCapacity > 0) {
+                                float socValue = ((QuantityType<Length>) csm.getState()).floatValue();
+                                float batteryCapacity = config.get().batteryCapacity;
+                                float chargedValue = Math.round(socValue * 1000 * batteryCapacity / 1000) / (float) 100;
+                                ChannelStateMap charged = new ChannelStateMap("charged", GROUP_RANGE,
+                                        QuantityType.valueOf(chargedValue, Units.KILOWATT_HOUR));
+                                updateChannel(charged);
+                                float unchargedValue = Math.round((100 - socValue) * 1000 * batteryCapacity / 1000)
+                                        / (float) 100;
+                                ChannelStateMap uncharged = new ChannelStateMap("uncharged", GROUP_RANGE,
+                                        QuantityType.valueOf(unchargedValue, Units.KILOWATT_HOUR));
+                                updateChannel(uncharged);
+                            } else {
+                                logger.trace("No battery capacity given");
+                                ChannelStateMap charged = new ChannelStateMap("charged", GROUP_RANGE,
+                                        QuantityType.valueOf(0, Units.KILOWATT_HOUR));
+                                updateChannel(charged);
+                                ChannelStateMap uncharged = new ChannelStateMap("uncharged", GROUP_RANGE,
+                                        QuantityType.valueOf(0, Units.KILOWATT_HOUR));
+                                updateChannel(uncharged);
+                            }
+                        } else {
+                            block = true;
+                        }
+                        break;
+                    case "fuel-level":
+                        if (!Constants.BEV.equals(vehicleType)) {
+                            if (config.get().fuelCapacity > 0) {
+                                float fuelLevelValue = ((QuantityType<?>) csm.getState()).floatValue();
+                                float fuelCapacity = config.get().fuelCapacity;
+                                float litersInTank = Math.round(fuelLevelValue * 1000 * fuelCapacity / 1000)
+                                        / (float) 100;
+                                ChannelStateMap tankFilled = new ChannelStateMap("tank-remain", GROUP_RANGE,
+                                        QuantityType.valueOf(litersInTank, Mapper.defaultVolumeUnit));
+                                updateChannel(tankFilled);
+                                float litersFree = Math.round((100 - fuelLevelValue) * 1000 * fuelCapacity / 1000)
+                                        / (float) 100;
+                                ChannelStateMap tankOpen = new ChannelStateMap("tank-open", GROUP_RANGE,
+                                        QuantityType.valueOf(litersFree, Mapper.defaultVolumeUnit));
+                                updateChannel(tankOpen);
+                            } else {
+                                logger.trace("No fuel capacity given");
+                                ChannelStateMap tankFilled = new ChannelStateMap("tank-remain", GROUP_RANGE,
+                                        QuantityType.valueOf(0, Mapper.defaultVolumeUnit));
+                                updateChannel(tankFilled);
+                                ChannelStateMap tankOpen = new ChannelStateMap("tank-open", GROUP_RANGE,
+                                        QuantityType.valueOf(0, Mapper.defaultVolumeUnit));
+                                updateChannel(tankOpen);
+                            }
+                        } else {
+                            block = true;
+                        }
+                        break;
+                    case "coolant-fluid":
+                    case "engine":
+                    case "gas-flap":
+                        if (Constants.BEV.equals(vehicleType)) {
+                            block = true;
+                        }
+                        break;
+                }
+                if (!block) {
+                    updateChannel(csm);
+                }
+            }
+        });
         /**
          * handle GPS
          */
