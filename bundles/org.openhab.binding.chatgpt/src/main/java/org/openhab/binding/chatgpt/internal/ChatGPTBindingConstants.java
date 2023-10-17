@@ -31,7 +31,4 @@ public class ChatGPTBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_CHAT = "chat";
-
-    public static final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-    public static final String OPENAI_MODELS_URL = "https://api.openai.com/v1/models";
 }

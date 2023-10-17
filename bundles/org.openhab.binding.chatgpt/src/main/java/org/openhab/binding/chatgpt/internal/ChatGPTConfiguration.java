@@ -23,4 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ChatGPTConfiguration {
 
     public String apiKey = "";
+    public String apiUrl = "https://api.openai.com/v1/chat/completions";
+    public String modelUrl = "https://api.openai.com/v1/models";
 }

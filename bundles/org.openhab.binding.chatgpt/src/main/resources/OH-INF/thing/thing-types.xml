@@ -19,6 +19,26 @@
 				<label>API Key</label>
 				<description>API key to access the account</description>
 			</parameter>
+			<parameter name="apiUrl" type="text" required="false">
+				<label>API URL</label>
+				<description>The server API where to reach the AI service.</description>
+				<default>https://api.openai.com/v1/chat/completions</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="https://api.openai.com/v1/chat/completions">https://api.openai.com/v1/chat/completions</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+			<parameter name="modelUrl" type="text" required="false">
+				<label>Model URL</label>
+				<description>The model url where to retrieve the available models from.</description>
+				<default>https://api.openai.com/v1/models</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="https://api.openai.com/v1/models">https://api.openai.com/v1/models</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
 		</config-description>
 	</thing-type>
 
