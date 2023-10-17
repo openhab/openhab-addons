@@ -92,6 +92,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         metadataRegistry = mdr;
         channelLinkRegistry = iclr;
 
+        MercedesMeMetadataAdjuster mdAdjuster = new MercedesMeMetadataAdjuster(mdr, iclr, localeProvider);
         Utils.initialze(tzp, lp);
         Mapper.initialze(up);
         httpClient = hcf.getCommonHttpClient();
@@ -122,8 +123,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             return new AccountHandler((Bridge) thing, discoveryService, httpClient, localeProvider, storageService);
         } else if (THING_TYPE_BEV.equals(thingTypeUID) || THING_TYPE_COMB.equals(thingTypeUID)
                 || THING_TYPE_HYBRID.equals(thingTypeUID)) {
-            return new VehicleHandler(thing, locationProvider, mmcop, mmsop, mmdsdp, metadataRegistry,
-                    channelLinkRegistry);
+            return new VehicleHandler(thing, locationProvider, mmcop, mmsop, mmdsdp);
         }
         return null;
     }

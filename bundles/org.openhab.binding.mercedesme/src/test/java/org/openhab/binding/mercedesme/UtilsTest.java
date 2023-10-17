@@ -19,11 +19,9 @@ import java.io.File;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
-import org.openhab.binding.mercedesme.internal.dto.TokenResponse;
 import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.Units;
 
 /**
  * {@link UtilsTest} fot helper functions
@@ -122,19 +120,6 @@ class UtilsTest {
         }
     }
 
-    @Test
-    public void testTokenTransform() {
-        String tokenJson = FileReader.readFileInString("src/test/resources/json/TokenResponse.json");
-        TokenResponse tr = Utils.GSON.fromJson(tokenJson, TokenResponse.class);
-        System.out.println(tr.createdOn);
-    }
-
-    @Test
-    public void testUnitSymbol() {
-        System.out.println(Constants.KILOMETRE_UNIT.toString());
-        System.out.println(Units.BAR.getSymbol());
-        System.out.println(ImperialUnits.POUND_FORCE_SQUARE_INCH.getSymbol());
-    }
     // @Test
     // public void testCommanedTypes() {
     // CommandType[] ctValues = CommandType.values();
