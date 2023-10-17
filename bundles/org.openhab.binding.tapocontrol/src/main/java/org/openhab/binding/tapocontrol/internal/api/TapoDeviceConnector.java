@@ -17,6 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstant
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -172,7 +173,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     }
 
     /**
-     * Send "set_device_info" command to device
+     * Send "set_device_info" command to device and query info immediately
      * 
      * @param deviceDataClass clazz contains devicedata which should be sent
      */
@@ -186,8 +187,8 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
      * @param command command
      * @param deviceDataClass clazz contains devicedata which should be sent
      */
-    public void sendDeviceCommand(String command, Object deviceDataClas) {
-        sendDeviceCommand(command, deviceDataClas, false);
+    public void sendDeviceCommand(String command, Object deviceDataClass) {
+        sendDeviceCommand(command, deviceDataClass, false);
     }
 
     /**
@@ -199,8 +200,10 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     public void sendDeviceCommand(String command, Object deviceDataClass, boolean ignoreGap) {
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastSent + TAPO_SEND_MIN_GAP_MS) {
-            lastSent = now;
-            sendAsyncRequest(new TapoRequest(command, deviceDataClass));
+            List<TapoRequest> requests = new ArrayList<>();
+            requests.add(new TapoRequest(command, deviceDataClass));
+            requests.add(new TapoRequest(DEVICE_CMD_GETINFO));
+            sendAsyncRequest(new TapoMultipleRequest(requests));
         } else {
             logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
         }
@@ -244,6 +247,13 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
         } else {
             logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
         }
+    }
+
+    /**
+     * send asynchron multi-request igrnoring min-gap
+     */
+    public void sendMultipleRequest(TapoRequest... requests) {
+        sendMultipleRequest(requests);
     }
 
     /**

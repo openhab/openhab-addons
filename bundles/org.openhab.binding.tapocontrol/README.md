@@ -79,13 +79,13 @@ All devices support some of the following channels:
 |           | output1          | Switch                 | Power socket 1 on or off            | P300                                                             |
 |           | output2          | Switch                 | Power socket 2 on or off            | P300                                                             |
 |           | output3          | Switch                 | Power socket 3 on or off            | P300                                                             |
-|           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900, L920                               |
-|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K         | L510, L530, L610, L630, L900, L920                               |
-|           | color            | Color                  | Color                               | L530, L630, L900, L920                                           |
+|           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900, L920, L930                         |
+|           | colorTemperature | Number                 | White-Color-Temp 2200-6500K         | L530, L630                                                       |
+|           | color            | Color                  | Color                               | L530, L630, L900, L920, L930                                     |
 | sensor    | isOpen           | Switch                 | Contact (Door/Window) is Open       | T110                                                             |
 |           | currentTemp      | Number:Temperature     | Current Temperature                 | T310, T315                                                       |
 |           | currentHumidity  | Number:Dimensionless   | Current relative humidity in %      | T310, T315                                                       |
-| effects   | fxName           | String                 | Active lightning effect             | L530                                                             |
+| effects   | fxName           | String                 | Active lightning effect             | L530, L900, L920, L930                                           |
 | device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
 |           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930             |
 |           | signalStrength   | Number                 | RF-quality-level                    | T110                                                             |

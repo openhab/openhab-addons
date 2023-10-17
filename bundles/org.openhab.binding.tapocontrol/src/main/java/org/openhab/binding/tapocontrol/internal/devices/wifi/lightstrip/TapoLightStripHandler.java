@@ -17,7 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightEffectData;
+import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightEffect;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -88,7 +88,11 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
                     handleOnOffCommand(command);
                     break;
                 case CHANNEL_BRIGHTNESS:
-                    handleBrightnessCommand(command);
+                    if (lightStripData.getLightEffect().isEnabled()) {
+                        handleLightFx(channel, command);
+                    } else {
+                        handleBrightnessCommand(command);
+                    }
                     break;
                 case CHANNEL_COLOR_TEMP:
                     handleColorTempCommand(command);
@@ -129,9 +133,9 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     }
 
     private void handleLightFx(String channel, Command command) {
-        TapoLightEffectData lightEffect = lightStripData.getLightEffect();
+        TapoLightEffect lightEffect = lightStripData.getLightEffect();
         switch (channel) {
-            case CHANNEL_FX_BRIGHTNESS:
+            case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType percentCommand) {
                     Float percent = percentCommand.floatValue();
                     lightEffect.setBrightness(percent.intValue()); // 0..100% = 0..100
@@ -140,7 +144,12 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
                 }
                 break;
             case CHANNEL_FX_NAME:
-                lightEffect.setName(command.toString());
+                try {
+                    lightEffect = lightEffect.setEffect(command.toString());
+                } catch (Exception e) {
+                    logger.warn("({}) could not load effect '{}'", uid, command);
+                }
+
                 break;
             default:
                 logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command, channel);
@@ -160,7 +169,6 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     protected void switchOnOff(boolean on) {
         lightStripData.switchOnOff(on);
         connector.sendDeviceCommand(lightStripData);
-        queryDeviceData();
     }
 
     /**
@@ -177,7 +185,6 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
             lightStripData.setBrightness(newBrightness);
         }
         connector.sendDeviceCommand(lightStripData);
-        queryDeviceData();
     }
 
     /**
@@ -191,7 +198,6 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
         lightStripData.setSaturation(command.getSaturation().intValue());
         lightStripData.setBrightness(command.getBrightness().intValue());
         connector.sendDeviceCommand(lightStripData);
-        queryDeviceData();
     }
 
     /**
@@ -203,7 +209,6 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
         lightStripData.switchOn();
         lightStripData.setColorTemp(colorTemp);
         connector.sendDeviceCommand(lightStripData);
-        queryDeviceData();
     }
 
     /**
@@ -211,9 +216,8 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
      * 
      * @param fxName (String) id of LightEffect
      */
-    protected void setLightEffect(TapoLightEffectData lightEffect) {
+    protected void setLightEffect(TapoLightEffect lightEffect) {
         connector.sendDeviceCommand(DEVICE_CMD_SET_LIGHT_FX, lightEffect);
-        queryDeviceData();
     }
 
     /*****************************
@@ -240,9 +244,9 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
      * Update light effect channels
      */
     protected void updateLightEffectChannels(TapoLightStripData deviceData) {
-        TapoLightEffectData lightEffect = deviceData.getLightEffect();
-        updateState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_BRIGHTNESS),
-                getPercentType(lightEffect.getBrightness()));
+        TapoLightEffect lightEffect = deviceData.getLightEffect();
+        updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_BRIGHTNESS),
+                getPercentType(deviceData.getBrightness()));
         updateState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_NAME), getStringType(lightEffect.getName()));
     }
 }

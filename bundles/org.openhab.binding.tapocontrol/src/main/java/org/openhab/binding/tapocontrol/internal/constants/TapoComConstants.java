@@ -40,12 +40,13 @@ public class TapoComConstants {
     public static final String DEVICE_CMD_CONTROL_CHILD = "control_child";
     public static final String DEVICE_CMD_MULTIPLE_REQ = "multipleRequest";
     public static final String DEVICE_CMD_CUSTOM = "custom_command";
-    public static final String DEVICE_CMD_SET_LIGHT_FX = "set_dynamic_light_effect_rule_enable";
+    public static final String DEVICE_CMD_SET_DYNAIMCLIGHT_FX = "set_dynamic_light_effect_rule_enable";
+    public static final String DEVICE_CMD_SET_LIGHT_FX = "set_lighting_effect";
 
     // Sets
     public static final Set<String> DEVICE_CMDLIST_QUERY = Set.of(DEVICE_CMD_GETINFO, DEVICE_CMD_GETENERGY,
             DEVICE_CMD_GETCHILDDEVICELIST);
-    public static final Set<String> DEVICE_CMDLIST_SET = Set.of(DEVICE_CMD_SETINFO, DEVICE_CMD_SET_LIGHT_FX,
+    public static final Set<String> DEVICE_CMDLIST_SET = Set.of(DEVICE_CMD_SETINFO, DEVICE_CMD_SET_DYNAIMCLIGHT_FX,
             DEVICE_CMD_CONTROL_CHILD);
 
     public static final int LOGIN_RETRIES = 1;

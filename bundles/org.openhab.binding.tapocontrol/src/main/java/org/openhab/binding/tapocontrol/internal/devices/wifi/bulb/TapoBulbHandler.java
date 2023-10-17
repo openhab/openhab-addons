@@ -17,7 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightEffectData;
+import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightEffect;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -144,7 +144,6 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
     protected void switchOnOff(boolean on) {
         bulbData.switchOnOff(on);
         connector.sendDeviceCommand(bulbData);
-        queryDeviceData();
     }
 
     /**
@@ -161,7 +160,6 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
             bulbData.setBrightness(newBrightness);
         }
         connector.sendDeviceCommand(bulbData);
-        queryDeviceData();
     }
 
     /**
@@ -175,7 +173,6 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
         bulbData.setSaturation(command.getSaturation().intValue());
         bulbData.setBrightness(command.getBrightness().intValue());
         connector.sendDeviceCommand(bulbData);
-        queryDeviceData();
     }
 
     /**
@@ -187,7 +184,6 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
         bulbData.switchOn();
         bulbData.setColorTemp(colorTemp);
         connector.sendDeviceCommand(bulbData);
-        queryDeviceData();
     }
 
     /**
@@ -196,8 +192,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
      * @param fxName (String) id of LightEffect
      */
     protected void setLightEffect(String fxName) {
-        connector.sendDeviceCommand(DEVICE_CMD_SET_LIGHT_FX, new TapoLightEffectData(fxName));
-        queryDeviceData();
+        connector.sendDeviceCommand(DEVICE_CMD_SET_DYNAIMCLIGHT_FX, new TapoLightEffect(fxName));
     }
 
     /*****************************

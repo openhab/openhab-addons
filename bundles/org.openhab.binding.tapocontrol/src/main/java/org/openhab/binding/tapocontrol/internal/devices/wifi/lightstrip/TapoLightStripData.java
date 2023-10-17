@@ -14,7 +14,7 @@ package org.openhab.binding.tapocontrol.internal.devices.wifi.lightstrip;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
-import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightEffectData;
+import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightEffect;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
@@ -60,7 +60,7 @@ public class TapoLightStripData extends TapoBaseDeviceData {
 
     @SerializedName("lighting_effect")
     @Expose(serialize = false, deserialize = true)
-    private TapoLightEffectData lightingEffect = new TapoLightEffectData();
+    private TapoLightEffect lightingEffect = new TapoLightEffect();
 
     /***********************************
      *
@@ -80,7 +80,11 @@ public class TapoLightStripData extends TapoBaseDeviceData {
     }
 
     public void setBrightness(int value) {
-        brightness = value;
+        if (lightingEffect.isEnabled()) {
+            lightingEffect.setBrightness(value);
+        } else {
+            brightness = value;
+        }
     }
 
     public void setColorTemp(int value) {
@@ -102,7 +106,11 @@ public class TapoLightStripData extends TapoBaseDeviceData {
      ************************************/
 
     public int getBrightness() {
-        return brightness;
+        if (lightingEffect.isEnabled()) {
+            return lightingEffect.getBrightness();
+        } else {
+            return brightness;
+        }
     }
 
     public int getColorTemp() {
@@ -120,7 +128,7 @@ public class TapoLightStripData extends TapoBaseDeviceData {
         return hue;
     }
 
-    public TapoLightEffectData getLightEffect() {
+    public TapoLightEffect getLightEffect() {
         return lightingEffect;
     }
 

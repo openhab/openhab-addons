@@ -104,7 +104,6 @@ public class TapoSocketHandler extends TapoBaseDeviceHandler {
     protected void switchOnOff(boolean on) {
         socketData.switchOnOff(on);
         connector.sendDeviceCommand(socketData);
-        queryDeviceData();
     }
 
     /*****************************

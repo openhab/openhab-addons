@@ -74,7 +74,6 @@
 		<channels>
 			<channel id="output" typeId="lightOn"/>
 			<channel id="brightness" typeId="dimmerChannel"/>
-			<channel id="colorTemperature" typeId="colorTemperature"/>
 		</channels>
 	</channel-group-type>
 
@@ -98,7 +97,6 @@
 			<channel id="output" typeId="lightOn"/>
 			<channel id="brightness" typeId="dimmerChannel"/>
 			<channel id="color" typeId="colorChannel"/>
-			<channel id="colorTemperature" typeId="colorTemperature"/>
 		</channels>
 	</channel-group-type>
 

@@ -27,7 +27,6 @@
 		<label>Lightning Effect</label>
 		<description>Tapo Lightning Effects</description>
 		<channels>
-			<channel id="fxBrightness" typeId="dimmerChannel"/>
 			<channel id="fxName" typeId="l920fxList"/>
 		</channels>
 	</channel-group-type>
@@ -37,9 +36,9 @@
 		<item-type>String</item-type>
 		<label>Light Effect Theme</label>
 		<description>Name of lightning effect</description>
-		<state readOnly="true">
+		<state readOnly="false">
 			<options>
-				<option value="">None (No FX)</option>
+				<option value="off">None (No FX)</option>
 				<option value="aurora">Aurora</option>
 				<option value="bubbling_calderon">Bubbling Calderon</option>
 				<option value="christmas">Christmas</option>
