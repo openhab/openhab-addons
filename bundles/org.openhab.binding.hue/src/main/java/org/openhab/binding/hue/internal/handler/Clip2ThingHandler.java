@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,6 +46,7 @@ import org.openhab.binding.hue.internal.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.dto.clip2.Resources;
+import org.openhab.binding.hue.internal.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
@@ -300,19 +302,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command commandParam) {
         if (RefreshType.REFRESH.equals(commandParam)) {
-            if ((thing.getStatus() == ThingStatus.ONLINE) && updateDependenciesDone) {
-                Future<?> task = updateServiceContributorsTask;
-                if (Objects.isNull(task) || !task.isDone()) {
-                    cancelTask(updateServiceContributorsTask, false);
-                    updateServiceContributorsTask = scheduler.schedule(() -> {
-                        try {
-                            updateServiceContributors();
-                        } catch (ApiException | AssetNotLoadedException e) {
-                            logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
-                        } catch (InterruptedException e) {
-                        }
-                    }, 3, TimeUnit.SECONDS);
-                }
+            if (thing.getStatus() == ThingStatus.ONLINE) {
+                refreshAllChannels();
             }
             return;
         }
@@ -348,8 +339,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_EFFECT:
-                putResource = Setters.setEffect(new Resource(lightResourceType), command, cache);
-                putResource.setOnOff(OnOffType.ON);
+                putResource = Setters.setEffect(new Resource(lightResourceType), command, cache).setOnOff(OnOffType.ON);
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
@@ -498,6 +488,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     && !dynamicsDuration.isNegative()) {
                 if (ResourceType.SCENE == putResource.getType()) {
                     putResource.setRecallDuration(dynamicsDuration);
+                } else if (CHANNEL_2_EFFECT == channelId) {
+                    putResource.setTimedEffectsDuration(dynamicsDuration);
                 } else {
                     putResource.setDynamicsDuration(dynamicsDuration);
                 }
@@ -522,6 +514,21 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
         } catch (InterruptedException e) {
         }
+    }
+
+    private void refreshAllChannels() {
+        if (!updateDependenciesDone) {
+            return;
+        }
+        cancelTask(updateServiceContributorsTask, false);
+        updateServiceContributorsTask = scheduler.schedule(() -> {
+            try {
+                updateServiceContributors();
+            } catch (ApiException | AssetNotLoadedException e) {
+                logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
+            } catch (InterruptedException e) {
+            }
+        }, 3, TimeUnit.SECONDS);
     }
 
     /**
@@ -899,11 +906,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
             } else if (thing.getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
-                // issue REFRESH command to update all channels
-                Channel lastUpdateChannel = thing.getChannel(CHANNEL_2_LAST_UPDATED);
-                if (Objects.nonNull(lastUpdateChannel)) {
-                    handleCommand(lastUpdateChannel.getUID(), RefreshType.REFRESH);
-                }
+                refreshAllChannels();
             }
         }
     }
@@ -945,21 +948,23 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Process the incoming Resource to initialize the effects channel.
+     * Process the incoming Resource to initialize the fixed resp. timed effects channel.
      *
-     * @param resource a Resource possibly with an Effects element.
+     * @param resource a Resource possibly containing a fixed and/or timed effects element.
      */
     public void updateEffectChannel(Resource resource) {
-        Effects effects = resource.getEffects();
-        if (Objects.nonNull(effects)) {
-            List<StateOption> stateOptions = effects.getStatusValues().stream()
-                    .map(effect -> EffectType.of(effect).name()).map(effectId -> new StateOption(effectId, effectId))
-                    .collect(Collectors.toList());
-            if (!stateOptions.isEmpty()) {
-                stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT),
-                        stateOptions);
-                logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
-            }
+        Effects fixedEffects = resource.getFixedEffects();
+        TimedEffects timedEffects = resource.getTimedEffects();
+        List<StateOption> stateOptions = Stream
+                .concat(Objects.nonNull(fixedEffects) ? fixedEffects.getStatusValues().stream() : Stream.empty(),
+                        Objects.nonNull(timedEffects) ? timedEffects.getStatusValues().stream() : Stream.empty())
+                .map(effect -> {
+                    String effectName = EffectType.of(effect).name();
+                    return new StateOption(effectName, effectName);
+                }).distinct().collect(Collectors.toList());
+        if (!stateOptions.isEmpty()) {
+            stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT), stateOptions);
+            logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
         }
     }
 
@@ -1091,7 +1096,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Fetch the full list of scenes from the bridge, and call updateSceneContributors(List<Resource> allScenes)
+     * Fetch the full list of scenes from the bridge, and call {@code updateSceneContributors(List<Resource> allScenes)}
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
