@@ -33,7 +33,6 @@
 				<description>Temperature of the selected program (10 °C = cold)</description>
 			</channel>
 			<channel id="spinningspeed" typeId="spinningspeed"/>
-			<channel id="powerConsumption" typeId="energy-consumption"/>
 			<channel id="energyConsumption" typeId="energy-consumption"/>
 			<channel id="waterConsumption" typeId="water-consumption"/>
 		</channels>

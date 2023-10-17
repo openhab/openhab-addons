@@ -8,14 +8,10 @@
 			<add-channel id="energyConsumption">
 				<type>miele:energy-consumption</type>
 			</add-channel>
-			<update-channel id="powerConsumption">
-				<type>miele:energy-consumption</type>
-				<label>Power Consumption</label>
-				<description>Deprecated, please use Energy Consumption instead. This channel will be removed in a later version</description>
-			</update-channel>
 			<update-channel id="waterConsumption">
 				<type>miele:water-consumption</type>
 			</update-channel>
+			<remove-channel id="powerConsumption"/>
 		</instruction-set>
 	</thing-type>
 
@@ -24,14 +20,10 @@
 			<add-channel id="energyConsumption">
 				<type>miele:energy-consumption</type>
 			</add-channel>
-			<update-channel id="powerConsumption">
-				<type>miele:energy-consumption</type>
-				<label>Power Consumption</label>
-				<description>Deprecated, please use Energy Consumption instead. This channel will be removed in a later version</description>
-			</update-channel>
 			<update-channel id="waterConsumption">
 				<type>miele:water-consumption</type>
 			</update-channel>
+			<remove-channel id="powerConsumption"/>
 		</instruction-set>
 	</thing-type>
 

@@ -130,7 +130,6 @@ public class DishwasherHandler extends MieleApplianceHandler<DishwasherChannelSe
         BigDecimal kiloWattHoursTenths = BigDecimal
                 .valueOf(extendedDeviceState[ENERGY_CONSUMPTION_BYTE_POSITION] & 0xff);
         var kiloWattHours = new QuantityType<>(kiloWattHoursTenths.divide(BigDecimal.valueOf(10)), Units.KILOWATT_HOUR);
-        updateExtendedState(POWER_CONSUMPTION_CHANNEL_ID, kiloWattHours);
         updateExtendedState(ENERGY_CONSUMPTION_CHANNEL_ID, kiloWattHours);
 
         BigDecimal decilitres = BigDecimal.valueOf(extendedDeviceState[WATER_CONSUMPTION_BYTE_POSITION] & 0xff);

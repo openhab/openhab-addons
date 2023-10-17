@@ -158,7 +158,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             return;
         }
         initializeTranslationProvider(bridge);
-        removeDeprecatedChannels();
         updateStatus(ThingStatus.UNKNOWN);
 
         MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
@@ -182,18 +181,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             this.translationProvider = new MieleTranslationProvider(i18nProvider, localeProvider);
         } else {
             this.translationProvider = new MieleTranslationProvider(i18nProvider, localeProvider, locale);
-        }
-    }
-
-    private void removeDeprecatedChannels() {
-        if (this.isLinked(POWER_CONSUMPTION_CHANNEL_ID)) {
-            logger.warn("Channel '{}' for '{}' is deprecated, please use '{}' instead.", POWER_CONSUMPTION_CHANNEL_ID,
-                    thing.getUID(), ENERGY_CONSUMPTION_CHANNEL_ID);
-        } else if (thing.getChannel(POWER_CONSUMPTION_CHANNEL_ID) != null) {
-            logger.debug("Removing deprecated unlinked channel '{}' for '{}'.", POWER_CONSUMPTION_CHANNEL_ID,
-                    thing.getUID());
-            updateThing(
-                    editThing().withoutChannel(new ChannelUID(thing.getUID(), POWER_CONSUMPTION_CHANNEL_ID)).build());
         }
     }
 
