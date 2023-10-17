@@ -97,8 +97,11 @@ public class TSmartHandler extends BaseThingHandler {
     public void initialize() {
         TSmartConfiguration config = getConfigAs(TSmartConfiguration.class);
         this.config = config;
-        if (config.hostname.isBlank() || config.refreshInterval <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        if (config.hostname.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname must be populated");
+        } else if (config.refreshInterval <= 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Refresh interval must be greater than zero");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             statusRefreshJob = scheduler.scheduleWithFixedDelay(this::requestStatusRefresh, 0, config.refreshInterval,
@@ -181,7 +184,8 @@ public class TSmartHandler extends BaseThingHandler {
 
         unRespondedRequests++;
         if (unRespondedRequests > 5) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Device has not responded to 5 consecutive requests");
         }
     }
 
