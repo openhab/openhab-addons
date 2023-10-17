@@ -29,7 +29,7 @@ import com.google.gson.JsonObject;
 
 /**
  * @author Patrick Boos - Initial contribution
- * @author Dieter Schmidt - Refactor & sound
+ * @author Dieter Schmidt - Refactor and sound
  */
 public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
 

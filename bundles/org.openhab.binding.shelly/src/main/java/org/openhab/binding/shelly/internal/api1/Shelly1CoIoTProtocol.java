@@ -225,10 +225,10 @@ public class Shelly1CoIoTProtocol {
      *
      * Handles the combined updated of the brightness channel:
      * brightness$Switch is the OnOffType (power state)
-     * brightness&Value is the brightness value
+     * brightness&amp;Value is the brightness value
      *
      * @param profile Device profile, required to select the channel group and name
-     * @param updates List of updates. updatePower will add brightness$Switch and brightness&Value if changed
+     * @param updates List of updates. updatePower will add brightness$Switch and brightness&amp;Value if changed
      * @param id Sensor id from the update
      * @param sen Sensor description from the update
      * @param s New sensor value

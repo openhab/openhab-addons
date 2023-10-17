@@ -352,6 +352,18 @@ Import-Package: \\
           <version>3.2.0</version>
           <configuration>
             <failOnError>!${quality.skip}</failOnError>
+            <tags>
+              <tag>
+                <name>apiNote</name>
+                <placement>a</placement>
+                <head>API note:</head>
+              </tag>
+              <tag>
+                <name>implNote</name>
+                <placement>a</placement>
+                <head>Implementation note:</head>
+              </tag>
+            </tags>
           </configuration>
           <dependencies>
             <!-- This newer version fixes issues with resolving tech.units:indriya packages -->

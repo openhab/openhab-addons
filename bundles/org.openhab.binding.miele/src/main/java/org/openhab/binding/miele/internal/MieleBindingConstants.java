@@ -20,7 +20,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Karel Goderis - Initial contribution
- * @author Martin Lepsy - added constants for support of WiFi devices & protocol
+ * @author Martin Lepsy - added constants for support of WiFi devices and protocol
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 @NonNullByDefault
