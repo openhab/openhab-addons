@@ -41,6 +41,10 @@ public class TSmartBindingConstants {
     public static final String CHANNEL_SMART_STATE = "smart-state";
     public static final String CHANNEL_RELAY = "relay";
 
+    // list properties
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_HOSTNAME = "hostname";
+
     // UDP port used by the t-smart device
     public static final int T_SMART_PORT = 1337;
 

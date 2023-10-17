@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tsmart.internal;
 
+import static org.openhab.binding.tsmart.internal.TSmartBindingConstants.PROPERTY_HOSTNAME;
+import static org.openhab.binding.tsmart.internal.TSmartBindingConstants.PROPERTY_ID;
 import static org.openhab.binding.tsmart.internal.TSmartBindingConstants.THING_TYPE_T_SMART;
 
 import java.net.InetAddress;
@@ -83,11 +85,10 @@ public class TSmartDiscoveryService extends AbstractDiscoveryService {
         String id = String.format("%02X%02X%02X%02X", buffer[8], buffer[7], buffer[6], buffer[5]);
 
         Map<String, Object> properties = new HashMap<>(3);
-        properties.put("hostname", addr.getHostAddress());
-        properties.put("id", id);
-        properties.put("name", name);
+        properties.put(PROPERTY_HOSTNAME, addr.getHostAddress());
+        properties.put(PROPERTY_ID, id);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_T_SMART, id))
-                .withProperties(properties).withRepresentationProperty("id").withLabel(name).build();
+                .withProperties(properties).withRepresentationProperty(PROPERTY_ID).withLabel(name).build();
         thingDiscovered(discoveryResult);
     }
 }
