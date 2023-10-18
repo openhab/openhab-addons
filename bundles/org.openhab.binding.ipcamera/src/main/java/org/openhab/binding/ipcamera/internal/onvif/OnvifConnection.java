@@ -40,6 +40,7 @@ import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +69,7 @@ import io.netty.handler.timeout.IdleStateHandler;
  * The {@link OnvifConnection} This is a basic Netty implementation for connecting and communicating to ONVIF cameras.
  *
  * @author Matthew Skinner - Initial contribution
+ * @author Kai Kreuzer - Improve handling for certain cameras
  */
 
 @NonNullByDefault
@@ -358,17 +360,23 @@ public class OnvifConnection {
         } else if (message.contains("GetDeviceInformationResponse")) {
             logger.debug("GetDeviceInformationResponse received");
         } else if (message.contains("GetSnapshotUriResponse")) {
-            snapshotUri = removeIPfromUrl(Helper.fetchXML(message, ":MediaUri", ":Uri"));
-            logger.debug("GetSnapshotUri:{}", snapshotUri);
-            if (ipCameraHandler.snapshotUri.isEmpty()
-                    && !"ffmpeg".equals(ipCameraHandler.cameraConfig.getSnapshotUrl())) {
-                ipCameraHandler.snapshotUri = snapshotUri;
+            String url = Helper.fetchXML(message, ":MediaUri", ":Uri");
+            if (!url.isBlank()) {
+                snapshotUri = removeIPfromUrl(url);
+                logger.debug("GetSnapshotUri: {}", snapshotUri);
+                if (ipCameraHandler.snapshotUri.isEmpty()
+                        && !"ffmpeg".equals(ipCameraHandler.cameraConfig.getSnapshotUrl())) {
+                    ipCameraHandler.snapshotUri = snapshotUri;
+                }
             }
         } else if (message.contains("GetStreamUriResponse")) {
-            rtspUri = Helper.fetchXML(message, ":MediaUri", ":Uri>");
-            logger.debug("GetStreamUri:{}", rtspUri);
-            if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
-                ipCameraHandler.rtspUri = rtspUri;
+            String xml = StringUtils.unEscapeXml(Helper.fetchXML(message, ":MediaUri", ":Uri>"));
+            if (xml != null) {
+                rtspUri = xml;
+                logger.debug("GetStreamUri: {}", rtspUri);
+                if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
+                    ipCameraHandler.rtspUri = rtspUri;
+                }
             }
         }
     }
@@ -564,7 +572,6 @@ public class OnvifConnection {
         }
         if (!mainEventLoopGroup.isShuttingDown()) {
             localBootstap.connect(new InetSocketAddress(ipAddress, onvifPort)).addListener(new ChannelFutureListener() {
-
                 @Override
                 public void operationComplete(@Nullable ChannelFuture future) {
                     if (future == null) {
