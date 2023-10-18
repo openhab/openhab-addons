@@ -25,6 +25,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public enum EffectType {
     // fixed Effects
+    PRISM,
+    OPAL,
+    GLISTEN,
     SPARKLE,
     FIRE,
     CANDLE,
@@ -33,7 +36,7 @@ public enum EffectType {
     // applies to both
     NO_EFFECT;
 
-    private static final Set<EffectType> FIXED = Set.of(SPARKLE, FIRE, CANDLE);
+    private static final Set<EffectType> FIXED = Set.of(PRISM, OPAL, GLISTEN, SPARKLE, FIRE, CANDLE);
     private static final Set<EffectType> TIMED = Set.of(SUNRISE);
 
     public static EffectType of(@Nullable String value) {

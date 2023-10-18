@@ -90,6 +90,11 @@ Additionally, these advanced channels are available (not all are available on al
 
 | Channel ID                | Item Type                | Label                         | Description                                                                                                      |
 |---------------------------|--------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------|
+| destinationname           | String                   | Route destination             | Name of the destination                                                                                          |
+| destinationlocation       | Location                 | Route location                | Location of the destination                                                                                      |
+| distancetoarrival         | Number:Length            | Distance to arrival           | Distance to drive to the destination (in miles)                                                                  |
+| minutestoarrival          | Number:Time              | Minutes to arrival            | Minutes to drive to the destination                                                                              |
+| trafficminutesdelay       | Number:Time              | Traffic delay                 | Minutes of delay due to traffic                                                                                  |
 | autoparkstate             | String                   | Autopark State                | Undocumented / To be defined                                                                                     |
 | autoparkstyle             | String                   | Autopark Style                | Undocumented / To be defined                                                                                     |
 | batterycurrent            | Number:ElectricCurrent   | Battery Current               | Current (Ampere) floating into (+) or out (-) of the battery                                                     |
@@ -139,7 +144,7 @@ Additionally, these advanced channels are available (not all are available on al
 | idealbatteryrange         | Number:Length            | Ideal Battery Range           | Indicates the Battery Range                                                                                      |
 | lefttempdirection         | Number                   | Left Temperature Direction    | Not documented / To be defined                                                                                   |
 | lastautoparkerror         | String                   | Last Autopark Error           | Not documented / To be defined                                                                                   |
-| location" advanced="false | Location                 | Location                      | The actual position of the vehicle                                                                               |
+| location                  | Location                 | Location                      | The actual position of the vehicle                                                                               |
 | leftseatheater            | Switch                   | Left Seat Heater              | Indicates if the left seat heater is switched on                                                                 |
 | leftrearseatheater        | Switch                   | Left Rear Seat Heater         | Indicates if the left rear seat heater is switched on                                                            |
 | leftrearbackseatheater    | Number                   | Left Rear Backseat Heater     | Indicates the level (0, 1, 2, or 3) of the left rear backseat heater                                             |
@@ -200,7 +205,6 @@ demo.Things:
 Bridge tesla:account:myaccount "My Tesla Account" [ refreshToken="xxxx" ] {
     model3 mycar "My favorite car" [ vin="5YJSA7H25FFP53736"]
 }
-```
 
 demo.items:
 
@@ -263,6 +267,11 @@ Number:Temperature  TeslaTemperature            {channel="account:model3:myaccou
 Number:Temperature  TeslaTemperatureCombined    {channel="account:model3:myaccount:mycar:combinedtemp"}
 Number:Temperature  TeslaInsideTemperature      {channel="account:model3:myaccount:mycar:insidetemp"}
 Number:Temperature  TeslaOutsideTemperature     {channel="account:model3:myaccount:mycar:outsidetemp"}
+
+String              TeslaDestinationName        {channel="account:model3:myaccount:mycar:destinationname"}
+Location            TeslaDestinationLocation    {channel="account:model3:myaccount:mycar:destinationlocation"}
+Number:Time         TeslaMinutesToArrival       {channel="account:model3:myaccount:mycar:minutestoarrival", unit="min"}
+Number:Length       TeslaDistanceToArrival      {channel="account:model3:myaccount:mycar:distancetoarrival"}
 ```
 
 demo.sitemap:
@@ -338,6 +347,13 @@ sitemap main label="Main"
         Frame
         {
             Mapview item=TeslaLocation height=10
+        }
+        Frame
+        {
+            Default item=TeslaDestinationName
+            Default item=TeslaMinutesToArrival
+            Default item=TeslaDistanceToArrival
+            Mapview item=TeslaDestinationLocation height=10
         }
     }
 }

@@ -1471,7 +1471,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     codec = "dolbyAtmos";
                     break;
                 case "33554434":
+                case "33554488":
                     codec = "DD20";
+                    break;
+                case "33554490":
+                    codec = "DDPlus20";
                     break;
                 case "33554494":
                     codec = "PCM20";
@@ -2918,9 +2922,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     /**
      * Removes a range of tracks from the queue.
-     * (<x,y> will remove y songs started by the song number x)
+     * ({@code <x,y>} will remove y songs started by the song number x)
      *
-     * @param command - must be in the format <startIndex, numberOfSongs>
+     * @param command - must be in the format {@code <startIndex, numberOfSongs>}
      */
     public void removeRangeOfTracksFromQueue(Command command) {
         if (command instanceof StringType) {

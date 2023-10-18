@@ -10,21 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enphase.internal;
+package org.openhab.binding.enphase.internal.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Exception thrown when an api call is made while the hostname / ip address is not set.
+ * Exception thrown when a connection problem occurs to the Envoy gateway.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class EnvoyNoHostnameException extends Exception {
+public class EnvoyConnectionException extends EnphaseException {
 
     private static final long serialVersionUID = 1L;
 
-    public EnvoyNoHostnameException(final String message) {
+    public EnvoyConnectionException(final String message) {
         super(message);
+    }
+
+    public EnvoyConnectionException(final String message, final @Nullable Throwable e) {
+        super(message + (e == null ? "" : e.getMessage()), e);
     }
 }

@@ -71,8 +71,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is the implementation of the InfluxDB {@link PersistenceService}. It
- * persists item values using the <a href="http://influxdb.org">InfluxDB time
- * series database. The states ( {@link State}) of an {@link Item} are persisted
+ * persists item values using the <a href="http://influxdb.org">InfluxDB</a> time
+ * series database. The states ({@link State}) of an {@link Item} are persisted
  * by default in a time series with names equal to the name of the item.
  *
  * This addon supports 1.X and 2.X versions, as two versions are incompatible

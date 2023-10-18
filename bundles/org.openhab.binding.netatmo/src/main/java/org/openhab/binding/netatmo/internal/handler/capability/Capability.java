@@ -47,7 +47,6 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class Capability {
-
     protected final Thing thing;
     protected final CommonInterface handler;
     protected final ModuleType moduleType;

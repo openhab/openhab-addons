@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * the binding, encapsulating the implementation of the real calendar.
  *
  * @author Michael Wodniok - Initial contribution
- * @author Andrew Fiddian-Green - Methods getJustBegunEvents() & getJustEndedEvents()
+ * @author Andrew Fiddian-Green - Methods getJustBegunEvents() and getJustEndedEvents()
  * @author Michael Wodniok - Added getFilteredEventsBetween()
  */
 @NonNullByDefault

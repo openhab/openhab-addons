@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The M message contains metadata about the MAX! Cube setup.
  *
- * @author Andreas Heil (info@aheil.de) - Initial Contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - Room details parse
  */
 @NonNullByDefault

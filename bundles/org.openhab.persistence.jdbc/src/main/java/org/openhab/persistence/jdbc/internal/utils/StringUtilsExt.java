@@ -69,6 +69,9 @@ public class StringUtilsExt {
 
     /**
      * <b>JDBC-URI Examples:</b><br/>
+     * 
+     * <pre>
+     * {@code
      * jdbc:dbShortcut:c:/dev/databaseName<br/>
      * jdbc:dbShortcut:scheme:c:/dev/databaseName<br/>
      * jdbc:dbShortcut:scheme:c:\\dev\\databaseName<br/>
@@ -79,7 +82,9 @@ public class StringUtilsExt {
      * jdbc:dbShortcut:./../../path/databaseName<br/>
      * jdbc:dbShortcut:scheme:./path/../path/databaseName;param1=true;<br/>
      * jdbc:dbShortcut://192.168.0.145:3306/databaseName?param1=false&param2=true
-     * <p/>
+     * }
+     * </pre>
+     * <p>
      *
      * @param url JDBC-URI
      * @param def Predefined Properties Object

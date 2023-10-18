@@ -31,7 +31,7 @@ public class NegateHandler {
      * Gets whether negation should be applied for the given <code>negateProperty</code> and the {@link MeterValue}
      * provided by the <code>getObisValueFunction</code>
      *
-     * @param negateProperty The negate property (in form <OBIS>:<POSITION>:<BIT_SET>)
+     * @param negateProperty The negate property (in form {@code <OBIS>:<POSITION>:<BIT_SET>})
      * @param getObisValueFunction The function to get the {@link MeterValue} from an OBIS code.
      * @return whether to negate or not.
      */

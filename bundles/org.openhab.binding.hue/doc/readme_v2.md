@@ -87,7 +87,13 @@ Device things support some of the following channels:
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
 
-The channels `color-xy-only`,  `dimming-only` and `on-off-only` are *advanced* channels - see [below](###advanced-channels-for-devices-,-rooms-and-zones) for more details.
+The channels `color-xy-only`, `dimming-only` and `on-off-only` are *advanced* channels - see [below](#advanced-channels-for-devices-rooms-and-zones) for more details.
+
+The `effect` channel is an amalgamation of 'normal' and 'timed' effects.
+To activate a 'normal' effect, the binding sends a single command to activate the respective effect.
+To activate a 'timed' effect, the binding sends a first command to set the timing followed a second command to activate the effect.
+You can explicitly send the timing command via the [dynamics channel](#the-dynamics-channel) before you send the effect command.
+Or otherwise the binding will send a default timing command of 15 minutes.
 
 The `button-last-event` channel is a trigger channel.
 When the button is pressed the channel receives a number as calculated by the following formula:
@@ -140,6 +146,7 @@ When you set a value for the `dynamics` channel (e.g. 2000 milliseconds) and the
 When the `dynamics` channel value is changed, it triggers a time window of ten seconds during which the value is active.
 If the second command is sent within the active time window, it will be executed gradually according to the `dynamics` channel value.
 However, if the second command is sent after the active time window has expired, then it will be executed immediately.
+If the second command is a 'timed' effect, then the dynamics duration will be applied to that effect.
 
 ### Advanced Channels for Devices, Rooms and Zones
 
@@ -218,7 +225,7 @@ Color Living_Room_Standard_Lamp_Left_Colour "Living Room Standard Lamp Left Colo
 Dimmer Living_Room_Standard_Lamp_Left_Brightness "Living Room Standard Lamp Left Brightness [%.0f %%]" {channel="hue:device:g24:11111111-2222-3333-4444-555555555555:brightness"}
 Switch Living_Room_Standard_Lamp_Left_Switch "Living Room Standard Lamp Left Switch" (g_Lights_On_Count) {channel="hue:device:g24:11111111-2222-3333-4444-555555555555:switch"}
 
-Number Kitchen_Wallplate_Switch_Last_Event "Kitchen Wallplate Switch Last Event" {channel="hue:device:g24:11111111-2222-3333-4444-666666666666:button-last-event"}
+String Kitchen_Wallplate_Switch_Last_Event "Kitchen Wallplate Switch Last Event" {channel="hue:device:g24:11111111-2222-3333-4444-666666666666:button-last-event"}
 Switch Kitchen_Wallplate_Switch_Battery_Low_Alarm "Kitchen Wallplate Switch Battery Low Alarm" {channel="hue:device:g24:11111111-2222-3333-4444-666666666666:battery-low"}
 ```
 
