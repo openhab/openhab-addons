@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.romyrobot.internal.api;
 
 import java.net.URL;
@@ -22,6 +34,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+/**
+ * The {@link RomyApi_v6} interface defines the functions which are
+ * controllable on the Romy API interface Version 6.
+ *
+ * @author Bernhard Kreuz - Initial contribution
+ */
 
 public class RomyApi_v6 implements RomyApi {
 

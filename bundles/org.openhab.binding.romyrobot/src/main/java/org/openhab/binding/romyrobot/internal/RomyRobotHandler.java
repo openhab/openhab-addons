@@ -78,21 +78,21 @@ public class RomyRobotHandler extends BaseThingHandler {
             try {
                 getRomyApi().setStrategy(command.toString());
             } catch (Exception e) {
-                logger.error("error updating strategy: {}", e);
+                logger.error("error updating strategy: {}", e.getMessage());
             }
         } else if (CHANNEL_SUCTION_MODE.equals(channelUID.getId())) {
             updateState(CHANNEL_SUCTION_MODE, new StringType(command.toString()));
             try {
                 getRomyApi().setSuctionMode(command.toString());
             } catch (Exception e) {
-                logger.error("error updating suctionmode: {}", e);
+                logger.error("error updating suctionmode: {}", e.getMessage());
             }
         } else if (CHANNEL_COMMAND.equals(channelUID.getId())) {
             updateState(CHANNEL_COMMAND, new StringType(command.toString()));
             try {
                 getRomyApi().executeCommand(command.toString());
             } catch (Exception e) {
-                logger.error("error executing command against RomyRobot", e);
+                logger.error("error executing command against RomyRobot", e.getMessage());
             }
         }
     }
