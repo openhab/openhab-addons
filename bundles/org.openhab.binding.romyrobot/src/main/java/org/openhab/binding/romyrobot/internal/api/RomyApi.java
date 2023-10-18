@@ -149,27 +149,15 @@ public interface RomyApi {
 
     /**
      * 
-     * @return a String listing the available maps
-     */
-    int getProtocolVersionMajor();
-
-    /**
-     * 
-     * @return a String listing the available maps
+     * @return Minor Interface Version
      */
     int getProtocolVersionMinor();
 
     /**
      * 
-     * @return a String listing the available maps
+     * @return Major Interface Version
      */
     int getProtocolVersionMajor();
-
-    /**
-     * 
-     * @return a String listing the available maps
-     */
-    int getProtocolVersionMinor();
 
     /**
      * 
