@@ -259,7 +259,7 @@ public class RomyApi_v6 implements RomyApi {
                 location = url;
             }
             ContentResponse response;
-            try {                
+            try {
                 response = withGeneralProperties(httpClient.newRequest(location))
                         .timeout(config.timeout, TimeUnit.SECONDS).method(HttpMethod.GET).send();
             } catch (Exception e) {
@@ -268,14 +268,14 @@ public class RomyApi_v6 implements RomyApi {
             if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
 
                 // forbiden, looks like http interface is locked, try to unlock it
-                // ------------------------------------------------------------------                
+                // ------------------------------------------------------------------
                 URL netUrl = new URL(url);
-                String host = netUrl.getHost();                
+                String host = netUrl.getHost();
                 try {
                     logger.info(
                             "looks like http interface is locked, try to unlock it now with password from config...");
                     String unlock = netUrl.getProtocol() + "://" + netUrl.getHost() + ":" + netUrl.getPort()
-                            + "/set/unlock_http?pass=" + config.password;                   
+                            + "/set/unlock_http?pass=" + config.password;
                     response = withGeneralProperties(httpClient.newRequest(unlock))
                             .timeout(config.timeout, TimeUnit.SECONDS).method(HttpMethod.GET).send();
                 } catch (Exception e) {
@@ -285,7 +285,7 @@ public class RomyApi_v6 implements RomyApi {
 
                 // send request again after unlocking
                 // -------------------------------------
-                try {                    
+                try {
                     response = withGeneralProperties(httpClient.newRequest(location))
                             .timeout(config.timeout, TimeUnit.SECONDS).method(HttpMethod.GET).send();
                 } catch (Exception e) {
