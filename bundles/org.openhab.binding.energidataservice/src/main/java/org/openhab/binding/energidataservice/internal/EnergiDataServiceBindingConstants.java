@@ -48,13 +48,16 @@ public class EnergiDataServiceBindingConstants {
             + "system-tariff";
     public static final String CHANNEL_ELECTRICITY_TAX = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR
             + "electricity-tax";
+    public static final String CHANNEL_REDUCED_ELECTRICITY_TAX = CHANNEL_GROUP_ELECTRICITY
+            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "reduced-electricity-tax";
     public static final String CHANNEL_TRANSMISSION_NET_TARIFF = CHANNEL_GROUP_ELECTRICITY
             + ChannelUID.CHANNEL_GROUP_SEPARATOR + "transmission-net-tariff";
     public static final String CHANNEL_HOURLY_PRICES = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR
             + "hourly-prices";
 
     public static final Set<String> ELECTRICITY_CHANNELS = Set.of(CHANNEL_SPOT_PRICE, CHANNEL_NET_TARIFF,
-            CHANNEL_SYSTEM_TARIFF, CHANNEL_ELECTRICITY_TAX, CHANNEL_TRANSMISSION_NET_TARIFF, CHANNEL_HOURLY_PRICES);
+            CHANNEL_SYSTEM_TARIFF, CHANNEL_ELECTRICITY_TAX, CHANNEL_REDUCED_ELECTRICITY_TAX,
+            CHANNEL_TRANSMISSION_NET_TARIFF, CHANNEL_HOURLY_PRICES);
 
     // List of all properties
     public static final String PROPERTY_REMAINING_CALLS = "remainingCalls";

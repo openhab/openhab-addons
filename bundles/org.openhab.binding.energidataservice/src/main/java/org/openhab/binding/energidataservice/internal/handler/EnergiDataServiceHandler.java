@@ -93,7 +93,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
 
     private record Price(String hourStart, BigDecimal spotPrice, String spotPriceCurrency,
             @Nullable BigDecimal netTariff, @Nullable BigDecimal systemTariff, @Nullable BigDecimal electricityTax,
-            @Nullable BigDecimal transmissionNetTariff) {
+            @Nullable BigDecimal reducedElectricityTax, @Nullable BigDecimal transmissionNetTariff) {
     }
 
     public EnergiDataServiceHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
@@ -246,6 +246,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
                 case NET_TARIFF -> getNetTariffFilter();
                 case SYSTEM_TARIFF -> DatahubTariffFilterFactory.getSystemTariff();
                 case ELECTRICITY_TAX -> DatahubTariffFilterFactory.getElectricityTax();
+                case REDUCED_ELECTRICITY_TAX -> DatahubTariffFilterFactory.getReducedElectricityTax();
                 case TRANSMISSION_NET_TARIFF -> DatahubTariffFilterFactory.getTransmissionNetTariff();
             };
             cacheManager.putTariffs(datahubTariff, downloadPriceLists(globalLocationNumber, filter));
@@ -339,9 +340,10 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             BigDecimal netTariff = cacheManager.getTariff(DatahubTariff.NET_TARIFF, hourStart);
             BigDecimal systemTariff = cacheManager.getTariff(DatahubTariff.SYSTEM_TARIFF, hourStart);
             BigDecimal electricityTax = cacheManager.getTariff(DatahubTariff.ELECTRICITY_TAX, hourStart);
+            BigDecimal reducedElectricityTax = cacheManager.getTariff(DatahubTariff.REDUCED_ELECTRICITY_TAX, hourStart);
             BigDecimal transmissionNetTariff = cacheManager.getTariff(DatahubTariff.TRANSMISSION_NET_TARIFF, hourStart);
             targetPrices[i++] = new Price(hourStart.toString(), sourcePrice.getValue(), config.currencyCode, netTariff,
-                    systemTariff, electricityTax, transmissionNetTariff);
+                    systemTariff, electricityTax, reducedElectricityTax, transmissionNetTariff);
         }
         updateState(CHANNEL_HOURLY_PRICES, new StringType(gson.toJson(targetPrices)));
     }
@@ -397,6 +399,15 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         }
 
         return cacheManager.getTariffs(datahubTariff);
+    }
+
+    /**
+     * Return whether reduced electricity tax is set in configuration.
+     *
+     * @return true if reduced electricity tax applies
+     */
+    public boolean isReducedElectricityTax() {
+        return config.reducedElectricityTax;
     }
 
     private void reschedulePriceUpdateJob() {

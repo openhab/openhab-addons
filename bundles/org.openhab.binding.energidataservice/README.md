@@ -12,12 +12,13 @@ All channels are available for thing type `service`.
 
 ### `service` Thing Configuration
 
-| Name           | Type    | Description                                       | Default       | Required |
-|----------------|---------|---------------------------------------------------|---------------|----------|
-| priceArea      | text    | Price area for spot prices (same as bidding zone) |               | yes      |
-| currencyCode   | text    | Currency code in which to obtain spot prices      | DKK           | no       |
-| gridCompanyGLN | integer | Global Location Number of the Grid Company        |               | no       |
-| energinetGLN   | integer | Global Location Number of Energinet               | 5790000432752 | no       |
+| Name                  | Type    | Description                                                          | Default       | Required |
+|-----------------------|---------|----------------------------------------------------------------------|---------------|----------|
+| priceArea             | text    | Price area for spot prices (same as bidding zone)                    |               | yes      |
+| currencyCode          | text    | Currency code in which to obtain spot prices                         | DKK           | no       |
+| gridCompanyGLN        | integer | Global Location Number of the Grid Company                           |               | no       |
+| energinetGLN          | integer | Global Location Number of Energinet                                  | 5790000432752 | no       |
+| reducedElectricityTax | boolean | Reduced electricity tax applies. For electric heating customers only | false         | no       |
 
 #### Global Location Number of the Grid Company
 
@@ -35,6 +36,13 @@ To obtain the Global Location Number of your grid company:
 - In column **Owner** you can find the GLN ("Global Location Number").
 - Most rows will have this **Owner**. If in doubt, try to look for rows __not__ having 5790000432752 as owner.
 
+#### Reduced electricity tax applies
+
+For customers using electricity for heating, a reduced electricity tax rate may apply after consuming the first 4000 kWh within a year.
+When you are entitled to reduced electricity tax, this option should be set.
+This will ensure that thing action calculations use the reduced electricity tax rate when price elements are not explicitly provided.
+It will not impact channels, see [Electricity Tax](#electricity-tax) for further information.
+
 ## Channels
 
 ### Channel Group `electricity`
@@ -45,6 +53,7 @@ To obtain the Global Location Number of your grid company:
 | net-tariff              | Number | Current net tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured | no       |
 | system-tariff           | Number | Current system tariff in DKK per kWh                                                  | no       |
 | electricity-tax         | Number | Current electricity tax in DKK per kWh                                                | no       |
+| reduced-electricity-tax | Number | Current reduced electricity tax in DKK per kWh. For electric heating customers only   | no       |
 | transmission-net-tariff | Number | Current transmission net tariff in DKK per kWh                                        | no       |
 | hourly-prices           | String | JSON array with hourly prices from 24 hours ago and onward                            | yes      |
 
@@ -55,6 +64,9 @@ This has the following advantages:
 - Full customization possible: Freely choose the channels which should be included in the total.
 - An additional item containing the kWh fee from your electricity supplier can be added also.
 - Spot price can be configured in EUR while tariffs are in DKK.
+
+If you want electricity tax included in your total price, please add either `electricity-tax` or `reduced-electricity-tax` to the group - depending on which one applies.
+See [Electricity Tax](#electricity-tax) for further information.
 
 #### Value-Added Tax
 
@@ -107,6 +119,15 @@ _Nord Energi Net:_
 | start           | StartOfDay |
 | offset          | -P1D       |
 
+#### Electricity Tax
+
+The standard channel for electricity tax is `electricity-tax`.
+For customers using electricity for heating, a reduced electricity tax rate may apply (see [Reduced electricity tax applies](#reduced-electricity-tax-applies)).
+This reduced rate is made available through channel `reduced-electricity-tax`.
+
+The binding cannot determine or manage rate variations as they depend on metering data.
+Usually `reduced-electricity-tax` is preferred when using electricity for heating.
+
 #### Hourly Prices
 
 The format of the `hourly-prices` JSON array is as follows:
@@ -114,22 +135,24 @@ The format of the `hourly-prices` JSON array is as follows:
 ```json
 [
 	{
-		"hourStart": "2023-01-24T15:00:00Z",
-		"spotPrice": 1.67076001,
+		"hourStart": "2023-09-19T18:00:00Z",
+		"spotPrice": 0.0,
 		"spotPriceCurrency": "DKK",
-		"netTariff": 0.432225,
-		"systemTariff": 0.054000,
-		"electricityTax": 0.008000,
-		"transmissionNetTariff": 0.058000
+		"netTariff": 0.0,
+		"systemTariff": 0.054,
+		"electricityTax": 0.697,
+		"reducedElectricityTax": 0.008,
+		"transmissionNetTariff": 0.058
 	},
 	{
-		"hourStart": "2023-01-24T16:00:00Z",
-		"spotPrice": 1.859880005,
+		"hourStart": "2023-09-19T19:00:00Z",
+		"spotPrice": -0.00052,
 		"spotPriceCurrency": "DKK",
-		"netTariff": 1.05619,
-		"systemTariff": 0.054000,
-		"electricityTax": 0.008000,
-		"transmissionNetTariff": 0.058000
+		"netTariff": 0.0,
+		"systemTariff": 0.054,
+		"electricityTax": 0.697,
+		"reducedElectricityTax": 0.008,
+		"transmissionNetTariff": 0.058
 	}
 ]
 ```
@@ -310,14 +333,17 @@ These elements can be requested:
 | NetTariff             | Net tariff              |
 | SystemTariff          | System tariff           |
 | ElectricityTax        | Electricity tax         |
+| ReducedElectricityTax | Reduced electricity tax |
 | TransmissionNetTariff | Transmission net tariff |
 
 Using `null` as parameter returns the total prices including all price elements.
+If **Reduced Electricity Tax** is set in Thing configuration, `ElectricityTax` will be excluded, otherwise `ReducedElectricityTax`.
+This logic ensures consistent and comparable results not affected by artifical changes in the rate for electricity tax two times per year.
 
 Example:
 
 ```javascript
-var priceMap = actions.getPrices("SpotPrice,NetTariff");
+var priceMap = actions.getPrices("SpotPrice,NetTariff")
 ```
 
 ## Full Example
