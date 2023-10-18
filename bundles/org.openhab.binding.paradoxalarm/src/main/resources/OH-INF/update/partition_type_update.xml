@@ -7,8 +7,6 @@
 		<instruction-set targetVersion="1">
 			<add-channel id="detailedState">
 				<type>paradoxalarm:detailedState</type>
-				<label>Detailed Partition State</label>
-				<description>The detailed state of partition (contains sub-states like Stay in Armed, Armed no entry, etc)</description>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

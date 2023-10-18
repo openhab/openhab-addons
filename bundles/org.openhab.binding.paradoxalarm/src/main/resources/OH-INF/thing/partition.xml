@@ -35,6 +35,10 @@
 			<channel id="command" typeId="command"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="id" type="integer" min="1" max="8" required="true">
 				<label>Partition Id</label>
