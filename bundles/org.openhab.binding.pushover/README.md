@@ -23,11 +23,9 @@ You can reach it via [https://pushover.net/apps/clone/openHAB](https://pushover.
 | `title`                 | text    | The default title of a message (default: `openHAB`).                                                                                                                                                                                                                                                          |
 | `format`                | text    | The default format (`none`, `html` or `monospace`) of a message (default: `none`).                                                                                                                                                                                                                            |
 | `sound`                 | text    | The notification sound on target device (default: `default`) (see [supported notification sounds](https://pushover.net/api#sounds)). This list will be populated dynamically during runtime with 21 different sounds plus user-defined [custom sounds](https://blog.pushover.net/posts/2021/3/custom-sounds). |
-| `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushover servers will send the same notification to the user (default: `300`). **advanced**                                                                                                                                                          |
-| `expire`                | integer | The expire parameter specifies how long (in seconds) your notification will continue to be retried (default: `3600`). **advanced**                                                                                                                                                                            |
+| `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushover servers will send the same emergency-priority notification to the user (default: `300`). **advanced**                                                                                                                                                          |
+| `expire`                | integer | The expire parameter specifies how long (in seconds) your emergency-priority notification will continue to be retried (default: `3600`). **advanced**                                                                                                                                                                            |
 | `timeout`               | integer | The timeout parameter specifies maximum number of seconds a request to Pushover can take. **advanced**                                                                                                                                                                                                        |
-
-The `retry` and `expire` parameters are only used for emergency-priority notifications.
 
 ## Channels
 
@@ -56,13 +54,13 @@ One has to pass a `null` value if it should be skipped or the default value for 
 
 - `sendMessageToDevice(String device, String message, @Nullable String title)` - This method is used to send a message to a specific device. Parameter `device` **mandatory** is the name of a specific device (multiple devices may be separated by a comma).
 
-The `sendPriorityMessage` action returns a `String` value (the `receipt`) if the message was sent successfully, otherwise `null`.
+- `sendPriorityMessage(String message, @Nullable String title, @Nullable Integer priority)` - This method is used to send a priority message.
+Parameter `priority` is the priority to be used (`-2` = lowest priority, `-1` = low priority, `0` = normal priority, `1` = high priority, `2` = emergency priority; default: `2`).
+For priority `2` only, the action returns a `String` value (the `receipt`) if the message was sent successfully, otherwise `null`.
+For other priorities, the action always returns an empty `String`.
 
-- `sendPriorityMessage(String message, @Nullable String title, @Nullable Integer priority)` - This method is used to send a priority message. Parameter `priority` is the priority (`-2`, `-1`, `0`, `1`, `2`) to be used (default: `2`).
-
-The `cancelPriorityMessage` returns a `Boolean` value to indicate if the message was cancelled successfully or not.
-
-- `cancelPriorityMessage(String receipt)` - This method is used to cancel a priority message.
+- `cancelPriorityMessage(String receipt)` - This method is used to cancel an emergency priority message.
+The action returns a `Boolean` value to indicate if the message was cancelled successfully or not.
 
 ## Full Example
 
