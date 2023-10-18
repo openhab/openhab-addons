@@ -154,115 +154,116 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
     }
 
     private void updateCommonChannels(RawDataParser parser, InverterData genericInverterData) {
-        updateState(SolaxBindingConstants.RAW_DATA, new StringType(genericInverterData.getRawData()));
+        updateState(SolaxBindingConstants.CHANNEL_RAW_DATA, new StringType(genericInverterData.getRawData()));
 
         Set<String> supportedChannels = parser.getSupportedChannels();
-        updateChannel(SolaxBindingConstants.INVERTER_PV1_POWER,
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_PV1_POWER,
                 new QuantityType<>(genericInverterData.getPV1Power(), Units.WATT), supportedChannels);
-        updateChannel(SolaxBindingConstants.INVERTER_PV1_CURRENT,
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_PV1_CURRENT,
                 new QuantityType<>(genericInverterData.getPV1Current(), Units.AMPERE), supportedChannels);
-        updateChannel(SolaxBindingConstants.INVERTER_PV1_VOLTAGE,
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_PV1_VOLTAGE,
                 new QuantityType<>(genericInverterData.getPV1Voltage(), Units.VOLT), supportedChannels);
 
-        updateChannel(SolaxBindingConstants.INVERTER_PV2_POWER,
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_PV2_POWER,
                 new QuantityType<>(genericInverterData.getPV2Power(), Units.WATT), supportedChannels);
-        updateChannel(SolaxBindingConstants.INVERTER_PV2_CURRENT,
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_PV2_CURRENT,
                 new QuantityType<>(genericInverterData.getPV2Current(), Units.AMPERE), supportedChannels);
-        updateChannel(SolaxBindingConstants.INVERTER_PV2_VOLTAGE,
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_PV2_VOLTAGE,
                 new QuantityType<>(genericInverterData.getPV2Voltage(), Units.VOLT), supportedChannels);
 
-        updateChannel(SolaxBindingConstants.INVERTER_PV_TOTAL_POWER,
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_PV_TOTAL_POWER,
                 new QuantityType<>(genericInverterData.getPVTotalPower(), Units.WATT), supportedChannels);
-        updateChannel(SolaxBindingConstants.INVERTER_PV_TOTAL_CURRENT,
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_PV_TOTAL_CURRENT,
                 new QuantityType<>(genericInverterData.getPVTotalCurrent(), Units.AMPERE), supportedChannels);
 
-        updateChannel(SolaxBindingConstants.BATTERY_POWER,
+        updateChannel(SolaxBindingConstants.CHANNEL_BATTERY_POWER,
                 new QuantityType<>(genericInverterData.getBatteryPower(), Units.WATT), supportedChannels);
-        updateChannel(SolaxBindingConstants.BATTERY_CURRENT,
+        updateChannel(SolaxBindingConstants.CHANNEL_BATTERY_CURRENT,
                 new QuantityType<>(genericInverterData.getBatteryCurrent(), Units.AMPERE), supportedChannels);
-        updateChannel(SolaxBindingConstants.BATTERY_VOLTAGE,
+        updateChannel(SolaxBindingConstants.CHANNEL_BATTERY_VOLTAGE,
                 new QuantityType<>(genericInverterData.getBatteryVoltage(), Units.VOLT), supportedChannels);
-        updateChannel(SolaxBindingConstants.BATTERY_TEMPERATURE,
+        updateChannel(SolaxBindingConstants.CHANNEL_BATTERY_TEMPERATURE,
                 new QuantityType<>(genericInverterData.getBatteryTemperature(), SIUnits.CELSIUS), supportedChannels);
-        updateChannel(SolaxBindingConstants.BATTERY_STATE_OF_CHARGE,
+        updateChannel(SolaxBindingConstants.CHANNEL_BATTERY_STATE_OF_CHARGE,
                 new QuantityType<>(genericInverterData.getBatteryLevel(), Units.PERCENT), supportedChannels);
-        updateChannel(SolaxBindingConstants.TIMESTAMP, new DateTimeType(ZonedDateTime.now()), supportedChannels);
-        updateChannel(SolaxBindingConstants.FEED_IN_POWER,
+        updateChannel(SolaxBindingConstants.CHANNEL_TIMESTAMP, new DateTimeType(ZonedDateTime.now()),
+                supportedChannels);
+        updateChannel(SolaxBindingConstants.CHANNEL_FEED_IN_POWER,
                 new QuantityType<>(genericInverterData.getFeedInPower(), Units.WATT), supportedChannels);
-        updateChannel(SolaxBindingConstants.POWER_USAGE,
+        updateChannel(SolaxBindingConstants.CHANNEL_POWER_USAGE,
                 new QuantityType<>(genericInverterData.getPowerUsage(), Units.WATT), supportedChannels);
 
         // Totals
-        updateChannel(SolaxBindingConstants.TOTAL_ENERGY,
+        updateChannel(SolaxBindingConstants.CHANNEL_TOTAL_ENERGY,
                 new QuantityType<>(genericInverterData.getTotalEnergy(), Units.KILOWATT_HOUR), supportedChannels);
-        updateChannel(SolaxBindingConstants.TOTAL_BATTERY_DISCHARGE_ENERGY,
+        updateChannel(SolaxBindingConstants.CHANNEL_TOTAL_BATTERY_DISCHARGE_ENERGY,
                 new QuantityType<>(genericInverterData.getTotalBatteryDischargeEnergy(), Units.KILOWATT_HOUR),
                 supportedChannels);
-        updateChannel(SolaxBindingConstants.TOTAL_BATTERY_CHARGE_ENERGY,
+        updateChannel(SolaxBindingConstants.CHANNEL_TOTAL_BATTERY_CHARGE_ENERGY,
                 new QuantityType<>(genericInverterData.getTotalBatteryChargeEnergy(), Units.KILOWATT_HOUR),
                 supportedChannels);
-        updateChannel(SolaxBindingConstants.TOTAL_PV_ENERGY,
+        updateChannel(SolaxBindingConstants.CHANNEL_TOTAL_PV_ENERGY,
                 new QuantityType<>(genericInverterData.getTotalPVEnergy(), Units.KILOWATT_HOUR), supportedChannels);
-        updateChannel(SolaxBindingConstants.TOTAL_FEED_IN_ENERGY,
+        updateChannel(SolaxBindingConstants.CHANNEL_TOTAL_FEED_IN_ENERGY,
                 new QuantityType<>(genericInverterData.getTotalFeedInEnergy(), Units.KILOWATT_HOUR), supportedChannels);
-        updateChannel(SolaxBindingConstants.TOTAL_CONSUMPTION,
+        updateChannel(SolaxBindingConstants.CHANNEL_TOTAL_CONSUMPTION,
                 new QuantityType<>(genericInverterData.getTotalConsumption(), Units.KILOWATT_HOUR), supportedChannels);
 
         // Today's
-        updateChannel(SolaxBindingConstants.TODAY_ENERGY,
+        updateChannel(SolaxBindingConstants.CHANNEL_TODAY_ENERGY,
                 new QuantityType<>(genericInverterData.getTodayEnergy(), Units.KILOWATT_HOUR), supportedChannels);
-        updateChannel(SolaxBindingConstants.TODAY_BATTERY_DISCHARGE_ENERGY,
+        updateChannel(SolaxBindingConstants.CHANNEL_TODAY_BATTERY_DISCHARGE_ENERGY,
                 new QuantityType<>(genericInverterData.getTodayBatteryDischargeEnergy(), Units.KILOWATT_HOUR),
                 supportedChannels);
-        updateChannel(SolaxBindingConstants.TODAY_BATTERY_CHARGE_ENERGY,
+        updateChannel(SolaxBindingConstants.CHANNEL_TODAY_BATTERY_CHARGE_ENERGY,
                 new QuantityType<>(genericInverterData.getTodayBatteryChargeEnergy(), Units.KILOWATT_HOUR),
                 supportedChannels);
-        updateChannel(SolaxBindingConstants.TODAY_FEED_IN_ENERGY,
+        updateChannel(SolaxBindingConstants.CHANNEL_TODAY_FEED_IN_ENERGY,
                 new QuantityType<>(genericInverterData.getTodayFeedInEnergy(), Units.KILOWATT_HOUR), supportedChannels);
-        updateChannel(SolaxBindingConstants.TODAY_CONSUMPTION,
+        updateChannel(SolaxBindingConstants.CHANNEL_TODAY_CONSUMPTION,
                 new QuantityType<>(genericInverterData.getTodayConsumption(), Units.KILOWATT_HOUR), supportedChannels);
     }
 
     private void updateSinglePhaseSpecificData(SinglePhaseInverterData singlePhaseData) {
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_POWER,
                 new QuantityType<>(singlePhaseData.getInverterOutputPower(), Units.WATT));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_CURRENT,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_CURRENT,
                 new QuantityType<>(singlePhaseData.getInverterCurrent(), Units.AMPERE));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_VOLTAGE,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_VOLTAGE,
                 new QuantityType<>(singlePhaseData.getInverterVoltage(), Units.VOLT));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_FREQUENCY,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_FREQUENCY,
                 new QuantityType<>(singlePhaseData.getInverterFrequency(), Units.HERTZ));
     }
 
     private void updateThreePhaseSpecificData(ThreePhaseInverterData threePhaseData) {
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER_PHASE1,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_POWER_PHASE1,
                 new QuantityType<>(threePhaseData.getOutputPowerPhase1(), Units.WATT));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER_PHASE2,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_POWER_PHASE2,
                 new QuantityType<>(threePhaseData.getOutputPowerPhase2(), Units.WATT));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER_PHASE3,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_POWER_PHASE3,
                 new QuantityType<>(threePhaseData.getOutputPowerPhase3(), Units.WATT));
-        updateState(SolaxBindingConstants.INVERTER_TOTAL_OUTPUT_POWER,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_TOTAL_OUTPUT_POWER,
                 new QuantityType<>(threePhaseData.getTotalOutputPower(), Units.WATT));
 
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_CURRENT_PHASE1,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_CURRENT_PHASE1,
                 new QuantityType<>(threePhaseData.getCurrentPhase1(), Units.AMPERE));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_CURRENT_PHASE2,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_CURRENT_PHASE2,
                 new QuantityType<>(threePhaseData.getCurrentPhase2(), Units.AMPERE));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_CURRENT_PHASE3,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_CURRENT_PHASE3,
                 new QuantityType<>(threePhaseData.getCurrentPhase3(), Units.AMPERE));
 
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_VOLTAGE_PHASE1,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_VOLTAGE_PHASE1,
                 new QuantityType<>(threePhaseData.getVoltagePhase1(), Units.VOLT));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_VOLTAGE_PHASE2,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_VOLTAGE_PHASE2,
                 new QuantityType<>(threePhaseData.getVoltagePhase2(), Units.VOLT));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_VOLTAGE_PHASE3,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_VOLTAGE_PHASE3,
                 new QuantityType<>(threePhaseData.getVoltagePhase3(), Units.VOLT));
 
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_FREQUENCY_PHASE1,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE1,
                 new QuantityType<>(threePhaseData.getFrequencyPhase1(), Units.HERTZ));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_FREQUENCY_PHASE2,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE2,
                 new QuantityType<>(threePhaseData.getFrequencyPhase2(), Units.HERTZ));
-        updateState(SolaxBindingConstants.INVERTER_OUTPUT_FREQUENCY_PHASE3,
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE3,
                 new QuantityType<>(threePhaseData.getFrequencyPhase3(), Units.HERTZ));
     }
 

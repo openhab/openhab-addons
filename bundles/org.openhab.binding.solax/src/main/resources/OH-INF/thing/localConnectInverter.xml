@@ -192,6 +192,10 @@
 			<channel id="raw-data" typeId="raw-data-type"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="refreshInterval" type="integer" min="1" max="600">
 				<label>Refresh Interval</label>
