@@ -543,7 +543,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 if (cause == null) {
                     logger.debug("An exception occurred while getting the home devices: '{}'", e.getMessage());
                 } else {
-                    logger.debug("An exception occurred while getting the home devices: '{}' -> '{}", e.getMessage(),
+                    logger.debug("An exception occurred while getting the home devices: '{}' -> '{}'", e.getMessage(),
                             cause.getMessage());
                 }
             }
