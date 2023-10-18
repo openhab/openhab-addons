@@ -65,7 +65,7 @@ public class RomyRobotHandlerFactory extends BaseThingHandlerFactory {
             try {
                 return new RomyRobotHandler(thing, apiFactory, stateDescriptionProvider);
             } catch (Exception e) {
-                logger.error("could not create handler {}", e);
+                logger.error("could not create handler {}", e.getMessage());
             }
         }
 

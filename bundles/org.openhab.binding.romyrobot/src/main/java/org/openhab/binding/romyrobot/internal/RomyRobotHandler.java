@@ -92,7 +92,7 @@ public class RomyRobotHandler extends BaseThingHandler {
             try {
                 getRomyApi().executeCommand(command.toString());
             } catch (Exception e) {
-                logger.error("error executing command against RomyRobot", e.getMessage());
+                logger.error("error executing command against RomyRobot", e);
             }
         }
     }

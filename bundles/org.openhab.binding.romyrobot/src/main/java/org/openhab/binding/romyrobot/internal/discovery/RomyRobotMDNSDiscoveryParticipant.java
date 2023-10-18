@@ -115,7 +115,7 @@ public class RomyRobotMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
             romyDevice.refresh_id();
             romyDevice.refresh_protocol_version();
             robotName = romyDevice.getName();
-            logger.debug("New ROMY with the name:{} discovered: {}", robotName);
+            logger.debug("New ROMY with the name: {}", robotName);
         } catch (Exception e) {
             logger.error("Error setting up ROMY api: {}", e.getMessage());
             return null;
