@@ -15,13 +15,15 @@ package org.openhab.binding.mercedesme;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-import java.util.Locale;
+import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.MercedesMeMetadataAdjuster;
-import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.UnitProvider;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.link.ItemChannelLink;
@@ -38,22 +40,22 @@ class MetadataTest {
     @Test
     public void testMetadataUpdate() {
         MetadataRegistryMock mdrm = new MetadataRegistryMock();
-        LocaleProvider localeMock = mock(LocaleProvider.class);
-        when(localeMock.getLocale()).thenReturn(Locale.GERMANY);
+        UnitProvider unitProviderMock = mock(UnitProvider.class);
+        when(unitProviderMock.getUnit(Length.class)).thenReturn(SIUnits.METRE);
 
         ThingUID tuid = new ThingUID(Constants.BINDING_ID, Constants.BEV);
         MercedesMeMetadataAdjuster mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class),
-                localeMock);
+                unitProviderMock);
         mmma.added(new ItemChannelLink("Soc_Test_Item", new ChannelUID(tuid, Constants.GROUP_RANGE, "soc")));
         assertEquals("%", mdrm.getAll().iterator().next().getValue(), "Percent Unit");
 
         mdrm = new MetadataRegistryMock();
-        mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class), localeMock);
+        mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class), unitProviderMock);
         mmma.added(new ItemChannelLink("Mileage_Test_Item", new ChannelUID(tuid, Constants.GROUP_RANGE, "mileage")));
         assertEquals("km", mdrm.getAll().iterator().next().getValue(), "Kilometer Unit");
 
         mdrm = new MetadataRegistryMock();
-        mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class), localeMock);
+        mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class), unitProviderMock);
         mmma.added(new ItemChannelLink("Mileage_Test_Item",
                 new ChannelUID(tuid, Constants.GROUP_TIRES, "pressure-front-right")));
         assertEquals("bar", mdrm.getAll().iterator().next().getValue(), "Prressure Unit");
@@ -62,22 +64,22 @@ class MetadataTest {
     @Test
     public void testImperialMetadataUpdate() {
         MetadataRegistryMock mdrm = new MetadataRegistryMock();
-        LocaleProvider localeMock = mock(LocaleProvider.class);
-        when(localeMock.getLocale()).thenReturn(Locale.US);
+        UnitProvider unitProviderMock = mock(UnitProvider.class);
+        when(unitProviderMock.getUnit(Length.class)).thenReturn(ImperialUnits.FOOT);
 
         ThingUID tuid = new ThingUID(Constants.BINDING_ID, Constants.BEV);
         MercedesMeMetadataAdjuster mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class),
-                localeMock);
+                unitProviderMock);
         mmma.added(new ItemChannelLink("Soc_Test_Item", new ChannelUID(tuid, Constants.GROUP_RANGE, "soc")));
         assertEquals("%", mdrm.getAll().iterator().next().getValue(), "Percent Unit");
 
         mdrm = new MetadataRegistryMock();
-        mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class), localeMock);
+        mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class), unitProviderMock);
         mmma.added(new ItemChannelLink("Mileage_Test_Item", new ChannelUID(tuid, Constants.GROUP_RANGE, "mileage")));
         assertEquals("mi", mdrm.getAll().iterator().next().getValue(), "Mile Unit");
 
         mdrm = new MetadataRegistryMock();
-        mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class), localeMock);
+        mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class), unitProviderMock);
         mmma.added(new ItemChannelLink("Mileage_Test_Item",
                 new ChannelUID(tuid, Constants.GROUP_TIRES, "pressure-rear-right")));
         assertEquals("psi", mdrm.getAll().iterator().next().getValue(), "Prressure Unit");
