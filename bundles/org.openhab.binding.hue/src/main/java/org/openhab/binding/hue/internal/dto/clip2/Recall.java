@@ -16,10 +16,11 @@ import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
+import org.openhab.binding.hue.internal.dto.clip2.enums.SceneRecallAction;
+import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneRecallAction;
 
 /**
- * DTO for scene recall.
+ * DTO for scene and smart scene recall.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -29,7 +30,12 @@ public class Recall {
     private @Nullable @SuppressWarnings("unused") String status;
     private @Nullable @SuppressWarnings("unused") Long duration;
 
-    public Recall setAction(RecallAction action) {
+    public Recall setAction(SceneRecallAction action) {
+        this.action = action.name().toLowerCase();
+        return this;
+    }
+
+    public Recall setAction(SmartSceneRecallAction action) {
         this.action = action.name().toLowerCase();
         return this;
     }
