@@ -1,4 +1,5 @@
 - Item Unit Metadata adjustment to km / mi, bar / psi and %
 - home-distance channel added 
 - Bugfix: GSON Token transformation
-- Bugfix: Thing Status translations
+- Bugfix: Thing Status translation
+- Bugfix: Combustion consumption units

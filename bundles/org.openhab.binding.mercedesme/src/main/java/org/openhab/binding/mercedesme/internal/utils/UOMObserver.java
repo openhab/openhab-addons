@@ -49,6 +49,9 @@ public class UOMObserver {
     public static final String CONSUMPTION_ELECTRIC_100KM = "KWH_PER_100KM";
     public static final String CONSUMPTION_ELECTRIC_100MI = "KWH_PER_100MI";
     public static final String CONSUMPTION_LIQUID_100KM = "LITER_PER_100KM";
+    public static final String CONSUMPTION_LIQUID_KM_PER_LITER = "KM_PER_LITER";
+    public static final String CONSUMPTION_LIQUID_MPG_UK = "MPG_UK";
+    public static final String CONSUMPTION_LIQUID_MPG_US = "MPG_US";
     public static final String CONSUMPTION_LIQUID_MI = "MPGE";
     public static final String CONSUMPTION_GAS_100KM = "KG_PER_100KM";
     public static final String TIME_US = "TIME_US";
@@ -77,6 +80,9 @@ public class UOMObserver {
             PATTERN_MAP.put(CONSUMPTION_ELECTRIC_100KM, "kWh/100km");
             PATTERN_MAP.put(CONSUMPTION_ELECTRIC_100MI, "kWh/100mi");
             PATTERN_MAP.put(CONSUMPTION_LIQUID_100KM, "l/100km");
+            PATTERN_MAP.put(CONSUMPTION_LIQUID_KM_PER_LITER, "km/l");
+            PATTERN_MAP.put(CONSUMPTION_LIQUID_MPG_UK, "mi/g");
+            PATTERN_MAP.put(CONSUMPTION_LIQUID_MPG_US, "mi/g");
             PATTERN_MAP.put(CONSUMPTION_LIQUID_MI, "mpge");
             PATTERN_MAP.put(TIME_US, "%1$tA, %1$td.%1$tm. %1$tI:%1$tM %1$Tp");
             PATTERN_MAP.put(TIME_ROW, "%1$tA, %1$td.%1$tm. %1$tH:%1$tM");
