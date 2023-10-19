@@ -237,7 +237,7 @@ public class PushoverMessageBuilder {
 
         if (!ttl.isZero()) {
             if (priority == EMERGENCY_PRIORITY) {
-                logger.warn("TTL value of {} ignored for emergency priority.", ttl);
+                logger.warn("TTL value of {} will be ignored for emergency priority.", ttl);
             }
             body.addFieldPart(MESSAGE_KEY_TTL, new StringContentProvider(String.valueOf(ttl.getSeconds())), null);
         }
