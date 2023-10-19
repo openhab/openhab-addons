@@ -20,7 +20,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -44,8 +43,7 @@ public class SpeedtestHandlerFactory extends BaseThingHandlerFactory {
     private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public SpeedtestHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+    public SpeedtestHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
         this.timeZoneProvider = timeZoneProvider;
     }
 
