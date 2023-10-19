@@ -39,7 +39,6 @@ import org.openhab.binding.sensibo.internal.config.SensiboSkyConfiguration;
 import org.openhab.binding.sensibo.internal.dto.poddetails.TemperatureDTO;
 import org.openhab.binding.sensibo.internal.model.SensiboModel;
 import org.openhab.binding.sensibo.internal.model.SensiboSky;
-import org.openhab.binding.sensibo.internal.util.StringUtils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -63,6 +62,7 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +105,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             bs.append(t);
         }
 
-        return StringUtils.capitalizeFully(bs.toString()).trim();
+        return StringUtils.capitalizeByUnderscore(bs.toString()).trim();
     }
 
     private String getMacAddress() {
