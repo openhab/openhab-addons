@@ -64,6 +64,10 @@ public class FroniusBindingConstants {
     public static final String POWER_FLOW_AUTONOMY = "powerflowautonomy";
     public static final String POWER_FLOW_SELF_CONSUMPTION = "powerflowselfconsumption";
 
+    public static final String POWER_FLOW_INVERTER_POWER = "powerflowinverterpower";
+    public static final String POWER_FLOW_INVERTER_SOC = "powerflowinvertersoc";
+
+    // For backwards compatibility
     public static final String POWER_FLOW_INVERTER_1_POWER = "powerflowinverter1power";
     public static final String POWER_FLOW_INVERTER_1_SOC = "powerflowinverter1soc";
 
