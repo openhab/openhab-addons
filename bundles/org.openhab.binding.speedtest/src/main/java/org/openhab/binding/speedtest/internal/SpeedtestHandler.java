@@ -21,23 +21,16 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.speedtest.internal.dto.ResultContainer;
 import org.openhab.binding.speedtest.internal.dto.ResultsContainerServerList;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -72,8 +65,6 @@ public class SpeedtestHandler extends BaseThingHandler {
     private static Runtime rt = Runtime.getRuntime();
     private long pollingInterval = 60;
     private String serverID = "";
-    private static final long API_REQUEST_TIMEOUT_SECONDS = 16L;
-    private @Nullable HttpClient httpClient;
     private final TimeZoneProvider timeZoneProvider;
 
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -114,9 +105,8 @@ public class SpeedtestHandler extends BaseThingHandler {
         NOT_SET
     }
 
-    public SpeedtestHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
+    public SpeedtestHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        this.httpClient = httpClient;
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -316,59 +306,74 @@ public class SpeedtestHandler extends BaseThingHandler {
                     timestamp = UnDefType.NULL;
                     logger.debug("Exception: {}", e.getMessage());
                 }
-
-                pingJitter = new QuantityType<>(Double.parseDouble(tmpCont.getPing().getJitter()) / 1000.0,
-                        Units.SECOND);
-                pingLatency = new QuantityType<>(Double.parseDouble(tmpCont.getPing().getLatency()) / 1000.0,
-                        Units.SECOND);
-                downloadBandwidth = new QuantityType<>(
-                        Double.parseDouble(tmpCont.getDownload().getBandwidth()) / 125000.0, Units.MEGABIT_PER_SECOND);
-                downloadBytes = new QuantityType<>(Double.parseDouble(tmpCont.getDownload().getBytes()), Units.BYTE);
-                downloadElapsed = new QuantityType<>(Double.parseDouble(tmpCont.getDownload().getElapsed()) / 1000.0,
-                        Units.SECOND);
-                uploadBandwidth = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getBandwidth()) / 125000.0,
-                        Units.MEGABIT_PER_SECOND);
-                uploadBytes = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getBytes()), Units.BYTE);
-                uploadElapsed = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getElapsed()) / 1000.0,
-                        Units.SECOND);
+                try {
+                    pingJitter = new QuantityType<>(Double.parseDouble(tmpCont.getPing().getJitter()) / 1000.0,
+                            Units.SECOND);
+                } catch (NumberFormatException e) {
+                    pingJitter = UnDefType.NULL;
+                    logger.debug("Exception: {}", e.getMessage());
+                }
+                try {
+                    pingLatency = new QuantityType<>(Double.parseDouble(tmpCont.getPing().getLatency()) / 1000.0,
+                            Units.SECOND);
+                } catch (NumberFormatException e) {
+                    pingLatency = UnDefType.NULL;
+                    logger.debug("Exception: {}", e.getMessage());
+                }
+                try {
+                    downloadBandwidth = new QuantityType<>(
+                            Double.parseDouble(tmpCont.getDownload().getBandwidth()) / 125000.0,
+                            Units.MEGABIT_PER_SECOND);
+                } catch (NumberFormatException e) {
+                    downloadBandwidth = UnDefType.NULL;
+                    logger.debug("Exception: {}", e.getMessage());
+                }
+                try {
+                    downloadBytes = new QuantityType<>(Double.parseDouble(tmpCont.getDownload().getBytes()),
+                            Units.BYTE);
+                } catch (NumberFormatException e) {
+                    downloadBytes = UnDefType.NULL;
+                    logger.debug("Exception: {}", e.getMessage());
+                }
+                try {
+                    downloadElapsed = new QuantityType<>(
+                            Double.parseDouble(tmpCont.getDownload().getElapsed()) / 1000.0, Units.SECOND);
+                } catch (NumberFormatException e) {
+                    downloadElapsed = UnDefType.NULL;
+                    logger.debug("Exception: {}", e.getMessage());
+                }
+                try {
+                    uploadBandwidth = new QuantityType<>(
+                            Double.parseDouble(tmpCont.getUpload().getBandwidth()) / 125000.0,
+                            Units.MEGABIT_PER_SECOND);
+                } catch (NumberFormatException e) {
+                    uploadBandwidth = UnDefType.NULL;
+                    logger.debug("Exception: {}", e.getMessage());
+                }
+                try {
+                    uploadBytes = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getBytes()), Units.BYTE);
+                } catch (NumberFormatException e) {
+                    uploadBytes = UnDefType.NULL;
+                    logger.debug("Exception: {}", e.getMessage());
+                }
+                try {
+                    uploadElapsed = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getElapsed()) / 1000.0,
+                            Units.SECOND);
+                } catch (NumberFormatException e) {
+                    uploadElapsed = UnDefType.NULL;
+                    logger.debug("Exception: {}", e.getMessage());
+                }
                 isp = tmpCont.getIsp();
                 interfaceInternalIp = tmpCont.getInterface().getInternalIp();
                 interfaceExternalIp = tmpCont.getInterface().getExternalIp();
                 resultUrl = tmpCont.getResult().getUrl();
-
-                HttpClient client = httpClient;
-                if (client == null) {
-                    logger.debug("Unable to download image because httpClient is not set");
+                String url = String.valueOf(resultUrl) + ".png";
+                logger.debug("Downloading result image from: {}", url);
+                RawType image = HttpUtil.downloadImage(url);
+                if (image != null) {
+                    resultImage = image;
                 } else {
-                    try {
-                        String url = String.valueOf(resultUrl) + ".png";
-                        logger.debug("Downloading result image from: {}", url);
-                        Request request = client.newRequest(url);
-                        request.method(HttpMethod.GET);
-                        request.timeout(API_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
-                        ContentResponse contentResponse = request.send();
-                        switch (contentResponse.getStatus()) {
-                            case HttpStatus.OK_200:
-                                resultImage = new RawType(contentResponse.getContent(),
-                                        contentResponse.getHeaders().get(HttpHeader.CONTENT_TYPE));
-                                break;
-                            default:
-                                logger.debug("HTTP GET failed: {}, {}", contentResponse.getStatus(),
-                                        contentResponse.getReason());
-                                break;
-                        }
-                    } catch (TimeoutException e) {
-                        resultImage = UnDefType.NULL;
-                        logger.debug("TimeoutException: Download of result image timed out");
-                    } catch (ExecutionException e) {
-                        resultImage = UnDefType.NULL;
-                        logger.debug("ExecutionException: {}", e.getMessage());
-                    } catch (InterruptedException e) {
-                        resultImage = UnDefType.NULL;
-                        logger.debug("InterruptedException: {}", e.getMessage());
-                        Thread.currentThread().interrupt();
-                    }
+                    resultImage = UnDefType.NULL;
                 }
 
                 server = tmpCont.getServer().getName() + " (" + tmpCont.getServer().getId().toString() + ") "

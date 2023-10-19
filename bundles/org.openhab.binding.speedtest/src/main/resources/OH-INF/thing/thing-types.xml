@@ -85,7 +85,7 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Timestamp of the Speedtest run</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%1$tF %1$tH:%1$tM:%1$tS"></state>
 	</channel-type>
 	<channel-type id="pingJitter" advanced="true">
 		<item-type>Number:Time</item-type>
