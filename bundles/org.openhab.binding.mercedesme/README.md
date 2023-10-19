@@ -14,15 +14,6 @@ First time users shall follow the following sequence
 6. Optional: you can [Discover your Vehicle](#discover-your-vehicle) more deeply
 7. In case of problems check [Troubleshooting](#troubleshooting) section
 
-## ''Alpha Version''
-
-Current development status is _alpha_.
-Data mappings are missing and testing of features and regions are necessary.
-
-In order to analyze problems check the binding logs.
-**In addition please connect the advanced channels from [vehicle](#vehicle) to analyze problems!**
-Please check [Troubleshooting](#troubleshooting) section in order to help analyze problems.
-
 ## Supported Things
 
 | Type            | ID            | Description                                     |
