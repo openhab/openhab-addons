@@ -12,15 +12,17 @@
  */
 package org.openhab.binding.mercedesme.internal;
 
-import java.util.Locale;
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.common.registry.RegistryChangeListener;
-import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.link.ItemChannelLink;
@@ -35,12 +37,12 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 public class MercedesMeMetadataAdjuster implements RegistryChangeListener<ItemChannelLink> {
     private final MetadataRegistry metadataRegistry;
     private final ItemChannelLinkRegistry channelLinkRegistry;
-    private final LocaleProvider localeProvider;
+    private final UnitProvider unitProvider;
 
-    public MercedesMeMetadataAdjuster(MetadataRegistry mdr, ItemChannelLinkRegistry iclr, LocaleProvider lp) {
+    public MercedesMeMetadataAdjuster(MetadataRegistry mdr, ItemChannelLinkRegistry iclr, UnitProvider up) {
         metadataRegistry = mdr;
         channelLinkRegistry = iclr;
-        localeProvider = lp;
+        unitProvider = up;
         channelLinkRegistry.addRegistryChangeListener(this);
     }
 
@@ -65,9 +67,10 @@ public class MercedesMeMetadataAdjuster implements RegistryChangeListener<ItemCh
                 case Constants.GROUP_TRIP + ChannelUID.CHANNEL_GROUP_SEPARATOR + "distance":
                 case Constants.GROUP_TRIP + ChannelUID.CHANNEL_GROUP_SEPARATOR + "distance-reset":
                     if (metadataRegistry.get(key) == null) {
-                        if (Locale.US.getCountry().equals(localeProvider.getLocale().getCountry())) {
+                        Unit<Length> lengthUnit = unitProvider.getUnit(Length.class);
+                        if (lengthUnit.equals(ImperialUnits.FOOT)) {
                             metadataRegistry.add(new Metadata(key, ImperialUnits.MILE.getSymbol(), null));
-                        } else {
+                        } else if (lengthUnit.equals(SIUnits.METRE)) {
                             metadataRegistry.add(new Metadata(key, Constants.KILOMETRE_UNIT.getSymbol(), null));
                         }
                     }
@@ -83,10 +86,11 @@ public class MercedesMeMetadataAdjuster implements RegistryChangeListener<ItemCh
                 case Constants.GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + "pressure-rear-left":
                 case Constants.GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + "pressure-rear-right":
                     if (metadataRegistry.get(key) == null) {
-                        if (Locale.US.getCountry().equals(localeProvider.getLocale().getCountry())) {
+                        Unit<Length> lengthUnit = unitProvider.getUnit(Length.class);
+                        if (lengthUnit.equals(ImperialUnits.FOOT)) {
                             metadataRegistry
                                     .add(new Metadata(key, ImperialUnits.POUND_FORCE_SQUARE_INCH.getSymbol(), null));
-                        } else {
+                        } else if (lengthUnit.equals(SIUnits.METRE)) {
                             metadataRegistry.add(new Metadata(key, Units.BAR.getSymbol(), null));
                         }
                     }
