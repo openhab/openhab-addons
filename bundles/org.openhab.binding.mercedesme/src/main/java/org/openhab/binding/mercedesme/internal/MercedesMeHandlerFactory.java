@@ -92,7 +92,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         metadataRegistry = mdr;
         channelLinkRegistry = iclr;
 
-        MercedesMeMetadataAdjuster mdAdjuster = new MercedesMeMetadataAdjuster(mdr, iclr, localeProvider);
+        MercedesMeMetadataAdjuster mdAdjuster = new MercedesMeMetadataAdjuster(mdr, iclr, up);
         Utils.initialze(tzp, lp);
         Mapper.initialze(up);
         httpClient = hcf.getCommonHttpClient();
