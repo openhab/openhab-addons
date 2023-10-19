@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -76,6 +77,7 @@ public class ApiController {
 
     private static final String HEADER_REMAINING_CALLS = "RemainingCalls";
     private static final String HEADER_TOTAL_CALLS = "TotalCalls";
+    private static final int REQUEST_TIMEOUT_SECONDS = 30;
 
     private final Logger logger = LoggerFactory.getLogger(ApiController.class);
     private final Gson gson = new GsonBuilder() //
@@ -110,6 +112,7 @@ public class ApiController {
         }
 
         Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + DATASET_NAME_SPOT_PRICES)
+                .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //
                 .param("start", start.toString()) //
                 .param("filter", "{\"" + FILTER_KEY_PRICE_AREA + "\":\"" + priceArea + "\"}") //
                 .param("columns", "HourUTC,SpotPrice" + currency) //
@@ -198,6 +201,7 @@ public class ApiController {
         }
 
         Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + DATASET_NAME_DATAHUB_PRICELIST)
+                .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //
                 .param("filter", mapToFilter(filterMap)) //
                 .param("columns", columns) //
                 .agent(userAgent) //

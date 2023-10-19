@@ -36,6 +36,7 @@ public class TapoBindingSettings {
     public static final Integer HTTP_MAX_CONNECTIONS = 10; // setMaxConnectionsPerDestination for HTTP-Client
     public static final Integer HTTP_MAX_QUEUED_REQUESTS = 10; // setMaxRequestsQueuedPerDestination for HTTP-Client
     public static final Integer TAPO_HTTP_TIMEOUT_MS = 5000; // http request timeout
+    public static final Integer TAPO_HTTP_CLOUD_TIMEOUT_MS = 10000; // http request cloud timeout
     public static final Integer TAPO_PING_TIMEOUT_MS = 2000; // ping timeout
     public static final Integer TAPO_REFRESH_MIN_GAP_MS = 5000; // min gap between sending refresh request
     public static final Integer TAPO_SEND_MIN_GAP_MS = 1000; // min gap between sending command request

@@ -89,7 +89,8 @@ class PullJob implements Runnable {
 
     @Override
     public void run() {
-        final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET);
+        final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET)
+                .timeout(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
         final Authentication.Result currentAuthentication = authentication;
         if (currentAuthentication != null) {
             currentAuthentication.apply(request);

@@ -82,6 +82,7 @@ import com.google.gson.stream.JsonWriter;
 public class SensiboAccountHandler extends BaseBridgeHandler {
     private static final int MIN_TIME_BETWEEEN_MODEL_UPDATES_MS = 30_000;
     private static final int SECONDS_IN_MINUTE = 60;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     public static String API_ENDPOINT = "https://home.sensibo.com/api";
     private final Logger logger = LoggerFactory.getLogger(SensiboAccountHandler.class);
     private final HttpClient httpClient;
@@ -275,6 +276,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     private Request buildRequest(final AbstractRequest req) {
         Request request = httpClient.newRequest(API_ENDPOINT + req.getRequestUrl()).param("apiKey", config.apiKey)
                 .method(req.getMethod());
+        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         if (!req.getMethod().contentEquals(HttpMethod.GET.asString())) { // POST, PATCH
             final String reqJson = gson.toJson(req);

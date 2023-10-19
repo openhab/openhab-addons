@@ -17,6 +17,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,6 +45,7 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class MieleGatewayCommunicationController {
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final URI uri;
     private final Random rand = new Random();
@@ -83,6 +85,7 @@ public class MieleGatewayCommunicationController {
 
         String requestBody = requestBodyAsJson.toString();
         Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                 .content(new StringContentProvider(requestBody), "application/json");
 
         String responseData = null;
