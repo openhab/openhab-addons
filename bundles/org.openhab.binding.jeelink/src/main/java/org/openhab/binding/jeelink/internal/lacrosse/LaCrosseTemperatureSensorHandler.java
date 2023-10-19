@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
 import org.openhab.binding.jeelink.internal.RollingAveragePublisher;
 import org.openhab.binding.jeelink.internal.RollingReadingAverage;
 import org.openhab.binding.jeelink.internal.config.LaCrosseTemperatureSensorConfig;
-import org.openhab.binding.jeelink.internal.util.StringUtils;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -38,6 +38,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,8 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                         missingChannels.add(ChannelBuilder
                                 .create(new ChannelUID(getThing().getUID(), channelName + idSuffix), "Number")
                                 .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(), channelName))
-                                .withLabel(StringUtils.capitalize(channelName + labelSuffix)).build());
+                                .withLabel(Objects.requireNonNull(StringUtils.capitalize(channelName + labelSuffix)))
+                                .build());
                     }
                 }
                 missingChannels.addAll(getThing().getChannels());
