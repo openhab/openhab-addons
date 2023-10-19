@@ -5,10 +5,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="speedtest">
-		<label>Speedtest Binding</label>
-		<description>Binding for Ookla Speedtest (https://www.speedtest.net/)</description>
+		<label>Ookla Speedtest</label>
+		<description>Ookla Speedtest (https://www.speedtest.net/)</description>
 		<channels>
 			<channel id="server" typeId="server"/>
+			<channel id="timestamp" typeId="timestamp"/>
 
 			<channel id="pingJitter" typeId="pingJitter"/>
 			<channel id="pingLatency" typeId="pingLatency"/>
@@ -27,6 +28,7 @@
 			<channel id="interfaceExternalIp" typeId="interfaceExternalIp"/>
 
 			<channel id="resultUrl" typeId="resultUrl"/>
+			<channel id="resultImage" typeId="resultImage"/>
 
 			<channel id="triggerTest" typeId="triggerTest"/>
 		</channels>
@@ -41,6 +43,7 @@
 			<property name="Server List 8"></property>
 			<property name="Server List 9"></property>
 			<property name="Server List 10"></property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<config-description>
 			<parameter-group name="config-info">
@@ -77,6 +80,12 @@
 		<label>Server</label>
 		<description>The remote server that the Speedtest was run against</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="timestamp" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Timestamp of the Speedtest run</description>
+		<state readOnly="true" pattern="%1$tF %1$tH:%1$tM:%1$tS"></state>
 	</channel-type>
 	<channel-type id="pingJitter" advanced="true">
 		<item-type>Number:Time</item-type>
@@ -148,6 +157,12 @@
 		<item-type>String</item-type>
 		<label>Result URL</label>
 		<description>The URL to the Speedtest results in HTML on the Ookla webserver</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="resultImage">
+		<item-type>Image</item-type>
+		<label>Result Image</label>
+		<description>The Speedtest results as image</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="triggerTest" advanced="true">
