@@ -213,7 +213,7 @@ public class MBWebsocket {
                 sendAchnowledgeMessage(cm);
                 logger.trace("Vehicle assignments acknowledged {}", cm.getAllFields());
             } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
-                logger.debug("Command Status {}", pm.getApptwinCommandStatusUpdatesByVin().getAllFields());
+                logger.trace("Command Status {}", pm.getApptwinCommandStatusUpdatesByVin().getAllFields());
                 AppTwinCommandStatusUpdatesByVIN csubv = pm.getApptwinCommandStatusUpdatesByVin();
                 accountHandler.commandStatusUpdate(csubv.getUpdatesByVinMap());
                 AcknowledgeAppTwinCommandStatusUpdatesByVIN ack = AcknowledgeAppTwinCommandStatusUpdatesByVIN
@@ -231,7 +231,7 @@ public class MBWebsocket {
             }
 
         } catch (IOException e) {
-            logger.debug("IOEXception {}", e.getMessage());
+            logger.trace("IOEXception {}", e.getMessage());
         } catch (Error err) {
             logger.trace("Error caught {}", err.getMessage());
             StackTraceElement[] stack = err.getStackTrace();

@@ -1211,11 +1211,13 @@ public class VehicleHandler extends BaseThingHandler {
             }
             // Channel adaptions for items with configurable units
             String pattern = deliveredObserver.getPattern(csm.getGroup(), csm.getChannel());
-            if (pattern.startsWith("%") && change) {
-                logger.trace("Set Pattern for {}#{} to {}", channel, csm.getGroup(), pattern);
-                mmdsdp.setStatePattern(cuid, pattern);
-            } else {
-                handleComplexTripPattern(channel, pattern);
+            if (pattern != null) {
+                if (pattern.startsWith("%") && change) {
+                    logger.trace("Set Pattern for {}#{} to {}", channel, csm.getGroup(), pattern);
+                    mmdsdp.setStatePattern(cuid, pattern);
+                } else {
+                    handleComplexTripPattern(channel, pattern);
+                }
             }
             unitStorage.put(channel, deliveredObserver);
         }
