@@ -76,7 +76,8 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | Channel                  | Type    | Description                                                                                   |
 |--------------------------|---------|-----------------------------------------------------------------------------------------------|
 | partitionLabel           | String  | Label of partition inside Paradox configuration                                               |
-| state                    | String  |State of partition (armed, disarmed, in alarm)                                                 |
+| state                    | String  | Calculated overall state of the partition (Armed, Disarmed, In Alarm)                         |
+| detailedState            | String  | Calculated detailed state of the partition based on partition state bits (see below table for possible values)             |
 | additionalState          | String  | This used to be a channel where all different states were consolidated as semi-colon separated string. With implementation of each state as channel additional states should be no longer used. (deprecated channel)                             |
 | readyToArm               | Switch  | Partition is Ready to arm                                                                     |
 | inExitDelay              | Switch  | Partition is in Exit delay                                                                    |
@@ -94,6 +95,13 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | inhibitReady             | Switch  | Partition is in state Inhibit Ready                                                           |
 | allZonesClosed           | Contact | All zones in partition are currently closed                                                   |
 | command                  | String  | Command to be send to partition. Can be (ARM, DISARM, FORCE_ARM, INSTANT_ARM, STAY_ARM, BEEP) |
+
+### Partition detailed state possible values:
+| Overall state value      | Detailed state value (depending on the sub-state)                                            |
+|--------------------------|----------------------------------------------------------------------------------------------|
+| InAlarm                  | Silent Alarm, Audible Alarm, Fire Alarm, In Alarm (if none of the first three)               |
+| Armed                    | Away Armed, Stay Armed, NoEntry Armed, Armed (if none of the first three)                    |
+| Disarmed                 | Disarmed                                                                                     |
 
 ### Zone channels:
 
