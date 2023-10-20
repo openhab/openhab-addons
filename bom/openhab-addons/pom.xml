@@ -2141,6 +2141,11 @@
       <artifactId>org.openhab.voice.watsonstt</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.misc.addonsuggestionfinder</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
 </project>
