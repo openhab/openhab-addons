@@ -12,12 +12,12 @@ In case the parsed information that comes with the binding out of the box differ
 
 ## Supported Things
 
-Note: Channels may vary depending on the invertor type and the availability of information for parsing the raw data. 
-If you're missing a channel this means that it's not supported for your inverter type.
-
 | Thing                  | Thing Type | Description                                                                         |
 |------------------------|------------|-------------------------------------------------------------------------------------|
 | local-connect-inverter | Thing      | This is model representation of inverter with all the data available as a channels  |
+
+Note: Channels may vary depending on the inverter type and the availability of information for parsing the raw data. 
+If you're missing a channel this means that it's not supported for your inverter type.
 
 ## Thing Configuration
 
@@ -47,9 +47,9 @@ If you're missing a channel this means that it's not supported for your inverter
 | inverter-voltage-phase1         | Number:ElectricPotential   | The output voltage of phase 1 of the inverter [V]              |
 | inverter-voltage-phase2         | Number:ElectricPotential   | The output voltage of phase 2 of the inverter [V]              |
 | inverter-voltage-phase3         | Number:ElectricPotential   | The output voltage of phase 3 of the inverter [V]              |
-| inverter-frequency-phase1       | Number:Frequency           | The frequency of phase 1 the electricity of the inverter [Hz]  |
-| inverter-frequency-phase2       | Number:Frequency           | The frequency of phase 2 the electricity of the inverter [Hz]  |
-| inverter-frequency-phase3       | Number:Frequency           | The frequency of phase 3 the electricity of the inverter [Hz]  |
+| inverter-frequency-phase1       | Number:Frequency           | The frequency of phase 1 of the inverter [Hz]                  |
+| inverter-frequency-phase2       | Number:Frequency           | The frequency of phase 2 of the inverter [Hz]                  |
+| inverter-frequency-phase3       | Number:Frequency           | The frequency of phase 3 of the inverter [Hz]                  |
 
 ### Photovoltaic Panels Production Channels
 
@@ -92,17 +92,17 @@ If you're missing a channel this means that it's not supported for your inverter
 | Channel                          | Type                       | Description                                               |
 |----------------------------------|----------------------------|-----------------------------------------------------------|
 | power-usage                      | Number:Power               | Current power usage / consumption of the building [W]     |
-| total-energy                     | Number:Power               | Total energy output from the inverter [W]                 |
-| total-battery-discharge-energy   | Number:Energy              | Total energy from the battery [KWh]                       |
-| total-battery-charge-energy      | Number:Energy              | Total energy to the battery [KWh]                         |
-| total-pv-energy                  | Number:Energy              | Total energy from the PV [KWh]                            |
-| total-consumption                | Number:Energy              | Total energy consumed for the building [KWh]              |
-| total-feed-in-energy             | Number:Energy              | Total energy consumed from the electricity provider [KWh] |
-| today-energy                     | Number:Energy              | Energy output from the inverter for the day [KWh]         |
-| today-battery-discharge-energy   | Number:Energy              | Total energy from the battery output for the day [KWh]    |
-| today-battery-charge-energy      | Number:Energy              | Total energy charged to the battery for the day [KWh]     |
-| today-feed-in-energy             | Number:Energy              | Total energy charged to the battery for the day [KWh]     |
-| today-consumption                | Number:Energy              | Total energy consumed for the day [KWh]                   |
+| total-energy                     | Number:Energy              | Total energy output from the inverter [kWh]               |
+| total-battery-discharge-energy   | Number:Energy              | Total energy from the battery [kWh]                       |
+| total-battery-charge-energy      | Number:Energy              | Total energy to the battery [kWh]                         |
+| total-pv-energy                  | Number:Energy              | Total energy from the PV [kWh]                            |
+| total-consumption                | Number:Energy              | Total energy consumed for the building [kWh]              |
+| total-feed-in-energy             | Number:Energy              | Total energy consumed from the electricity provider [kWh] |
+| today-energy                     | Number:Energy              | Energy output from the inverter for the day [kWh]         |
+| today-battery-discharge-energy   | Number:Energy              | Total energy from the battery output for the day [kWh]    |
+| today-battery-charge-energy      | Number:Energy              | Total energy charged to the battery for the day [kWh]     |
+| today-feed-in-energy             | Number:Energy              | Total energy charged to the battery for the day [kWh]     |
+| today-consumption                | Number:Energy              | Total energy consumed for the day [kWh]                   |
 
 ### Properties
 
