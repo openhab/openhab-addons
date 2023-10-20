@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -62,7 +63,8 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
         NetworkOceanicBindingConfiguration config = getConfigAs(NetworkOceanicBindingConfiguration.class);
 
         try {
-            socket = new Socket(config.ipAddress, config.portNumber);
+            this.socket = new Socket(config.ipAddress, config.portNumber);
+            Socket socket = this.socket;
             if (socket != null) {
                 socket.setSoTimeout(REQUEST_TIMEOUT);
                 outputStream = socket.getOutputStream();
@@ -86,7 +88,7 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
     @Override
     public void dispose() {
         NetworkOceanicBindingConfiguration config = getConfigAs(NetworkOceanicBindingConfiguration.class);
-
+        Socket socket = this.socket;
         if (socket != null) {
             try {
                 socket.close();
@@ -94,7 +96,7 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                 logger.error("An exception occurred while disconnecting to host {}:{} : '{}'", config.ipAddress,
                         config.portNumber, e.getMessage());
             } finally {
-                socket = null;
+                this.socket = null;
                 outputStream = null;
                 inputStream = null;
             }
@@ -186,7 +188,7 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                                     if (index > 0) {
                                         line = new String(Arrays.copyOf(dataBuffer, index));
                                         logger.debug("Received response '{}'", line);
-                                        line = StringUtils.chomp(line);
+                                        line = Objects.requireNonNull(StringUtils.chomp(line));
                                         line = line.replace(",", ".");
                                         line = line.trim();
                                         index = 0;

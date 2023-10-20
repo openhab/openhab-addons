@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.TooManyListenersException;
 import java.util.stream.Collectors;
 
@@ -272,7 +273,8 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                                         logger.trace("The resulting line is '{}'",
                                                 new String(Arrays.copyOf(dataBuffer, index)));
                                     }
-                                    line = StringUtils.chomp(new String(Arrays.copyOf(dataBuffer, index)));
+                                    line = Objects.requireNonNull(
+                                            StringUtils.chomp(new String(Arrays.copyOf(dataBuffer, index))));
                                     line = line.replace(",", ".");
                                     line = line.trim();
                                     index = 0;
