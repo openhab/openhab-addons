@@ -6,8 +6,7 @@ This binding connects to [Kermi x-center controller](https://www.kermi.com/en/de
 
 Current support is developed and tested on 
 
-* a franchised version of the Kermi heatpump, namely the
-[Heizbösch MOZART13AC-RW60](https://www.boesch.at/produkte/heizen/waermepumpe/luft/modulierende-luft-wasser-waermepumpe-mozart-aussenaufstellung~495589) heatpump manager version  _1.6.0.118_ .
+* a franchised version of the Kermi heatpump, namely the [Heizbösch MOZART13AC-RW60](https://www.boesch.at/produkte/heizen/waermepumpe/luft/modulierende-luft-wasser-waermepumpe-mozart-aussenaufstellung~495589) heatpump manager version  _1.6.0.118_ .
 
 No official documentation could be found or gathered. This plug-in is based
 on reverse engineering the protocol.
@@ -61,6 +60,19 @@ Number:Temperature Outside_temperature {channel="kermi:room-heating:heatpumpbrid
 Number:Power Current_Power_Inverter {channel="kermi:heatpump:heatpumpbridge:heatpump:Rubin_CurrentPowerInverter"}
 ```
 
+# Changelog
+
+20.10.23 
+* Support numeric values for datapointType = 0
+* Support string values for datapointType = 3
+* Support string values for datapointType = 4
+
 # ToDo / Future Tasks
 
-* Support `DatapointType==0` and `DatapointType>2`
+* Change default query time, resemble webinterface behaviour (every 10 seconds to GetFavorites)
+* Support channels for bridge
+* Somehow add DatapointConfigId to channel, seems not supported
+* Collection of statistics providing virtual channels
+    * 24/h power consumption (all, heating, drinking-water)
+    * number of cycles (all, heating, drinking-water)
+    * time between cycles

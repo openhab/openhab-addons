@@ -22,12 +22,16 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import tech.units.indriya.unit.Units;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 public class KermiBaseThingHandlerUtil {
 
     public ChannelTypeUID determineChannelTypeUID(Config datapointConfig) {
         switch (datapointConfig.getDatapointType()) {
+            case 0:
+                // enumeration values, there should be a specific item-type for each
+                // of these channels, we simply return the numeric value by now
+                return KermiBindingConstants.CHANNEL_TYPE_NUMBER;
             case 1:
                 Unit<?> unit = KermiSiteInfoUtil.determineUnitByString(datapointConfig.getUnit());
                 if (Units.WATT.equals(unit)) {
@@ -38,6 +42,11 @@ public class KermiBaseThingHandlerUtil {
                 return KermiBindingConstants.CHANNEL_TYPE_NUMBER;
             case 2:
                 return KermiBindingConstants.CHANNEL_TYPE_ONOFF;
+            case 3:
+                return KermiBindingConstants.CHANNEL_TYPE_STRING;
+            case 4:
+                // time value?
+                return KermiBindingConstants.CHANNEL_TYPE_STRING;
             default:
                 break;
         }

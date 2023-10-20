@@ -42,6 +42,7 @@ public class KermiBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_POWER = new ChannelTypeUID(BINDING_ID, "power");
     public static final ChannelTypeUID CHANNEL_TYPE_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
     public static final ChannelTypeUID CHANNEL_TYPE_ONOFF = new ChannelTypeUID(BINDING_ID, "onoff");
+    public static final ChannelTypeUID CHANNEL_TYPE_STRING = new ChannelTypeUID(BINDING_ID, "string");
 
     // Device Constants
     public static final String DEVICE_ID_HEATPUMP_MANAGER = "00000000-0000-0000-0000-000000000000";

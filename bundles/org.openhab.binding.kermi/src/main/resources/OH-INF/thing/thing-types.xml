@@ -86,4 +86,9 @@
 		<label>Switch</label>
 	</channel-type>
 
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String</label>
+	</channel-type>
+
 </thing:thing-descriptions>
