@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
@@ -34,6 +35,7 @@ import org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeBinding
 import org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeDevice;
 import org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeDeviceException;
 import org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeDeviceReadException;
+import org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeHandlerFactory;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -46,6 +48,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.tananaev.adblib.AdbCrypto;
 
 /**
  * The {@link AndroidDebugBridgeDiscoveryService} discover Android ADB Instances in the network.
@@ -62,17 +66,25 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     public static final int MAX_RETRIES = 2;
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDiscoveryService.class);
     private final ConfigurationAdmin admin;
+    private final AndroidDebugBridgeHandlerFactory handlerFactory;
     private boolean discoveryRunning = false;
 
     @Activate
-    public AndroidDebugBridgeDiscoveryService(final @Reference ConfigurationAdmin admin) {
+    public AndroidDebugBridgeDiscoveryService(final @Reference AndroidDebugBridgeHandlerFactory handlerFactory,
+            final @Reference ConfigurationAdmin admin) {
         super(SUPPORTED_THING_TYPES, TIMEOUT_MS, false);
         this.admin = admin;
+        this.handlerFactory = handlerFactory;
     }
 
     @Override
     protected void startScan() {
         logger.debug("scan started: searching android devices");
+        var adbCrypto = handlerFactory.getAdbCrypto();
+        if (adbCrypto == null) {
+            logger.warn("Adb not loaded restart the binding");
+            return;
+        }
         discoveryRunning = true;
         Enumeration<NetworkInterface> nets;
         AndroidDebugBridgeBindingConfiguration configuration = getConfig();
@@ -104,9 +116,9 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                             if (currentAddress.isReachable(configuration.discoveryReachableMs)) {
                                 logger.debug("Reachable ip: {}", currentIp);
                                 int retries = 0;
-                                while (retries < MAX_RETRIES) {
+                                while (true) {
                                     try {
-                                        discoverWithADB(currentIp, configuration.discoveryPort,
+                                        discoverWithADB(adbCrypto, currentIp, configuration.discoveryPort,
                                                 new String(netint.getHardwareAddress()).toLowerCase());
                                     } catch (AndroidDebugBridgeDeviceReadException | TimeoutException e) {
                                         retries++;
@@ -131,15 +143,21 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void discoverWithADB(String ip, int port, String macAddress)
+    private void discoverWithADB(AdbCrypto adbCrypto, String ip, int port, String macAddress)
             throws InterruptedException, AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceReadException,
             TimeoutException, ExecutionException {
-        var device = new AndroidDebugBridgeDevice(scheduler);
+        var device = new AndroidDebugBridgeDevice(scheduler, adbCrypto);
         device.configureConnection(ip, port, 10);
         try {
             device.connect();
             logger.debug("connected adb at {}:{}", ip, port);
-            String serialNo = device.getSerialNo();
+            String serialNo = "";
+            try {
+                serialNo = device.getSerialNo();
+            } catch (AndroidDebugBridgeDeviceReadException readException) {
+                logger.debug("This device without serial no.");
+                serialNo = "unknown-" + UUID.randomUUID();
+            }
             String model = device.getModel();
             String androidVersion = device.getAndroidVersion();
             String brand = device.getBrand();
@@ -160,21 +178,22 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     private void onDiscoverResult(String serialNo, String ip, int port, String model, String androidVersion,
             String brand, String macAddress) {
         String friendlyName = String.format("%s (%s)", model, ip);
-        thingDiscovered(
-                DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ANDROID_DEVICE, macAddress.replace(":", ""))) //
-                        .withProperties(Map.of( //
-                                PARAMETER_IP, ip, //
-                                PARAMETER_PORT, port, //
-                                Thing.PROPERTY_MAC_ADDRESS, macAddress, //
-                                Thing.PROPERTY_SERIAL_NUMBER, serialNo, //
-                                Thing.PROPERTY_MODEL_ID, model, //
-                                Thing.PROPERTY_VENDOR, brand, //
-                                Thing.PROPERTY_FIRMWARE_VERSION, androidVersion //
-                        )) //
-                        .withLabel(friendlyName) //
-                        .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS) //
-                        .withTTL(DISCOVERY_RESULT_TTL_SEC) //
-                        .build());
+        thingDiscovered(DiscoveryResultBuilder
+                .create(new ThingUID(THING_TYPE_ANDROID_DEVICE,
+                        macAddress.replace(":", "").replaceAll("[^a-zA-Z0-9]", ""))) //
+                .withProperties(Map.of( //
+                        PARAMETER_IP, ip, //
+                        PARAMETER_PORT, port, //
+                        Thing.PROPERTY_MAC_ADDRESS, macAddress, //
+                        Thing.PROPERTY_SERIAL_NUMBER, serialNo, //
+                        Thing.PROPERTY_MODEL_ID, model, //
+                        Thing.PROPERTY_VENDOR, brand, //
+                        Thing.PROPERTY_FIRMWARE_VERSION, androidVersion //
+                )) //
+                .withLabel(friendlyName) //
+                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS) //
+                .withTTL(DISCOVERY_RESULT_TTL_SEC) //
+                .build());
     }
 
     private @Nullable AndroidDebugBridgeBindingConfiguration getConfig() {

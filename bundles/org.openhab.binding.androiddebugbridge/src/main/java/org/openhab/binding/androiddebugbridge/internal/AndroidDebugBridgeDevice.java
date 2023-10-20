@@ -13,19 +13,14 @@
 package org.openhab.binding.androiddebugbridge.internal;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -40,11 +35,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tananaev.adblib.AdbBase64;
 import com.tananaev.adblib.AdbConnection;
 import com.tananaev.adblib.AdbCrypto;
 import com.tananaev.adblib.AdbStream;
@@ -57,7 +50,6 @@ import com.tananaev.adblib.AdbStream;
 @NonNullByDefault
 public class AndroidDebugBridgeDevice {
     public static final int ANDROID_MEDIA_STREAM = 3;
-    private static final String ADB_FOLDER = OpenHAB.getUserDataFolder() + File.separator + ".adb";
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
     private static final Pattern VOLUME_PATTERN = Pattern
             .compile("volume is (?<current>\\d.*) in range \\[(?<min>\\d.*)\\.\\.(?<max>\\d.*)]");
@@ -74,21 +66,7 @@ public class AndroidDebugBridgeDevice {
 
     private static final Pattern SECURE_SHELL_INPUT_PATTERN = Pattern.compile("^[^\\|\\&;\\\"]+$");
 
-    private static @Nullable AdbCrypto adbCrypto;
-
-    static {
-        var logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
-        try {
-            File directory = new File(ADB_FOLDER);
-            if (!directory.exists()) {
-                directory.mkdir();
-            }
-            adbCrypto = loadKeyPair(ADB_FOLDER + File.separator + "adb_pub.key",
-                    ADB_FOLDER + File.separator + "adb.key");
-        } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
-            logger.warn("Unable to setup adb keys: {}", e.getMessage());
-        }
-    }
+    private final AdbCrypto adbCrypto;
 
     private final ScheduledExecutorService scheduler;
     private final ReentrantLock commandLock = new ReentrantLock();
@@ -110,7 +88,8 @@ public class AndroidDebugBridgeDevice {
     private int deviceMaxVolume = 25;
     private String volumeSettingKey = "volume_music_hdmi";
 
-    public AndroidDebugBridgeDevice(ScheduledExecutorService scheduler) {
+    public AndroidDebugBridgeDevice(ScheduledExecutorService scheduler, @Nullable AdbCrypto adbCrypto) {
+        this.adbCrypto = adbCrypto;
         this.scheduler = scheduler;
     }
 
@@ -791,32 +770,6 @@ public class AndroidDebugBridgeDevice {
             }
             commandLock.unlock();
         }
-    }
-
-    private static AdbBase64 getBase64Impl() {
-        Charset asciiCharset = Charset.forName("ASCII");
-        return bytes -> new String(Base64.getEncoder().encode(bytes), asciiCharset);
-    }
-
-    private static AdbCrypto loadKeyPair(String pubKeyFile, String privKeyFile)
-            throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
-        File pub = new File(pubKeyFile);
-        File priv = new File(privKeyFile);
-        AdbCrypto c = null;
-        // load key pair
-        if (pub.exists() && priv.exists()) {
-            try {
-                c = AdbCrypto.loadAdbKeyPair(getBase64Impl(), priv, pub);
-            } catch (IOException ignored) {
-                // Keys don't exits
-            }
-        }
-        if (c == null) {
-            // generate key pair
-            c = AdbCrypto.generateAdbKeyPair(getBase64Impl());
-            c.saveAdbKeyPair(priv, pub);
-        }
-        return c;
     }
 
     public void disconnect() {
