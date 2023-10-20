@@ -37,6 +37,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -167,8 +168,8 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
                 logger.trace("'{}'", stringParser);
 
                 // Due to Belkins bad response formatting, we need to run this twice.
-                stringParser = unescapeXml(stringParser);
-                stringParser = unescapeXml(stringParser);
+                stringParser = StringUtils.unEscapeXml(stringParser);
+                stringParser = StringUtils.unEscapeXml(stringParser);
                 logger.trace("Maker response '{}' for device '{}' received", stringParser, getThing().getUID());
 
                 stringParser = "<data>" + stringParser + "</data>";

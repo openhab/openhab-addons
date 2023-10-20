@@ -19,6 +19,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +38,7 @@ import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.CharacterData;
@@ -146,7 +148,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
                 try {
                     String stringParser = substringBetween(endDeviceRequest, "<DeviceLists>", "</DeviceLists>");
 
-                    stringParser = unescapeXml(stringParser);
+                    stringParser = Objects.requireNonNull(StringUtils.unEscapeXml(stringParser));
 
                     // check if there are already paired devices with WeMo Link
                     if ("0".equals(stringParser)) {

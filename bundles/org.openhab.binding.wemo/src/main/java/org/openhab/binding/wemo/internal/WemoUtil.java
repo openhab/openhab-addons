@@ -12,11 +12,6 @@
  */
 package org.openhab.binding.wemo.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.dom.CharacterData;
@@ -50,84 +45,6 @@ public class WemoUtil {
             }
         }
         return "";
-    }
-
-    public static String unescape(final String text) {
-        StringBuilder result = new StringBuilder(text.length());
-        int i = 0;
-        int n = text.length();
-        while (i < n) {
-            char charAt = text.charAt(i);
-            if (charAt != '&') {
-                result.append(charAt);
-                i++;
-            } else {
-                if (text.startsWith("&amp;", i)) {
-                    result.append('&');
-                    i += 5;
-                } else if (text.startsWith("&apos;", i)) {
-                    result.append('\'');
-                    i += 6;
-                } else if (text.startsWith("&quot;", i)) {
-                    result.append('"');
-                    i += 6;
-                } else if (text.startsWith("&lt;", i)) {
-                    result.append('<');
-                    i += 4;
-                } else if (text.startsWith("&gt;", i)) {
-                    result.append('>');
-                    i += 4;
-                } else {
-                    i++;
-                }
-            }
-        }
-        return result.toString();
-    }
-
-    public static String unescapeXml(final String xml) {
-        Pattern xmlEntityRegex = Pattern.compile("&(#?)([^;]+);");
-        // Unfortunately, Matcher requires a StringBuffer instead of a StringBuilder
-        StringBuffer unescapedOutput = new StringBuffer(xml.length());
-
-        Matcher m = xmlEntityRegex.matcher(xml);
-        Map<String, String> builtinEntities = null;
-        String entity;
-        String hashmark;
-        String ent;
-        int code;
-        while (m.find()) {
-            ent = m.group(2);
-            hashmark = m.group(1);
-            if ((hashmark != null) && (hashmark.length() > 0)) {
-                code = Integer.parseInt(ent);
-                entity = Character.toString((char) code);
-            } else {
-                // must be a non-numerical entity
-                if (builtinEntities == null) {
-                    builtinEntities = buildBuiltinXMLEntityMap();
-                }
-                entity = builtinEntities.get(ent);
-                if (entity == null) {
-                    // not a known entity - ignore it
-                    entity = "&" + ent + ';';
-                }
-            }
-            m.appendReplacement(unescapedOutput, entity);
-        }
-        m.appendTail(unescapedOutput);
-
-        return unescapedOutput.toString();
-    }
-
-    private static Map<String, String> buildBuiltinXMLEntityMap() {
-        Map<String, String> entities = new HashMap<String, String>(10);
-        entities.put("lt", "<");
-        entities.put("gt", ">");
-        entities.put("amp", "&");
-        entities.put("apos", "'");
-        entities.put("quot", "\"");
-        return entities;
     }
 
     public static String createBinaryStateContent(boolean binaryState) {

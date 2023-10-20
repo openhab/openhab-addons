@@ -36,6 +36,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -302,7 +303,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
             String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-            wemoCallResponse = unescapeXml(wemoCallResponse);
+            wemoCallResponse = StringUtils.unEscapeXml(wemoCallResponse);
             String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
             logger.trace("wemoNewLightState = {}", response);
             String[] splitResponse = response.split(",");
