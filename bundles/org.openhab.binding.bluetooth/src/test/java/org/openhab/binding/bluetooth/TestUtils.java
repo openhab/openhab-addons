@@ -13,8 +13,8 @@
 package org.openhab.binding.bluetooth;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.bluetooth.util.StringUtil;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.StringUtils;
 
 /**
  * Contains general utilities used for bluetooth tests
@@ -27,14 +27,14 @@ public class TestUtils {
     public static BluetoothAddress randomAddress() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 5; i++) {
-            builder.append(StringUtil.randomHex(2));
+            builder.append(StringUtils.getRandomHex(2));
             builder.append(":");
         }
-        builder.append(StringUtil.randomHex(2));
+        builder.append(StringUtils.getRandomHex(2));
         return new BluetoothAddress(builder.toString());
     }
 
     public static ThingUID randomThingUID() {
-        return new ThingUID(BluetoothBindingConstants.BINDING_ID, StringUtil.randomAlphabetic(6));
+        return new ThingUID(BluetoothBindingConstants.BINDING_ID, StringUtils.getRandomAlphabetic(6));
     }
 }
