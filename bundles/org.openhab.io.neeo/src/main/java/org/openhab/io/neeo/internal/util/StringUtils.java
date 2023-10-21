@@ -12,12 +12,9 @@
  */
 package org.openhab.io.neeo.internal.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link StringUtils} class defines some static string utility methods
@@ -27,13 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class StringUtils {
 
-    public static String[] split(@Nullable String input, String delimiter) {
-        if (input == null) {
-            return new String[0];
-        }
-        String[] splitted = input.split(delimiter);
-        List<String> list = new ArrayList<String>(Arrays.asList(splitted));
-        list.removeAll(Arrays.asList("", null));
-        return list.toArray(new String[0]);
+    public static String[] split(String input, String delimiter) {
+        return Arrays.stream(input.split(delimiter)).filter(str -> !str.isEmpty()).toArray(String[]::new);
     }
 }
