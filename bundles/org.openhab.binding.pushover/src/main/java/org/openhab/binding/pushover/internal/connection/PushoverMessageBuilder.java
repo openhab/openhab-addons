@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,7 @@ public class PushoverMessageBuilder {
     private static final String MESSAGE_KEY_PRIORITY = "priority";
     private static final String MESSAGE_KEY_RETRY = "retry";
     private static final String MESSAGE_KEY_EXPIRE = "expire";
+    private static final String MESSAGE_KEY_TTL = "ttl";
     private static final String MESSAGE_KEY_URL = "url";
     private static final String MESSAGE_KEY_URL_TITLE = "url_title";
     private static final String MESSAGE_KEY_SOUND = "sound";
@@ -79,6 +81,7 @@ public class PushoverMessageBuilder {
     private int priority = DEFAULT_PRIORITY;
     private int retry = 300;
     private int expire = 3600;
+    private Duration ttl = Duration.ZERO;
     private @Nullable String url;
     private @Nullable String urlTitle;
     private @Nullable String sound;
@@ -135,6 +138,11 @@ public class PushoverMessageBuilder {
         return this;
     }
 
+    public PushoverMessageBuilder withTTL(Duration ttl) {
+        this.ttl = ttl;
+        return this;
+    }
+
     public PushoverMessageBuilder withUrl(String url) {
         this.url = url;
         return this;
@@ -171,6 +179,7 @@ public class PushoverMessageBuilder {
     }
 
     public ContentProvider build() throws CommunicationException {
+        String message = this.message;
         if (message != null) {
             if (message.length() > MAX_MESSAGE_LENGTH) {
                 throw new IllegalArgumentException(String.format(
@@ -179,6 +188,7 @@ public class PushoverMessageBuilder {
             body.addFieldPart(MESSAGE_KEY_MESSAGE, new StringContentProvider(message), null);
         }
 
+        String title = this.title;
         if (title != null) {
             if (title.length() > MAX_TITLE_LENGTH) {
                 throw new IllegalArgumentException(String
@@ -187,6 +197,7 @@ public class PushoverMessageBuilder {
             body.addFieldPart(MESSAGE_KEY_TITLE, new StringContentProvider(title), null);
         }
 
+        String device = this.device;
         if (device != null) {
             if (device.length() > MAX_DEVICE_LENGTH) {
                 logger.warn("Skip 'device' as it is longer than {} characters. Got: {}.", MAX_DEVICE_LENGTH, device);
@@ -224,6 +235,14 @@ public class PushoverMessageBuilder {
             }
         }
 
+        if (!ttl.isZero()) {
+            if (priority == EMERGENCY_PRIORITY) {
+                logger.warn("TTL value of {} will be ignored for emergency priority.", ttl);
+            }
+            body.addFieldPart(MESSAGE_KEY_TTL, new StringContentProvider(String.valueOf(ttl.getSeconds())), null);
+        }
+
+        String url = this.url;
         if (url != null) {
             if (url.length() > MAX_URL_LENGTH) {
                 throw new IllegalArgumentException(String
@@ -231,6 +250,7 @@ public class PushoverMessageBuilder {
             }
             body.addFieldPart(MESSAGE_KEY_URL, new StringContentProvider(url), null);
 
+            String urlTitle = this.urlTitle;
             if (urlTitle != null) {
                 if (urlTitle.length() > MAX_URL_TITLE_LENGTH) {
                     throw new IllegalArgumentException(
@@ -245,9 +265,9 @@ public class PushoverMessageBuilder {
             body.addFieldPart(MESSAGE_KEY_SOUND, new StringContentProvider(sound), null);
         }
 
+        String attachment = this.attachment;
         if (attachment != null) {
-            String localAttachment = attachment;
-            if (localAttachment.startsWith("http")) { // support data HTTP(S) scheme
+            if (attachment.startsWith("http")) { // support data HTTP(S) scheme
                 RawType rawImage = HttpUtil.downloadImage(attachment, 10000);
                 if (rawImage == null) {
                     throw new IllegalArgumentException(
@@ -255,9 +275,9 @@ public class PushoverMessageBuilder {
                 }
                 addFilePart(createTempFile(rawImage.getBytes()),
                         contentType == null ? rawImage.getMimeType() : contentType);
-            } else if (localAttachment.startsWith("data:")) { // support data URI scheme
+            } else if (attachment.startsWith("data:")) { // support data URI scheme
                 try {
-                    RawType rawImage = RawType.valueOf(localAttachment);
+                    RawType rawImage = RawType.valueOf(attachment);
                     addFilePart(createTempFile(rawImage.getBytes()),
                             contentType == null ? rawImage.getMimeType() : contentType);
                 } catch (IllegalArgumentException e) {
