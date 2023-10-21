@@ -21,7 +21,7 @@ If you want to your addon to scan the user's system then you need to include add
 The following is an example for the discovery XML description for HP Printers.
 
 ```xml
-<addon:addon id="groovyscripting" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<addon:addon id="hpprinter" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
     xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
@@ -47,7 +47,7 @@ The following is an example for the discovery XML description for HP Printers.
 The following is an example for the discovery XML description for the Philips Hue bridge.
 
 ```xml
-<addon:addon id="groovyscripting" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<addon:addon id="hue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
     xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
