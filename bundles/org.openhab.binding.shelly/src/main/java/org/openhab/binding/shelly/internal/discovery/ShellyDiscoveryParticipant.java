@@ -13,10 +13,11 @@
 package org.openhab.binding.shelly.internal.discovery;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.substringBeforeLast;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -117,9 +118,9 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             Map<String, Object> properties = new TreeMap<>();
 
             name = service.getName().toLowerCase();
-            String[] hostAddresses = service.getHostAddresses();
+            Inet4Address[] hostAddresses = service.getInet4Addresses();
             if ((hostAddresses != null) && (hostAddresses.length > 0)) {
-                address = hostAddresses[0];
+                address = substringAfter(hostAddresses[0].toString(), "/");
             }
             if (address.isEmpty()) {
                 logger.trace("{}: Shelly device discovered with empty IP address (service-name={})", name, service);
@@ -142,12 +143,11 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             config.password = bindingConfig.defaultPassword;
 
             boolean gen2 = "2".equals(service.getPropertyString("gen"));
+            ShellyApiInterface api = null;
             try {
-                ShellyApiInterface api = gen2 ? new Shelly2ApiRpc(name, config, httpClient)
-                        : new Shelly1HttpApi(name, config, httpClient);
+                api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
                 api.initialize();
                 profile = api.getDeviceProfile(thingType);
-                api.close();
                 logger.debug("{}: Shelly settings : {}", name, profile.settingsJson);
                 deviceName = profile.name;
                 model = profile.deviceType;
@@ -170,6 +170,10 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 }
             } catch (IllegalArgumentException e) { // maybe some format description was buggy
                 logger.debug("{}: Discovery failed!", name, e);
+            } finally {
+                if (api != null) {
+                    api.close();
+                }
             }
 
             if (thingUID != null) {
