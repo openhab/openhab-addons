@@ -125,7 +125,7 @@ transform/ekey_multi_action.map
 ```text
 1=open
 2=refuseunrecognizedfinger
-3=efusetimeslotA
+3=refusetimeslotA
 4=refusetimeslotB
 5=refusedisabled
 6=refuseOnlyalwaysusers
