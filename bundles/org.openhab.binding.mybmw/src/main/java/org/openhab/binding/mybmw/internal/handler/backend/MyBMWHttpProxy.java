@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * https://customer.bmwgroup.com/one/app/oauth.js
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
  * @author Martin Grassl - refactoring
  * @author Mark Herwege - extended log anonymization
  */

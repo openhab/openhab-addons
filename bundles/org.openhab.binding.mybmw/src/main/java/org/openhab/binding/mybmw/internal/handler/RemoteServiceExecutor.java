@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @see https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/remote_services.py
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
  * @author Martin Grassl - rename and refactor for v2
  */
 @NonNullByDefault

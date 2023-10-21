@@ -170,7 +170,7 @@ import org.slf4j.LoggerFactory;
  * updated
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send charge profile
+ * @author Norbert Truchsess - edit and send charge profile
  * @author Martin Grassl - refactoring, merge with VehicleChannelHandler
  * @author Mark Herwege - refactoring, V2 API charging
  */

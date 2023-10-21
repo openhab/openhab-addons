@@ -16,7 +16,7 @@ package org.openhab.binding.mybmw.internal.dto.charge;
  * The {@link Time} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
  * @author Martin Grassl - refactored to Java Bean
  */
 public class Time {
