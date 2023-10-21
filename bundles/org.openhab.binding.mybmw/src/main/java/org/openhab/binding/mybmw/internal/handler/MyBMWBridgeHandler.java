@@ -95,12 +95,23 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
             // test-jar profile
             String environment = System.getenv(ENVIRONMENT);
 
+            if (environment == null) {
+                environment = "";
+            }
+
+            createMyBmwProxy(config, environment);
+            initializerJob = Optional.of(scheduler.schedule(this::discoverVehicles, 2, TimeUnit.SECONDS));
+        }
+    }
+
+    private synchronized void createMyBmwProxy(MyBMWBridgeConfiguration config, String environment) {
+        if (!myBmwProxy.isPresent()) {
             if (!(TEST.equals(environment) && TESTUSER.equals(config.userName))) {
                 myBmwProxy = Optional.of(new MyBMWHttpProxy(httpClientFactory, config));
             } else {
                 myBmwProxy = Optional.of(new MyBMWFileProxy(httpClientFactory, config));
             }
-            initializerJob = Optional.of(scheduler.schedule(this::discoverVehicles, 2, TimeUnit.SECONDS));
+            logger.trace("xxxMyBMWBridgeHandler proxy set");
         }
     }
 
@@ -138,6 +149,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
 
     public Optional<MyBMWProxy> getMyBmwProxy() {
         logger.trace("xxxMyBMWBridgeHandler.getProxy");
+        createMyBmwProxy(getConfigAs(MyBMWBridgeConfiguration.class), ENVIRONMENT);
         return myBmwProxy;
     }
 }

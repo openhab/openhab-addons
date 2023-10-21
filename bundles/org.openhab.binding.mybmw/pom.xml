@@ -25,6 +25,9 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <bnd.importpackage>javax.measure.*;version="[2.1,3)"</bnd.importpackage>
+  </properties>
 
   <profiles>
     <profile>

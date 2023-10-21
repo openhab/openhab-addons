@@ -79,7 +79,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
     private final String remoteStatusUrl;
 
     public MyBMWHttpProxy(HttpClientFactory httpClientFactory, MyBMWBridgeConfiguration bridgeConfiguration) {
-        logger.trace("MyBMWHttpProxy - initialize");
+        logger.trace("xxxMyBMWHttpProxy - initialize");
         httpClient = httpClientFactory.getCommonHttpClient();
 
         myBMWTokenHandler = new MyBMWTokenController(bridgeConfiguration, httpClient);
@@ -94,6 +94,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         remoteCommandUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.region)
                 + BimmerConstants.API_REMOTE_SERVICE_BASE_URL;
         remoteStatusUrl = remoteCommandUrl + "eventStatus";
+        logger.trace("xxxMyBMWHttpProxy - ready");
     }
 
     @Override
