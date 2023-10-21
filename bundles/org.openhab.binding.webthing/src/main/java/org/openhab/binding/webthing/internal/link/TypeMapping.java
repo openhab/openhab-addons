@@ -20,9 +20,9 @@ import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.core.library.CoreItemFactory;
 
 /**
- * The {@link TypeMapping} class defines the mapping of Item types <-> WebThing Property types.
+ * The {@link TypeMapping} class defines the mapping of Item types {@literal <->} WebThing Property types.
  *
- * Please consider that changes of 'Item types <-> WebThing Property types' mapping will break the
+ * Please consider that changes of 'Item types {@literal <->} WebThing Property types' mapping will break the
  * compatibility to former releases
  *
  * @author Gregor Roth - Initial contribution

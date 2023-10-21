@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The implementation of {@link TransformationService} which transforms the input by XSLT.
  *
- * @author Thomas.Eichstaedt-Engelen
+ * @author Thomas.Eichstaedt-Engelen - Initial contribution
  */
 @NonNullByDefault
 @Component(property = { "openhab.transform=XSLT" })

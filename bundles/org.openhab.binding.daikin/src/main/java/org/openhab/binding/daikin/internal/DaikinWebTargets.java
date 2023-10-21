@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * Handles performing the actual HTTP requests for communicating with Daikin air conditioning units.
  *
  * @author Tim Waterhouse - Initial Contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Jimmy Tanagra - Add support for https and Daikin's uuid authentication
  *         Implement connection retry
  *

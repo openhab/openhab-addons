@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
  * other inputs are using the same way of navigating through menus. A menu on Yamaha AVRs
  * is hierarchically organised. Entries are divided into pages with 8 elements per page.
  *
- * The XML nodes <List_Control> and <List_Info> are used.
+ * The XML nodes {@code <List_Control>} and {@code <List_Info>} are used.
  *
  * In contrast to other protocol classes an object of this type will store state information,
  * because it caches the received XML information of the updateNavigationState(). This may change
@@ -88,7 +88,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate back
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void goBack() throws IOException, ReceivedMessageParseException {
@@ -98,7 +99,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate up
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void goUp() throws IOException, ReceivedMessageParseException {
@@ -108,7 +110,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate down
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void goDown() throws IOException, ReceivedMessageParseException {
@@ -118,7 +121,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate left. Not for all zones or functions available.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void goLeft() throws IOException, ReceivedMessageParseException {
@@ -128,7 +132,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate right. Not for all zones or functions available.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void goRight() throws IOException, ReceivedMessageParseException {
@@ -138,7 +143,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Select current item. Not for all zones or functions available.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void selectCurrentItem() throws IOException, ReceivedMessageParseException {
@@ -148,7 +154,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     /**
      * Navigate to root menu
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public boolean goToRoot() throws IOException, ReceivedMessageParseException {
@@ -270,7 +277,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
      * some time because it retries the request for up to MENU_MAX_WAITING_TIME or the menu state reports
      * "Ready", whatever comes first.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void update() throws IOException, ReceivedMessageParseException {

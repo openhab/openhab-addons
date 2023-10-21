@@ -54,10 +54,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * Constructor
      *
      * @param thing The thing passed by the HandlerFactory
+     * @param translationProvider
      * @param bindingConfig configuration of the binding
+     * @param thingTable
      * @param coapServer coap server instance
-     * @param localIP local IP of the openHAB host
-     * @param httpPort port of the openHAB HTTP API
+     * @param httpClient to connect to the openHAB HTTP API
      */
     public ShellyRelayHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,
@@ -304,8 +305,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     /**
      * Update Relay/Roller channels
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
      * @param status Last ShellySettingsStatus
      *
      * @throws ShellyApiException
@@ -348,8 +347,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     /**
      * Update LED channels
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
      * @param status Last ShellySettingsStatus
      */
     public boolean updateLed(ShellySettingsStatus status) {

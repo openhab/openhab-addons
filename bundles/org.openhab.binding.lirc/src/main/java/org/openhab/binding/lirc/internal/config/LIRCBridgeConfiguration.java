@@ -13,7 +13,7 @@
 package org.openhab.binding.lirc.internal.config;
 
 /**
- * Configuration class for {@link LIRCBridge} device.
+ * Configuration class for LIRCBridge device.
  *
  * @author Andrew Nagle - Initial contribution
  */

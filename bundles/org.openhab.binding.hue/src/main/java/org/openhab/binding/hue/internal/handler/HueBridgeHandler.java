@@ -799,7 +799,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
      * If there is a user name available, it attempts to re-authenticate. Otherwise new authentication credentials will
      * be requested from the bridge.
      *
-     * @param bridge the Hue Bridge the connection is not authorized
      * @return returns {@code true} if re-authentication was successful, {@code false} otherwise
      */
     public boolean onNotAuthenticated() {

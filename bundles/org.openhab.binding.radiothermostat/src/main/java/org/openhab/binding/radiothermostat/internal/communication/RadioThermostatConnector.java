@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class RadioThermostatConnector {
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatConnector.class);
 
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private static final String URL = "http://%s/%s";
 
     private final HttpClient httpClient;
@@ -81,7 +82,7 @@ public class RadioThermostatConnector {
      * Send an asynchronous http call to the thermostat, the response will be send to the
      * event listeners as a RadioThermostat event when it is finally received
      *
-     * @param resouce the url of the json resource on the thermostat
+     * @param resource the url of the json resource on the thermostat
      */
     public void getAsyncThermostatData(String resource) {
         httpClient.newRequest(buildRequestURL(resource)).method(GET).timeout(30, TimeUnit.SECONDS)
@@ -100,9 +101,9 @@ public class RadioThermostatConnector {
     /**
      * Sends a command to the thermostat
      *
-     * @param the JSON attribute key for the value to be updated
-     * @param the value to be updated in the thermostat
-     * @param the end point URI to use for the command
+     * @param cmdKey the JSON attribute key for the value to be updated
+     * @param cmdVal the value to be updated in the thermostat
+     * @param resource the end point URI to use for the command
      * @return the JSON response string from the thermostat
      */
     public String sendCommand(String cmdKey, @Nullable String cmdVal, String resource) {
@@ -112,10 +113,10 @@ public class RadioThermostatConnector {
     /**
      * Sends a command to the thermostat
      *
-     * @param the JSON attribute key for the value to be updated
-     * @param the value to be updated in the thermostat
-     * @param JSON string to send directly to the thermostat instead of a key/value pair
-     * @param the end point URI to use for the command
+     * @param cmdKey the JSON attribute key for the value to be updated
+     * @param cmdVal the value to be updated in the thermostat
+     * @param cmdJson JSON string to send directly to the thermostat instead of a key/value pair
+     * @param resource the end point URI to use for the command
      * @return the JSON response string from the thermostat
      */
     public String sendCommand(@Nullable String cmdKey, @Nullable String cmdVal, @Nullable String cmdJson,
@@ -124,7 +125,8 @@ public class RadioThermostatConnector {
         String postJson = cmdJson != null ? cmdJson : "{\"" + cmdKey + "\":" + cmdVal + "}";
 
         try {
-            Request request = httpClient.POST(buildRequestURL(resource));
+            Request request = httpClient.POST(buildRequestURL(resource)).timeout(REQUEST_TIMEOUT_MS,
+                    TimeUnit.MILLISECONDS);
             request.header(HttpHeader.ACCEPT, "text/plain");
             request.header(HttpHeader.CONTENT_TYPE, "text/plain");
             request.content(new StringContentProvider(postJson), "application/json");

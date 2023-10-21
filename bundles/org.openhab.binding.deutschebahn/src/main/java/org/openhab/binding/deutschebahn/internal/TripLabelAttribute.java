@@ -31,8 +31,8 @@ import org.openhab.core.types.UnDefType;
  * 
  * chapter "1.2.7 TripLabel" in Technical Interface Description for external Developers
  *
- * @see @see <a href="https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables">DB API
- *      Marketplace</a>
+ * See <a href="https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables">DB API
+ * Marketplace</a>
  * 
  * @author Sönke Küper - Initial contribution.
  * 

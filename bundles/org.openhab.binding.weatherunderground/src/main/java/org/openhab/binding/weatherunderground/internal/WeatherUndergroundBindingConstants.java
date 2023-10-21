@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link WeatherUndergroundBinding} class defines common constants, which are
+ * The {@link WeatherUndergroundBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Laurent Garnier - Initial contribution

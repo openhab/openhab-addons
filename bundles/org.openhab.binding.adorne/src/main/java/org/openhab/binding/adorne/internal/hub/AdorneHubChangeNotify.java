@@ -25,7 +25,7 @@ public interface AdorneHubChangeNotify {
     /**
      * Notify listener about state change of on/off and brightness state
      *
-     * @param zoneID zone ID for which change occurred
+     * @param zoneId zone ID for which change occurred
      * @param onOff new on/off state
      * @param brightness new brightness
      */

@@ -13,7 +13,6 @@
 package org.openhab.binding.neeo.internal.net;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +22,7 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.api.ContentResponse;
 
 /**
  * This class represents an {@link HttpRequest} response
@@ -47,24 +47,18 @@ public class HttpResponse {
     /**
      * Instantiates a new http response from the {@link Response}.
      *
-     * @param response the non-null response
+     * @param refreshResponse the non-null response
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    HttpResponse(Response response) throws IOException {
-        Objects.requireNonNull(response, "response cannot be null");
+    HttpResponse(ContentResponse refreshResponse) throws IOException {
+        Objects.requireNonNull(refreshResponse, "response cannot be null");
 
-        httpStatus = response.getStatus();
-        httpReason = response.getStatusInfo().getReasonPhrase();
+        httpStatus = refreshResponse.getStatus();
+        httpReason = refreshResponse.getReason();
+        contents = refreshResponse.getContent();
 
-        if (response.hasEntity()) {
-            InputStream is = response.readEntity(InputStream.class);
-            contents = is.readAllBytes();
-        } else {
-            contents = null;
-        }
-
-        for (String key : response.getHeaders().keySet()) {
-            headers.put(key, response.getHeaderString(key));
+        for (String key : refreshResponse.getHeaders().getFieldNamesCollection()) {
+            headers.put(key, refreshResponse.getHeaders().getField(key).toString());
         }
     }
 

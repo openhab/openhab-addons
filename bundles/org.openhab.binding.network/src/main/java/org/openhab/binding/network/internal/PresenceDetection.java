@@ -236,7 +236,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     /**
-     * Return the last seen value in milliseconds based on {@link System.currentTimeMillis()} or 0 if not seen yet.
+     * Return the last seen value in milliseconds based on {@link System#currentTimeMillis()} or 0 if not seen yet.
      */
     public long getLastSeen() {
         return lastSeenInMS;
