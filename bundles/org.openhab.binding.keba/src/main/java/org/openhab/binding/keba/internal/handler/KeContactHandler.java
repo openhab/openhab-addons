@@ -21,6 +21,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -237,7 +238,7 @@ public class KeContactHandler extends BaseThingHandler {
         }
 
         String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
-        response = StringUtils.chomp(response);
+        response = Objects.requireNonNull(StringUtils.chomp(response));
 
         if (response.contains("TCH-OK")) {
             // ignore confirmation messages which are not JSON
@@ -529,7 +530,7 @@ public class KeContactHandler extends BaseThingHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_MAX_PRESET_CURRENT: {
                     if (command instanceof QuantityType<?> quantityCommand) {
-                        QuantityType<?> value = quantityCommand.toUnit("mA");
+                        QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit("mA"));
 
                         transceiver.send("curr " + Math.min(Math.max(6000, value.intValue()), maxSystemCurrent), this);
                     }
@@ -548,7 +549,7 @@ public class KeContactHandler extends BaseThingHandler {
                         } else if (command == OnOffType.OFF) {
                             newValue = 6000;
                         } else if (command instanceof QuantityType<?> quantityCommand) {
-                            QuantityType<?> value = quantityCommand.toUnit("%");
+                            QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit("%"));
                             newValue = Math.round(6000 + (maxSystemCurrent - 6000) * value.doubleValue() / 100.0);
                         } else {
                             return;
@@ -595,7 +596,7 @@ public class KeContactHandler extends BaseThingHandler {
                 }
                 case CHANNEL_SETENERGY: {
                     if (command instanceof QuantityType<?> quantityCommand) {
-                        QuantityType<?> value = quantityCommand.toUnit(Units.WATT_HOUR);
+                        QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit(Units.WATT_HOUR));
                         transceiver.send(
                                 "setenergy " + Math.min(Math.max(0, Math.round(value.doubleValue() * 10.0)), 999999999),
                                 this);
