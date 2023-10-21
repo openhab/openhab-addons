@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class SenecHomeBindingConstants {
-    private static final String BINDING_ID = "senechome";
+    protected static final String BINDING_ID = "senechome";
     private static final String THING_BASE_ID = "senechome";
     public static final ThingTypeUID THING_TYPE_SENEC_HOME_BATTERY = new ThingTypeUID(BINDING_ID, THING_BASE_ID);
 

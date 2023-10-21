@@ -13,7 +13,6 @@
 package org.openhab.binding.senechome.internal;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -33,13 +32,13 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.MalformedJsonException;
 
 /**
  * The {@link SenecHomeApi} class configures http client and
  * performs status requests
  *
  * @author Steven Schwarznau - Initial contribution
+ * @author Robert Delbrück - Update for Senec API changes
  *
  */
 @NonNullByDefault
@@ -64,19 +63,16 @@ public class SenecHomeApi {
      * To receive new values, just modify the Json objects and add them to the thing channels
      *
      * @return Instance of SenecHomeResponse
-     * @throws MalformedURLException Configuration/URL is wrong
+     * @throws TimeoutException Communication failed (Timeout)
+     * @throws ExecutionException Communication failed
      * @throws IOException Communication failed
+     * @throws InterruptedException Communication failed (Interrupted)
+     * @throws JsonSyntaxException Received response has an invalid json syntax
      */
     public SenecHomeResponse getStatistics()
-            throws InterruptedException, TimeoutException, ExecutionException, IOException {
+            throws TimeoutException, ExecutionException, IOException, InterruptedException, JsonSyntaxException {
         String location = hostname + "/lala.cgi";
         logger.trace("sending request to: {}", location);
-
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.error("cannot connect", e);
-        }
 
         Request request = httpClient.newRequest(location);
         request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
@@ -93,8 +89,7 @@ public class SenecHomeApi {
                 logger.trace("Got unexpected response code {}", response.getStatus());
                 throw new IOException("Got unexpected response code " + response.getStatus());
             }
-        } catch (MalformedJsonException | JsonSyntaxException | InterruptedException | TimeoutException
-                | ExecutionException e) {
+        } catch (JsonSyntaxException | InterruptedException | TimeoutException | ExecutionException e) {
             String errorMessage = "\nlocation: " + location;
             errorMessage += "\nrequest: " + request.toString();
             errorMessage += "\nrequest.getHeaders: " + request.getHeaders();

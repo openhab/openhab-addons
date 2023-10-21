@@ -197,22 +197,6 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateQtyState(CHANNEL_SENEC_GRID_VOLTAGE_PH3, response.grid.currentGridVoltagePerPhase[2], 2, Units.VOLT);
             updateQtyState(CHANNEL_SENEC_GRID_FREQUENCY, response.grid.currentGridFrequency, 2, Units.HERTZ);
 
-            // updateQtyState(CHANNEL_SENEC_LIVE_BAT_CHARGE, response.statistics.liveBatCharge, 2, Units.KILOWATT_HOUR);
-            // updateQtyState(CHANNEL_SENEC_LIVE_BAT_DISCHARGE, response.statistics.liveBatDischarge, 2,
-            // Units.KILOWATT_HOUR);
-            // updateQtyState(CHANNEL_SENEC_LIVE_GRID_IMPORT, response.statistics.liveGridImport, 2,
-            // Units.KILOWATT_HOUR);
-            // updateQtyState(CHANNEL_SENEC_LIVE_GRID_EXPORT, response.statistics.liveGridExport, 2,
-            // Units.KILOWATT_HOUR);
-            // updateQtyState(CHANNEL_SENEC_LIVE_HOUSE_CONSUMPTION, response.statistics.liveHouseConsumption, 2,
-            // Units.KILOWATT_HOUR);
-            // updateQtyState(CHANNEL_SENEC_LIVE_POWER_GENERATOR, response.statistics.livePowerGenerator, 2,
-            // Units.KILOWATT_HOUR);
-            // if (response.statistics.liveWallboxEnergy != null) {
-            // updateQtyState(CHANNEL_SENEC_LIVE_ENERGY_WALLBOX1, response.statistics.liveWallboxEnergy[0], 2,
-            // Units.KILOWATT_HOUR, DIVISOR_ISO_TO_KILO);
-            // }
-
             if (response.battery.chargedEnergy != null) {
                 updateQtyState(CHANNEL_SENEC_CHARGED_ENERGY_PACK1, response.battery.chargedEnergy[0], 2,
                         Units.KILOWATT_HOUR, DIVISOR_MILLI_TO_KILO);
