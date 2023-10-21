@@ -29,7 +29,6 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -619,17 +618,6 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             this.oAuthService = oAuthService;
         }
         return oAuthService;
-    }
-
-    private static String randomString(int length) {
-        int low = 97; // a-z
-        int high = 122; // A-Z
-        StringBuilder sb = new StringBuilder(length);
-        Random random = new Random();
-        for (int i = 0; i < length; i++) {
-            sb.append((char) (low + (int) (random.nextFloat() * (high - low + 1))));
-        }
-        return sb.toString();
     }
 
     private String generateCodeVerifier() {
