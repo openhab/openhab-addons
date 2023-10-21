@@ -25,7 +25,7 @@ Examples: Lights, pool filters, wash machines, ...
 demo.things
 
 ```java
-Thing senechome:senechome:pvbattery [ hostname="192.168.0.128", refreshInterval=60, limitationTresholdValue=70, limitationDuration=60, usePlain=false ]
+Thing senechome:senechome:pvbattery [ hostname="192.168.0.128", refreshInterval=60, limitationTresholdValue=70, limitationDuration=60, useHttp=false ]
 ```
 
 If the thing goes online then the connection to the web interface is successful.

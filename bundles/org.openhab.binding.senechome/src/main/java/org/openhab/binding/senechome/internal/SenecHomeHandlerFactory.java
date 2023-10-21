@@ -24,9 +24,12 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SenecHomeHandlerFactory} is responsible for creating things and thing
@@ -37,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.senechome", service = ThingHandlerFactory.class)
 public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
-    public static final String BINDING_ID = "senechome";
+    private final Logger logger = LoggerFactory.getLogger(SenecHomeHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
             .of(SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY);
@@ -47,7 +50,7 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public SenecHomeHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         SslContextFactory.Client sslContextFactory = new SslContextFactory.Client(true); // Accept all certificates
-        this.httpClient = httpClientFactory.createHttpClient(BINDING_ID, sslContextFactory);
+        this.httpClient = httpClientFactory.createHttpClient(SenecHomeBindingConstants.BINDING_ID, sslContextFactory);
     }
 
     @Override
@@ -64,5 +67,27 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            logger.error("cannot start Jetty-Http-Client", e);
+        }
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.error("cannot stop Jetty-Http-Client", e);
+        }
     }
 }
