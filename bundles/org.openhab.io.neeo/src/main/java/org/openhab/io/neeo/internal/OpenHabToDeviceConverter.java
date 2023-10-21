@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -38,6 +37,7 @@ import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
 import org.openhab.io.neeo.internal.models.NeeoDeviceTiming;
 import org.openhab.io.neeo.internal.models.NeeoDeviceType;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
+import org.openhab.io.neeo.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +146,7 @@ class OpenHabToDeviceConverter {
             final NeeoDeviceTiming timing = new NeeoDeviceTiming(standbyDelay, switchDelay, shutDownDelay);
 
             final String dc = properties.get("Device Capabilities");
-            final String[] deviceCapabilities = dc == null || dc.isEmpty() ? new String[0] : StringUtils.split(dc, ',');
+            final String[] deviceCapabilities = dc == null || dc.isEmpty() ? new String[0] : StringUtils.split(dc, ",");
 
             try {
                 return new NeeoDevice(new NeeoThingUID(thing.getUID()), 0,
