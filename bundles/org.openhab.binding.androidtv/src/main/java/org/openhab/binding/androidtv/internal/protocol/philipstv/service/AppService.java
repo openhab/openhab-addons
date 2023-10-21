@@ -182,11 +182,13 @@ public class AppService implements PhilipsTVService {
                         (a1, a2) -> a1));
 
         ConcurrentMap<String, String> appDNMap = availableAppsDto.getApplications().stream().collect(Collectors
-                .toConcurrentMap(a -> a.getIntent().getComponent().getClassName(), ApplicationsDto::getLabel));
+                .toConcurrentMap(a -> a.getIntent().getComponent().getPackageName(), ApplicationsDto::getLabel));
 
-        logger.debug("Apps added: {}", appsMap.size());
+        logger.debug("appsMap - Apps added: {}", appsMap.size());
+        logger.debug("appDNMap - Apps added: {}", appDNMap.size());
         if (logger.isTraceEnabled()) {
-            appsMap.keySet().forEach(app -> logger.trace("App found: {}", app));
+            appsMap.keySet().forEach(app -> logger.trace("appsMap - App found: {}", app));
+            appDNMap.keySet().forEach(app -> logger.trace("appDNMap - App found: {}", app));
         }
 
         this.availableApps = appsMap;
