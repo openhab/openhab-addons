@@ -113,7 +113,7 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob != null && !pollingJob.isCancelled()) {
+        if (pollingJob != null) {
             pollingJob.cancel(true);
             this.pollingJob = null;
         }

@@ -63,14 +63,12 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
         NetworkOceanicBindingConfiguration config = getConfigAs(NetworkOceanicBindingConfiguration.class);
 
         try {
-            this.socket = new Socket(config.ipAddress, config.portNumber);
-            Socket socket = this.socket;
-            if (socket != null) {
-                socket.setSoTimeout(REQUEST_TIMEOUT);
-                outputStream = socket.getOutputStream();
-                inputStream = socket.getInputStream();
-                updateStatus(ThingStatus.ONLINE);
-            }
+            Socket socket = new Socket(config.ipAddress, config.portNumber);
+            this.socket = socket;
+            socket.setSoTimeout(REQUEST_TIMEOUT);
+            outputStream = socket.getOutputStream();
+            inputStream = socket.getInputStream();
+            updateStatus(ThingStatus.ONLINE);
         } catch (UnknownHostException e) {
             logger.error("An exception occurred while resolving host {}:{} : '{}'", config.ipAddress, config.portNumber,
                     e.getMessage());
