@@ -406,7 +406,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Register a device ThingHandler to this BridgHandler
      *
-     * @param ownId the device OpenWebNet id
+     * @param ownId        the device OpenWebNet id
      * @param thingHandler the thing handler to be registered
      */
     protected void registerDevice(String ownId, OpenWebNetThingHandler thingHandler) {
@@ -713,23 +713,24 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Return a ownId string (=WHO.WHERE) from the device Where address and handler
      *
-     * @param where the Where address (to be normalized)
+     * @param where   the Where address (to be normalized)
      * @param handler the device handler
      * @return the ownId String
      */
     protected String ownIdFromDeviceWhere(Where where, OpenWebNetThingHandler handler) {
-        return handler.ownIdPrefix() + "." + normalizeWhere(where);
+        Who w = handler.getManagedWho();
+        return w.value().toString() + "." + normalizeWhere(w, where);
     }
 
     /**
      * Returns a ownId string (=WHO.WHERE) from a Who and Where address
      *
-     * @param who the Who
+     * @param who   the Who
      * @param where the Where address (to be normalized)
      * @return the ownId String
      */
     public String ownIdFromWhoWhere(Who who, Where where) {
-        return who.value() + "." + normalizeWhere(where);
+        return who.value() + "." + normalizeWhere(who, where);
     }
 
     /**
@@ -742,7 +743,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         @Nullable
         Where w = baseMsg.getWhere();
         if (w != null) {
-            return baseMsg.getWho().value() + "." + normalizeWhere(w);
+            return baseMsg.getWho().value() + "." + normalizeWhere(baseMsg.getWho(), w);
         } else if (baseMsg instanceof Alarm) { // null and Alarm
             return baseMsg.getWho().value() + "." + "0"; // Alarm System --> where=0
         } else {
@@ -752,30 +753,35 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Transform a Where address into a Thing id string
+     * Given a Who and a Where address, return a Thing id string
      *
+     * @param who   the Who
      * @param where the Where address
      * @return the thing Id string
      */
-    public String thingIdFromWhere(Where where) {
-        return normalizeWhere(where); // '#' cannot be used in ThingUID;
+    public String thingIdFromWhoWhere(Who who, Where where) {
+        return normalizeWhere(who, where); // '#' cannot be used in ThingUID;
     }
 
     /**
-     * Normalize a Where address to generate ownId and Thing id
+     * Normalize, based on Who, a Where address. Used to generate ownId and Thing id
      *
+     * @param who   the Who
      * @param where the Where address
      * @return the normalized address as String
      */
-    public String normalizeWhere(Where where) {
+    public String normalizeWhere(Who who, Where where) {
         String str = where.value();
         if (where instanceof WhereZigBee whereZigBee) {
             str = whereZigBee.valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
         } else {
             if (str.indexOf("#4#") == -1) { // skip APL#4#bus case
-                if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z,
-                                             // Alarm Zone (#Z) --> Z
-                    str = str.substring(1);
+                if (str.indexOf('#') == 0) {
+                    if (who.equals(Who.THERMOREGULATION) || who.equals(Who.THERMOREGULATION_DIAGNOSTIC)
+                            || who.equals(Who.BURGLAR_ALARM)) {
+                        // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z
+                        str = str.substring(1);
+                    } // else leave the initial hash
                 } else if (str.indexOf('#') > 0 && str.charAt(0) != '0') { // Thermo zone Z and actuator N (Z#N,
                                                                            // Z=[1-99], N=[1-9]) --> Z
                     str = str.substring(0, str.indexOf('#'));

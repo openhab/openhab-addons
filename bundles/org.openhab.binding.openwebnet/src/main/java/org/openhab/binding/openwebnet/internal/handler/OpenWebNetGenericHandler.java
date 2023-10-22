@@ -23,12 +23,15 @@ import org.openhab.core.types.Command;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereLightAutom;
+import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetGenericHandler} is responsible for handling Generic OpenWebNet
- * devices. It does not too much, but it is needed to avoid handler errors and to tell the user
+ * The {@link OpenWebNetGenericHandler} is responsible for handling Generic
+ * OpenWebNet
+ * devices. It does not too much, but it is needed to avoid handler errors and
+ * to tell the user
  * that some device has been found by the gateway but it was not recognised.
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
@@ -69,8 +72,8 @@ public class OpenWebNetGenericHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return "G";
+    protected Who getManagedWho() {
+        return Who.UNKNOWN;
     }
 
     @Override
