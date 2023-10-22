@@ -374,8 +374,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.LIGHTING.value().toString();
+    protected Who getManagedWho() {
+        return Who.LIGHTING;
     }
 
     protected void handleMultipleMessage(Lighting msg) {
@@ -438,7 +438,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             WhereLightAutom w = (WhereLightAutom) deviceWhere;
             // Propagate APL msg to AREA handler, if exists
             if (brH != null && w != null && w.isAPL()) {
-                String areaOwnId = this.ownIdPrefix() + "." + w.getArea();
+                String areaOwnId = this.getManagedWho() + "." + w.getArea();
                 OpenWebNetLightingHandler areaHandler = (OpenWebNetLightingHandler) brH.getRegisteredDevice(areaOwnId);
                 if (areaHandler != null) {
                     logger.debug("//////////////////// Propagating msg {} to AREA handler {}", msg, areaOwnId);
@@ -447,7 +447,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             }
             // Propagate APL msg to GEN handler, if exists
             if (brH != null && w != null && w.isAPL()) {
-                String genOwnId = this.ownIdPrefix() + ".0";
+                String genOwnId = this.getManagedWho() + ".0";
                 OpenWebNetLightingHandler genHandler = (OpenWebNetLightingHandler) brH.getRegisteredDevice(genOwnId);
                 if (genHandler != null) {
                     logger.debug("//////////////////// Propagating msg {} to GEN handler", msg);

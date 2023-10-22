@@ -42,6 +42,7 @@ import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.OpenMessage;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereZigBee;
+import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -235,8 +236,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      * handler.
      *
      * @param refreshAll true if all devices for this handler must be refreshed with
-     *            a single OWN command, if supported, otherwise just refresh
-     *            the single device.
+     *                   a single OWN command, if supported, otherwise just refresh
+     *                   the single device.
      */
     protected abstract void refreshDevice(boolean refreshAll);
 
@@ -322,7 +323,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      * value is null
      *
      * @param value to be used
-     * @param unit to be used
+     * @param unit  to be used
      * @return Quantity
      */
     protected <U extends Quantity<U>> State getAsQuantityTypeOrNull(@Nullable Number value, Unit<U> unit) {
@@ -330,10 +331,10 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns a prefix String for ownId specific for each handler.
+     * Returns the Who managed by the handler.
      * To be implemented by sub-classes.
      *
-     * @return
+     * @return Who managed by the handler
      */
-    protected abstract String ownIdPrefix();
+    protected abstract Who getManagedWho();
 }
