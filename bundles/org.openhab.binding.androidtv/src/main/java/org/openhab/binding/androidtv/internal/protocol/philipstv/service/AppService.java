@@ -62,8 +62,6 @@ public class AppService implements PhilipsTVService {
     // Label , Entry<PackageName,ClassName> of App
     private @Nullable Map<String, AbstractMap.SimpleEntry<String, String>> availableApps;
 
-    private @Nullable Map<String, String> appDNMap;
-
     private String currentPackageName = "";
 
     private final PhilipsTVConnectionManager handler;
@@ -111,8 +109,8 @@ public class AppService implements PhilipsTVService {
                 String appName = "";
                 if (CHANNEL_APPNAME.equals(channel) && availableApps.containsKey(command.toString())) {
                     launchApp(command.toString());
-                } else if (CHANNEL_APP.equals(channel) && appDNMap.containsKey(command.toString())) {
-                    launchApp(appDNMap.getOrDefault(command.toString(), ""));
+                } else if (CHANNEL_APP.equals(channel)) {
+                    launchDNApp(command.toString());
                 } else {
                     logger.warn("The given App with Name: {} {} couldn't be found in the local App List from the tv.",
                             command, appName);
@@ -135,6 +133,18 @@ public class AppService implements PhilipsTVService {
 
     private boolean isAvailableAppListEmpty() {
         return (availableApps == null) || availableApps.isEmpty();
+    }
+
+    private void launchDNApp(String appName) throws IOException {
+        for (Map.Entry<String, AbstractMap.SimpleEntry<String, String>> entry : availableApps.entrySet()) {
+            Map.Entry<String, String> app = entry.getValue();
+            if (app.getKey().equals(appName)) {
+                logger.debug("Found app by dn: {} {} {}", entry.getKey(), app.getKey(), app.getValue());
+                launchApp(entry.getKey());
+                return;
+            }
+        }
+        logger.warn("The given App with DN: {} couldn't be found in the local App List from the tv.", appName);
     }
 
     private void launchApp(String appName) throws IOException {
@@ -181,18 +191,12 @@ public class AppService implements PhilipsTVService {
                                 a.getIntent().getComponent().getClassName()),
                         (a1, a2) -> a1));
 
-        ConcurrentMap<String, String> appDNMap = availableAppsDto.getApplications().stream().collect(Collectors
-                .toConcurrentMap(a -> a.getIntent().getComponent().getPackageName(), ApplicationsDto::getLabel));
-
         logger.debug("appsMap - Apps added: {}", appsMap.size());
-        logger.debug("appDNMap - Apps added: {}", appDNMap.size());
         if (logger.isTraceEnabled()) {
             appsMap.keySet().forEach(app -> logger.trace("appsMap - App found: {}", app));
-            appDNMap.keySet().forEach(app -> logger.trace("appDNMap - App found: {}", app));
         }
 
         this.availableApps = appsMap;
-        this.appDNMap = appDNMap;
     }
 
     public void clearAvailableAppList() {
