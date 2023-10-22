@@ -92,6 +92,10 @@
 			<channel id="wallbox1ChargingPower" typeId="wallbox1ChargingPower"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname/IP Address</label>
