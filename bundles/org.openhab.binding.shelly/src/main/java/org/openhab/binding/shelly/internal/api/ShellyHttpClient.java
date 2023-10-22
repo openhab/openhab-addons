@@ -174,7 +174,7 @@ public class ShellyHttpClient {
                 }
             }
             fillPostData(request, data);
-            logger.trace("{}: HTTP {} for {} {}\n{}", thingName, method, url, data, request.getHeaders());
+            logger.trace("{}: HTTP {} {}\n{}\n{}", thingName, method, url, request.getHeaders(), data);
 
             // Do request and get response
             ContentResponse contentResponse = request.send();

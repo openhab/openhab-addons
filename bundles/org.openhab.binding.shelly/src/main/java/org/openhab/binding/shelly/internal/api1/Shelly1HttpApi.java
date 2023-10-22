@@ -258,7 +258,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void setValveTemperature(int valveId, int value) throws ShellyApiException {
-        request("/thermostat/" + valveId + "?target_t_enabled=1&target_t=" + value);
+        httpRequest("/thermostat/" + valveId + "?target_t_enabled=1&target_t=" + value);
     }
 
     @Override
@@ -273,17 +273,17 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     @Override
     public void setValveProfile(int valveId, int value) throws ShellyApiException {
         String uri = "/settings/thermostat/" + valveId + "?";
-        request(uri + (value == 0 ? "schedule=0" : "schedule=1&schedule_profile=" + value));
+        httpRequest(uri + (value == 0 ? "schedule=0" : "schedule=1&schedule_profile=" + value));
     }
 
     @Override
     public void setValvePosition(int valveId, double value) throws ShellyApiException {
-        request("/thermostat/" + valveId + "?pos=" + value); // percentage to open the valve
+        httpRequest("/thermostat/" + valveId + "?pos=" + value); // percentage to open the valve
     }
 
     @Override
     public void setValveBoostTime(int valveId, int value) throws ShellyApiException {
-        request("/settings/thermostat/" + valveId + "?boost_minutes=" + value);
+        httpRequest("/settings/thermostat/" + valveId + "?boost_minutes=" + value);
     }
 
     @Override
