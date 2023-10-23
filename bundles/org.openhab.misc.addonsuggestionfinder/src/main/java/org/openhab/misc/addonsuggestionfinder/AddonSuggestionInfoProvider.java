@@ -15,6 +15,7 @@ package org.openhab.misc.addonsuggestionfinder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,7 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.addon.AddonInfo;
 import org.openhab.core.addon.AddonInfoProvider;
-import org.openhab.misc.addonsuggestionfinder.internal.AddonListSerializer;
+import org.openhab.misc.addonsuggestionfinder.info.AddonInfoList;
+import org.openhab.misc.addonsuggestionfinder.xml.AddonListSerializer;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
@@ -36,27 +38,24 @@ import org.osgi.service.component.annotations.Component;
 @Component(name = "addon-suggestion-info-provider", service = AddonInfoProvider.class)
 public class AddonSuggestionInfoProvider implements AddonInfoProvider {
 
-    private final Set<AddonInfo> addonInfos;
+    private final Set<AddonInfo> candidateAddonInfos = new HashSet<>();
 
     @Activate
     public AddonSuggestionInfoProvider() {
-        AddonListSerializer serializer = new AddonListSerializer();
-        String xml = loadAddonXmlResource();
-        addonInfos = serializer.fromXML(xml).getAddonInfos().stream().filter(a -> !a.getDiscoveryMethods().isEmpty())
-                .collect(Collectors.toSet());
+        setCandidates(getResourceXml());
     }
 
     @Override
     public @Nullable AddonInfo getAddonInfo(@Nullable String id, @Nullable Locale locale) {
-        return addonInfos.stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);
+        return candidateAddonInfos.stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);
     }
 
     @Override
     public Set<AddonInfo> getAddonInfos(@Nullable Locale locale) {
-        return addonInfos;
+        return candidateAddonInfos;
     }
 
-    private String loadAddonXmlResource() {
+    private String getResourceXml() {
         ClassLoader loader = getClass().getClassLoader();
         if (loader != null) {
             InputStream stream = loader.getResourceAsStream("addons.xml");
@@ -64,10 +63,17 @@ public class AddonSuggestionInfoProvider implements AddonInfoProvider {
                 try {
                     return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
                 } catch (IOException e) {
-                    // fall through
                 }
             }
         }
-        return "";
+        throw new IllegalStateException("Error loading 'addons.xml' resource");
+    }
+
+    public void setCandidates(String xml) {
+        candidateAddonInfos.clear();
+        AddonListSerializer reader = new AddonListSerializer();
+        AddonInfoList addonInfoList = reader.fromXML(xml);
+        candidateAddonInfos.addAll(addonInfoList.getAddons().stream().filter(a -> !a.getDiscoveryMethods().isEmpty())
+                .collect(Collectors.toSet()));
     }
 }

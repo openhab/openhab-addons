@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.misc.addonsuggestionfinder.internal;
+package org.openhab.misc.addonsuggestionfinder.info;
 
 import java.util.List;
 
@@ -19,16 +19,21 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.addon.AddonInfo;
 
 /**
- * DTO for a list of {@link AddonInfo}.
+ * DTO containing a list of {@code AddonInfo}
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 public class AddonInfoList {
-    public @Nullable List<AddonInfo> addonInfos;
+    protected @Nullable List<AddonInfo> addons;
 
-    public List<AddonInfo> getAddonInfos() {
-        List<AddonInfo> addonInfos = this.addonInfos;
-        return addonInfos != null ? addonInfos : List.of();
+    public List<AddonInfo> getAddons() {
+        List<AddonInfo> addons = this.addons;
+        return addons != null ? addons : List.of();
+    }
+
+    public AddonInfoList setAddons(@Nullable List<AddonInfo> addons) {
+        this.addons = addons;
+        return this;
     }
 }

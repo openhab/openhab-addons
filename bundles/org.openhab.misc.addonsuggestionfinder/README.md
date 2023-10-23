@@ -7,14 +7,16 @@ It allows developers to include information in their own addons so that the syst
 
 If you want to your addon to scan the user's system then you need to include additional fields in your `src/main/resources/OH-INF/addon.xml` file.
 
-| XML Element Name    | Description                                                                   | Instances                                     |
-|---------------------|-------------------------------------------------------------------------------|-----------------------------------------------|
-| `discovery-method`  | Complex XML element describing an addon discovery method.                     | Zero or more instances per file.              |
-| `service-type`      | The type of discovery method. May be `upnp` or `mdns`.                        | Mandatory one per `discovery-method`.         |
-| `mdns-service-type` | If `service-type` is `mdns`, contains the MDNS discovery service type.        | Optional one per `discovery-method`.          |
-| `match-property`    | A property name and regular expression used for matching discovery findings.  | Zero or more instance per `discovery-method`. |
-| `name`              | A property name to search for.                                                | Mandatory one instance per `match-property`.  |
-| `regex`             | A regular expression (or plain string) that needs to match the property name. | Mandatory one instance per `match-property`.  |
+| XML Element Name    | Description                                                                   | Instances                                      |
+|---------------------|-------------------------------------------------------------------------------|------------------------------------------------|
+| `discovery-methods` | Wrapper for `discovery-method` elements (see below).                          | Zero or one instances per file.                |
+| `discovery-method`  | Complex XML element describing an addon discovery method.                     | Zero or more instances per file.               |
+| `service-type`      | The type of discovery method. May be `upnp` or `mdns`.                        | Mandatory one per `discovery-method`.          |
+| `mdns-service-type` | If `service-type` is `mdns`, contains the MDNS discovery service type.        | Optional one per `discovery-method`.           |
+| `match-properties`  | Wrapper for `match-property` elements (see below).                            | Zero or one instances per `discovery-method`.  |
+| `match-property`    | A property name and regular expression used for matching discovery findings.  | Zero or more instances per `discovery-method`. |
+| `name`              | A property name to search for.                                                | Mandatory one instance per `match-property`.   |
+| `regex`             | A regular expression (or plain string) that needs to match the property name. | Mandatory one instance per `match-property`.   |
 
 ## Example `addon.xml` File
 
@@ -29,18 +31,22 @@ The following is an example for the discovery XML description for HP Printers.
     <name>HP Printer</name>
     <description>HP Printer Binding</description>
     <connection>local</connection>
-    <discovery-method>
-        <service-type>mdns</service-type>
-        <match-property>
-            <name>rp</name>
-            <regex>.*</regex>
-        </match-property>
-        <match-property>
-            <name>ty</name>
-            <regex>hp (.*)</regex>
-        </match-property>
-        <mdns-service-type>_printer._tcp.local.</mdns-service-type>
-    </discovery-method>
+    <discovery-methods>
+        <discovery-method>
+            <service-type>mdns</service-type>
+            <mdns-service-type>_printer._tcp.local.</mdns-service-type>
+            <match-properties>
+                <match-property>
+                    <name>rp</name>
+                    <regex>.*</regex>
+                </match-property>
+                <match-property>
+                    <name>ty</name>
+                    <regex>hp (.*)</regex>
+                </match-property>
+            </match-properties>
+        </discovery-method>
+    </discovery-methods>
 </addon:addon>
 ```
 
@@ -55,16 +61,20 @@ The following is an example for the discovery XML description for the Philips Hu
     <name>Philips Hue</name>
     <description>Philips Hue Binding</description>
     <connection>local</connection>
-    <discovery-method>
-        <serviceType>mdns</serviceType>
-        <mdnsServiceType>_hue._tcp.local.</mdnsServiceType>
-    </discovery-method>
-    <discovery-method>
-        <service-type>upnp</service-type>
-        <match-property>
-            <name>modelName</name>
-            <regex>Philips hue bridge</regex>
-        </match-property>
-    </discovery-method>
+    <discovery-methods>
+        <discovery-method>
+            <serviceType>mdns</serviceType>
+            <mdnsServiceType>_hue._tcp.local.</mdnsServiceType>
+        </discovery-method>
+        <discovery-method>
+            <service-type>upnp</service-type>
+            </match-properties>
+                <match-property>
+                    <name>modelName</name>
+                    <regex>Philips hue bridge</regex>
+                </match-property>
+            </match-properties>
+        </discovery-method>
+    </discovery-methods>
 </addon:addon>
 ```

@@ -10,12 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.misc.addonsuggestionfinder.internal;
+package org.openhab.misc.addonsuggestionfinder.xml;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.addon.AddonDiscoveryMethod;
 import org.openhab.core.addon.AddonInfo;
 import org.openhab.core.addon.AddonMatchProperty;
+import org.openhab.misc.addonsuggestionfinder.info.AddonInfoList;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
@@ -37,7 +38,7 @@ public class AddonListSerializer {
         xstream.allowTypesByWildcard(new String[] { "org.openhab.**" });
 
         xstream.alias("addons", AddonInfoList.class);
-        xstream.addImplicitCollection(AddonInfoList.class, "addonInfos", "addon", AddonInfo.class);
+        xstream.addImplicitCollection(AddonInfoList.class, "addons", "addon", AddonInfo.class);
 
         xstream.alias("addon", AddonInfo.class);
         xstream.useAttributeFor(AddonInfo.class, "id");

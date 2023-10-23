@@ -21,22 +21,19 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.addon.AddonDiscoveryMethod;
-import org.openhab.core.addon.AddonDiscoveryServiceType;
 import org.openhab.core.addon.AddonInfo;
 import org.openhab.core.addon.AddonMatchProperty;
 import org.openhab.misc.addonsuggestionfinder.AddonSuggestionInfoProvider;
-import org.openhab.misc.addonsuggestionfinder.internal.AddonInfoList;
-import org.openhab.misc.addonsuggestionfinder.internal.AddonListSerializer;
+import org.openhab.misc.addonsuggestionfinder.info.AddonInfoList;
+import org.openhab.misc.addonsuggestionfinder.xml.AddonListSerializer;
 
 /**
- * JUnit tests for {@link SuggestedAddonInfoProvider}.
+ * JUnit tests for {@link AddonSuggestionInfoProvider} and {@link AddonListSerializer}.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-class AddonSuggestionInfoProviderTest {
-
-    private final AddonListSerializer serializer = new AddonListSerializer();
+class AddonSuggestionFinderTest {
 
     // @formatter:off
     private final String testXml =
@@ -73,8 +70,9 @@ class AddonSuggestionInfoProviderTest {
 
     @Test
     void testAddonInfosXml() {
+        AddonListSerializer serializer = new AddonListSerializer();
         AddonInfoList addons = serializer.fromXML(testXml);
-        List<AddonInfo> addonsInfos = addons.getAddonInfos();
+        List<AddonInfo> addonsInfos = addons.getAddons();
         assertEquals(1, addonsInfos.size());
         AddonInfo addon = addonsInfos.get(0);
         assertNotNull(addon);
@@ -84,7 +82,7 @@ class AddonSuggestionInfoProviderTest {
 
         AddonDiscoveryMethod method = discoveryMethods.get(0);
         assertNotNull(method);
-        assertEquals(AddonDiscoveryServiceType.MDNS, method.getServiceType());
+        assertEquals("mdns", method.getServiceType());
         assertEquals("_printer._tcp.local.", method.getMdnsServiceType());
         List<AddonMatchProperty> matchProperties = method.getMatchProperties();
         assertNotNull(matchProperties);
@@ -96,7 +94,7 @@ class AddonSuggestionInfoProviderTest {
 
         method = discoveryMethods.get(1);
         assertNotNull(method);
-        assertEquals(AddonDiscoveryServiceType.UPNP, method.getServiceType());
+        assertEquals("upnp", method.getServiceType());
         assertEquals("", method.getMdnsServiceType());
         matchProperties = method.getMatchProperties();
         assertNotNull(matchProperties);
@@ -108,12 +106,12 @@ class AddonSuggestionInfoProviderTest {
     }
 
     @Test
-    void testAddonSuggestionAddonInfoProvider() {
+    void testAddonSuggestionInfoProvider() {
         AddonSuggestionInfoProvider provider = new AddonSuggestionInfoProvider();
         assertNotNull(provider);
-        Set<AddonInfo> addons = provider.getAddonInfos(Locale.US);
-        assertNotNull(addons);
-        // TODO un-comment the following line when at least one addon has officially added a 'discovery-method'
-        // assertFalse(addons.isEmpty());
+        Set<AddonInfo> addonInfos = provider.getAddonInfos(Locale.US);
+        assertNotNull(addonInfos);
+        AddonInfo addonInfo = provider.getAddonInfo("flying-aardvarks", Locale.US);
+        assertNull(addonInfo);
     }
 }
