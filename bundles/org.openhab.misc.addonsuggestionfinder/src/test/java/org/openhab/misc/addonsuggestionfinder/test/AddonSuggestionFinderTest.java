@@ -22,10 +22,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.addon.AddonDiscoveryMethod;
 import org.openhab.core.addon.AddonInfo;
+import org.openhab.core.addon.AddonInfoList;
+import org.openhab.core.addon.AddonInfoListReader;
 import org.openhab.core.addon.AddonMatchProperty;
 import org.openhab.misc.addonsuggestionfinder.AddonSuggestionInfoProvider;
-import org.openhab.misc.addonsuggestionfinder.info.AddonInfoList;
-import org.openhab.misc.addonsuggestionfinder.xml.AddonListSerializer;
 
 /**
  * JUnit tests for {@link AddonSuggestionInfoProvider} and {@link AddonListSerializer}.
@@ -37,41 +37,53 @@ class AddonSuggestionFinderTest {
 
     // @formatter:off
     private final String testXml =
-            "<addons>"
-            + "    <addon:addon id=\"groovyscripting\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-            + "        xmlns:addon=\"https://openhab.org/schemas/addon/v1.0.0\""
-            + "        xsi:schemaLocation=\"https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd\">"
-            + "        <type>automation</type>"
-            + "        <name>Groovy Scripting</name>"
-            + "        <description>This adds a Groovy script engine.</description>"
-            + "        <connection>none</connection>"
-            + "        <discovery-method>"
-            + "            <service-type>mdns</service-type>"
-            + "            <match-property>"
-            + "                <name>rp</name>"
-            + "                <regex>.*</regex>"
-            + "            </match-property>"
-            + "            <match-property>"
-            + "                <name>ty</name>"
-            + "                <regex>hp (.*)</regex>"
-            + "            </match-property>"
-            + "            <mdns-service-type>_printer._tcp.local.</mdns-service-type>"
-            + "        </discovery-method>"
-            + "        <discovery-method>"
-            + "            <service-type>upnp</service-type>"
-            + "            <match-property>"
-            + "                <name>modelName</name>"
-            + "                <regex>Philips hue bridge</regex>"
-            + "            </match-property>"
-            + "        </discovery-method>"
-            + "    </addon:addon>"
-            + "</addons>";
+            "<addon-info-list><addons>"
+            + "  <addon:addon id=\"groovyscripting\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+            + "    xmlns:addon=\"https://openhab.org/schemas/addon/v1.0.0\""
+            + "    xsi:schemaLocation=\"https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd\">"
+            + "    <type>automation</type>"
+            + "    <name>Groovy Scripting</name>"
+            + "    <description>This adds a Groovy script engine.</description>"
+            + "    <connection>none</connection>"
+            + "    <discovery-methods>"
+            + "      <discovery-method>"
+            + "        <service-type>mdns</service-type>"
+            + "        <mdns-service-type>_printer._tcp.local.</mdns-service-type>"
+            + "        <match-properties>"
+            + "          <match-property>"
+            + "            <name>rp</name>"
+            + "            <regex>.*</regex>"
+            + "          </match-property>"
+            + "          <match-property>"
+            + "            <name>ty</name>"
+            + "            <regex>hp (.*)</regex>"
+            + "          </match-property>"
+            + "        </match-properties>"
+            + "      </discovery-method>"
+            + "      <discovery-method>"
+            + "        <service-type>upnp</service-type>"
+            + "        <match-properties>"
+            + "          <match-property>"
+            + "            <name>modelName</name>"
+            + "            <regex>Philips hue bridge</regex>"
+            + "          </match-property>"
+            + "        </match-properties>"
+            + "      </discovery-method>"
+            + "    </discovery-methods>"
+            + "  </addon:addon>"
+            + "</addons></addon-info-list>";
     // @formatter:on
 
     @Test
     void testAddonInfosXml() {
-        AddonListSerializer serializer = new AddonListSerializer();
-        AddonInfoList addons = serializer.fromXML(testXml);
+        AddonInfoList addons = null;
+        try {
+            AddonInfoListReader reader = new AddonInfoListReader();
+            addons = reader.readFromXML(testXml);
+        } catch (Exception e) {
+            fail(e);
+        }
+        assertNotNull(addons);
         List<AddonInfo> addonsInfos = addons.getAddons();
         assertEquals(1, addonsInfos.size());
         AddonInfo addon = addonsInfos.get(0);

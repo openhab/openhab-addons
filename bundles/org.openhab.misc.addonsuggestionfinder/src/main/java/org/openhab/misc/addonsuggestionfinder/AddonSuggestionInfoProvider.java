@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.addon.AddonInfo;
+import org.openhab.core.addon.AddonInfoList;
+import org.openhab.core.addon.AddonInfoListReader;
 import org.openhab.core.addon.AddonInfoProvider;
-import org.openhab.misc.addonsuggestionfinder.info.AddonInfoList;
-import org.openhab.misc.addonsuggestionfinder.xml.AddonListSerializer;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
@@ -71,9 +71,11 @@ public class AddonSuggestionInfoProvider implements AddonInfoProvider {
 
     public void setCandidates(String xml) {
         candidateAddonInfos.clear();
-        AddonListSerializer reader = new AddonListSerializer();
-        AddonInfoList addonInfoList = reader.fromXML(xml);
-        candidateAddonInfos.addAll(addonInfoList.getAddons().stream().filter(a -> !a.getDiscoveryMethods().isEmpty())
-                .collect(Collectors.toSet()));
+        AddonInfoListReader reader = new AddonInfoListReader();
+        AddonInfoList addonInfoList = reader.readFromXML(xml);
+        if (addonInfoList != null) {
+            candidateAddonInfos.addAll(addonInfoList.getAddons().stream()
+                    .filter(a -> !a.getDiscoveryMethods().isEmpty()).collect(Collectors.toSet()));
+        }
     }
 }
