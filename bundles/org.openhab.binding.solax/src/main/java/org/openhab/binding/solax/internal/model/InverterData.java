@@ -35,109 +35,107 @@ public interface InverterData {
     String getRawData();
 
     default double getPV1Voltage() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default double getPV1Current() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default short getPV1Power() {
-        return -1;
+        return Short.MIN_VALUE;
     }
 
     default double getPV2Voltage() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default double getPV2Current() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default short getPV2Power() {
-        return -1;
+        return Short.MIN_VALUE;
     }
 
-    default short getPVTotalPower() {
-        return (short) (getPV1Power() + getPV2Power());
+    default double getPVTotalPower() {
+        return getPV1Power() + getPV2Power();
     }
 
-    default short getPVTotalCurrent() {
-        return (short) (getPV1Current() + getPV2Current());
+    default double getPVTotalCurrent() {
+        return getPV1Current() + getPV2Current();
     }
 
     default double getBatteryVoltage() {
-        return -1;
+        return Integer.MIN_VALUE;
     };
 
     default double getBatteryCurrent() {
-        return -1;
+        return Integer.MIN_VALUE;
     };
 
     default short getBatteryPower() {
-        return -1;
+        return Short.MIN_VALUE;
     }
 
     default short getBatteryTemperature() {
-        return -1;
+        return Short.MIN_VALUE;
     }
 
     default short getBatteryLevel() {
-        return -1;
+        return Short.MIN_VALUE;
     }
 
     default short getFeedInPower() {
-        return -1;
+        return Short.MIN_VALUE;
     }
 
-    //
-
     default short getPowerUsage() {
-        return -1;
+        return Short.MIN_VALUE;
     }
 
     default double getTotalEnergy() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default short getTotalBatteryDischargeEnergy() {
-        return -1;
+        return Short.MIN_VALUE;
     }
 
     default short getTotalBatteryChargeEnergy() {
-        return -1;
+        return Short.MIN_VALUE;
     }
 
     default double getTotalPVEnergy() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default short getTotalFeedInEnergy() {
-        return -1;
+        return Short.MIN_VALUE;
     }
 
     default double getTotalConsumption() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default double getTodayEnergy() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default double getTodayFeedInEnergy() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default double getTodayConsumption() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default double getTodayBatteryDischargeEnergy() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default double getTodayBatteryChargeEnergy() {
-        return -1;
+        return Integer.MIN_VALUE;
     }
 
     default String toStringDetailed() {
