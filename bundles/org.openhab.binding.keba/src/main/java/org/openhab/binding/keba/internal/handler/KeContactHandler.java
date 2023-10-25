@@ -322,31 +322,11 @@ public class KeContactHandler extends BaseThingHandler {
                         break;
                     }
                     case "Enable sys": {
-                        int state = entry.getValue().getAsInt();
-                        switch (state) {
-                            case 1: {
-                                updateState(CHANNEL_ENABLED_SYSTEM, OnOffType.ON);
-                                break;
-                            }
-                            default: {
-                                updateState(CHANNEL_ENABLED_SYSTEM, OnOffType.OFF);
-                                break;
-                            }
-                        }
+                        updateState(CHANNEL_ENABLED_SYSTEM, OnOffType.from(entry.getValue().getAsInt() == 1));
                         break;
                     }
                     case "Enable user": {
-                        int state = entry.getValue().getAsInt();
-                        switch (state) {
-                            case 1: {
-                                updateState(CHANNEL_ENABLED_USER, OnOffType.ON);
-                                break;
-                            }
-                            default: {
-                                updateState(CHANNEL_ENABLED_USER, OnOffType.OFF);
-                                break;
-                            }
-                        }
+                        updateState(CHANNEL_ENABLED_USER, OnOffType.from(entry.getValue().getAsInt() == 1));
                         break;
                     }
                     case "Curr HW": {
