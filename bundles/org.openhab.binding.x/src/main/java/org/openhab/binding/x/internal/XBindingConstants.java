@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link TwitterBindingConstants} class defines common constants, which are
+ * The {@link XBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Scott Hanson - Initial contribution

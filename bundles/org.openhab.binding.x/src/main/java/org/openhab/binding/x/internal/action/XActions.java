@@ -112,8 +112,8 @@ public class XActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof XHandler) {
-            this.handler = (XHandler) handler;
+        if (handler instanceof XHandler xHandler) {
+            this.handler = xHandler;
         }
     }
 

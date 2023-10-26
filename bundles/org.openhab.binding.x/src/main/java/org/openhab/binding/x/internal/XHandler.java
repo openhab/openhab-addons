@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.twitter.internal;
+package org.openhab.binding.x.internal;
 
-import static org.openhab.binding.twitter.internal.TwitterBindingConstants.CHANNEL_LASTTWEET;
+import static org.openhab.binding.x.internal.XBindingConstants.CHANNEL_LASTTWEET;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,8 +27,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.twitter.internal.action.TwitterActions;
-import org.openhab.binding.twitter.internal.config.TwitterConfig;
+import org.openhab.binding.x.internal.action.XActions;
+import org.openhab.binding.x.internal.config.XConfig;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -51,18 +51,18 @@ import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 
 /**
- * The {@link TwitterHandler} is responsible for handling commands, which are
+ * The {@link XHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Scott Hanson - Initial contribution
  */
 
 @NonNullByDefault
-public class TwitterHandler extends BaseThingHandler {
+public class XHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(TwitterHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(XHandler.class);
 
-    private TwitterConfig config = new TwitterConfig();
+    private XConfig config = new XConfig();
 
     private @Nullable ScheduledFuture<?> refreshTask;
 
@@ -71,7 +71,7 @@ public class TwitterHandler extends BaseThingHandler {
     private static @Nullable Twitter client = null;
     boolean isProperlyConfigured = false;
 
-    public TwitterHandler(Thing thing) {
+    public XHandler(Thing thing) {
         super(thing);
     }
 
@@ -82,14 +82,14 @@ public class TwitterHandler extends BaseThingHandler {
     // creates list of available Actions
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(TwitterActions.class);
+        return Collections.singletonList(XActions.class);
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(TwitterConfig.class);
+        config = getConfigAs(XConfig.class);
 
-        // create a New Twitter Client
+        // create a New X/Twitter Client
         Twitter localClient = createClient();
         client = localClient;
         refresh();// Get latest status
@@ -107,7 +107,7 @@ public class TwitterHandler extends BaseThingHandler {
     }
 
     /**
-     * Internal method for Getting Twitter Status
+     * Internal method for Getting X Status
      *
      */
     private void refresh() {
@@ -125,7 +125,7 @@ public class TwitterHandler extends BaseThingHandler {
                 }
             }
         } catch (TwitterException e) {
-            logger.debug("Error when trying to refresh Twitter Account: {}", e.getMessage());
+            logger.debug("Error when trying to refresh X Account: {}", e.getMessage());
         }
     }
 
@@ -205,7 +205,7 @@ public class TwitterHandler extends BaseThingHandler {
             try {
                 // we have a remote url and need to download the remote file to a temporary location
                 Path tDir = Files.createTempDirectory("TempDirectory");
-                String path = tDir + File.separator + "openhab-twitter-remote_attached_file" + "."
+                String path = tDir + File.separator + "openhab-x-remote_attached_file" + "."
                         + getExtension(tweetPicture);
 
                 // URL url = new URL(tweetPicture);
@@ -287,18 +287,18 @@ public class TwitterHandler extends BaseThingHandler {
     }
 
     /**
-     * check if twitter account was created with prerequisites
+     * check if x account was created with prerequisites
      *
-     * @return <code>true</code>, if twitter account was initialized
+     * @return <code>true</code>, if x account was initialized
      *         <code>false</code> in all other cases.
      */
     private boolean checkPrerequisites() {
         if (client == null) {
-            logger.debug("Twitter client is not yet configured > execution aborted!");
+            logger.debug("X client is not yet configured > execution aborted!");
             return false;
         }
         if (!isProperlyConfigured) {
-            logger.debug("Twitter client is not yet configured > execution aborted!");
+            logger.debug("X client is not yet configured > execution aborted!");
             return false;
         }
         return true;
