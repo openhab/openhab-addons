@@ -41,14 +41,12 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import twitter4j.DirectMessage;
-import twitter4j.ResponseList;
-import twitter4j.Status;
-import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.auth.AccessToken;
+import twitter4j.v1.DirectMessage;
+import twitter4j.v1.ResponseList;
+import twitter4j.v1.Status;
+import twitter4j.v1.StatusUpdate;
 
 /**
  * The {@link XHandler} is responsible for handling commands, which are
@@ -117,7 +115,7 @@ public class XHandler extends BaseThingHandler {
             }
             Twitter localClient = client;
             if (localClient != null) {
-                ResponseList<Status> statuses = localClient.getUserTimeline();
+                ResponseList<Status> statuses = localClient.v1().timelines().getUserTimeline();
                 if (statuses.size() > 0) {
                     updateState(CHANNEL_LASTTWEET, StringType.valueOf(statuses.get(0).getText()));
                 } else {
@@ -150,11 +148,11 @@ public class XHandler extends BaseThingHandler {
             Twitter localClient = client;
             if (localClient != null) {
                 // send the Tweet
-                StatusUpdate status = new StatusUpdate(abbreviatedTweetTxt);
+                StatusUpdate status = StatusUpdate.of(abbreviatedTweetTxt);
                 if (fileToAttach != null && fileToAttach.isFile()) {
-                    status.setMedia(fileToAttach);
+                    status = status.media(fileToAttach);
                 }
-                Status updatedStatus = localClient.updateStatus(status);
+                Status updatedStatus = localClient.v1().tweets().updateStatus(status);
                 logger.debug("Successfully sent Tweet '{}'", updatedStatus.getText());
                 updateState(CHANNEL_LASTTWEET, StringType.valueOf(updatedStatus.getText()));
                 return true;
@@ -275,7 +273,8 @@ public class XHandler extends BaseThingHandler {
                 // abbreviate the Tweet to meet the allowed character limit ...
                 String abbreviatedMessageTxt = abbreviateString(messageTxt, CHARACTER_LIMIT);
                 // send the direct message
-                DirectMessage message = localClient.sendDirectMessage(recipientId, abbreviatedMessageTxt);
+                DirectMessage message = localClient.v1().directMessages().sendDirectMessage(recipientId,
+                        abbreviatedMessageTxt);
                 logger.debug("Successfully sent direct message '{}' to @'{}'", message.getText(),
                         message.getRecipientId());
                 return true;
@@ -310,9 +309,9 @@ public class XHandler extends BaseThingHandler {
      * @return a new instance of a Twitter4J Twitter client.
      */
     private twitter4j.Twitter createClient() {
-        twitter4j.Twitter client = TwitterFactory.getSingleton();
-        client.setOAuthConsumer(config.consumerKey, config.consumerSecret);
-        client.setOAuthAccessToken(new AccessToken(config.accessToken, config.accessTokenSecret));
+        Twitter client = Twitter.newBuilder().oAuthConsumer(config.consumerKey, config.consumerSecret)
+                .oAuthAccessToken(config.accessToken, config.accessTokenSecret).build();
+
         return client;
     }
 
