@@ -91,6 +91,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
     private static final ResourceReference BRIDGE_HOME = new ResourceReference().setType(ResourceType.BRIDGE_HOME);
     private static final ResourceReference SCENE = new ResourceReference().setType(ResourceType.SCENE);
+    private static final ResourceReference SMART_SCENE = new ResourceReference().setType(ResourceType.SMART_SCENE);
 
     /**
      * List of resource references that need to be mass down loaded.
@@ -161,71 +162,48 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private synchronized void checkConnection() {
         logger.debug("checkConnection()");
 
-        // check connection to the hub
-        ThingStatusDetail thingStatus;
+        boolean retryApplicationKey = false;
+        boolean retryConnection = false;
+
         try {
             checkAssetsLoaded();
             getClip2Bridge().testConnectionState();
-            thingStatus = ThingStatusDetail.NONE;
-        } catch (HttpUnauthorizedException e) {
-            logger.debug("checkConnection() {}", e.getMessage(), e);
-            thingStatus = ThingStatusDetail.CONFIGURATION_ERROR;
+            updateSelf(); // go online
+        } catch (HttpUnauthorizedException unauthorizedException) {
+            logger.debug("checkConnection() {}", unauthorizedException.getMessage(), unauthorizedException);
+            if (applKeyRetriesRemaining > 0) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.api2.conf-error.press-pairing-button");
+                try {
+                    registerApplicationKey();
+                    retryApplicationKey = true;
+                } catch (HttpUnauthorizedException e) {
+                    retryApplicationKey = true;
+                } catch (ApiException e) {
+                    setStatusOfflineWithCommunicationError(e);
+                } catch (IllegalStateException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.api2.conf-error.read-only");
+                } catch (AssetNotLoadedException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.api2.conf-error.assets-not-loaded");
+                } catch (InterruptedException e) {
+                    return;
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.api2.conf-error.not-authorized");
+            }
         } catch (ApiException e) {
             logger.debug("checkConnection() {}", e.getMessage(), e);
-            thingStatus = ThingStatusDetail.COMMUNICATION_ERROR;
+            setStatusOfflineWithCommunicationError(e);
+            retryConnection = connectRetriesRemaining > 0;
         } catch (AssetNotLoadedException e) {
             logger.debug("checkConnection() {}", e.getMessage(), e);
-            thingStatus = ThingStatusDetail.HANDLER_INITIALIZING_ERROR;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.api2.conf-error.assets-not-loaded");
         } catch (InterruptedException e) {
             return;
-        }
-
-        // update the thing status
-        boolean retryApplicationKey = false;
-        boolean retryConnection = false;
-        switch (thingStatus) {
-            case CONFIGURATION_ERROR:
-                if (applKeyRetriesRemaining > 0) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.api2.conf-error.press-pairing-button");
-                    try {
-                        registerApplicationKey();
-                        retryApplicationKey = true;
-                    } catch (HttpUnauthorizedException e) {
-                        retryApplicationKey = true;
-                    } catch (ApiException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/offline.communication-error");
-                    } catch (IllegalStateException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "@text/offline.api2.conf-error.read-only");
-                    } catch (AssetNotLoadedException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/offline.api2.conf-error.assets-not-loaded");
-                    } catch (InterruptedException e) {
-                        return;
-                    }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.api2.conf-error.not-authorized");
-                }
-                break;
-
-            case COMMUNICATION_ERROR:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.communication-error");
-                retryConnection = connectRetriesRemaining > 0;
-                break;
-
-            case HANDLER_INITIALIZING_ERROR:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.api2.conf-error.assets-not-loaded");
-                break;
-
-            case NONE:
-            default:
-                updateSelf(); // go online
-                break;
         }
 
         int milliSeconds;
@@ -248,6 +226,18 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         // this method schedules itself to be called again in a loop..
         cancelTask(checkConnectionTask, false);
         checkConnectionTask = scheduler.schedule(() -> checkConnection(), milliSeconds, TimeUnit.MILLISECONDS);
+    }
+
+    private void setStatusOfflineWithCommunicationError(Exception e) {
+        Throwable cause = e.getCause();
+        String causeMessage = cause == null ? null : cause.getMessage();
+        if (causeMessage == null || causeMessage.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + "\"]");
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + " -> " + causeMessage + "\"]");
+        }
     }
 
     /**
@@ -467,8 +457,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 }
             } catch (IOException e) {
                 logger.trace("initializeAssets() communication error on '{}'", ipAddress, e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + "\"]");
+                setStatusOfflineWithCommunicationError(e);
                 return;
             }
 
@@ -491,8 +480,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 clip2Bridge = new Clip2Bridge(httpClientFactory, this, ipAddress, applicationKey);
             } catch (ApiException e) {
                 logger.trace("initializeAssets() communication error on '{}'", ipAddress, e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + "\"]");
+                setStatusOfflineWithCommunicationError(e);
                 return;
             }
 
@@ -555,14 +543,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Execute an HTTP PUT to send a Resource object to the server.
      *
      * @param resource the resource to put.
+     * @return the resource, which may contain errors.
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
      * @throws InterruptedException
      */
-    public void putResource(Resource resource) throws ApiException, AssetNotLoadedException, InterruptedException {
+    public Resources putResource(Resource resource) throws ApiException, AssetNotLoadedException, InterruptedException {
         logger.debug("putResource() {}", resource);
         checkAssetsLoaded();
-        getClip2Bridge().putResource(resource);
+        return getClip2Bridge().putResource(resource);
     }
 
     /**
@@ -684,8 +673,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             getClip2Bridge().open();
         } catch (ApiException e) {
             logger.trace("updateSelf() {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + "\"]");
+            setStatusOfflineWithCommunicationError(e);
             onConnectionOffline();
         } catch (AssetNotLoadedException e) {
             logger.trace("updateSelf() {}", e.getMessage(), e);
@@ -742,9 +730,19 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             for (ResourceReference reference : MASS_DOWNLOAD_RESOURCE_REFERENCES) {
                 ResourceType resourceType = reference.getType();
                 List<Resource> resourceList = bridge.getResources(reference).getResources();
-                if (resourceType == ResourceType.ZONE) {
-                    // add special 'All Lights' zone to the zone resource list
-                    resourceList.addAll(bridge.getResources(BRIDGE_HOME).getResources());
+                switch (resourceType) {
+                    case ZONE:
+                        // add special 'All Lights' zone to the zone resource list
+                        resourceList.addAll(bridge.getResources(BRIDGE_HOME).getResources());
+                        break;
+
+                    case SCENE:
+                        // add 'smart scenes' to the scene resource list
+                        resourceList.addAll(bridge.getResources(SMART_SCENE).getResources());
+                        break;
+
+                    default:
+                        break;
                 }
                 getThing().getThings().forEach(thing -> {
                     ThingHandler handler = thing.getHandler();

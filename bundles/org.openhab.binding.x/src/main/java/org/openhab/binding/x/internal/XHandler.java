@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.x.internal;
+package org.openhab.binding.twitter.internal;
 
-import static org.openhab.binding.x.internal.XBindingConstants.CHANNEL_LASTTWEET;
+import static org.openhab.binding.twitter.internal.TwitterBindingConstants.CHANNEL_LASTTWEET;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,8 +27,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.x.internal.action.XActions;
-import org.openhab.binding.x.internal.config.XConfig;
+import org.openhab.binding.twitter.internal.action.TwitterActions;
+import org.openhab.binding.twitter.internal.config.TwitterConfig;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -58,11 +58,11 @@ import twitter4j.auth.AccessToken;
  */
 
 @NonNullByDefault
-public class XHandler extends BaseThingHandler {
+public class TwitterHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(XHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TwitterHandler.class);
 
-    private XConfig config = new XConfig();
+    private TwitterConfig config = new TwitterConfig();
 
     private @Nullable ScheduledFuture<?> refreshTask;
 
@@ -71,7 +71,7 @@ public class XHandler extends BaseThingHandler {
     private static @Nullable Twitter client = null;
     boolean isProperlyConfigured = false;
 
-    public XHandler(Thing thing) {
+    public TwitterHandler(Thing thing) {
         super(thing);
     }
 
@@ -82,12 +82,12 @@ public class XHandler extends BaseThingHandler {
     // creates list of available Actions
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(XActions.class);
+        return Collections.singletonList(TwitterActions.class);
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(XConfig.class);
+        config = getConfigAs(TwitterConfig.class);
 
         // create a New Twitter Client
         Twitter localClient = createClient();
@@ -205,7 +205,7 @@ public class XHandler extends BaseThingHandler {
             try {
                 // we have a remote url and need to download the remote file to a temporary location
                 Path tDir = Files.createTempDirectory("TempDirectory");
-                String path = tDir + File.separator + "openhab-x-remote_attached_file" + "."
+                String path = tDir + File.separator + "openhab-twitter-remote_attached_file" + "."
                         + getExtension(tweetPicture);
 
                 // URL url = new URL(tweetPicture);
@@ -257,7 +257,7 @@ public class XHandler extends BaseThingHandler {
      * Sends a DirectMessage
      *
      * @param recipientId
-     *            recipient ID of the x user
+     *            recipient ID of the twitter user
      * @param messageTxt
      *            text string to be sent as a Direct Message
      *
@@ -287,9 +287,9 @@ public class XHandler extends BaseThingHandler {
     }
 
     /**
-     * check if x account was created with prerequisites
+     * check if twitter account was created with prerequisites
      *
-     * @return <code>true</code>, if x account was initialized
+     * @return <code>true</code>, if twitter account was initialized
      *         <code>false</code> in all other cases.
      */
     private boolean checkPrerequisites() {

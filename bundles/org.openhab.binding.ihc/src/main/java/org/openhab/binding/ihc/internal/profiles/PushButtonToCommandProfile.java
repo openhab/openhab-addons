@@ -96,8 +96,8 @@ public class PushButtonToCommandProfile implements TriggerProfile {
         long retval;
         Object paramValue = context.getConfiguration().get(param);
         logger.debug("Configuring profile with {} parameter '{}'", param, paramValue);
-        if (paramValue instanceof BigDecimal) {
-            retval = ((BigDecimal) paramValue).longValue();
+        if (paramValue instanceof BigDecimal decimalParam) {
+            retval = decimalParam.longValue();
         } else {
             logger.debug("Parameter '{}' is not of type BigDecimal, using default value '{}'", param, defValue);
             retval = defValue;

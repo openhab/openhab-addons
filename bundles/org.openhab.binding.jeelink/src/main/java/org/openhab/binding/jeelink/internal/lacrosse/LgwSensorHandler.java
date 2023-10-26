@@ -17,11 +17,11 @@ import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
-import org.openhab.binding.jeelink.internal.util.StringUtils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -31,6 +31,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public class LgwSensorHandler extends JeeLinkSensorHandler<LgwReading> {
 
     @Override
     public ReadingPublisher<LgwReading> createPublisher() {
-        ReadingPublisher<LgwReading> publisher = new ReadingPublisher<LgwReading>() {
+        return new ReadingPublisher<LgwReading>() {
             @Override
             public void publish(LgwReading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {
@@ -78,7 +79,8 @@ public class LgwSensorHandler extends JeeLinkSensorHandler<LgwReading> {
                                     .create(new ChannelUID(getThing().getUID(), HUMIDITY_CHANNEL), "Number:Humidity")
                                     .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(),
                                             HUMIDITY_CHANNEL))
-                                    .withLabel(StringUtils.capitalize(HUMIDITY_CHANNEL)).build());
+                                    .withLabel(Objects.requireNonNull(StringUtils.capitalize(HUMIDITY_CHANNEL)))
+                                    .build());
                             updateThing(thingBuilder.build());
 
                             hasHumidityChannel = true;
@@ -94,7 +96,8 @@ public class LgwSensorHandler extends JeeLinkSensorHandler<LgwReading> {
                                     .create(new ChannelUID(getThing().getUID(), PRESSURE_CHANNEL), "Number:Pressure")
                                     .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(),
                                             PRESSURE_CHANNEL))
-                                    .withLabel(StringUtils.capitalize(PRESSURE_CHANNEL)).build());
+                                    .withLabel(Objects.requireNonNull(StringUtils.capitalize(PRESSURE_CHANNEL)))
+                                    .build());
                             updateThing(thingBuilder.build());
 
                             hasPressureChannel = true;
@@ -109,7 +112,5 @@ public class LgwSensorHandler extends JeeLinkSensorHandler<LgwReading> {
             public void dispose() {
             }
         };
-
-        return publisher;
     }
 }

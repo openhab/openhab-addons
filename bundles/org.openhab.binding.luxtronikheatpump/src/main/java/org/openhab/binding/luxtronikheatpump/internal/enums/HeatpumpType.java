@@ -109,7 +109,7 @@ public enum HeatpumpType {
         this.name = name;
     }
 
-    public static final HeatpumpType fromCode(Integer code) {
+    public static HeatpumpType fromCode(Integer code) {
         for (HeatpumpType error : HeatpumpType.values()) {
             if (error.code.equals(code)) {
                 return error;

@@ -107,7 +107,7 @@ public class WemoDiscoveryParticipantTest {
         assertThat(result.getThingUID(), is(new ThingUID(thingTypeUid, DEVICE_UDN)));
         assertThat(result.getThingTypeUID(), is(thingTypeUid));
         assertThat(result.getBridgeUID(), is(nullValue()));
-        assertThat(result.getProperties().get(WemoBindingConstants.UDN), is(DEVICE_UDN.toString()));
+        assertThat(result.getProperties().get(WemoBindingConstants.UDN), is(DEVICE_UDN));
         assertThat(result.getRepresentationProperty(), is(WemoBindingConstants.UDN));
     }
 }

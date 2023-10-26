@@ -15,7 +15,6 @@ package org.openhab.binding.rme.internal.handler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.rme.internal.RMEBindingConstants.DataField;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
@@ -24,6 +23,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +79,9 @@ public class RMEThingHandler extends SerialThingHandler {
     @Override
     public void onDataReceived(String receivedLine) {
         String line = StringUtils.chomp(receivedLine);
-
+        if (line == null) {
+            line = "";
+        }
         // little hack to overcome Locale limits of the RME Rain Manager
         // note to the attentive reader : should we add support for system
         // locale's in the Type classes? ;-)
@@ -102,9 +104,9 @@ public class RMEThingHandler extends SerialThingHandler {
                         }
                         case MODE: {
                             StringType stringType = null;
-                            if (matcher.group(i).equals("0")) {
+                            if ("0".equals(matcher.group(i))) {
                                 stringType = MANUAL;
-                            } else if (matcher.group(i).equals("1")) {
+                            } else if ("1".equals(matcher.group(i))) {
                                 stringType = AUTOMATIC;
                             }
                             if (stringType != null) {
@@ -115,9 +117,9 @@ public class RMEThingHandler extends SerialThingHandler {
                         }
                         case SOURCE: {
                             StringType stringType = null;
-                            if (matcher.group(i).equals("0")) {
+                            if ("0".equals(matcher.group(i))) {
                                 stringType = RAIN;
-                            } else if (matcher.group(i).equals("1")) {
+                            } else if ("1".equals(matcher.group(i))) {
                                 stringType = CITY;
                             }
                             if (stringType != null) {
@@ -127,10 +129,10 @@ public class RMEThingHandler extends SerialThingHandler {
                             break;
                         }
                         default:
-                            if (matcher.group(i).equals("0")) {
+                            if ("0".equals(matcher.group(i))) {
                                 updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()),
                                         OnOffType.OFF);
-                            } else if (matcher.group(i).equals("1")) {
+                            } else if ("1".equals(matcher.group(i))) {
                                 updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()),
                                         OnOffType.ON);
                             }

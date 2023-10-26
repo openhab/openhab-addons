@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * The {@link BenqProjectorHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * Based on 'epsonprojector' originally by Pauli Anttila & Yannick Schaus
+ * Based on 'epsonprojector' originally by Pauli Anttila and Yannick Schaus
  *
  * @author Michael Lobstein - Initial contribution
  */

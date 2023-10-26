@@ -54,7 +54,7 @@ public class NetatmoConstants {
             this.minValue = minValue;
             this.maxValue = maxValue;
             this.unit = unit;
-            String[] splitter = Double.valueOf(precision).toString().split("\\.");
+            String[] splitter = Double.toString(precision).split("\\.");
             if (splitter.length > 1) {
                 int dec = Integer.parseInt(splitter[1]);
                 this.scale = dec > 0 ? Integer.toString(dec).length() : 0;
@@ -169,7 +169,7 @@ public class NetatmoConstants {
     public static final int THERM_MAX_SETPOINT = 30;
 
     // Token scopes
-    public static enum Scope {
+    public enum Scope {
         @SerializedName("read_station")
         READ_STATION,
         @SerializedName("read_thermostat")
@@ -200,7 +200,7 @@ public class NetatmoConstants {
         ACCESS_DOORBELL,
         @SerializedName("read_carbonmonoxidedetector")
         READ_CARBONMONOXIDEDETECTOR,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private static final Scope[] SMOKE_SCOPES = { Scope.READ_SMOKEDETECTOR };
@@ -212,7 +212,7 @@ public class NetatmoConstants {
     private static final Scope[] DOORBELL_SCOPES = { Scope.READ_DOORBELL, Scope.WRITE_DOORBELL, Scope.ACCESS_DOORBELL };
     private static final Scope[] PRESENCE_SCOPES = { Scope.READ_PRESENCE, Scope.WRITE_PRESENCE, Scope.ACCESS_PRESENCE };
 
-    public static enum FeatureArea {
+    public enum FeatureArea {
         AIR_CARE(AIR_CARE_SCOPES),
         WEATHER(WEATHER_SCOPES),
         ENERGY(THERMOSTAT_SCOPES),
@@ -234,7 +234,7 @@ public class NetatmoConstants {
     static final int[] RADIO_SIGNAL_LEVELS = new int[] { 90, 80, 70, 60 }; // Resp : low, medium, high, full
 
     // Thermostat definitions
-    public static enum SetpointMode {
+    public enum SetpointMode {
         @SerializedName("program")
         PROGRAM("program"),
         @SerializedName("away")
@@ -259,7 +259,7 @@ public class NetatmoConstants {
         }
     }
 
-    public static enum ThermostatZoneType {
+    public enum ThermostatZoneType {
         @SerializedName("0")
         DAY("0"),
         @SerializedName("1")
@@ -290,7 +290,7 @@ public class NetatmoConstants {
         OFF,
         @SerializedName("auto")
         AUTO,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public enum EventCategory {
@@ -300,7 +300,7 @@ public class NetatmoConstants {
         ANIMAL,
         @SerializedName("vehicle")
         VEHICLE,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public enum TrendDescription {
@@ -310,7 +310,7 @@ public class NetatmoConstants {
         STABLE,
         @SerializedName("down")
         DOWN,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public enum VideoStatus {
@@ -320,7 +320,7 @@ public class NetatmoConstants {
         AVAILABLE,
         @SerializedName("deleted")
         DELETED,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public enum SdCardStatus {
@@ -338,7 +338,7 @@ public class NetatmoConstants {
         SD_CARD_INCOMPATIBLE_SPEED,
         @SerializedName("7")
         SD_CARD_INSUFFICIENT_SPACE,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public enum AlimentationStatus {
@@ -346,7 +346,7 @@ public class NetatmoConstants {
         ALIM_INCORRECT_POWER,
         @SerializedName("2")
         ALIM_CORRECT_POWER,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public enum SirenStatus {
@@ -429,6 +429,29 @@ public class NetatmoConstants {
         @SerializedName("40")
         JSON_GIVEN_HAS_AN_INVALID_ENCODING,
         @SerializedName("41")
-        DEVICE_IS_UNREACHABLE;
+        DEVICE_IS_UNREACHABLE
+    }
+
+    public enum HomeStatusError {
+        @SerializedName("1")
+        UNKNOWN_ERROR("homestatus-unknown-error"),
+        @SerializedName("2")
+        INTERNAL_ERROR("homestatus-internal-error"),
+        @SerializedName("3")
+        PARSER_ERROR("homestatus-parser-error"),
+        @SerializedName("4")
+        COMMAND_UNKNOWN_NODE_MODULE_ERROR("homestatus-command-unknown"),
+        @SerializedName("5")
+        COMMAND_INVALID_PARAMS("homestatus-invalid-params"),
+        @SerializedName("6")
+        UNREACHABLE("device-not-connected"),
+        UNKNOWN("deserialization-unknown");
+
+        // Associated error message that can be found in properties files
+        public final String message;
+
+        HomeStatusError(String message) {
+            this.message = message;
+        }
     }
 }

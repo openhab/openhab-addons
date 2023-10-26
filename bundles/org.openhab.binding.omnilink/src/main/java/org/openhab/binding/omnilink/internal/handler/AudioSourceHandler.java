@@ -118,8 +118,8 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
                 if (command instanceof RefreshType) {
                     updateState(CHANNEL_AUDIO_SOURCE_POLLING,
                             OnOffType.from((scheduledPolling != null && !scheduledPolling.isDone())));
-                } else if (command instanceof OnOffType) {
-                    handlePolling(channelUID, (OnOffType) command);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    handlePolling(channelUID, onOffCommand);
                 } else {
                     logger.debug("Invalid command: {}, must be RefreshType or OnOffType", command);
                 }

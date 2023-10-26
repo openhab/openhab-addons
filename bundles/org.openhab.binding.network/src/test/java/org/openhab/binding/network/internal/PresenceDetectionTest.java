@@ -20,8 +20,8 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -62,7 +62,7 @@ public class PresenceDetectionTest {
     @BeforeEach
     public void setUp() throws UnknownHostException {
         // Mock an interface
-        when(networkUtils.getInterfaceNames()).thenReturn(Collections.singleton("TESTinterface"));
+        when(networkUtils.getInterfaceNames()).thenReturn(Set.of("TESTinterface"));
         doReturn(ArpPingUtilEnum.IPUTILS_ARPING).when(networkUtils).determineNativeARPpingMethod(anyString());
         doReturn(IpPingMethodEnum.WINDOWS_PING).when(networkUtils).determinePingMethod();
 
@@ -77,7 +77,7 @@ public class PresenceDetectionTest {
         subject.setTimeout(300);
         subject.setUseDhcpSniffing(false);
         subject.setIOSDevice(true);
-        subject.setServicePorts(Collections.singleton(1010));
+        subject.setServicePorts(Set.of(1010));
         subject.setUseArpPing(true, "arping", ArpPingUtilEnum.IPUTILS_ARPING);
         subject.setUseIcmpPing(true);
 

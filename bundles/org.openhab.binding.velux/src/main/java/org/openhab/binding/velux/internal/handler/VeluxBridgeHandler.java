@@ -914,7 +914,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * Exported method (called by an OpenHAB Rules Action) to move an actuator relative to its current position
      *
      * @param nodeId the node to be moved
-     * @param relativePercent relative position change to the current position (-100% <= relativePercent <= +100%)
+     * @param relativePercent relative position change to the current position
+     *            ({@code -100% <= relativePercent <= +100%})
      * @return true if the command could be issued
      */
     public boolean moveRelative(int nodeId, int relativePercent) {
@@ -1029,8 +1030,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     private void updateDynamicChannels() {
         getThing().getThings().stream().forEach(thing -> {
             ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler instanceof VeluxHandler) {
-                ((VeluxHandler) thingHandler).updateDynamicChannels(this);
+            if (thingHandler instanceof VeluxHandler veluxHandler) {
+                veluxHandler.updateDynamicChannels(this);
             }
         });
     }

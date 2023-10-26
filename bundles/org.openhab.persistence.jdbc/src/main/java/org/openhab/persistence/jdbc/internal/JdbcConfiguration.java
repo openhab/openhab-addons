@@ -321,7 +321,7 @@ public class JdbcConfiguration {
                         warn += "\tDerby:     version >= 10.14.2.0 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
                         break;
                     case "h2":
-                        warn += "\tH2:        version >= 1.4.189 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
+                        warn += "\tH2:        version >= 2.2.224 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
                         break;
                     case "hsqldb":
                         warn += "\tHSQLDB:    version >= 2.3.3 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
@@ -330,13 +330,13 @@ public class JdbcConfiguration {
                         warn += "\tMariaDB:   version >= 3.0.8 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
                         break;
                     case "mysql":
-                        warn += "\tMySQL:     version >= 8.0.33 from             https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
+                        warn += "\tMySQL:     version >= 8.1.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
                         break;
                     case "postgresql":
                         warn += "\tPostgreSQL:version >= 42.4.3 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
                         break;
                     case "sqlite":
-                        warn += "\tSQLite:    version >= 3.40.0.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                        warn += "\tSQLite:    version >= 3.42.0.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
                         break;
                 }
             }

@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_DISHWASHER;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.math.BigDecimal;
 
@@ -49,7 +47,7 @@ import com.google.gson.JsonElement;
 public class DishwasherHandler extends MieleApplianceHandler<DishwasherChannelSelector>
         implements ExtendedDeviceStateListener {
 
-    private static final int POWER_CONSUMPTION_BYTE_POSITION = 16;
+    private static final int ENERGY_CONSUMPTION_BYTE_POSITION = 16;
     private static final int WATER_CONSUMPTION_BYTE_POSITION = 18;
     private static final int EXTENDED_STATE_MIN_SIZE_BYTES = 19;
 
@@ -122,6 +120,7 @@ public class DishwasherHandler extends MieleApplianceHandler<DishwasherChannelSe
         updateSwitchStartStopFromState(dp);
     }
 
+    @Override
     public void onApplianceExtendedStateChanged(byte[] extendedDeviceState) {
         if (extendedDeviceState.length < EXTENDED_STATE_MIN_SIZE_BYTES) {
             logger.debug("Insufficient extended state data to extract consumption values: {}", extendedDeviceState);
@@ -129,9 +128,9 @@ public class DishwasherHandler extends MieleApplianceHandler<DishwasherChannelSe
         }
 
         BigDecimal kiloWattHoursTenths = BigDecimal
-                .valueOf(extendedDeviceState[POWER_CONSUMPTION_BYTE_POSITION] & 0xff);
+                .valueOf(extendedDeviceState[ENERGY_CONSUMPTION_BYTE_POSITION] & 0xff);
         var kiloWattHours = new QuantityType<>(kiloWattHoursTenths.divide(BigDecimal.valueOf(10)), Units.KILOWATT_HOUR);
-        updateExtendedState(POWER_CONSUMPTION_CHANNEL_ID, kiloWattHours);
+        updateExtendedState(ENERGY_CONSUMPTION_CHANNEL_ID, kiloWattHours);
 
         BigDecimal decilitres = BigDecimal.valueOf(extendedDeviceState[WATER_CONSUMPTION_BYTE_POSITION] & 0xff);
         var litres = new QuantityType<>(decilitres.divide(BigDecimal.valueOf(10)), Units.LITRE);

@@ -82,8 +82,8 @@ public class AbstractDynamoDBItemSerializationTest {
         Object actualState = dbItem.getState();
         assertNotNull(actualState);
         Objects.requireNonNull(actualState);
-        if (expectedState instanceof BigDecimal) {
-            BigDecimal expectedRounded = DynamoDBBigDecimalItem.loseDigits(((BigDecimal) expectedState));
+        if (expectedState instanceof BigDecimal decimal) {
+            BigDecimal expectedRounded = DynamoDBBigDecimalItem.loseDigits(decimal);
             assertEquals(0, expectedRounded.compareTo((BigDecimal) actualState),
                     String.format("Expected state %s (%s but with some digits lost) did not match actual state %s",
                             expectedRounded, expectedState, actualState));

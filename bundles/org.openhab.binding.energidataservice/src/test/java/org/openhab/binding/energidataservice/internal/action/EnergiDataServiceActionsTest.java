@@ -40,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.energidataservice.internal.DatahubTariff;
 import org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants;
 import org.openhab.binding.energidataservice.internal.PriceListParser;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecords;
@@ -174,7 +175,26 @@ public class EnergiDataServiceActionsTest {
         Map<Instant, BigDecimal> actual = actions.getPrices();
         assertThat(actual.size(), is(35));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("1.545065027"))));
+        assertThat(actual.get(Instant.parse("2023-02-04T15:00:00Z")), is(equalTo(new BigDecimal("1.708765039"))));
         assertThat(actual.get(Instant.parse("2023-02-04T16:00:00Z")), is(equalTo(new BigDecimal("2.443870054"))));
+    }
+
+    @Test
+    void getPricesTotalFullElectricityTax() throws IOException {
+        mockCommonDatasets(actions, "SpotPrices20231003.json");
+
+        Map<Instant, BigDecimal> actual = actions.getPrices();
+        assertThat(actual.size(), is(4));
+        assertThat(actual.get(Instant.parse("2023-10-03T20:00:00Z")), is(equalTo(new BigDecimal("0.829059999"))));
+    }
+
+    @Test
+    void getPricesTotalReducedElectricityTax() throws IOException {
+        mockCommonDatasets(actions, "SpotPrices20231003.json", true);
+
+        Map<Instant, BigDecimal> actual = actions.getPrices();
+        assertThat(actual.size(), is(4));
+        assertThat(actual.get(Instant.parse("2023-10-03T20:00:00Z")), is(equalTo(new BigDecimal("0.140059999"))));
     }
 
     @Test
@@ -373,6 +393,11 @@ public class EnergiDataServiceActionsTest {
     }
 
     private void mockCommonDatasets(EnergiDataServiceActions actions, String spotPricesFilename) throws IOException {
+        mockCommonDatasets(actions, spotPricesFilename, false);
+    }
+
+    private void mockCommonDatasets(EnergiDataServiceActions actions, String spotPricesFilename,
+            boolean isReducedElectricityTax) throws IOException {
         SpotPrice[] spotPriceRecords = getObjectFromJson(spotPricesFilename, SpotPrice[].class);
         Map<Instant, BigDecimal> spotPrices = Arrays.stream(spotPriceRecords)
                 .collect(Collectors.toMap(SpotPrice::hourStart, SpotPrice::spotPrice));
@@ -388,16 +413,21 @@ public class EnergiDataServiceActionsTest {
         datahubRecords = getObjectFromJson("ElectricityTaxes.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> electricityTaxes = priceListParser
                 .toHourly(Arrays.stream(datahubRecords.records()).toList());
+        datahubRecords = getObjectFromJson("ReducedElectricityTaxes.json", DatahubPricelistRecords.class);
+        Map<Instant, BigDecimal> reducedElectricityTaxes = priceListParser
+                .toHourly(Arrays.stream(datahubRecords.records()).toList());
         datahubRecords = getObjectFromJson("TransmissionNetTariffs.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> transmissionNetTariffs = priceListParser
                 .toHourly(Arrays.stream(datahubRecords.records()).toList());
 
         when(handler.getSpotPrices()).thenReturn(spotPrices);
-        when(handler.getNetTariffs()).thenReturn(netTariffs);
-        when(handler.getSystemTariffs()).thenReturn(systemTariffs);
-        when(handler.getElectricityTaxes()).thenReturn(electricityTaxes);
-        when(handler.getTransmissionNetTariffs()).thenReturn(transmissionNetTariffs);
+        when(handler.getTariffs(DatahubTariff.NET_TARIFF)).thenReturn(netTariffs);
+        when(handler.getTariffs(DatahubTariff.SYSTEM_TARIFF)).thenReturn(systemTariffs);
+        when(handler.getTariffs(DatahubTariff.ELECTRICITY_TAX)).thenReturn(electricityTaxes);
+        when(handler.getTariffs(DatahubTariff.REDUCED_ELECTRICITY_TAX)).thenReturn(reducedElectricityTaxes);
+        when(handler.getTariffs(DatahubTariff.TRANSMISSION_NET_TARIFF)).thenReturn(transmissionNetTariffs);
         when(handler.getCurrency()).thenReturn(EnergiDataServiceBindingConstants.CURRENCY_DKK);
+        when(handler.isReducedElectricityTax()).thenReturn(isReducedElectricityTax);
         actions.setThingHandler(handler);
     }
 }

@@ -66,8 +66,7 @@ public class BPUPListener implements Runnable {
     /**
      * Constructor of the receiver runnable thread.
      *
-     * @param address The address of the Bond Bridge
-     * @throws SocketException is some problem occurs opening the socket.
+     * @param bridgeHandler The handler of the Bond Bridge
      */
     public BPUPListener(BondBridgeHandler bridgeHandler) {
         logger.debug("Starting BPUP Listener...");

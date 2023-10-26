@@ -133,11 +133,9 @@ public class PlexApiConnector {
      */
     public @Nullable MediaContainer getSessionData() {
         try {
-            String url = "https://" + host + ":" + String.valueOf(port) + "/status/sessions" + "?X-Plex-Token=" + token;
+            String url = "https://" + host + ":" + port + "/status/sessions" + "?X-Plex-Token=" + token;
             logger.debug("Getting session data '{}'", url);
-            MediaContainer mediaContainer = getFromXml(doHttpRequest("GET", url, getClientHeaders(), false),
-                    MediaContainer.class);
-            return mediaContainer;
+            return getFromXml(doHttpRequest("GET", url, getClientHeaders(), false), MediaContainer.class);
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("An exception occurred while polling the PLEX Server: '{}'", e.getMessage());
             return null;
@@ -151,8 +149,7 @@ public class PlexApiConnector {
      * @return the completed url that will be usable
      */
     public String getURL(String url) {
-        String artURL = scheme + "://" + host + ":" + String.valueOf(port + url + "?X-Plex-Token=" + token);
-        return artURL;
+        return scheme + "://" + host + ":" + port + url + "?X-Plex-Token=" + token;
     }
 
     /**
@@ -231,7 +228,8 @@ public class PlexApiConnector {
             response = HttpUtil.executeUrl(method, url, headers, null, null, REQUEST_TIMEOUT_MS);
         } else {
             // Requests sent to the local server need to bypass certificate checking via the custom httpClient
-            final Request request = httpClient.newRequest(url).method(HttpUtil.createHttpMethod(method));
+            final Request request = httpClient.newRequest(url).method(HttpUtil.createHttpMethod(method))
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             for (String httpHeaderKey : headers.stringPropertyNames()) {
                 if (httpHeaderKey.equalsIgnoreCase(HttpHeader.USER_AGENT.toString())) {
                     request.agent(headers.getProperty(httpHeaderKey));
@@ -355,7 +353,7 @@ public class PlexApiConnector {
             NotificationContainer notification = gson.fromJson(msg, NotificationContainer.class);
             if (notification != null) {
                 PlexUpdateListener listenerLocal = listener;
-                if (listenerLocal != null && notification.getNotificationContainer().getType().equals("playing")) {
+                if (listenerLocal != null && "playing".equals(notification.getNotificationContainer().getType())) {
                     listenerLocal.onItemStatusUpdate(
                             notification.getNotificationContainer().getPlaySessionStateNotification().get(0)
                                     .getSessionKey(),
@@ -413,7 +411,7 @@ public class PlexApiConnector {
 
         if (commandPath != null) {
             try {
-                String url = "https://" + host + ":" + String.valueOf(port) + commandPath;
+                String url = "https://" + host + ":" + port + commandPath;
                 Properties headers = getClientHeaders();
                 headers.put("X-Plex-Target-Client-Identifier", playerID);
                 doHttpRequest("GET", url, headers, false);

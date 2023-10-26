@@ -99,16 +99,15 @@ class LxControlEIBDimmer extends LxControl {
             } else {
                 sendAction(CMD_OFF);
             }
-        } else if (command instanceof PercentType) {
-            PercentType percentCmd = (PercentType) command;
-            setPosition(percentCmd.doubleValue());
-        } else if (command instanceof IncreaseDecreaseType) {
+        } else if (command instanceof PercentType percentCommand) {
+            setPosition(percentCommand.doubleValue());
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
             Double value = getStateDoubleValue(STATE_POSITION);
             Double min = getMin();
             Double max = getMax();
             Double step = getStep();
             if (value != null && max != null && min != null && step != null && min >= 0 && max >= 0 && max > min) {
-                if ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE) {
+                if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                     value += step;
                     if (value > max) {
                         value = max;
@@ -169,8 +168,8 @@ class LxControlEIBDimmer extends LxControl {
             Double max = getMax();
             Double min = getMin();
             if (max != null && min != null) {
-                double value = min + ohValue * (max - min) / 100;
-                return value; // no rounding to integer value is needed as loxone is accepting floating point values
+                return min + ohValue * (max - min) / 100; // no rounding to integer value is needed as loxone is
+                                                          // accepting floating point values
             }
         }
         return null;

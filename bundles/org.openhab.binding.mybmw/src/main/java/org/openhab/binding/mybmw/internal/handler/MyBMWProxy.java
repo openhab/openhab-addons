@@ -57,14 +57,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MyBMWProxy} This class holds the important constants for the BMW Connected Drive Authorization.
- * They
- * are taken from the Bimmercode from github {@link https://github.com/bimmerconnected/bimmer_connected}
+ * They are taken from the Bimmercode from github <a href="https://github.com/bimmerconnected/bimmer_connected">
+ * https://github.com/bimmerconnected/bimmer_connected</a>.
  * File defining these constants
- * {@link https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py}
- * https://customer.bmwgroup.com/one/app/oauth.js
+ * <a href="https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py">
+ * https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py</a>
+ * <a href="https://customer.bmwgroup.com/one/app/oauth.js">https://customer.bmwgroup.com/one/app/oauth.js</a>
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
  */
 @NonNullByDefault
 public class MyBMWProxy {
@@ -163,10 +164,10 @@ public class MyBMWProxy {
                     logger.debug("HTTP Error {}", error.toString());
                     callback.onError(error);
                 } else {
-                    if (callback instanceof StringResponseCallback) {
-                        ((StringResponseCallback) callback).onResponse(getContentAsString());
-                    } else if (callback instanceof ByteResponseCallback) {
-                        ((ByteResponseCallback) callback).onResponse(getContent());
+                    if (callback instanceof StringResponseCallback responseCallback) {
+                        responseCallback.onResponse(getContentAsString());
+                    } else if (callback instanceof ByteResponseCallback responseCallback) {
+                        responseCallback.onResponse(getContent());
                     } else {
                         logger.error("unexpected reponse type {}", callback.getClass().getName());
                     }
@@ -304,7 +305,8 @@ public class MyBMWProxy {
              */
             String authValuesUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                     + BimmerConstants.API_OAUTH_CONFIG;
-            Request authValuesRequest = httpClient.newRequest(authValuesUrl);
+            Request authValuesRequest = httpClient.newRequest(authValuesUrl).timeout(HTTP_TIMEOUT_SEC,
+                    TimeUnit.SECONDS);
             authValuesRequest.header(ACP_SUBSCRIPTION_KEY, BimmerConstants.OCP_APIM_KEYS.get(configuration.region));
             authValuesRequest.header(X_USER_AGENT,
                     String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
@@ -343,7 +345,7 @@ public class MyBMWProxy {
              * Step 3) Authorization with username and password
              */
             String loginUrl = aqr.gcdmBaseUrl + BimmerConstants.OAUTH_ENDPOINT;
-            Request loginRequest = httpClient.POST(loginUrl);
+            Request loginRequest = httpClient.POST(loginUrl).timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS);
             loginRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
 
             MultiMap<String> loginParams = new MultiMap<String>(baseParams);
@@ -363,7 +365,8 @@ public class MyBMWProxy {
             /**
              * Step 4) Authorize with code
              */
-            Request authRequest = httpClient.POST(loginUrl).followRedirects(false);
+            Request authRequest = httpClient.POST(loginUrl).followRedirects(false).timeout(HTTP_TIMEOUT_SEC,
+                    TimeUnit.SECONDS);
             MultiMap<String> authParams = new MultiMap<String>(baseParams);
             authParams.put(AUTHORIZATION, authCode);
             authRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
@@ -379,7 +382,7 @@ public class MyBMWProxy {
             /**
              * Step 5) Request token
              */
-            Request codeRequest = httpClient.POST(aqr.tokenEndpoint);
+            Request codeRequest = httpClient.POST(aqr.tokenEndpoint).timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS);
             String basicAuth = "Basic "
                     + Base64.getUrlEncoder().encodeToString((aqr.clientId + ":" + aqr.clientSecret).getBytes());
             codeRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
@@ -425,10 +428,10 @@ public class MyBMWProxy {
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         final StringBuilder codeFound = new StringBuilder();
         tokenMap.forEach((key, value) -> {
-            if (value.size() > 0) {
+            if (!value.isEmpty()) {
                 String val = value.get(0);
                 if (key.endsWith(CODE)) {
-                    codeFound.append(val.toString());
+                    codeFound.append(val);
                 }
             }
         });
@@ -443,7 +446,7 @@ public class MyBMWProxy {
              */
             String publicKeyUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_CHINA)
                     + BimmerConstants.CHINA_PUBLIC_KEY;
-            Request oauthQueryRequest = httpClient.newRequest(publicKeyUrl);
+            Request oauthQueryRequest = httpClient.newRequest(publicKeyUrl).timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS);
             oauthQueryRequest.header(HttpHeader.USER_AGENT, BimmerConstants.USER_AGENT);
             oauthQueryRequest.header(X_USER_AGENT,
                     String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
@@ -479,7 +482,7 @@ public class MyBMWProxy {
              */
             String tokenUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_CHINA)
                     + BimmerConstants.CHINA_LOGIN;
-            Request loginRequest = httpClient.POST(tokenUrl);
+            Request loginRequest = httpClient.POST(tokenUrl).timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS);
             loginRequest.header(X_USER_AGENT,
                     String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
             String jsonContent = "{ \"mobile\":\"" + configuration.userName + "\", \"password\":\"" + encodedPassword

@@ -69,14 +69,15 @@ public class LivisiClientTest {
 
     @Test
     public void testRefreshStatusSHC2() throws Exception {
-        mockRequest(STATUS_URL,
-                "{\"gateway\": {\"serialNumber\": \"123\","
-                        + "\"appVersion\": \"1.2.37.430\",\"osVersion\": \"8.17\",\"configVersion\": 1200,"
-                        + "\"operationStatus\": \"active\",\"network\": "
-                        + "{\"ethCableAttached\": true,\"inUseAdapter\": \"eth\",\"hotspotActive\": false,"
-                        + "\"wpsActive\": false,\"backendAvailable\": true,\"ethMacAddress\": "
-                        + "[{\"id\": \"456\",\"config\": {\"name\": \"Arbeitszimmer\",\"type\": \"Other\"},"
-                        + "\"desc\": \"/desc/location\"}]}}}");
+        mockRequest(STATUS_URL, """
+                {"gateway": {"serialNumber": "123",\
+                "appVersion": "1.2.37.430","osVersion": "8.17","configVersion": 1200,\
+                "operationStatus": "active","network": \
+                {"ethCableAttached": true,"inUseAdapter": "eth","hotspotActive": false,\
+                "wpsActive": false,"backendAvailable": true,"ethMacAddress": \
+                [{"id": "456","config": {"name": "Arbeitszimmer","type": "Other"},\
+                "desc": "/desc/location"}]}}}\
+                """);
         assertEquals("1200", client.refreshStatus());
     }
 

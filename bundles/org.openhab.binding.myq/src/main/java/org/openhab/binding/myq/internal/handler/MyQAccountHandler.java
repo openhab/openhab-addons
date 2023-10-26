@@ -27,10 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -92,12 +91,14 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
+
     /*
      * MyQ oAuth relate fields
      */
     private static final String CLIENT_SECRET = "VUQ0RFhuS3lQV3EyNUJTdw==";
-    private static final String CLIENT_ID = "IOS_CGI_MYQ";
-    private static final String REDIRECT_URI = "com.myqops://ios";
+    private static final String CLIENT_ID = "ANDROID_CGI_MYQ";
+    private static final String REDIRECT_URI = "com.myqops://android";
     private static final String SCOPE = "MyQ_Residential offline_access";
     /*
      * MyQ authentication API endpoints
@@ -151,7 +152,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         username = config.username;
         password = config.password;
         // MyQ can get picky about blocking user agents apparently
-        userAgent = MyQAccountHandler.randomString(20);
+        userAgent = ""; // no agent string
         needsLogin = true;
         updateStatus(ThingStatus.UNKNOWN);
         restartPolls(false);
@@ -176,17 +177,15 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MyQDiscoveryService.class);
+        return Set.of(MyQDiscoveryService.class);
     }
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         List<DeviceDTO> localDeviceCaches = devicesCache;
-        if (childHandler instanceof MyQDeviceHandler) {
-            MyQDeviceHandler handler = (MyQDeviceHandler) childHandler;
-            localDeviceCaches.stream()
-                    .filter(d -> ((MyQDeviceHandler) childHandler).getSerialNumber().equalsIgnoreCase(d.serialNumber))
-                    .findFirst().ifPresent(handler::handleDeviceUpdate);
+        if (childHandler instanceof MyQDeviceHandler deviceHandler) {
+            localDeviceCaches.stream().filter(d -> deviceHandler.getSerialNumber().equalsIgnoreCase(d.serialNumber))
+                    .findFirst().ifPresent(deviceHandler::handleDeviceUpdate);
         }
     }
 
@@ -418,7 +417,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             needsLogin = false;
         }
 
-        Request request = httpClient.newRequest(url).method(method).agent(userAgent).timeout(10, TimeUnit.SECONDS)
+        Request request = httpClient.newRequest(url).method(method).agent(userAgent)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                 .header("Authorization", authTokenHeader(tokenResponse));
         if (content != null & contentType != null) {
             request = request.content(content, contentType);
@@ -486,6 +486,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             throws InterruptedException, ExecutionException, TimeoutException {
         try {
             Request request = httpClient.newRequest(LOGIN_AUTHORIZE_URL) //
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS) //
                     .param("client_id", CLIENT_ID) //
                     .param("code_challenge", generateCodeChallange(codeVerifier)) //
                     .param("code_challenge_method", "S256") //
@@ -493,6 +494,9 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                     .param("response_type", "code") //
                     .param("scope", SCOPE) //
                     .agent(userAgent).followRedirects(true);
+            request.header("Accept", "\"*/*\"");
+            request.header("Authorization",
+                    "Basic " + Base64.getEncoder().encodeToString((CLIENT_ID + ":").getBytes()));
             logger.debug("Sending {} to {}", request.getMethod(), request.getURI());
             ContentResponse response = request.send();
             logger.debug("Login Code {} Response {}", response.getStatus(), response.getContentAsString());
@@ -530,6 +534,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         fields.add("ReturnUrl", returnURL);
 
         Request request = httpClient.newRequest(url).method(HttpMethod.POST) //
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS) //
                 .content(new FormContentProvider(fields)) //
                 .agent(userAgent) //
                 .followRedirects(false);
@@ -556,7 +561,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                 location = loc;
                 break;
             }
-            request = httpClient.newRequest(LOGIN_BASE_URL + loc).agent(userAgent).followRedirects(false);
+            request = httpClient.newRequest(LOGIN_BASE_URL + loc).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .agent(userAgent).followRedirects(false);
             setCookies(request);
             response = request.send();
         }
@@ -588,11 +594,11 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             fields.add("scope", params.get("scope"));
 
             Request request = httpClient.newRequest(LOGIN_TOKEN_URL) //
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS) //
                     .content(new FormContentProvider(fields)) //
                     .method(HttpMethod.POST) //
                     .agent(userAgent).followRedirects(true);
             setCookies(request);
-
             ContentResponse response = request.send();
             if (logger.isTraceEnabled()) {
                 logger.trace("Login Code {} Response {}", response.getStatus(), response.getContentAsString());
@@ -612,17 +618,6 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             this.oAuthService = oAuthService;
         }
         return oAuthService;
-    }
-
-    private static String randomString(int length) {
-        int low = 97; // a-z
-        int high = 122; // A-Z
-        StringBuilder sb = new StringBuilder(length);
-        Random random = new Random();
-        for (int i = 0; i < length; i++) {
-            sb.append((char) (low + (int) (random.nextFloat() * (high - low + 1))));
-        }
-        return sb.toString();
     }
 
     private String generateCodeVerifier() {

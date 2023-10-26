@@ -46,8 +46,8 @@ import com.google.gson.Gson;
  * The {@link NukiApiServlet} class is responsible for handling the callbacks from the Nuki Bridge.
  *
  * @author Markus Katter - Initial contribution
- * @contributer Christian Hoefler - Door sensor integration
- * @contributer Jan Vybíral - Added Opener support, improved callback handling
+ * @author Christian Hoefler - Door sensor integration
+ * @author Jan Vybíral - Added Opener support, improved callback handling
  */
 @NonNullByDefault
 public class NukiApiServlet extends HttpServlet {

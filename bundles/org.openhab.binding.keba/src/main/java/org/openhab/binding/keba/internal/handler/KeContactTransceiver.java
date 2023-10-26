@@ -405,7 +405,7 @@ public class KeContactTransceiver {
     private void establishConnection(KeContactHandler handler) {
         String ipAddress = handler.getIPAddress();
         if (handler.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR
-                && !ipAddress.equals("")) {
+                && !"".equals(ipAddress)) {
             logger.debug("Establishing the connection to the KEBA KeContact '{}'", handler.getThing().getUID());
 
             DatagramChannel datagramChannel = null;

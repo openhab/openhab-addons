@@ -48,6 +48,7 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
         if (partition != null) {
             updateState(PARTITION_LABEL_CHANNEL_UID, new StringType(partition.getLabel()));
             updateState(PARTITION_STATE_CHANNEL_UID, new StringType(partition.getState().getMainState()));
+            updateState(PARTITION_DETAILED_STATE_CHANNEL_UID, new StringType(partition.getState().getDetailedState()));
             updateState(PARTITION_ADDITIONAL_STATES_CHANNEL_UID,
                     new StringType("Deprecated field. Use direct channels instead"));
             updateState(PARTITION_READY_TO_ARM_CHANNEL_UID, booleanToSwitchState(partition.getState().isReadyToArm()));
@@ -121,7 +122,6 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
             return null;
         }
 
-        Partition partition = partitions.get(index);
-        return partition;
+        return partitions.get(index);
     }
 }

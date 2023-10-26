@@ -18,6 +18,7 @@ import java.net.URI;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.UriBuilder;
@@ -42,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@FreeboxOsIconProvider} delivers icons provided by FreeboxOS
+ * The {@link FreeboxOsIconProvider} delivers icons provided by FreeboxOS
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -51,6 +52,7 @@ import org.slf4j.LoggerFactory;
 public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsIconProvider.class);
+    private static final int REQUEST_TIMEOUT_MS = 8000;
 
     private final HttpClient httpClient;
     private final UriBuilder uriBuilder;
@@ -77,7 +79,8 @@ public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
     @Override
     protected @Nullable InputStream getResource(String iconSetId, String resourceName) {
         URI uri = uriBuilder.clone().path(resourceName).build();
-        Request request = httpClient.newRequest(uri).method(HttpMethod.GET);
+        Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
 
         try {
             ContentResponse response = request.send();

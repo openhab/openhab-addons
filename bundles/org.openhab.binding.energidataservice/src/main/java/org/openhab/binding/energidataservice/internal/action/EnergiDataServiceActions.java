@@ -33,6 +33,7 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.energidataservice.internal.DatahubTariff;
 import org.openhab.binding.energidataservice.internal.PriceCalculator;
 import org.openhab.binding.energidataservice.internal.exception.MissingPriceException;
 import org.openhab.binding.energidataservice.internal.handler.EnergiDataServiceHandler;
@@ -61,19 +62,22 @@ public class EnergiDataServiceActions implements ThingActions {
     private @Nullable EnergiDataServiceHandler handler;
 
     private enum PriceElement {
-        SPOT_PRICE("spotprice"),
-        NET_TARIFF("nettariff"),
-        SYSTEM_TARIFF("systemtariff"),
-        ELECTRICITY_TAX("electricitytax"),
-        TRANSMISSION_NET_TARIFF("transmissionnettariff");
+        SPOT_PRICE("spotprice", null),
+        NET_TARIFF("nettariff", DatahubTariff.NET_TARIFF),
+        SYSTEM_TARIFF("systemtariff", DatahubTariff.SYSTEM_TARIFF),
+        ELECTRICITY_TAX("electricitytax", DatahubTariff.ELECTRICITY_TAX),
+        REDUCED_ELECTRICITY_TAX("reducedelectricitytax", DatahubTariff.REDUCED_ELECTRICITY_TAX),
+        TRANSMISSION_NET_TARIFF("transmissionnettariff", DatahubTariff.TRANSMISSION_NET_TARIFF);
 
         private static final Map<String, PriceElement> NAME_MAP = Stream.of(values())
                 .collect(Collectors.toMap(PriceElement::toString, Function.identity()));
 
         private String name;
+        private @Nullable DatahubTariff datahubTariff;
 
-        private PriceElement(String name) {
+        private PriceElement(String name, @Nullable DatahubTariff datahubTariff) {
             this.name = name;
+            this.datahubTariff = datahubTariff;
         }
 
         @Override
@@ -89,11 +93,26 @@ public class EnergiDataServiceActions implements ThingActions {
             }
             return myEnum;
         }
+
+        public @Nullable DatahubTariff getDatahubTariff() {
+            return datahubTariff;
+        }
     }
 
     @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description")
     public @ActionOutput(name = "prices", type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices() {
-        return getPrices(Arrays.stream(PriceElement.values()).collect(Collectors.toSet()));
+        EnergiDataServiceHandler handler = this.handler;
+        if (handler == null) {
+            logger.warn("EnergiDataServiceActions ThingHandler is null.");
+            return Map.of();
+        }
+
+        boolean isReducedElectricityTax = handler.isReducedElectricityTax();
+
+        return getPrices(Arrays.stream(PriceElement.values())
+                .filter(element -> element != (isReducedElectricityTax ? PriceElement.ELECTRICITY_TAX
+                        : PriceElement.REDUCED_ELECTRICITY_TAX))
+                .collect(Collectors.toSet()));
     }
 
     @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description")
@@ -235,24 +254,16 @@ public class EnergiDataServiceActions implements ThingActions {
             prices = new HashMap<>();
         }
 
-        if (priceElements.contains(PriceElement.NET_TARIFF)) {
-            Map<Instant, BigDecimal> netTariffMap = handler.getNetTariffs();
-            mergeMaps(prices, netTariffMap, !spotPricesRequired);
-        }
+        for (PriceElement priceElement : PriceElement.values()) {
+            DatahubTariff datahubTariff = priceElement.getDatahubTariff();
+            if (datahubTariff == null) {
+                continue;
+            }
 
-        if (priceElements.contains(PriceElement.SYSTEM_TARIFF)) {
-            Map<Instant, BigDecimal> systemTariffMap = handler.getSystemTariffs();
-            mergeMaps(prices, systemTariffMap, !spotPricesRequired);
-        }
-
-        if (priceElements.contains(PriceElement.ELECTRICITY_TAX)) {
-            Map<Instant, BigDecimal> electricityTaxMap = handler.getElectricityTaxes();
-            mergeMaps(prices, electricityTaxMap, !spotPricesRequired);
-        }
-
-        if (priceElements.contains(PriceElement.TRANSMISSION_NET_TARIFF)) {
-            Map<Instant, BigDecimal> transmissionNetTariffMap = handler.getTransmissionNetTariffs();
-            mergeMaps(prices, transmissionNetTariffMap, !spotPricesRequired);
+            if (priceElements.contains(priceElement)) {
+                Map<Instant, BigDecimal> tariffMap = handler.getTariffs(datahubTariff);
+                mergeMaps(prices, tariffMap, !spotPricesRequired);
+            }
         }
 
         return prices;
@@ -280,11 +291,11 @@ public class EnergiDataServiceActions implements ThingActions {
      * @return Map of prices
      */
     public static Map<Instant, BigDecimal> getPrices(@Nullable ThingActions actions, @Nullable String priceElements) {
-        if (actions instanceof EnergiDataServiceActions) {
+        if (actions instanceof EnergiDataServiceActions serviceActions) {
             if (priceElements != null && !priceElements.isBlank()) {
-                return ((EnergiDataServiceActions) actions).getPrices(priceElements);
+                return serviceActions.getPrices(priceElements);
             } else {
-                return ((EnergiDataServiceActions) actions).getPrices();
+                return serviceActions.getPrices();
             }
         } else {
             throw new IllegalArgumentException("Instance is not an EnergiDataServiceActions class.");
@@ -305,8 +316,8 @@ public class EnergiDataServiceActions implements ThingActions {
         if (start == null || end == null || power == null) {
             return BigDecimal.ZERO;
         }
-        if (actions instanceof EnergiDataServiceActions) {
-            return ((EnergiDataServiceActions) actions).calculatePrice(start, end, power);
+        if (actions instanceof EnergiDataServiceActions serviceActions) {
+            return serviceActions.calculatePrice(start, end, power);
         } else {
             throw new IllegalArgumentException("Instance is not an EnergiDataServiceActions class.");
         }
@@ -314,11 +325,11 @@ public class EnergiDataServiceActions implements ThingActions {
 
     public static Map<String, Object> calculateCheapestPeriod(@Nullable ThingActions actions,
             @Nullable Instant earliestStart, @Nullable Instant latestEnd, @Nullable Duration duration) {
-        if (actions instanceof EnergiDataServiceActions) {
+        if (actions instanceof EnergiDataServiceActions serviceActions) {
             if (earliestStart == null || latestEnd == null || duration == null) {
                 return Map.of();
             }
-            return ((EnergiDataServiceActions) actions).calculateCheapestPeriod(earliestStart, latestEnd, duration);
+            return serviceActions.calculateCheapestPeriod(earliestStart, latestEnd, duration);
         } else {
             throw new IllegalArgumentException("Instance is not an EnergiDataServiceActions class.");
         }
@@ -327,12 +338,11 @@ public class EnergiDataServiceActions implements ThingActions {
     public static Map<String, Object> calculateCheapestPeriod(@Nullable ThingActions actions,
             @Nullable Instant earliestStart, @Nullable Instant latestEnd, @Nullable Duration duration,
             @Nullable QuantityType<Power> power) {
-        if (actions instanceof EnergiDataServiceActions) {
+        if (actions instanceof EnergiDataServiceActions serviceActions) {
             if (earliestStart == null || latestEnd == null || duration == null || power == null) {
                 return Map.of();
             }
-            return ((EnergiDataServiceActions) actions).calculateCheapestPeriod(earliestStart, latestEnd, duration,
-                    power);
+            return serviceActions.calculateCheapestPeriod(earliestStart, latestEnd, duration, power);
         } else {
             throw new IllegalArgumentException("Instance is not an EnergiDataServiceActions class.");
         }
@@ -341,13 +351,13 @@ public class EnergiDataServiceActions implements ThingActions {
     public static Map<String, Object> calculateCheapestPeriod(@Nullable ThingActions actions,
             @Nullable Instant earliestStart, @Nullable Instant latestEnd, @Nullable Duration totalDuration,
             @Nullable List<Duration> durationPhases, @Nullable QuantityType<Energy> energyUsedPerPhase) {
-        if (actions instanceof EnergiDataServiceActions) {
+        if (actions instanceof EnergiDataServiceActions serviceActions) {
             if (earliestStart == null || latestEnd == null || totalDuration == null || durationPhases == null
                     || energyUsedPerPhase == null) {
                 return Map.of();
             }
-            return ((EnergiDataServiceActions) actions).calculateCheapestPeriod(earliestStart, latestEnd, totalDuration,
-                    durationPhases, energyUsedPerPhase);
+            return serviceActions.calculateCheapestPeriod(earliestStart, latestEnd, totalDuration, durationPhases,
+                    energyUsedPerPhase);
         } else {
             throw new IllegalArgumentException("Instance is not an EnergiDataServiceActions class.");
         }
@@ -356,12 +366,11 @@ public class EnergiDataServiceActions implements ThingActions {
     public static Map<String, Object> calculateCheapestPeriod(@Nullable ThingActions actions,
             @Nullable Instant earliestStart, @Nullable Instant latestEnd, @Nullable List<Duration> durationPhases,
             @Nullable List<QuantityType<Power>> powerPhases) {
-        if (actions instanceof EnergiDataServiceActions) {
+        if (actions instanceof EnergiDataServiceActions serviceActions) {
             if (earliestStart == null || latestEnd == null || durationPhases == null || powerPhases == null) {
                 return Map.of();
             }
-            return ((EnergiDataServiceActions) actions).calculateCheapestPeriod(earliestStart, latestEnd,
-                    durationPhases, powerPhases);
+            return serviceActions.calculateCheapestPeriod(earliestStart, latestEnd, durationPhases, powerPhases);
         } else {
             throw new IllegalArgumentException("Instance is not an EnergiDataServiceActions class.");
         }
@@ -369,8 +378,8 @@ public class EnergiDataServiceActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof EnergiDataServiceHandler) {
-            this.handler = (EnergiDataServiceHandler) handler;
+        if (handler instanceof EnergiDataServiceHandler serviceHandler) {
+            this.handler = serviceHandler;
         }
     }
 

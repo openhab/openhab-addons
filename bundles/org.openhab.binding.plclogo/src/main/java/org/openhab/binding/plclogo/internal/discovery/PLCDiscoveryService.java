@@ -21,7 +21,6 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Set;
 import java.util.TreeSet;
@@ -55,7 +54,7 @@ import org.slf4j.LoggerFactory;
 public class PLCDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(PLCDiscoveryService.class);
-    private static final Set<ThingTypeUID> THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
+    private static final Set<ThingTypeUID> THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE);
 
     private static final String LOGO_HOST = "address";
     private static final int LOGO_PORT = 102;

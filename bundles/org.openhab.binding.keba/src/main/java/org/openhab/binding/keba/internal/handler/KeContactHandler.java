@@ -22,6 +22,7 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +33,6 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 import javax.measure.quantity.Time;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
 import org.openhab.core.cache.ExpiringCacheMap;
@@ -51,6 +51,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -237,7 +238,7 @@ public class KeContactHandler extends BaseThingHandler {
         }
 
         String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
-        response = StringUtils.chomp(response);
+        response = Objects.requireNonNull(StringUtils.chomp(response));
 
         if (response.contains("TCH-OK")) {
             // ignore confirmation messages which are not JSON
@@ -342,7 +343,7 @@ public class KeContactHandler extends BaseThingHandler {
                         updateState(CHANNEL_MAX_SYSTEM_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
                             if (maxSystemCurrent < maxPresetCurrent) {
-                                transceiver.send("curr " + String.valueOf(maxSystemCurrent), this);
+                                transceiver.send("curr " + maxSystemCurrent, this);
                                 updateState(CHANNEL_MAX_PRESET_CURRENT,
                                         new QuantityType<ElectricCurrent>(maxSystemCurrent / 1000.0, Units.AMPERE));
                                 updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<Dimensionless>(
@@ -528,12 +529,10 @@ public class KeContactHandler extends BaseThingHandler {
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_MAX_PRESET_CURRENT: {
-                    if (command instanceof QuantityType<?>) {
-                        QuantityType<?> value = ((QuantityType<?>) command).toUnit("mA");
+                    if (command instanceof QuantityType<?> quantityCommand) {
+                        QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit("mA"));
 
-                        transceiver.send(
-                                "curr " + String.valueOf(Math.min(Math.max(6000, value.intValue()), maxSystemCurrent)),
-                                this);
+                        transceiver.send("curr " + Math.min(Math.max(6000, value.intValue()), maxSystemCurrent), this);
                     }
                     break;
                 }
@@ -549,13 +548,13 @@ public class KeContactHandler extends BaseThingHandler {
                             newValue = maxSystemCurrent;
                         } else if (command == OnOffType.OFF) {
                             newValue = 6000;
-                        } else if (command instanceof QuantityType<?>) {
-                            QuantityType<?> value = ((QuantityType<?>) command).toUnit("%");
+                        } else if (command instanceof QuantityType<?> quantityCommand) {
+                            QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit("%"));
                             newValue = Math.round(6000 + (maxSystemCurrent - 6000) * value.doubleValue() / 100.0);
                         } else {
                             return;
                         }
-                        transceiver.send("curr " + String.valueOf(newValue), this);
+                        transceiver.send("curr " + newValue, this);
                     }
                     break;
                 }
@@ -596,11 +595,10 @@ public class KeContactHandler extends BaseThingHandler {
                     break;
                 }
                 case CHANNEL_SETENERGY: {
-                    if (command instanceof QuantityType<?>) {
-                        QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.WATT_HOUR);
+                    if (command instanceof QuantityType<?> quantityCommand) {
+                        QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit(Units.WATT_HOUR));
                         transceiver.send(
-                                "setenergy " + String.valueOf(
-                                        Math.min(Math.max(0, Math.round(value.doubleValue() * 10.0)), 999999999)),
+                                "setenergy " + Math.min(Math.max(0, Math.round(value.doubleValue() * 10.0)), 999999999),
                                 this);
                     }
                     break;
