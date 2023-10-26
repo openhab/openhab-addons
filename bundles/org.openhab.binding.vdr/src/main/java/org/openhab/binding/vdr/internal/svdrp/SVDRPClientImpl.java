@@ -64,7 +64,7 @@ public class SVDRPClientImpl implements SVDRPClient {
      *
      * Open VDR Socket Connection
      *
-     * @throws IOException if an IO Error occurs
+     * @throws SVDRPConnectionException if an IO Error occurs
      */
     @Override
     public void openConnection() throws SVDRPConnectionException, SVDRPParseResponseException {
@@ -117,7 +117,7 @@ public class SVDRPClientImpl implements SVDRPClient {
     /**
      * Close VDR Socket Connection
      *
-     * @throws IOException if an IO Error occurs
+     * @throws SVDRPConnectionException if an IO Error occurs
      */
     @Override
     public void closeConnection() throws SVDRPConnectionException, SVDRPParseResponseException {
@@ -403,7 +403,6 @@ public class SVDRPClientImpl implements SVDRPClient {
      * Retrieve VDR Version from SVDRP Client
      *
      * @return VDR Version
-     * @throws SVDRPException thrown if something's not OK with SVDRP call
      */
     @Override
     public String getSVDRPVersion() {

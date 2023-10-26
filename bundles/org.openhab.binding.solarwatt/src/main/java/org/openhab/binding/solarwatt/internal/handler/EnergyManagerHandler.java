@@ -222,7 +222,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Setup the handler and trigger initial load via {@link EnergyManagerHandler::refreshDevices}.
+     * Setup the handler and trigger initial load via {@link EnergyManagerHandler#refreshDevices}.
      *
      * Web request against energy manager and loading of devices is deferred and will send the ONLINE
      * event after loading all devices.

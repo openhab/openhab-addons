@@ -34,7 +34,8 @@ public class MqttThingID {
     /**
      * Creates a normal broker thing with an url that will be converted to a thing ID.
      *
-     * @param url The broker connection url
+     * @param host The broker connection (host name)
+     * @param port The port
      * @return Returns a ThingUID
      */
     public static ThingUID getThingUID(String host, int port) {

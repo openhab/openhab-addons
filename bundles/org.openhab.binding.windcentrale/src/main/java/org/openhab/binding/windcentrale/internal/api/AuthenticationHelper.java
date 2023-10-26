@@ -55,9 +55,13 @@ import org.slf4j.LoggerFactory;
  * Helps with authenticating users to Amazon Cognito to get a JWT access token which can be used for retrieving
  * information using the REST APIs.
  *
- * @see https://en.wikipedia.org/wiki/Secure_Remote_Password_protocol
- * @see https://stackoverflow.com/questions/67528443/cognito-srp-using-aws-java-sdk-v2-x
- * @see https://github.com/aws-samples/aws-cognito-java-desktop-app/blob/master/src/main/java/com/amazonaws/sample/cognitoui/AuthenticationHelper.java
+ * @see <a href="https://en.wikipedia.org/wiki/Secure_Remote_Password_protocol">
+ *      https://en.wikipedia.org/wiki/Secure_Remote_Password_protocol</a>
+ * @see <a href="https://stackoverflow.com/questions/67528443/cognito-srp-using-aws-java-sdk-v2-x">
+ *      https://stackoverflow.com/questions/67528443/cognito-srp-using-aws-java-sdk-v2-x</a>
+ * @see <a href=
+ *      "https://github.com/aws-samples/aws-cognito-java-desktop-app/blob/master/src/main/java/com/amazonaws/sample/cognitoui/AuthenticationHelper.java">
+ *      https://github.com/aws-samples/aws-cognito-java-desktop-app/blob/master/src/main/java/com/amazonaws/sample/cognitoui/AuthenticationHelper.java</a>
  *
  * @author Wouter Born - Initial contribution
  */

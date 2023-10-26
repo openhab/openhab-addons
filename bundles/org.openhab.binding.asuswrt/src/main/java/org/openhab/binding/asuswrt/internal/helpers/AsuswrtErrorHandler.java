@@ -39,7 +39,7 @@ public class AsuswrtErrorHandler {
     /**
      * Raises a new error.
      *
-     * @param exception the exception
+     * @param ex the exception
      */
     public void raiseError(Exception ex) {
         raiseError(ex, "");
@@ -48,7 +48,7 @@ public class AsuswrtErrorHandler {
     /**
      * Raises a new error.
      *
-     * @param exception the exception
+     * @param ex the exception
      * @param infoMessage optional info message
      */
     public void raiseError(Exception ex, @Nullable String infoMessage) {

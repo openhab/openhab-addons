@@ -35,7 +35,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link EnOceanBinding} class defines common constants, which are
+ * The {@link EnOceanBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Daniel Weber - Initial contribution
@@ -221,7 +221,7 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_EXHAUSTAIRFANAIRFLOWRATE = "exhaustAirFanAirFlowRate";
     public static final String CHANNEL_SUPPLYFANSPEED = "supplyFanSpeed";
     public static final String CHANNEL_EXHAUSTFANSPEED = "exhaustFanSpeed";
-    public final static String CHANNEL_DAYNIGHTMODESTATE = "dayNightModeState";
+    public static final String CHANNEL_DAYNIGHTMODESTATE = "dayNightModeState";
 
     public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Map.ofEntries(
             Map.entry(CHANNEL_GENERAL_SWITCHING,

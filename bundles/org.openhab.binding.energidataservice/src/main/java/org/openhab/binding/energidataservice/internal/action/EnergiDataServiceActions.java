@@ -33,6 +33,7 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.energidataservice.internal.DatahubTariff;
 import org.openhab.binding.energidataservice.internal.PriceCalculator;
 import org.openhab.binding.energidataservice.internal.exception.MissingPriceException;
 import org.openhab.binding.energidataservice.internal.handler.EnergiDataServiceHandler;
@@ -61,19 +62,22 @@ public class EnergiDataServiceActions implements ThingActions {
     private @Nullable EnergiDataServiceHandler handler;
 
     private enum PriceElement {
-        SPOT_PRICE("spotprice"),
-        NET_TARIFF("nettariff"),
-        SYSTEM_TARIFF("systemtariff"),
-        ELECTRICITY_TAX("electricitytax"),
-        TRANSMISSION_NET_TARIFF("transmissionnettariff");
+        SPOT_PRICE("spotprice", null),
+        NET_TARIFF("nettariff", DatahubTariff.NET_TARIFF),
+        SYSTEM_TARIFF("systemtariff", DatahubTariff.SYSTEM_TARIFF),
+        ELECTRICITY_TAX("electricitytax", DatahubTariff.ELECTRICITY_TAX),
+        REDUCED_ELECTRICITY_TAX("reducedelectricitytax", DatahubTariff.REDUCED_ELECTRICITY_TAX),
+        TRANSMISSION_NET_TARIFF("transmissionnettariff", DatahubTariff.TRANSMISSION_NET_TARIFF);
 
         private static final Map<String, PriceElement> NAME_MAP = Stream.of(values())
                 .collect(Collectors.toMap(PriceElement::toString, Function.identity()));
 
         private String name;
+        private @Nullable DatahubTariff datahubTariff;
 
-        private PriceElement(String name) {
+        private PriceElement(String name, @Nullable DatahubTariff datahubTariff) {
             this.name = name;
+            this.datahubTariff = datahubTariff;
         }
 
         @Override
@@ -89,11 +93,26 @@ public class EnergiDataServiceActions implements ThingActions {
             }
             return myEnum;
         }
+
+        public @Nullable DatahubTariff getDatahubTariff() {
+            return datahubTariff;
+        }
     }
 
     @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description")
     public @ActionOutput(name = "prices", type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices() {
-        return getPrices(Arrays.stream(PriceElement.values()).collect(Collectors.toSet()));
+        EnergiDataServiceHandler handler = this.handler;
+        if (handler == null) {
+            logger.warn("EnergiDataServiceActions ThingHandler is null.");
+            return Map.of();
+        }
+
+        boolean isReducedElectricityTax = handler.isReducedElectricityTax();
+
+        return getPrices(Arrays.stream(PriceElement.values())
+                .filter(element -> element != (isReducedElectricityTax ? PriceElement.ELECTRICITY_TAX
+                        : PriceElement.REDUCED_ELECTRICITY_TAX))
+                .collect(Collectors.toSet()));
     }
 
     @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description")
@@ -235,24 +254,16 @@ public class EnergiDataServiceActions implements ThingActions {
             prices = new HashMap<>();
         }
 
-        if (priceElements.contains(PriceElement.NET_TARIFF)) {
-            Map<Instant, BigDecimal> netTariffMap = handler.getNetTariffs();
-            mergeMaps(prices, netTariffMap, !spotPricesRequired);
-        }
+        for (PriceElement priceElement : PriceElement.values()) {
+            DatahubTariff datahubTariff = priceElement.getDatahubTariff();
+            if (datahubTariff == null) {
+                continue;
+            }
 
-        if (priceElements.contains(PriceElement.SYSTEM_TARIFF)) {
-            Map<Instant, BigDecimal> systemTariffMap = handler.getSystemTariffs();
-            mergeMaps(prices, systemTariffMap, !spotPricesRequired);
-        }
-
-        if (priceElements.contains(PriceElement.ELECTRICITY_TAX)) {
-            Map<Instant, BigDecimal> electricityTaxMap = handler.getElectricityTaxes();
-            mergeMaps(prices, electricityTaxMap, !spotPricesRequired);
-        }
-
-        if (priceElements.contains(PriceElement.TRANSMISSION_NET_TARIFF)) {
-            Map<Instant, BigDecimal> transmissionNetTariffMap = handler.getTransmissionNetTariffs();
-            mergeMaps(prices, transmissionNetTariffMap, !spotPricesRequired);
+            if (priceElements.contains(priceElement)) {
+                Map<Instant, BigDecimal> tariffMap = handler.getTariffs(datahubTariff);
+                mergeMaps(prices, tariffMap, !spotPricesRequired);
+            }
         }
 
         return prices;

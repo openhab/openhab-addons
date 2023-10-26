@@ -102,15 +102,14 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
      * Method to Update a Channel
      *
      * @param channel
-     * @param state
-     * @param description
+     * @param data
      */
     public abstract void updateChannel(ChannelUID channel, String data);
 
     /**
      * Receives Events from the bridge.
      *
-     * @param event.
+     * @param event
      * @param thing
      */
     public abstract void caddxEventReceived(CaddxEvent event, Thing thing);
