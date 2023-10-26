@@ -10,9 +10,9 @@
     <version>4.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.binding.twitter</artifactId>
+  <artifactId>org.openhab.binding.x</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Twitter Binding</name>
+  <name>openHAB Add-ons :: Bundles :: X Binding</name>
 
   <properties>
     <bnd.importpackage>!android.*,!com.android.org.*,!dalvik.*,!javax.annotation.meta.*,!org.apache.harmony.*,!org.conscrypt.*,!sun.*,!com.google.appengine.api.*</bnd.importpackage>

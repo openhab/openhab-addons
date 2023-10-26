@@ -1,16 +1,16 @@
-# Twitter Binding
+# X Binding
 
-The Twitter binding allows your home to Tweet 280 characters at a time. It also supports direct messages and tweeting with media.
+The X (formerly known as Twitter) binding allows your home to Tweet 280 characters at a time. It also supports direct messages and tweeting with media.
 
 ## Supported Things
 
 ```text
-account - Twitter Account.
+account - X Account.
 ```
 
 ## Thing Configuration
 
-The Twitter Account Thing requires you to create a Twitter App in the Twitter Developer Page.
+The X Account Thing requires you to create a X App in the X Developer Page.
 
 |   Property        | Default | Required | Description                       |
 |-------------------|---------|:--------:|-----------------------------------|
@@ -28,17 +28,17 @@ The Twitter Account Thing requires you to create a Twitter App in the Twitter De
 
 ## Full Example
 
-twitter.things:
+x.things:
 
 ```java
-Thing twitter:account:sampleaccount [ consumerKey="11111", consumerSecret="22222", accessToken="33333", accessTokenSecret="444444" ]
+Thing x:account:sampleaccount [ consumerKey="11111", consumerSecret="22222", accessToken="33333", accessTokenSecret="444444" ]
 
 ```
 
-twitter.items:
+x.items:
 
 ```java
-String sample_tweet   "Latest Tweet: [%s]" { channel="twitter:account:sampleaccount:lasttweet" }
+String sample_tweet   "Latest Tweet: [%s]" { channel="x:account:sampleaccount:lasttweet" }
 
 ```
 
@@ -53,7 +53,7 @@ This binding includes rule actions for sending tweets and direct messages.
 Examples:
 
 ```java
-val tweetActions = getActions("twitter","twitter:account:sampleaccount")
+val tweetActions = getActions("x","x:account:sampleaccount")
 val success  = tweetActions.sendTweet("This is A Tweet")
 val success2 = tweetActions.sendTweetWithAttachment("This is A Tweet with a Pic", file:///tmp/201601011031.jpg)
 val success3 = tweetActions.sendTweetWithAttachment("Windows Picture", "D:\\Test.png" )

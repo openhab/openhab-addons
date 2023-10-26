@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.twitter.internal.action;
+package org.openhab.binding.x.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.twitter.internal.TwitterHandler;
+import org.openhab.binding.x.internal.XHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -29,13 +29,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Hanson - Initial contribution
  */
-@ThingActionsScope(name = "twitter")
+@ThingActionsScope(name = "x")
 @NonNullByDefault
-public class TwitterActions implements ThingActions {
+public class XActions implements ThingActions {
 
-    private final Logger logger = LoggerFactory.getLogger(TwitterActions.class);
+    private final Logger logger = LoggerFactory.getLogger(XActions.class);
 
-    private @Nullable TwitterHandler handler;
+    private @Nullable XHandler handler;
 
     @RuleAction(label = "@text/sendTweetActionLabel", description = "@text/sendTweetActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendTweet(
@@ -45,7 +45,7 @@ public class TwitterActions implements ThingActions {
             return false;
         }
 
-        final TwitterHandler handler = this.handler;
+        final XHandler handler = this.handler;
         if (handler == null) {
             logger.debug("Handler is null, cannot tweet.");
             return false;
@@ -66,7 +66,7 @@ public class TwitterActions implements ThingActions {
             return false;
         }
 
-        final TwitterHandler handler = this.handler;
+        final XHandler handler = this.handler;
         if (handler == null) {
             logger.debug("Handler is null, cannot tweet.");
             return false;
@@ -88,7 +88,7 @@ public class TwitterActions implements ThingActions {
             return false;
         }
 
-        final TwitterHandler handler = this.handler;
+        final XHandler handler = this.handler;
         if (handler == null) {
             logger.debug("Handler is null, cannot tweet.");
             return false;
@@ -98,22 +98,22 @@ public class TwitterActions implements ThingActions {
     }
 
     public static boolean sendTweet(ThingActions actions, @Nullable String text) {
-        return ((TwitterActions) actions).sendTweet(text);
+        return ((XActions) actions).sendTweet(text);
     }
 
     public static boolean sendTweetWithAttachment(ThingActions actions, @Nullable String text,
             @Nullable String urlString) {
-        return ((TwitterActions) actions).sendTweetWithAttachment(text, urlString);
+        return ((XActions) actions).sendTweetWithAttachment(text, urlString);
     }
 
     public static boolean sendDirectMessage(ThingActions actions, @Nullable String recipient, @Nullable String text) {
-        return ((TwitterActions) actions).sendDirectMessage(recipient, text);
+        return ((XActions) actions).sendDirectMessage(recipient, text);
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TwitterHandler) {
-            this.handler = (TwitterHandler) handler;
+        if (handler instanceof XHandler) {
+            this.handler = (XHandler) handler;
         }
     }
 
