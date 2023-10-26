@@ -88,7 +88,7 @@ public class DatahubTariffFilterFactory {
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("43300")),
                         Set.of("Transportbetaling, eget net C"));
             case GLN_ELNET_MIDT:
-                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("T3002")), Set.of(NOTE_NET_TARIFF_C),
+                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("T3001")), Set.of(NOTE_NET_TARIFF_C),
                         DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_ELNET_KONGERSLEV:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("K_22100")), Set.of(NOTE_NET_TARIFF_C));
