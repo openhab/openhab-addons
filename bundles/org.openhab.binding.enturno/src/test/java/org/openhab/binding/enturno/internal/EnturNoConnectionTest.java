@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.enturno.internal.connection.EnturNoConnection;
 
 /**
- * The {@link EnturNoConnectionTest} class defines tests for the {@link EnturNoConnection} implemenation
+ * The {@link EnturNoConnectionTest} class defines tests for the {@link EnturNoConnection} class
  *
  * @author Leo Siepel - Initial contribution
  */
