@@ -103,6 +103,7 @@ class AddonSuggestionFinderTest {
         assertNotNull(property);
         assertEquals("rp", property.getName());
         assertEquals(".*", property.getRegex());
+        assertTrue(property.getPattern().matcher("the cat sat on the mat").matches());
 
         method = discoveryMethods.get(1);
         assertNotNull(method);
@@ -115,6 +116,7 @@ class AddonSuggestionFinderTest {
         assertNotNull(property);
         assertEquals("modelName", property.getName());
         assertEquals("Philips hue bridge", property.getRegex());
+        assertTrue(property.getPattern().matcher("Philips hue bridge").matches());
     }
 
     @Test

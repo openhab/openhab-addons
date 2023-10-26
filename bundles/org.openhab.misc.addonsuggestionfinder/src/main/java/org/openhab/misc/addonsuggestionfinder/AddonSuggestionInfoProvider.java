@@ -74,8 +74,7 @@ public class AddonSuggestionInfoProvider implements AddonInfoProvider {
         AddonInfoListReader reader = new AddonInfoListReader();
         AddonInfoList addonInfoList = reader.readFromXML(xml);
         if (addonInfoList != null) {
-            candidateAddonInfos.addAll(addonInfoList.getAddons().stream()
-                    .filter(a -> !a.getDiscoveryMethods().isEmpty()).collect(Collectors.toSet()));
+            candidateAddonInfos.addAll(addonInfoList.getAddons().stream().collect(Collectors.toSet()));
         }
     }
 }
