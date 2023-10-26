@@ -211,8 +211,8 @@ public class EnturNoConnection {
         List<String> keys = new ArrayList<>(departures.keySet());
         DisplayData processedData = new DisplayData();
         List<EstimatedCalls> quayCalls = departures.get(keys.get(quayIndex));
-        List<String> departureTimes = quayCalls.stream().map(eq -> eq.expectedDepartureTime).map(this::getIsoDateTime)
-                .collect(Collectors.toList());
+        List<String> departureTimes = quayCalls.stream().map(eq -> eq.expectedDepartureTime)
+                .map(EnturNoConnection::getIsoDateTime).collect(Collectors.toList());
 
         List<String> estimatedFlags = quayCalls.stream().map(es -> es.realtime).collect(Collectors.toList());
 
@@ -231,9 +231,15 @@ public class EnturNoConnection {
         return processedData;
     }
 
-    private String getIsoDateTime(String dateTimeWithoutColonInZone) {
+    /**
+     * Converts a zoned date time string that lacks a colon in the zone to an ISO-8601 formatted string
+     * 
+     * @param dateTimeWithoutColonInZone
+     * @return ISO-8601 formatted string
+     */
+    public static String getIsoDateTime(String dateTimeWithoutColonInZone) {
         String dateTime = dateTimeWithoutColonInZone;
-        String offset = "";
+        String offset = "00";
         if (dateTimeWithoutColonInZone.lastIndexOf("+") > 0) {
             dateTime = dateTimeWithoutColonInZone.substring(0, dateTimeWithoutColonInZone.lastIndexOf("+"));
             offset = dateTimeWithoutColonInZone.substring(dateTimeWithoutColonInZone.lastIndexOf("+") + 1);
