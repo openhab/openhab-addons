@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +29,8 @@ import org.openhab.core.addon.AddonInfoListReader;
 import org.openhab.core.addon.AddonInfoProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AddonSuggestionInfoProvider} provides a list of candidate suggested addons to be installed.
@@ -38,6 +41,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(name = "addon-suggestion-info-provider", service = AddonInfoProvider.class)
 public class AddonSuggestionInfoProvider implements AddonInfoProvider {
 
+    private final Logger logger = LoggerFactory.getLogger(AddonSuggestionInfoProvider.class);
     private final Set<AddonInfo> candidateAddonInfos = new HashSet<>();
 
     @Activate
@@ -72,9 +76,14 @@ public class AddonSuggestionInfoProvider implements AddonInfoProvider {
     public void setCandidates(String xml) {
         candidateAddonInfos.clear();
         AddonInfoListReader reader = new AddonInfoListReader();
-        AddonInfoList addonInfoList = reader.readFromXML(xml);
-        if (addonInfoList != null) {
-            candidateAddonInfos.addAll(addonInfoList.getAddons().stream().collect(Collectors.toSet()));
+        try {
+            AddonInfoList addonInfoList = reader.readFromXML(xml);
+            if (addonInfoList != null) {
+                candidateAddonInfos.addAll(addonInfoList.getAddons().stream().collect(Collectors.toSet()));
+            }
+        } catch (PatternSyntaxException e) {
+            logger.warn("PatternSyntaxException: message:{}, description:{}, pattern:{}, index:{}", e.getMessage(),
+                    e.getDescription(), e.getPattern(), e.getIndex(), e);
         }
     }
 }
