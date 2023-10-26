@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -30,11 +31,22 @@ import com.google.gson.annotations.SerializedName;
 public class LightLevel {
     private @SerializedName("light_level") int lightLevel;
     private @SerializedName("light_level_valid") boolean lightLevelValid;
+    private @Nullable @SerializedName("light_level_report") LightLevelReport lightLevelReport;
 
+    /**
+     * The underlying field is deprecated in the CLIP 2 API.
+     * Moved to light_level_report/light_level
+     * Should be used only as fallback for older firmwares.
+     */
     public int getLightLevel() {
         return lightLevel;
     }
 
+    /**
+     * The underlying field is deprecated in the CLIP 2 API.
+     * Indication whether the value presented in light_level is valid
+     * Should be used only as fallback for older firmwares.
+     */
     public boolean isLightLevelValid() {
         return lightLevelValid;
     }
@@ -55,5 +67,9 @@ public class LightLevel {
 
     public State isLightLevelValidState() {
         return OnOffType.from(lightLevelValid);
+    }
+
+    public @Nullable LightLevelReport getLightLevelReport() {
+        return lightLevelReport;
     }
 }

@@ -29,18 +29,33 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class RelativeRotary {
     private @Nullable @SerializedName("last_event") RotationEvent lastEvent;
+    private @Nullable @SerializedName("rotary_report") RotaryReport rotaryReport;
 
     public State getActionState() {
         RotationEvent lastEvent = getLastEvent();
         return Objects.nonNull(lastEvent) ? lastEvent.getActionState() : UnDefType.NULL;
     }
 
+    /**
+     * The underlying field is deprecated in the CLIP 2 API.
+     * Renamed to RelativeRotaryReport. Indicate which type of rotary event is received.
+     * Should be used only as fallback for older firmwares.
+     */
     public @Nullable RotationEvent getLastEvent() {
         return lastEvent;
     }
 
+    /**
+     * The underlying field is deprecated in the CLIP 2 API.
+     * Renamed to RelativeRotaryReport.
+     * Should be used only as fallback for older firmwares.
+     */
     public State getStepsState() {
         RotationEvent lastEvent = getLastEvent();
         return Objects.nonNull(lastEvent) ? lastEvent.getStepsState() : UnDefType.NULL;
+    }
+
+    public @Nullable RotaryReport getRotaryReport() {
+        return rotaryReport;
     }
 }

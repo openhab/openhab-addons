@@ -12,43 +12,42 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2;
 
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ButtonEventType;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * DTO for CLIP 2 button state.
+ * DTO for CLIP 2 button report.
  *
- * @author Andrew Fiddian-Green - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class Button {
-    private @Nullable @SerializedName("last_event") String lastEvent;
-    private @Nullable @SerializedName("button_report") ButtonReport buttonReport;
-    private @SerializedName("repeat_interval") int repeatInterval;
+public class ButtonReport {
+    private @NonNullByDefault({}) Instant updated;
+    private @Nullable String event;
 
     /**
-     * The underlying field is deprecated in the CLIP 2 API.
-     * Moved to button_report/event
-     *
-     * @return the last button event as an enum (null if none or invalid).
+     * @return last time the value of this property is updated.
+     */
+    public Instant getLastChanged() {
+        return updated;
+    }
+
+    /**
+     * @return event which can be sent by a button control (null if none or invalid).
      */
     public @Nullable ButtonEventType getLastEvent() {
-        String lastEvent = this.lastEvent;
-        if (lastEvent == null) {
+        String event = this.event;
+        if (event == null) {
             return null;
         }
 
         try {
-            return ButtonEventType.valueOf(lastEvent.toUpperCase());
+            return ButtonEventType.valueOf(event.toUpperCase());
         } catch (IllegalArgumentException e) {
             return null;
         }
-    }
-
-    public @Nullable ButtonReport getButtonReport() {
-        return buttonReport;
     }
 }
