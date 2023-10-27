@@ -195,7 +195,7 @@
 	</channel-type>
 	<channel-type id="is_mop_drying">
 		<item-type>Switch</item-type>
-		<label>Mop cleaning active</label>
+		<label>Mop Cleaning Active</label>
 		<state readOnly="true"/>
 	</channel-type>
 
