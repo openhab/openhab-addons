@@ -240,6 +240,8 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | String  | info#fw_features                  | Firmware Features          |
 | String  | info#room_mapping                 | Room Mapping details       |
 | String  | info#multi_maps_list              | Maps Listing details       |
+| Number  | status#mop_drying_time            | Mop Drying Time            |
+| Switch  | status#is_mop_drying              | Mop cleaning active        |
 
 Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
 
@@ -252,6 +254,10 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
 | Switch  | status#is_locating                | Robot is locating          |
 | Number  | actions#segment                   | Room Clean  (enter room #) |
+| Switch  | actions#collectdust               | Start collect the dust at  |
+| Switch  | actions#cleanmopstart             | Start mop wash             |
+| Switch  | actions#cleanmopstop              | Stop mop wash              |
+
 
 Note: cleaning map is only available with cloud access.
 
