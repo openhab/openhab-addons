@@ -406,7 +406,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (deviceCapabilities.containsKey(RobotCababilities.MOP_DRYING_REMAING_TIME)) {
             updateState(CHANNEL_MOP_TOTALDRYTIME,
-                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getMopDryTime()), Units.SECOND));
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getMopDryTime()), Units.MINUTE));
         }
         return true;
     }
