@@ -45,6 +45,7 @@ import org.openhab.binding.enturno.internal.model.EnturJsonData;
 import org.openhab.binding.enturno.internal.model.estimated.EstimatedCalls;
 import org.openhab.binding.enturno.internal.model.simplified.DisplayData;
 import org.openhab.binding.enturno.internal.model.stopplace.StopPlace;
+import org.openhab.binding.enturno.internal.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,7 +213,7 @@ public class EnturNoConnection {
         DisplayData processedData = new DisplayData();
         List<EstimatedCalls> quayCalls = departures.get(keys.get(quayIndex));
         List<String> departureTimes = quayCalls.stream().map(eq -> eq.expectedDepartureTime)
-                .map(EnturNoConnection::getIsoDateTime).collect(Collectors.toList());
+                .map(DateUtil::getIsoDateTime).collect(Collectors.toList());
 
         List<String> estimatedFlags = quayCalls.stream().map(es -> es.realtime).collect(Collectors.toList());
 
@@ -229,26 +230,5 @@ public class EnturNoConnection {
         processedData.stopName = stopPlace.name;
         processedData.transportMode = stopPlace.transportMode;
         return processedData;
-    }
-
-    /**
-     * Converts a zoned date time string that lacks a colon in the zone to an ISO-8601 formatted string
-     * 
-     * @param dateTimeWithoutColonInZone
-     * @return ISO-8601 formatted string
-     */
-    public static String getIsoDateTime(String dateTimeWithoutColonInZone) {
-        String dateTime = dateTimeWithoutColonInZone;
-        String offset = "00";
-        if (dateTimeWithoutColonInZone.lastIndexOf("+") > 0) {
-            dateTime = dateTimeWithoutColonInZone.substring(0, dateTimeWithoutColonInZone.lastIndexOf("+"));
-            offset = dateTimeWithoutColonInZone.substring(dateTimeWithoutColonInZone.lastIndexOf("+") + 1);
-            if (offset.length() > 1) {
-                offset = offset.substring(0, 2);
-            }
-        }
-
-        StringBuilder builder = new StringBuilder();
-        return builder.append(dateTime).append("+").append(offset).append(":00").toString();
     }
 }
