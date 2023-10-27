@@ -50,8 +50,8 @@ public class AddonSuggestionInfoProvider implements AddonInfoProvider {
     }
 
     @Override
-    public @Nullable AddonInfo getAddonInfo(@Nullable String id, @Nullable Locale locale) {
-        return candidateAddonInfos.stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);
+    public @Nullable AddonInfo getAddonInfo(@Nullable String uid, @Nullable Locale locale) {
+        return candidateAddonInfos.stream().filter(a -> a.getUID().equals(uid)).findFirst().orElse(null);
     }
 
     @Override
