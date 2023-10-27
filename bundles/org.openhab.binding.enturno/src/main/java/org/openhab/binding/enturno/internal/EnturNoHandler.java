@@ -26,7 +26,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.enturno.internal.connection.EnturCommunicationException;
 import org.openhab.binding.enturno.internal.connection.EnturConfigurationException;
 import org.openhab.binding.enturno.internal.connection.EnturNoConnection;
-import org.openhab.binding.enturno.internal.model.simplified.DisplayData;
+import org.openhab.binding.enturno.internal.dto.simplified.DisplayData;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;

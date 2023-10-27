@@ -10,21 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enturno.internal.model.stopplace;
+package org.openhab.binding.enturno.internal.dto.simplified;
 
-import org.openhab.binding.enturno.internal.model.estimated.EstimatedCalls;
+import java.util.List;
 
 /**
- * Generated Plain Old Java Objects class for {@link StopPlace} from JSON.
+ * {@link DisplayData} is a Plain Old Java Objects class to wrap only needed data after processing API call results.
  *
  * @author Michal Kloc - Initial contribution
  */
-public class StopPlace {
-    public java.util.List<EstimatedCalls> estimatedCalls;
+public class DisplayData {
+    public String stopPlaceId;
 
-    public String name;
-
-    public String id;
+    public String stopName;
 
     public String transportMode;
+
+    public String lineCode;
+
+    public String frontText;
+
+    public List<String> departures;
+
+    public List<String> estimatedFlags;
 }

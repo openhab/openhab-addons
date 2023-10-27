@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enturno.internal.model.estimated;
+package org.openhab.binding.enturno.internal.dto.estimated;
 
 /**
  * Generated Plain Old Java Objects class for {@link EstimatedCalls} from JSON.
