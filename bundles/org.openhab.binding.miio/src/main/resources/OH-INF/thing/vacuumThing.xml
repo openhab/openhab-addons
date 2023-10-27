@@ -189,7 +189,7 @@
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="mop_drying_time">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Mop Drying Time</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
