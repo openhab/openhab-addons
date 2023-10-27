@@ -269,6 +269,8 @@ To (re-)read the file either restart openHAB, restart the binding or alternative
 Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
 Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
 
+### Basic, gateway and lumi Things channels
+
 !!!channelList
 
 ## Example item file Rockrobo vacuum
@@ -316,6 +318,8 @@ Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vac
 
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
+
+### Basic, gateway and lumi Things item files examples
 
 !!!itemFileExamples
 
