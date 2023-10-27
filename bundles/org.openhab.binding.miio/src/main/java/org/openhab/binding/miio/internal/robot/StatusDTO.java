@@ -176,8 +176,8 @@ public class StatusDTO {
         return mopForbiddenEnable;
     }
 
-    public Integer getIsMapDryingActive() {
-        return isMapDryingActive;
+    public Integer getIsMopDryingActive() {
+        return isMopDryingActive;
     }
 
     public Long getMopDryTime() {

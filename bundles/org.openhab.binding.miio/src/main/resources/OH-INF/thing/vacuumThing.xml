@@ -317,11 +317,13 @@
 	</channel-type>
 	<channel-type id="collect_dust" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Start Collect the Dust at the Station</label>
+		<label>Start Collect Dust</label>
+		<description>Once the vacuum cleaner is back in place, you can start collecting the dust</description>
 	</channel-type>
 	<channel-type id="clean_mop_start" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Start Mop Wash</label>
+		<description>Once the vacuum cleaner is back in place, you can start cleaning the mop</description>
 	</channel-type>
 	<channel-type id="clean_mop_stop" advanced="true">
 		<item-type>Switch</item-type>

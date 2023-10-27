@@ -402,7 +402,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             safeUpdateState(RobotCababilities.COLLECT_DUST.getChannel(), 0);
         }
         if (deviceCapabilities.containsKey(RobotCababilities.MOP_DRYING)) {
-            safeUpdateState(RobotCababilities.MOP_DRYING.getChannel(), statusInfo.getIsMapDryingActive());
+            safeUpdateState(RobotCababilities.MOP_DRYING.getChannel(), statusInfo.getIsMopDryingActive());
         }
         if (deviceCapabilities.containsKey(RobotCababilities.MOP_DRYING_REMAING_TIME)) {
             updateState(CHANNEL_MOP_TOTALDRYTIME,
