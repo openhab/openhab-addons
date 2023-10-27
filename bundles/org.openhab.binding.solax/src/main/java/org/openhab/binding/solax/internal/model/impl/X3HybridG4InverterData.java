@@ -14,7 +14,6 @@ package org.openhab.binding.solax.internal.model.impl;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.ThreePhaseInverterData;
 
 /**
  * The {@link X3HybridG4InverterData} is responsible for handling commands, which are
@@ -23,7 +22,7 @@ import org.openhab.binding.solax.internal.model.ThreePhaseInverterData;
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public class X3HybridG4InverterData extends CommonInverterData implements ThreePhaseInverterData {
+public class X3HybridG4InverterData extends CommonInverterData {
 
     public X3HybridG4InverterData(LocalConnectRawDataBean data) {
         super(data);

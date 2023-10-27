@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.SinglePhaseInverterData;
+import org.openhab.binding.solax.internal.model.InverterData;
 import org.openhab.binding.solax.internal.model.impl.X1HybridG4InverterData;
 
 /**
@@ -28,7 +28,7 @@ import org.openhab.binding.solax.internal.model.impl.X1HybridG4InverterData;
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public class X1HybridG4DataParser implements SinglePhaseDataParser {
+public class X1HybridG4DataParser implements RawDataParser {
 
     private static final Set<String> X1_HYBRID_G4_SUPPORTED_CHANNELS = Set.of(CHANNEL_INVERTER_PV1_POWER,
             CHANNEL_INVERTER_PV1_VOLTAGE, CHANNEL_INVERTER_PV1_CURRENT, CHANNEL_INVERTER_PV2_POWER,
@@ -39,7 +39,7 @@ public class X1HybridG4DataParser implements SinglePhaseDataParser {
             CHANNEL_INVERTER_OUTPUT_VOLTAGE, CHANNEL_INVERTER_OUTPUT_FREQUENCY);
 
     @Override
-    public SinglePhaseInverterData getData(LocalConnectRawDataBean rawData) {
+    public InverterData getData(LocalConnectRawDataBean rawData) {
         return new X1HybridG4InverterData(rawData);
     }
 

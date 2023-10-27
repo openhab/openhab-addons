@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterData;
 import org.openhab.binding.solax.internal.model.InverterType;
-import org.openhab.binding.solax.internal.model.ThreePhaseInverterData;
 import org.openhab.binding.solax.internal.model.parsers.RawDataParser;
 
 /**
@@ -65,53 +64,51 @@ public class TestX3HybridG4Parser {
         assertEquals("XYZ", data.getWifiSerial());
         assertEquals("3.005.01", data.getWifiVersion());
 
-        assertTrue(data instanceof ThreePhaseInverterData, "Data not parsed as a three-phase inverter data");
-        ThreePhaseInverterData threePhaseData = (ThreePhaseInverterData) data;
-        assertEquals(231.6, threePhaseData.getVoltagePhase1()); // [0]
-        assertEquals(232.9, threePhaseData.getVoltagePhase2()); // [1]
-        assertEquals(231.5, threePhaseData.getVoltagePhase3()); // [2]
+        assertEquals(231.6, data.getVoltagePhase1()); // [0]
+        assertEquals(232.9, data.getVoltagePhase2()); // [1]
+        assertEquals(231.5, data.getVoltagePhase3()); // [2]
 
-        assertEquals(1.8, threePhaseData.getCurrentPhase1()); // [3]
-        assertEquals(1.8, threePhaseData.getCurrentPhase2()); // [4]
-        assertEquals(1.8, threePhaseData.getCurrentPhase3()); // [5]
+        assertEquals(1.8, data.getCurrentPhase1()); // [3]
+        assertEquals(1.8, data.getCurrentPhase2()); // [4]
+        assertEquals(1.8, data.getCurrentPhase3()); // [5]
 
-        assertEquals(372, threePhaseData.getOutputPowerPhase1()); // [6]
-        assertEquals(363, threePhaseData.getOutputPowerPhase2()); // [7]
-        assertEquals(365, threePhaseData.getOutputPowerPhase3()); // [8]
+        assertEquals(372, data.getOutputPowerPhase1()); // [6]
+        assertEquals(363, data.getOutputPowerPhase2()); // [7]
+        assertEquals(365, data.getOutputPowerPhase3()); // [8]
 
-        assertEquals(1100, threePhaseData.getTotalOutputPower()); // [9]
+        assertEquals(1100, data.getTotalOutputPower()); // [9]
 
-        assertEquals(1.2, threePhaseData.getPV1Voltage()); // [10]
-        assertEquals(2.3, threePhaseData.getPV2Voltage()); // [11]
-        assertEquals(3.4, threePhaseData.getPV1Current()); // [12]
-        assertEquals(4.5, threePhaseData.getPV2Current()); // [13]
-        assertEquals(56, threePhaseData.getPV1Power()); // [14]
-        assertEquals(67, threePhaseData.getPV2Power()); // [15]
+        assertEquals(1.2, data.getPV1Voltage()); // [10]
+        assertEquals(2.3, data.getPV2Voltage()); // [11]
+        assertEquals(3.4, data.getPV1Current()); // [12]
+        assertEquals(4.5, data.getPV2Current()); // [13]
+        assertEquals(56, data.getPV1Power()); // [14]
+        assertEquals(67, data.getPV2Power()); // [15]
 
-        assertEquals(49.96, threePhaseData.getFrequencyPhase1()); // [16]
-        assertEquals(49.96, threePhaseData.getFrequencyPhase2()); // [17]
-        assertEquals(49.96, threePhaseData.getFrequencyPhase3()); // [18]
+        assertEquals(49.96, data.getFrequencyPhase1()); // [16]
+        assertEquals(49.96, data.getFrequencyPhase2()); // [17]
+        assertEquals(49.96, data.getFrequencyPhase3()); // [18]
 
-        assertEquals(-41, threePhaseData.getFeedInPower()); // [34] - [35]
+        assertEquals(-41, data.getFeedInPower()); // [34] - [35]
 
-        assertEquals(313.3, threePhaseData.getBatteryVoltage()); // [39]
-        assertEquals(3.2, threePhaseData.getBatteryCurrent()); // [40]
-        assertEquals(1034, threePhaseData.getBatteryPower()); // [41]
-        assertEquals(45, threePhaseData.getBatteryLevel()); // [103]
-        assertEquals(59, threePhaseData.getBatteryTemperature()); // [105]
+        assertEquals(313.3, data.getBatteryVoltage()); // [39]
+        assertEquals(3.2, data.getBatteryCurrent()); // [40]
+        assertEquals(1034, data.getBatteryPower()); // [41]
+        assertEquals(45, data.getBatteryLevel()); // [103]
+        assertEquals(59, data.getBatteryTemperature()); // [105]
 
         // Totals
-        assertEquals(1294, threePhaseData.getPowerUsage()); // [47]
-        assertEquals(50.5, threePhaseData.getTotalEnergy()); // [68]
-        assertEquals(102, threePhaseData.getTotalBatteryDischargeEnergy()); // [74]
-        assertEquals(142, threePhaseData.getTotalBatteryChargeEnergy()); // [76]
-        assertEquals(57, threePhaseData.getTotalPVEnergy()); // [80]
-        assertEquals(1925, threePhaseData.getTotalFeedInEnergy()); // [86]
-        assertEquals(36.9, threePhaseData.getTotalConsumption()); // [88]
-        assertEquals(46.3, threePhaseData.getTodayEnergy()); // [82] / 10
-        assertEquals(5.06, threePhaseData.getTodayFeedInEnergy()); // [90] / 100
-        assertEquals(3.04, threePhaseData.getTodayConsumption()); // [92] / 100
-        assertEquals(6.2, threePhaseData.getTodayBatteryDischargeEnergy()); // [78] / 100
-        assertEquals(11, threePhaseData.getTodayBatteryChargeEnergy()); // [79] / 100
+        assertEquals(1294, data.getPowerUsage()); // [47]
+        assertEquals(50.5, data.getTotalEnergy()); // [68]
+        assertEquals(102, data.getTotalBatteryDischargeEnergy()); // [74]
+        assertEquals(142, data.getTotalBatteryChargeEnergy()); // [76]
+        assertEquals(57, data.getTotalPVEnergy()); // [80]
+        assertEquals(1925, data.getTotalFeedInEnergy()); // [86]
+        assertEquals(36.9, data.getTotalConsumption()); // [88]
+        assertEquals(46.3, data.getTodayEnergy()); // [82] / 10
+        assertEquals(5.06, data.getTodayFeedInEnergy()); // [90] / 100
+        assertEquals(3.04, data.getTodayConsumption()); // [92] / 100
+        assertEquals(6.2, data.getTodayBatteryDischargeEnergy()); // [78] / 100
+        assertEquals(11, data.getTodayBatteryChargeEnergy()); // [79] / 100
     }
 }

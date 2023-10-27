@@ -14,7 +14,6 @@ package org.openhab.binding.solax.internal.model.impl;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.SinglePhaseInverterData;
 
 /**
  * The {@link X1HybridG4InverterData} is an implementation of the single phased inverter data interface for X1 Hybrid G4
@@ -23,7 +22,7 @@ import org.openhab.binding.solax.internal.model.SinglePhaseInverterData;
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public class X1HybridG4InverterData extends CommonInverterData implements SinglePhaseInverterData {
+public class X1HybridG4InverterData extends CommonInverterData {
 
     public X1HybridG4InverterData(LocalConnectRawDataBean data) {
         super(data);

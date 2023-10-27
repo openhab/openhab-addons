@@ -138,6 +138,74 @@ public interface InverterData {
         return Integer.MIN_VALUE;
     }
 
+    default double getInverterVoltage() {
+        return Integer.MIN_VALUE;
+    }
+
+    default double getInverterCurrent() {
+        return Integer.MIN_VALUE;
+    }
+
+    default short getInverterOutputPower() {
+        return Short.MIN_VALUE;
+    }
+
+    default double getInverterFrequency() {
+        return Integer.MIN_VALUE;
+    }
+
+    default double getVoltagePhase1() {
+        return Integer.MIN_VALUE;
+    }
+
+    default double getVoltagePhase2() {
+        return Integer.MIN_VALUE;
+    }
+
+    default double getVoltagePhase3() {
+        return Integer.MIN_VALUE;
+    }
+
+    default double getCurrentPhase1() {
+        return Integer.MIN_VALUE;
+    }
+
+    default double getCurrentPhase2() {
+        return Integer.MIN_VALUE;
+    }
+
+    default double getCurrentPhase3() {
+        return Integer.MIN_VALUE;
+    }
+
+    default short getOutputPowerPhase1() {
+        return Short.MIN_VALUE;
+    }
+
+    default short getOutputPowerPhase2() {
+        return Short.MIN_VALUE;
+    }
+
+    default short getOutputPowerPhase3() {
+        return Short.MIN_VALUE;
+    }
+
+    default short getTotalOutputPower() {
+        return Short.MIN_VALUE;
+    }
+
+    default double getFrequencyPhase1() {
+        return Integer.MIN_VALUE;
+    }
+
+    default double getFrequencyPhase2() {
+        return Integer.MIN_VALUE;
+    }
+
+    default double getFrequencyPhase3() {
+        return Integer.MIN_VALUE;
+    }
+
     default String toStringDetailed() {
         return "WifiSerial = " + getWifiSerial() + ", WifiVersion = " + getWifiVersion() + ", InverterType = "
                 + getInverterType() + ", BatteryPower = " + getBatteryPower() + "W, Battery SoC = " + getBatteryLevel()

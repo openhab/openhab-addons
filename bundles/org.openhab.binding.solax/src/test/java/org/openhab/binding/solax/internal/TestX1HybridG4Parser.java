@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterData;
 import org.openhab.binding.solax.internal.model.InverterType;
-import org.openhab.binding.solax.internal.model.SinglePhaseInverterData;
 import org.openhab.binding.solax.internal.model.parsers.RawDataParser;
 
 /**
@@ -58,27 +57,25 @@ public class TestX1HybridG4Parser {
         assertEquals("SOME_SERIAL_NUMBER", data.getWifiSerial());
         assertEquals("3.008.10", data.getWifiVersion());
 
-        assertTrue(data instanceof SinglePhaseInverterData, "Data not parsed as a single phase inverter data");
-        SinglePhaseInverterData singlePhaseData = (SinglePhaseInverterData) data;
-        assertEquals(238.8, singlePhaseData.getInverterVoltage()); // [0]
-        assertEquals(2.1, singlePhaseData.getInverterCurrent()); // [1]
-        assertEquals(460, singlePhaseData.getInverterOutputPower()); // [2]
-        assertEquals(49.98, singlePhaseData.getInverterFrequency()); // [3]
+        assertEquals(238.8, data.getInverterVoltage()); // [0]
+        assertEquals(2.1, data.getInverterCurrent()); // [1]
+        assertEquals(460, data.getInverterOutputPower()); // [2]
+        assertEquals(49.98, data.getInverterFrequency()); // [3]
 
-        assertEquals(448.3, singlePhaseData.getPV1Voltage()); // [4]
-        assertEquals(448.3, singlePhaseData.getPV2Voltage()); // [5]
-        assertEquals(1, singlePhaseData.getPV1Current()); // [6]
-        assertEquals(0.1, singlePhaseData.getPV2Current()); // [7]
-        assertEquals(487, singlePhaseData.getPV1Power()); // [8]
-        assertEquals(65, singlePhaseData.getPV2Power()); // [9]
+        assertEquals(448.3, data.getPV1Voltage()); // [4]
+        assertEquals(448.3, data.getPV2Voltage()); // [5]
+        assertEquals(1, data.getPV1Current()); // [6]
+        assertEquals(0.1, data.getPV2Current()); // [7]
+        assertEquals(487, data.getPV1Power()); // [8]
+        assertEquals(65, data.getPV2Power()); // [9]
 
-        assertEquals(121.8, singlePhaseData.getBatteryVoltage()); // [14]
-        assertEquals(5, singlePhaseData.getBatteryCurrent()); // [15]
-        assertEquals(605, singlePhaseData.getBatteryPower()); // [16]
-        assertEquals(33, singlePhaseData.getBatteryTemperature()); // [17]
-        assertEquals(99, singlePhaseData.getBatteryLevel()); // [18]
+        assertEquals(121.8, data.getBatteryVoltage()); // [14]
+        assertEquals(5, data.getBatteryCurrent()); // [15]
+        assertEquals(605, data.getBatteryPower()); // [16]
+        assertEquals(33, data.getBatteryTemperature()); // [17]
+        assertEquals(99, data.getBatteryLevel()); // [18]
 
-        assertEquals(12, singlePhaseData.getFeedInPower()); // [32]
+        assertEquals(12, data.getFeedInPower()); // [32]
     }
 
     // Yield_Today: Data[13] / 10,
