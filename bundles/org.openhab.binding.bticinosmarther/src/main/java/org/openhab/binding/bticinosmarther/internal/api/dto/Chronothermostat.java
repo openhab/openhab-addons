@@ -104,8 +104,8 @@ public class Chronothermostat {
      *
      * @return a {@link MeasureUnit} object representing the module operational temperature format
      *
-     * @throws {@link SmartherIllegalPropertyValueException}
-     *             if the measure internal raw unit cannot be mapped to any valid measure unit
+     * @throws SmartherIllegalPropertyValueException if the measure internal raw unit cannot be mapped to any valid
+     *             measure unit
      */
     public MeasureUnit getTemperatureFormatUnit() throws SmartherIllegalPropertyValueException {
         return MeasureUnit.fromValue(temperatureFormat);
@@ -125,8 +125,8 @@ public class Chronothermostat {
      *
      * @return {@code true} if the load state is active, {@code false} otherwise
      *
-     * @throws {@link SmartherIllegalPropertyValueException}
-     *             if the load state internal raw value cannot be mapped to any valid load state enum value
+     * @throws SmartherIllegalPropertyValueException if the load state internal raw value cannot be mapped to any valid
+     *             load state enum value
      */
     public boolean isActive() throws SmartherIllegalPropertyValueException {
         return LoadState.fromValue(loadState).isActive();

@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NZWaterAlertsController} is responsible for handling the connection
+ * The {@link NZWaterAlertsBinder} is responsible for handling the connection
  * between the handler and API.
  *
  * @author Stewart Cossey - Initial contribution

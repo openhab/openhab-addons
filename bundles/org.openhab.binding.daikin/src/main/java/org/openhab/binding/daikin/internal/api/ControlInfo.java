@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * Class for holding the set of parameters used by set and get control info.
  *
  * @author Tim Waterhouse - Initial Contribution
- * @author Paul Smedley <paul@smedley.id.au> - mods for Daikin Airbase
+ * @author Paul Smedley - mods for Daikin Airbase
  *
  */
 @NonNullByDefault

@@ -15,7 +15,7 @@ package org.openhab.binding.neato.internal.classes;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link BeehiveAuthenticcation} is the internal class for handling authentication.
+ * The {@link BeehiveAuthentication} is the internal class for handling authentication.
  *
  * @author Patrik Wimnell - Initial contribution
  */

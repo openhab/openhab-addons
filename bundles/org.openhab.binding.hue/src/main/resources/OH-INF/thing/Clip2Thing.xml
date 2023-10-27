@@ -24,13 +24,29 @@
 				<description>Activate the effect for the light.</description>
 			</channel>
 			<channel id="button-last-event" typeId="button-last-event"/>
+			<channel id="button-last-updated" typeId="last-updated-v2">
+				<label>Button Last Updated</label>
+				<description>The date and time when a button was last pressed.</description>
+			</channel>
 			<channel id="rotary-steps" typeId="rotary-steps"/>
+			<channel id="rotary-steps-last-updated" typeId="last-updated-v2">
+				<label>Rotary Steps Last Updated</label>
+				<description>The date and time when the rotary steps were last updated.</description>
+			</channel>
 			<channel id="motion" typeId="system.motion"/>
+			<channel id="motion-last-updated" typeId="last-updated-v2">
+				<label>Motion Last Updated</label>
+				<description>The date and time when the motion value was last updated.</description>
+			</channel>
 			<channel id="motion-enabled" typeId="sensor-enabled">
 				<description>Motion sensor enabled.</description>
 			</channel>
 			<channel id="light-level" typeId="illuminance">
 				<description>Current light level.</description>
+			</channel>
+			<channel id="light-level-last-updated" typeId="last-updated-v2">
+				<label>Light Level Last Updated</label>
+				<description>The date and time when the light level was last updated.</description>
 			</channel>
 			<channel id="light-level-enabled" typeId="sensor-enabled">
 				<description>Light level sensor enabled.</description>
@@ -38,6 +54,10 @@
 			<channel id="temperature" typeId="system.indoor-temperature">
 				<label>Temperature</label>
 				<description>Temperature at the sensor location.</description>
+			</channel>
+			<channel id="temperature-last-updated" typeId="last-updated-v2">
+				<label>Temperature Last Updated</label>
+				<description>The date and time when the temperature was last updated.</description>
 			</channel>
 			<channel id="temperature-enabled" typeId="sensor-enabled">
 				<description>Temperature sensor enabled.</description>
@@ -57,6 +77,10 @@
 				<description>Set the on/off parameter of the light without changing other state parameters.</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>resourceId</representation-property>
 

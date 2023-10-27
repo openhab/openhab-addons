@@ -49,7 +49,8 @@ public abstract class LcnAddr {
      * Gets the physical segment id ("local" segment replaced with 0).
      * Can be used to send data into the LCN bus.
      *
-     * @param localSegegmentId the segment id of the local segment (managed by {@link Connection})
+     * @param localSegegmentId the segment id of the local segment (managed by
+     *            {@link org.openhab.binding.lcn.internal.connection.Connection})
      * @return the physical segment id
      */
     public int getPhysicalSegmentId(int localSegegmentId) {

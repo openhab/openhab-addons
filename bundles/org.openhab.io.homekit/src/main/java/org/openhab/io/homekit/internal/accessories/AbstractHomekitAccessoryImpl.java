@@ -84,6 +84,8 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     /**
      * Gives an accessory an opportunity to populate additional characteristics after all optional
      * charactericteristics have been added.
+     * 
+     * @throws HomekitException
      */
     public void init() throws HomekitException {
     }
@@ -332,8 +334,10 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * If the primary service does not yet exist, it won't be added to it. It's the resposibility
      * of the caller to add characteristics when the primary service is created.
      *
-     * @param type
      * @param characteristic
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
      */
     @NonNullByDefault
     public void addCharacteristic(Characteristic characteristic)

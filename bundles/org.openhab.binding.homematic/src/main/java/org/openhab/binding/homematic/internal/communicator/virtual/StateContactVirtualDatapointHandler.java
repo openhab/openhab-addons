@@ -21,7 +21,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 
 /**
- * A virtual datapoint that converts the ENUM state of the HMIP-SWDO device to a contact.
+ * A virtual datapoint that converts the ENUM state of the HMIP-SWD_ devices to a contact.
  *
  * @author Gerhard Riegler - Initial contribution
  */
@@ -58,7 +58,7 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
     }
 
     private boolean isApplicable(HmDevice device) {
-        return device.getType().toUpperCase().startsWith("HMIP-SWDO");
+        return device.getType().toUpperCase().startsWith("HMIP-SWD");
     }
 
     private Boolean convertState(Object value) {
