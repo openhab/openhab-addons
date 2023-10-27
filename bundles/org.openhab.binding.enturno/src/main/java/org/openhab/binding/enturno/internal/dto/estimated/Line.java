@@ -10,13 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enturno.internal.model;
+package org.openhab.binding.enturno.internal.dto.estimated;
 
 /**
- * Generated Plain Old Java Objects class for {@link Data} from JSON.
+ * Generated Plain Old Java Objects class for {@link Line} from JSON.
  *
  * @author Michal Kloc - Initial contribution
  */
-public class EnturData {
-    public Data data;
+public class Line {
+    public String name;
+
+    public String transportMode;
+
+    public String publicCode;
+
+    public String id;
 }

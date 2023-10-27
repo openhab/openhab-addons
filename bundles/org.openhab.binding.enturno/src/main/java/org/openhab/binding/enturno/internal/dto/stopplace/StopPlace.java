@@ -10,13 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enturno.internal.model;
+package org.openhab.binding.enturno.internal.dto.stopplace;
+
+import org.openhab.binding.enturno.internal.dto.estimated.EstimatedCalls;
 
 /**
- * {@link EnturJsonData} is a root level class to holding reference of data generated from JSON.
+ * Generated Plain Old Java Objects class for {@link StopPlace} from JSON.
  *
  * @author Michal Kloc - Initial contribution
  */
-public class EnturJsonData {
-    public Data data;
+public class StopPlace {
+    public java.util.List<EstimatedCalls> estimatedCalls;
+
+    public String name;
+
+    public String id;
+
+    public String transportMode;
 }
