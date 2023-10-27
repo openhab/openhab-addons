@@ -87,7 +87,7 @@ public class StatusDTO {
     private Integer mopForbiddenEnable;
     @SerializedName("dry_status")
     @Expose
-    private Integer isMapDryingActive;
+    private Integer isMopDryingActive;
     @SerializedName("rdt")
     @Expose
     private Long mopDryTime;
