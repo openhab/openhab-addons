@@ -46,17 +46,20 @@ public enum EventType {
     @SerializedName("daily_summary") // When the Outdoor Camera video summary of the last 24 hours is available
     DAILY_SUMMARY(ModuleType.PRESENCE),
 
+    @SerializedName("vehicle") // When the Outdoor Camera detects a car
+    VEHICLE(ModuleType.PRESENCE),
+
     @SerializedName("movement") // When the Indoor Camera detects motion
     MOVEMENT(ModuleType.WELCOME),
 
+    @SerializedName("alarm_started") // When the Indoor Camera triggers alarm
+    ALARM_STARTED(ModuleType.WELCOME),
+
     @SerializedName("human") // When the camera detects human motion
-    HUMAN(ModuleType.WELCOME, ModuleType.OUTDOOR, ModuleType.DOORBELL),
+    HUMAN(ModuleType.WELCOME, ModuleType.PRESENCE, ModuleType.DOORBELL),
 
     @SerializedName("animal") // When the camera detects animal motion
-    ANIMAL(ModuleType.WELCOME, ModuleType.OUTDOOR),
-
-    @SerializedName("vehicle") // When the Outdoor Camera detects a car
-    VEHICLE(ModuleType.OUTDOOR),
+    ANIMAL(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("new_module") // A new Module has been paired with the Indoor Camera
     NEW_MODULE(ModuleType.WELCOME),
