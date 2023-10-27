@@ -10,13 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enturno.internal.model.estimated;
+package org.openhab.binding.enturno.internal.dto;
+
+import org.openhab.binding.enturno.internal.dto.stopplace.StopPlace;
 
 /**
- * Generated Plain Old Java Objects class for {@link ServiceJourney} from JSON.
+ * Generated Plain Old Java Objects class for {@link Data} from JSON.
  *
  * @author Michal Kloc - Initial contribution
  */
-public class ServiceJourney {
-    public JourneyPattern journeyPattern;
+public class Data {
+    public StopPlace stopPlace;
 }
