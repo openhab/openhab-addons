@@ -56,6 +56,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Konrad Zawadka - Initial contribution, based on previous work from Joan Pujol Espinar, Theo Weiss and Dominik
  *         Vorreiter
  */
+@NonNullByDefault
 public class MongoDBConvertUtils {
     @NonNullByDefault
     static final Number DIGITAL_VALUE_OFF = 0; // Visible for testing
