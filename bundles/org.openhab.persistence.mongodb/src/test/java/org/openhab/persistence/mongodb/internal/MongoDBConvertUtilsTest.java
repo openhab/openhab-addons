@@ -56,6 +56,7 @@ import com.mongodb.BasicDBObject;
  * @author Konrad Zawadka - Initial contribution, based on previous work from Joan Pujol Espinar, Theo Weiss and Dominik
  *         Vorreiter
  */
+@NonNullByDefault
 class MongoDBConvertUtilsTest {
 
     @Test
