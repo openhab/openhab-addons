@@ -323,7 +323,7 @@
 		<item-type>Switch</item-type>
 		<label>Start mop wash</label>
 	</channel-type>
-	<channel-type id="cleanmopstop" advanced="true">
+	<channel-type id="clean_mop_stop" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Stop mop wash</label>
 	</channel-type>
