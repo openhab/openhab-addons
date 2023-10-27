@@ -734,7 +734,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             case SET_CLEAN_MOP_START:
             case SET_CLEAN_MOP_STOP:
 
-
                 for (RobotCababilities cmd : FEATURES_CHANNELS) {
                     if (response.getCommand().getCommand().contentEquals(cmd.getCommand())) {
                         updateState(cmd.getChannel(), new StringType(response.getResult().toString()));
