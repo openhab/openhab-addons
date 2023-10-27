@@ -315,7 +315,7 @@
 		<item-type>String</item-type>
 		<label>Vacuum Room [room#]</label>
 	</channel-type>
-	<channel-type id="collectdust" advanced="true">
+	<channel-type id="collect_dust" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Start collect the dust at the station</label>
 	</channel-type>
