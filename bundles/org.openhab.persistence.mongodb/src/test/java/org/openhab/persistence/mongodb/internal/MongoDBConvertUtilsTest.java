@@ -53,8 +53,7 @@ import com.mongodb.BasicDBObject;
 /**
  * Conversion logic between openHAB {@link State} types and MongoDB store types
  *
- * @author Konrad Zawadka - Initial contribution, based on previous work from Joan Pujol Espinar, Theo Weiss and Dominik
- *         Vorreiter
+ * @author Konrad Zawadka - Initial contribution
  */
 @NonNullByDefault
 class MongoDBConvertUtilsTest {
