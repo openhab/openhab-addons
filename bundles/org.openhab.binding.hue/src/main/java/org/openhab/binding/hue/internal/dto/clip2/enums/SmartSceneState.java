@@ -16,17 +16,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Enum for scene recall actions.
+ * Enum for 'smart_scene' states.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum RecallAction {
+public enum SmartSceneState {
+    INACTIVE,
     ACTIVE,
-    DYNAMIC_PALETTE,
-    STATIC;
+    UNKNOWN;
 
-    public static RecallAction of(@Nullable String value) {
+    public static SmartSceneState of(@Nullable String value) {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());
@@ -34,6 +34,6 @@ public enum RecallAction {
                 // fall through
             }
         }
-        return ACTIVE;
+        return UNKNOWN;
     }
 }
