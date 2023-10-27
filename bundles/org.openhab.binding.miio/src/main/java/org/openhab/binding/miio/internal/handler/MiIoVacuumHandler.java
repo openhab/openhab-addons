@@ -729,11 +729,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             case GET_CUSTOMIZED_CLEAN_MODE:
             case GET_MULTI_MAP_LIST:
 
-            case GET_ROOM_MAPPING:
             case SET_COLLECT_DUST:
             case SET_CLEAN_MOP_START:
             case SET_CLEAN_MOP_STOP:
-
 
                 for (RobotCababilities cmd : FEATURES_CHANNELS) {
                     if (response.getCommand().getCommand().contentEquals(cmd.getCommand())) {
