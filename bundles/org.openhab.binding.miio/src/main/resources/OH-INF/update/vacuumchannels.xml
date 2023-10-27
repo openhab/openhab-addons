@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="miio:vacuum">
+		<instruction-set targetVersion="1">
+			<add-channel id="collect_dust">
+				<type>miio:collect_dust</type>
+				<label>Start Collect Dust</label>
+			</add-channel>
+			<add-channel id="clean_mop_start">
+				<type>miio:clean_mop_start</type>
+				<label>Start Mop Wash</label>
+			</add-channel>
+			<add-channel id="clean_mop_stop">
+				<type>miio:clean_mop_stop</type>
+				<label>Stop Mop Wash</label>
+			</add-channel>
+			<add-channel id="mop_drying_time">
+				<type>miio:mop_drying_time</type>
+				<label>Mop Drying Time</label>
+			</add-channel>
+			<add-channel id="is_mop_drying">
+				<type>miio:is_mop_drying</type>
+				<label>Mop Cleaning Active</label>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>
