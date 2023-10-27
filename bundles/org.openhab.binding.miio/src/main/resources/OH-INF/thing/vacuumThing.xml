@@ -317,7 +317,7 @@
 	</channel-type>
 	<channel-type id="collect_dust" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Start collect the dust at the station</label>
+		<label>Start Collect the Dust at the Station</label>
 	</channel-type>
 	<channel-type id="cleanmopstart" advanced="true">
 		<item-type>Switch</item-type>
