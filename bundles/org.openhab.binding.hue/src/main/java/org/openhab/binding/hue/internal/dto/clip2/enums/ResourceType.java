@@ -50,6 +50,7 @@ public enum ResourceType {
     RELATIVE_ROTARY,
     SCENE,
     TAMPER,
+    SMART_SCENE,
     TEMPERATURE,
     ZGP_CONNECTIVITY,
     ZIGBEE_CONNECTIVITY,
