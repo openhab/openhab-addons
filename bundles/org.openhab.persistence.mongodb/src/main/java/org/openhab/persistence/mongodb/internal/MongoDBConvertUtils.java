@@ -48,7 +48,7 @@ import org.openhab.core.types.State;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-import io.micrometer.core.lang.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Conversion logic between openHAB {@link State} types and MongoDB store types
