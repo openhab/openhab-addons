@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ActivePlayerHandler} is responsible for handling everything associated to Freebox Player with api
- * capabilities.
+ * The {@link ActivePlayerHandler} is responsible for handling everything associated to Freebox Player
+ * with api capabilities.
  *
  * @author Gaël L'hopital - Initial contribution
  */
