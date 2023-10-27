@@ -319,7 +319,7 @@
 		<item-type>Switch</item-type>
 		<label>Start Collect the Dust at the Station</label>
 	</channel-type>
-	<channel-type id="cleanmopstart" advanced="true">
+	<channel-type id="clean_mop_start" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Start Mop Wash</label>
 	</channel-type>
