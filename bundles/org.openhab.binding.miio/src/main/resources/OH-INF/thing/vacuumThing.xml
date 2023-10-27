@@ -34,9 +34,9 @@
 			<channel id="fan" typeId="fan"/>
 			<channel id="vacuum" typeId="vacuum"/>
 			<channel id="segment" typeId="segment"/>
-			<channel id="collectdust" typeId="collectdust"/>
-			<channel id="cleanmopstart" typeId="cleanmopstart"/>
-			<channel id="cleanmopstop" typeId="cleanmopstop"/>
+			<channel id="collect_dust" typeId="collect_dust"/>
+			<channel id="clean_mop_start" typeId="clean_mop_start"/>
+			<channel id="clean_mop_stop" typeId="clean_mop_stop"/>
 		</channels>
 	</channel-group-type>
 
