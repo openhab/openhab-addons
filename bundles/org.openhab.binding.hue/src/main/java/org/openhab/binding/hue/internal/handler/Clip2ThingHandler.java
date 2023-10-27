@@ -433,6 +433,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResource = new Resource(ResourceType.LIGHT_LEVEL).setEnabled(command);
                 break;
 
+            case CHANNEL_2_SECURITY_CONTACT_ENABLED:
+                putResource = new Resource(ResourceType.CONTACT).setEnabled(command);
+                break;
+
             case CHANNEL_2_SCENE:
                 if (command instanceof StringType) {
                     Resource scene = sceneResourceEntries.get(((StringType) command).toString());
@@ -925,6 +929,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateState(CHANNEL_2_SECURITY_CONTACT, resource.getContactState(), fullUpdate);
                 updateState(CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED,
                         resource.getContactLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_CONTACT_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case TAMPER:

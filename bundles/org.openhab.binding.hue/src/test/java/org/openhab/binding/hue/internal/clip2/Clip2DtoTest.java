@@ -712,20 +712,38 @@ class Clip2DtoTest {
 
     @Test
     void testSecurityContact() {
-        Resource resource = new Resource(ResourceType.CONTACT);
-        assertEquals(UnDefType.NULL, resource.getContactState());
-        assertEquals(UnDefType.NULL, resource.getContactLastUpdatedState(ZoneId.systemDefault()));
-        resource.setContactReport(new ContactReport().setLastChanged(Instant.now()).setContactState("contact"));
+        String json = load(ResourceType.CONTACT.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource resource = list.get(0);
+        assertEquals(ResourceType.CONTACT, resource.getType());
+
         assertEquals(OpenClosedType.CLOSED, resource.getContactState());
-        assertTrue(resource.getContactLastUpdatedState(ZoneId.systemDefault()) instanceof DateTimeType);
+        assertEquals(new DateTimeType("2023-10-10T19:10:55.919Z"),
+                resource.getContactLastUpdatedState(ZoneId.of("UTC")));
+
         resource.setContactReport(new ContactReport().setLastChanged(Instant.now()).setContactState("no_contact"));
         assertEquals(OpenClosedType.OPEN, resource.getContactState());
+        assertTrue(resource.getContactLastUpdatedState(ZoneId.of("UTC")) instanceof DateTimeType);
     }
 
     @Test
     void testSecurityTamper() {
-        Resource resource = new Resource(ResourceType.CONTACT);
-        assertEquals(UnDefType.NULL, resource.getTamperState());
+        String json = load(ResourceType.TAMPER.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource resource = list.get(0);
+        assertEquals(ResourceType.TAMPER, resource.getType());
+
+        assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
+        assertEquals(new DateTimeType("2023-01-01T00:00:00.001Z"),
+                resource.getTamperLastUpdatedState(ZoneId.of("UTC")));
 
         Instant start = Instant.now();
         List<TamperReport> tamperReports;
@@ -735,7 +753,7 @@ class Clip2DtoTest {
         tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
         resource.setTamperReports(tamperReports);
         assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
-        state = resource.getTamperLastUpdatedState(ZoneId.systemDefault());
+        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
         assertTrue(state instanceof DateTimeType);
         assertEquals(start, ((DateTimeType) state).getInstant());
 
@@ -744,7 +762,7 @@ class Clip2DtoTest {
         tamperReports.add(new TamperReport().setTamperState("tampered").setLastChanged(start.plusSeconds(1)));
         resource.setTamperReports(tamperReports);
         assertEquals(OpenClosedType.OPEN, resource.getTamperState());
-        state = resource.getTamperLastUpdatedState(ZoneId.systemDefault());
+        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
         assertTrue(state instanceof DateTimeType);
         assertEquals(start.plusSeconds(1), ((DateTimeType) state).getInstant());
 
@@ -754,9 +772,28 @@ class Clip2DtoTest {
         tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start.plusSeconds(2)));
         resource.setTamperReports(tamperReports);
         assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
-        state = resource.getTamperLastUpdatedState(ZoneId.systemDefault());
+        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
         assertTrue(state instanceof DateTimeType);
         assertEquals(start.plusSeconds(2), ((DateTimeType) state).getInstant());
+    }
+
+    @Test
+    void testCameraMotion() {
+        String json = load(ResourceType.CAMERA_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource resource = list.get(0);
+        assertEquals(ResourceType.CAMERA_MOTION, resource.getType());
+
+        Boolean enabled = resource.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
+        assertEquals(OnOffType.ON, resource.getMotionState());
+        assertEquals(new DateTimeType("2020-04-01T20:04:30.395Z"),
+                resource.getMotionLastUpdatedState(ZoneId.of("UTC")));
     }
 
     void testFixedEffectSetter() {

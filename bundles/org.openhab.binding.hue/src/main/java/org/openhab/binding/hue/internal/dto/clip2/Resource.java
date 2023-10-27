@@ -106,8 +106,8 @@ public class Resource {
     private @Nullable List<ResourceReference> children;
     private @Nullable JsonElement status;
     private @Nullable @SuppressWarnings("unused") Dynamics dynamics;
-    private @Nullable @SerializedName("contact-report") ContactReport contactReport;
-    private @Nullable @SerializedName("tamper-reports") List<TamperReport> tamperReports;
+    private @Nullable @SerializedName("contact_report") ContactReport contactReport;
+    private @Nullable @SerializedName("tamper_reports") List<TamperReport> tamperReports;
     private @Nullable String state;
 
     /**

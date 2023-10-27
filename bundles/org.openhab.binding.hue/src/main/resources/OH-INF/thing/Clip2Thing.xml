@@ -66,6 +66,9 @@
 				<label>Security Contact</label>
 				<description>Open or closed state of the contact.</description>
 			</channel>
+			<channel id="security-contact-enabled" typeId="sensor-enabled">
+				<description>Security contact enabled.</description>
+			</channel>
 			<channel id="security-contact-last-updated" typeId="last-updated-v2">
 				<label>Security Contact Last Updated</label>
 				<description>The date and time when the contact state was last updated.</description>
