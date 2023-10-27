@@ -87,6 +87,8 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
                 } else {
                     uptime = 0;
                 }
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
             }
             updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
         }
