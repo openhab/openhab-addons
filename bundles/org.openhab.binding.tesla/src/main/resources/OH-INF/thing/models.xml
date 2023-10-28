@@ -115,6 +115,10 @@
 			<channel id="sidemirrorheaters" typeId="sidemirrorheaters"/>
 			<channel id="smartpreconditioning" typeId="smartpreconditioning"/>
 			<channel id="soc" typeId="soc"/>
+			<channel id="softwareupdateavailable" typeId="softwareupdateavailable"/>
+			<channel id="softwareupdatestatus" typeId="softwareupdatestatus"/>
+			<channel id="softwareupdateversion" typeId="softwareupdateversion"/>
+			<channel id="softwareversion" typeId="softwareversion"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="state" typeId="state"/>
 			<channel id="steeringwheelheater" typeId="steeringwheelheater"/>
