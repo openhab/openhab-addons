@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.mybmw.internal.utils;
 
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -166,15 +164,6 @@ public interface Converter {
         } catch (NumberFormatException nfe) {
         }
         return index;
-    }
-
-    static String getRandomString(int size) {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        Random random = new SecureRandom();
-
-        return random.ints(leftLimit, rightLimit + 1).limit(size)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
     }
 
     static State getConnectionState(boolean connected) {

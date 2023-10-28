@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -28,11 +29,24 @@ import com.google.gson.annotations.SerializedName;
 public class Motion {
     private boolean motion;
     private @SerializedName("motion_valid") boolean motionValid;
+    private @Nullable @SerializedName("motion_report") MotionReport motionReport;
 
+    /**
+     * The underlying field is deprecated in the CLIP 2 API.
+     * Moved to motion_report/motion.
+     * Should be used only as fallback for older firmwares.
+     *
+     * @return true if motion is detected
+     */
     public boolean isMotion() {
         return motion;
     }
 
+    /**
+     * The underlying field is deprecated in the CLIP 2 API.
+     * Motion is valid when motion_report property is present, invalid when absent.
+     * Should be used only as fallback for older firmwares.
+     */
     public boolean isMotionValid() {
         return motionValid;
     }
@@ -43,5 +57,9 @@ public class Motion {
 
     public State getMotionValidState() {
         return OnOffType.from(motionValid);
+    }
+
+    public @Nullable MotionReport getMotionReport() {
+        return motionReport;
     }
 }

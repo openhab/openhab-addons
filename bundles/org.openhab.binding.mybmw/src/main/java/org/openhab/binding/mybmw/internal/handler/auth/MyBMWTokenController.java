@@ -78,7 +78,7 @@ import org.openhab.binding.mybmw.internal.dto.auth.ChinaTokenExpiration;
 import org.openhab.binding.mybmw.internal.dto.auth.ChinaTokenResponse;
 import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer;
 import org.openhab.binding.mybmw.internal.utils.Constants;
-import org.openhab.binding.mybmw.internal.utils.Converter;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -261,7 +261,7 @@ public class MyBMWTokenController {
     }
 
     private String generateState() {
-        String stateBytes = Converter.getRandomString(16);
+        String stateBytes = StringUtils.getRandomAlphabetic(64).toLowerCase();
         return Base64.getUrlEncoder().withoutPadding().encodeToString(stateBytes.getBytes());
     }
 
@@ -272,7 +272,7 @@ public class MyBMWTokenController {
     }
 
     private String generateCodeVerifier() {
-        String verfifierBytes = Converter.getRandomString(64);
+        String verfifierBytes = StringUtils.getRandomAlphabetic(64).toLowerCase();
         return Base64.getUrlEncoder().withoutPadding().encodeToString(verfifierBytes.getBytes());
     }
 
