@@ -13,7 +13,6 @@
 package org.openhab.binding.mybmw.internal.utils;
 
 import java.lang.reflect.Type;
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -247,15 +245,6 @@ public class Converter {
             v.properties.vehicleLocation.address.formatted = Constants.UNDEF;
         }
         return v;
-    }
-
-    public static String getRandomString(int size) {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        Random random = new SecureRandom();
-
-        return random.ints(leftLimit, rightLimit + 1).limit(size)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
     }
 
     public static State getLockState(boolean lock) {
