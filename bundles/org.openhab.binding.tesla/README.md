@@ -182,9 +182,13 @@ Additionally, these advanced channels are available (not all are available on al
 | shiftstate                | String                   | Shift State                   | Indicates the state of the transmission, “P”, “D”, “R”, or “N”                                                   |
 | sidemirrorheaters         | Switch                   | Side Mirror Heaters           | Indicates if the side mirror heaters are switched on                                                             |
 | smartpreconditioning      | Switch                   | Smart Preconditioning         | Indicates if smart preconditioning is switched on                                                                |
+| softwareupdateavailable   | Switch                   | Update Available              | Car Software update available, automatically generated comparing "version" to "update version"                   |
+| softwareupdatestatus      | String                   | Update Status                 | Car Software update status, e.g. "downloading_wifi_wait", "installing"                                           |
+| softwareupdateversion     | String                   | Update version                | Car software version to update to, e.g. "2023.32.9" or empty                                                     |
+| softwareversion           | String                   | Software version              | Software version, e.g. "2023.32.6 93d75c736e0c"                                                                  |
 | soc                       | Number                   | State of Charge               | State of Charge, in %                                                                                            |
 | state                     | String                   | State                         | “online”, “asleep”, “waking”                                                                                     |
-| steeringwheelheater       | Switch                   | Steering Wheel Heater         | Turns On/Off the steering wheel heater                      |
+| steeringwheelheater       | Switch                   | Steering Wheel Heater         | Turns On/Off the steering wheel heater                                                                           |
 | sunroofstate              | String                   | Sunroof State                 | Valid states are “unknown”, “open”, “closed”, “vent”, “comfort”. Accepts commands "close" and "vent".            |
 | sunroof                   | Dimmer                   | Sunroof                       | Indicates the opening state of the sunroof (0% closed, 100% fully open)                                          |
 | temperature               | Number:Temperature       | Temperature                   | Set the temperature of the autoconditioning system. The temperature for the driver and passenger will be synced. |
