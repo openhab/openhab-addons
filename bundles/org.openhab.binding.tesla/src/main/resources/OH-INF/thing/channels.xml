@@ -22,12 +22,6 @@
 		<description>Car software version to update to</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="softwareversion">
-		<item-type>String</item-type>
-		<label>Software version</label>
-		<description>Current software version of the car</description>
-		<state readOnly="true"></state>
-	</channel-type>
 	<channel-type id="destinationname">
 		<item-type>String</item-type>
 		<label>Route Destination</label>

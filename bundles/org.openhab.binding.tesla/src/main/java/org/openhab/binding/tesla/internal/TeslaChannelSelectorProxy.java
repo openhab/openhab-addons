@@ -160,6 +160,7 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
+        CAR_VERSION("car_version", "version", StringType.class, true),
         CENTER_DISPLAY("center_display_state", "centerdisplay", DecimalType.class, false),
         CHARGE(null, "charge", OnOffType.class, false) {
             @Override
@@ -932,7 +933,6 @@ public class TeslaChannelSelectorProxy {
             }
         },
         SOC("soc", "soc", PercentType.class, false),
-        SOFTWARE_VERSION("car_version", "softwareversion", StringType.class, false),
         SOFTWARE_UPDATE_STATUS("status", "softwareupdatestatus", StringType.class, false),
         SOFTWARE_UPDATE_VERSION("version", "softwareupdateversion", StringType.class, false),
         SPEED("speed", "speed", DecimalType.class, false) {

@@ -118,7 +118,6 @@
 			<channel id="softwareupdateavailable" typeId="softwareupdateavailable"/>
 			<channel id="softwareupdatestatus" typeId="softwareupdatestatus"/>
 			<channel id="softwareupdateversion" typeId="softwareupdateversion"/>
-			<channel id="softwareversion" typeId="softwareversion"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="state" typeId="state"/>
 			<channel id="combinedtemp" typeId="combinedtemp"/>

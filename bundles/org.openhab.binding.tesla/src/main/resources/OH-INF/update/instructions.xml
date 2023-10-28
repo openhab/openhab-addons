@@ -32,9 +32,6 @@
 			<add-channel id="softwareupdateversion" typeId="softwareupdateversion">
 				<type>tesla:softwareupdateversion</type>
 			</add-channel>
-			<add-channel id="softwareversion" typeId="softwareversion">
-				<type>tesla:softwareversion</type>
-			</add-channel>
 		</instruction-set>
 	</thing-type>
 
@@ -66,9 +63,6 @@
 			</add-channel>
 			<add-channel id="softwareupdateversion" typeId="softwareupdateversion">
 				<type>tesla:softwareupdateversion</type>
-			</add-channel>
-			<add-channel id="softwareversion" typeId="softwareversion">
-				<type>tesla:softwareversion</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -102,9 +96,6 @@
 			<add-channel id="softwareupdateversion" typeId="softwareupdateversion">
 				<type>tesla:softwareupdateversion</type>
 			</add-channel>
-			<add-channel id="softwareversion" typeId="softwareversion">
-				<type>tesla:softwareversion</type>
-			</add-channel>
 		</instruction-set>
 	</thing-type>
 
@@ -136,9 +127,6 @@
 			</add-channel>
 			<add-channel id="softwareupdateversion" typeId="softwareupdateversion">
 				<type>tesla:softwareupdateversion</type>
-			</add-channel>
-			<add-channel id="softwareversion" typeId="softwareversion">
-				<type>tesla:softwareversion</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
