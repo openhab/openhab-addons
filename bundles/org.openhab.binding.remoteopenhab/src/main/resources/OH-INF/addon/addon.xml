@@ -8,4 +8,11 @@
 	<description>The Remote openHAB binding allows to communicate with remote openHAB servers.</description>
 	<connection>hybrid</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_openhab-server._tcp.local.</mdns-service-type>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

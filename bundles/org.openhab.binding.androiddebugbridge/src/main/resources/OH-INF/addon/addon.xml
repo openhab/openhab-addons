@@ -30,4 +30,28 @@
 			<default>255</default>
 		</parameter>
 	</config-description>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_androidtvremote2._tcp.local.</mdns-service-type>
+			<match-properties>
+				<match-property>
+					<name>bt</name>
+					<regex>.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_amzn-wplay._tcp.local.</mdns-service-type>
+			<match-properties>
+				<match-property>
+					<name>c</name>
+					<regex>.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

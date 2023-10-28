@@ -8,4 +8,11 @@
 	<description>Controls TiVo DVRs that support the TiVo TCP Control Protocol v1.1</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_tivo-remote._tcp.local.</mdns-service-type>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

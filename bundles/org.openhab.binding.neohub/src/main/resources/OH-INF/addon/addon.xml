@@ -8,4 +8,17 @@
 	<description>This is the binding for Heatmiser NeoHub devices</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_hap._tcp.local.</mdns-service-type>
+			<match-properties>
+				<match-property>
+					<name>name</name>
+					<regex>Heatmiser neoHub</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>
