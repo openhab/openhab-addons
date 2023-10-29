@@ -307,9 +307,9 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                     }
                     updateState(channelUID, inputSource(result.input));
 
-                    if (result.radio_freq.isPresent()) {
+                    if (result.radioFrequency.isPresent()) {
                         updateState(SonyAudioBindingConstants.CHANNEL_RADIO_FREQ,
-                                new DecimalType(result.radio_freq.get() / 1000000.0));
+                                new DecimalType(result.radioFrequency.get() / 1000000.0));
                     }
                 }
             } catch (CompletionException ex) {
@@ -509,9 +509,9 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 break;
         }
 
-        if (input.radio_freq.isPresent()) {
+        if (input.radioFrequency.isPresent()) {
             updateState(SonyAudioBindingConstants.CHANNEL_RADIO_FREQ,
-                    new DecimalType(input.radio_freq.get() / 1000000.0));
+                    new DecimalType(input.radioFrequency.get() / 1000000.0));
         }
     }
 
