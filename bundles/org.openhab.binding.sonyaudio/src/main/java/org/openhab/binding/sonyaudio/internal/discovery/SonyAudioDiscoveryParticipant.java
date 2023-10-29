@@ -128,19 +128,19 @@ public class SonyAudioDiscoveryParticipant implements UpnpDiscoveryParticipant {
             while ((s = bufferedReader.readLine()) != null) {
                 builder.append(s);
             }
-            Pattern ScalarWebAPImatch = Pattern.compile("<av:X_ScalarWebAPI_BaseURL>(.*)</av:X_ScalarWebAPI_BaseURL>");
+            Pattern scalarWebAPImatch = Pattern.compile("<av:X_ScalarWebAPI_BaseURL>(.*)</av:X_ScalarWebAPI_BaseURL>");
             Pattern baseURLmatch = Pattern.compile("http://(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):(\\d+)([^<]*)");
 
-            Matcher tagmatch = ScalarWebAPImatch.matcher(builder.toString());
+            Matcher tagmatch = scalarWebAPImatch.matcher(builder.toString());
             if (tagmatch.find()) {
                 Matcher matcher = baseURLmatch.matcher(tagmatch.group());
                 matcher.find();
                 // String scalar_host = matcher.group(0);
-                int scalar_port = Integer.parseInt(matcher.group(2));
-                String scalar_path = matcher.group(3);
+                int scalarPort = Integer.parseInt(matcher.group(2));
+                String scalarPath = matcher.group(3);
 
-                properties.put(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER, scalar_port);
-                properties.put(SonyAudioBindingConstants.SCALAR_PATH_PARAMETER, scalar_path);
+                properties.put(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER, scalarPort);
+                properties.put(SonyAudioBindingConstants.SCALAR_PATH_PARAMETER, scalarPath);
             }
             return properties;
         }
