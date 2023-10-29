@@ -96,7 +96,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
      *
      * @param where the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param message the OWN message received that identified the device
+     * @param baseMsg the OWN message received that identified the device
      *            (optional)
      */
     public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,

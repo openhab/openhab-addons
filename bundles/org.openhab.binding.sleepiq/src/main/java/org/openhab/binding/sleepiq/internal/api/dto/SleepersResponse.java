@@ -15,7 +15,7 @@ package org.openhab.binding.sleepiq.internal.api.dto;
 import java.util.List;
 
 /**
- * The {@link SleeperResponse} holds the information about the sleepers assigned to the bed sides.
+ * The {@link SleepersResponse} holds the information about the sleepers assigned to the bed sides.
  *
  * @author Gregory Moyer - Initial contribution
  */

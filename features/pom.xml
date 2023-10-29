@@ -92,6 +92,7 @@
                   <!-- Apache Karaf -->
                   <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
                   <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
+                  <descriptor>mvn:org.apache.karaf.features/specs/${karaf.version}/xml/features</descriptor>
                   <!-- Current feature under verification -->
                   <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
                 </descriptors>

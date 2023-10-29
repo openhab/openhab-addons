@@ -85,7 +85,7 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
  *
  * The service creates tables automatically, one for numbers, and one for strings.
  *
- * @see AbstractDynamoDBItem.fromState for details how different items are persisted
+ * @see AbstractDynamoDBItem#fromStateNew for details how different items are persisted
  *
  * @author Sami Salonen - Initial contribution
  * @author Kai Kreuzer - Migration to 3.x

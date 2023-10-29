@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.openhab.core.util.StringUtils;
+
 /**
  * A XML-RPC request for sending data to the Homematic server.
  *
@@ -39,7 +41,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
     private List<Object> parms;
     private StringBuilder sb;
     private TYPE type;
-    public static SimpleDateFormat xmlRpcDateFormat = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
+    public static final SimpleDateFormat XML_RPC_DATEFORMAT = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 
     public XmlRpcRequest(String methodName) {
         this(methodName, TYPE.REQUEST);
@@ -122,7 +124,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
         } else {
             Class<?> clazz = value.getClass();
             if (clazz == String.class || clazz == Character.class) {
-                sb.append(escapeXml(value.toString()));
+                sb.append(StringUtils.escapeXml(value.toString()));
             } else if (clazz == Long.class || clazz == Integer.class || clazz == Short.class || clazz == Byte.class) {
                 tag("int", value.toString());
             } else if (clazz == Double.class) {
@@ -135,7 +137,9 @@ public class XmlRpcRequest implements RpcRequest<String> {
             } else if (clazz == Boolean.class) {
                 tag("boolean", ((Boolean) value).booleanValue() ? "1" : "0");
             } else if (clazz == Date.class) {
-                tag("dateTime.iso8601", xmlRpcDateFormat.format(((Date) value)));
+                synchronized (XML_RPC_DATEFORMAT) {
+                    tag("dateTime.iso8601", XML_RPC_DATEFORMAT.format(((Date) value)));
+                }
             } else if (value instanceof Calendar calendar) {
                 generateValue(calendar.getTime());
             } else if (value instanceof byte[] bytes) {
@@ -173,31 +177,5 @@ public class XmlRpcRequest implements RpcRequest<String> {
                 throw new RuntimeException("Unsupported XML-RPC Type: " + value.getClass());
             }
         }
-    }
-
-    private StringBuilder escapeXml(String inValue) {
-        StringBuilder outValue = new StringBuilder(inValue.length());
-        for (int i = 0; i < inValue.length(); i++) {
-            switch (inValue.charAt(i)) {
-                case '<':
-                    outValue.append("&lt;");
-                    break;
-                case '>':
-                    outValue.append("&gt;");
-                    break;
-                case '&':
-                    outValue.append("&amp;");
-                    break;
-                case '\'':
-                    outValue.append("&apost;");
-                    break;
-                case '"':
-                    outValue.append("&quot;");
-                    break;
-                default:
-                    outValue.append(inValue.charAt(i));
-            }
-        }
-        return outValue;
     }
 }

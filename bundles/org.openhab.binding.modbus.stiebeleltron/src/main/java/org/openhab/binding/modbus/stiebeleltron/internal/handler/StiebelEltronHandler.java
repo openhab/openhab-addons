@@ -59,7 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Modbus.StiebelEltronHandler} is responsible for handling commands,
+ * The {@link StiebelEltronHandler} is responsible for handling commands,
  * which are sent to one of the channels and for polling the modbus.
  *
  * @author Paul Frank - Initial contribution
@@ -177,7 +177,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
-     * @param modbusManager the modbus manager
      */
     public StiebelEltronHandler(Thing thing) {
         super(thing);

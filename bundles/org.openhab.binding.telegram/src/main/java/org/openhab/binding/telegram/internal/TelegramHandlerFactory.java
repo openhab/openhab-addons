@@ -14,7 +14,6 @@ package org.openhab.binding.telegram.internal;
 
 import static org.openhab.binding.telegram.internal.TelegramBindingConstants.TELEGRAM_THING;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.telegram", service = ThingHandlerFactory.class)
 public class TelegramHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(TELEGRAM_THING);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TELEGRAM_THING);
 
     private final HttpClient httpClient;
 

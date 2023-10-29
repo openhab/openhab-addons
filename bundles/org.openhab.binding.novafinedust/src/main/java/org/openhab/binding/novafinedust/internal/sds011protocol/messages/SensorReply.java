@@ -62,7 +62,8 @@ public class SensorReply {
     }
 
     /**
-     * Gets the first byte from the data bytes (usually holds the {@link Command}) as a form of some sub command
+     * Gets the first byte from the data bytes (usually holds the
+     * {@link org.openhab.binding.novafinedust.internal.sds011protocol.Command}) as a form of some sub command
      *
      * @return first byte from the data section of a reply
      */

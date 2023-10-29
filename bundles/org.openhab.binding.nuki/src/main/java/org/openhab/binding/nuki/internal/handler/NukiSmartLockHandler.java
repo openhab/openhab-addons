@@ -29,8 +29,8 @@ import org.openhab.core.types.Command;
  * sent to one of the channels.
  *
  * @author Markus Katter - Initial contribution
- * @contributer Christian Hoefler - Door sensor integration
- * @contributer Jan Vybíral - Refactoring, added more channels
+ * @author Christian Hoefler - Door sensor integration
+ * @author Jan Vybíral - Refactoring, added more channels
  */
 @NonNullByDefault
 public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLockConfiguration> {

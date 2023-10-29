@@ -47,8 +47,8 @@ public abstract class VelbusMemoHandler extends VelbusThermostatHandler {
             return;
         }
 
-        if (channelUID.equals(memoChannel) && command instanceof StringType) {
-            String memoText = ((StringType) command).toFullString();
+        if (channelUID.equals(memoChannel) && command instanceof StringType stringCommand) {
+            String memoText = stringCommand.toFullString();
             String trucatedMemoText = memoText.substring(0, Math.min(memoText.length(), MEMO_TEXT_MAX_LENGTH));
             String[] splittedMemoText = trucatedMemoText.split("(?<=\\G.....)");
 

@@ -19,7 +19,6 @@ import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.VmManager;
 import org.openhab.binding.freeboxos.internal.api.rest.VmManager.Status;
 import org.openhab.binding.freeboxos.internal.api.rest.VmManager.VirtualMachine;
-import org.openhab.binding.freeboxos.internal.api.rest.WebSocketManager;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -37,35 +36,19 @@ import org.slf4j.LoggerFactory;
 public class VmHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(VmHandler.class);
 
-    // We start in pull mode and switch to push after a first update
-    private boolean pushSubscribed = false;
-
     public VmHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void dispose() {
-        try {
-            getManager(WebSocketManager.class).unregisterVm(getClientId());
-        } catch (FreeboxException e) {
-            logger.warn("Error unregistering VM from the websocket: {}", e.getMessage());
-        }
-        super.dispose();
-    }
-
-    @Override
     protected void internalPoll() throws FreeboxException {
-        if (pushSubscribed) {
-            return;
-        }
         super.internalPoll();
 
-        logger.debug("Polling Virtual machine status");
-        VirtualMachine vm = getManager(VmManager.class).getDevice(getClientId());
-        updateVmChannels(vm);
-        getManager(WebSocketManager.class).registerVm(vm.id(), this);
-        pushSubscribed = true;
+        if (!pushSubscribed) {
+            logger.debug("Polling Virtual machine status");
+            VirtualMachine vm = getManager(VmManager.class).getDevice(getClientId());
+            updateVmChannels(vm);
+        }
     }
 
     public void updateVmChannels(VirtualMachine vm) {

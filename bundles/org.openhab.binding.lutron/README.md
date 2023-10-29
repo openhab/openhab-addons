@@ -10,7 +10,7 @@ It contains support for four different types of Lutron systems via different bri
 
 Each is described in a separate section below.
 
-# Lutron RadioRA 2/HomeWorks QS/RA2 Select/Caseta Binding
+# Lutron RadioRA 3/ RadioRA 2/HomeWorks QS/RA2 Select/Caseta Binding
 
 **Note:** While the Lutron Integration Protocol used by ipbridge in this binding should largely be compatible with other current Lutron systems, it has only been fully tested with RadioRA 2, HomeWorks QS, and Caseta with Smart Bridge Pro.
 Homeworks QS support is still a work in progress, since not all features/devices are supported yet.
@@ -23,7 +23,7 @@ The binding has not been tested with Quantum, QS Standalone, myRoom Plus, or Ath
 This binding currently supports the following thing types:
 
 - **ipbridge** - The Lutron main repeater/processor/hub
-- **leapbridge** - Experimental bridge that uses LEAP protocol (Caseta & RA2 Select only)
+- **leapbridge** - Experimental bridge that uses LEAP protocol (Caseta, Radio RA3 & RA2 Select only)
 - **dimmer** - Light dimmer
 - **switch** - Switch or relay module
 - **fan** - Fan controller
@@ -61,7 +61,7 @@ The experimental leapbridge supports full automated discovery of these systems, 
 Other supported Lutron systems must be configured manually.
 
 **Note:** Discovery selects ipbridge for HomeWorks QS, RadioRA 2, RA2 Select, and Caseta Smart Bridge Pro.
-It select leapbridge for Caseta Smart Bridge, since only LEAP protocol is supported by this system.
+It select leapbridge for Caseta Smart Bridge and Radio RA 3, since only LEAP protocol is supported by these systems.
 
 ## Binding Configuration
 
@@ -79,13 +79,14 @@ Two different bridges are now supported by the binding for current Lutron system
 The LIP protocol is supported by ipbridge while the LEAP protocol is supported by leapbridge.
 Current systems support one or both protocols as shown below.
 
-|Bridge Device           | LIP | LEAP |
-|------------------------|-----|------|
-|HomeWorks QS Processor  |  X  |      |
-|RadioRA 2 Main Repeater |  X  |      |
-|RA2 Select Main Repeater|  X  |  X   |
-|Caseta Smart Bridge Pro |  X  |  X   |
-|Caseta Smart Bridge     |     |  X   |
+| Bridge Device            | LIP | LEAP |
+|--------------------------|-----|------|
+| HomeWorks QS Processor   |  X  |      |
+| RadioRA 2 Main Repeater  |  X  |      |
+| RA2 Select Main Repeater |  X  |  X   |
+| Caseta Smart Bridge Pro  |  X  |  X   |
+| Caseta Smart Bridge      |     |  X   |
+| RadioRA 3 Processor      |     |  X   |
 
 If your system supports only one protocol, then the choice of bridge is easy.
 If you have a system that supports both protocols, you must decide which you wish to use.
@@ -140,7 +141,7 @@ Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", passwo
 
 #### leapbridge [**experimental**]
 
-The leapbridge is an experimental bridge which allows the binding to work with the Caseta Smart Hub (non-Pro version).
+The leapbridge is an experimental bridge which allows the binding to work with the Caseta Smart Hub (non-Pro version) and the RadioRA 3 Processor.
 It can also be used to provide additional features, such as support for occupancy groups and device discovery, when used with Caseta Smart Hub Pro or RA2 Select.
 It uses the LEAP protocol over SSL, which is an undocumented protocol supported by some of Lutron's newer systems.
 Note that the LEAP protocol will not notify the bridge of keypad key presses.

@@ -24,6 +24,10 @@
 				<label>Electricity Tax</label>
 				<description>Current electricity tax in DKK per kWh.</description>
 			</channel>
+			<channel id="reduced-electricity-tax" typeId="datahub-price">
+				<label>Reduced Electricity Tax</label>
+				<description>Current reduced electricity tax in DKK per kWh. For electric heating customers only.</description>
+			</channel>
 			<channel id="transmission-net-tariff" typeId="datahub-price">
 				<label>Transmission Net Tariff</label>
 				<description>Current transmission net tariff in DKK per kWh.</description>
