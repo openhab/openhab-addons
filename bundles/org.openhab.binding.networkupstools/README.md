@@ -78,7 +78,6 @@ The following channels are available:
 | batteryVoltage      | Number:ElectricPotential | V    | Battery voltage (V)                                                 | yes      |
 | batteryTemperature  | Number:Temperature       | °C   | Battery temperature (degrees C)                                     | yes      |
 
-
 ### Dynamic Channels
 
 Because there is a lot of variation in UPS features, the binding supports dynamically adding channels for features, not supported out-of-the-box.
