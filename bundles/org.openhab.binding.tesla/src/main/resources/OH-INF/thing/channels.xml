@@ -13,7 +13,7 @@
 	<channel-type id="softwareupdatestatus">
 		<item-type>String</item-type>
 		<label>Update Status</label>
-		<description>Car Software update status</description>
+		<description>Car software update status</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="softwareupdateversion">
