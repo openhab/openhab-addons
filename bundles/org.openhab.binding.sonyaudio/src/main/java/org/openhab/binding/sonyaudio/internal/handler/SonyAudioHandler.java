@@ -64,7 +64,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
     private ScheduledFuture<?> refreshJob;
 
     private int currentRadioStation = 0;
-    private final Map<Integer, String> input_zone = new HashMap<>();
+    private final Map<Integer, String> inputZone = new HashMap<>();
 
     private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
 
@@ -303,7 +303,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 SonyAudioConnection.SonyAudioInput result = inputCache[zone].getValue();
                 if (result != null) {
                     if (zone > 0) {
-                        input_zone.put(zone, result.input);
+                        inputZone.put(zone, result.input);
                     }
                     updateState(channelUID, inputSource(result.input));
 
@@ -387,7 +387,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
             String radioCommand = "radio:fm?contentId=" + currentRadioStation;
 
             for (int i = 1; i <= 4; i++) {
-                String input = input_zone.get(i);
+                String input = inputZone.get(i);
                 if (input != null && input.startsWith("radio:fm")) {
                     connection.setInput(radioCommand, i);
                 }
@@ -418,20 +418,20 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         Configuration config = getThing().getConfiguration();
         String ipAddress = (String) config.get(SonyAudioBindingConstants.HOST_PARAMETER);
         String path = (String) config.get(SonyAudioBindingConstants.SCALAR_PATH_PARAMETER);
-        Object port_o = config.get(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER);
+        Object portO = config.get(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER);
         int port = 10000;
-        if (port_o instanceof BigDecimal decimalValue) {
+        if (portO instanceof BigDecimal decimalValue) {
             port = decimalValue.intValue();
-        } else if (port_o instanceof Integer) {
-            port = (int) port_o;
+        } else if (portO instanceof Integer) {
+            port = (int) portO;
         }
 
-        Object refresh_o = config.get(SonyAudioBindingConstants.REFRESHINTERVAL);
+        Object refreshO = config.get(SonyAudioBindingConstants.REFRESHINTERVAL);
         int refresh = 0;
-        if (refresh_o instanceof BigDecimal decimalValue) {
+        if (refreshO instanceof BigDecimal decimalValue) {
             refresh = decimalValue.intValue();
-        } else if (refresh_o instanceof Integer) {
-            refresh = (int) refresh_o;
+        } else if (refreshO instanceof Integer) {
+            refresh = (int) refreshO;
         }
 
         try {
