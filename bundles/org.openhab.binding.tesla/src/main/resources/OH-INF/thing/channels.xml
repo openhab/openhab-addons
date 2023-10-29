@@ -7,7 +7,7 @@
 	<channel-type id="softwareupdateavailable">
 		<item-type>Switch</item-type>
 		<label>Update Available</label>
-		<description>Car Software update available</description>
+		<description>Car software update available</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="softwareupdatestatus">
