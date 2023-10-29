@@ -142,15 +142,15 @@ The gpio pin number on the Pi that the channel will monitor.
 
 Invert:
 
-Inverts the value of the gpio pin before reflecting the value on the channel. Useful
-for active low gpio pins where you want the channel state to reflect an ON value when
-the pin is low (OFF).
+Inverts the value of the gpio pin before reflecting the value on the channel.
+Useful for active low gpio pins where you want the channel state to reflect an ON value when the pin is low (OFF).
 
 Delay Time:
 
-Sets a delay value in milliseconds that the gpio pin must remain at prior to updating the channel state. 
-This is the same as switch debouncing or hysteresis. Default value is 10 milliseconds. Increase this value
-for noisy inputs.
+Sets a delay value in milliseconds that the gpio pin must remain at prior to updating the channel state.
+This is the same as switch debouncing or hysteresis.
+Default value is 10 milliseconds.
+Increase this value for noisy inputs.
 
 Pull Up/Down Resistor:
 
@@ -159,9 +159,9 @@ Set this to OFF if you use external pull up/down resistors.
 
 Edge Detection Mode:
 
-Sets the mode of operation for the pin edge detection mode. If you are not sure what
-the use case is for this, leave at the default value of `Either Edge`. This is the most common
-mode that gpio inputs are used.
+Sets the mode of operation for the pin edge detection mode.
+If you are not sure what the use case is for this, leave at the default value of `Either Edge`.
+This is the most common mode that gpio inputs are used.
 
 ### GPIO pigpio-digital-output channel configuration
 
@@ -173,8 +173,8 @@ The gpio pin number on the Pi that the channel will control.
 
 Invert:
 
-Inverts the value of the channel state before commanding the gpio pin. Useful to 
-simulate active low gpio pins.
+Inverts the value of the channel state before commanding the gpio pin.
+Useful to simulate active low gpio pins.
 
 Pulse:
 
@@ -187,11 +187,11 @@ Together with the Pulse configuration, can be used to create a one shot or momen
 This is useful to simulate momentary button presses or to drive motors for a predefined amount
 of time.
 
-  Off             : When the ON command is issued to the channel. The Pulse feature will send an
-                    OFF command after the Pulse duration.
-  On              : When the OFF command is issued to the channel. The Pulse feature will send an
+- **Off:** When the ON command is issued to the channel. The Pulse feature will send an OFF command
+                    after the Pulse duration.
+- **On:** When the OFF command is issued to the channel. The Pulse feature will send an
                     ON command after the Pulse duration.
-  Blink           : Cycles the channel ON, OFF, ON indefinitely with a 50% duty cycle. The Blink
+- **Blink:** Cycles the channel ON, OFF, ON indefinitely with a 50% duty cycle. The Blink
                     operation continues regardless of the commanded channel state. This was originaly
                     developed as a way to flash a status LED to visually confirm that a remote pigpiod
                     instance has connectivity to openHAB.
