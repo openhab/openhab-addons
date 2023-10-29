@@ -50,18 +50,16 @@ sudo systemctl start pigpiod
 
 Binding general configuration options. If you do not see all options, ensure `Show Advanced` is selected.
 
-Host:
+### Host
 
-```
-Set Host to the address of the Pi that pigpiod is running on. Default is 127.0.0.1 (IPV4).
+Set `Host` to the address of the Pi that pigpiod is running on. Default is 127.0.0.1 (IPV4).
 Note: If you are running pigpiod on same host as openHAB, set the host to 127.0.0.1 (IPV4) or ::1 (IPV6).
-```
 
-Port:
+### Port
 
 Set `Port` to the network port that pigpiod is listening on. Default is 8888.
 
-Heart Beat Interval:
+### Heart Beat Interval
 
 The binding will poll pigpiod running on the Pi to determine if a network disconnect has occurred.
 This is the interval in milliseconds that the heart beat poll occurs. Defaults to 30000 (30 seconds).
