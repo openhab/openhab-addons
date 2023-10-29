@@ -167,7 +167,7 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
         } catch (PigpioException e) {
             // If there is a communication error, the set alert below will throw.
             if (e.getErrorCode() != -99999999) {
-                logger.warn("Listen exception :", e);
+                logger.debug("Listen exception :", e);
             }
         }
 
