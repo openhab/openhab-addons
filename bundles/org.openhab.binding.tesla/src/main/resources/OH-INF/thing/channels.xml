@@ -18,7 +18,7 @@
 	</channel-type>
 	<channel-type id="softwareupdateversion">
 		<item-type>String</item-type>
-		<label>Update version</label>
+		<label>Update Version</label>
 		<description>Car software version to update to</description>
 		<state readOnly="true"></state>
 	</channel-type>
