@@ -74,7 +74,7 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
         this.gpioId = configuration.gpioId;
 
         if (this.gpioId <= 0) {
-            throw new ChannelConfigurationException("Invalid gpioId value.");
+            throw new ChannelConfigurationException("Invalid gpioId value: " + this.gpioId);
         }
 
         String pullupdownStr = configuration.pullupdown.toUpperCase();
@@ -141,7 +141,7 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
             } catch (PigpioException e) {
                 // -99999999 is communication related, we will let the Thing connect poll refresh it.
                 if (e.getErrorCode() != -99999999) {
-                    logger.warn("Debounce exception :", e);
+                    logger.debug("Debounce exception :", e);
                 }
             }
         }
@@ -204,7 +204,7 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
                         // Best effort to remove listener,
                         // the command socket could already be dead.
                         if (e.getErrorCode() != -99999999) {
-                            logger.warn("Dispose exception :", e);
+                            logger.debug("Dispose exception :", e);
                         }
                     }
                 }

@@ -60,7 +60,7 @@ Note: If you are running pigpiod on same host as openHAB, set the host to 127.0.
 Port:
 
 ```
-Set Port to the network port that pigpiod is listening on. Default is 8888.
+Set `Port` to the network port that pigpiod is listening on. Default is 8888.
 ```
 
 Heart Beat Interval:
