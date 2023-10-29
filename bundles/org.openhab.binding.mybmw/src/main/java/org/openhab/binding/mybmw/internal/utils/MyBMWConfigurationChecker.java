@@ -25,7 +25,7 @@ import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
 @NonNullByDefault
 public final class MyBMWConfigurationChecker {
     public static boolean checkConfiguration(MyBMWBridgeConfiguration config) {
-        if (Constants.EMPTY.equals(config.userName) || Constants.EMPTY.equals(config.password)) {
+        if (config.userName.isBlank() || config.password.isBlank()) {
             return false;
         } else {
             return BimmerConstants.EADRAX_SERVER_MAP.containsKey(config.region);
