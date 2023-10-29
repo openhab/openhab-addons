@@ -59,89 +59,74 @@ Note: If you are running pigpiod on same host as openHAB, set the host to 127.0.
 
 Port:
 
-```
 Set `Port` to the network port that pigpiod is listening on. Default is 8888.
-```
 
 Heart Beat Interval:
 
-```
-The binding will poll pigpiod running on the Pi to determine if a network disconnect has occurred. 
+The binding will poll pigpiod running on the Pi to determine if a network disconnect has occurred.
 This is the interval in milliseconds that the heart beat poll occurs. Defaults to 30000 (30 seconds).
-```
 
-Input Channel Connect Action:
+## Input Channel Connect Action
 
-```
-Input Channel Connect Action determines what happens when the binding initially connects to pigpiod. 
+Input Channel Connect Action determines what happens when the binding initially connects to pigpiod.
 This action only occurs once after binding startup.
-  
-  Do Nothing      : The default, do nothing. Input channels will retain their default value (UNDEF).
-  Refresh Channel : Issues a refresh command on the input channels. This will refresh the channels from
-                    pigpiod causing the gpio pin state to reflect on the channel state.
-```
+
+- **Do Nothing:** The default, do nothing. Input channels will retain their default value (UNDEF).
+- **Refresh Channel:** Issues a refresh command on the input channels. This will refresh the channels from pigpiod causing the gpio pin state to reflect on the channel state.
 
 Input Channel Disconnect Connect Action:
 
-```
-Input Channel Disconnect Connect Action determines what happens when the binding disconnects from pigpiod. 
-  
-  Do Nothing : The default, do nothing. Input channels will retain their current value.
-  Set Undef  : Sets the input channel states to UNDEF to indicate that pigpiod has disconnected.
-```
+### Input Channel Disconnect Connect Action
 
-Input Channel Reconnect Connect Action:
+Input Channel Disconnect Connect Action determines what happens when the binding disconnects from pigpiod.
 
-```
+- **Do Nothing:** The default, do nothing. Input channels will retain their current value.
+- **Set Undef:** Sets the input channel states to UNDEF to indicate that pigpiod has disconnected.
+
+### Input Channel Reconnect Connect Action
+
 Input Channel Reconnect Action determines what happens when the binding reconnects to pigpiod
 after a disconnect. This action does not occur on the initial binding connect to pigpiod.
 startup.
   
-  Do Nothing      : The default, do nothing. Input channels will retain their current value.
-  Refresh Channel : Issues a refresh command on the input channels. This will refresh the channels from
+- **Do Nothing:** The default, do nothing. Input channels will retain their current value.
+- **Refresh Channel:** Issues a refresh command on the input channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state.
-```
 
-Output Channel Connect Action:
+### Output Channel Connect Action
 
-```
-Output Channel Connect Action determines what happens when the binding initially connects to pigpiod. 
+Output Channel Connect Action determines what happens when the binding initially connects to pigpiod.
 This action only occurs once after binding startup.
   
-  Do Nothing      : The default, do nothing. Output channels will retain their default value (UNDEF).
-  All On          : Issues a ON command to all configured output channels.
-  All Off         : Issues a OFF command to all configured output channels.
-  Refresh Channel : Issues a refresh command on the output channels. This will refresh the channels from
+- **Do Nothing:** The default, do nothing. Output channels will retain their default value (UNDEF).
+- **All On:** Issues a ON command to all configured output channels.
+- **All Off:** Issues a OFF command to all configured output channels.
+- **Refresh Channel:** Issues a refresh command on the output channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state. NOTE: This does
                     not update the gpio pin state on the Pi itself. It only updates the channel state
                     within openHAB.
-```
 
-Output Channel Disconnect Connect Action:
+### Output Channel Disconnect Connect Action
 
-```
-Output Channel Disconnect Connect Action determines what happens when the binding disconnects from pigpiod. 
+Output Channel Disconnect Connect Action determines what happens when the binding disconnects from pigpiod.
   
-  Do Nothing : The default, do nothing. Input channels will retain their current value.
-  Set Undef  : Sets the output channel states to UNDEF to indicate that pigpiod has disconnected.
-```
+- **Do Nothing:** he default, do nothing. Input channels will retain their current value.
+- **Set Undef:** Sets the output channel states to UNDEF to indicate that pigpiod has disconnected.
 
-Output Channel Reconnect Connect Action:
+### Output Channel Reconnect Connect Action
 
-```
 Output Channel Reconnect Action determines what happens when the binding reconnects to pigpiod
 after a disconnect. This action does not occur on the initial binding connect to pigpiod.
   
-  Do Nothing      : The default, do nothing. Output channels will retain their current value.
-  Refresh Channel : Issues a refresh command on the output channels. This will refresh the channels from
+- **Do Nothing:** The default, do nothing. Output channels will retain their current value.
+- **Refresh Channel:** Issues a refresh command on the output channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state. NOTE: This does
                     not update the gpio pin state on the Pi itself. It only updates the channel state
                     within openHAB.
-```
 
 ## Channels
 
-The binding has two channel types. 
+The binding has two channel types.
 One for gpio input pins, and another for gpio output pins.
 
 | channel               | type   | description                     |
@@ -155,40 +140,30 @@ Input channels provide a read-only value of the gpio pin state using the `OnOffT
 
 GPIO Pin:
 
-```
 The gpio pin number on the Pi that the channel will monitor.
-```
 
 Invert:
 
-```
 Inverts the value of the gpio pin before reflecting the value on the channel. Useful
 for active low gpio pins where you want the channel state to reflect an ON value when
 the pin is low (OFF).
-```
 
 Delay Time:
 
-```
 Sets a delay value in milliseconds that the gpio pin must remain at prior to updating the channel state. 
 This is the same as switch debouncing or hysteresis. Default value is 10 milliseconds. Increase this value
 for noisy inputs.
-```
 
 Pull Up/Down Resistor:
 
-```
 Sets the mode of operation for the internal pull up/ down resistor on the gpio pin.
 Set this to OFF if you use external pull up/down resistors.
-```
 
 Edge Detection Mode:
 
-```
 Sets the mode of operation for the pin edge detection mode. If you are not sure what
 the use case is for this, leave at the default value of `Either Edge`. This is the most common
 mode that gpio inputs are used.
-```
 
 ### GPIO pigpio-digital-output channel configuration
 
@@ -196,27 +171,20 @@ Output channels provide a means of controlling the output value of the gpio pin 
 
 GPIO Pin:
 
-```
 The gpio pin number on the Pi that the channel will control.
-```
 
 Invert:
 
-```
 Inverts the value of the channel state before commanding the gpio pin. Useful to 
 simulate active low gpio pins.
-```
 
 Pulse:
 
-```
 Time in milliseconds that must elapse before the Pulse Command is sent to the channel.
 Default value is 0, which disables the Pulse feature.
-```
 
 Pulse Command:
 
-```
 Together with the Pulse configuration, can be used to create a one shot or momentary output.
 This is useful to simulate momentary button presses or to drive motors for a predefined amount
 of time.
@@ -229,7 +197,6 @@ of time.
                     operation continues regardless of the commanded channel state. This was originaly
                     developed as a way to flash a status LED to visually confirm that a remote pigpiod
                     instance has connectivity to openHAB.
-```
 
 ## Config file example
 
