@@ -14,7 +14,7 @@
 			<match-properties>
 				<match-property>
 					<name>deviceType</name>
-					<regex>fritzbox</regex>
+					<regex>(?i).*fritzbox.*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>

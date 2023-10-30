@@ -19,7 +19,7 @@
 				</match-property>
 				<match-property>
 					<name>deviceType</name>
-					<regex>MediaRenderer</regex>
+					<regex>.*MediaRenderer.*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>

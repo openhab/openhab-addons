@@ -22,7 +22,7 @@
 			<match-properties>
 				<match-property>
 					<name>deviceType</name>
-					<regex>MediaRenderer</regex>
+					<regex>.*MediaRenderer.*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>
@@ -31,7 +31,7 @@
 			<match-properties>
 				<match-property>
 					<name>deviceType</name>
-					<regex>MediaServer</regex>
+					<regex>.*MediaServer.*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>
