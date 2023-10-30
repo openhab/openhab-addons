@@ -349,13 +349,14 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
             response = sendCommand(getFirmwareVersion);
 
             if (response != null) {
-                String message = stripByteCount(response).split("\0")[0];
-                if (message != null) {
-                    if (message.contains("VERSION")) {
-                        logger.info("'{}' matches an IRtrans device with firmware {}", getThing().getUID(), message);
-                        getConfig().put(FIRMWARE_VERSION, message);
+                String[] messages = stripByteCount(response).split("\0");
+                if (messages.length > 0) {
+                    if (messages[0].contains("VERSION")) {
+                        logger.info("'{}' matches an IRtrans device with firmware {}", getThing().getUID(),
+                                messages[0]);
+                        getConfig().put(FIRMWARE_VERSION, messages[0]);
                     } else {
-                        logger.debug("Received some non-compliant garbage ({})", message);
+                        logger.debug("Received some non-compliant garbage ({})", messages[0]);
                         onConnectionLost();
                     }
                 }
@@ -446,13 +447,13 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         String[] commandList = new String[0];
 
         if (response != null) {
-            String message = stripByteCount(response).split("\0")[0];
-            logger.trace("commands returned {}", message);
-            if (message != null) {
-                if (message.contains("COMMANDLIST")) {
-                    commandList = message.split(",");
+            String[] messages = stripByteCount(response).split("\0");
+            logger.trace("commands returned {}", messages[0]);
+            if (messages.length > 0) {
+                if (messages[0].contains("COMMANDLIST")) {
+                    commandList = messages[0].split(",");
                 } else {
-                    logger.debug("Received some non-compliant command ({})", message);
+                    logger.debug("Received some non-compliant command ({})", messages[0]);
                     onConnectionLost();
                 }
             }
@@ -471,13 +472,13 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         String[] remoteList = new String[0];
 
         if (response != null) {
-            String message = stripByteCount(response).split("\0")[0];
-            logger.trace("remotes returned {}", message);
-            if (message != null) {
-                if (message.contains("REMOTELIST")) {
-                    remoteList = message.split(",");
+            String[] messages = stripByteCount(response).split("\0");
+            logger.trace("remotes returned {}", messages[0]);
+            if (messages.length > 0) {
+                if (messages[0].contains("REMOTELIST")) {
+                    remoteList = messages[0].split(",");
                 } else {
-                    logger.debug("Received some non-compliant command ({})", message);
+                    logger.debug("Received some non-compliant command ({})", messages[0]);
                     onConnectionLost();
                 }
             }
@@ -499,11 +500,11 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
             ByteBuffer response = sendCommand(output);
 
             if (response != null) {
-                String message = stripByteCount(response).split("\0")[0];
-                if (message != null && message.contains("RESULT OK")) {
+                String[] messages = stripByteCount(response).split("\0");
+                if (messages.length > 0 && messages[0].contains("RESULT OK")) {
                     return true;
                 } else {
-                    logger.debug("Received an unexpected response from the IRtrans transceiver: '{}'", message);
+                    logger.debug("Received an unexpected response from the IRtrans transceiver: '{}'", messages[0]);
                     return false;
                 }
             }
