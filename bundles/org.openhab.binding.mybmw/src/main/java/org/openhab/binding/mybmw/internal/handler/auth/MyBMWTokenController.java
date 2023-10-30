@@ -121,8 +121,6 @@ public class MyBMWTokenController {
                     tokenUpdateSuccess = updateTokenChina();
                     break;
                 case REGION_NORTH_AMERICA:
-                    tokenUpdateSuccess = updateToken();
-                    break;
                 case REGION_ROW:
                     tokenUpdateSuccess = updateToken();
                     break;
