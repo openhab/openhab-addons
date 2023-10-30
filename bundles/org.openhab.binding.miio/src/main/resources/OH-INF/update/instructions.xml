@@ -6,19 +6,19 @@
 	<thing-type uid="miio:vacuum">
 		<instruction-set targetVersion="1">
 			<add-channel id="collect_dust">
-				<type>miio:collect_dust</type>			
+				<type>miio:collect_dust</type>
 			</add-channel>
 			<add-channel id="clean_mop_start">
-				<type>miio:clean_mop_start</type>				
+				<type>miio:clean_mop_start</type>
 			</add-channel>
 			<add-channel id="clean_mop_stop">
-				<type>miio:clean_mop_stop</type>				
+				<type>miio:clean_mop_stop</type>
 			</add-channel>
 			<add-channel id="mop_drying_time">
-				<type>miio:mop_drying_time</type>				
+				<type>miio:mop_drying_time</type>
 			</add-channel>
 			<add-channel id="is_mop_drying">
-				<type>miio:is_mop_drying</type>				
+				<type>miio:is_mop_drying</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

@@ -18,8 +18,10 @@
 			<channel-group id="info" typeId="info"/>
 		</channel-groups>
 
+
 		<properties>
 			<property name="vendor">Xiaomi</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:miio:config"/>
