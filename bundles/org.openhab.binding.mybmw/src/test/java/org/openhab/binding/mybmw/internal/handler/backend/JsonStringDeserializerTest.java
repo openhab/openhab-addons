@@ -46,9 +46,6 @@ public class JsonStringDeserializerTest {
         String content = FileReader.fileToString("responses/BEV/charging_sessions.json");
         ChargingSessionsContainer chargeSessionsContainer = JsonStringDeserializer.getChargingSessions(content);
         assertNotNull(chargeSessionsContainer);
-
-        // String jsonString = gson.toJson(chargeSessionsContainer);
-        // assertEquals(content.replace(" ", ""), jsonString.replace(" ", ""));
     }
 
     @Test
@@ -56,9 +53,6 @@ public class JsonStringDeserializerTest {
         String content = FileReader.fileToString("responses/BEV/charging_statistics.json");
         ChargingStatisticsContainer chargeStatisticsContainer = JsonStringDeserializer.getChargingStatistics(content);
         assertNotNull(chargeStatisticsContainer);
-
-        // String jsonString = gson.toJson(chargeStatisticsContainer);
-        // assertEquals(content.replace(" ", ""), jsonString.replace(" ", ""));
     }
 
     @Test
@@ -66,9 +60,6 @@ public class JsonStringDeserializerTest {
         String content = FileReader.fileToString("responses/MILD_HYBRID/remote_service_status.json");
         ExecutionStatusContainer executionStatusContainer = JsonStringDeserializer.getExecutionStatus(content);
         assertNotNull(executionStatusContainer);
-
-        // String jsonString = gson.toJson(executionStatusContainer);
-        // assertEquals(content.replace(" ", ""), jsonString.replace(" ", ""));
     }
 
     @Test
@@ -76,9 +67,6 @@ public class JsonStringDeserializerTest {
         String content = FileReader.fileToString("responses/MILD_HYBRID/remote_service_error.json");
         ExecutionStatusContainer executionStatusContainer = JsonStringDeserializer.getExecutionStatus(content);
         assertNotNull(executionStatusContainer);
-
-        // String jsonString = gson.toJson(executionStatusContainer);
-        // assertEquals(content.replace(" ", ""), jsonString.replace(" ", ""));
     }
 
     @Test
@@ -88,9 +76,6 @@ public class JsonStringDeserializerTest {
         assertNotNull(vehicleBases);
         assertFalse(vehicleBases.isEmpty());
         assertEquals(1, vehicleBases.size());
-
-        // String jsonString = gson.toJson(vehicleBases);
-        // assertEquals(content.replace(" ", ""), jsonString.replace(" ", ""));
     }
 
     @Test
@@ -109,9 +94,6 @@ public class JsonStringDeserializerTest {
         String content = FileReader.fileToString("responses/MILD_HYBRID/vehicles_state.json");
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(content);
         assertNotNull(vehicleStateContainer);
-
-        // String jsonString = gson.toJson(vehicleStateContainer);
-        // assertEquals(content.replace(" ", ""), jsonString.replace(" ", ""));
     }
 
     @Test
@@ -119,9 +101,6 @@ public class JsonStringDeserializerTest {
         String content = FileReader.fileToString("responses/PHEV/vehicles_state.json");
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(content);
         assertNotNull(vehicleStateContainer);
-
-        // String jsonString = gson.toJson(vehicleStateContainer);
-        // assertEquals(content.replace(" ", ""), jsonString.replace(" ", ""));
     }
 
     @Test
@@ -129,8 +108,5 @@ public class JsonStringDeserializerTest {
         String content = FileReader.fileToString("responses/ICE/vehicles_state.json");
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(content);
         assertNotNull(vehicleStateContainer);
-
-        // String jsonString = gson.toJson(vehicleStateContainer);
-        // assertEquals(content.replace(" ", ""), jsonString.replace(" ", ""));
     }
 }
