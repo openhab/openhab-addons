@@ -35,7 +35,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
 import org.openhab.binding.irtrans.internal.IrCommand;
@@ -179,11 +178,11 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         }
     }
 
-    public boolean registerTransceiverStatusListener(@NonNull TransceiverStatusListener transceiverStatusListener) {
+    public boolean registerTransceiverStatusListener(TransceiverStatusListener transceiverStatusListener) {
         return transceiverStatusListeners.add(transceiverStatusListener);
     }
 
-    public boolean unregisterTransceiverStatusListener(@NonNull TransceiverStatusListener transceiverStatusListener) {
+    public boolean unregisterTransceiverStatusListener(TransceiverStatusListener transceiverStatusListener) {
         return transceiverStatusListeners.remove(transceiverStatusListener);
     }
 
