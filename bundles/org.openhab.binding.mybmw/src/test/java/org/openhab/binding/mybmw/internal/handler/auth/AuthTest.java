@@ -139,10 +139,7 @@ class AuthTest {
             logger.info("Auth");
 
             logger.info(aqr.tokenEndpoint);
-            // AuthenticationStore authenticationStore = authHttpClient.getAuthenticationStore();
-            // BasicAuthentication ba = new BasicAuthentication(new URI(aqr.tokenEndpoint), Authentication.ANY_REALM,
-            // aqr.clientId, aqr.clientSecret);
-            // authenticationStore.addAuthentication(ba);
+
             Request codeRequest = authHttpClient.POST(aqr.tokenEndpoint);
             String basicAuth = "Basic "
                     + Base64.getUrlEncoder().encodeToString((aqr.clientId + ":" + aqr.clientSecret).getBytes());
@@ -177,30 +174,19 @@ class AuthTest {
             vehicleParams.put("tireGuardMode", "ENABLED");
             vehicleParams.put("appDateTime", Long.toString(System.currentTimeMillis()));
             vehicleParams.put("apptimezone", "60");
-            // vehicleRequest.param("tireGuardMode", "ENABLED");
-            // vehicleRequest.param("appDateTime", Long.toString(System.currentTimeMillis()));
-            // vehicleRequest.param("apptimezone", "60.0");
-            // vehicleRequest.
-            // // logger.info(vehicleParams);
-            // vehicleRequest.content(new StringContentProvider(CONTENT_TYPE_JSON_ENCODED, vehicleParams.toString(),
-            // StandardCharsets.UTF_8));
-            // logger.info(vehicleRequest.getHeaders());
+
             String params = UrlEncoded.encode(vehicleParams, StandardCharsets.UTF_8, false);
 
             String vehicleUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
                     + "/eadrax-vcs/v1/vehicles";
             logger.info(vehicleUrl);
-            Request vehicleRequest = apiHttpClient.newRequest(vehicleUrl + "?" + params);//
-            // .param("tireGuardMode", "ENABLED")
-            // .param("appDateTime", Long.toString(System.currentTimeMillis())).param("apptimezone", "60.0");
-            // vehicleRequest.header("Content-Type", "application/x-www-form-urlencoded");
+            Request vehicleRequest = apiHttpClient.newRequest(vehicleUrl + "?" + params);
+
             vehicleRequest.header(HttpHeader.AUTHORIZATION, t.getBearerToken());
             vehicleRequest.header("accept", "application/json");
             vehicleRequest.header("accept-language", "de");
             vehicleRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
-            // vehicleRequest.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
-            // vehicleRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
-            // UrlEncoded.encode(vehicleParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
+
             ContentResponse vehicleResponse = vehicleRequest.send();
             logger.info("Vehicle Status {} {}", vehicleResponse.getStatus(), vehicleResponse.getContentAsString());
 
@@ -217,17 +203,12 @@ class AuthTest {
             Request chargeStatisticsRequest = apiHttpClient.newRequest(chargeStatisticsUrl)
                     .param("vin", "WBY1Z81040V905639").param("currentDate", Converter.getCurrentISOTime());
             logger.info("{}", chargeStatisticsUrl);
-            // vehicleRequest.header("Content-Type", "application/x-www-form-urlencoded");
+
             chargeStatisticsRequest.header(HttpHeader.AUTHORIZATION, t.getBearerToken());
             chargeStatisticsRequest.header("accept", "application/json");
             chargeStatisticsRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
             chargeStatisticsRequest.header("accept-language", "de");
 
-            // MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
-            // chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
-            // chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
-            //
-            // params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
             logger.info("{}", params);
             chargeStatisticsRequest
                     .content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, params, StandardCharsets.UTF_8));
@@ -251,20 +232,13 @@ class AuthTest {
                     + "/eadrax-chs/v1/charging-sessions";
             Request chargeSessionsRequest = apiHttpClient.newRequest(chargeSessionsUrl + "?" + params);
             logger.info("{}", chargeSessionsUrl);
-            // vehicleRequest.header("Content-Type", "application/x-www-form-urlencoded");
+
             chargeSessionsRequest.header(HttpHeader.AUTHORIZATION, t.getBearerToken());
             chargeSessionsRequest.header("accept", "application/json");
             chargeSessionsRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
             chargeSessionsRequest.header("accept-language", "de");
 
-            // MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
-            // chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
-            // chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
-            //
-            // params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
             logger.info("{}", params);
-            // chargeStatisticsRequest
-            // .content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, params, StandardCharsets.UTF_8));
 
             ContentResponse chargeSessionsResponse = chargeSessionsRequest.send();
             logger.info("{}", chargeSessionsResponse.getStatus());
@@ -275,31 +249,12 @@ class AuthTest {
                     + "/eadrax-vrccs/v2/presentation/remote-commands/WBY1Z81040V905639/charging-control";
             Request chargingControlRequest = apiHttpClient.POST(chargingControlUrl);
             logger.info("{}", chargingControlUrl);
-            // vehicleRequest.header("Content-Type", "application/x-www-form-urlencoded");
+
             chargingControlRequest.header(HttpHeader.AUTHORIZATION, t.getBearerToken());
             chargingControlRequest.header("accept", "application/json");
             chargingControlRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
             chargingControlRequest.header("accept-language", "de");
             chargingControlRequest.header("Content-Type", CONTENT_TYPE_JSON);
-
-            // String content = FileReader.readFileInString("responses/charging-profile.json");
-            // logger.info("{}", content);
-            // ChargeProfile cpc = JsonStringDeserializer.deserializeString(content, ChargeProfile.class);
-            // String contentTranfsorm = Converter.getGson().toJson(cpc);
-            // String profile = "{chargingProfile:" + contentTranfsorm + "}";
-            // logger.info("{}", profile);
-            // chargingControlRequest
-            // .content(new StringContentProvider(CONTENT_TYPE_JSON_ENCODED, params, StandardCharsets.UTF_8));
-
-            // chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
-            // chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
-            //
-            // params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
-
-            // ContentResponse chargingControlResponse = chargingControlRequest.send();
-            // logger.info("{}", chargingControlResponse.getStatus());
-            // logger.info("{}", chargingControlResponse.getReason());
-            // logger.info("{}", chargingControlResponse.getContentAsString());
 
         } catch (Exception e) {
             logger.error("{}", e.getMessage());
@@ -417,7 +372,7 @@ class AuthTest {
             // https://stackoverflow.com/questions/11410770/load-rsa-public-key-from-file
 
             String publicKeyStr = pkr.data.value;
-            // String cleanPublicKeyStr = pkr.data.value.replaceAll("(\r\n|\n)", Constants.EMPTY);
+
             String publicKeyPEM = publicKeyStr.replace("-----BEGIN PUBLIC KEY-----", "")
                     .replaceAll(System.lineSeparator(), "").replace("-----END PUBLIC KEY-----", "");
             byte[] encoded = Base64.getDecoder().decode(publicKeyPEM);
