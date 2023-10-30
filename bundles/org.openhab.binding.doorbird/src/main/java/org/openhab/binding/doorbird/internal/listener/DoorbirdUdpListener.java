@@ -66,10 +66,11 @@ public class DoorbirdUdpListener extends Thread {
     }
 
     public void shutdown() {
+        DatagramSocket socket = this.socket;
         if (socket != null) {
             socket.close();
             logger.debug("Listener closing listener socket");
-            socket = null;
+            this.socket = null;
         }
     }
 
@@ -97,7 +98,6 @@ public class DoorbirdUdpListener extends Thread {
                 // Nothing to do on socket timeout
             } catch (IOException e) {
                 logger.debug("Listener got IOException waiting for datagram: {}", e.getMessage());
-                socket = null;
             }
         }
         logger.debug("Listener exiting");
