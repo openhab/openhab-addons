@@ -15,11 +15,15 @@ package org.openhab.binding.gpio.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Is thrown when no gpio id is provided
+ * Is thrown when a channel configuration is invalid
  *
- * @author Nils Bauer - Initial contribution
+ * @author Jeremy Rumpf - Initial contribution
  */
 @NonNullByDefault
-public class NoGpioIdException extends Exception {
+public class ChannelConfigurationException extends Exception {
     private static final long serialVersionUID = -1281107134439928767L;
+
+    public ChannelConfigurationException(String message) {
+        super(message);
+    }
 }
