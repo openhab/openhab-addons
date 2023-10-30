@@ -32,4 +32,41 @@ public class PigpioConfiguration {
      * Port of pigpio on the remote raspberry pi
      */
     public int port = 8888;
+
+    /**
+     * Interval to send heartbeat checks
+     */
+    public int heartBeatInterval = 60000;
+
+    /**
+     * Input channel action on connect
+     * (First connect after INITIALIATION)
+     */
+    public @Nullable String inputConnectAction;
+
+    /**
+     * Input channel action on reconnect
+     */
+    public @Nullable String inputReconnectAction;
+
+    /**
+     * Input channel action on disconnect
+     */
+    public @Nullable String inputDisconnectAction;
+
+    /**
+     * Output channel action on connect
+     * (First connect after INITIALIATION)
+     */
+    public @Nullable String outputConnectAction;
+
+    /**
+     * Output channel action on reconnect
+     */
+    public @Nullable String outputReconnectAction;
+
+    /**
+     * Output channel action on disconnect
+     */
+    public @Nullable String outputDisconnectAction;
 }
