@@ -33,7 +33,7 @@ import ch.qos.logback.classic.Level;
  * 
  * checks the vehicleBase response
  * 
- * @author Martin Grassl - initial contribution
+ * @author Martin Grassl - Initial contribution
  */
 public class VehicleBaseTest {
 
