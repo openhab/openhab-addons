@@ -13,7 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.devices.rf.smartcontact;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.devices.dto;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 
 import java.io.InputStream;
@@ -25,8 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -196,8 +195,7 @@ public class TapoLightEffect {
             if (is != null) {
                 try {
                     Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
-                    Gson gson = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation().create();
-                    return gson.fromJson(reader, TapoLightEffect.class);
+                    return GSON.fromJson(reader, TapoLightEffect.class);
                 } catch (Exception e) {
                     throw new TapoErrorHandler(TapoErrorCode.ERR_API_JSON_DECODE_FAIL, fxName);
                 }

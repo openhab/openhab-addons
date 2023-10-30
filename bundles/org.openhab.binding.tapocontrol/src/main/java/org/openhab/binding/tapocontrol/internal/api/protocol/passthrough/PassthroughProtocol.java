@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.tapocontrol.internal.api.protocol.passthrough;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -39,9 +41,6 @@ import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * Handler class for TAPO-PASSTHROUGH-Protocol
  *
@@ -49,11 +48,8 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class PassthroughProtocol implements TapoProtocolInterface {
-    protected static final Gson gson = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation()
-            .create();
-
     private final Logger logger = LoggerFactory.getLogger(PassthroughProtocol.class);
-    private final TapoConnectorInterface httpDelegator;;
+    private final TapoConnectorInterface httpDelegator;
     private final String uid;
 
     /***********************
@@ -237,7 +233,7 @@ public class PassthroughProtocol implements TapoProtocolInterface {
      */
     private TapoResponse getTapoResponse(String responseString) throws TapoErrorHandler {
         if (isValidJson(responseString)) {
-            return Objects.requireNonNull(gson.fromJson(responseString, TapoResponse.class));
+            return Objects.requireNonNull(GSON.fromJson(responseString, TapoResponse.class));
         } else {
             logger.debug("({}) invalid response received", uid);
             throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, "invalid response receicved");

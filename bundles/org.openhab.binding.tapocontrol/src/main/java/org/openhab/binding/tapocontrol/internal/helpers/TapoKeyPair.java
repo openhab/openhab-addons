@@ -17,6 +17,7 @@ import static java.util.Base64.*;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -30,33 +31,37 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TapoKeyPair {
-    private String publicKey = "";
-    private String privateKey = "";
+    private static final String ALGORITHM_RSA = "RSA";
+    private static final String LINE_SEPARATOR = "\n";
+    private static final int LINE_LENGTH = 64;
+    private byte[] publicKeyBytes = {};
+    private byte[] privateKeyBytes = {};
 
-    private final String ALGORITHM = "RSA";
-    private final int KEYSIZE = 1024;
+    public TapoKeyPair(int keysize) {
+        try {
+            createNewKeyPair(ALGORITHM_RSA, keysize);
+        } catch (Exception e) {
+            publicKeyBytes = new byte[0];
+            privateKeyBytes = new byte[0];
+        }
+    }
 
-    public TapoKeyPair() {
-        createKeyPair();
+    public TapoKeyPair(String algorithm, int keysize) throws NoSuchAlgorithmException {
+        createNewKeyPair(algorithm, keysize);
     }
 
     /**
      * Create Key-Pairs
      *
      */
-    private void createKeyPair() {
-        try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM);
-            keyPairGenerator.initialize(KEYSIZE, new SecureRandom());
-            KeyPair generateKeyPair = keyPairGenerator.generateKeyPair();
+    public void createNewKeyPair(String algorithm, int keysize) throws NoSuchAlgorithmException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm);
+        keyPairGenerator.initialize(keysize, new SecureRandom());
+        KeyPair generateKeyPair = keyPairGenerator.generateKeyPair();
+        Encoder mimEncoder = getMimeEncoder(LINE_LENGTH, LINE_SEPARATOR.getBytes(StandardCharsets.UTF_8));
 
-            publicKey = new String(getMimeEncoder().encode(((RSAPublicKey) generateKeyPair.getPublic()).getEncoded()));
-            privateKey = new String(
-                    getMimeEncoder().encode(((RSAPrivateKey) generateKeyPair.getPrivate()).getEncoded()));
-        } catch (Exception e) {
-            publicKey = "";
-            privateKey = "";
-        }
+        publicKeyBytes = mimEncoder.encode(((RSAPublicKey) generateKeyPair.getPublic()).getEncoded());
+        privateKeyBytes = mimEncoder.encode(((RSAPrivateKey) generateKeyPair.getPrivate()).getEncoded());
     }
 
     /***********************************
@@ -66,21 +71,23 @@ public class TapoKeyPair {
      ************************************/
 
     /**
-     * get Private-Key
+     * get PEM-formated Private-Key
      * 
      * @return String -----BEGIN PRIVATE KEY-----\n%s\n-----END PRIVATE KEY-----
      */
     public String getPrivateKey() {
-        return String.format("-----BEGIN PRIVATE KEY-----%n%s%n-----END PRIVATE KEY-----%n", privateKey);
+        return String.format("-----BEGIN PRIVATE KEY-----%2$s%1$s%2$s-----END PRIVATE KEY-----%2$s",
+                new String(privateKeyBytes), LINE_SEPARATOR);
     }
 
     /**
-     * get Public-Key
+     * get PEM-formated Public-Key
      * 
      * @return String -----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----
      */
     public String getPublicKey() {
-        return String.format("-----BEGIN PUBLIC KEY-----%n%s%n-----END PUBLIC KEY-----%n", publicKey);
+        return String.format("-----BEGIN PUBLIC KEY-----%2$s%1$s%2$s-----END PUBLIC KEY-----%2$s",
+                new String(publicKeyBytes), LINE_SEPARATOR);
     }
 
     /**
@@ -89,11 +96,7 @@ public class TapoKeyPair {
      * @return UTF-8 coded byte[] with private key
      */
     public byte[] getPrivateKeyBytes() {
-        try {
-            return privateKey.getBytes(StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            return new byte[0];
-        }
+        return privateKeyBytes;
     }
 
     /**
@@ -102,10 +105,6 @@ public class TapoKeyPair {
      * @return UTF-8 coded byte[] with private key
      */
     public byte[] getPublicKeyBytes() {
-        try {
-            return publicKey.getBytes(StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            return new byte[0];
-        }
+        return publicKeyBytes;
     }
 }

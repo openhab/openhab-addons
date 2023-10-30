@@ -17,9 +17,32 @@
 		</parameter>
 		<parameter name="cloudDiscovery" type="boolean" required="false">
 			<label>Cloud Discovery</label>
-			<description>Use Cloud Discovery-Service</description>
+			<description>Use Cloud Discovery-Service to get all in Tapo-App registered devices. Includes DeviceName. IP-Address
+				and Encryption has to set manually if device is not found via udpDiscovery</description>
 			<default>false</default>
 			<advanced>false</advanced>
+		</parameter>
+		<parameter name="udpDiscovery" type="boolean" required="false">
+			<label>UDP Discovery</label>
+			<description>Use UDP Discovery-Service to discover online devices in the local network. Includes Encryption and
+				IP-Address</description>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="onlyLocalOnlineDevices" type="boolean" required="false">
+			<label>Discover only online devices</label>
+			<description>Uses Cloud and UPD-Discovery to get more informations but will only discover online devices via UDP</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="broadcastAddress" type="text" required="false">
+			<context>network-address</context>
+			<label>Broadcast Address</label>
+			<description>Broadcast-Address UDP-requests are sent to. Change it to the broadcast-address of your ip-range (e.g.
+				'192.168.1.255') if you have problems with
+				default (255.255.255.255)</description>
+			<default>255.255.255.255</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="discoveryInterval" type="integer" min="1" max="10080" required="false">
 			<label>Background Discovery Interval</label>

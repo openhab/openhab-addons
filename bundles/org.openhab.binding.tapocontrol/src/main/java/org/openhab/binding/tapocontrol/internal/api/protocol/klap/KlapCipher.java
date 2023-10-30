@@ -14,7 +14,7 @@ package org.openhab.binding.tapocontrol.internal.api.protocol.klap;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoEncoder.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.ByteUtils.*;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
@@ -33,15 +33,14 @@ import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
  */
 @NonNullByDefault
 public class KlapCipher {
+    protected static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
+    protected static final String CIPHER_ALGORITHM = "AES";
+    protected static final String CIPHER_CHARSET = "UTF-8";
+
     private int ivSeq = 0;
     private byte[] iv;
     private byte[] key;
     private byte[] sig;
-
-    /* class contants */
-    protected static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
-    protected static final String CIPHER_ALGORITHM = "AES";
-    protected static final String CIPHER_CHARSET = "UTF-8";
 
     /************************
      * INIT CLASS

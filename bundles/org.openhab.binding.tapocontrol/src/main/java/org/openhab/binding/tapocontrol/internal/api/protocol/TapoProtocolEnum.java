@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.api.protocol;
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.EnumSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -24,24 +23,27 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum TapoProtocolEnum {
-    PASSTHROUGH("passthrough"),
-    SECUREPASSTROUGH("securePassthrough"),
-    KLAP("klap");
+    PASSTHROUGH(""),
+    SECUREPASSTROUGH("AES"),
+    KLAP("KLAP");
 
-    private static final HashMap<String, TapoProtocolEnum> BY_VALUE = new HashMap<>();
     public final String value;
-
-    static {
-        for (TapoProtocolEnum e : values()) {
-            BY_VALUE.put(e.value, e);
-        }
-    }
 
     private TapoProtocolEnum(String value) {
         this.value = value;
     }
 
     public static TapoProtocolEnum valueOfString(String label) {
-        return Objects.requireNonNull(BY_VALUE.get(label));
+        return EnumSet.allOf(TapoProtocolEnum.class).stream().filter(p -> p.value.equals(label)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException());
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return getValue();
     }
 }

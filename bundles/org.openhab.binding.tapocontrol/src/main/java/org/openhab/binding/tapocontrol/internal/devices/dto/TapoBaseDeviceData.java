@@ -13,7 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.devices.dto;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.tapocontrol.internal.api.protocol.klap;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.ByteUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -38,9 +41,6 @@ import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * Handler class for TAPO-KLAP-Protocol
  *
@@ -48,8 +48,6 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface {
-    protected static final Gson gson = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation()
-            .create();
 
     private final Logger logger = LoggerFactory.getLogger(KlapProtocol.class);
     protected final TapoConnectorInterface httpDelegator;
@@ -124,7 +122,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
 
         /* encrypt request */
         byte[] encodedBytes = session.encryptRequest(tapoRequest);
-        String encrypteString = encodeHexString(encodedBytes);
+        String encrypteString = byteArrayToHex(encodedBytes);
         Integer ivSequence = session.getIvSequence();
         logger.trace("({}) encrypted request is '{}' with sequence '{}'", uid, encrypteString, ivSequence);
 
@@ -210,7 +208,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
      * @throws TapoErrorHandler
      */
     public void encryptedResponseReceived(byte[] content, Integer ivSeq, String command) throws TapoErrorHandler {
-        String stringContent = encodeHexString(content);
+        String stringContent = byteArrayToHex(content);
         logger.trace("({}) receivedRespose '{}'", uid, stringContent);
         String decryptedResponse = session.decryptResponse(content, ivSeq);
         logger.trace("({}) decrypted response: '{}'", uid, decryptedResponse);
@@ -235,9 +233,8 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
      * decrypt if is encrypted
      */
     protected TapoResponse getTapoResponse(String responseString) throws TapoErrorHandler {
-
         if (isValidJson(responseString)) {
-            TapoResponse tapoResponse = Objects.requireNonNull(gson.fromJson(responseString, TapoResponse.class));
+            TapoResponse tapoResponse = Objects.requireNonNull(GSON.fromJson(responseString, TapoResponse.class));
             if (tapoResponse.hasError()) {
                 throw new TapoErrorHandler(tapoResponse.errorCode(), tapoResponse.message());
             }

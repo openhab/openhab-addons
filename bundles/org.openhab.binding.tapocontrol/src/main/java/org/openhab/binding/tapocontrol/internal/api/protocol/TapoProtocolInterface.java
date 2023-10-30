@@ -28,18 +28,6 @@ import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 public interface TapoProtocolInterface {
 
     /***********************
-     * Init Class
-     **********************/
-
-    /*
-     * public [ClassName](TapoDeviceHttpApi httpDelegator, TapoBaseDeviceHandler deviceHandler){
-     * this.httpDelegator = httpDelegator;
-     * device = deviceHandler;
-     * uid = device.getThingUID().toString() + " / HTTP-[ClassName]";
-     * }
-     */
-
-    /***********************
      * Login Handling
      **********************/
     public boolean login(TapoCredentials credentials) throws TapoErrorHandler;

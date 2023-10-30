@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.tapocontrol.internal.api.protocol.securePassthrough;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.*;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
@@ -36,8 +37,6 @@ import org.openhab.binding.tapocontrol.internal.helpers.TapoKeyPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
@@ -47,11 +46,12 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class SecurePassthroughSession {
+    private static final int RSA_KEYSIZE = 1024;
+
     private final Logger logger = LoggerFactory.getLogger(SecurePassthroughSession.class);
-    protected static final Gson gson = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation()
-            .create();
+
     private final SecurePasstroughCipher cipher = new SecurePasstroughCipher();
-    private final TapoKeyPair tapoKeyPair = new TapoKeyPair();
+    private final TapoKeyPair tapoKeyPair;
     private final SecurePassthrough spth;
     private String cookie = "";
     private String token = "";
@@ -63,6 +63,7 @@ public class SecurePassthroughSession {
     public static final String DEVICE_CMD_SECURE_METHOD = "securePassthrough";
 
     public SecurePassthroughSession(SecurePassthrough sptHandler) {
+        tapoKeyPair = new TapoKeyPair(RSA_KEYSIZE);
         spth = sptHandler;
         uid = spth.httpDelegator.getThingUID() + " / SecurePassthrough-Session";
     }
@@ -244,7 +245,7 @@ public class SecurePassthroughSession {
                 String encryptedResponse = response.result().get("response").getAsString();
                 String decryptedResponse = cipher.decode(encryptedResponse);
                 logger.trace("({}) decrypted response '{}'", uid, decryptedResponse);
-                return Objects.requireNonNull(gson.fromJson(decryptedResponse, TapoResponse.class));
+                return Objects.requireNonNull(GSON.fromJson(decryptedResponse, TapoResponse.class));
             } catch (Exception e) {
                 logger.debug("({}) exception '{}' decryptingResponse: '{}'", uid, e, response);
                 throw new TapoErrorHandler(ERR_DATA_DECRYPTING);
@@ -259,7 +260,7 @@ public class SecurePassthroughSession {
     public TapoRequest encryptRequest(Object request) throws TapoErrorHandler {
         try {
             JsonObject jso = new JsonObject();
-            jso.addProperty("request", cipher.encode(gson.toJson(request)));
+            jso.addProperty("request", cipher.encode(GSON.toJson(request)));
             return new TapoRequest(DEVICE_CMD_SECURE_METHOD, jso);
         } catch (Exception e) {
             logger.debug("({}) exception encoding Payload '{}'", uid, e.toString());

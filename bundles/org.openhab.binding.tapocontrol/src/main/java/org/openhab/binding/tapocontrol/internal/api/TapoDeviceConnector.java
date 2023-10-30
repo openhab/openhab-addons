@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.api;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
@@ -41,8 +42,6 @@ import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -55,8 +54,6 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class TapoDeviceConnector implements TapoConnectorInterface {
     private final Logger logger = LoggerFactory.getLogger(TapoDeviceConnector.class);
-    protected static final Gson gson = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation()
-            .create();
     private final TapoBaseDeviceHandler device;
     private final TapoBridgeHandler bridge;
     private final String uid;
@@ -280,7 +277,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     private <T> T getObjectFromJson(String json, Class<T> clazz) {
         try {
             @Nullable
-            T result = gson.fromJson(json, clazz);
+            T result = GSON.fromJson(json, clazz);
             if (result == null) {
                 throw new JsonParseException("result is null");
             }
@@ -288,7 +285,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
         } catch (Exception e) {
             logger.debug("({}) error parsing string {} to class: {}", uid, json, clazz.getName());
             device.setError(new TapoErrorHandler(ERR_API_JSON_DECODE_FAIL));
-            return Objects.requireNonNull(gson.fromJson(json, clazz));
+            return Objects.requireNonNull(GSON.fromJson(json, clazz));
         }
     }
 

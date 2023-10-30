@@ -14,7 +14,7 @@ package org.openhab.binding.tapocontrol.internal.discovery;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
 
 import java.util.HashMap;
 import java.util.List;

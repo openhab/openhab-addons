@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.dto;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import java.lang.reflect.Type;
@@ -21,7 +22,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -83,12 +83,10 @@ public record TapoResponse(@Expose @SerializedName(value = "errorcode", alternat
     }
 
     public List<TapoResponse> responses() {
-        Gson gson = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation().create();
-
         JsonArray responses = result.getAsJsonArray(MULTI_RESPONSE_KEY);
         Type repsonseListType = new TypeToken<List<TapoResponse>>() {
         }.getType();
-        return Objects.requireNonNullElse(gson.fromJson(responses.toString(), repsonseListType),
+        return Objects.requireNonNullElse(GSON.fromJson(responses.toString(), repsonseListType),
                 new ArrayList<TapoResponse>());
     }
 

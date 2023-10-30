@@ -26,6 +26,9 @@ public final class TapoBridgeConfiguration {
     public static final String CONFIG_EMAIL = "username";
     public static final String CONFIG_PASS = "password";
     public static final String CONFIG_DISCOVERY_CLOUD = "cloudDiscovery";
+    public static final String CONFIG_DISCOVERY_UDP = "udpDiscovery";
+    public static final String CONFIG_DISCOVERY_ONLINE = "onlyLocalOnlineDevices";
+    public static final String CONFIG_BROADCAST_ADDRESS = "broadcastAddress";
     public static final String CONFIG_DISCOVERY_INTERVAL = "discoveryInterval";
 
     /* DEFAULT & FIXED CONFIGURATIONS */
@@ -34,7 +37,10 @@ public final class TapoBridgeConfiguration {
     /* thing configuration parameter. */
     public String username = "";
     public String password = "";
+    public String broadcastAddress = "255.255.255.255";
     public boolean cloudDiscovery = false;
+    public boolean udpDiscovery = false;
+    public boolean onlyLocalOnlineDevices = false;
     public int reconnectInterval = CONFIG_CLOUD_FIXED_INTERVAL;
     public int discoveryInterval = 60;
 }

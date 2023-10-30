@@ -19,12 +19,12 @@
 			<label>Protocol</label>
 			<description>Communication Protocol</description>
 			<options>
-				<option value="passthrough">Direct HTTP</option>
-				<option value="securePassthrough">Secured HTTP Protocol</option>
-				<option value="klap">Secured KLAP HTTP Protocol</option>
+				<option value="">Direct HTTP</option>
+				<option value="AES">Secured HTTP Protocol</option>
+				<option value="KLAP">Secured KLAP HTTP Protocol</option>
 			</options>
 			<limitToOptions>true</limitToOptions>
-			<default>securePassthrough</default>
+			<default>AES</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="pollingInterval" type="integer" min="0" max="9999" required="false">

@@ -29,7 +29,7 @@ public interface TapoConnectorInterface {
     HttpClient getHttpClient();
 
     /* handle received taporesponse */
-    public void handleResponse(TapoResponse tapoResponse, String command);
+    public void handleResponse(TapoResponse tapoResponse, String command) throws TapoErrorHandler;
 
     /* handle error */
     public void handleError(TapoErrorHandler e);

@@ -16,7 +16,8 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSett
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import java.io.IOException;
 import java.util.ArrayList;

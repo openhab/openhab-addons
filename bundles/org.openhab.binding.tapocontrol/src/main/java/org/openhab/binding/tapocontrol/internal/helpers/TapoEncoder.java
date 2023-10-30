@@ -17,6 +17,8 @@ import static java.util.Base64.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.zip.CRC32;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -43,6 +45,23 @@ public class TapoEncoder {
         return byteArrayToString(decoded);
     }
 
+    /**
+     * Checks if a string is encoded to Base64.
+     *
+     * @param input The string to be checked.
+     * @return Returns true if the string is Base64 encoded, false otherwise.
+     */
+    public static boolean isBase64Encoded(String input) {
+        try {
+            byte[] decodedBytes = Base64.getDecoder().decode(input.getBytes());
+            String decodedString = new String(decodedBytes);
+            String reencodedString = Base64.getEncoder().encodeToString(decodedString.getBytes());
+            return input.equals(reencodedString);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     /* create sha1 hash (string) */
     public static String sha1Encode(String textToEncode) throws NoSuchAlgorithmException {
         byte[] digest = sha1Encode(textToEncode.getBytes(StandardCharsets.UTF_8));
@@ -63,6 +82,13 @@ public class TapoEncoder {
     /* create sha256 hash (byte[])) */
     public static byte[] sha256Encode(byte[] bArr) throws NoSuchAlgorithmException {
         return MessageDigest.getInstance(SHA256_ALGORITHM).digest(bArr);
+    }
+
+    /* get CRC32-Checksum from byteArray */
+    public static long crc32Checksum(byte[] bArr) {
+        CRC32 crc32 = new CRC32();
+        crc32.update(bArr);
+        return crc32.getValue();
     }
 
     /* convert bytearray[] into string */

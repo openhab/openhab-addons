@@ -46,6 +46,9 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * The {@link TapoControlHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -55,6 +58,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tapocontrol")
 @NonNullByDefault
 public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
+    public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation()
+            .create();
     private final Logger logger = LoggerFactory.getLogger(TapoControlHandlerFactory.class);
     private final Set<TapoBridgeHandler> accountHandlers = new HashSet<>();
     private final HttpClient httpClient;

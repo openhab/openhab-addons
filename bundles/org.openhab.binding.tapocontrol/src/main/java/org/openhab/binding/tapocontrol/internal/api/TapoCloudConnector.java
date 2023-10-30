@@ -15,28 +15,22 @@ package org.openhab.binding.tapocontrol.internal.api;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
-
-import java.util.Objects;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.openhab.binding.tapocontrol.internal.api.protocol.passthrough.PassthroughProtocol;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
-import org.openhab.binding.tapocontrol.internal.devices.bridge.dto.TapoCloudDeviceList;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.dto.TapoCloudLoginData;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.dto.TapoCloudLoginResult;
+import org.openhab.binding.tapocontrol.internal.discovery.dto.TapoDiscoveryResultList;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
 /**
  * Handler class for TAPO-Cloud connections.
@@ -47,7 +41,6 @@ import com.google.gson.JsonParseException;
 public class TapoCloudConnector implements TapoConnectorInterface {
     private final Logger logger = LoggerFactory.getLogger(TapoCloudConnector.class);
     private final TapoBridgeHandler bridge;
-    private final Gson gson = new Gson();
 
     private @NonNullByDefault({}) TapoCloudLoginResult loginResult;
     private String token = "";
@@ -77,16 +70,17 @@ public class TapoCloudConnector implements TapoConnectorInterface {
     /**
      * handle received response
      */
-    public void handleResponse(TapoResponse tapoResponse, String command) {
+    public void handleResponse(TapoResponse tapoResponse, String command) throws TapoErrorHandler {
         switch (command) {
             case CLOUD_CMD_LOGIN:
                 handleLoginResult(tapoResponse);
                 break;
             case CLOUD_CMD_GETDEVICES:
-                bridge.handleScanResults(getDeviceListFromResponse(tapoResponse));
+                bridge.getDiscoveryService().addScanResults((getDeviceListFromResponse(tapoResponse)));
                 break;
             default:
                 logger.debug("({}) handleResponse - unknown command: {}", uid, command);
+                throw new TapoErrorHandler(ERR_BINDING_NOT_IMPLEMENTED);
         }
     }
 
@@ -116,10 +110,13 @@ public class TapoCloudConnector implements TapoConnectorInterface {
     /*
      * get response from login and set token
      */
-    private void handleLoginResult(TapoResponse tapoResponse) {
+    private void handleLoginResult(TapoResponse tapoResponse) throws TapoErrorHandler {
         logger.trace("({}) received login result: {}", uid, tapoResponse);
         loginResult = getObjectFromJson(tapoResponse.result(), TapoCloudLoginResult.class);
         token = loginResult.token();
+        if (!isLoggedIn()) {
+            throw new TapoErrorHandler(ERR_API_LOGIN);
+        }
     }
 
     public void logout() {
@@ -151,9 +148,9 @@ public class TapoCloudConnector implements TapoConnectorInterface {
     /**
      * get DeviceList from response
      */
-    private TapoCloudDeviceList getDeviceListFromResponse(TapoResponse tapoResponse) {
+    private TapoDiscoveryResultList getDeviceListFromResponse(TapoResponse tapoResponse) throws TapoErrorHandler {
         logger.trace("({}) received devicelist: {}", uid, tapoResponse);
-        return getObjectFromJson(tapoResponse.result(), TapoCloudDeviceList.class);
+        return getObjectFromJson(tapoResponse.result(), TapoDiscoveryResultList.class);
     }
 
     /***********************
@@ -190,36 +187,5 @@ public class TapoCloudConnector implements TapoConnectorInterface {
         httpRequest.header("content-type", CONTENT_TYPE_JSON);
         httpRequest.header("Accept", CONTENT_TYPE_JSON);
         return httpRequest;
-    }
-
-    /**
-     * Return class object from json formated string
-     * 
-     * @param json json formatted string
-     * @param clazz class string should parsed to
-     */
-    private <T> T getObjectFromJson(String json, Class<T> clazz) {
-        try {
-            @Nullable
-            T result = gson.fromJson(json, clazz);
-            if (result == null) {
-                throw new JsonParseException("result is null");
-            }
-            return result;
-        } catch (Exception e) {
-            logger.debug("({}) error parsing string {} to class: {}", uid, json, clazz.getName());
-            handleError(new TapoErrorHandler(ERR_API_JSON_DECODE_FAIL));
-            return Objects.requireNonNull(gson.fromJson("", clazz));
-        }
-    }
-
-    /**
-     * Return class object from JsonObject
-     * 
-     * @param jso JsonOject
-     * @param clazz class string should parsed to
-     */
-    private <T> T getObjectFromJson(JsonObject jso, Class<T> clazz) {
-        return getObjectFromJson(jso.toString(), clazz);
     }
 }

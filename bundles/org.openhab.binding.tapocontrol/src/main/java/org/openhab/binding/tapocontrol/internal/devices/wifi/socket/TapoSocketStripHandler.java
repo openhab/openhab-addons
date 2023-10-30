@@ -14,7 +14,7 @@ package org.openhab.binding.tapocontrol.internal.devices.wifi.socket;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;

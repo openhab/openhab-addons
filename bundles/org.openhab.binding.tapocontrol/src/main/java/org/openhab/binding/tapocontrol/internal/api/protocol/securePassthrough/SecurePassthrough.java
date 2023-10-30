@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.tapocontrol.internal.api.protocol.securePassthrough;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -38,9 +40,6 @@ import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * Handler class for TAPO-SECUREPASSTHROUGH-Protocol
  *
@@ -48,9 +47,7 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class SecurePassthrough implements TapoProtocolInterface {
-    private static final Logger logger = LoggerFactory.getLogger(SecurePassthrough.class);
-    protected static final Gson gson = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation()
-            .create();
+    private final Logger logger = LoggerFactory.getLogger(SecurePassthrough.class);
     protected final TapoConnectorInterface httpDelegator;
     private final SecurePassthroughSession session;
     private final String uid;
@@ -235,7 +232,7 @@ public class SecurePassthrough implements TapoProtocolInterface {
      */
     protected TapoResponse getTapoResponse(String responseString) throws TapoErrorHandler {
         if (isValidJson(responseString)) {
-            TapoResponse tapoResponse = Objects.requireNonNull(gson.fromJson(responseString, TapoResponse.class));
+            TapoResponse tapoResponse = Objects.requireNonNull(GSON.fromJson(responseString, TapoResponse.class));
             if (tapoResponse.result().has("response")) {
                 tapoResponse = session.decryptResponse(tapoResponse);
             }

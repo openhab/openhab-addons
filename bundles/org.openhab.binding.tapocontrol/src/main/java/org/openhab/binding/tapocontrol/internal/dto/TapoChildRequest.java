@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.tapocontrol.internal.dto;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -55,6 +55,6 @@ public record TapoChildRequest(@Expose String method, @Expose @Nullable Object p
     }
 
     public String toJson() {
-        return new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation().create().toJson(this);
+        return GSON.toJson(this);
     }
 }

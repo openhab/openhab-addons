@@ -31,7 +31,7 @@ public final class TapoDeviceConfiguration {
 
     /* thing configuration parameter. */
     public String ipAddress = "";
-    public String protocol = "securePassthrough";
+    public String protocol = "AES";
     public int httpPort = 80;
     public int pollingInterval = 30;
     public boolean backgroundDiscovery = false;

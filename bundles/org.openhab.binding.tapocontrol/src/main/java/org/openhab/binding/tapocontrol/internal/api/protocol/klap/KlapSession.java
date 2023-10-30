@@ -15,7 +15,7 @@ package org.openhab.binding.tapocontrol.internal.api.protocol.klap;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoEncoder.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.ByteUtils.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
@@ -32,12 +32,8 @@ import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
-import org.openhab.binding.tapocontrol.internal.helpers.TapoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * Handler class for KLAP Session
@@ -47,8 +43,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class KlapSession {
     private final Logger logger = LoggerFactory.getLogger(KlapSession.class);
-    protected static final Gson gson = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation()
-            .create();
+
     private final KlapProtocol klap;
     private @NonNullByDefault({}) KlapCipher cipher;
     private byte[] localSeed = new byte[16];
@@ -113,9 +108,9 @@ public class KlapSession {
             expireAt = System.currentTimeMillis() * timeout;
             /* get seeds */
             byte[] responseContent = response.getContent();
-            byte[] bRemoteSeed = TapoUtils.truncateByteArray(responseContent, 0, 16); // get first 16 bytes
-            byte[] bServerHash = TapoUtils.truncateByteArray(responseContent, 16, responseContent.length - 16); // get
-                                                                                                                // rest
+            byte[] bRemoteSeed = truncateByteArray(responseContent, 0, 16); // get first 16 bytes
+            byte[] bServerHash = truncateByteArray(responseContent, 16, responseContent.length - 16); // get
+                                                                                                      // rest
             setSeed(bRemoteSeed, bServerHash);
         } catch (Exception e) {
             throw new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED, e.getMessage());
@@ -130,8 +125,8 @@ public class KlapSession {
     public boolean setSeed(byte[] remoteSeed, byte[] serverHash) throws TapoErrorHandler {
         logger.trace("({}) Init Session", uid);
         try {
-            logger.trace("remoteseed is '{}' / serverhash is '{}' authhash is '{}'", encodeHexString(localSeed),
-                    encodeHexString(remoteSeed), encodeHexString(authHash));
+            logger.trace("remoteseed is '{}' / serverhash is '{}' authhash is '{}'", byteArrayToHex(localSeed),
+                    byteArrayToHex(remoteSeed), byteArrayToHex(authHash));
 
             byte[] concatByteArray = concatBytes(localSeed, remoteSeed, authHash);
             byte[] bLocalSeedAuthHash = sha256Encode(concatByteArray);
@@ -143,8 +138,8 @@ public class KlapSession {
                 this.localSeedAuthHash = bLocalSeedAuthHash;
                 return true;
             } else {
-                logger.trace("handshake1 does not match {} / {}", encodeHexString(bLocalSeedAuthHash),
-                        encodeHexString(serverHash));
+                logger.trace("handshake1 does not match {} / {}", byteArrayToHex(bLocalSeedAuthHash),
+                        byteArrayToHex(serverHash));
                 reset();
                 throw new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED);
             }
@@ -162,7 +157,7 @@ public class KlapSession {
      */
     private ContentResponse sendHandshake(String customUrl, byte[] payloadBytes, String command)
             throws TimeoutException, InterruptedException, ExecutionException, TapoErrorHandler {
-        logger.trace("({}) sending bytes'{} to '{}' ", uid, encodeHexString(payloadBytes), customUrl);
+        logger.trace("({}) sending bytes'{} to '{}' ", uid, byteArrayToHex(payloadBytes), customUrl);
 
         Request httpRequest = klap.httpDelegator.getHttpClient().newRequest(customUrl)
                 .method(HttpMethod.POST.toString());

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.dto;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 
 import java.util.Arrays;
@@ -19,7 +20,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
 import io.reactivex.annotations.Nullable;
@@ -54,6 +54,6 @@ public record TapoMultipleRequest(@Expose String method, @Expose @Nullable Objec
     }
 
     public String toJson() {
-        return new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation().create().toJson(this);
+        return GSON.toJson(this);
     }
 }

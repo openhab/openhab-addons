@@ -20,12 +20,4 @@
 
 		<config-description-ref uri="thing-type:tapo:device"/>
 	</thing-type>
-
-	<channel-type id="colorTemperature">
-		<item-type>Number</item-type>
-		<label>Color Temperature</label>
-		<description>This channel supports adjusting the color temperature from 2200K to 6500K.</description>
-		<category>LightBulb</category>
-		<state min="2200" max="6500" pattern="%d K"/>
-	</channel-type>
 </thing:thing-descriptions>

@@ -14,7 +14,8 @@ package org.openhab.binding.tapocontrol.internal.devices.rf;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import java.util.HashMap;
 import java.util.Map;
