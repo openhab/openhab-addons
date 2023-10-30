@@ -98,6 +98,7 @@ public class DoorbirdUdpListener extends Thread {
                 // Nothing to do on socket timeout
             } catch (IOException e) {
                 logger.debug("Listener got IOException waiting for datagram: {}", e.getMessage());
+                socket = null;
             }
         }
         logger.debug("Listener exiting");
