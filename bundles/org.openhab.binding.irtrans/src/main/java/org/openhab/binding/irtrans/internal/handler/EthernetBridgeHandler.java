@@ -277,19 +277,15 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 if (channel.getChannelTypeUID() != null
                         && channel.getChannelTypeUID().getId().equals(IRtransBindingConstants.BLASTER_CHANNEL_TYPE)) {
                     if (command instanceof StringType) {
-
-                        String remoteName = command.toString();
-                        String irCommandName = "";
-
                         String[] remoteCommand = command.toString().split(",", 2);
-                        if (remoteCommand.length > 1) {
-                            remoteName = remoteCommand[0];
-                            irCommandName = remoteCommand[1];
+                        if (remoteCommand.length < 2) {
+                            logger.warn("Ignoring invalid command '{}'", command);
+                            return;
                         }
 
                         IrCommand ircommand = new IrCommand();
-                        ircommand.setRemote(remoteName);
-                        ircommand.setCommand(irCommandName);
+                        ircommand.setRemote(remoteCommand[0]);
+                        ircommand.setCommand(remoteCommand[1]);
 
                         IrCommand thingCompatibleCommand = new IrCommand();
                         thingCompatibleCommand.setRemote((String) channelConfiguration.get(REMOTE));
