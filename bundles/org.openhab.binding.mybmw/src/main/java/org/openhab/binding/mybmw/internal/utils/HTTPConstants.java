@@ -15,7 +15,7 @@ package org.openhab.binding.mybmw.internal.utils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link HTTPConstants} class contains fields mapping thing configuration parameters.
+ * The {@link HTTPConstants} interface contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - added image content type
