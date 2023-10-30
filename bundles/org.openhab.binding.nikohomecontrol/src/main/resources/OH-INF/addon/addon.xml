@@ -15,7 +15,7 @@
 			<match-properties>
 				<match-property>
 					<name>hostname</name>
-					<regex>^(?i)FP00112A</regex>
+					<regex>(?i)FP00112A.*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>
