@@ -8,11 +8,9 @@
 			<remove-channel id="enabled"/>
 			<add-channel id="enabledsystem">
 				<type>keba:enaledsystem</type>
-				<label>Enabled (System)</label>
 			</add-channel>
 			<add-channel id="enableduser">
 				<type>keba:enaleduser</type>
-				<label>Enabled (User)</label>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
