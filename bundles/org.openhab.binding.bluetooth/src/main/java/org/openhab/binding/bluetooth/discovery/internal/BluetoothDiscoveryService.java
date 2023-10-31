@@ -153,7 +153,9 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
         logger.debug("Discovered bluetooth device '{}': {}", device.getName(), device);
 
         DiscoveryCache cache = discoveryCaches.computeIfAbsent(device.getAddress(), addr -> new DiscoveryCache());
-        cache.handleDiscovery(device);
+        if (cache != null) {
+            cache.handleDiscovery(device);
+        }
     }
 
     private static ThingUID createThingUIDWithBridge(DiscoveryResult result, BluetoothAdapter adapter) {
