@@ -38,6 +38,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
     private @Nullable SiemensHvacDeviceDiscoveryService discoveryService;
     private final @Nullable HttpClientFactory httpClientFactory;
     private final SiemensHvacMetadataRegistry metaDataRegistry;
+    private @Nullable SiemensHvacBridgeConfig config;
 
     public SiemensHvacBridgeBaseThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService,
             @Nullable HttpClientFactory httpClientFactory, SiemensHvacMetadataRegistry metaDataRegistry) {
@@ -58,7 +59,13 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
     @Override
     public void initialize() {
+        config = getConfigAs(SiemensHvacBridgeConfig.class);
+
         metaDataRegistry.ReadMeta();
+    }
+
+    public @Nullable SiemensHvacBridgeConfig getBridgeConfiguration() {
+        return config;
     }
 
     @Override

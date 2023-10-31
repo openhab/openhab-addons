@@ -57,7 +57,7 @@ public class SiemensHvacBindingConstants {
     public static final String DPT_TYPE_ENUM = "Enumeration";
     public static final String DPT_TYPE_NUMERIC = "Numeric";
     public static final String DPT_TYPE_RADIO = "RadioButton";
-    public static final String DPT_TYPE_DATE = "DateTime";
+    public static final String DPT_TYPE_DATE_TIME = "DateTime";
     public static final String DPT_TYPE_TIME = "TimeOfDay";
     public static final String DPT_TYPE_SCHEDULER = "Scheduler";
     public static final String DPT_TYPE_CALENDAR = "Calendar";

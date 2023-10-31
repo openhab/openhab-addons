@@ -33,12 +33,19 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 @NonNullByDefault
 public class UidUtils {
 
-    public static String sanetizeId(String st) {
+    /**
+     * The methods remove specific local character (like 'é'/'ê','â') so we have a correctly formated UID from a
+     * localize item label
+     *
+     * @param label
+     * @return the label without invalid character
+     */
+    public static String sanetizeId(String label) {
 
         StringBuffer buffer = new StringBuffer();
 
-        for (int i = 0; i < st.length(); i++) {
-            char c = st.charAt(i);
+        for (int i = 0; i < label.length(); i++) {
+            char c = label.charAt(i);
             if (c == 130) {
 
             } else if (c >= 232 && c <= 234) {

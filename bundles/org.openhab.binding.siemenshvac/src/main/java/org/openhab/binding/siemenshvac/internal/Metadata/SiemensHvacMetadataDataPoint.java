@@ -229,12 +229,8 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
                     ch.setIsActive(button.get("IsActive").getAsString());
                     child.add(ch);
                 }
-            } else if (SiemensHvacBindingConstants.DPT_TYPE_DATE.equals(dptType)) {
-            } else if (SiemensHvacBindingConstants.DPT_TYPE_TIME.equals(dptType)) {
-            } else if (SiemensHvacBindingConstants.DPT_TYPE_SCHEDULER.equals(dptType)) {
-            } else if (SiemensHvacBindingConstants.DPT_TYPE_CALENDAR.equals(dptType)) {
-            } else {
             }
+
             detailsResolved = true;
         }
     }

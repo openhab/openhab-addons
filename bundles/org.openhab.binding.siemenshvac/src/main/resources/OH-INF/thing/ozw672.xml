@@ -35,36 +35,43 @@
 		<label>Numeric</label>
 		<description>A numeric value</description>
 	</channel-type>
+	
 	<channel-type id="String_16">
 		<item-type>String</item-type>
 		<label>String 16 char</label>
 		<description>A string with 16 characters</description>
 	</channel-type>
+	
 	<channel-type id="String">
 		<item-type>String</item-type>
 		<label>String</label>
 		<description>A string with unlimited characters</description>
 	</channel-type>
+	
 	<channel-type id="TimeOfDay">
 		<item-type>TimeOfDay</item-type>
 		<label>TimeOfDay</label>
 		<description>TimeOfDay</description>
 	</channel-type>
+	
 	<channel-type id="Datetime">
 		<item-type>DateTime</item-type>
 		<label>DateTime</label>
 		<description>DateTime</description>
 	</channel-type>
+	
 	<channel-type id="RadioButton">
 		<item-type>RadioButton</item-type>
 		<label>RadioButton</label>
 		<description>RadioButton</description>
 	</channel-type>
+	
 	<channel-type id="Scheduler">
 		<item-type>Scheduler</item-type>
 		<label>Scheduler</label>
 		<description>Scheduler</description>
 	</channel-type>
+	
 	<channel-type id="Temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
@@ -73,14 +80,16 @@
 		<state readOnly="true" pattern="%.1f %unit%" min="-100" max="+100" step="0.1">
 		</state>
 	</channel-type>
+	
 	<channel-type id="temperature-setpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
-		<description>Current setpoint temperature in degrees Celsius</description>
+		<description>Current setpoint temperature in degrees</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" min="0" max="+30" step="0.5">
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5">
 		</state>
 	</channel-type>
+	
 	<channel-type id="Regime">
 		<item-type>Number</item-type>
 		<label>Regime</label>

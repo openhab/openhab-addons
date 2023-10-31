@@ -2,8 +2,9 @@
 
 This binding is to support Siemens Hvac controller ecosystem, and the Web Gateway interface OZW672.
 A typical system is composed of:
-                                                    
-<=== Ethernet ===>   | OZW672 | <====== ¨BSB/LPB BUS ======> | Hvac Controler (RVS41.813/327) | ====== | Internal device in your system : sensors, boiler, external pac unit, ... |
+         
+![Diagram](Diagram.png)                 
+
 
 There's a lot of different HVAC controllers depending on model in lot of different PAC constructors.
 Siemens RVS41.813/327 inside a Atlantic Hybrid Duo was used for the developpement, and is fully supported and tested.
@@ -58,11 +59,35 @@ IP should have be discovered automatically via UPNP.
 
 ## Bridge Configuration
 
-| Parameter       | Required | Default       | Description                                                         |
-|-----------------|----------|---------------|---------------------------------------------------------------------|
-| baseUrl         | yes      |               | The address of the OZW672 devices                                   |
-| userName        | yes      | Administrator | The user name to log into the OZW672                                | 
-| userPass        | yes      |               | The user password to log into the OZW672                            | 
+
+<table>
+  <tr>
+    <th>Parameter</th>
+    <th>Required</th>
+    <th>Default</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>baseUrl</td>
+    <td>yes</td>
+    <td></td>
+    <td>The address of the OZW672 devices</td>
+  </tr>
+  <tr>
+    <td>userName</td>
+    <td>yes</td>
+    <td>Administrator</td>
+    <td>The user name to log into the OZW672</td>
+  </tr>
+  <tr>
+    <td>userPass</td>
+    <td>yes</td>
+    <td></td>
+    <td>The user password to log into the OZW672</td>
+  </tr>
+</table>
+
+
 
 
 ## Thing Configuration
@@ -75,23 +100,97 @@ Channels are autodiscovered, you will find them on the RVS things.
 They are organized the same way as the LCD screen of your PAC device, by top level menu functionnality, and sub-functionnalities.
 Each channel are strongly typed, so for exemple, for heating mode, openhab will provide you with a list of choice supported by the device.
 
-| Channel                   | Description                                                                     | Type     | Unit | Security Access Level | ReadOnly | Advanced |
-| ------------------------- | ------------------------------------------------------------------------------- | -------- | :--: | :-------------------: | :------: | :------: |
-| `controlBoilerApproval`   | Set Boiler Approval (`AUTO`, `OFF`, `ON`)                                       | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlProgram`          | Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`<sup id="a1">[1](f1)</sup>) | `String` |      |        🔐 W1         |   
 
-| Channel Type ID  | Item Type    | Description                                              |
-|------------------|--------------|----------------------------------------------------------|
-| Numeric          | Number       | Handle basic numeric value                               | 
-| String           | String       | a String                                                 | 
-| String_16        | String       | a String of length <= 16 char                            | 
-| TimeOfDay        | TimeOfDay    |                                                          | 
-| Datetime         | Datetime     |                                                          | 
-| RadioButton      | RadioButton  |                                                          | 
-| Scheduler        | Scheduler    |                                                          | 
-| Temperature      | Number       | Use to handle reading of  temperature                    | 
-| Setpoint         | Number       | Handle the setting of a temperature                      | 
-| Regime           | Number       | Enumeration for handling mode change                     |
+<table>
+  <tr>
+    <th>Channel</th>
+    <th>Description</th>
+    <th>Type</th>
+    <th>Unit</th>
+    <th>Security Access Level</th>
+    <th>ReadOnly</th>
+    <th>Advanced</th>
+  </tr>
+  <tr>
+    <td>controlBoilerApproval</td>
+    <td>Set Boiler Approval (`AUTO`, `OFF`, `ON`)</td>
+    <td>String</td>
+    <td></td>
+    <td>R/W</td>
+    <td>true</td>
+  </tr>
+  <tr>
+    <td>controlProgram</td>
+    <td>Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`)</td>
+    <td>String</td>
+    <td></td>
+    <td>R/W</td>
+    <td>true</td>
+  </tr>
+</table>
+
+
+<br/>
+<br/>
+
+
+<table>
+  <tr>
+    <th>Channel Type ID</th>
+    <th>Item Type </th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>Numeric</td>
+    <td>Number</td>
+    <td>Handle basic numeric value</td>
+  </tr>
+  <tr>
+    <td>String</td>
+    <td>String</td>
+    <td>a String</td>
+  </tr>
+  <tr>
+    <td>String_16</td>
+    <td>String</td>
+    <td>a String of length <= 16 char</td>
+  </tr>
+  <tr>
+    <td>TimeOfDay</td>
+    <td>TimeOfDay</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Datetime</td>
+    <td>Datetime</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>RadioButton</td>
+    <td>RadioButton</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Scheduler</td>
+    <td>Scheduler</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Temperature</td>
+    <td>Number</td>
+    <td>Use to handle reading of  temperature</td>
+  </tr>
+  <tr>
+    <td>Setpoint</td>
+    <td>Number</td>
+    <td>Handle the setting of a temperature</td>
+  </tr>
+  <tr>
+    <td>Regime</td>
+    <td>Number</td>
+    <td>Enumeration for handling mode change</td>
+  </tr>
+</table>
 
 
 ## Full Example
@@ -114,13 +213,13 @@ Bridge siemenshvac:ozw672:local "Ozw672"@"Chaufferie" [ baseUrl="https://192.168
 Items file `.items`
 
 ```java
-String  Chaudiere_Etat_Pompe_ECS    "Etat Pompe ECS [%s]"   { channel = "siemenshvac:RVS41_813_327:local:local:2237#2259_PpeChargeECS"          }       
-Number  Chaudiere_Etat_ECS          "Etat ECS [%s]"         { channel = "siemenshvac:RVS41_813_327:local:local:2032#2035_Etat_ECS"              }
-Number  Temperature_Depart_Reel     "Départ réel [%.1f °C]" { channel = "siemenshvac:RVS41_813_327:local:local:2237#2248_ValReelleTempDep_CC1"  }   
-Number  Temperature_Depart_Consigne "Départ cons [%.1f °C]" { channel = "siemenshvac:RVS41_813_327:local:local:2237#2249_ConsTDepResultCC1"     }   
-Number  Heure_fct_ECS               "Heure Fct Ecs"         { channel = "siemenshvac:RVS41_813_327:local:local:2237#2263_HeuresFoncPompeECS"    }   
-Number  Nb_Demarrage_ECS            "Nbr dém ECS [%.1f]"    { channel = "siemenshvac:RVS41_813_327:local:local:2237#2266_ComptDemarResEl_ECS"   }
-Number  TemperatureThermostat       "Temp thermt [%.1f °C]" { channel = "siemenshvac:RVS41_813_327:local:local:2237#2246_TAmbAct_CC1"           }
-Number  Temperature_Consigne_C      "Chauf Cons  [%.1f °C]" { channel = "siemenshvac:RVS41_813_327:local:local:1724#1726_ConsConfort_TA_CC1"    }
-Number  Chauffage_Mode              "Chauffage Mode [%s]"   { channel="siemenshvac:RVS41_813_327:local:local:1724#1725_Regime_CC1"              }
+String  Boiler_State_Pump_HWS       "HWS Pump State [%s]"                   { channel = "siemenshvac:RVS41_813_327:local:local:2237#2259_PpeChargeECS"              }       
+Number  Boiler_State_HWS            "HWS State [%s]"                        { channel = "siemenshvac:RVS41_813_327:local:local:2032#2035_Etat_ECS"                  }
+Number  Flow_Temperature_Real       "Flow Temparature Real [%.1f °C]"       { channel = "siemenshvac:RVS41_813_327:local:local:2237#2248_ValReelleTempDep_CC1"      }   
+Number  Flow_Temperature_Setpoint   "Flow Temperature Setpoint [%.1f °C]"   { channel = "siemenshvac:RVS41_813_327:local:local:2237#2249_ConsTDepResultCC1"         }   
+Number  Hour_fct_HWS                "HWS Hour function"                     { channel = "siemenshvac:RVS41_813_327:local:local:2237#2263_HeuresFoncPompeECS"        }   
+Number  Nb_Start_HWS                "HWS Number of start [%.1f]"            { channel = "siemenshvac:RVS41_813_327:local:local:2237#2266_ComptDemarResEl_ECS"       }
+Number  Thermostat_Temperature      "Thermostat tempeature [%.1f °C]"       { channel = "siemenshvac:RVS41_813_327:local:local:2237#2246_TAmbAct_CC1"               }
+Number  Thermostat_Setpoint         "Thermostat setpoint [%.1f °C]"         { channel = "siemenshvac:RVS41_813_327:local:local:1724#1726_ConsConfort_TA_CC1"        }
+Number  Heat_Mode                   "Heat mode [%s]"                        { channel = "siemenshvac:RVS41_813_327:local:local:1724#1725_Regime_CC1"                }
 ``` 
