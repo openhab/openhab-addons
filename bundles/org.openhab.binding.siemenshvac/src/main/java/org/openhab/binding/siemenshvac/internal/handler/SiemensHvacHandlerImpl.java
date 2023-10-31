@@ -311,11 +311,14 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             BigDecimal maxb = sd.getMaximum();
             BigDecimal minb = sd.getMinimum();
             BigDecimal step = sd.getStep();
+            boolean doMods = false;
 
             if (command instanceof DecimalType) {
                 DecimalType bdc = (DecimalType) command;
                 double v1 = bdc.doubleValue();
+
                 if (step != null) {
+                    doMods = true;
                     int divider = 1;
                     if (step.floatValue() == 0.5) {
                         divider = 2;
@@ -330,13 +333,17 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 }
 
                 if (minb != null && v1 < minb.floatValue()) {
+                    doMods = true;
                     v1 = minb.floatValue();
                 }
                 if (maxb != null && v1 > maxb.floatValue()) {
+                    doMods = true;
                     v1 = maxb.floatValue();
                 }
 
-                result = new DecimalType("" + v1);
+                if (doMods) {
+                    result = new DecimalType("" + v1);
+                }
 
             }
         }
