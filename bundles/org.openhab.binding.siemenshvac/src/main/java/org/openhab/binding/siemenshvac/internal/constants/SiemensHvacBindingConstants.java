@@ -47,7 +47,7 @@ public class SiemensHvacBindingConstants {
     public static final String ITEM_TYPE_CONTACT = "Contact";
     public static final String ITEM_TYPE_STRING = "String";
     public static final String ITEM_TYPE_NUMBER = "Number";
-    public static final String ITEM_TYPE_ENUM = "Enum";
+    public static final String ITEM_TYPE_ENUMERATION = "Number";
     public static final String ITEM_TYPE_DIMMER = "Dimmer";
     public static final String ITEM_TYPE_DATETIME = "DateTime";
 

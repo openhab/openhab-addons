@@ -544,7 +544,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
             return SiemensHvacBindingConstants.ITEM_TYPE_NUMBER;
         } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_ENUM)) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_ENUM;
+            return SiemensHvacBindingConstants.ITEM_TYPE_ENUMERATION;
         } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME)) {
             return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
         } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_TIME)) {
