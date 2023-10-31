@@ -64,9 +64,9 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof MyBMWBridgeHandler) {
+        if (handler instanceof MyBMWBridgeHandler bridgeHandler) {
             logger.trace("xxxVehicleDiscovery.setThingHandler for MybmwBridge");
-            bridgeHandler = Optional.of((MyBMWBridgeHandler) handler);
+            bridgeHandler = Optional.of(bridgeHandler);
             bridgeHandler.get().setVehicleDiscovery(this);
             bridgeUid = Optional.of(bridgeHandler.get().getThing().getUID());
         }
