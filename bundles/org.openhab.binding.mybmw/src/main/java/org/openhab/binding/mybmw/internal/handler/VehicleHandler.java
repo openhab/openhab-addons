@@ -193,7 +193,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     private MyBMWCommandOptionProvider commandOptionProvider;
     private LocationProvider locationProvider;
-    private ZoneId timeZone;
+    private TimeZoneProvider timeZoneProvider;
 
     // Data Caches
     private Optional<VehicleStateContainer> vehicleStatusCache = Optional.empty();
@@ -212,7 +212,7 @@ public class VehicleHandler extends BaseThingHandler {
         super(thing);
         logger.trace("xxxVehicleHandler.constructor {}, {}", thing.getUID(), driveTrain);
         this.commandOptionProvider = commandOptionProvider;
-        this.timeZone = timeZoneProvider.getTimeZone();
+        this.timeZoneProvider = timeZoneProvider;
         this.locationProvider = locationProvider;
         if (locationProvider.getLocation() == null) {
             logger.debug("Home location not available");
@@ -475,9 +475,11 @@ public class VehicleHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,
                 Converter.toTitleCase(vehicleState.getOverallCheckControlStatus()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
-                Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt(), timeZone), channelToBeUpdated);
+                Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt(), timeZoneProvider.getTimeZone()),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, LAST_FETCHED,
-                Converter.zonedToLocalDateTime(vehicleState.getLastFetched(), timeZone), channelToBeUpdated);
+                Converter.zonedToLocalDateTime(vehicleState.getLastFetched(), timeZoneProvider.getTimeZone()),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, DOORS,
                 Converter.toTitleCase(vehicleState.getDoorsState().getCombinedState()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, WINDOWS,
@@ -661,7 +663,8 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_SERVICE, DETAILS, StringType.valueOf(serviceEntry.getDescription()),
                     channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_SERVICE, DATE,
-                    Converter.zonedToLocalDateTime(serviceEntry.getDateTime(), timeZone), channelToBeUpdated);
+                    Converter.zonedToLocalDateTime(serviceEntry.getDateTime(), timeZoneProvider.getTimeZone()),
+                    channelToBeUpdated);
 
             if (serviceEntry.getMileage() > 0) {
                 updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
