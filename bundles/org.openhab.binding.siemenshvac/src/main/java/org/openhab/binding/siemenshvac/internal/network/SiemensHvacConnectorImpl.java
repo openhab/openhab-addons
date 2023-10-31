@@ -37,10 +37,9 @@ import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadata;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataMenu;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThingHandler;
+import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeConfig;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.types.Type;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -68,9 +67,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private @Nullable String sessionId = null;
     private @Nullable String sessionIdHttp = null;
-    private String baseUrl = "";
-    private String userName = "";
-    private String userPassword = "";
+    private @Nullable SiemensHvacBridgeConfig config = null;
 
     protected final HttpClientFactory httpClientFactory;
 
@@ -134,18 +131,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         this.hvacBridgeBaseThingHandler = null;
     }
 
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setUserPassword(String userPassword) {
-        this.userPassword = userPassword;
-    }
-
     @Override
     public void onComplete(@Nullable Request request) {
         lockObj.lock();
@@ -186,7 +171,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private @Nullable ContentResponse executeRequest(final Request request, @Nullable SiemensHvacCallback callback)
             throws Exception {
-        request.timeout(240, TimeUnit.SECONDS);
+        request.timeout(60, TimeUnit.SECONDS);
 
         ContentResponse response = null;
 
@@ -221,27 +206,13 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     private void initConfig() throws Exception {
-
-        Configuration config = null;
         SiemensHvacBridgeBaseThingHandler lcHvacBridgeBaseThingHandler = hvacBridgeBaseThingHandler;
 
         if (lcHvacBridgeBaseThingHandler != null) {
-            Bridge bridge = lcHvacBridgeBaseThingHandler.getThing();
-            config = bridge.getConfiguration();
+            config = lcHvacBridgeBaseThingHandler.getBridgeConfiguration();
         } else {
             throw new SiemensHvacException(
                     "siemensHvac:Exception unable to get config because hvacBridgeBaseThingHandler is null");
-        }
-
-        if (config.containsKey("baseUrl")) {
-            baseUrl = (String) config.get("baseUrl");
-        }
-
-        if (config.containsKey("userName")) {
-            userName = (String) config.get("userName");
-        }
-        if (config.containsKey("userPassword")) {
-            userPassword = (String) config.get("userPassword");
         }
     }
 
@@ -249,18 +220,24 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         logger.debug("siemensHvac:doAuth()");
 
         initConfig();
-        String baseUri = baseUrl;
+
+        SiemensHvacBridgeConfig config = this.config;
+        if (config == null) {
+            throw new SiemensHvacException("Missing SiemensHvacOZW672 Bridge configuration");
+        }
+
+        String baseUri = config.baseUrl;
         String uri = "";
 
         if (http) {
             uri = "main.app";
         } else {
-            uri = String.format("api/auth/login.json?user=%s&pwd=%s", userName, userPassword);
+            uri = String.format("api/auth/login.json?user=%s&pwd=%s", config.userName, config.userPassword);
         }
 
         final Request request = httpClient.newRequest(baseUri + uri);
         if (http) {
-            request.method(HttpMethod.POST).param("user", userName).param("pwd", userPassword);
+            request.method(HttpMethod.POST).param("user", config.userName).param("pwd", config.userPassword);
         } else {
             request.method(HttpMethod.GET);
         }
@@ -349,44 +326,44 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             doAuth(false);
         }
 
-        try {
-            String baseUri = baseUrl;
+        SiemensHvacBridgeConfig config = this.config;
+        if (config == null) {
+            throw new SiemensHvacException("Missing SiemensHvacOZW672 Bridge configuration");
+        }
 
-            String mUri = uri;
-            if (!mUri.endsWith("?")) {
-                mUri = mUri + "&";
+        String baseUri = config.baseUrl;
+
+        String mUri = uri;
+        if (!mUri.endsWith("?")) {
+            mUri = mUri + "&";
+        }
+        if (mUri.indexOf("main.app") >= 0) {
+            mUri = mUri + "SessionId=" + sessionIdHttp;
+        } else {
+            mUri = mUri + "SessionId=" + sessionId;
+        }
+
+        logger.debug("Execute request: {}", uri);
+        CookieStore c = httpClient.getCookieStore();
+        java.net.HttpCookie cookie = new HttpCookie("SessionId", sessionIdHttp);
+        cookie.setPath("/");
+        cookie.setVersion(0);
+
+        c.add(new URI(baseUri), cookie);
+
+        logger.debug("Execute request: {}", uri);
+        final Request request = httpClient.newRequest(baseUri + mUri);
+        request.method(HttpMethod.GET);
+
+        ContentResponse response = executeRequest(request, callback);
+        if (callback == null && response != null) {
+            int statusCode = response.getStatus();
+
+            if (statusCode == HttpStatus.OK_200) {
+                String result = response.getContentAsString();
+
+                return result;
             }
-            if (mUri.indexOf("main.app") >= 0) {
-                mUri = mUri + "SessionId=" + sessionIdHttp;
-            } else {
-                mUri = mUri + "SessionId=" + sessionId;
-            }
-
-            logger.debug("Execute request: {}", uri);
-            CookieStore c = httpClient.getCookieStore();
-            java.net.HttpCookie cookie = new HttpCookie("SessionId", sessionIdHttp);
-            cookie.setPath("/");
-            cookie.setVersion(0);
-
-            c.add(new URI(baseUri), cookie);
-
-            logger.debug("Execute request: {}", uri);
-            final Request request = httpClient.newRequest(baseUri + mUri);
-            request.method(HttpMethod.GET);
-
-            ContentResponse response = executeRequest(request, callback);
-            if (callback == null && response != null) {
-                int statusCode = response.getStatus();
-
-                if (statusCode == HttpStatus.OK_200) {
-                    String result = response.getContentAsString();
-
-                    return result;
-                }
-            }
-        } catch (Exception ex) {
-            logger.warn("siemensHvac:DoRequest:Exception by executing Request: {}: {} ", uri, ex.getLocalizedMessage());
-        } finally {
         }
 
         return null;
@@ -416,7 +393,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 return null;
             }
         } catch (Exception e) {
-            logger.error("siemensHvac:DoRequest:Exception by executing jsonRequest: {} ; {} ", req,
+            logger.warn("siemensHvac:DoRequest:Exception by executing jsonRequest: {} ; {} ", req,
                     e.getLocalizedMessage());
         }
 

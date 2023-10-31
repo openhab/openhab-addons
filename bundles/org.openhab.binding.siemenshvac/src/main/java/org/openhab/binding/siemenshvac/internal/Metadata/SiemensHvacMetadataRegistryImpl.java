@@ -545,7 +545,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             return SiemensHvacBindingConstants.ITEM_TYPE_NUMBER;
         } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_ENUM)) {
             return SiemensHvacBindingConstants.ITEM_TYPE_ENUM;
-        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_DATE)) {
+        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME)) {
             return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
         } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_TIME)) {
             return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
@@ -574,15 +574,15 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             return "";
         } else if (dptUnit.contains("°C")) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_PROPS_TEMP;
-        } else if (dpType.contains("DateTime")) {
+        } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME)) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_PROPS_TIME;
-        } else if (dpType.contains("TimeOfDay")) {
+        } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_TIME)) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_PROPS_TIME;
-        } else if (dpType.contains("Enumeration")) {
+        } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_ENUM)) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_WIDGETS_SWITCH;
-        } else if (dpType.contains("RadioButton")) {
+        } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_RADIO)) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_WIDGETS_SWITCH;
-        } else if (dpType.contains("Numeric")) {
+        } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_WIDGETS_NUMBER;
         } else {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_CONTROL_HEATING;

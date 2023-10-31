@@ -15,7 +15,6 @@ package org.openhab.binding.siemenshvac.internal.handler;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +27,7 @@ import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataData
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacCallback;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -69,31 +69,25 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
     private final @Nullable SiemensHvacConnector hvacConnector;
     private final @Nullable SiemensHvacMetadataRegistry metaDataRegistry;
     private final ChannelTypeRegistry channelTypeRegistry;
+    private final TimeZoneProvider timeZoneProvider;
+
     private long LastWrite = 0;
 
     public SiemensHvacHandlerImpl(Thing thing, @Nullable SiemensHvacConnector hvacConnector,
-            @Nullable SiemensHvacMetadataRegistry metaDataRegistry, ChannelTypeRegistry channelTypeRegistry) {
+            @Nullable SiemensHvacMetadataRegistry metaDataRegistry, ChannelTypeRegistry channelTypeRegistry,
+            final TimeZoneProvider timeZoneProvider) {
         super(thing);
 
         this.hvacConnector = hvacConnector;
         this.metaDataRegistry = metaDataRegistry;
         this.channelTypeRegistry = channelTypeRegistry;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
     public void initialize() {
 
         updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.execute(() -> {
-            boolean thingReachable = true;
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
-
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 60, TimeUnit.SECONDS);
     }
 
@@ -110,6 +104,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         for (Channel channel : chList) {
             ReadChannel(channel);
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void ReadChannel(Channel channel) {
@@ -193,10 +188,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             } else if ("DayOfTime".equals(typer) || "DateTime".equals(typer)) {
                 try {
                     SimpleDateFormat dtf = new SimpleDateFormat("EEEE, d. MMMM yyyy hh:mm"); // first example
-                    ZonedDateTime zdt = dtf.parse(value.getAsString()).toInstant().atZone(ZoneId.systemDefault());
+                    ZonedDateTime zdt = dtf.parse(value.getAsString()).toInstant()
+                            .atZone(this.timeZoneProvider.getTimeZone());
                     updateState(updateKey, new DateTimeType(zdt));
                 } catch (ParseException ex) {
-                    logger.debug("error decoding date!");
+                    logger.debug("Error decoding date : " + value.getAsString());
                 }
             } else {
                 updateState(updateKey, new StringType(value.getAsString()));

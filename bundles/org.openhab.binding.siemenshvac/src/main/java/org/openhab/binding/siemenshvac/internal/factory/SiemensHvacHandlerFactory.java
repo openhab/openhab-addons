@@ -19,6 +19,7 @@ import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingCons
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacHandlerImpl;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacOZW672BridgeThingHandler;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -47,16 +48,19 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
     private final SiemensHvacMetadataRegistry metaDataRegistry;
     private final ChannelTypeRegistry channelTypeRegistry;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public SiemensHvacHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference SiemensHvacMetadataRegistry metaDataRegistry,
             final @Reference NetworkAddressService networkAddressService,
-            final @Reference ChannelTypeRegistry channelTypeRegistry) {
+            final @Reference ChannelTypeRegistry channelTypeRegistry,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClientFactory = httpClientFactory;
         this.metaDataRegistry = metaDataRegistry;
         this.networkAddressService = networkAddressService;
         this.channelTypeRegistry = channelTypeRegistry;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -85,7 +89,8 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
                     metaDataRegistry);
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
             SiemensHvacHandlerImpl handler = new SiemensHvacHandlerImpl(thing,
-                    metaDataRegistry.getSiemensHvacConnector(), metaDataRegistry, channelTypeRegistry);
+                    metaDataRegistry.getSiemensHvacConnector(), metaDataRegistry, channelTypeRegistry,
+                    timeZoneProvider);
             return handler;
         }
         return null;
