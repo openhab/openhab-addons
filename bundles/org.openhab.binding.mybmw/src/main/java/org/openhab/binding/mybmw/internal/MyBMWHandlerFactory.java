@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.mybmw.internal;
 
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SUPPORTED_THING_SET;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.THING_TYPE_CONNECTED_DRIVE_ACCOUNT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,6 +22,7 @@ import org.openhab.binding.mybmw.internal.handler.MyBMWCommandOptionProvider;
 import org.openhab.binding.mybmw.internal.handler.VehicleHandler;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -44,15 +46,19 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
     private final MyBMWCommandOptionProvider commandOptionProvider;
     private final LocationProvider locationProvider;
+    private final TimeZoneProvider timeZoneProvider;
     private String localeLanguage;
 
     @Activate
-    public MyBMWHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference MyBMWCommandOptionProvider cop,
-            final @Reference LocaleProvider localeP, final @Reference LocationProvider locationP) {
-        httpClientFactory = hcf;
-        commandOptionProvider = cop;
-        locationProvider = locationP;
-        localeLanguage = localeP.getLocale().getLanguage().toLowerCase();
+    public MyBMWHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference MyBMWCommandOptionProvider commandOptionProvider,
+            final @Reference LocaleProvider localeProvider, final @Reference LocationProvider locationProvider,
+            final @Reference TimeZoneProvider timeZoneProvider) {
+        this.httpClientFactory = httpClientFactory;
+        this.commandOptionProvider = commandOptionProvider;
+        this.locationProvider = locationProvider;
+        this.timeZoneProvider = timeZoneProvider;
+        this.localeLanguage = localeProvider.getLocale().getLanguage().toLowerCase();
     }
 
     @Override
@@ -66,7 +72,8 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(thingTypeUID)) {
             return new MyBMWBridgeHandler((Bridge) thing, httpClientFactory, localeLanguage);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            return new VehicleHandler(thing, commandOptionProvider, locationProvider, thingTypeUID.getId());
+            return new VehicleHandler(thing, commandOptionProvider, locationProvider, timeZoneProvider,
+                    thingTypeUID.getId());
         }
         return null;
     }

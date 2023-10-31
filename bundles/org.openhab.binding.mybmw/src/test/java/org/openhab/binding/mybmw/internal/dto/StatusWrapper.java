@@ -72,6 +72,7 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_DRIV
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_PASSENGER_FRONT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_PASSENGER_REAR;
 
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -336,13 +337,15 @@ public class StatusWrapper {
             case LAST_UPDATE:
                 assertTrue(state instanceof DateTimeType);
                 dtt = (DateTimeType) state;
-                State expectedUpdateDate = Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt());
+                State expectedUpdateDate = Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt(),
+                        ZoneId.systemDefault());
                 assertEquals(expectedUpdateDate.toString(), dtt.toString(), "Last Update");
                 break;
             case LAST_FETCHED:
                 assertTrue(state instanceof DateTimeType);
                 dtt = (DateTimeType) state;
-                State expectedFetchedDate = Converter.zonedToLocalDateTime(vehicleState.getLastFetched());
+                State expectedFetchedDate = Converter.zonedToLocalDateTime(vehicleState.getLastFetched(),
+                        ZoneId.systemDefault());
                 assertEquals(expectedFetchedDate.toString(), dtt.toString(), "Last Fetched");
                 break;
             case GPS:
@@ -473,7 +476,7 @@ public class StatusWrapper {
                         }
                     } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
                         String dueDateString = vehicleState.getRequiredServices().get(0).getDateTime();
-                        State expectedDTT = Converter.zonedToLocalDateTime(dueDateString);
+                        State expectedDTT = Converter.zonedToLocalDateTime(dueDateString, ZoneId.systemDefault());
                         assertEquals(expectedDTT.toString(), dtt.toString(), "First Service Date");
                     }
                 }
@@ -561,7 +564,7 @@ public class StatusWrapper {
                     switch (gUid) {
                         case CHANNEL_GROUP_SERVICE:
                             String dueDateString = vehicleState.getRequiredServices().get(0).getDateTime();
-                            State expectedDTT = Converter.zonedToLocalDateTime(dueDateString);
+                            State expectedDTT = Converter.zonedToLocalDateTime(dueDateString, ZoneId.systemDefault());
                             assertEquals(expectedDTT.toString(), dtt.toString(), "ServiceSate");
                             break;
                         default:

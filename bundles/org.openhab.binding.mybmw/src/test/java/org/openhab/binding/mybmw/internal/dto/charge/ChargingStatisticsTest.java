@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,6 +40,7 @@ import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer
 import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -87,7 +89,10 @@ public class ChargingStatisticsTest {
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
         MyBMWCommandOptionProvider myBmwCommandOptionProvider = mock(MyBMWCommandOptionProvider.class);
         LocationProvider locationProvider = mock(LocationProvider.class);
-        vehicleHandler = new VehicleHandler(thing, myBmwCommandOptionProvider, locationProvider, type);
+        TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
+        when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.systemDefault());
+        vehicleHandler = new VehicleHandler(thing, myBmwCommandOptionProvider, locationProvider, timeZoneProvider,
+                type);
         MyBMWVehicleConfiguration vc = new MyBMWVehicleConfiguration();
         vc.setVin(Constants.ANONYMOUS);
 

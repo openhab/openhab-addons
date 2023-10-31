@@ -13,6 +13,7 @@
 package org.openhab.binding.mybmw.internal.utils;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,7 +56,7 @@ public class VehicleStatusUtils {
         if (serviceDate.equals(farFuture)) {
             return UnDefType.UNDEF;
         } else {
-            return DateTimeType.valueOf(serviceDate.format(Converter.DATE_INPUT_PATTERN));
+            return DateTimeType.valueOf(serviceDate.format(DateTimeFormatter.ISO_INSTANT));
         }
     }
 

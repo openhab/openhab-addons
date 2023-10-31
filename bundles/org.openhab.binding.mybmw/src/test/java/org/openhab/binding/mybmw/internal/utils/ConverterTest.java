@@ -15,6 +15,8 @@ package org.openhab.binding.mybmw.internal.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.ZoneId;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DateTimeType;
@@ -41,13 +43,15 @@ public class ConverterTest {
 
     @Test
     void testDateConversion() {
-        State state = Converter.zonedToLocalDateTime(null);
+        State state = Converter.zonedToLocalDateTime(null, ZoneId.systemDefault());
         assertTrue(state instanceof UnDefType);
-        state = Converter.zonedToLocalDateTime("");
+        state = Converter.zonedToLocalDateTime("", ZoneId.systemDefault());
         assertTrue(state instanceof UnDefType);
-        state = Converter.zonedToLocalDateTime("2023-01-18");
+        state = Converter.zonedToLocalDateTime("2023-01-18", ZoneId.systemDefault());
         assertTrue(state instanceof UnDefType);
-        state = Converter.zonedToLocalDateTime("2023-01-18T18:07:59.076Z");
+        state = Converter.zonedToLocalDateTime("2023-01-18T18:07:59.076Z", ZoneId.systemDefault());
+        assertTrue(state instanceof DateTimeType);
+        state = Converter.zonedToLocalDateTime("2023-10-28T17:41:17Z", ZoneId.systemDefault());
         assertTrue(state instanceof DateTimeType);
     }
 }

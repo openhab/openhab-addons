@@ -12,13 +12,10 @@
  */
 package org.openhab.binding.mybmw.internal.utils;
 
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,21 +37,15 @@ import org.slf4j.LoggerFactory;
 public interface Converter {
     static final Logger LOGGER = LoggerFactory.getLogger(Converter.class);
 
-    static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
-    static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
-    static final DateTimeFormatter LOCALE_ENGLISH_TIMEFORMATTER = DateTimeFormatter.ofPattern("hh:mm a",
-            Locale.ENGLISH);
-    static final SimpleDateFormat ISO_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
-
     static final String SPLIT_HYPHEN = "-";
     static final String SPLIT_BRACKET = "\\(";
 
-    static State zonedToLocalDateTime(@Nullable String input) {
+    static State zonedToLocalDateTime(@Nullable String input, ZoneId timezone) {
         if (input != null && !input.isEmpty()) {
             try {
-                String dateString = ZonedDateTime.parse(input).withZoneSameInstant(ZoneId.systemDefault())
-                        .toLocalDateTime().format(Converter.DATE_INPUT_PATTERN);
-                return DateTimeType.valueOf(dateString);
+                String localTimeString = Instant.parse(input).atZone(timezone)
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                return DateTimeType.valueOf(localTimeString);
             } catch (Exception e) {
                 LOGGER.debug("Unable to parse date {} - {}", input, e.getMessage());
                 return UnDefType.UNDEF;
@@ -175,11 +166,7 @@ public interface Converter {
     }
 
     static String getCurrentISOTime() {
-        Date date = new Date(System.currentTimeMillis());
-        synchronized (ISO_FORMATTER) {
-            ISO_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return ISO_FORMATTER.format(date);
-        }
+        return ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT);
     }
 
     static String getTime(Time t) {

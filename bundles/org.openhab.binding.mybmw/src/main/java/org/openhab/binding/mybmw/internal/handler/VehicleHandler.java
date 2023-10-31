@@ -138,6 +138,7 @@ import org.openhab.binding.mybmw.internal.utils.ImageProperties;
 import org.openhab.binding.mybmw.internal.utils.RemoteServiceUtils;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -192,6 +193,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     private MyBMWCommandOptionProvider commandOptionProvider;
     private LocationProvider locationProvider;
+    private ZoneId timeZone;
 
     // Data Caches
     private Optional<VehicleStateContainer> vehicleStatusCache = Optional.empty();
@@ -205,12 +207,14 @@ public class VehicleHandler extends BaseThingHandler {
 
     private ImageProperties imageProperties = new ImageProperties();
 
-    public VehicleHandler(Thing thing, MyBMWCommandOptionProvider cop, LocationProvider lp, String driveTrain) {
+    public VehicleHandler(Thing thing, MyBMWCommandOptionProvider commandOptionProvider,
+            LocationProvider locationProvider, TimeZoneProvider timeZoneProvider, String driveTrain) {
         super(thing);
         logger.trace("xxxVehicleHandler.constructor {}, {}", thing.getUID(), driveTrain);
-        commandOptionProvider = cop;
-        locationProvider = lp;
-        if (lp.getLocation() == null) {
+        this.commandOptionProvider = commandOptionProvider;
+        this.timeZone = timeZoneProvider.getTimeZone();
+        this.locationProvider = locationProvider;
+        if (locationProvider.getLocation() == null) {
             logger.debug("Home location not available");
         }
 
@@ -471,9 +475,9 @@ public class VehicleHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,
                 Converter.toTitleCase(vehicleState.getOverallCheckControlStatus()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
-                Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt()), channelToBeUpdated);
-        updateChannel(CHANNEL_GROUP_STATUS, LAST_FETCHED, Converter.zonedToLocalDateTime(vehicleState.getLastFetched()),
-                channelToBeUpdated);
+                Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt(), timeZone), channelToBeUpdated);
+        updateChannel(CHANNEL_GROUP_STATUS, LAST_FETCHED,
+                Converter.zonedToLocalDateTime(vehicleState.getLastFetched(), timeZone), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, DOORS,
                 Converter.toTitleCase(vehicleState.getDoorsState().getCombinedState()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, WINDOWS,
@@ -656,8 +660,8 @@ public class VehicleHandler extends BaseThingHandler {
                     channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_SERVICE, DETAILS, StringType.valueOf(serviceEntry.getDescription()),
                     channelToBeUpdated);
-            updateChannel(CHANNEL_GROUP_SERVICE, DATE, Converter.zonedToLocalDateTime(serviceEntry.getDateTime()),
-                    channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_SERVICE, DATE,
+                    Converter.zonedToLocalDateTime(serviceEntry.getDateTime(), timeZone), channelToBeUpdated);
 
             if (serviceEntry.getMileage() > 0) {
                 updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
