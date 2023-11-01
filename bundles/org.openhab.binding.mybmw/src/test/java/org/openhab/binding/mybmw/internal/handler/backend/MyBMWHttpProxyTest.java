@@ -148,8 +148,7 @@ public class MyBMWHttpProxyTest {
     @Test
     void testSuccessfulImage() {
         // test successful POST for remote service execution
-        byte[] responseContent = FileReader.fileToByteArray("responses/MILD_HYBRID/340i_frontView.png");
-        MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(200, new String(responseContent));
+        MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(200, "test");
 
         try {
             byte[] image = myBMWProxy.requestImage("testVin", BimmerConstants.BRAND_BMW, new ImageProperties());
