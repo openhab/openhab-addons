@@ -411,18 +411,27 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
         WhereLightAutom dw = (WhereLightAutom) deviceWhere;
         if (dw != null && !dw.isAPL()) {
+            // handle message for GEN/GR/A handler
             Lighting lmsg = (Lighting) msg;
-            if (lmsg.isOn()) {
-                listOn.add(this.bridgeHandler.ownIdFromMessage(lmsg));
-                logger.debug("/////////// listOn for {}: {}", dw, listOn);
+            if (!lmsg.isOff()) {
+                listOn.add(bridgeHandler.ownIdFromMessage(lmsg));
+                logger.debug("/////////// ADDED {} to listOn for {}", bridgeHandler.ownIdFromMessage(lmsg), dw);
             } else {
-                listOn.remove(this.bridgeHandler.ownIdFromMessage(lmsg));
-                logger.debug("/////////// listOn for {}: {}", dw, listOn);
-                if (listOn.size() > 0) { // some light still on, ignore this OFF msg
-                    logger.debug("/////////// some light still ON in {}... skipping msg {}", dw, msg);
-                    return;
-                }
+                listOn.remove(bridgeHandler.ownIdFromMessage(lmsg));
+                logger.debug("/////////// REMOVED {} from listOn for {}", bridgeHandler.ownIdFromMessage(lmsg),
+                        dw);
             }
+            logger.debug("/////////// listOn for {}: {}", dw, listOn);
+            if (listOn.size() > 0) {
+                // some light still on
+                logger.debug("/////////// some light is ON for {}", dw);
+                updateState(CHANNEL_SWITCH, OnOffType.ON);
+            } else {
+                // no light is ON anymore
+                logger.debug("/////////// all lights OFF for {}... switching group to OFF", dw);
+                updateState(CHANNEL_SWITCH, OnOffType.OFF);
+            }
+            return;
         }
 
         ThingTypeUID thingType = thing.getThingTypeUID();
@@ -435,25 +444,23 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         WhereLightAutom msgWhere = (WhereLightAutom) msg.getWhere();
         if (msgWhere.isAPL()) {
             OpenWebNetBridgeHandler brH = this.bridgeHandler;
-            WhereLightAutom w = (WhereLightAutom) deviceWhere;
-            // Propagate APL msg to AREA handler, if exists
-            if (brH != null && w != null && w.isAPL()) {
-                String areaOwnId = this.getManagedWho() + "." + w.getArea();
+            if (brH != null && dw != null && dw.isAPL()) {
+                // Propagate APL msg to AREA handler, if exists
+                String areaOwnId = this.getManagedWho().value() + "." + dw.getArea();
                 OpenWebNetLightingHandler areaHandler = (OpenWebNetLightingHandler) brH.getRegisteredDevice(areaOwnId);
                 if (areaHandler != null) {
                     logger.debug("//////////////////// Propagating msg {} to AREA handler {}", msg, areaOwnId);
                     areaHandler.handleMessage(msg);
                 }
-            }
-            // Propagate APL msg to GEN handler, if exists
-            if (brH != null && w != null && w.isAPL()) {
-                String genOwnId = this.getManagedWho() + ".0";
+                // Propagate APL msg to GEN handler, if exists
+                String genOwnId = this.getManagedWho().value() + ".0";
                 OpenWebNetLightingHandler genHandler = (OpenWebNetLightingHandler) brH.getRegisteredDevice(genOwnId);
                 if (genHandler != null) {
                     logger.debug("//////////////////// Propagating msg {} to GEN handler", msg);
                     genHandler.handleMessage(msg);
                 }
             }
+
         }
     }
 
@@ -612,8 +619,20 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         Where w = deviceWhere;
         if (w != null) {
             int area = ((WhereLightAutom) w).getArea();
+
+            // remove light from listOn for Area
+            OpenWebNetBridgeHandler brH = this.bridgeHandler;
+            String areaOwnId = this.getManagedWho().value() + "." + area;
+            OpenWebNetLightingHandler areaHandler = (OpenWebNetLightingHandler) brH.getRegisteredDevice(areaOwnId);
+            if (areaHandler != null) {
+                areaHandler.listOn.remove(ownId);
+                logger.debug("//////////////////// Removed {} from listOn for {}", ownId, areaOwnId);
+            }
+
+            // remove light from lightsMap
             lightsMap.remove(area, this);
-            logger.debug("Light.dispose() - removed APL {}", w);
+            logger.debug("Light.dispose() - removed APL {} from lightsMap", w);
+
         }
         super.dispose();
     }

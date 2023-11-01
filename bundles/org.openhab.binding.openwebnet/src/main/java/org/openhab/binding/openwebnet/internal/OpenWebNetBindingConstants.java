@@ -25,10 +25,10 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link OpenWebNetBindingConstants} class defines common constants, which
  * are used across the whole binding.
  *
- * @author Massimo Valla - Initial contribution, updates
+ * @author Massimo Valla - Initial contribution, updates. Light groups.
  * @author Gilberto Cocchi - Thermoregulation
  * @author Andrea Conte - Energy management, Thermoregulation
- * @author Giovanni Fabiani - Aux support
+ * @author Giovanni Fabiani - AUX support
  */
 
 @NonNullByDefault
@@ -53,6 +53,10 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_ON_OFF_SWITCH = "Switch";
     public static final ThingTypeUID THING_TYPE_BUS_DIMMER = new ThingTypeUID(BINDING_ID, "bus_dimmer");
     public static final String THING_LABEL_BUS_DIMMER = "Dimmer";
+
+    public static final ThingTypeUID THING_TYPE_BUS_LIGHT_GROUP = new ThingTypeUID(BINDING_ID, "bus_light_group");
+    public static final String THING_LABEL_BUS_LIGHT_GROUP = "Light Group";
+
     public static final ThingTypeUID THING_TYPE_BUS_AUTOMATION = new ThingTypeUID(BINDING_ID, "bus_automation");
     public static final String THING_LABEL_BUS_AUTOMATION = "Automation";
     public static final ThingTypeUID THING_TYPE_BUS_ENERGY_METER = new ThingTypeUID(BINDING_ID, "bus_energy_meter");
@@ -96,7 +100,7 @@ public class OpenWebNetBindingConstants {
     // ## Lighting
     public static final Set<ThingTypeUID> LIGHTING_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ZB_ON_OFF_SWITCH,
             THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS, THING_TYPE_ZB_DIMMER, THING_TYPE_BUS_ON_OFF_SWITCH,
-            THING_TYPE_BUS_DIMMER);
+            THING_TYPE_BUS_DIMMER, THING_TYPE_BUS_LIGHT_GROUP);
     // ## Automation
     public static final Set<ThingTypeUID> AUTOMATION_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ZB_AUTOMATION,
             THING_TYPE_BUS_AUTOMATION);
