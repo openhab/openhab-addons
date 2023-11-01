@@ -37,7 +37,7 @@ The following channels are available:
 |--------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | activeApp          | String               | A dropdown containing a list of all apps installed on the Roku. The app currently running is automatically selected. The list updates every 10 minutes.         |
 | activeAppName      | String               | The name of the current app (ReadOnly).                                                                                                                         |
-| button             | String               | Sends a remote control command the Roku. See list of available commands below.                                                                                  |
+| button             | String               | Sends a remote control command the Roku. See list of available commands below (WriteOnly).                                                                      |
 | control            | Player               | Control Playback e.g. play/pause/next/previous                                                                                                                  |
 | playMode           | String               | The current playback mode ie: stop, play, pause (ReadOnly).                                                                                                     |
 | timeElapsed        | Number:Time          | The total number of seconds of playback time elapsed for the current playing title (ReadOnly).                                                                  |
@@ -51,6 +51,7 @@ The following channels are available:
 | programRating      | String               | The TV parental guideline rating of the current TV program (ReadOnly).                                                                                          |
 | power              | Switch               | Controls the power for the TV.                                                                                                                                  |
 | powerState         | String               | The current power state for the TV. (ReadOnly - ie PowerOn, DisplayOff, Ready, etc.)                                                                            |
+| secretScreen       | String               | Access the Roku's hidden menus. See list of available commands below (WriteOnly).                                                                               |
 
 Some Notes:
 
@@ -89,6 +90,19 @@ InputAV1
 PowerOff  
 POWERON _(NOTE: POWERON needs to be completely capitalized due to a bug with older Roku devices)_
 
+
+**List of available Secret Screen commands:**  
+CHANNEL_INFO  
+DEVELOPER_INFO  
+HDMI_INFO  
+NETWORK_INFO  
+PLATFORM_INFO  
+RESET_INFO  
+ADVERTISING_INFO  
+WIRELESS_INFO  
+TV_INFO _(May only work on TCL TVs)_  
+REBOOT _(Reboots the device immediately)_
+
 ## Full Example
 
 ### roku.things:
@@ -114,6 +128,7 @@ Player Player_Control          "Control"                   { channel="roku:roku_
 String Player_PlayMode         "Status: [%s]"              { channel="roku:roku_player:myplayer1:playMode" }
 Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="roku:roku_player:myplayer1:timeElapsed" }
 Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="roku:roku_player:myplayer1:timeTotal" }
+String Player_SecretScreen     "Access Secret Screen"      { channel="roku:roku_player:myplayer1:secretScreen" }
 
 // Roku TV items:
 
@@ -133,6 +148,7 @@ String Player_ProgramDescription "Program Description: [%s]" { channel="roku:rok
 String Player_ProgramRating      "Program Rating: [%s]"      { channel="roku:roku_tv:mytv1:programRating" }
 Switch Player_Power              "Power: [%s]"               { channel="roku:roku_tv:mytv1:power" }
 String Player_PowerState         "Power State: [%s]          { channel="roku:roku_tv:mytv1:powerState" }
+String Player_SecretScreen       "Access Secret Screen"      { channel="roku:roku_tv:mytv1:secretScreen" }
 
 ```
 
@@ -148,6 +164,7 @@ sitemap roku label="Roku" {
         Text item=Player_PlayMode
         Text item=Player_TimeElapsed icon="time"
         Text item=Player_TimeTotal icon="time"
+        Selection item=Player_SecretScreen icon="screen"
         // The following items apply to Roku TVs only
         Selection item=Player_ActiveChannel icon="screen"
         Text item=Player_SignalMode

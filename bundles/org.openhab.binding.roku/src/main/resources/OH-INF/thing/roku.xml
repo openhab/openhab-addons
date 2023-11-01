@@ -19,6 +19,7 @@
 			<channel id="playMode" typeId="playMode"/>
 			<channel id="timeElapsed" typeId="timeElapsed"/>
 			<channel id="timeTotal" typeId="timeTotal"/>
+			<channel id="secretScreen" typeId="secretScreen"/>
 		</channels>
 
 		<properties>
@@ -28,7 +29,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -60,6 +61,7 @@
 			<channel id="programDescription" typeId="programDescription"/>
 			<channel id="programRating" typeId="programRating"/>
 			<channel id="powerState" typeId="powerState"/>
+			<channel id="secretScreen" typeId="secretScreen"/>
 		</channels>
 
 		<properties>
@@ -69,7 +71,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -240,6 +242,26 @@
 				<option value="PowerOn">Power On</option>
 				<option value="DisplayOff">Display Off</option>
 				<option value="Ready">Ready</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="secretScreen" advanced="true">
+		<item-type>String</item-type>
+		<label>Secret Screen</label>
+		<description>Access a Secret Screen on the Roku Device</description>
+		<state>
+			<options>
+				<option value="CHANNEL_INFO">Channel Info</option>
+				<option value="DEVELOPER_INFO">Developer Info</option>
+				<option value="HDMI_INFO">HDMI Info</option>
+				<option value="NETWORK_INFO">Network Info</option>
+				<option value="PLATFORM_INFO">Platform Info</option>
+				<option value="RESET_INFO">Reset Info</option>
+				<option value="ADVERTISING_INFO">Advertising Info</option>
+				<option value="WIRELESS_INFO">Wireless Info</option>
+				<option value="TV_INFO">TV Info</option>
+				<option value="REBOOT">Reboot the Device</option>
 			</options>
 		</state>
 	</channel-type>

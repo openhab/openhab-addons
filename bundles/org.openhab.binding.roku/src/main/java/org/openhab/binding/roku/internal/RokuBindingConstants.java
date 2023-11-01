@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.roku.internal;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import javax.measure.Unit;
@@ -52,6 +54,7 @@ public class RokuBindingConstants {
     public static final String ACTIVE_APPNAME = "activeAppName";
     public static final String BUTTON = "button";
     public static final String CONTROL = "control";
+    public static final String SECRET_SCREEN = "secretScreen";
     public static final String PLAY_MODE = "playMode";
     public static final String TIME_ELAPSED = "timeElapsed";
     public static final String TIME_TOTAL = "timeTotal";
@@ -76,12 +79,51 @@ public class RokuBindingConstants {
     public static final String ROKU_HOME = "Roku Home";
     public static final String ROKU_HOME_ID = "-1";
     public static final String ROKU_HOME_ID_562859 = "562859";
-    public static final String ROKU_HOME_BUTTON = "Home";
-    public static final String ROKU_PLAY_BUTTON = "Play";
-    public static final String ROKU_NEXT_BUTTON = "Fwd";
-    public static final String ROKU_PREV_BUTTON = "Rev";
+    public static final String BUTTON_HOME = "Home";
+    public static final String BUTTON_UP = "Up";
+    public static final String BUTTON_DOWN = "Down";
+    public static final String BUTTON_LEFT = "Left";
+    public static final String BUTTON_RIGHT = "Right";
+    public static final String BUTTON_PLAY = "Play";
+    public static final String BUTTON_NEXT = "Fwd";
+    public static final String BUTTON_PREV = "Rev";
     public static final String NON_DIGIT_PATTERN = "[^\\d]";
     public static final String TV_APP = "tvinput.dtv";
     public static final String TV_INPUT = "tvinput";
     public static final String POWER_ON = "POWERON";
+
+    // Roku secret screens button press sequences
+    public static final HashMap<String, List<String>> SECRET_SCREENS_MAP = new HashMap<String, List<String>>();
+    static {
+        SECRET_SCREENS_MAP.put("CHANNEL_INFO", List.of(BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_UP, BUTTON_UP,
+                BUTTON_LEFT, BUTTON_RIGHT, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_LEFT));
+
+        SECRET_SCREENS_MAP.put("DEVELOPER_INFO", List.of(BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_UP, BUTTON_UP,
+                BUTTON_RIGHT, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_LEFT, BUTTON_RIGHT));
+
+        SECRET_SCREENS_MAP.put("HDMI_INFO", List.of(BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME,
+                BUTTON_DOWN, BUTTON_LEFT, BUTTON_UP, BUTTON_UP, BUTTON_UP));
+
+        SECRET_SCREENS_MAP.put("NETWORK_INFO", List.of(BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME,
+                BUTTON_RIGHT, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_LEFT, BUTTON_RIGHT));
+
+        SECRET_SCREENS_MAP.put("PLATFORM_INFO", List.of(BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME,
+                BUTTON_NEXT, BUTTON_PLAY, BUTTON_PREV, BUTTON_PLAY, BUTTON_NEXT));
+
+        SECRET_SCREENS_MAP.put("RESET_INFO", List.of(BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME,
+                BUTTON_NEXT, BUTTON_NEXT, BUTTON_NEXT, BUTTON_PREV, BUTTON_PREV));
+
+        SECRET_SCREENS_MAP.put("ADVERTISING_INFO", List.of(BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME,
+                BUTTON_HOME, BUTTON_UP, BUTTON_RIGHT, BUTTON_DOWN, BUTTON_LEFT, BUTTON_UP));
+
+        SECRET_SCREENS_MAP.put("WIRELESS_INFO", List.of(BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME,
+                BUTTON_UP, BUTTON_DOWN, BUTTON_UP, BUTTON_DOWN, BUTTON_UP));
+
+        SECRET_SCREENS_MAP.put("TV_INFO", List.of(BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME,
+                BUTTON_PREV, BUTTON_DOWN, BUTTON_NEXT, BUTTON_DOWN, BUTTON_PREV));
+
+        SECRET_SCREENS_MAP.put("REBOOT", List.of(BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME, BUTTON_HOME,
+                BUTTON_UP, BUTTON_PREV, BUTTON_PREV, BUTTON_NEXT, BUTTON_NEXT));
+
+    }
 }

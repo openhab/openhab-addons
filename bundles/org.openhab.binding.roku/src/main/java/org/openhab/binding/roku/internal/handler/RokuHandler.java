@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RokuHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_PERIOD_SEC = 10;
+    private static final long SLEEP_BETWEEN_CMD_MS = 100;
 
     private final Logger logger = LoggerFactory.getLogger(RokuHandler.class);
     private final HttpClient httpClient;
@@ -74,6 +75,7 @@ public class RokuHandler extends BaseThingHandler {
     private int refreshInterval = DEFAULT_REFRESH_PERIOD_SEC;
     private boolean tvActive = false;
     private Map<String, String> appMap = new HashMap<>();
+    private String activeAppId = ROKU_HOME_ID;
 
     private Object sequenceLock = new Object();
 
@@ -138,7 +140,6 @@ public class RokuHandler extends BaseThingHandler {
      */
     private void refreshPlayerState() {
         synchronized (sequenceLock) {
-            String activeAppId = ROKU_HOME_ID;
             try {
                 if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
                     try {
@@ -151,11 +152,13 @@ public class RokuHandler extends BaseThingHandler {
                     }
                 }
 
-                activeAppId = communicator.getActiveApp().getApp().getId();
+                final String activeAppIdLocal = communicator.getActiveApp().getApp().getId();
 
                 // 562859 is now reported when on the home screen, reset to -1
-                if (ROKU_HOME_ID_562859.equals(activeAppId)) {
+                if (ROKU_HOME_ID_562859.equals(activeAppIdLocal)) {
                     activeAppId = ROKU_HOME_ID;
+                } else {
+                    activeAppId = activeAppIdLocal;
                 }
 
                 updateState(ACTIVE_APP, new StringType(activeAppId));
@@ -328,7 +331,7 @@ public class RokuHandler extends BaseThingHandler {
                     if (!ROKU_HOME_ID.equals(appId)) {
                         communicator.launchApp(appId);
                     } else {
-                        communicator.keyPress(ROKU_HOME_BUTTON);
+                        communicator.keyPress(BUTTON_HOME);
                     }
                 } catch (RokuHttpException e) {
                     logger.debug("Unable to launch app on Roku, appId: {}, Exception: {}", command, e.getMessage());
@@ -365,12 +368,12 @@ public class RokuHandler extends BaseThingHandler {
             synchronized (sequenceLock) {
                 try {
                     if (command instanceof PlayPauseType) {
-                        communicator.keyPress(ROKU_PLAY_BUTTON);
+                        communicator.keyPress(BUTTON_PLAY);
                     } else if (command instanceof NextPreviousType) {
                         if (command == NextPreviousType.NEXT) {
-                            communicator.keyPress(ROKU_NEXT_BUTTON);
+                            communicator.keyPress(BUTTON_NEXT);
                         } else if (command == NextPreviousType.PREVIOUS) {
-                            communicator.keyPress(ROKU_PREV_BUTTON);
+                            communicator.keyPress(BUTTON_PREV);
                         }
                     } else {
                         logger.warn("Unknown control command: {}", command);
@@ -378,6 +381,28 @@ public class RokuHandler extends BaseThingHandler {
                 } catch (RokuHttpException e) {
                     logger.debug("Unable to send control cmd to Roku, cmd: {}, Exception: {}", command, e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
+            }
+        } else if (channelUID.getId().equals(SECRET_SCREEN)) {
+            if (activeAppId != ROKU_HOME_ID) {
+                logger.debug("Secret Screen command can only be used while on Roku Home screen");
+                return;
+            }
+            synchronized (sequenceLock) {
+                final List<String> commandSequence = SECRET_SCREENS_MAP.get(command.toString());
+                if (commandSequence != null) {
+                    for (String cmd : commandSequence) {
+                        try {
+                            communicator.keyPress(cmd);
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                        } catch (RokuHttpException | InterruptedException e) {
+                            logger.debug("Unable to send secret screen sequence {} to Roku, cmd: {}, Exception: {}",
+                                    command, cmd, e.getMessage());
+                            break;
+                        }
+                    }
+                } else {
+                    logger.debug("Invalid Secret Screen command: {}", command);
                 }
             }
         } else {
