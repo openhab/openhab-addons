@@ -20,6 +20,6 @@
 		<item-type>Number:Length</item-type>
 		<label>Distance from Home</label>
 		<description>Computed distance between vehicle and home location</description>
-		<state pattern="%d km" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
