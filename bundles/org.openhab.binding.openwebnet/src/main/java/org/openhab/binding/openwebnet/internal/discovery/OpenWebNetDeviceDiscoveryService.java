@@ -29,6 +29,7 @@ import org.openwebnet4j.OpenDeviceType;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereAlarm;
+import org.openwebnet4j.message.WhereLightAutom;
 import org.openwebnet4j.message.WhereThermo;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
@@ -56,7 +57,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
 
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
-    private boolean cuFound = false;
+    private boolean thermoCUFound = false;
+    private boolean lightFound = false;
 
     public OpenWebNetDeviceDiscoveryService() {
         super(OpenWebNetBridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME_SEC);
@@ -71,7 +73,9 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
     protected void startScan() {
         logger.info("------ SEARCHING for DEVICES on bridge '{}' ({}) ...", thingHandler.getThing().getLabel(),
                 bridgeUID);
-        cuFound = false;
+
+        thermoCUFound = false;
+        lightFound = false;
         thingHandler.searchDevices();
     }
 
@@ -223,7 +227,13 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
         }
 
         String ownId = thingHandler.ownIdFromWhoWhere(deviceWho, w);
-        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ON_OFF_SWITCH.equals(thingTypeUID)) {
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ON_OFF_SWITCH.equals(thingTypeUID)
+                || OpenWebNetBindingConstants.THING_TYPE_BUS_DIMMER.equals(thingTypeUID)) {
+            WhereLightAutom wla = (WhereLightAutom) w;
+            discoverBUSGroups(deviceWho, wla);
+            if (wla.isGroup()) { // group thing has been already discovered in previous line
+                return;
+            }
             if (thingHandler.getRegisteredDevice(ownId) != null) {
                 logger.debug("dimmer/switch with WHERE={} already registered, skipping this discovery result", w);
                 return;
@@ -246,7 +256,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
 
         // detect Thermo CU type
         if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CU.equals(thingTypeUID)) {
-            cuFound = true;
+            thermoCUFound = true;
             logger.debug("CU found: {}", w);
             if (w.value().charAt(0) == '#') { // 99-zone CU
                 thingLabel += " 99-zone";
@@ -258,7 +268,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
                 logger.debug("@@@@ THERMO CU found 4-zone: where={}, ownId={}, whereConfig={}", w, ownId, whereConfig);
             }
         } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE.equals(thingTypeUID)) {
-            if (cuFound) {
+            if (thermoCUFound) {
                 // set param standalone = false for thermo zone
                 properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE, false);
             }
@@ -287,6 +297,62 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
             thingLabel = thingLabel + " (WHERE=" + whereConfig + ")";
         }
         discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties)
+                .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_OWNID).withBridge(bridgeUID)
+                .withLabel(thingLabel).build();
+        thingDiscovered(discoveryResult);
+    }
+
+    private void discoverBUSGroups(Who deviceWho, WhereLightAutom where) {
+        if (!lightFound) {
+            lightFound = true;
+            createGroupDiscoveryResult(deviceWho, (WhereLightAutom) WhereLightAutom.GENERAL);
+        }
+        if (where.isGroup()) {
+            createGroupDiscoveryResult(deviceWho, where);
+        } else {
+            createGroupDiscoveryResult(deviceWho, new WhereLightAutom(Integer.toString(where.getArea())));
+        }
+    }
+
+    private void createGroupDiscoveryResult(Who deviceWho, WhereLightAutom where) {
+        Map<String, Object> properties = new HashMap<>(2);
+        String ownId = bridgeHandler.ownIdFromWhoWhere(deviceWho, where);
+        String tId = bridgeHandler.thingIdFromWhoWhere(deviceWho, where);
+
+        ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_LIGHT_GROUP;
+        String thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_LIGHT_GROUP;
+
+        /* @formatter:off
+         *
+          Interruttore Generale         General Switch Group
+          Area 5                        Area 5 Switch Group
+          Gruppo 26                     Switch Group 26
+
+          Automazione Generale          General Automation
+          Automazione Area 6            Area 6 Automation
+          Gruppo Automazione 26         Automation Group 26
+
+          @formatter:on
+        */
+        if (where.isGeneral()) {
+            thingLabel = "General " + thingLabel;
+        } else if (where.isArea()) {
+            thingLabel = "Area " + where.getArea() + " " + thingLabel;
+        } else {
+            thingLabel += " " + where.value();
+        }
+
+        ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
+        String whereConfig = where.value();
+
+        properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, whereConfig);
+        properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID, ownId);
+
+        thingLabel = thingLabel + " (WHERE=" + whereConfig
+                + ")";
+
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                .withProperties(properties)
                 .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_OWNID).withBridge(bridgeUID)
                 .withLabel(thingLabel).build();
         thingDiscovered(discoveryResult);

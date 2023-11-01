@@ -464,8 +464,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 }
             } else if (System.currentTimeMillis() - lastRegisteredDeviceTS < REFRESH_ALL_DEVICES_DELAY_MSEC) {
                 // a device has been registered with the bridge just now, let's wait for other
-                // devices: re-schedule
-                // refreshAllDevices
+                // devices: re-schedule refreshAllDevices
                 logger.debug("--- REGISTER device just called... re-scheduling refreshAllBridgeDevices()");
                 refreshAllSchedule = scheduler.schedule(this::refreshAllBridgeDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
                         TimeUnit.MILLISECONDS);
@@ -780,10 +779,12 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     if (who.equals(Who.THERMOREGULATION) || who.equals(Who.THERMOREGULATION_DIAGNOSTIC)
                             || who.equals(Who.BURGLAR_ALARM)) {
                         // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z
+                        // or Alarm zone #Z --> Z
                         str = str.substring(1);
-                    } // else leave the initial hash
-                } else if (str.indexOf('#') > 0 && str.charAt(0) != '0') { // Thermo zone Z and actuator N (Z#N,
-                                                                           // Z=[1-99], N=[1-9]) --> Z
+                    } // else leave the initial hash (for example for LightAutomWhere GROUPs #GR -->
+                      // hGR)
+                } else if (str.indexOf('#') > 0 && str.charAt(0) != '0') {
+                    // Thermo zone Z and actuator N (Z#N, Z=[1-99], N=[1-9]) --> Z)
                     str = str.substring(0, str.indexOf('#'));
                 }
             }
