@@ -23,11 +23,11 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H619Z RGBIC Pro LED Strip Lights
 - H6046 RGBIC TV Light Bars
 - H6047 RGBIC Gaming Light Bars with Smart Controller
-- H6061 Glide Hexa LED Panels
+- H6061 Glide Hexa LED Panels (*)
 - H6062 Glide Wall Light
 - H6065 Glide RGBIC Y Lights
 - H6066 Glide Hexa Pro LED Panel
-- H6067 Glide Triangle Light Panels
+- H6067 Glide Triangle Light Panels (*)
 - H6072 RGBICWW Corner Floor Lamp
 - H6076 RGBICW Smart Corner Floor Lamp (*)
 - H6073 LED Floor Lamp
@@ -111,17 +111,15 @@ arp -a | grep "MAC_ADDRESS"
 | deviceType      | text    | The product number of the device      | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in sec. | 5       | no       | yes      |
 
-
 ## Channels
 
-| Channel               | Type              | Read/Write | Description         |
-|-----------------------|-------------------|------------|---------------------|
-| brightness            | Percentage        | RW         |                     |
-|                       | Switch            | RW         | Power On / OFF      |
-| color                 | Color HSB Type    | RW         |                     |
-| color-temperature     | Percentage        | RW         |                     |
-| color-temperature-abs | Color Temperature | RW         | in 2000-9000 Kelvin |
-
+| Channel               | Type                         | Read/Write | Description          |
+|-----------------------|------------------------------|------------|----------------------|
+| brightness            | Percentage                   | RW         |                      |
+|                       | Switch                       | RW         | Power On / OFF       |
+| color                 | Color HSB Type               | RW         |                      |
+| color-temperature     | Color Temperature Percentage | RW         |                      |
+| color-temperature-abs | Color Temperature Absolute   | RW         | in 2000-9000 Kelvin  | 
 
 Note: you may have to add "%.0f K" as the state description when creating a color-temperature-abs item.
 

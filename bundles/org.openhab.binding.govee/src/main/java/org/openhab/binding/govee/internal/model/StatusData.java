@@ -17,10 +17,10 @@ package org.openhab.binding.govee.internal.model;
  *
  * @param onOff on=1 off=0
  * @param brightness brightness
- * @param color rgb Color
- * @param colorTemInKelvin color in Kelvin
+ * @param color rgb color
+ * @param colorTemInKelvin color temperature in Kelvin
  *
- *            * @author Stefan Höhn - Initial contribution
+ * @author Stefan Höhn - Initial contribution
  */
 public record StatusData(int onOff, int brightness, Color color, int colorTemInKelvin) {
 }

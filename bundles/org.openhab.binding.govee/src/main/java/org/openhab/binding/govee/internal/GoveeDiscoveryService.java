@@ -60,20 +60,23 @@ import com.google.gson.Gson;
  *
  * A typical scan response looks as follows
  *
+ * <pre>{@code
  * {
- * "msg":{
- * "cmd":"scan",
- * "data":{
- * "ip":"192.168.1.23",
- * "device":"1F:80:C5:32:32:36:72:4E",
- * "sku":"Hxxxx",
- * "bleVersionHard":"3.01.01",
- * "bleVersionSoft":"1.03.01",
- * "wifiVersionHard":"1.00.10",
- * "wifiVersionSoft":"1.02.03"
+ *   "msg":{
+ *     "cmd":"scan",
+ *     "data":{
+ *       "ip":"192.168.1.23",
+ *       "device":"1F:80:C5:32:32:36:72:4E",
+ *       "sku":"Hxxxx",
+ *       "bleVersionHard":"3.01.01",
+ *       "bleVersionSoft":"1.03.01",
+ *       "wifiVersionHard":"1.00.10",
+ *       "wifiVersionSoft":"1.02.03"
+ *     }
+ *   }
  * }
  * }
- * }
+ * </pre>
  *
  * Note that it uses the same port for receiving data like when receiving devices status updates.
  *
@@ -142,7 +145,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
                     receiveSocket.setReuseAddress(true);
                     sendBroadcastToDiscoverThing(sendSocket, receiveSocket, broadcastAddress);
                 } catch (IOException e) {
-                    logger.warn("Discovery with IO exception: {}", e.getMessage());
+                    logger.debug("Discovery with IO exception: {}", e.getMessage());
                 }
             });
         } catch (InterruptedException ie) {
@@ -190,7 +193,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
                             + properties.get(GoveeBindingConstants.IP_ADDRESS) + ")");
 
             thingDiscovered(discoveryResult.build());
-        } while (true); // left by SocketTimeoutException
+        } while (Thread.currentThread().isInterrupted()); // left by SocketTimeoutException
     }
 
     public Map<String, Object> getDeviceProperties(String response) {
@@ -254,7 +257,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (SocketException exception) {
-            return Collections.emptyList();
+            return List.of();
         }
         return result;
     }

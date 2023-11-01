@@ -5,19 +5,19 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="govee-light">
-		<label>Govee Light Thing</label>
+		<label>Govee Light</label>
 		<description>Govee light controllable via LAN API</description>
 
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color-temperature" typeId="system.color-temperature"/>
-			<channel id="color-temperature-abs" typeId="colortemperatureabs"/>
+			<channel id="color-temperature-abs" typeId="color-temperature-abs"/>
 		</channels>
 		<config-description-ref uri="thing-type:govee:govee-light"/>
 	</thing-type>
 
-	<channel-type id="colortemperatureabs">
+	<channel-type id="color-temperature-abs">
 		<item-type>Number:Temperature</item-type>
 		<label>Absolute Color Temperature </label>
 		<description>Controls the color temperature of the light in Kelvin</description>

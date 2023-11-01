@@ -15,7 +15,8 @@ package org.openhab.binding.govee.internal.model;
 
 /**
  * Govee Message
- * @ param msg
+ * 
+ * @param msg message block
  *
  * @author Stefan Höhn - Initial contribution
  */

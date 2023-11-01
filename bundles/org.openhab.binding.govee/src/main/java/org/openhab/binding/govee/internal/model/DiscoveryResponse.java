@@ -17,7 +17,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Govee Message
- * @ param msg
+ * 
+ * @param msg message block
  *
  * @author Stefan Höhn - Initial contribution
  */
