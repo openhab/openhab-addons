@@ -48,6 +48,7 @@ import org.openhab.binding.tesla.internal.protocol.ClimateState;
 import org.openhab.binding.tesla.internal.protocol.DriveState;
 import org.openhab.binding.tesla.internal.protocol.Event;
 import org.openhab.binding.tesla.internal.protocol.GUIState;
+import org.openhab.binding.tesla.internal.protocol.SoftwareUpdate;
 import org.openhab.binding.tesla.internal.protocol.Vehicle;
 import org.openhab.binding.tesla.internal.protocol.VehicleData;
 import org.openhab.binding.tesla.internal.protocol.VehicleState;
@@ -111,6 +112,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected VehicleState vehicleState;
     protected ChargeState chargeState;
     protected ClimateState climateState;
+    protected SoftwareUpdate softwareUpdate;
 
     protected boolean allowWakeUp;
     protected boolean allowWakeUpForCommands;
@@ -922,6 +924,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             (climateState.driver_temp_setting + climateState.passenger_temp_setting) / 2.0f));
                     updateState(CHANNEL_COMBINED_TEMP, new QuantityType<>(avgtemp, SIUnits.CELSIUS));
 
+                    softwareUpdate = vehicleState.software_update;
+
                     try {
                         lock.lock();
 
@@ -932,6 +936,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         entrySet.addAll(gson.toJsonTree(vehicleState, VehicleState.class).getAsJsonObject().entrySet());
                         entrySet.addAll(gson.toJsonTree(chargeState, ChargeState.class).getAsJsonObject().entrySet());
                         entrySet.addAll(gson.toJsonTree(climateState, ClimateState.class).getAsJsonObject().entrySet());
+                        entrySet.addAll(
+                                gson.toJsonTree(softwareUpdate, SoftwareUpdate.class).getAsJsonObject().entrySet());
 
                         for (Map.Entry<String, JsonElement> entry : entrySet) {
                             try {
@@ -965,6 +971,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                                 logger.trace("An exception occurred while converting the JSON data : '{}'",
                                         e.getMessage(), e);
                             }
+                        }
+
+                        if (softwareUpdate.version == null || softwareUpdate.version.isBlank()) {
+                            updateState(CHANNEL_SOFTWARE_UPDATE_AVAILABLE, OnOffType.OFF);
+                        } else {
+                            updateState(CHANNEL_SOFTWARE_UPDATE_AVAILABLE, OnOffType.ON);
                         }
                     } finally {
                         lock.unlock();
