@@ -183,7 +183,7 @@ Additionally, these advanced channels are available (not all are available on al
 | sidemirrorheaters         | Switch                   | Side Mirror Heaters           | Indicates if the side mirror heaters are switched on                                                             |
 | smartpreconditioning      | Switch                   | Smart Preconditioning         | Indicates if smart preconditioning is switched on                                                                |
 | softwareupdateavailable   | Switch                   | Update Available              | Car software update available, automatically generated on non-empty "update version"                             |
-| softwareupdatestatus      | String                   | Update Status                 | Car Software update status, e.g. "downloading_wifi_wait", "installing"                                           |
+| softwareupdatestatus      | String                   | Update Status                 | Car software update status, e.g. "downloading_wifi_wait", "installing"                                           |
 | softwareupdateversion     | String                   | Update Version                | Car software version to update to, e.g. "2023.32.9" or empty                                                     |
 | soc                       | Number                   | State of Charge               | State of Charge, in %                                                                                            |
 | state                     | String                   | State                         | “online”, “asleep”, “waking”                                                                                     |
