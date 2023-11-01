@@ -184,7 +184,7 @@ Additionally, these advanced channels are available (not all are available on al
 | smartpreconditioning      | Switch                   | Smart Preconditioning         | Indicates if smart preconditioning is switched on                                                                |
 | softwareupdateavailable   | Switch                   | Update Available              | Car Software update available, automatically generated on non-empty "update version"                             |
 | softwareupdatestatus      | String                   | Update Status                 | Car Software update status, e.g. "downloading_wifi_wait", "installing"                                           |
-| softwareupdateversion     | String                   | Update version                | Car software version to update to, e.g. "2023.32.9" or empty                                                     |
+| softwareupdateversion     | String                   | Update Version                | Car software version to update to, e.g. "2023.32.9" or empty                                                     |
 | soc                       | Number                   | State of Charge               | State of Charge, in %                                                                                            |
 | state                     | String                   | State                         | “online”, “asleep”, “waking”                                                                                     |
 | steeringwheelheater       | Switch                   | Steering Wheel Heater         | Turns On/Off the steering wheel heater                                                                           |
