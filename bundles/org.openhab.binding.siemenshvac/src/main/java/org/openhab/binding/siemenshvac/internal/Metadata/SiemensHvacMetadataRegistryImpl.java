@@ -297,7 +297,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         logger.info("siemensHvac:Initialization():Begin_0001");
 
         logger.info("siemensHvac:Initialization():ReadCache");
-        // LoadMetaDataFromCache();
+        LoadMetaDataFromCache();
 
         logger.info("siemensHvac:Initialization():ReadDeviceList");
         ReadDeviceList();
