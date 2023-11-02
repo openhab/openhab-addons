@@ -192,7 +192,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                             .atZone(this.timeZoneProvider.getTimeZone());
                     updateState(updateKey, new DateTimeType(zdt));
                 } catch (ParseException ex) {
-                    logger.debug("Error decoding date : " + value.getAsString());
+                    logger.debug("Error decoding date : {}", value.getAsString());
                 }
             } else {
                 updateState(updateKey, new StringType(value.getAsString()));
