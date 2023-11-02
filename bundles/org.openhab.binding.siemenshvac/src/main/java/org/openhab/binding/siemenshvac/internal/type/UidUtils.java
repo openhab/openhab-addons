@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDevice;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataMenu;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataPointChild;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -32,7 +31,6 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class UidUtils {
-
     /**
      * The methods remove specific local character (like 'é'/'ê','â') so we have a correctly formated UID from a
      * localize item label
@@ -127,45 +125,100 @@ public class UidUtils {
     }
 
     /**
+     * get a more user friendly description from English short descriptor
+     *
+     * @param descriptor
+     * @return
+     */
+    private static String normalizeDescriptor(String descriptor) {
+        String result = descriptor.trim();
+
+        if (result.indexOf("CC") >= 0 || result.indexOf("HC") >= 0) {
+            for (int idx = 0; idx < 4; idx++) {
+                result = result.replace("CC" + idx, "CC");
+                result = result.replace("HC" + idx, "HC");
+            }
+        }
+
+        result = result.toLowerCase();
+
+        if (result.indexOf("history") >= 0) {
+            for (int idx = 0; idx < 20; idx++) {
+                result = result.replace("history " + idx, "history");
+            }
+        }
+
+        result = result.replace(" mon", "");
+        result = result.replace(" yue", "");
+        result = result.replace(" wed", "");
+        result = result.replace(" thu", "");
+        result = result.replace(" tue", "");
+        result = result.replace(" fri", "");
+        result = result.replace(" sat", "");
+        result = result.replace(" sun", "");
+        result = result.replace(" mo", "");
+        result = result.replace(" tu", "");
+        result = result.replace(" we", "");
+        result = result.replace(" th", "");
+        result = result.replace(" fr", "");
+        result = result.replace(" sa", "");
+        result = result.replace(" su", "");
+
+        if (result.indexOf("holidays") >= 0) {
+            if (result.indexOf("firstd") >= 0) {
+                result = "holidays-hc-firstd";
+            }
+            if (result.indexOf("lastd") >= 0) {
+                result = "holidays-hc-lastd";
+            }
+        }
+
+        result = result.replace("---", "-");
+        result = result.replace("--", "-");
+        result = result.replace('\'', '-');
+        result = result.replace('/', '-');
+        result = result.replace(' ', '-');
+        result = result.replace("--", "-");
+
+        result = result.replace("standard-tsp-hc", "time-switch-program-standard");
+        result = result.replace("standard-tsp-4", "time-switch-program-standard");
+        result = result.replace("tsp-3", "time-switch-program-day");
+        result = result.replace("tsp-4", "time-switch-program-day");
+        result = result.replace("setpointtemp", "setpoint-temp-");
+        result = result.replace("rmtmp", "roomtemp");
+        result = result.replace("roomtempfrostprot", "room-temp-frostprot-");
+        result = result.replace("-setp", "-setpoint");
+        result = result.replace("optg", "operating-");
+        result = result.replace("-comf", "-comfort");
+        result = result.replace("-red", "-reduce");
+        result = result.replace("setp-", "-setpoint");
+        result = result.replace("roomtemp-", "room-temp-");
+        result = result.replace("-setpointhc", "-setpoint-hc");
+        result = result.replace("setphc", "-setpoint-hc");
+
+        return result;
+
+    }
+
+    /**
      * Generates the ChannelTypeUID for the given datapoint with deviceType, channelNumber and datapointName.
      */
     public static ChannelTypeUID generateChannelTypeUID(SiemensHvacMetadataDataPoint dpt) {
-
         String type = dpt.getDptType();
-        String id = "";
+        String shortDesc = dpt.getShortDescEn();
+        String result = normalizeDescriptor(shortDesc);
 
-        if (SiemensHvacBindingConstants.DPT_TYPE_ENUM.equals(type)) {
-            StringBuilder builder = new StringBuilder();
-            int idx = 0;
-            for (SiemensHvacMetadataPointChild child : dpt.getChild()) {
-
-                if (idx > 0) {
-                    builder.append("_");
-                }
-
-                String opt = child.getText();
-                String[] subParts = opt.split(" ");
-                for (String subPart : subParts) {
-                    if (subPart.length() > 0) {
-                        builder.append(subPart.charAt(0));
-                    }
-                }
-                idx++;
-
-            }
-            String token = sanetizeId(builder.toString());
-
-            id = String.format("%s_%s", type, token);
-        } else if (SiemensHvacBindingConstants.DPT_TYPE_NUMERIC.equals(type)) {
-            id = sanetizeId(String.format("%s_%s_%s_%s_%s_%s", type, dpt.getDptUnit(), dpt.getMin(), dpt.getMax(),
-                    dpt.getFieldWitdh(), dpt.getResolution()));
-        } else if (SiemensHvacBindingConstants.DPT_TYPE_STRING.equals(type)) {
-            id = String.format("%s_%s", type, dpt.getMaxLength());
-        } else {
-            id = String.format("%s", dpt.getDptType());
+        if (type.equals("DateTime")) {
+            result = "datetime";
+        } else if (type.equals("String")) {
+            result = "string";
+        } else if (type.equals("TimeOfDay")) {
+            result = "datetime";
+        } else if (type.equals("Scheduler")) {
+            result = "datetime";
         }
 
-        return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, id);
+        return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, result);
     }
 
     /**
