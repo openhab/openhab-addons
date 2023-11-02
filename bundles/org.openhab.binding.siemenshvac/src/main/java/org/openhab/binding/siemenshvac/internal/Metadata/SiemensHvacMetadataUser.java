@@ -37,5 +37,4 @@ public class SiemensHvacMetadataUser {
     public void setLanguageId(int languageId) {
         this.languageId = languageId;
     }
-
 }

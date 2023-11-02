@@ -197,7 +197,6 @@ public class UidUtils {
         result = result.replace("setphc", "-setpoint-hc");
 
         return result;
-
     }
 
     /**

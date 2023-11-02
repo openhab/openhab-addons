@@ -31,5 +31,4 @@ public class UidUtilsTest {
         assertEquals(UidUtils.sanetizeId("App.Ambiance 1"), "App_Ambiance_1");
         assertEquals(UidUtils.sanetizeId("Appareil d'ambiance P"), "Appareil_d_ambiance_P");
     }
-
 }
