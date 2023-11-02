@@ -216,6 +216,10 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
     }
 
+    public @Nullable SiemensHvacBridgeConfig getBridgeConfiguration() {
+        return config;
+    }
+
     private void doAuth(boolean http) throws Exception {
         logger.debug("siemensHvac:doAuth()");
 
@@ -309,6 +313,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
     }
 
+    @Override
     public @Nullable String DoBasicRequest(String uri) throws Exception {
         return DoBasicRequest(uri, null);
     }
@@ -375,7 +380,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             String response = DoBasicRequest(req, callback);
 
             if (response != null) {
-
                 JsonObject resultObj = getGson().fromJson(response, JsonObject.class);
 
                 if (resultObj != null && resultObj.has("Result")) {
@@ -457,6 +461,15 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     public void AddDpUpdate(String itemName, Type dp) {
         synchronized (updateCommand) {
             updateCommand.put(itemName, dp);
+        }
+    }
+
+    @Override
+    public void ResetSessionId(boolean web) {
+        if (web) {
+            sessionIdHttp = null;
+        } else {
+            sessionId = null;
         }
     }
 }

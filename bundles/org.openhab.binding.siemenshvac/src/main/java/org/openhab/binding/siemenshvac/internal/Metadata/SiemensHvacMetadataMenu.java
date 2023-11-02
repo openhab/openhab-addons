@@ -23,17 +23,25 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SiemensHvacMetadataMenu extends SiemensHvacMetadata {
-    private LinkedHashMap<String, SiemensHvacMetadata> childList;
+    private LinkedHashMap<Integer, SiemensHvacMetadata> childList;
 
     public SiemensHvacMetadataMenu() {
-        childList = new LinkedHashMap<String, SiemensHvacMetadata>();
+        childList = new LinkedHashMap<Integer, SiemensHvacMetadata>();
     }
 
     public void AddChild(SiemensHvacMetadata information) {
-        childList.put(information.getLongDesc(), information);
+        childList.put(information.getId(), information);
     }
 
-    public HashMap<String, SiemensHvacMetadata> getChilds() {
+    public HashMap<Integer, SiemensHvacMetadata> getChilds() {
         return this.childList;
+    }
+
+    public boolean hasChild(int Id) {
+        return this.childList.containsKey(Id);
+    }
+
+    public SiemensHvacMetadata getChild(int Id) {
+        return this.childList.get(Id);
     }
 }
