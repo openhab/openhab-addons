@@ -46,6 +46,7 @@ import org.openhab.binding.miio.internal.cloud.CloudUtil;
 import org.openhab.binding.miio.internal.cloud.HomeRoomDTO;
 import org.openhab.binding.miio.internal.cloud.MiCloudException;
 import org.openhab.binding.miio.internal.robot.ConsumablesType;
+import org.openhab.binding.miio.internal.robot.DockStatusType;
 import org.openhab.binding.miio.internal.robot.FanModeType;
 import org.openhab.binding.miio.internal.robot.HistoryRecordDTO;
 import org.openhab.binding.miio.internal.robot.RRMapDraw;
@@ -100,13 +101,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
 
-    private static final Set<RobotCababilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream
-            .of(RobotCababilities.SEGMENT_STATUS, RobotCababilities.MAP_STATUS, RobotCababilities.LED_STATUS,
-                    RobotCababilities.CARPET_MODE, RobotCababilities.FW_FEATURES, RobotCababilities.ROOM_MAPPING,
-                    RobotCababilities.MULTI_MAP_LIST, RobotCababilities.CUSTOMIZE_CLEAN_MODE,
-                    RobotCababilities.COLLECT_DUST, RobotCababilities.CLEAN_MOP_START, RobotCababilities.CLEAN_MOP_STOP,
-                    RobotCababilities.MOP_DRYING, RobotCababilities.MOP_DRYING_REMAING_TIME)
-            .collect(Collectors.toSet()));
+    private static final Set<RobotCababilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
+            RobotCababilities.SEGMENT_STATUS, RobotCababilities.MAP_STATUS, RobotCababilities.LED_STATUS,
+            RobotCababilities.CARPET_MODE, RobotCababilities.FW_FEATURES, RobotCababilities.ROOM_MAPPING,
+            RobotCababilities.MULTI_MAP_LIST, RobotCababilities.CUSTOMIZE_CLEAN_MODE, RobotCababilities.COLLECT_DUST,
+            RobotCababilities.CLEAN_MOP_START, RobotCababilities.CLEAN_MOP_STOP, RobotCababilities.MOP_DRYING,
+            RobotCababilities.MOP_DRYING_REMAING_TIME, RobotCababilities.DOCK_STATE_ID).collect(Collectors.toSet()));
 
     private ExpiringCache<String> status;
     private ExpiringCache<String> consumables;
@@ -244,6 +244,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             forceStatusUpdate();
             return;
         }
+
         if (channelUID.getId().equals(RobotCababilities.WATERBOX_MODE.getChannel())) {
             sendCommand(MiIoCommand.SET_WATERBOX_MODE, "[" + command.toString() + "]");
             forceStatusUpdate();
@@ -373,6 +374,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 updateState(CHANNEL_CONTROL, new StringType(control));
             }
             updateState(CHANNEL_VACUUM, vacuum);
+        }
+        if (this.deviceCapabilities.containsKey(RobotCababilities.DOCK_STATE_ID)) {
+            DockStatusType state = DockStatusType.getType(statusInfo.getDockErrorStatus().intValue());
+            updateState("status#dock_state", new StringType(state.getDescription()));
+            updateState("status#dock_state_id", new DecimalType(state.getId()));
         }
         if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_MODE)) {
             safeUpdateState(RobotCababilities.WATERBOX_MODE.getChannel(), statusInfo.getWaterBoxMode());

@@ -61,6 +61,8 @@
 			<channel id="led_status" typeId="led_status"/>
 			<channel id="mop_drying_time" typeId="mop_drying_time"/>
 			<channel id="is_mop_drying" typeId="is_mop_drying"/>
+			<channel id="dock_state" typeId="dock_state"/>
+			<channel id="dock_state_id" typeId="dock_state_id"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
@@ -231,6 +233,16 @@
 	<channel-type id="is_locating">
 		<item-type>Switch</item-type>
 		<label>Robot Locating</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="dock_state">
+		<item-type>String</item-type>
+		<label>Dock State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="dock_state_id">
+		<item-type>Number</item-type>
+		<label>Dock State ID</label>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -257,7 +257,8 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Switch  | actions#clean_mop_stop            | Stop mop wash              |
 | Number  | status#mop_drying_time            | Mop Drying Time            |
 | Switch  | status#is_mop_drying              | Mop cleaning active        |
-
+| Number  | status#dock_state_id              | Dock Status id             |
+| String  | status#dock_state                 | Dock Status message        |
 
 
 Note: cleaning map is only available with cloud access.

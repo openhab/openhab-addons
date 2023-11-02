@@ -91,6 +91,9 @@ public class StatusDTO {
     @SerializedName("rdt")
     @Expose
     private Long mopDryTime;
+    @SerializedName("dock_error_status")
+    @Expose
+    private Integer dockErrorStatus;
 
     public final Integer getMsgVer() {
         return msgVer;
@@ -182,5 +185,13 @@ public class StatusDTO {
 
     public Long getMopDryTime() {
         return mopDryTime;
+    }
+
+    public Integer getDockErrorStatus() {
+        return this.dockErrorStatus;
+    }
+
+    public void setDockErrorStatus(Integer dockErrorStatus) {
+        this.dockErrorStatus = dockErrorStatus;
     }
 }
