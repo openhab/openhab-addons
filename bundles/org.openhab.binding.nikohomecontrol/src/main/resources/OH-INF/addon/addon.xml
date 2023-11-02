@@ -14,7 +14,7 @@
 			<mdns-service-type>_http._tcp.local.</mdns-service-type>
 			<match-properties>
 				<match-property>
-					<name>hostname</name>
+					<name>name</name>
 					<regex>(?i)FP00112A.*</regex>
 				</match-property>
 			</match-properties>

@@ -19,7 +19,7 @@
 				</match-property>
 				<match-property>
 					<name>ty</name>
-					<regex>hp (.*)</regex>
+					<regex>(i?)HP .*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>
