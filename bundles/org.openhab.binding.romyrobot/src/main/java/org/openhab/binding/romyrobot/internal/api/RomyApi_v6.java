@@ -107,13 +107,10 @@ public class RomyApi_v6 implements RomyApi {
 
     @Override
     public void refresh_protocol_version() throws Exception {
-        String returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_ROBOT_ID, null);
+        String returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_PROTOCOL_VERSION, null);
         JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
-        firmwareVersion = jsonNode.get("firmware").asText();
-        if (firmwareVersion == null) {
-            throw new Exception("There was a problem in the HTTP communication: firmware was empty.");
-        }
-        name = jsonNode.get("name").asText();
+        protocolVersionMajor = jsonNode.get("version_major").intValue();
+        protocolVersionMinor = jsonNode.get("version_minor").intValue();
     }
 
     @Override
@@ -258,6 +255,8 @@ public class RomyApi_v6 implements RomyApi {
             } else {
                 location = url;
             }
+
+            logger.debug("sendHttpGet location:{}", location);
             ContentResponse response;
             try {
                 response = withGeneralProperties(httpClient.newRequest(location))
