@@ -238,7 +238,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 }
             } else {
                 if (lcHvacConnector != null) {
-                    JsonObject js = lcHvacConnector.doRequest(request, null);
+                    JsonObject js = lcHvacConnector.doRequest(request);
                     DecodeReadDp(js, uid, dp, type);
                 }
             }
@@ -289,7 +289,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
             if (lcHvacConnector != null) {
                 logger.trace("Write request for: {} ", valUpdate);
-                JsonObject response = lcHvacConnector.doRequest(request, null);
+                JsonObject response = lcHvacConnector.doRequest(request);
 
                 logger.trace("Write request response: {} ", response);
             }

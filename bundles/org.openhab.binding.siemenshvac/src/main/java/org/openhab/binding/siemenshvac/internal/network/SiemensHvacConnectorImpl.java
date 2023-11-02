@@ -110,7 +110,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
         this.httpClient = new HttpClient(ctxFactory);
         this.httpClient.setMaxConnectionsPerDestination(10);
-        this.httpClient.setMaxRequestsQueuedPerDestination(1000);
+        this.httpClient.setMaxRequestsQueuedPerDestination(10000);
         this.httpClient.setConnectTimeout(10000);
         this.httpClient.setFollowRedirects(false);
 
@@ -179,8 +179,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         SiemensHvacRequestListener requestListener = null;
         if (callback != null) {
             requestListener = new SiemensHvacRequestListener(callback, this);
-            request.onResponseSuccess(requestListener);
-            request.onResponseFailure(requestListener);
         }
 
         try {
@@ -216,6 +214,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
     }
 
+    @Override
     public @Nullable SiemensHvacBridgeConfig getBridgeConfiguration() {
         return config;
     }
@@ -375,6 +374,11 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     @Override
+    public @Nullable JsonObject doRequest(String req) {
+        return doRequest(req, null);
+    }
+
+    @Override
     public @Nullable JsonObject doRequest(String req, @Nullable SiemensHvacCallback callback) {
         try {
             String response = DoBasicRequest(req, callback);
@@ -402,6 +406,12 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
 
         return null;
+    }
+
+    @Override
+    public void DisplayRequestStats() {
+        logger.info("DisplayRequestStats : {} ({}/{})", (startedRequest - completedRequest), startedRequest,
+                completedRequest);
     }
 
     @Override

@@ -30,6 +30,9 @@ public interface SiemensHvacConnector {
     String DoBasicRequest(String uri) throws Exception;
 
     @Nullable
+    JsonObject doRequest(String req);
+
+    @Nullable
     JsonObject doRequest(String req, @Nullable SiemensHvacCallback callback);
 
     public void WaitAllPendingRequest();
@@ -45,4 +48,6 @@ public interface SiemensHvacConnector {
     public @Nullable SiemensHvacBridgeConfig getBridgeConfiguration();
 
     void ResetSessionId(boolean web);
+
+    public void DisplayRequestStats();
 }

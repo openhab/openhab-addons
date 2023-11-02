@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.siemenshvac.internal.network;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
@@ -38,6 +41,14 @@ import com.google.gson.JsonSyntaxException;
 public class SiemensHvacRequestListener extends BufferingResponseListener
         implements SuccessListener, FailureListener, ContentListener, CompleteListener, QueuedListener, BeginListener {
 
+    private static Lock lockObj = new ReentrantLock();
+    private static int requestListenerCount = 0;
+    private static int onSuccessCount = 0;
+    private static int onBeginCount = 0;
+    private static int onQueuedCount = 0;
+    private static int onCompleteCount = 0;
+    private static int onFailureCount = 0;
+
     private static final Logger logger = LoggerFactory.getLogger(SiemensHvacRequestListener.class);
     private SiemensHvacConnector hvacConnector;
 
@@ -54,10 +65,24 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
     public SiemensHvacRequestListener(SiemensHvacCallback callback, SiemensHvacConnector hvacConnector) {
         this.callback = callback;
         this.hvacConnector = hvacConnector;
+
+        lockObj.lock();
+        try {
+            requestListenerCount++;
+        } finally {
+            lockObj.unlock();
+        }
+
     }
 
     @Override
     public void onSuccess(@Nullable Response response) {
+        lockObj.lock();
+        try {
+            onSuccessCount++;
+        } finally {
+            lockObj.unlock();
+        }
         if (response != null) {
             logger.debug("{} response: {}", response.getRequest().getURI(), response.getStatus());
         }
@@ -65,6 +90,12 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
     @Override
     public void onFailure(@Nullable Response response, @Nullable Throwable failure) {
+        lockObj.lock();
+        try {
+            onFailureCount++;
+        } finally {
+            lockObj.unlock();
+        }
         if (response != null && failure != null) {
             logger.debug("response failed: {}  {}", response.getRequest().getURI(), failure.getLocalizedMessage(),
                     failure);
@@ -73,14 +104,44 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
     @Override
     public void onQueued(@Nullable Request request) {
+        lockObj.lock();
+        try {
+            onQueuedCount++;
+        } finally {
+            lockObj.unlock();
+        }
+
     }
 
     @Override
     public void onBegin(@Nullable Request request) {
+        lockObj.lock();
+        try {
+            onBeginCount++;
+        } finally {
+            lockObj.unlock();
+        }
+    }
+
+    public static void DisplayStats() {
+        logger.info("DisplayStats :");
+        logger.info("     requestListenerCount : {}", requestListenerCount);
+        logger.info("     onSuccessCount       : {}", onSuccessCount);
+        logger.info("     onBeginCount         : {}", onBeginCount);
+        logger.info("     onQueuedCount        : {}", onQueuedCount);
+        logger.info("     onCompleteCount      : {}", onCompleteCount);
+        logger.info("     onFailureCount       : {}", onFailureCount);
     }
 
     @Override
     public void onComplete(@Nullable Result result) {
+        lockObj.lock();
+        try {
+            onCompleteCount++;
+        } finally {
+            lockObj.unlock();
+        }
+
         if (result == null) {
             return;
         }
@@ -97,6 +158,7 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
             if (content != null) {
                 if (content.indexOf("<!DOCTYPE html>") >= 0) {
+                    hvacConnector.onComplete(result.getRequest());
                     callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), content);
                 } else {
                     JsonObject resultObj = null;
@@ -128,26 +190,29 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                                 hvacConnector.onComplete(result.getRequest());
                                 callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(),
                                         resultObj);
+                                return;
                             } else {
                                 logger.debug("error: {}", subResultObj);
                                 hvacConnector.onError(result.getRequest(), callback);
+                                return;
                             }
                         } else {
                             logger.debug("error: invalid response from gateway, missing subResultObj:Success entry");
                             hvacConnector.onError(result.getRequest(), callback);
+                            return;
                         }
 
                     } else {
                         logger.debug("error: invalid response from gateway, missing Result entry");
                         hvacConnector.onError(result.getRequest(), callback);
+                        return;
                     }
-
-                    return;
                 }
+            } else {
+                logger.debug("error: content == null");
+                hvacConnector.onError(result.getRequest(), callback);
+                return;
             }
-
-            callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), content);
-            hvacConnector.onComplete(result.getRequest());
         } catch (Exception ex) {
             logger.debug("An error occurred", ex);
         }
