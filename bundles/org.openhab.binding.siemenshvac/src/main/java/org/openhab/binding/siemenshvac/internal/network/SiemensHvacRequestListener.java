@@ -57,6 +57,22 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
      */
     private final SiemensHvacCallback callback;
 
+    public static int getQueuedCount() {
+        return onQueuedCount;
+    }
+
+    public static int getRequestListenerCount() {
+        return requestListenerCount;
+    }
+
+    public static int getCompleteCount() {
+        return onCompleteCount;
+    }
+
+    public static int getCurrentRunning() {
+        return requestListenerCount - onCompleteCount;
+    }
+
     /**
      * Constructor
      *
