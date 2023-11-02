@@ -352,7 +352,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
 
         logger.debug("siemensHvac:InitDptMap():end");
-
     }
 
     private void generateThingsType(SiemensHvacMetadataDevice device) {

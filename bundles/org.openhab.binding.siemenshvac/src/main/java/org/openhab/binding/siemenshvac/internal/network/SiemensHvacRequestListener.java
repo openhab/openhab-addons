@@ -88,7 +88,6 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
         } finally {
             lockObj.unlock();
         }
-
     }
 
     @Override
@@ -126,7 +125,6 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
         } finally {
             lockObj.unlock();
         }
-
     }
 
     @Override

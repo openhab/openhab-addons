@@ -31,29 +31,29 @@
 	</bridge-type>
 
 
-	
-	
-	
+
+
+
 	<channel-type id="outside-temp">
-        <item-type>Number:Temperature</item-type>
-        <label>Outside temp</label>
-        <description>Outside temp</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%" step="0.1">
-        </state>
-    </channel-type>
-    
-	
+		<item-type>Number:Temperature</item-type>
+		<label>Outside temp</label>
+		<description>Outside temp</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.1">
+		</state>
+	</channel-type>
+
+
 	<channel-type id="setpoint-heat-pump">
-        <item-type>Number:Temperature</item-type>
-        <label>Setpoint heat pump</label>
-        <description>Setpoint heat pump</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%" step="0.1">
-        </state>
-    </channel-type>
-	
-	
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint heat pump</label>
+		<description>Setpoint heat pump</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.1">
+		</state>
+	</channel-type>
+
+
 	<channel-type id="room-temp-comfort-setpoint-hc">
 		<item-type>Number:Temperature</item-type>
 		<label>RoomTemp ComfSetp HC</label>
@@ -62,16 +62,16 @@
 		<state readOnly="true" pattern="%.1f %unit%" step="0.5">
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="room-temp-reduce-setpoint-hc">
-        <item-type>Number:Temperature</item-type>
-        <label>RmTmp RedSetp HC</label>
-        <description>Room temp reduced setpoint heat circuit</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%" step="0.5">
-        </state>
-    </channel-type>
-	
+		<item-type>Number:Temperature</item-type>
+		<label>RmTmp RedSetp HC</label>
+		<description>Room temp reduced setpoint heat circuit</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5">
+		</state>
+	</channel-type>
+
 	<channel-type id="operating-mode-hc">
 		<item-type>Number</item-type>
 		<label>OptgMode HC</label>
@@ -86,26 +86,26 @@
 		</command>
 	</channel-type>
 
-    <channel-type id="status-hc">
-        <item-type>Number</item-type>
-        <label>Status</label>
-        <description>Status heating circuit</description>
-        <category>Temperature</category>
-        <command>
-            <options>
-                <option value="0">---</option>
-                <option value="1">STB interrogé</option>
-                <option value="2">Défaut</option>
-                <option value="3">Contrôleur interrogé</option>
-                <option value="4">Régime manuel actif</option>
-                <option value="5">Fonction ramonage, pleine charge</option>
-                <option value="6">Fonction ramonage, charge partielle</option>
-                <option value="7">Fonction ramonage active</option>
-                <option value="8">Bloqué, manuel</option>
-                <option value="9">Bloqué, automatique</option>
-            </options>
-        </command>
-    </channel-type>
-    
+	<channel-type id="status-hc">
+		<item-type>Number</item-type>
+		<label>Status</label>
+		<description>Status heating circuit</description>
+		<category>Temperature</category>
+		<command>
+			<options>
+				<option value="0">---</option>
+				<option value="1">STB interrogé</option>
+				<option value="2">Défaut</option>
+				<option value="3">Contrôleur interrogé</option>
+				<option value="4">Régime manuel actif</option>
+				<option value="5">Fonction ramonage, pleine charge</option>
+				<option value="6">Fonction ramonage, charge partielle</option>
+				<option value="7">Fonction ramonage active</option>
+				<option value="8">Bloqué, manuel</option>
+				<option value="9">Bloqué, automatique</option>
+			</options>
+		</command>
+	</channel-type>
+
 
 </thing:thing-descriptions>
