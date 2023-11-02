@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.siemenshvac.internal.Metadata;
 
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
 public class SiemensHvacMetadataLanguage {
     private String name;
     private int id;

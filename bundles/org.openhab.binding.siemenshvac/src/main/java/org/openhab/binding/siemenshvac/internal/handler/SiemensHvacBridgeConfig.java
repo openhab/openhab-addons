@@ -14,6 +14,10 @@ package org.openhab.binding.siemenshvac.internal.handler;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
 public class SiemensHvacBridgeConfig {
 
     public @Nullable String baseUrl;
