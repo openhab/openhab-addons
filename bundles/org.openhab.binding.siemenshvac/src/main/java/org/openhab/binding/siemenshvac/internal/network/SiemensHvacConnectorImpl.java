@@ -171,7 +171,9 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private @Nullable ContentResponse executeRequest(final Request request, @Nullable SiemensHvacCallback callback)
             throws Exception {
-        request.timeout(60, TimeUnit.SECONDS);
+        // Give a high timeout because we queue a lot of async request,
+        // so enqueued them will take some times ...
+        request.timeout(240, TimeUnit.SECONDS);
 
         ContentResponse response = null;
 
