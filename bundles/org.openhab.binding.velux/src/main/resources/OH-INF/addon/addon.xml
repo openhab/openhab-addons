@@ -15,7 +15,7 @@
 			<match-properties>
 				<match-property>
 					<name>name</name>
-					<regex>VELUX_KLF_.*</regex>
+					<regex>(?i)VELUX.KLF.LAN*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>
