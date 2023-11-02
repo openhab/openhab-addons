@@ -79,6 +79,7 @@ The things has the following configuration parameters:
 | ipAddress          | IP Address of the device.                                             | Any Wi-Fi-Device            |
 | pollingInterval    | [optional] Refresh interval in seconds. The default is 30 seconds     | Any Wi-Fi-Device            |
 | httpPort           | [optional] HTTP-Communication Port. Default is 80                     | Any Wi-Fi-Device            |
+| protocol           | [optional] Used Communication Protocol (AES/KLAP/'') Default 'AES'    | Any Wi-Fi-Device            |
 | backgroundDiscovery| [optional] RF-Devices will be discovered after every polling request  | SmartHub                    |
 
 
@@ -122,9 +123,9 @@ To minimize network traffic the default refresh-rate is set to 30 seconds. This 
 ```java
 tapocontrol:bridge:myTapoBridge                 "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
 tapocontrol:P100:myTapoBridge:mySocket          "My-Socket"     (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.150" ]
-tapocontrol:L510:myTapoBridge:whiteBulb         "white-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.151", httpPort=80, pollingInterval=30, protocol="securePassthrough" ]
-tapocontrol:L530:myTapoBridge:colorBulb         "color-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.152", pollingInterval=30, protocol="klap" ]
-tapocontrol:L900:myTapoBridge:myLightStrip      "light-strip"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.153", pollingInterval=30, protocol="passthrough" ]
+tapocontrol:L510:myTapoBridge:whiteBulb         "white-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.151", httpPort=80, pollingInterval=30, protocol="AES" ]
+tapocontrol:L530:myTapoBridge:colorBulb         "color-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.152", pollingInterval=30, protocol="KLAP" ]
+tapocontrol:L900:myTapoBridge:myLightStrip      "light-strip"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.153", pollingInterval=30, protocol="" ]
 
 Bridge tapocontrol:bridge:secondBridgeExample            "Cloud-Login"        [ username="youtoo@anyprovider.com", password="verysecret" ] {
    Thing P110 mySocket   "My-Socket"          [ ipAddress="192.168.101.51", pollingInterval=30 ]

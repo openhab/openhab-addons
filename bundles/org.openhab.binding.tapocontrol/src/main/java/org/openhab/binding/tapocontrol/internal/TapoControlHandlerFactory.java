@@ -50,7 +50,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * The {@link TapoControlHandler} is responsible for handling commands, which are
+ * The {@link TapoControlHandlerFactory} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Christian Wild - Initial contribution

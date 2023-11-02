@@ -76,7 +76,7 @@ public class TapoCloudConnector implements TapoConnectorInterface {
                 handleLoginResult(tapoResponse);
                 break;
             case CLOUD_CMD_GETDEVICES:
-                bridge.getDiscoveryService().addScanResults((getDeviceListFromResponse(tapoResponse)));
+                bridge.getDiscoveryService().addScanResults(getDeviceListFromResponse(tapoResponse));
                 break;
             default:
                 logger.debug("({}) handleResponse - unknown command: {}", uid, command);

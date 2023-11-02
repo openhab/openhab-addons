@@ -307,9 +307,11 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.deviceHwVer());
         properties.put(Thing.PROPERTY_MODEL_ID, deviceModel);
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.deviceId());
-        properties.put(TapoDeviceConfiguration.CONFIG_DEVICE_IP, device.ip());
-        properties.put(TapoDeviceConfiguration.CONFIG_HTTP_PORT, device.encryptionShema().httpPort());
-        properties.put(TapoDeviceConfiguration.CONFIG_PROTOCOL, device.encryptionShema().encryptType());
+        if (device.ip().length() >= 7) {
+            properties.put(TapoDeviceConfiguration.CONFIG_DEVICE_IP, device.ip());
+            properties.put(TapoDeviceConfiguration.CONFIG_HTTP_PORT, device.encryptionShema().httpPort());
+            properties.put(TapoDeviceConfiguration.CONFIG_PROTOCOL, device.encryptionShema().encryptType());
+        }
 
 <<<<<<< HEAD
         logger.debug("device {} discovered", deviceModel);

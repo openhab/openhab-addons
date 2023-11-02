@@ -31,7 +31,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -78,9 +77,8 @@ public abstract class TapoChildDeviceHandler extends BaseThingHandler {
         try {
             Bridge bridgeThing = getBridge();
             if (bridgeThing != null) {
-                BridgeHandler bridgeHandler = bridgeThing.getHandler();
-                if (bridgeHandler != null) {
-                    this.hub = (TapoHubHandler) bridgeHandler;
+                if (bridgeThing.getHandler() instanceof TapoHubHandler tapoHubHandler) {
+                    this.hub = tapoHubHandler;
                 }
                 activateDevice();
             } else {
