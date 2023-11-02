@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
+import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeConfig;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacCallback;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnectorImpl;
@@ -91,7 +92,10 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     private @Nullable SiemensHvacConfigDescriptionProvider configDescriptionProvider;
     private @Nullable SiemensHvacConnector hvacConnector;
 
+    private final HashMap<String, SiemensHvacMetadataUser> userList;
+
     public SiemensHvacMetadataRegistryImpl() {
+        userList = new HashMap<String, SiemensHvacMetadataUser>();
     }
 
     @Reference
@@ -261,59 +265,95 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         ArrayList<SiemensHvacMetadataDevice> lcDevices = devices;
         SiemensHvacConnector lcHvacConnector = hvacConnector;
 
-        if (root == null && lcHvacConnector != null) {
-            logger.info("siemensHvac:Initialization():Begin_0001");
-
-            logger.info("siemensHvac:Initialization():ReadCache");
-            LoadMetaDataFromCache();
-
-            logger.info("siemensHvac:Initialization():ReadDeviceList");
-            ReadDeviceList();
-
-            if (root == null) {
-                logger.info("siemensHvac:Initialization():BeginReadMenu");
-                root = new SiemensHvacMetadataMenu();
-                ReadMetaData(root, -1);
-                lcHvacConnector.WaitNoNewRequest();
-                lcHvacConnector.WaitAllPendingRequest();
-                logger.info("siemensHvac:Initialization():EndReadMenu");
-            }
-
-            if (root != null) {
-                logger.info("siemensHvac:Initialization():BeginInitDptMap");
-                InitDptMap(root);
-                logger.info("siemensHvac:Initialization():EndInitDptMap");
-            }
-
-            int unresolveCount = UnresolveCount();
-            // unresolveCount = 0;
-
-            while (unresolveCount > 0) {
-                logger.info("siemensHvac:Initialization():BeginResolveDtpMap {}", unresolveCount);
-                ResolveDetails(unresolveCount);
-                lcHvacConnector.WaitAllPendingRequest();
-                unresolveCount = UnresolveCount();
-                logger.info("siemensHvac:Initialization():EndResolveDtpMap {}", unresolveCount);
-            }
-
-            logger.info("siemensHvac:Initialization():SaveCache");
-            SaveMetaDataToCache();
-
-            logger.info("siemensHvac:Initialization():InitThing");
-            getRoot();
-            lcDevices = devices;
-            if (lcDevices != null) {
-                for (SiemensHvacMetadataDevice device : lcDevices) {
-                    if (device.getType().indexOf("OZW672") >= 0) {
-                        continue;
-                    }
-
-                    generateThingsType(device);
-                }
-            }
-
-            logger.debug("siemensHvac:InitDptMap():end");
+        if (root != null) {
+            return;
         }
+
+        if (lcHvacConnector == null) {
+            logger.info("SiemensHvacMetadataRegistryImpl:ReadMeta() : lHvacConnector not initialize.");
+            return;
+        }
+
+        ReadUserInfo();
+
+        SiemensHvacBridgeConfig config = lcHvacConnector.getBridgeConfiguration();
+        if (config == null) {
+            logger.info("SiemensHvacMetadataRegistryImpl:ReadMeta() : config not initialize.");
+            return;
+        }
+
+        SiemensHvacMetadataUser user = null;
+
+        String userName = config.userName;
+        if (userList.containsKey(userName)) {
+            user = userList.get(userName);
+        }
+
+        if (user == null) {
+            logger.info("SiemensHvacMetadataRegistryImpl:ReadMeta() : cannot find user, aborting.");
+            return;
+        }
+
+        logger.info("siemensHvac:Initialization():Begin_0001");
+
+        logger.info("siemensHvac:Initialization():ReadCache");
+        // LoadMetaDataFromCache();
+
+        logger.info("siemensHvac:Initialization():ReadDeviceList");
+        ReadDeviceList();
+
+        if (root == null) {
+            logger.info("siemensHvac:Initialization():BeginReadMenu");
+            root = new SiemensHvacMetadataMenu();
+
+            ChangeLanguage(1);
+            ReadMetaData(root, -1, 1);
+            lcHvacConnector.WaitNoNewRequest();
+            lcHvacConnector.WaitAllPendingRequest();
+
+            ChangeLanguage(user.getLanguageId());
+            ReadMetaData(root, -1, 3);
+            lcHvacConnector.WaitNoNewRequest();
+            lcHvacConnector.WaitAllPendingRequest();
+
+            logger.info("siemensHvac:Initialization():EndReadMenu");
+        }
+
+        if (root != null) {
+            logger.info("siemensHvac:Initialization():BeginInitDptMap");
+            InitDptMap(root);
+            logger.info("siemensHvac:Initialization():EndInitDptMap");
+        }
+
+        int unresolveCount = UnresolveCount();
+        // unresolveCount = 0;
+
+        while (unresolveCount > 0) {
+            logger.info("siemensHvac:Initialization():BeginResolveDtpMap {}", unresolveCount);
+            ResolveDetails(unresolveCount);
+            lcHvacConnector.WaitAllPendingRequest();
+            unresolveCount = UnresolveCount();
+            logger.info("siemensHvac:Initialization():EndResolveDtpMap {}", unresolveCount);
+        }
+
+        logger.info("siemensHvac:Initialization():SaveCache");
+        SaveMetaDataToCache();
+
+        logger.info("siemensHvac:Initialization():InitThing");
+        getRoot();
+        lcDevices = devices;
+        if (lcDevices != null) {
+            for (SiemensHvacMetadataDevice device : lcDevices) {
+                if (device.getType().indexOf("OZW672") >= 0) {
+                    continue;
+                }
+
+                generateThingsType(device);
+            }
+        }
+
+        logger.debug("siemensHvac:InitDptMap():end");
+
     }
 
     private void generateThingsType(SiemensHvacMetadataDevice device) {
@@ -608,6 +648,132 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         return "";
     }
 
+    public void ReadUserInfo() {
+        try {
+            SiemensHvacConnector lcHvacConnector = hvacConnector;
+            String request = "main.app?section=settings&subsection=user";
+
+            if (lcHvacConnector != null) {
+                String response = lcHvacConnector.DoBasicRequest(request);
+
+                if (response != null) {
+                    String st = response;
+                    st = st.replace("\n", "");
+
+                    Pattern pattern1 = Pattern.compile("table class=\\\"user_table\\\".*?>(.*?)<\\/table>");
+                    Matcher matcher1 = pattern1.matcher(st);
+
+                    if (matcher1.find()) {
+                        String userTable = matcher1.group(1);
+
+                        Pattern pattern2 = Pattern.compile("<tr.*?>(.*?)<\\/tr>");
+                        Matcher matcher2 = pattern2.matcher(userTable);
+
+                        int idx = 0;
+                        while (matcher2.find()) {
+                            String line = matcher2.group(1);
+
+                            if (idx > 0) {
+                                Pattern pattern3 = Pattern.compile("<td(.*?)>(.*?)<\\/td>");
+                                Matcher matcher3 = pattern3.matcher(line);
+
+                                int idxCell = 0;
+                                String userName = "";
+                                String userEdit = "";
+                                String userId = "";
+                                while (matcher3.find()) {
+                                    String cell = matcher3.group(2);
+                                    String header = matcher3.group(1);
+
+                                    if (idxCell == 0) {
+                                        userName = cell;
+                                    } else if (idxCell == 5) {
+                                        userEdit = header;
+                                    }
+                                    idxCell++;
+                                }
+
+                                if (userName.equals("")) {
+                                    continue;
+                                }
+
+                                Pattern pattern4 = Pattern.compile("userid=(.+?)");
+                                Matcher matcher4 = pattern4.matcher(userEdit);
+
+                                if (matcher4.find()) {
+                                    userId = matcher4.group(1);
+                                }
+
+                                SiemensHvacMetadataUser user = new SiemensHvacMetadataUser();
+                                user.setName(userName);
+                                user.setId(Integer.parseInt(userId));
+
+                                request = "main.app?section=settings&subsection=user&action=modify&userid=" + userId;
+                                response = lcHvacConnector.DoBasicRequest(request);
+
+                                Pattern pattern5 = Pattern.compile(
+                                        "<select name=\\\"language\\\".*>((.*|\\n)*?)</select>", Pattern.MULTILINE);
+                                Matcher matcher5 = pattern5.matcher(response);
+
+                                if (matcher5.find()) {
+                                    String optionsList = matcher5.group(1);
+
+                                    Pattern pattern6 = java.util.regex.Pattern.compile(
+                                            "<option value=\\\"([^ ]*)\\\"(.*)>(.*)</option>", Pattern.MULTILINE);
+                                    Matcher matcher6 = pattern6.matcher(optionsList);
+
+                                    while (matcher6.find()) {
+                                        String id = matcher6.group(1);
+                                        String opt = matcher6.group(2);
+                                        String lang = matcher6.group(3);
+
+                                        if (opt.indexOf("selected") >= 0) {
+                                            user.setLanguage(lang);
+                                            user.setLanguageId(Integer.parseInt(id));
+                                        }
+
+                                        logger.info("aaaa");
+                                    }
+                                }
+
+                                userList.put(userName, user);
+                            }
+
+                            idx++;
+
+                        }
+                    }
+                }
+            }
+        } catch (
+
+        Exception e) {
+            logger.error("siemensHvac:ResolveDpt:Error during dp reading: {}", e.getLocalizedMessage());
+            // Reset sessionId so we redone _auth on error
+        }
+
+        logger.info("toto");
+    }
+
+    public void ChangeLanguage(int lang) {
+        try {
+            SiemensHvacConnector lcHvacConnector = hvacConnector;
+            String request = "main.app?section=settings&subsection=user&action=modify&userid=1&language=" + lang
+                    + "&submit=OK";
+            if (lcHvacConnector != null) {
+                lcHvacConnector.DoBasicRequest(request);
+                lcHvacConnector.ResetSessionId(false);
+                lcHvacConnector.ResetSessionId(true);
+            }
+
+        } catch (
+
+        Exception e) {
+            logger.error("siemensHvac:ResolveDpt:Error during dp reading: {}", e.getLocalizedMessage());
+            // Reset sessionId so we redone _auth on error
+        }
+    }
+
     public void ReadDeviceList() {
         try {
             SiemensHvacConnector lcHvacConnector = hvacConnector;
@@ -700,7 +866,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    public void ReadMetaData(@Nullable SiemensHvacMetadata parent, int id) {
+    public void ReadMetaData(@Nullable SiemensHvacMetadata parent, int id, int currentLanguage) {
         try {
             SiemensHvacConnector lcHvacConnector = hvacConnector;
             String request = "api/menutree/list.json?";
@@ -715,7 +881,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     public void execute(URI uri, int status, @Nullable Object response) {
                         logger.debug("response for {}, status {}:", uri, status);
                         if (response instanceof JsonObject) {
-                            DecodeMetaDataResult((JsonObject) response, parent, id);
+                            DecodeMetaDataResult((JsonObject) response, parent, id, currentLanguage);
                         } else {
                             logger.debug("error status {}: {}", uri, status);
                         }
@@ -732,7 +898,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     @SuppressWarnings("unused")
     private static int nbDpt = 0;
 
-    public void DecodeMetaDataResult(JsonObject resultObj, @Nullable SiemensHvacMetadata parent, int id) {
+    public void DecodeMetaDataResult(JsonObject resultObj, @Nullable SiemensHvacMetadata parent, int id,
+            int currentLanguage) {
         SiemensHvacConnector lcHvacConnector = hvacConnector;
         if (resultObj.has("MenuItems")) {
             if (parent != null) {
@@ -744,15 +911,24 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             for (JsonElement child : menuItems) {
                 JsonObject menuItem = child.getAsJsonObject();
 
-                childNode = new SiemensHvacMetadataMenu();
-                childNode.setParent(parent);
-
                 int itemId = -1;
                 if (menuItem.has("Id")) {
                     itemId = menuItem.get("Id").getAsInt();
                 }
 
-                childNode.setId(itemId);
+                SiemensHvacMetadataMenu menu = (SiemensHvacMetadataMenu) parent;
+
+                if (menu.hasChild(itemId)) {
+                    childNode = menu.getChild(itemId);
+                } else {
+                    childNode = new SiemensHvacMetadataMenu();
+                    childNode.setId(itemId);
+                    childNode.setParent(parent);
+
+                    if (parent != null) {
+                        menu.AddChild(childNode);
+                    }
+                }
 
                 if (menuItem.has("Text")) {
                     JsonObject descObj = menuItem.getAsJsonObject("Text");
@@ -772,6 +948,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     if (descObj.has("Id")) {
                         subItemId = descObj.get("Id").getAsInt();
                     }
+
                     if (descObj.has("Long")) {
                         longDesc = descObj.get("Long").getAsString();
                     }
@@ -782,13 +959,15 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     childNode.setSubId(subItemId);
                     childNode.setCatId(catId);
                     childNode.setGroupId(groupId);
-                    childNode.setShortDesc(shortDesc);
-                    childNode.setLongDesc(longDesc);
-                    if (parent != null) {
-                        ((SiemensHvacMetadataMenu) parent).AddChild(childNode);
+                    if (currentLanguage == 1) {
+                        childNode.setShortDescEn(shortDesc);
+                        childNode.setLongDescEn(longDesc);
+                    } else {
+                        childNode.setShortDesc(shortDesc);
+                        childNode.setLongDesc(longDesc);
                     }
 
-                    ReadMetaData(childNode, itemId);
+                    ReadMetaData(childNode, itemId, currentLanguage);
                 }
 
             }

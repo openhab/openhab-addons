@@ -25,6 +25,8 @@ public class SiemensHvacMetadata {
     private int subId = -1;
     private int groupId = -1;
     private int catId = -1;
+    private String shortDescEn = "";
+    private String longDescEn = "";
     private String shortDesc = "";
     private String longDesc = "";
     @Nullable
@@ -63,6 +65,22 @@ public class SiemensHvacMetadata {
 
     public void setCatId(int catId) {
         this.catId = catId;
+    }
+
+    public String getShortDescEn() {
+        return shortDescEn;
+    }
+
+    public void setShortDescEn(String shortDesc) {
+        this.shortDescEn = shortDesc;
+    }
+
+    public String getLongDescEn() {
+        return longDescEn;
+    }
+
+    public void setLongDescEn(String longDesc) {
+        this.longDescEn = longDesc;
     }
 
     public String getShortDesc() {

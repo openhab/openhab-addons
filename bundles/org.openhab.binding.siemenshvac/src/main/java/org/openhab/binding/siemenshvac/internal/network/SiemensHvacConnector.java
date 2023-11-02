@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThingHandler;
+import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeConfig;
 
 import com.google.gson.JsonObject;
 
@@ -24,6 +25,9 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public interface SiemensHvacConnector {
+
+    @Nullable
+    String DoBasicRequest(String uri) throws Exception;
 
     @Nullable
     JsonObject doRequest(String req, @Nullable SiemensHvacCallback callback);
@@ -37,4 +41,8 @@ public interface SiemensHvacConnector {
     public void onError(Request request, SiemensHvacCallback cb) throws Exception;
 
     public void setSiemensHvacBridgeBaseThingHandler(SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler);
+
+    public @Nullable SiemensHvacBridgeConfig getBridgeConfiguration();
+
+    void ResetSessionId(boolean web);
 }
