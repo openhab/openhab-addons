@@ -41,7 +41,8 @@ public class KebaBindingConstants {
     public static final String CHANNEL_WALLBOX = "wallbox";
     public static final String CHANNEL_VEHICLE = "vehicle";
     public static final String CHANNEL_PLUG_LOCKED = "locked";
-    public static final String CHANNEL_ENABLED = "enabled";
+    public static final String CHANNEL_ENABLED_SYSTEM = "enabledsystem";
+    public static final String CHANNEL_ENABLED_USER = "enableduser";
     public static final String CHANNEL_PILOT_CURRENT = "maxpilotcurrent";
     public static final String CHANNEL_PILOT_PWM = "maxpilotcurrentdutycyle";
     public static final String CHANNEL_MAX_SYSTEM_CURRENT = "maxsystemcurrent";
