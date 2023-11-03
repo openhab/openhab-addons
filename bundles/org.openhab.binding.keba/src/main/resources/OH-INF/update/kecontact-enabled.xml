@@ -7,10 +7,10 @@
 		<instruction-set targetVersion="1">
 			<remove-channel id="enabled"/>
 			<add-channel id="enabledsystem">
-				<type>keba:enaledsystem</type>
+				<type>keba:enabledsystem</type>
 			</add-channel>
 			<add-channel id="enableduser">
-				<type>keba:enaleduser</type>
+				<type>keba:enableduser</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
