@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * This message is sent to the Mycroft audio module
  * to trigger a TTS action.
@@ -41,11 +43,13 @@ public class MessageSpeak extends BaseMessage {
 
     public static class Data {
         public String utterance = "";
-        public String expect_response = "";
+        @SerializedName("expect_response")
+        public String expectResponse = "";
     };
 
     public static class Context {
-        public String client_name = "";
+        @SerializedName("client_name")
+        public String clientName = "";
         public List<String> source = new ArrayList<>();
         public String destination = "";
     }

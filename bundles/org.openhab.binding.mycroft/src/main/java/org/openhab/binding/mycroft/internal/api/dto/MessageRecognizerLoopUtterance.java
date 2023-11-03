@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * This message is sent to the skills
  * module to trigger an intent from a text.
@@ -36,7 +38,7 @@ public class MessageRecognizerLoopUtterance extends BaseMessage {
     public MessageRecognizerLoopUtterance(String utterance) {
         this();
         this.data.utterances.add(utterance);
-        this.context.client_name = "java_api";
+        this.context.clientName = "java_api";
         this.context.source = "audio";
         this.context.destination.add("skills");
     }
@@ -46,7 +48,8 @@ public class MessageRecognizerLoopUtterance extends BaseMessage {
     }
 
     public static class Context {
-        public String client_name = "";
+        @SerializedName("client_name")
+        public String clientName = "";
         public String source = "";
         public List<String> destination = new ArrayList<>();
     }

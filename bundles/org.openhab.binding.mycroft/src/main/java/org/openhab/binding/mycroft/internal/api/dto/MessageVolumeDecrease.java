@@ -14,6 +14,8 @@ package org.openhab.binding.mycroft.internal.api.dto;
 
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * This message asks Mycroft to decrease the volume by 10%
  *
@@ -28,6 +30,7 @@ public class MessageVolumeDecrease extends BaseMessage {
     }
 
     public static class Data {
-        public Boolean play_sound = true;
+        @SerializedName("play_sound")
+        public Boolean playSound = true;
     }
 }
