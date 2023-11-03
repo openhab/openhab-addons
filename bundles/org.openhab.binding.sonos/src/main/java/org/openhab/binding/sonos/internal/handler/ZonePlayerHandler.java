@@ -1468,7 +1468,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 case "59":
                 case "61":
                 case "63":
-                    codec = "dolbyAtmos";
+                    codec = "Atmos";
                     break;
                 case "33554434":
                 case "33554488":
@@ -1485,6 +1485,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     break;
                 case "84934714":
                     codec = "DDPlus51";
+                    break;
+                case "84934716":
+                    codec = "TrueHD51";
                     break;
                 case "84934718":
                     codec = "PCM51";
