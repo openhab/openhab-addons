@@ -19,6 +19,8 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link RomyApiFactory} class is used for creating instances of
@@ -31,6 +33,8 @@ import org.osgi.service.component.annotations.Reference;
 public class RomyApiFactory {
     private HttpClient httpClient;
 
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Activate
     public RomyApiFactory(@Reference HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
@@ -38,11 +42,11 @@ public class RomyApiFactory {
 
     public RomyApi getHttpApi(RomyRobotConfiguration config) throws Exception {
         int version = -1;
-        RomyApi lowestSupportedApi = new RomyApi_v6(this.httpClient, config);
+        RomyApi lowestSupportedApi = new RomyApiV6(this.httpClient, config);
         try {
             version = lowestSupportedApi.getProtocolVersionMajor();
         } catch (Exception exp) {
-            throw new Exception("Problem fetching the firmware version from RomyRobot: " + exp.getMessage());
+            logger.error("Problem fetching the firmware version from RomyRobot: {}", exp.getMessage());
         }
         // will start to make sense once a breaking API Version > 6 is introduced
         if (version >= 6) {

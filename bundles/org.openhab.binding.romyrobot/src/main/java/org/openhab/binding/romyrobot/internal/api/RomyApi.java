@@ -21,7 +21,7 @@ import java.util.HashMap;
  *
  * @author Bernhard Kreuz - Initial contribution
  */
-
+// TODO @NonNullByDefault
 public interface RomyApi {
 
     /**
@@ -33,7 +33,7 @@ public interface RomyApi {
      * @throws CommunicationApiException
      * @throws UnauthorizedApiException
      */
-    void refresh_id() throws Exception;
+    void refreshID() throws Exception;
 
     /**
      * get robots api protocol version
@@ -44,7 +44,7 @@ public interface RomyApi {
      * @throws CommunicationApiException
      * @throws UnauthorizedApiException
      */
-    void refresh_protocol_version() throws Exception;
+    void refreshProtocolVersion() throws Exception;
 
     /**
      * Sends all the GET requests and stores/cache the responses for use by the API to prevent the need for multiple

@@ -36,13 +36,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The {@link RomyApi_v6} interface defines the functions which are
+ * The {@link RomyApiV6} interface defines the functions which are
  * controllable on the Romy API interface Version 6.
  *
  * @author Bernhard Kreuz - Initial contribution
  */
 
-public class RomyApi_v6 implements RomyApi {
+public class RomyApiV6 implements RomyApi {
 
     private @NonNull String hostname;
     private @NonNull RomyRobotConfiguration config;
@@ -74,7 +74,7 @@ public class RomyApi_v6 implements RomyApi {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public RomyApi_v6(final @NonNull HttpClient httpClient, final @NonNull RomyRobotConfiguration config) {
+    public RomyApiV6(final @NonNull HttpClient httpClient, final @NonNull RomyRobotConfiguration config) {
         this.config = config;
         if (config.hostname.startsWith("http://") || config.hostname.startsWith("https://")) {
             this.hostname = config.hostname;
@@ -95,18 +95,18 @@ public class RomyApi_v6 implements RomyApi {
     }
 
     @Override
-    public void refresh_id() throws Exception {
+    public void refreshID() throws Exception {
         String returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_ROBOT_ID, null);
         JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
         firmwareVersion = jsonNode.get("firmware").asText();
         if (firmwareVersion == null) {
-            throw new Exception("There was a problem in the HTTP communication: firmware was empty.");
+            logger.error("There was a problem in the HTTP communication: firmware was empty.");
         }
         name = jsonNode.get("name").asText();
     }
 
     @Override
-    public void refresh_protocol_version() throws Exception {
+    public void refreshProtocolVersion() throws Exception {
         String returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_PROTOCOL_VERSION, null);
         JsonNode jsonNode = new ObjectMapper().readTree(returnContent);
         protocolVersionMajor = jsonNode.get("version_major").intValue();
@@ -262,14 +262,14 @@ public class RomyApi_v6 implements RomyApi {
                 response = withGeneralProperties(httpClient.newRequest(location))
                         .timeout(config.timeout, TimeUnit.SECONDS).method(HttpMethod.GET).send();
             } catch (Exception e) {
-                throw new Exception("Request to RomyRobot device failed: " + e.getMessage());
+                logger.error("Request to RomyRobot device failed: {}", e.getMessage());
+                return "";
             }
-            if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
 
+            if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
                 // forbiden, looks like http interface is locked, try to unlock it
                 // ------------------------------------------------------------------
                 URL netUrl = new URL(url);
-                String host = netUrl.getHost();
                 try {
                     logger.info(
                             "looks like http interface is locked, try to unlock it now with password from config...");
@@ -278,8 +278,8 @@ public class RomyApi_v6 implements RomyApi {
                     response = withGeneralProperties(httpClient.newRequest(unlock))
                             .timeout(config.timeout, TimeUnit.SECONDS).method(HttpMethod.GET).send();
                 } catch (Exception e) {
-                    throw new Exception("Request to unlock RomyRobot device with password " + config.password
-                            + " failed: " + e.getMessage());
+                    logger.error("Request to unlock RomyRobot device with password {} failed: {}", config.password,
+                            e.getMessage());
                 }
 
                 // send request again after unlocking
@@ -288,12 +288,11 @@ public class RomyApi_v6 implements RomyApi {
                     response = withGeneralProperties(httpClient.newRequest(location))
                             .timeout(config.timeout, TimeUnit.SECONDS).method(HttpMethod.GET).send();
                 } catch (Exception e) {
-                    throw new Exception("Request to RomyRobot device failed: " + e.getMessage());
+                    logger.error("Request to RomyRobot device failed: {}", e.getMessage());
                 }
             }
             if (response.getStatus() != HttpStatus.OK_200) {
-                throw new Exception(
-                        "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
+                logger.error("Error sending HTTP GET request to {}. Got response code: {}", url, response.getStatus());
             }
             return response.getContentAsString();
         }
@@ -327,11 +326,11 @@ public class RomyApi_v6 implements RomyApi {
                 response = withGeneralProperties(httpClient.newRequest(url)).timeout(config.timeout, TimeUnit.SECONDS)
                         .method(HttpMethod.POST).content(new StringContentProvider(urlParameters)).send();
             } catch (Exception e) {
-                throw new Exception("Request to RomyRobot device failed: " + e.getMessage());
+                logger.error("Request to RomyRobot device failed: {}", e.getMessage());
+                return "";
             }
             if (response.getStatus() != HttpStatus.OK_200) {
-                throw new Exception(
-                        "Error sending HTTP POST request to " + url + ". Got response code: " + response.getStatus());
+                logger.error("Error sending HTTP POST request to {}. Got response code: {}", url, response.getStatus());
             }
             return response.getContentAsString();
         }
@@ -352,12 +351,11 @@ public class RomyApi_v6 implements RomyApi {
             }
             if (strategy != null && !"REFRESH".equals(strategy)) {
                 params.add("cleaning_strategy_mode=" + strategy);
-
             }
             if (activePumpVolume != null) {
                 params.add("pump_volume=" + activePumpVolume);
             }
-            if (params.size() > 0) {
+            if (params.isEmpty()) {
                 query = String.join("&", params);
             }
         } else if ("redo_explore".equalsIgnoreCase(command) || "clean_map".equalsIgnoreCase(command)) {

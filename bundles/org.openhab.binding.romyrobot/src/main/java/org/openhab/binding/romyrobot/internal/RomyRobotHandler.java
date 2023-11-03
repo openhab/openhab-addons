@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernhard Kreuz - Initial contribution
  */
-
+// TODO @NonNullByDefault
 public class RomyRobotHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RomyRobotHandler.class);
 
@@ -105,12 +105,10 @@ public class RomyRobotHandler extends BaseThingHandler {
     }
 
     public void refreshVacuum() {
-
         try {
             getRomyApi().refresh();
             updateStatus(ThingStatus.ONLINE);
             this.updateChannels(getRomyApi());
-
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not sync status with RomyRobot, check your robot is unlocked to unlock it please provide password, you can find it under the dustbin (look for QR Code)"

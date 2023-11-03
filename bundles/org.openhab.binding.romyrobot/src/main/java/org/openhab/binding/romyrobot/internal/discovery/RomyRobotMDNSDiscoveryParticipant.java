@@ -77,7 +77,6 @@ public class RomyRobotMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
-
         final ThingUID uid = getThingUID(service);
         if (uid == null) {
             logger.error("uid is null!");
@@ -112,8 +111,8 @@ public class RomyRobotMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
             RomyRobotConfiguration config = new RomyRobotConfiguration();
             config.hostname = address;
             RomyApi romyDevice = apiFactory.getHttpApi(config);
-            romyDevice.refresh_id();
-            romyDevice.refresh_protocol_version();
+            romyDevice.refreshID();
+            romyDevice.refreshProtocolVersion();
             robotName = romyDevice.getName();
             logger.debug("New ROMY with the name: {}", robotName);
         } catch (Exception e) {
