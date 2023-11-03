@@ -10,23 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.phc.internal.util;
+package org.openhab.binding.hue.internal.dto.clip2.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link StringUtils} class defines some static string utility methods
+ * Enum for scene recall actions.
  *
- * @author Leo Siepel - Initial contribution
+ * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class StringUtils {
+public enum SceneRecallAction {
+    ACTIVE,
+    DYNAMIC_PALETTE,
+    STATIC,
+    UNKNOWN;
 
-    public static String padLeft(@Nullable String input, int minSize, String padString) {
-        if (input == null) {
-            input = "";
+    public static SceneRecallAction of(@Nullable String value) {
+        if (value != null) {
+            try {
+                return valueOf(value.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // fall through
+            }
         }
-        return String.format("%" + minSize + "s", input).replace(" ", padString);
+        return UNKNOWN;
     }
 }
