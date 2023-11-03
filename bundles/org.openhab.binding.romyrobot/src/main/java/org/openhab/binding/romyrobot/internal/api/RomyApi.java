@@ -15,13 +15,15 @@ package org.openhab.binding.romyrobot.internal.api;
 
 import java.util.HashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link RomyApi} interface defines the functions which are
  * controllable on the Romy API interface.
  *
  * @author Bernhard Kreuz - Initial contribution
  */
-// TODO @NonNullByDefault
+@NonNullByDefault
 public interface RomyApi {
 
     /**

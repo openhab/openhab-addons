@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -44,8 +43,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RomyApiV6 implements RomyApi {
 
-    private @NonNull String hostname;
-    private @NonNull RomyRobotConfiguration config;
+    private String hostname;
+    private RomyRobotConfiguration config;
     protected HttpRequestSender http;
     private String firmwareVersion = "UNKNOWN";
     private String name;
@@ -74,7 +73,7 @@ public class RomyApiV6 implements RomyApi {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public RomyApiV6(final @NonNull HttpClient httpClient, final @NonNull RomyRobotConfiguration config) {
+    public RomyApiV6(final HttpClient httpClient, final RomyRobotConfiguration config) {
         this.config = config;
         if (config.hostname.startsWith("http://") || config.hostname.startsWith("https://")) {
             this.hostname = config.hostname;
@@ -298,15 +297,6 @@ public class RomyApiV6 implements RomyApi {
         }
 
         private Request withGeneralProperties(Request request) {
-            // TODO: request header configuration
-            /*
-             * request.header(HttpHeader.USER_AGENT, USER_AGENT);
-             * if (!config.basicUsername.isEmpty() && !config.basicPassword.isEmpty()) {
-             * String encoded = Base64.getEncoder().encodeToString(
-             * (config.basicUsername + ":" + config.basicPassword).getBytes(StandardCharsets.UTF_8));
-             * request.header(HttpHeader.AUTHORIZATION, "Basic " + encoded);
-             * }
-             */
             return request;
         }
 

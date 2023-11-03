@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.constraints.NotNull;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.romyrobot.internal.api.RomyApi;
 import org.openhab.binding.romyrobot.internal.api.RomyApiFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -45,12 +47,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernhard Kreuz - Initial contribution
  */
-// TODO @NonNullByDefault
+@NonNullByDefault
 public class RomyRobotHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RomyRobotHandler.class);
 
     private RomyRobotConfiguration config;
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
     private RomyApi romyDevice;
     private RomyApiFactory apiFactory;
     private RomyRobotStateDescriptionOptionsProvider stateDescriptionProvider;
@@ -117,17 +119,15 @@ public class RomyRobotHandler extends BaseThingHandler {
     }
 
     private void updateChannels(RomyApi device) {
-        if (device != null) {
-            updateState(CHANNEL_FW_VERSION, StringType.valueOf(device.getFirmwareVersion()));
-            updateState(CHANNEL_MODE, StringType.valueOf(device.getModeString()));
-            updateState(CHANNEL_ACTIVE_PUMP_VOLUME, StringType.valueOf(device.getActivePumpVolume()));
-            updateState(CHANNEL_BATTERY, QuantityType.valueOf(device.getBatteryLevel(), PERCENT));
-            updateState(CHANNEL_CHARGING, StringType.valueOf(device.getChargingStatus()));
-            updateState(CHANNEL_POWER_STATUS, StringType.valueOf(device.getPowerStatus()));
-            updateState(CHANNEL_RSSI, new DecimalType(device.getRssi()));
-            updateState(CHANNEL_AVAILABLE_MAPS_JSON, StringType.valueOf(device.getAvailableMapsJson()));
-            updateMapsList(device.getAvailableMaps());
-        }
+        updateState(CHANNEL_FW_VERSION, StringType.valueOf(device.getFirmwareVersion()));
+        updateState(CHANNEL_MODE, StringType.valueOf(device.getModeString()));
+        updateState(CHANNEL_ACTIVE_PUMP_VOLUME, StringType.valueOf(device.getActivePumpVolume()));
+        updateState(CHANNEL_BATTERY, QuantityType.valueOf(device.getBatteryLevel(), PERCENT));
+        updateState(CHANNEL_CHARGING, StringType.valueOf(device.getChargingStatus()));
+        updateState(CHANNEL_POWER_STATUS, StringType.valueOf(device.getPowerStatus()));
+        updateState(CHANNEL_RSSI, new DecimalType(device.getRssi()));
+        updateState(CHANNEL_AVAILABLE_MAPS_JSON, StringType.valueOf(device.getAvailableMapsJson()));
+        updateMapsList(device.getAvailableMaps());
     }
 
     public void updateMapsList(HashMap<String, String> maps) {
@@ -150,22 +150,16 @@ public class RomyRobotHandler extends BaseThingHandler {
     }
 
     private RomyApi getRomyApi() throws Exception {
-        if (romyDevice == null) {
-            romyDevice = apiFactory.getHttpApi(config);
-        }
+        romyDevice = apiFactory.getHttpApi(config);
         return romyDevice;
     }
 
     @Override
     public void dispose() {
-        RomyApi localApi = romyDevice;
-        if (localApi != null) {
-            romyDevice = null;
-        }
-        ScheduledFuture<?> localFuture = pollingJob;
-        if (localFuture != null) {
-            localFuture.cancel(true);
-            pollingJob = null;
+        final ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            this.pollingJob = null;
         }
     }
 }

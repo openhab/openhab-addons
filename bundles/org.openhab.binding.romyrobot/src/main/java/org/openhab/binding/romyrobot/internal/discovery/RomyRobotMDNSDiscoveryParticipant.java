@@ -15,6 +15,7 @@ package org.openhab.binding.romyrobot.internal.discovery;
 import static org.openhab.binding.romyrobot.internal.RomyRobotBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -89,21 +90,15 @@ public class RomyRobotMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
         String address = "";
         String robotName = "";
         String robotLabel = "";
-        String robotUniqeId = "";
+        String robotUniqeId = service.getName();
         String[] hostAddresses = service.getHostAddresses();
-        logger.debug("hostAddresses: {}", hostAddresses);
 
-        if ((hostAddresses == null) || (hostAddresses.length == 0)) {
-            logger.error("hostAddresses is null!");
+        if (hostAddresses.length == 0) {
+            logger.error("hostAddresses is empty!");
             return null;
         }
 
-        robotUniqeId = service.getName();
-        if ((hostAddresses == null) || (hostAddresses.length == 0)) {
-            logger.error("hostAddresses is null!");
-            return null;
-        }
-
+        logger.debug("hostAddresses: {}", Arrays.toString(hostAddresses));
         address = hostAddresses[0];
         logger.debug("address: {}", address);
 
