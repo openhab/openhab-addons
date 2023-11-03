@@ -20,6 +20,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
 public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private static final int AUTODISCOVERY_SEARCH_TIME_SEC = 5;
-    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC = 60 * 10;
+    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC = 10 * 60; // 10 minutes
 
     private static final String SSDP_DISCOVERY_REQUEST_MESSAGE = """
             M-SEARCH * HTTP/1.1
@@ -65,6 +66,7 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
             MX:3
 
             """;
+
     public static final String SSDP_MULTICAST_ADDRESS = "239.255.255.250";
     public static final int SSDP_PORT = 1900;
     public static final int SSDP_WAIT_TIMEOUT = 2000; // in milliseconds
@@ -91,51 +93,54 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
                 Enumeration<InetAddress> inetAddresses = nic.getInetAddresses();
                 for (InetAddress inetAddress : Collections.list(inetAddresses)) {
                     if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                        DatagramSocket ssdp = new DatagramSocket(
-                                new InetSocketAddress(inetAddress.getHostAddress(), 0));
-                        byte[] buff = SSDP_DISCOVERY_REQUEST_MESSAGE.getBytes(StandardCharsets.UTF_8);
-                        DatagramPacket sendPack = new DatagramPacket(buff, buff.length);
-                        sendPack.setAddress(InetAddress.getByName(SSDP_MULTICAST_ADDRESS));
-                        sendPack.setPort(SSDP_PORT);
-                        ssdp.send(sendPack);
-                        ssdp.setSoTimeout(SSDP_WAIT_TIMEOUT);
+                        try {
+                            DatagramSocket ssdp = new DatagramSocket(
+                                    new InetSocketAddress(inetAddress.getHostAddress(), 0));
+                            byte[] buff = SSDP_DISCOVERY_REQUEST_MESSAGE.getBytes(StandardCharsets.UTF_8);
+                            DatagramPacket sendPack = new DatagramPacket(buff, buff.length);
+                            sendPack.setAddress(InetAddress.getByName(SSDP_MULTICAST_ADDRESS));
+                            sendPack.setPort(SSDP_PORT);
+                            ssdp.send(sendPack);
+                            ssdp.setSoTimeout(SSDP_WAIT_TIMEOUT);
 
-                        boolean loop = true;
-                        while (loop) {
-                            DatagramPacket recvPack = new DatagramPacket(new byte[1024], 1024);
-                            ssdp.receive(recvPack);
-                            byte[] recvData = recvPack.getData();
+                            boolean loop = true;
+                            while (loop) {
+                                DatagramPacket recvPack = new DatagramPacket(new byte[1024], 1024);
+                                ssdp.receive(recvPack);
+                                byte[] recvData = recvPack.getData();
 
-                            final Scanner scanner = new Scanner(new ByteArrayInputStream(recvData),
-                                    StandardCharsets.UTF_8);
-                            loop = scanner.findAll("Location:([0-9.]+):(.*)").peek(matchResult -> {
-                                final String server = matchResult.group(1);
-                                final Integer port = Integer.parseInt(matchResult.group(2));
-                                final String bridgeName = server.replace(".", "") + "" + port;
+                                final Scanner scanner = new Scanner(new ByteArrayInputStream(recvData),
+                                        StandardCharsets.UTF_8);
+                                loop = scanner.findAll("Location:([0-9.]+):(.*)").peek(matchResult -> {
+                                    final String server = matchResult.group(1);
+                                    final Integer port = Integer.parseInt(matchResult.group(2));
+                                    final String bridgeName = server.replace(".", "") + "" + port;
 
-                                logger.debug("Found pilight daemon at {}:{}", server, port);
+                                    logger.debug("Found pilight daemon at {}:{}", server, port);
 
-                                Map<String, Object> properties = new HashMap<>();
-                                properties.put(PilightBindingConstants.PROPERTY_IP_ADDRESS, server);
-                                properties.put(PilightBindingConstants.PROPERTY_PORT, port);
-                                properties.put(PilightBindingConstants.PROPERTY_NAME, bridgeName);
+                                    Map<String, Object> properties = new HashMap<>();
+                                    properties.put(PilightBindingConstants.PROPERTY_IP_ADDRESS, server);
+                                    properties.put(PilightBindingConstants.PROPERTY_PORT, port);
+                                    properties.put(PilightBindingConstants.PROPERTY_NAME, bridgeName);
 
-                                ThingUID uid = new ThingUID(PilightBindingConstants.THING_TYPE_BRIDGE, bridgeName);
+                                    ThingUID uid = new ThingUID(PilightBindingConstants.THING_TYPE_BRIDGE, bridgeName);
 
-                                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                                        .withRepresentationProperty(PilightBindingConstants.PROPERTY_NAME)
-                                        .withLabel("Pilight Bridge (" + server + ")").build();
+                                    DiscoveryResult result = DiscoveryResultBuilder.create(uid)
+                                            .withProperties(properties)
+                                            .withRepresentationProperty(PilightBindingConstants.PROPERTY_NAME)
+                                            .withLabel("Pilight Bridge (" + server + ")").build();
 
-                                thingDiscovered(result);
-                            }).count() == 0;
+                                    thingDiscovered(result);
+                                }).count() == 0;
+                            }
+                        } catch (IOException e) {
+                            // nothing to do
                         }
                     }
                 }
             }
-        } catch (IOException e) {
-            if (e.getMessage() != null && !"Receive timed out".equals(e.getMessage())) {
-                logger.warn("Unable to enumerate the local network interfaces {}", e.getMessage());
-            }
+        } catch (SocketException e) {
+            logger.warn("Unable to enumerate the local network interfaces", e);
         }
     }
 
