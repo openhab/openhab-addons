@@ -62,7 +62,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void initialize() {
-        // initialisation would take too long and show a warning during binding startup
+        // initialization would take too long and show a warning during binding startup
         // KNX secure is adding serious delay
         updateStatus(ThingStatus.UNKNOWN);
         initJob = scheduler.submit(this::initializeLater);

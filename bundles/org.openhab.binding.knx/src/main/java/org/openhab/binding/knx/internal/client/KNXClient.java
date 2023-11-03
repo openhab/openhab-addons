@@ -48,7 +48,7 @@ public interface KNXClient {
     /**
      * Get the {@link DeviceInfoClient} which allows further device inspection.
      *
-     * @return the device infor client
+     * @return the device info client
      * @throws IllegalStateException in case the client is not connected
      */
     DeviceInfoClient getDeviceInfoClient();

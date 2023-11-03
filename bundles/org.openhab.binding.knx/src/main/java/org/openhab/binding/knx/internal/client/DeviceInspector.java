@@ -284,7 +284,7 @@ public class DeviceInspector {
 
     /**
      * @implNote {@link readDeviceDescription(address)} tries to read device description from the KNX device.
-     *           According to KNX specification, eihter device descriptor DD0 or DD2 must be implemented.
+     *           According to KNX specification, either device descriptor DD0 or DD2 must be implemented.
      *           Currently only data from DD0 is returned; DD2 is just logged in debug mode.
      *
      * @param address Individual address of KNX device
