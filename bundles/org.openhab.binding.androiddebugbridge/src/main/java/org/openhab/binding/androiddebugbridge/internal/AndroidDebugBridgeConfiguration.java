@@ -51,9 +51,9 @@ public class AndroidDebugBridgeConfiguration {
      */
     public int deviceMaxVolume = 25;
     /**
-     * Max ADB command consecutive timeouts to force to reset the connection.
+     * Max ADB command consecutive timeouts to force to reset the connection. (0 for disabled)
      */
-    public int maxADBTimeouts = 10;
+    public int maxADBTimeouts;
     /**
      * Settings key for android versions where volume is gather using settings command (>=android 11).
      */
