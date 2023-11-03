@@ -88,7 +88,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
     public void initialize() {
 
         updateStatus(ThingStatus.UNKNOWN);
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 60, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
     }
 
     @Override
@@ -100,11 +100,20 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
     }
 
     private void pollingCode() {
+        long start = System.currentTimeMillis();
         var chList = this.getThing().getChannels();
         for (Channel channel : chList) {
             ReadChannel(channel);
         }
         updateStatus(ThingStatus.ONLINE);
+
+        SiemensHvacConnector lcHvacConnector = hvacConnector;
+        if (lcHvacConnector != null) {
+            logger.debug("WaitAllPendingRequest:Start waiting()");
+            lcHvacConnector.WaitAllPendingRequest();
+            long end = System.currentTimeMillis();
+            logger.debug("WaitAllPendingRequest:All request done(): {}", (end - start) / 1000.00);
+        }
     }
 
     private void ReadChannel(Channel channel) {
@@ -211,10 +220,10 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         try {
             lockObj.lock();
 
-            logger.info("Start read : {}", dp);
+            logger.trace("Start read : {}", dp);
             String request = "api/menutree/read_datapoint.json?Id=" + dp;
 
-            logger.info("siemensHvac:ReadDp:DoRequest(): {}", request);
+            logger.debug("siemensHvac:ReadDp:DoRequest(): {}", request);
 
             if (async) {
                 if (lcHvacConnector != null) {
@@ -253,6 +262,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
     private void WriteDp(String dp, Type dpVal, String type) {
         SiemensHvacConnector lcHvacConnector = hvacConnector;
+
+        if (lcHvacConnector != null) {
+            lcHvacConnector.DisplayRequestStats();
+        }
+
         if ("-1".equals(dp)) {
             return;
         }
