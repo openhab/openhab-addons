@@ -805,7 +805,7 @@ public class Clip2Bridge implements Closeable {
         // work around for issue #15468 (and similar)
         ResourceType resourceType = reference.getType();
         if (resourceType == ResourceType.ERROR) {
-            LOGGER.warn("Resource '{}' type '{}' unknown => GET aborted", reference.getId(), resourceType);
+            LOGGER.debug("Resource '{}' type '{}' unknown => GET aborted", reference.getId(), resourceType);
             return new Resources();
         }
         Stream stream = null;
