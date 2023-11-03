@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -40,24 +41,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Bernhard Kreuz - Initial contribution
  */
-
+@NonNullByDefault
 public class RomyApiV6 implements RomyApi {
 
     private String hostname;
     private RomyRobotConfiguration config;
     protected HttpRequestSender http;
-    private String firmwareVersion = "UNKNOWN";
-    private String name;
-    private String mode;
-    private String activePumpVolume;
-    private String charging;
+    private @Nullable String firmwareVersion;
+    private @Nullable String name;
+    private @Nullable String mode;
+    private @Nullable String activePumpVolume;
+    private @Nullable String charging;
     private int batteryLevel;
-    private String powerStatus;
-    private String mapsJson;
+    private @Nullable String powerStatus;
+    private String mapsJson = "";
     private int rssi;
-    private String strategy;
-    private String suctionMode;
-    private String selectedMap;
+    private @Nullable String strategy;
+    private @Nullable String suctionMode;
+    private @Nullable String selectedMap;
 
     // that was the newest version when this code was written
     private int protocolVersionMajor = 6;
@@ -154,22 +155,22 @@ public class RomyApiV6 implements RomyApi {
     }
 
     @Override
-    public String getFirmwareVersion() {
+    public @Nullable String getFirmwareVersion() {
         return firmwareVersion;
     }
 
     @Override
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
     @Override
-    public String getModeString() {
+    public @Nullable String getModeString() {
         return mode;
     }
 
     @Override
-    public String getActivePumpVolume() {
+    public @Nullable String getActivePumpVolume() {
         return activePumpVolume;
     }
 
@@ -179,7 +180,7 @@ public class RomyApiV6 implements RomyApi {
     }
 
     @Override
-    public String getStrategy() {
+    public @Nullable String getStrategy() {
         return strategy;
     }
 
@@ -189,7 +190,7 @@ public class RomyApiV6 implements RomyApi {
     }
 
     @Override
-    public String getSuctionMode() {
+    public @Nullable String getSuctionMode() {
         return suctionMode;
     }
 
@@ -204,7 +205,7 @@ public class RomyApiV6 implements RomyApi {
     }
 
     @Override
-    public String getChargingStatus() {
+    public @Nullable String getChargingStatus() {
         return charging;
     }
 
@@ -214,7 +215,7 @@ public class RomyApiV6 implements RomyApi {
     }
 
     @Override
-    public String getPowerStatus() {
+    public @Nullable String getPowerStatus() {
         return powerStatus;
     }
 

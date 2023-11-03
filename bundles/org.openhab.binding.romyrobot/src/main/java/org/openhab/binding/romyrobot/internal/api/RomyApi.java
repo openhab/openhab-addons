@@ -16,6 +16,7 @@ package org.openhab.binding.romyrobot.internal.api;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link RomyApi} interface defines the functions which are
@@ -63,24 +64,28 @@ public interface RomyApi {
      * 
      * @return Firmware Version of robot
      */
+    @Nullable
     String getFirmwareVersion();
 
     /**
      *
      * @return Firmware Version of robot
      */
+    @Nullable
     String getName();
 
     /**
      * 
      * @return Status / Mode robot is currently in
      */
+    @Nullable
     String getModeString();
 
     /**
      * 
      * @return currently set pump volume
      */
+    @Nullable
     String getActivePumpVolume();
 
     /**
@@ -93,6 +98,7 @@ public interface RomyApi {
      * 
      * @return cleaning strategy
      */
+    @Nullable
     String getStrategy();
 
     /**
@@ -105,6 +111,7 @@ public interface RomyApi {
      * 
      * @return suction mode, see thing xml for details
      */
+    @Nullable
     String getSuctionMode();
 
     /**
@@ -123,6 +130,7 @@ public interface RomyApi {
      * 
      * @return weither the vacuum is charging
      */
+    @Nullable
     String getChargingStatus();
 
     /**
@@ -135,6 +143,7 @@ public interface RomyApi {
      * 
      * @return current power status of the vacuum
      */
+    @Nullable
     String getPowerStatus();
 
     /**
