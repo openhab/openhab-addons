@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.misc.addonsuggestionfinder</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Addon Suggestion Finder</name>
+  <name>openHAB Add-ons :: Bundles :: Addon Suggestion Candidate Finder</name>
 
   <build>
     <plugins>
