@@ -646,13 +646,13 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
 | Switch  | status#is_locating                | Robot is locating          |
 | Number  | actions#segment                   | Room Clean  (enter room #) |
-| Switch  | actions#collect_dust              | Start collect the dust at  |
+| Switch  | actions#collect_dust              | Start collect the dust     |
 | Switch  | actions#clean_mop_star            | Start mop wash             |
 | Switch  | actions#clean_mop_stop            | Stop mop wash              |
-| Number  | status#mop_drying_time            | Mop Drying Time            |
+| Number  | status#mop_drying_time            | Mop drying Time            |
 | Switch  | status#is_mop_drying              | Mop cleaning active        |
-
-
+| Number  | status#dock_state_id              | Dock status id             |
+| String  | status#dock_state                 | Dock status message        |
 
 Note: cleaning map is only available with cloud access.
 

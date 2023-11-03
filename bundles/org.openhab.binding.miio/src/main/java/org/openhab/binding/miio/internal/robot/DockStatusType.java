@@ -25,8 +25,8 @@ public enum DockStatusType {
     OK(0, "OK"),
     ERROR_SUCTION(34, "Suction Error"),
     ERROR_FRESH_WATER_TANK(38, "Error fresh water tank"),
-    ERROR_FRESH_DIRTY_WATER_TANKL(39, "Error dirty water tank"),
-    ERROR_DUST_CONTAEINERL(46, "Missing dust container/dust bag");
+    ERROR_FRESH_DIRTY_WATER_TANK(39, "Error dirty water tank"),
+    ERROR_DUST_CONTAINER(46, "Missing dust container/dust bag");
 
     private final int id;
     private final String description;

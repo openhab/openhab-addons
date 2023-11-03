@@ -106,7 +106,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             RobotCababilities.CARPET_MODE, RobotCababilities.FW_FEATURES, RobotCababilities.ROOM_MAPPING,
             RobotCababilities.MULTI_MAP_LIST, RobotCababilities.CUSTOMIZE_CLEAN_MODE, RobotCababilities.COLLECT_DUST,
             RobotCababilities.CLEAN_MOP_START, RobotCababilities.CLEAN_MOP_STOP, RobotCababilities.MOP_DRYING,
-            RobotCababilities.MOP_DRYING_REMAING_TIME, RobotCababilities.DOCK_STATE_ID).collect(Collectors.toSet()));
+            RobotCababilities.MOP_DRYING_REMAINING_TIME, RobotCababilities.DOCK_STATE_ID).collect(Collectors.toSet()));
 
     private ExpiringCache<String> status;
     private ExpiringCache<String> consumables;
@@ -410,7 +410,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         if (deviceCapabilities.containsKey(RobotCababilities.MOP_DRYING)) {
             safeUpdateState(RobotCababilities.MOP_DRYING.getChannel(), statusInfo.getIsMopDryingActive());
         }
-        if (deviceCapabilities.containsKey(RobotCababilities.MOP_DRYING_REMAING_TIME)) {
+        if (deviceCapabilities.containsKey(RobotCababilities.MOP_DRYING_REMAINING_TIME)) {
             updateState(CHANNEL_MOP_TOTALDRYTIME,
                     new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getMopDryTime()), Units.MINUTE));
         }

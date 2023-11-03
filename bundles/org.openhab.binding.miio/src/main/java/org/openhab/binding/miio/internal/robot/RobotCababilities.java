@@ -43,7 +43,7 @@ public enum RobotCababilities {
     CLEAN_MOP_START("dry_status", "actions#cleanmopstart", "miio:cleanmopstart", ""),
     CLEAN_MOP_STOP("dry_status", "actions#cleanmopstop", "miio:cleanmopstop", ""),
     MOP_DRYING("dry_status", "status#is_mop_drying", "miio:is_mop_drying", ""),
-    MOP_DRYING_REMAING_TIME("dry_status", "status#mop_drying_time", "miio:mop_drying_time", ""),
+    MOP_DRYING_REMAINING_TIME("dry_status", "status#mop_drying_time", "miio:mop_drying_time", ""),
     DOCK_STATE("dock_error_status", "status#dock_state", "miio:dock_state", ""),
     DOCK_STATE_ID("dock_error_status", "status#dock_state_id", "miio:dock_state_id", "");
 
