@@ -76,6 +76,7 @@ The following channels are available:
 | batteryCharge       | Number:Dimensionless     | %    | Battery charge (percent)                                            | no       |
 | batteryRuntime      | Number:Time              | s    | Battery runtime (seconds)                                           | no       |
 | batteryVoltage      | Number:ElectricPotential | V    | Battery voltage (V)                                                 | yes      |
+| batteryTemperature  | Number:Temperature       | °C   | Battery temperature (degrees C)                                     | yes      |
 
 ### Dynamic Channels
 
