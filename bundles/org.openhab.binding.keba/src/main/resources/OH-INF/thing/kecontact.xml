@@ -9,7 +9,8 @@
 		<description>A KeContact EV Charging Station</description>
 
 		<channels>
-			<channel id="enabled" typeId="enabled"/>
+			<channel id="enabledsystem" typeId="enabledsystem"/>
+			<channel id="enableduser" typeId="enableduser"/>
 			<channel id="state" typeId="state"/>
 			<channel id="maxpresetcurrent" typeId="current_settable"/>
 			<channel id="maxpresetcurrentrange" typeId="range"/>
@@ -56,6 +57,10 @@
 			<channel id="setenergylimit" typeId="setenergylimit"/>
 			<channel id="authenticate" typeId="authenticate"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -115,10 +120,16 @@
 		<description>Indicator if the plug is locked by the electrical vehicle</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="enabled">
+	<channel-type id="enabledsystem">
 		<item-type>Switch</item-type>
-		<label>Enabled</label>
-		<description>Activation state of the wallbox</description>
+		<label>Enabled (System)</label>
+		<description>Activation state of the wallbox (System)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="enableduser">
+		<item-type>Switch</item-type>
+		<label>Enabled (User)</label>
+		<description>Activation state of the wallbox (User)</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="x1" advanced="true">
