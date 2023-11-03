@@ -76,22 +76,22 @@
 		<item-type>Number</item-type>
 		<label>OptgMode HC</label>
 		<description>Operating mode heat circuit</description>
-		<command>
+		<state>
 			<options>
 				<option value="0">Protection mode</option>
 				<option value="1">Automatic mode</option>
 				<option value="2">Reduced mode</option>
 				<option value="3">Comfort mode</option>
 			</options>
-		</command>
+		</state>
 	</channel-type>
 
-	<channel-type id="status-hc">
+	<channel-type id="status-hc2">
 		<item-type>Number</item-type>
 		<label>Status</label>
 		<description>Status heating circuit</description>
 		<category>Temperature</category>
-		<command>
+		<state>
 			<options>
 				<option value="0">---</option>
 				<option value="1">STB interrogé</option>
@@ -104,7 +104,7 @@
 				<option value="8">Bloqué, manuel</option>
 				<option value="9">Bloqué, automatique</option>
 			</options>
-		</command>
+		</state>
 	</channel-type>
 
 
