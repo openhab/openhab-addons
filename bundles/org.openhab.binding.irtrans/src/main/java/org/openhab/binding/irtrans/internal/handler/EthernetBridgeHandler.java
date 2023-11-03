@@ -344,16 +344,13 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
             response = sendCommand(getFirmwareVersion);
 
             if (response != null) {
-                String[] messages = stripByteCount(response).split("\0");
-                if (messages.length > 0) {
-                    if (messages[0].contains("VERSION")) {
-                        logger.info("'{}' matches an IRtrans device with firmware {}", getThing().getUID(),
-                                messages[0]);
-                        getConfig().put(FIRMWARE_VERSION, messages[0]);
-                    } else {
-                        logger.debug("Received some non-compliant garbage ({})", messages[0]);
-                        onConnectionLost();
-                    }
+                String message = stripByteCount(response).split("\0")[0];
+                if (message.contains("VERSION")) {
+                    logger.info("'{}' matches an IRtrans device with firmware {}", getThing().getUID(), message);
+                    getConfig().put(FIRMWARE_VERSION, message);
+                } else {
+                    logger.debug("Received some non-compliant garbage ({})", message);
+                    onConnectionLost();
                 }
             } else {
                 try {
@@ -442,22 +439,19 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         String[] commandList = new String[0];
 
         if (response != null) {
-            String[] messages = stripByteCount(response).split("\0");
-            logger.trace("commands returned {}", messages[0]);
-            if (messages.length > 0) {
-                if (messages[0].contains("COMMANDLIST")) {
-                    commandList = messages[0].split(",");
-                } else {
-                    logger.debug("Received some non-compliant command ({})", messages[0]);
-                    onConnectionLost();
-                }
+            String message = stripByteCount(response).split("\0")[0];
+            logger.trace("commands returned {}", message);
+            if (message.contains("COMMANDLIST")) {
+                commandList = message.split(",");
+            } else {
+                logger.debug("Received some non-compliant command ({})", message);
+                onConnectionLost();
             }
         } else {
             logger.debug("Did not receive an answer from the IRtrans transceiver for '{}' - Parsing is skipped",
                     getThing().getUID());
             onConnectionLost();
         }
-
         return commandList;
     }
 
