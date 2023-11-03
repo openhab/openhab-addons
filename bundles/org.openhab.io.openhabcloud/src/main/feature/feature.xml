@@ -5,7 +5,7 @@
 	<feature name="openhab-misc-openhabcloud" description="openHAB Cloud Connector" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<configfile finalname="${openhab.conf}/services/openhabcloud.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/openhabcloud</configfile>
-		<bundle dependency="true">mvn:org.json/json/20230227</bundle>
+		<bundle dependency="true">mvn:org.json/json/20231013</bundle>
 		<bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsr305/3.0.2_1</bundle>
 		<bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.okhttp/3.8.1_1</bundle>
 		<bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.okio/1.13.0_1</bundle>

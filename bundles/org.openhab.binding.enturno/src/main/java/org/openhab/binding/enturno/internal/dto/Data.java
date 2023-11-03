@@ -10,16 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gpio.internal;
+package org.openhab.binding.enturno.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.enturno.internal.dto.stopplace.StopPlace;
 
 /**
- * Is thrown when invalid GPIO pin Pull Up/Down resistor configuration is set
+ * Generated Plain Old Java Objects class for {@link Data} from JSON.
  *
- * @author Martin Dagarin - Initial contribution
+ * @author Michal Kloc - Initial contribution
  */
-@NonNullByDefault
-public class InvalidPullUpDownException extends Exception {
-    private static final long serialVersionUID = -1281107134439928767L;
+public class Data {
+    public StopPlace stopPlace;
 }

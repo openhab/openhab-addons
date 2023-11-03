@@ -933,6 +933,8 @@ public class TeslaChannelSelectorProxy {
             }
         },
         SOC("soc", "soc", PercentType.class, false),
+        SOFTWARE_UPDATE_STATUS("status", "softwareupdatestatus", StringType.class, false),
+        SOFTWARE_UPDATE_VERSION("version", "softwareupdateversion", StringType.class, false),
         SPEED("speed", "speed", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {

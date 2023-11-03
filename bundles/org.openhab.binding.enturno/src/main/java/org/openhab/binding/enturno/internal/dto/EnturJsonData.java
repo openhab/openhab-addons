@@ -10,15 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enturno.internal.model;
-
-import org.openhab.binding.enturno.internal.model.stopplace.StopPlace;
+package org.openhab.binding.enturno.internal.dto;
 
 /**
- * Generated Plain Old Java Objects class for {@link Data} from JSON.
+ * {@link EnturJsonData} is a root level class to holding reference of data generated from JSON.
  *
  * @author Michal Kloc - Initial contribution
  */
-public class Data {
-    public StopPlace stopPlace;
+public class EnturJsonData {
+    public Data data;
 }
