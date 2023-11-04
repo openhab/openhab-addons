@@ -53,6 +53,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.thing.type.ThingType;
@@ -86,6 +87,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
     private static final String JSON_DIR = OpenHAB.getUserDataFolder() + File.separatorChar + "jsondb";
 
+    private @Nullable ChannelTypeRegistry channelTypeRegistry;
+
     private @Nullable SiemensHvacThingTypeProvider thingTypeProvider;
     private @Nullable SiemensHvacChannelTypeProvider channelTypeProvider;
     private @Nullable SiemensHvacChannelGroupTypeProvider channelGroupTypeProvider;
@@ -96,6 +99,15 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
     public SiemensHvacMetadataRegistryImpl() {
         userList = new HashMap<String, SiemensHvacMetadataUser>();
+    }
+
+    @Reference
+    protected void setChannelTypeRegistry(ChannelTypeRegistry channelTypeRegistry) {
+        this.channelTypeRegistry = channelTypeRegistry;
+    }
+
+    protected void unsetChannelTypeRegistry(ChannelTypeRegistry channelTypeRegistry) {
+        this.channelTypeRegistry = null;
     }
 
     @Reference
@@ -394,7 +406,10 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                         ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dataPoint);
 
                                         ChannelType channelType = null;
-                                        if (lcChannelTypeProvider != null) {
+
+                                        if (channelTypeProvider != null && lcChannelTypeProvider != null) {
+                                            ChannelType channelTypeFromThingDesc = channelTypeProvider
+                                                    .getInternalChannelType(channelTypeUID);
 
                                             channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
                                             if (channelType == null) {
@@ -490,29 +505,29 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             BigDecimal max = new BigDecimal(dpt.getMax());
             BigDecimal step = new BigDecimal(dpt.getResolution());
 
-            stateFragment.withMinimum(min).withMaximum(max).withStep(step).withReadOnly(false);
+            stateFragment = stateFragment.withMinimum(min).withMaximum(max).withStep(step).withReadOnly(false);
 
             description = channelTypeUID.toString();
             label = channelTypeUID.getId();
         } else {
-            stateFragment.withPattern(getStatePattern(dpt)).withReadOnly(dpt.getWriteAccess() == false);
+            stateFragment = stateFragment.withPattern(getStatePattern(dpt)).withReadOnly(dpt.getWriteAccess() == false);
         }
 
         if (!options.isEmpty()) {
-            stateFragment.withOptions(options);
+            stateFragment = stateFragment.withOptions(options);
         }
 
         boolean isAdvanced = false;
-        if (label.contains("_Y")) {
+        if (channelTypeUID.getId().contains("-y")) {
             isAdvanced = true;
         }
-        if (label.contains("_K")) {
+        if (channelTypeUID.getId().contains("-k")) {
             isAdvanced = true;
         }
-        if (label.contains("Histo")) {
+        if (channelTypeUID.getId().contains("histo")) {
             isAdvanced = true;
         }
-        if (label.contains(" QX")) {
+        if (channelTypeUID.getId().contains("-qx")) {
             isAdvanced = true;
         }
 
