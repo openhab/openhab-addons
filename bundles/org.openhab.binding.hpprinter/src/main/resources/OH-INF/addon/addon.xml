@@ -23,6 +23,20 @@
 				</match-property>
 			</match-properties>
 		</discovery-method>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_ipp._tcp.local.</mdns-service-type>
+			<match-properties>
+				<match-property>
+					<name>rp</name>
+					<regex>.*</regex>
+				</match-property>
+				<match-property>
+					<name>ty</name>
+					<regex>(?i)HP .*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
 	</discovery-methods>
 
 </addon:addon>
