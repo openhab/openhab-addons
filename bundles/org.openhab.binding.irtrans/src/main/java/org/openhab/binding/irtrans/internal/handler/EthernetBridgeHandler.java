@@ -461,15 +461,13 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         String[] remoteList = new String[0];
 
         if (response != null) {
-            String[] messages = stripByteCount(response).split("\0");
-            logger.trace("remotes returned {}", messages[0]);
-            if (messages.length > 0) {
-                if (messages[0].contains("REMOTELIST")) {
-                    remoteList = messages[0].split(",");
-                } else {
-                    logger.debug("Received some non-compliant command ({})", messages[0]);
-                    onConnectionLost();
-                }
+            String message = stripByteCount(response).split("\0")[0];
+            logger.trace("remotes returned {}", message);
+            if (message.contains("REMOTELIST")) {
+                remoteList = message.split(",");
+            } else {
+                logger.debug("Received some non-compliant command ({})", message);
+                onConnectionLost();
             }
         } else {
             logger.debug("Did not receive an answer from the IRtrans transceiver for '{}' - Parsing is skipped",
@@ -489,11 +487,11 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
             ByteBuffer response = sendCommand(output);
 
             if (response != null) {
-                String[] messages = stripByteCount(response).split("\0");
-                if (messages.length > 0 && messages[0].contains("RESULT OK")) {
+                String message = stripByteCount(response).split("\0")[0];
+                if (message.contains("RESULT OK")) {
                     return true;
                 } else {
-                    logger.debug("Received an unexpected response from the IRtrans transceiver: '{}'", messages[0]);
+                    logger.debug("Received an unexpected response from the IRtrans transceiver: '{}'", message);
                     return false;
                 }
             }
