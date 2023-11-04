@@ -31,7 +31,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -87,8 +86,6 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
                 } else {
                     uptime = 0;
                 }
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
             }
             updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
         }
