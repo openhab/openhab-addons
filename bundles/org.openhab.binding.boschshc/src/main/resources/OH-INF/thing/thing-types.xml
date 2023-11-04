@@ -10,8 +10,8 @@
 		<description>The Bosch Smart Home Bridge representing the Bosch Smart Home Controller.</description>
 
 		<channels>
-			<channel id="triggered-scenario" typeId="triggered-scenario"/>
-			<channel id="execute-scenario" typeId="execute-scenario"/>
+			<channel id="scenario-triggered" typeId="scenario-triggered"/>
+			<channel id="trigger-scenario" typeId="trigger-scenario"/>
 		</channels>
 
 		<properties>
@@ -529,16 +529,16 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="triggered-scenario">
+	<channel-type id="scenario-triggered">
 		<item-type>String</item-type>
-		<label>Triggered Scenario</label>
+		<label>Scenario Triggered</label>
 		<description>Name of the triggered scenario</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="execute-scenario">
+	<channel-type id="trigger-scenario">
 		<item-type>String</item-type>
-		<label>Execute Scenario</label>
-		<description>Name of the scenario to execute</description>
+		<label>Trigger Scenario</label>
+		<description>Name of the scenario to trigger</description>
 	</channel-type>
 
 </thing:thing-descriptions>

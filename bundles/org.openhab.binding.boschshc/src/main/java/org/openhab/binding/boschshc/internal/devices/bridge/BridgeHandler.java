@@ -18,7 +18,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,6 +59,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -104,11 +104,11 @@ public class BridgeHandler extends BaseBridgeHandler {
      */
     private @Nullable ThingDiscoveryService thingDiscoveryService;
 
-    private final @NonNullByDefault ScenarioHandler scenarioHandler;
+    private final ScenarioHandler scenarioHandler;
 
     public BridgeHandler(Bridge bridge) {
         super(bridge);
-        scenarioHandler = new ScenarioHandler(new HashMap<>());
+        scenarioHandler = new ScenarioHandler();
 
         this.longPolling = new LongPolling(this.scheduler, this::handleLongPollResult, this::handleLongPollFailure);
     }
@@ -203,9 +203,10 @@ public class BridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // commands are handled by individual device handlers
-        if (channelUID.getId().equals(BoschSHCBindingConstants.CHANNEL_EXECUTE_SCENARIO)
-                && !command.toString().equals("REFRESH") && this.httpClient != null) {
-            this.scenarioHandler.executeScenario(this.httpClient, command.toString());
+        BoschHttpClient httpClient = this.httpClient;
+        if (BoschSHCBindingConstants.CHANNEL_TRIGGER_SCENARIO.equals(channelUID.getId())
+                && !RefreshType.REFRESH.equals(command) && httpClient != null) {
+            scenarioHandler.triggerScenario(httpClient, command.toString());
         }
     }
 
@@ -423,12 +424,12 @@ public class BridgeHandler extends BaseBridgeHandler {
      */
     private void handleLongPollResult(LongPollResult result) {
         for (BoschSHCServiceState serviceState : result.result) {
-            if (DeviceServiceData.class == serviceState.getClass()) {
-                handleDeviceServiceData((DeviceServiceData) serviceState);
-            } else if (Scenario.class == serviceState.getClass()) {
-                final Channel channel = this.getThing().getChannel(BoschSHCBindingConstants.CHANNEL_SCENARIO);
+            if (serviceState instanceof DeviceServiceData deviceServiceData) {
+                handleDeviceServiceData(deviceServiceData);
+            } else if (serviceState instanceof Scenario scenario) {
+                final Channel channel = this.getThing().getChannel(BoschSHCBindingConstants.CHANNEL_SCENARIO_TRIGGERED);
                 if (channel != null && isLinked(channel.getUID())) {
-                    updateState(channel.getUID(), new StringType(((Scenario) serviceState).name));
+                    updateState(channel.getUID(), new StringType(scenario.name));
                 }
             }
         }

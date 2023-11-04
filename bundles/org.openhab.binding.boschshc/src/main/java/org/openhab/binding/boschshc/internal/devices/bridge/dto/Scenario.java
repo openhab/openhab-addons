@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
+import java.util.Arrays;
+
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
@@ -35,5 +37,18 @@ public class Scenario extends BoschSHCServiceState {
 
     public Scenario() {
         super("scenarioTriggered");
+    }
+
+    public static Scenario createScenario(final String id, final String name, final String lastTimeTriggered) {
+        final Scenario scenario = new Scenario();
+
+        scenario.id = id;
+        scenario.name = name;
+        scenario.lastTimeTriggered = lastTimeTriggered;
+        return scenario;
+    }
+
+    public static Boolean isValid(Scenario[] scenarios) {
+        return Arrays.stream(scenarios).allMatch(scenario -> (scenario.id != null));
     }
 }

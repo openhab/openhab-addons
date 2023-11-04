@@ -230,9 +230,10 @@ _Press and hold the Bosch Smart Home Controller Bridge button until the LED star
 
 ### Supported Channels
 
-| Channel Type ID    | Item Type            | Writable | Description                                                        |
-|--------------------| -------------------- |:--------:|--------------------------------------------------------------------|
-| triggered-scenario | String               | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex) |
+| Channel ID         | Item Type | Writable | Description                                                             |
+|--------------------|--------|:--------:|-------------------------------------------------------------------------|
+| scenario-triggered | String | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex)      | 
+| trigger-scenario   | String | &#9744;  | Scenario name that will be triggered on the Bosch Smart Home Controller |
 
 
 ## Getting the device IDs
