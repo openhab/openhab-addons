@@ -193,7 +193,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
                             + properties.get(GoveeBindingConstants.IP_ADDRESS) + ")");
 
             thingDiscovered(discoveryResult.build());
-        } while (Thread.currentThread().isInterrupted()); // left by SocketTimeoutException
+        } while (!Thread.currentThread().isInterrupted()); // left by SocketTimeoutException
     }
 
     public Map<String, Object> getDeviceProperties(String response) {
