@@ -76,7 +76,7 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.error("cannot start Jetty-Http-Client", e);
+            logger.warn("cannot start Jetty-Http-Client", e);
         }
     }
 
@@ -87,7 +87,7 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
         try {
             httpClient.stop();
         } catch (Exception e) {
-            logger.error("cannot stop Jetty-Http-Client", e);
+            logger.warn("cannot stop Jetty-Http-Client", e);
         }
     }
 }

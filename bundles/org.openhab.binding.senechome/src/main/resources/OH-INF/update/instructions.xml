@@ -6,13 +6,13 @@
 	<thing-type uid="senechome:senechome">
 
 		<instruction-set targetVersion="1">
-			<remove-channel id="liveBatCharge" groupIds="main"/>
-			<remove-channel id="liveBatDischarge" groupIds="main"/>
-			<remove-channel id="liveGridImport" groupIds="main"/>
-			<remove-channel id="liveGridExport" groupIds="main"/>
-			<remove-channel id="liveHouseConsumption" groupIds="main"/>
-			<remove-channel id="livePowerGenerator" groupIds="main"/>
-			<remove-channel id="liveEnergyWallbox1" groupIds="main"/>
+			<remove-channel id="liveBatCharge"/>
+			<remove-channel id="liveBatDischarge"/>
+			<remove-channel id="liveGridImport"/>
+			<remove-channel id="liveGridExport"/>
+			<remove-channel id="liveHouseConsumption"/>
+			<remove-channel id="livePowerGenerator"/>
+			<remove-channel id="liveEnergyWallbox1"/>
 		</instruction-set>
 
 	</thing-type>
