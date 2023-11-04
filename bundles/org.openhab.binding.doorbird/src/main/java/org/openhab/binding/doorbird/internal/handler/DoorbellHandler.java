@@ -383,6 +383,7 @@ public class DoorbellHandler extends BaseThingHandler {
         if (listenerJob != null) {
             listenerJob.cancel(true);
             udpListener.shutdown();
+            this.listenerJob = null;
             logger.debug("Canceling listener job");
         }
     }
@@ -420,7 +421,7 @@ public class DoorbellHandler extends BaseThingHandler {
         if (motionOffJob != null) {
             motionOffJob.cancel(true);
         }
-        motionOffJob = scheduler.schedule(() -> {
+        this.motionOffJob = scheduler.schedule(() -> {
             logger.debug("Update channel 'motion' to OFF for thing {}", getThing().getUID());
             updateState(CHANNEL_MOTION, OnOffType.OFF);
         }, offDelay, TimeUnit.SECONDS);

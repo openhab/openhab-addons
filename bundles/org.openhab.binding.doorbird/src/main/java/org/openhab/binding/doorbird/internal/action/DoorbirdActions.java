@@ -57,7 +57,6 @@ public class DoorbirdActions implements ThingActions {
         DoorbellHandler handler = this.handler;
         if (handler != null) {
             handler.actionRestart();
-            this.handler = handler;
         } else {
             logger.info("Doorbird Action service ThingHandler is null!");
         }
@@ -73,7 +72,6 @@ public class DoorbirdActions implements ThingActions {
         DoorbellHandler handler = this.handler;
         if (handler != null) {
             handler.actionSIPHangup();
-            this.handler = handler;
         } else {
             logger.info("Doorbird Action service ThingHandler is null!");
         }
