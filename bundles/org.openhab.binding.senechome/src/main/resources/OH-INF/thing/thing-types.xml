@@ -118,8 +118,8 @@
 				<default>120</default>
 			</parameter>
 			<parameter name="useHttp" type="boolean" required="false">
-				<label>Http access</label>
-				<description>Use legacy http access</description>
+				<label>Use HTTP</label>
+				<description>Use legacy http access instead of https</description>
 				<default>false</default>
 			</parameter>
 		</config-description>
