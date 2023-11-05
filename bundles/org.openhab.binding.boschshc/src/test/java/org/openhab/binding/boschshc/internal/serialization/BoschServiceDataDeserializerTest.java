@@ -14,9 +14,9 @@ package org.openhab.binding.boschshc.internal.serialization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -31,10 +31,10 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
  *
  */
 @NonNullByDefault
-public class BoschServiceDataDeserializerTest {
+class BoschServiceDataDeserializerTest {
 
     @Test
-    public void deserializationOfLongPollingResult() {
+    void deserializationOfLongPollingResult() {
         var resultJson = """
                 {
                     "result": [
@@ -63,10 +63,9 @@ public class BoschServiceDataDeserializerTest {
         assertNotNull(longPollResult);
         assertEquals(2, longPollResult.result.size());
 
-        var resultClasses = new ArrayList<>(longPollResult.result.stream().map(e -> e.getClass().getName()).toList());
-        for (var className : List.of(DeviceServiceData.class.getName(), Scenario.class.getName())) {
-            resultClasses.remove(className);
-        }
-        assertEquals(0, resultClasses.size());
+        var resultClasses = new HashSet<>(longPollResult.result.stream().map(e -> e.getClass().getName()).toList());
+        assertEquals(2, resultClasses.size());
+        assertTrue(resultClasses.contains(DeviceServiceData.class.getName()));
+        assertTrue(resultClasses.contains(Scenario.class.getName()));
     }
 }

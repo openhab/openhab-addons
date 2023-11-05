@@ -203,10 +203,10 @@ public class BridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // commands are handled by individual device handlers
-        BoschHttpClient httpClient = this.httpClient;
+        BoschHttpClient localHttpClient = this.httpClient;
         if (BoschSHCBindingConstants.CHANNEL_TRIGGER_SCENARIO.equals(channelUID.getId())
-                && !RefreshType.REFRESH.equals(command) && httpClient != null) {
-            scenarioHandler.triggerScenario(httpClient, command.toString());
+                && !RefreshType.REFRESH.equals(command) && localHttpClient != null) {
+            scenarioHandler.triggerScenario(localHttpClient, command.toString());
         }
     }
 

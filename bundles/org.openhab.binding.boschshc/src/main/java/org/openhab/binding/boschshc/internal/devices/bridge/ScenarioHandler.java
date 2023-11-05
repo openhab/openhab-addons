@@ -66,6 +66,7 @@ public class ScenarioHandler {
             return httpClient.sendRequest(request, Scenario[].class, Scenario::isValid, null);
         } catch (InterruptedException e) {
             logger.debug("Scenario call was interrupted", e);
+            Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             logger.debug("Scenario call timed out", e);
         } catch (ExecutionException e) {
@@ -85,6 +86,7 @@ public class ScenarioHandler {
             }
         } catch (InterruptedException e) {
             logger.debug("Scenario call was interrupted", e);
+            Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             logger.debug("Scenario call timed out", e);
         } catch (ExecutionException e) {

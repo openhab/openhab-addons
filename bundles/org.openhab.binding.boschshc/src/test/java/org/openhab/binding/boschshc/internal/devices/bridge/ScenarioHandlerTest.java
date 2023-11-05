@@ -89,7 +89,6 @@ class ScenarioHandlerTest {
         // GIVEN
         final var httpClient = mock(BoschHttpClient.class);
         final var request = mock(Request.class);
-        final var contentResponse = mock(ContentResponse.class);
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenReturn("http://localhost/smartHome/scenarios")
                 .thenReturn("http://localhost/smartHome/scenarios/1234/triggers");
         when(httpClient.createRequest(anyString(), any(HttpMethod.class))).thenReturn(request).thenReturn(request);
@@ -111,7 +110,6 @@ class ScenarioHandlerTest {
         // GIVEN
         final var httpClient = mock(BoschHttpClient.class);
         final var request = mock(Request.class);
-        final var contentResponse = mock(ContentResponse.class);
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenReturn("http://localhost/smartHome/scenarios")
                 .thenReturn("http://localhost/smartHome/scenarios/1234/triggers");
         when(httpClient.createRequest(anyString(), any(HttpMethod.class))).thenReturn(request);
@@ -156,7 +154,6 @@ class ScenarioHandlerTest {
         // GIVEN
         final var httpClient = mock(BoschHttpClient.class);
         final var request = mock(Request.class);
-        final var contentResponse = mock(ContentResponse.class);
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenReturn("http://localhost/smartHome/scenarios")
                 .thenReturn("http://localhost/smartHome/scenarios/1234/triggers");
         when(httpClient.createRequest(anyString(), any(HttpMethod.class))).thenReturn(request).thenReturn(request);
