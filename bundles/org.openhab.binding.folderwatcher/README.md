@@ -70,7 +70,7 @@ Local folder example:
 ```java
 rule "New Local file"
 when
-    Channel "folderwatcher:localfolder:myFTPFolder:newfile" triggered
+    Channel "folderwatcher:localfolder:myLocalFolder:newfile" triggered
 then
     logInfo("NewLocalFile", receivedEvent.toString())
 end
@@ -81,7 +81,7 @@ FTP example:
 ```java
 rule "New FTP file"
 when
-    Channel "folderwatcher:ftpfolder:myLocalFolder:newfile" triggered
+    Channel "folderwatcher:ftpfolder:myFTPFolder:newfile" triggered
 then
     logInfo("NewFTPFile", receivedEvent.toString())
 end
