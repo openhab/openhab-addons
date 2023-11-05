@@ -15,7 +15,7 @@
 			<match-properties>
 				<match-property>
 					<name>path</name>
-					<regex>\/</regex>
+					<regex>^\/$</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>
