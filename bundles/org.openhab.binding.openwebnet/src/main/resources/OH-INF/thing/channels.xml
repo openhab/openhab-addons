@@ -343,18 +343,18 @@
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="totalizerMonth">
+	<channel-type id="energyThisMonth">
 		<item-type>Number:Energy</item-type>
-		<label>Current month totalizer</label>
-		<description>Current month totalizer</description>
+		<label>Energy this month</label>
+		<description>Total energy measured for this month</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="totalizerDay">
+	<channel-type id="energyToday">
 		<item-type>Number:Energy</item-type>
-		<label>Current day totalizer</label>
-		<description>Current day totalizer</description>
+		<label>Energy Today</label>
+		<description>Total energy measured for today</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>

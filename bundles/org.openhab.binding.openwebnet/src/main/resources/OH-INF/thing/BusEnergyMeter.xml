@@ -15,8 +15,8 @@
 
 		<channels>
 			<channel id="power" typeId="power"/>
-			<channel id="totalizerDay" typeId="totalizerDay"/>
-			<channel id="totalizerMonth" typeId="totalizerMonth"/>
+			<channel id="energyToday" typeId="energyToday"/>
+			<channel id="energyThisMonth" typeId="energyThisMonth"/>
 		</channels>
 
 		<properties>
@@ -34,9 +34,9 @@
 					where="542"</description>
 			</parameter>
 
-			<parameter name="refreshPeriod" type="integer" min="30" max="1440" required="true">
-				<label>Totalizers Refresh Period</label>
-				<description> Sets the number of minutes between refreshes (default: 30 minutes)</description>
+			<parameter name="energyRefreshPeriod" type="integer" min="30" max="1440" required="true">
+				<label>Energy Totalizers Refresh Period</label>
+				<description> Sets the number of minutes between refreshes for energy totalizers (default: 30 minutes)</description>
 				<default>30</default>
 			</parameter>
 		</config-description>

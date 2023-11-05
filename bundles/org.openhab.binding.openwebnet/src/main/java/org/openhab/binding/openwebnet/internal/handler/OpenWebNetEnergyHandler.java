@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.openwebnet.internal.handler;
 
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_ENERGY_TOTALIZER_DAY;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_ENERGY_TOTALIZER_MONTH;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_POWER;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_POWER_TOTALIZER_DAY;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_POWER_TOTALIZER_MONTH;
 
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -200,8 +200,8 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     protected void refreshDevice(boolean refreshAll) {
         logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
         requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER));
-        requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER_TOTALIZER_DAY));
-        requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER_TOTALIZER_MONTH));
+        requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_TOTALIZER_DAY));
+        requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_TOTALIZER_MONTH));
     }
 
     @Override
@@ -255,7 +255,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates current month totalizer
+     * Updates current day totalizer
      *
      * @param msg the EnergyManagement message received
      * @throws FrameException
@@ -264,10 +264,10 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         Double currentDayEnergy;
         try {
             currentDayEnergy = Double.parseDouble(msg.getDimValues()[0]) / 1000d;
-            updateState(CHANNEL_POWER_TOTALIZER_DAY, new QuantityType<Energy>(currentDayEnergy, Units.KILOWATT_HOUR));
+            updateState(CHANNEL_ENERGY_TOTALIZER_DAY, new QuantityType<Energy>(currentDayEnergy, Units.KILOWATT_HOUR));
         } catch (FrameException e) {
             logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
-            updateState(CHANNEL_POWER_TOTALIZER_DAY, UnDefType.UNDEF);
+            updateState(CHANNEL_ENERGY_TOTALIZER_DAY, UnDefType.UNDEF);
         }
     }
 
@@ -281,11 +281,11 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         Double currentMonthEnergy;
         try {
             currentMonthEnergy = Double.parseDouble(msg.getDimValues()[0]) / 1000d;
-            updateState(CHANNEL_POWER_TOTALIZER_MONTH,
+            updateState(CHANNEL_ENERGY_TOTALIZER_MONTH,
                     new QuantityType<Energy>(currentMonthEnergy, Units.KILOWATT_HOUR));
         } catch (FrameException e) {
             logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
-            updateState(CHANNEL_POWER_TOTALIZER_MONTH, UnDefType.UNDEF);
+            updateState(CHANNEL_ENERGY_TOTALIZER_MONTH, UnDefType.UNDEF);
         }
     }
 }
