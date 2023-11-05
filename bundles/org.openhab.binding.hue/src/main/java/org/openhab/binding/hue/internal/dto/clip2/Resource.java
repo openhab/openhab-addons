@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,16 +27,23 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
+import org.openhab.binding.hue.internal.dto.clip2.enums.ButtonEventType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.SceneRecallAction;
+import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneRecallAction;
+import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneState;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -93,6 +103,7 @@ public class Resource {
     private @Nullable List<ResourceReference> children;
     private @Nullable JsonElement status;
     private @Nullable @SuppressWarnings("unused") Dynamics dynamics;
+    private @Nullable String state;
 
     /**
      * Constructor
@@ -185,15 +196,36 @@ public class Resource {
      */
     public State getButtonEventState(Map<String, Integer> controlIds) {
         Button button = this.button;
-        if (Objects.nonNull(button)) {
-            try {
-                return new DecimalType(
-                        (controlIds.getOrDefault(getId(), 0).intValue() * 1000) + button.getLastEvent().ordinal());
-            } catch (IllegalArgumentException e) {
-                // fall through
-            }
+        if (button == null) {
+            return UnDefType.NULL;
         }
-        return UnDefType.NULL;
+        ButtonEventType event;
+        ButtonReport buttonReport = button.getButtonReport();
+        if (buttonReport == null) {
+            event = button.getLastEvent();
+        } else {
+            event = buttonReport.getLastEvent();
+        }
+        if (event == null) {
+            return UnDefType.NULL;
+        }
+        return new DecimalType((controlIds.getOrDefault(getId(), 0).intValue() * 1000) + event.ordinal());
+    }
+
+    public State getButtonLastUpdatedState(ZoneId zoneId) {
+        Button button = this.button;
+        if (button == null) {
+            return UnDefType.NULL;
+        }
+        ButtonReport buttonReport = button.getButtonReport();
+        if (buttonReport == null) {
+            return UnDefType.UNDEF;
+        }
+        Instant lastChanged = buttonReport.getLastChanged();
+        if (Instant.EPOCH.equals(lastChanged)) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
     }
 
     public List<ResourceReference> getChildren() {
@@ -203,7 +235,7 @@ public class Resource {
 
     /**
      * Get the color as an HSBType. This returns an HSB that is based on an amalgamation of the color xy, dimming, and
-     * on/off JSON elements. It takes its 'H' & 'S' parts from the 'ColorXy' JSON element, and its 'B' part from the
+     * on/off JSON elements. It takes its 'H' and 'S' parts from the 'ColorXy' JSON element, and its 'B' part from the
      * on/off resp. dimming JSON elements. If off the B part is 0, otherwise it is the dimming element value. Note: this
      * method is only to be used on cached state DTOs which already have a defined color gamut.
      *
@@ -320,13 +352,33 @@ public class Resource {
         return UnDefType.NULL;
     }
 
-    public @Nullable Effects getEffects() {
+    public @Nullable Effects getFixedEffects() {
         return effects;
     }
 
+    /**
+     * Get the amalgamated effect state. The result may be either from an 'effects' field or from a 'timedEffects'
+     * field. If both fields are missing it returns UnDefType.NULL, otherwise if either field is present and has an
+     * active value (other than EffectType.NO_EFFECT) it returns a StringType of the name of the respective active
+     * effect; and if none of the above apply, it returns a StringType of 'NO_EFFECT'.
+     *
+     * @return either a StringType value or UnDefType.NULL
+     */
     public State getEffectState() {
         Effects effects = this.effects;
-        return Objects.nonNull(effects) ? new StringType(effects.getStatus().name()) : UnDefType.NULL;
+        TimedEffects timedEffects = this.timedEffects;
+        if (Objects.isNull(effects) && Objects.isNull(timedEffects)) {
+            return UnDefType.NULL;
+        }
+        EffectType effect = Objects.nonNull(effects) ? effects.getStatus() : null;
+        if (Objects.nonNull(effect) && effect != EffectType.NO_EFFECT) {
+            return new StringType(effect.name());
+        }
+        EffectType timedEffect = Objects.nonNull(timedEffects) ? timedEffects.getStatus() : null;
+        if (Objects.nonNull(timedEffect) && timedEffect != EffectType.NO_EFFECT) {
+            return new StringType(timedEffect.name());
+        }
+        return new StringType(EffectType.NO_EFFECT.name());
     }
 
     public @Nullable Boolean getEnabled() {
@@ -362,8 +414,31 @@ public class Resource {
     }
 
     public State getLightLevelState() {
-        LightLevel light = this.light;
-        return Objects.nonNull(light) ? light.getLightLevelState() : UnDefType.NULL;
+        LightLevel lightLevel = this.light;
+        if (lightLevel == null) {
+            return UnDefType.NULL;
+        }
+        LightLevelReport lightLevelReport = lightLevel.getLightLevelReport();
+        if (lightLevelReport == null) {
+            return lightLevel.getLightLevelState();
+        }
+        return new QuantityType<>(Math.pow(10f, (double) lightLevelReport.getLightLevel() / 10000f) - 1f, Units.LUX);
+    }
+
+    public State getLightLevelLastUpdatedState(ZoneId zoneId) {
+        LightLevel lightLevel = this.light;
+        if (lightLevel == null) {
+            return UnDefType.NULL;
+        }
+        LightLevelReport lightLevelReport = lightLevel.getLightLevelReport();
+        if (lightLevelReport == null) {
+            return UnDefType.UNDEF;
+        }
+        Instant lastChanged = lightLevelReport.getLastChanged();
+        if (Instant.EPOCH.equals(lastChanged)) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
     }
 
     public @Nullable MetaData getMetaData() {
@@ -386,7 +461,30 @@ public class Resource {
 
     public State getMotionState() {
         Motion motion = this.motion;
-        return Objects.nonNull(motion) ? motion.getMotionState() : UnDefType.NULL;
+        if (motion == null) {
+            return UnDefType.NULL;
+        }
+        MotionReport motionReport = motion.getMotionReport();
+        if (motionReport == null) {
+            return motion.getMotionState();
+        }
+        return OnOffType.from(motionReport.isMotion());
+    }
+
+    public State getMotionLastUpdatedState(ZoneId zoneId) {
+        Motion motion = this.motion;
+        if (motion == null) {
+            return UnDefType.NULL;
+        }
+        MotionReport motionReport = motion.getMotionReport();
+        if (motionReport == null) {
+            return UnDefType.UNDEF;
+        }
+        Instant lastChanged = motionReport.getLastChanged();
+        if (Instant.EPOCH.equals(lastChanged)) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
     }
 
     public State getMotionValidState() {
@@ -449,14 +547,36 @@ public class Resource {
         return relativeRotary;
     }
 
-    public State getRelativeRotaryActionState() {
-        RelativeRotary relativeRotary = this.relativeRotary;
-        return Objects.nonNull(relativeRotary) ? relativeRotary.getActionState() : UnDefType.NULL;
-    }
-
     public State getRotaryStepsState() {
         RelativeRotary relativeRotary = this.relativeRotary;
-        return Objects.nonNull(relativeRotary) ? relativeRotary.getStepsState() : UnDefType.NULL;
+        if (relativeRotary == null) {
+            return UnDefType.NULL;
+        }
+        RotaryReport rotaryReport = relativeRotary.getRotaryReport();
+        if (rotaryReport == null) {
+            return relativeRotary.getStepsState();
+        }
+        Rotation rotation = rotaryReport.getRotation();
+        if (rotation == null) {
+            return UnDefType.NULL;
+        }
+        return rotation.getStepsState();
+    }
+
+    public State getRotaryStepsLastUpdatedState(ZoneId zoneId) {
+        RelativeRotary relativeRotary = this.relativeRotary;
+        if (relativeRotary == null) {
+            return UnDefType.NULL;
+        }
+        RotaryReport rotaryReport = relativeRotary.getRotaryReport();
+        if (rotaryReport == null) {
+            return UnDefType.UNDEF;
+        }
+        Instant lastChanged = rotaryReport.getLastChanged();
+        if (Instant.EPOCH.equals(lastChanged)) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
     }
 
     /**
@@ -486,8 +606,34 @@ public class Resource {
      * @return either 'UnDefType.NULL', a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
      */
     public State getSceneState() {
-        Optional<Boolean> active = getSceneActive();
-        return active.isEmpty() ? UnDefType.NULL : active.get() ? new StringType(getName()) : UnDefType.UNDEF;
+        return getSceneActive().map(a -> a ? new StringType(getName()) : UnDefType.UNDEF).orElse(UnDefType.NULL);
+    }
+
+    /**
+     * Check if the smart scene resource contains a 'state' element. If such an element is present, returns a Boolean
+     * Optional whose value depends on the value of that element, or an empty Optional if it is not.
+     *
+     * @return true, false, or empty.
+     */
+    public Optional<Boolean> getSmartSceneActive() {
+        if (ResourceType.SMART_SCENE == getType()) {
+            String state = this.state;
+            if (Objects.nonNull(state)) {
+                return Optional.of(SmartSceneState.ACTIVE == SmartSceneState.of(state));
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * If the getSmartSceneActive() optional result is empty return 'UnDefType.NULL'. Otherwise if the optional result
+     * is present and 'true' (i.e. the scene is active) return the smart scene name. Or finally (the optional result is
+     * present and 'false') return 'UnDefType.UNDEF'.
+     *
+     * @return either 'UnDefType.NULL', a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
+     */
+    public State getSmartSceneState() {
+        return getSmartSceneActive().map(a -> a ? new StringType(getName()) : UnDefType.UNDEF).orElse(UnDefType.NULL);
     }
 
     public List<ResourceReference> getServiceReferences() {
@@ -509,7 +655,30 @@ public class Resource {
 
     public State getTemperatureState() {
         Temperature temperature = this.temperature;
-        return Objects.nonNull(temperature) ? temperature.getTemperatureState() : UnDefType.NULL;
+        if (temperature == null) {
+            return UnDefType.NULL;
+        }
+        TemperatureReport temperatureReport = temperature.getTemperatureReport();
+        if (temperatureReport == null) {
+            return temperature.getTemperatureState();
+        }
+        return new QuantityType<>(temperatureReport.getTemperature(), SIUnits.CELSIUS);
+    }
+
+    public State getTemperatureLastUpdatedState(ZoneId zoneId) {
+        Temperature temperature = this.temperature;
+        if (temperature == null) {
+            return UnDefType.NULL;
+        }
+        TemperatureReport temperatureReport = temperature.getTemperatureReport();
+        if (temperatureReport == null) {
+            return UnDefType.UNDEF;
+        }
+        Instant lastChanged = temperatureReport.getLastChanged();
+        if (Instant.EPOCH.equals(lastChanged)) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(lastChanged, zoneId));
     }
 
     public State getTemperatureValidState() {
@@ -517,7 +686,7 @@ public class Resource {
         return Objects.nonNull(temperature) ? temperature.getTemperatureValidState() : UnDefType.NULL;
     }
 
-    public @Nullable Effects getTimedEffects() {
+    public @Nullable TimedEffects getTimedEffects() {
         return timedEffects;
     }
 
@@ -577,7 +746,7 @@ public class Resource {
         return this;
     }
 
-    public Resource setEffects(Effects effect) {
+    public Resource setFixedEffects(Effects effect) {
         this.effects = effect;
         return this;
     }
@@ -628,7 +797,13 @@ public class Resource {
         this.on = on;
     }
 
-    public Resource setRecallAction(RecallAction recallAction) {
+    public Resource setRecallAction(SceneRecallAction recallAction) {
+        Recall recall = this.recall;
+        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
+        return this;
+    }
+
+    public Resource setRecallAction(SmartSceneRecallAction recallAction) {
         Recall recall = this.recall;
         this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
         return this;
@@ -637,6 +812,19 @@ public class Resource {
     public Resource setRecallDuration(Duration recallDuration) {
         Recall recall = this.recall;
         this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setDuration(recallDuration);
+        return this;
+    }
+
+    public Resource setTimedEffects(TimedEffects timedEffects) {
+        this.timedEffects = timedEffects;
+        return this;
+    }
+
+    public Resource setTimedEffectsDuration(Duration dynamicsDuration) {
+        TimedEffects timedEffects = this.timedEffects;
+        if (Objects.nonNull(timedEffects)) {
+            timedEffects.setDuration(dynamicsDuration);
+        }
         return this;
     }
 

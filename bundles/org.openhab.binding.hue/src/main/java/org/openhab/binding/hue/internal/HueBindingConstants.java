@@ -151,12 +151,17 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_ALERT = CHANNEL_ALERT;
     public static final String CHANNEL_2_EFFECT = CHANNEL_EFFECT;
     public static final String CHANNEL_2_BUTTON_LAST_EVENT = "button-last-event";
+    public static final String CHANNEL_2_BUTTON_LAST_UPDATED = "button-last-updated";
     public static final String CHANNEL_2_ROTARY_STEPS = "rotary-steps";
+    public static final String CHANNEL_2_ROTARY_STEPS_LAST_UPDATED = "rotary-steps-last-updated";
     public static final String CHANNEL_2_MOTION = "motion";
+    public static final String CHANNEL_2_MOTION_LAST_UPDATED = "motion-last-updated";
     public static final String CHANNEL_2_MOTION_ENABLED = "motion-enabled";
     public static final String CHANNEL_2_LIGHT_LEVEL = "light-level";
+    public static final String CHANNEL_2_LIGHT_LEVEL_LAST_UPDATED = "light-level-last-updated";
     public static final String CHANNEL_2_LIGHT_LEVEL_ENABLED = "light-level-enabled";
     public static final String CHANNEL_2_TEMPERATURE = CHANNEL_TEMPERATURE;
+    public static final String CHANNEL_2_TEMPERATURE_LAST_UPDATED = "temperature-last-updated";
     public static final String CHANNEL_2_TEMPERATURE_ENABLED = "temperature-enabled";
     public static final String CHANNEL_2_BATTERY_LEVEL = "battery-level";
     public static final String CHANNEL_2_BATTERY_LOW = "battery-low";
@@ -167,7 +172,7 @@ public class HueBindingConstants {
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
-            CHANNEL_2_COLOR_TEMP_PERCENT, CHANNEL_2_COLOR_TEMP_ABSOLUTE, CHANNEL_2_SCENE);
+            CHANNEL_2_COLOR_TEMP_PERCENT, CHANNEL_2_COLOR_TEMP_ABSOLUTE, CHANNEL_2_SCENE, CHANNEL_2_EFFECT);
 
     /*
      * Map of API v1 channel IDs against API v2 channel IDs where, if the v1 channel exists in the system, then we

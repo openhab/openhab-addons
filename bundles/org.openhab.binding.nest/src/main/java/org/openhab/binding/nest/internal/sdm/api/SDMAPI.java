@@ -61,7 +61,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  *
- * @see https://developers.google.com/nest/device-access/reference/rest
+ * @see <a href="https://developers.google.com/nest/device-access/reference/rest">
+ *      https://developers.google.com/nest/device-access/reference/rest</a>
  */
 @NonNullByDefault
 public class SDMAPI {

@@ -105,7 +105,7 @@ import org.slf4j.LoggerFactory;
  * to the framework. All {@link MaxDevicesHandler}s use the
  * {@link MaxCubeBridgeHandler} to execute the actual commands.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - Initial contribution OH2 version
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de) - Exclusive mode
  */

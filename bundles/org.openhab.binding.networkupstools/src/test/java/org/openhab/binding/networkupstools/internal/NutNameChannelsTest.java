@@ -43,7 +43,7 @@ public class NutNameChannelsTest {
     private static final String THING_TYPES_XML = "thing-types.xml";
     private static final String CHANNELS_XML = "channels.xml";
 
-    private static final int EXPECTED_NUMBER_OF_CHANNELS = 20;
+    private static final int EXPECTED_NUMBER_OF_CHANNELS = 21;
     private static final int EXPECTED_NUMMBER_OF_CHANNEL_XML_LINES = EXPECTED_NUMBER_OF_CHANNELS * 6;
 
     // README table is: | Channel Name | Item Type | Unit | Description | Advanced

@@ -143,5 +143,10 @@
 		<description>Battery voltage (V)</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-
+	<channel-type id="battery-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<description>Battery temperature (degrees C)</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

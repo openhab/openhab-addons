@@ -33,9 +33,13 @@
 				<description>Temperature of the selected program (10 °C = cold)</description>
 			</channel>
 			<channel id="spinningspeed" typeId="spinningspeed"/>
-			<channel id="powerConsumption" typeId="powerConsumption"/>
-			<channel id="waterConsumption" typeId="waterConsumption"/>
+			<channel id="energyConsumption" typeId="energy-consumption"/>
+			<channel id="waterConsumption" typeId="water-consumption"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>uid</representation-property>
 
