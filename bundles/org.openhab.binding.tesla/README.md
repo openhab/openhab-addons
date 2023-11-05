@@ -182,8 +182,8 @@ Additionally, these advanced channels are available (not all are available on al
 | shiftstate                | String                   | Shift State                   | Indicates the state of the transmission, “P”, “D”, “R”, or “N”                                                   |
 | sidemirrorheaters         | Switch                   | Side Mirror Heaters           | Indicates if the side mirror heaters are switched on                                                             |
 | smartpreconditioning      | Switch                   | Smart Preconditioning         | Indicates if smart preconditioning is switched on                                                                |
-| softwareupdateavailable   | Switch                   | Update Available              | Car software update available, automatically generated on non-empty "update version"                             |
-| softwareupdatestatus      | String                   | Update Status                 | Car software update status, e.g. "downloading_wifi_wait", "installing"                                           |
+| softwareupdateavailable   | Switch                   | Update Available              | Car software or map update available, automatically generated on non-empty "update version"                      |
+| softwareupdatestatus      | String                   | Update Status                 | Car software or map update status, e.g. "downloading_wifi_wait", "installing"                                    |
 | softwareupdateversion     | String                   | Update Version                | Car software or map version to update to, e.g. "2023.32.9", "EU-2023.32-14783" for map updates, or empty         |
 | soc                       | Number                   | State of Charge               | State of Charge, in %                                                                                            |
 | state                     | String                   | State                         | “online”, “asleep”, “waking”                                                                                     |
