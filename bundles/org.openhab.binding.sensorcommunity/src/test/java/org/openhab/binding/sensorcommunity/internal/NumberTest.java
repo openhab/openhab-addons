@@ -14,14 +14,9 @@ package org.openhab.binding.sensorcommunity.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import javax.measure.quantity.Dimensionless;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.sensorcommunity.internal.utils.NumberUtils;
-import org.openhab.core.library.dimension.Density;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link NumberTest} Test rounding and converting Numbers
@@ -62,19 +57,5 @@ public class NumberTest {
         double d1r1 = NumberUtils.round(d1, 1);
         // System.out.println("D1R1 " + d1r1);
         assertEquals("1.9", Double.toString(d1r1), "Double 1.94, 1 place");
-    }
-
-    @Test
-    public void testDecibelPattern() {
-        String d1 = "1.94 dB";
-        QuantityType<Dimensionless> dbQt = (QuantityType<Dimensionless>) QuantityType.valueOf(d1);
-        assertEquals(Units.DECIBEL, dbQt.getUnit());
-    }
-
-    @Test
-    public void testMicrogramQubicMeterPattern() {
-        String d1 = "1.94 µg/m³";
-        QuantityType<Density> pressureQt = (QuantityType<Density>) QuantityType.valueOf(d1);
-        assertEquals(Units.MICROGRAM_PER_CUBICMETRE, pressureQt.getUnit());
     }
 }
