@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,24 +12,19 @@
  */
 package org.openhab.transform.exec.internal;
 
-import static java.nio.file.StandardWatchEventKinds.*;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.OpenHAB;
-import org.openhab.core.service.AbstractWatchService;
+import org.openhab.core.service.WatchService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,35 +35,36 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ExecTransformationWhitelistWatchService.class)
 @NonNullByDefault
-public class ExecTransformationWhitelistWatchService extends AbstractWatchService {
-    private static final String COMMAND_WHITELIST_PATH = OpenHAB.getConfigFolder() + File.separator + "misc";
-    private static final String COMMAND_WHITELIST_FILE = "exec.whitelist";
+public class ExecTransformationWhitelistWatchService implements WatchService.WatchEventListener {
+    private static final Path COMMAND_WHITELIST_FILE = Path.of("misc", "exec.whitelist");
 
     private final Logger logger = LoggerFactory.getLogger(ExecTransformationWhitelistWatchService.class);
     private final Set<String> commandWhitelist = new HashSet<>();
+    private final WatchService watchService;
+    private final Path watchFile;
 
     @Activate
-    public ExecTransformationWhitelistWatchService() {
-        super(COMMAND_WHITELIST_PATH);
-        processWatchEvent(null, null, Paths.get(COMMAND_WHITELIST_PATH, COMMAND_WHITELIST_FILE));
+    public ExecTransformationWhitelistWatchService(
+            final @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
+        this.watchService = watchService;
+        this.watchFile = watchService.getWatchPath().resolve(COMMAND_WHITELIST_FILE);
+        watchService.registerListener(this, COMMAND_WHITELIST_FILE, false);
+
+        // read initial content
+        processWatchEvent(WatchService.Kind.CREATE, COMMAND_WHITELIST_FILE);
+    }
+
+    @Deactivate
+    public void deactivate() {
+        watchService.unregisterListener(this);
     }
 
     @Override
-    protected boolean watchSubDirectories() {
-        return false;
-    }
-
-    @Override
-    protected Kind<?> @Nullable [] getWatchEventKinds(@Nullable Path directory) {
-        return new Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
-    }
-
-    @Override
-    protected void processWatchEvent(@Nullable WatchEvent<?> event, @Nullable Kind<?> kind, @Nullable Path path) {
-        if (path != null && path.endsWith(COMMAND_WHITELIST_FILE)) {
-            commandWhitelist.clear();
-            try {
-                Files.lines(path).filter(line -> !line.trim().startsWith("#")).forEach(commandWhitelist::add);
+    public void processWatchEvent(WatchService.Kind kind, Path path) {
+        commandWhitelist.clear();
+        if (kind != WatchService.Kind.DELETE) {
+            try (Stream<String> lines = Files.lines(watchFile)) {
+                lines.filter(line -> !line.trim().startsWith("#")).forEach(commandWhitelist::add);
                 logger.debug("Updated command whitelist: {}", commandWhitelist);
             } catch (IOException e) {
                 logger.warn("Cannot read whitelist file, exec transformations won't be processed: {}", e.getMessage());

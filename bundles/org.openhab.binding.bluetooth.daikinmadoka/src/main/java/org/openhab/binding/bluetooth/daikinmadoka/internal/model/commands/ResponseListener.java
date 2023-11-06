@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,33 +23,33 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface ResponseListener {
 
-    public void receivedResponse(byte[] bytes);
+    void receivedResponse(byte[] bytes);
 
-    public void receivedResponse(GetVersionCommand command);
+    void receivedResponse(GetVersionCommand command);
 
-    public void receivedResponse(GetFanspeedCommand command);
+    void receivedResponse(GetFanspeedCommand command);
 
-    public void receivedResponse(GetOperationmodeCommand command);
+    void receivedResponse(GetOperationmodeCommand command);
 
-    public void receivedResponse(GetPowerstateCommand command);
+    void receivedResponse(GetPowerstateCommand command);
 
-    public void receivedResponse(GetSetpointCommand command);
+    void receivedResponse(GetSetpointCommand command);
 
-    public void receivedResponse(GetIndoorOutoorTemperatures command);
+    void receivedResponse(GetIndoorOutoorTemperatures command);
 
-    public void receivedResponse(SetPowerstateCommand command);
+    void receivedResponse(SetPowerstateCommand command);
 
-    public void receivedResponse(SetSetpointCommand command);
+    void receivedResponse(SetSetpointCommand command);
 
-    public void receivedResponse(SetOperationmodeCommand command);
+    void receivedResponse(SetOperationmodeCommand command);
 
-    public void receivedResponse(SetFanspeedCommand command);
+    void receivedResponse(SetFanspeedCommand command);
 
-    public void receivedResponse(GetOperationHoursCommand command);
+    void receivedResponse(GetOperationHoursCommand command);
 
-    public void receivedResponse(GetEyeBrightnessCommand command);
+    void receivedResponse(GetEyeBrightnessCommand command);
 
-    public void receivedResponse(SetEyeBrightnessCommand command);
+    void receivedResponse(SetEyeBrightnessCommand command);
 
-    public void receivedResponse(GetCleanFilterIndicatorCommand command);
+    void receivedResponse(GetCleanFilterIndicatorCommand command);
 }

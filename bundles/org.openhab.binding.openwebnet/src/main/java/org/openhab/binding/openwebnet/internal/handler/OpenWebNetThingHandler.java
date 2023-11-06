@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,9 +46,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetThingHandler} is responsible for handling commands for an OpenWebNet device.
- * It's the abstract class for all OpenWebNet things. It should be extended by each specific OpenWebNet category of
- * device (WHO).
+ * The {@link OpenWebNetThingHandler} is responsible for handling commands for
+ * an OpenWebNet device.
+ * It's the abstract class for all OpenWebNet things. It should be extended by
+ * each specific OpenWebNet category of device (WHO).
  *
  * @author Massimo Valla - Initial contribution
  */
@@ -118,7 +119,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/unknown.waiting-state");
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
         }
     }
 
@@ -157,8 +158,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     protected abstract void handleChannelCommand(ChannelUID channel, Command command);
 
     /**
-     * Handle incoming message from OWN network via bridge Thing, directed to this device.
-     * It should be further implemented by each specific device handler.
+     * Handle incoming message from OWN network via bridge Thing, directed to this
+     * device. It should be further implemented by each specific device handler.
      *
      * @param msg the message to handle
      */
@@ -203,8 +204,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Request the state for the specified channel. If no answer is received within THING_STATE_REQ_TIMEOUT_SEC, it is
-     * put OFFLINE.
+     * Request the state for the specified channel. If no answer is received within
+     * THING_STATE_REQ_TIMEOUT_SEC, it is put OFFLINE.
      * The method must be further implemented by each specific handler.
      *
      * @param channel the {@link ChannelUID} to request the state for
@@ -217,7 +218,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-where");
             return;
         }
-        // set a schedule to put device OFFLINE if no answer is received after THING_STATE_REQ_TIMEOUT_SEC
+        // set a schedule to put device OFFLINE if no answer is received after
+        // THING_STATE_REQ_TIMEOUT_SEC
         requestChannelStateTimeout = scheduler.schedule(() -> {
             if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
                 logger.debug("requestChannelState() TIMEOUT for thing {}", thing.getUID());
@@ -228,21 +230,24 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Refresh a device, possibly using a single OWN command if refreshAll=true and if supported.
-     * The method must be further implemented by each specific handler.
+     * Refresh a device, possibly using a single OWN command if refreshAll=true and
+     * if supported. The method must be further implemented by each specific
+     * handler.
      *
-     * @param refreshAll true if all devices for this handler must be refreshed with a single OWN command, if supported,
-     *            otherwise just refresh the single device.
+     * @param refreshAll true if all devices for this handler must be refreshed with
+     *            a single OWN command, if supported, otherwise just refresh
+     *            the single device.
      */
     protected abstract void refreshDevice(boolean refreshAll);
 
     /**
-     * If the subclass supports refreshing all devices with a single OWN command, returns the last TS when a refreshAll
-     * was requested, or 0 if not requested yet. If not supported return -1 (default).
+     * If the subclass supports refreshing all devices with a single OWN command,
+     * returns the last TS when a refreshAll was requested, or 0 if not requested
+     * yet. If not supported return -1 (default).
      * It must be implemented by each subclass that supports all devices refresh.
      *
-     * @return timestamp when last refreshAll command was sent, 0 if not requested yet, or -1 if it's not supported by
-     *         subclass.
+     * @return timestamp when last refreshAll command was sent, 0 if not requested
+     *         yet, or -1 if it's not supported by subclass.
      */
     protected long getRefreshAllLastTS() {
         return -1;
@@ -266,8 +271,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                     logger.debug("--- refreshAllDevices() : refresh all devices sent {}msec ago, skipping... ({})",
                             ALL_DEVICES_REFRESH_INTERVAL_MSEC, thing.getUID());
                 }
-                // sometimes GENERAL (e.g. #*1*0##) refresh requests do not return state for all devices, so let's
-                // schedule another single refresh device, just in case
+                // sometimes GENERAL (e.g. #*1*0##) refresh requests do not return state for all
+                // devices, so let's schedule another single refresh device, just in case
                 refreshTimeout = scheduler.schedule(() -> {
                     if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
                         logger.debug(
@@ -286,8 +291,9 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Abstract builder for device Where address, to be implemented by each subclass to choose the right Where subclass
-     * (the method is used only if the Thing is associated to a BUS gateway).
+     * Abstract builder for device Where address, to be implemented by each subclass
+     * to choose the right Where subclass (the method is used only if the Thing is
+     * associated to a BUS gateway).
      *
      * @param wStr the WHERE string
      */
@@ -312,7 +318,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Helper method to return a Quantity from a Number value or UnDefType.NULL if value is null
+     * Helper method to return a Quantity from a Number value or UnDefType.NULL if
+     * value is null
      *
      * @param value to be used
      * @param unit to be used
@@ -323,7 +330,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns a prefix String for ownId specific for each handler. To be implemented by sub-classes.
+     * Returns a prefix String for ownId specific for each handler.
+     * To be implemented by sub-classes.
      *
      * @return
      */

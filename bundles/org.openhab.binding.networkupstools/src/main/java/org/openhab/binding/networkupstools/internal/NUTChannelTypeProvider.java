@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,9 +58,9 @@ public class NUTChannelTypeProvider implements ChannelTypeProvider, ThingHandler
 
     @Override
     public void setThingHandler(@Nullable final ThingHandler handler) {
-        if (handler instanceof NUTHandler) {
+        if (handler instanceof NUTHandler nutHandler) {
             this.handler = handler;
-            ((NUTHandler) handler).setChannelTypeProvider(this);
+            nutHandler.setChannelTypeProvider(this);
         }
     }
 

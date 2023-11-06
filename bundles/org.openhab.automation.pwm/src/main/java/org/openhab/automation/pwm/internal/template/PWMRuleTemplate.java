@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ public class PWMRuleTemplate extends RuleTemplate {
     public static PWMRuleTemplate initialize() {
         final String triggerId = UUID.randomUUID().toString();
 
-        final List<Trigger> triggers = Collections.singletonList(ModuleBuilder.createTrigger().withId(triggerId)
+        final List<Trigger> triggers = List.of(ModuleBuilder.createTrigger().withId(triggerId)
                 .withTypeUID(PWMTriggerType.UID).withLabel("PWM Trigger").build());
 
         final Map<String, String> actionInputs = new HashMap<String, String>();

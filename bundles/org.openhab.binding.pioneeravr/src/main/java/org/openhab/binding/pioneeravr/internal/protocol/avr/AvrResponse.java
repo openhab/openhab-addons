@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ public interface AvrResponse {
     /**
      * Represent the type of a response.
      */
-    public interface AvrResponseType {
+    interface AvrResponseType {
 
         /**
          * Return the prefix of the command of this type.
@@ -73,26 +73,26 @@ public interface AvrResponse {
      *
      * @return
      */
-    public ResponseType getResponseType();
+    ResponseType getResponseType();
 
     /**
      * Return the parameter of this response or null if the resposne has no parameter.
      *
      * @return
      */
-    public String getParameterValue();
+    String getParameterValue();
 
     /**
      * Return true if this response has a parameter.
      *
      * @return
      */
-    public boolean hasParameter();
+    boolean hasParameter();
 
     /**
      * Return the zone number which is concerned by this response.
      *
      * @return
      */
-    public Integer getZone();
+    Integer getZone();
 }

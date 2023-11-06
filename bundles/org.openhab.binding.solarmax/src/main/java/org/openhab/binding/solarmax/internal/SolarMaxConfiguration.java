@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SolarMaxConfiguration {
     public String host = ""; // this will always need to be overridden
     public int portNumber = 12345; // default value is 12345
+    public int deviceAddress = 1; // default value is 1
 
     public int refreshInterval = 15; // default value is 15
 }

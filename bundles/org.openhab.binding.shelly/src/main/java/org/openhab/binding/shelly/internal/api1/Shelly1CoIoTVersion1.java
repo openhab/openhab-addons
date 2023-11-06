@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,11 +57,15 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
      * Process CoIoT status update message. If a status update is received, but the device description has not been
      * received yet a GET is send to query device description.
      *
-     * @param devId device id included in the status packet
-     * @param payload CoAP payload (Json format), example: {"G":[[0,112,0]]}
+     * @param sensorUpdates
+     * @param sen
      * @param serial Serial for this request. If this the the same as last serial
      *            the update was already sent and processed so this one gets
      *            ignored.
+     * @param serial
+     * @param s
+     * @param updates
+     * @param col
      */
     @Override
     public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
@@ -149,7 +153,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         break;
                     case "current":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_CURRENT,
-                                toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.AMPERE));
+                                toQuantityType(getDouble(s.value), DIGITS_AMPERE, Units.AMPERE));
                         break;
                     case "pf":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR, getDecimal(s.value));

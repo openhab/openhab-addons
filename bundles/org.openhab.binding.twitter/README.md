@@ -4,9 +4,8 @@ The Twitter binding allows your home to Tweet 280 characters at a time. It also 
 
 ## Supported Things
 
-```
+```text
 account - Twitter Account.
-
 ```
 
 ## Thing Configuration
@@ -21,26 +20,24 @@ The Twitter Account Thing requires you to create a Twitter App in the Twitter De
 | accessTokenSecret |         |   Yes    | Access Token Secret               |
 | refresh           | 30      |   No     | Tweet refresh interval in minutes |
 
-
 ## Channels
 
 | channel    | type   | description                                    |
 |------------|--------|------------------------------------------------|
 | lasttweet  | String | This channel provides the Latest Tweet message |
 
-
 ## Full Example
 
 twitter.things:
 
-```
+```java
 Thing twitter:account:sampleaccount [ consumerKey="11111", consumerSecret="22222", accessToken="33333", accessTokenSecret="444444" ]
 
 ```
 
 twitter.items:
 
-```
+```java
 String sample_tweet   "Latest Tweet: [%s]" { channel="twitter:account:sampleaccount:lasttweet" }
 
 ```
@@ -49,13 +46,13 @@ String sample_tweet   "Latest Tweet: [%s]" { channel="twitter:account:sampleacco
 
 This binding includes rule actions for sending tweets and direct messages.
 
-* `boolean success = sendTweet(String text)`
-* `boolean success = sendTweetWithAttachment(String text, String URL)`
-* `boolean success = sendDirectMessage(String recipientID, String text)`
+- `boolean success = sendTweet(String text)`
+- `boolean success = sendTweetWithAttachment(String text, String URL)`
+- `boolean success = sendDirectMessage(String recipientID, String text)`
 
 Examples:
 
-```
+```java
 val tweetActions = getActions("twitter","twitter:account:sampleaccount")
 val success  = tweetActions.sendTweet("This is A Tweet")
 val success2 = tweetActions.sendTweetWithAttachment("This is A Tweet with a Pic", file:///tmp/201601011031.jpg)

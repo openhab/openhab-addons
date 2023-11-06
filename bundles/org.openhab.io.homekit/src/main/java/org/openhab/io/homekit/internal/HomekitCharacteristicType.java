@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,7 +124,28 @@ public enum HomekitCharacteristicType {
 
     FILTER_CHANGE_INDICATION("FilterChangeIndication"),
     FILTER_LIFE_LEVEL("FilterLifeLevel"),
-    FILTER_RESET_INDICATION("FilterResetIndication");
+    FILTER_RESET_INDICATION("FilterResetIndication"),
+
+    ACTIVE_IDENTIFIER("ActiveIdentifier"),
+    REMOTE_KEY("RemoteKey"),
+    SLEEP_DISCOVERY_MODE("SleepDiscoveryMode"),
+    POWER_MODE("PowerMode"),
+    CLOSED_CAPTIONS("ClosedCaptions"),
+    PICTURE_MODE("PictureMode"),
+
+    CONFIGURED("Configured"),
+    INPUT_SOURCE_TYPE("InputSourceType"),
+    CURRENT_VISIBILITY("CurrentVisibility"),
+    IDENTIFIER("Identifier"),
+    INPUT_DEVICE_TYPE("InputDeviceType"),
+    TARGET_VISIBILITY_STATE("TargetVisibilityState"),
+
+    VOLUME_SELECTOR("VolumeSelector"),
+    VOLUME_CONTROL_TYPE("VolumeControlType"),
+
+    PROGRAM_MODE("ProgramMode"),
+    SERVICE_LABEL("ServiceLabel"),
+    SERVICE_INDEX("ServiceIndex");
 
     private static final Map<String, HomekitCharacteristicType> TAG_MAP = new HashMap<>();
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ import org.openhab.core.thing.Thing;
  * @author Roland Edelhoff - Initial contribution
  * @author Björn Lange - Add channel state wrappers
  * @author Benjamin Bolte - Add info state channel and map signal flags from API
- * @author Björn Lange - Add elapsed time channel
+ * @author Björn Lange - Add elapsed time, current water and energy consumption channels
  */
 @NonNullByDefault
 public class DryerDeviceThingHandler extends AbstractMieleThingHandler {
@@ -57,6 +57,7 @@ public class DryerDeviceThingHandler extends AbstractMieleThingHandler {
         updateState(channel(INFO_STATE), device.getInfoState());
         updateState(channel(LIGHT_SWITCH), device.getLightSwitch());
         updateState(channel(DOOR_STATE), device.getDoorState());
+        updateState(channel(ENERGY_CONSUMPTION_CURRENT), device.getCurrentEnergyConsumption());
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -343,8 +343,8 @@ public class AllPlayHandler extends BaseThingHandler
      * @throws SpeakerException Exception if the volume change failed
      */
     public void handleVolumeCommand(Command command) throws SpeakerException {
-        if (command instanceof PercentType) {
-            speaker.volume().setVolume(convertPercentToAbsoluteVolume((PercentType) command));
+        if (command instanceof PercentType percentCommand) {
+            speaker.volume().setVolume(convertPercentToAbsoluteVolume(percentCommand));
         } else if (command instanceof IncreaseDecreaseType) {
             int stepSize = (command == IncreaseDecreaseType.DECREASE ? -getVolumeStepSize() : getVolumeStepSize());
             speaker.volume().adjustVolume(stepSize);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +41,7 @@ import org.openhab.binding.robonect.internal.model.Status;
 import org.openhab.binding.robonect.internal.model.Timer;
 import org.openhab.binding.robonect.internal.model.Wlan;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -69,16 +69,17 @@ public class RobonectHandlerTest {
     private @Mock Thing robonectThingMock;
     private @Mock RobonectClient robonectClientMock;
     private @Mock ThingHandlerCallback callbackMock;
-    private @Mock HttpClient httpClientMock;
+    private @Mock HttpClientFactory httpClientFactoryMock;
     private @Mock TimeZoneProvider timezoneProvider;
 
     @BeforeEach
     public void setUp() {
-        subject = new RobonectHandler(robonectThingMock, httpClientMock, timezoneProvider);
+        Mockito.when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
+        Mockito.when(timezoneProvider.getTimeZone()).thenReturn(ZoneId.of("Europe/Berlin"));
+
+        subject = new RobonectHandler(robonectThingMock, httpClientFactoryMock, timezoneProvider);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
-
-        Mockito.when(timezoneProvider.getTimeZone()).thenReturn(ZoneId.of("Europe/Berlin"));
     }
 
     @Test
@@ -97,7 +98,6 @@ public class RobonectHandlerTest {
 
         // when
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
-        when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER),
                 RefreshType.REFRESH);
@@ -141,7 +141,6 @@ public class RobonectHandlerTest {
         // when
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
         when(robonectClientMock.errorList()).thenReturn(errorList);
-        when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -192,7 +191,6 @@ public class RobonectHandlerTest {
 
         // when
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
-        when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -223,7 +221,6 @@ public class RobonectHandlerTest {
 
         // when
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
-        when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -259,7 +256,6 @@ public class RobonectHandlerTest {
         // when
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
         when(robonectClientMock.errorList()).thenReturn(errorList);
-        when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);

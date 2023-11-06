@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,16 @@ package org.openhab.voice.rustpotterks.internal;
 
 import static org.openhab.voice.rustpotterks.internal.RustpotterKSConstants.*;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,7 +41,6 @@ import org.openhab.core.voice.KSService;
 import org.openhab.core.voice.KSServiceHandle;
 import org.openhab.core.voice.KSpottedEvent;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -46,10 +48,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.givimad.rustpotter_java.Endianness;
-import io.github.givimad.rustpotter_java.NoiseDetectionMode;
-import io.github.givimad.rustpotter_java.RustpotterJava;
-import io.github.givimad.rustpotter_java.RustpotterJavaBuilder;
-import io.github.givimad.rustpotter_java.VadMode;
+import io.github.givimad.rustpotter_java.Rustpotter;
+import io.github.givimad.rustpotter_java.RustpotterConfig;
+import io.github.givimad.rustpotter_java.RustpotterDetection;
+import io.github.givimad.rustpotter_java.SampleFormat;
+import io.github.givimad.rustpotter_java.ScoreMode;
+import io.github.givimad.rustpotter_java.VADMode;
 
 /**
  * The {@link RustpotterKSService} is a keyword spotting implementation based on rustpotter.
@@ -61,28 +65,30 @@ import io.github.givimad.rustpotter_java.VadMode;
 @ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
         + " Keyword Spotter", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class RustpotterKSService implements KSService {
-    private static final String RUSTPOTTER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "rustpotter").toString();
+    private static final Path RUSTPOTTER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "rustpotter");
+    private static final Path RUSTPOTTER_RECORDS_FOLDER = RUSTPOTTER_FOLDER.resolve("records");
     private final Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
-    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-rustpotterks");
+    private final ExecutorService executor = ThreadPoolManager.getPool("voice-rustpotterks");
     private RustpotterKSConfiguration config = new RustpotterKSConfiguration();
-    static {
-        Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
-        File directory = new File(RUSTPOTTER_FOLDER);
-        if (!directory.exists()) {
-            if (directory.mkdir()) {
-                logger.info("rustpotter dir created {}", RUSTPOTTER_FOLDER);
-            }
-        }
-    }
+    private final List<RustpotterMutex> runningInstances = new ArrayList<>();
 
     @Activate
-    protected void activate(ComponentContext componentContext, Map<String, Object> config) {
+    protected void activate(Map<String, Object> config) {
+        logger.debug("Loading library");
+        tryCreateDir(RUSTPOTTER_FOLDER);
+        tryCreateDir(RUSTPOTTER_RECORDS_FOLDER);
+        try {
+            Rustpotter.loadLibrary();
+        } catch (IOException e) {
+            logger.warn("Unable to load rustpotter native library: {}", e.getMessage());
+        }
         modified(config);
     }
 
     @Modified
     protected void modified(Map<String, Object> config) {
         this.config = new Configuration(config).as(RustpotterKSConfiguration.class);
+        asyncUpdateActiveInstances();
     }
 
     @Override
@@ -102,19 +108,15 @@ public class RustpotterKSService implements KSService {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return Set
-                .of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null, null, null, null));
+        return Set.of(
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L),
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null, 16, null, null),
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null, 32, null, null));
     }
 
     @Override
     public KSServiceHandle spot(KSListener ksListener, AudioStream audioStream, Locale locale, String keyword)
             throws KSException {
-        logger.debug("Loading library");
-        try {
-            RustpotterJava.loadLibrary();
-        } catch (IOException e) {
-            throw new KSException("Unable to load rustpotter lib: " + e.getMessage());
-        }
         var audioFormat = audioStream.getFormat();
         var frequency = audioFormat.getFrequency();
         var bitDepth = audioFormat.getBitDepth();
@@ -125,126 +127,222 @@ public class RustpotterKSService implements KSService {
                     "Missing stream metadata: frequency, bit depth, channels and endianness must be defined.");
         }
         var endianness = isBigEndian ? Endianness.BIG : Endianness.LITTLE;
-        logger.debug("Audio wav spec: frequency '{}', bit depth '{}', channels '{}', '{}'", frequency, bitDepth,
-                channels, audioFormat.isBigEndian() ? "big-endian" : "little-endian");
-        RustpotterJava rustpotter = initRustpotter(frequency, bitDepth, channels, endianness);
-        var modelName = keyword.replaceAll("\\s", "_") + ".rpw";
-        var modelPath = Path.of(RUSTPOTTER_FOLDER, modelName);
-        if (!modelPath.toFile().exists()) {
-            throw new KSException("Missing model " + modelName);
+        logger.debug("Audio wav spec: sample rate {}, {} bits, {} channels, {}", frequency, bitDepth, channels,
+                isBigEndian ? "big-endian" : "little-endian");
+        var wakewordName = keyword.replaceAll("\\s", "_") + ".rpw";
+
+        var wakewordPath = RUSTPOTTER_FOLDER.resolve(wakewordName);
+        if (!Files.exists(wakewordPath)) {
+            throw new KSException("Missing wakeword file: " + wakewordPath);
+        }
+        Rustpotter rustpotter;
+        try {
+            rustpotter = initRustpotter(frequency, bitDepth, channels, endianness);
+        } catch (Exception e) {
+            throw new KSException("Unable to start rustpotter: " + e.getMessage(), e);
         }
         try {
-            rustpotter.addWakewordModelFile(modelPath.toString());
+            rustpotter.addWakewordFile("w", wakewordPath.toString());
         } catch (Exception e) {
-            throw new KSException("Unable to load wake word model: " + e.getMessage());
+            throw new KSException("Unable to load wakeword file: " + e.getMessage());
         }
-        logger.debug("Model '{}' loaded", modelPath);
+        logger.debug("Wakeword '{}' loaded", wakewordPath);
         AtomicBoolean aborted = new AtomicBoolean(false);
-        executor.submit(() -> processAudioStream(rustpotter, ksListener, audioStream, aborted));
-        return new KSServiceHandle() {
-            @Override
-            public void abort() {
-                logger.debug("Stopping service");
-                aborted.set(true);
-            }
+        int bufferSize = (int) rustpotter.getBytesPerFrame();
+        long bytesPerMs = frequency / 1000 * (long) bitDepth;
+        RustpotterMutex rustpotterMutex = new RustpotterMutex(rustpotter);
+        synchronized (this.runningInstances) {
+            this.runningInstances.add(rustpotterMutex);
+        }
+        executor.submit(
+                () -> processAudioStream(rustpotterMutex, bufferSize, bytesPerMs, ksListener, audioStream, aborted));
+        return () -> {
+            logger.debug("Stopping service");
+            aborted.set(true);
         };
     }
 
-    private RustpotterJava initRustpotter(long frequency, int bitDepth, int channels, Endianness endianness) {
-        var rustpotterBuilder = new RustpotterJavaBuilder();
-        // audio configs
-        rustpotterBuilder.setBitsPerSample(bitDepth);
-        rustpotterBuilder.setSampleRate(frequency);
-        rustpotterBuilder.setChannels(channels);
-        rustpotterBuilder.setEndianness(endianness);
-        // detector configs
-        rustpotterBuilder.setThreshold(config.threshold);
-        rustpotterBuilder.setAveragedThreshold(config.averagedThreshold);
-        rustpotterBuilder.setComparatorRef(config.comparatorRef);
-        rustpotterBuilder.setComparatorBandSize(config.comparatorBandSize);
-        @Nullable
-        VadMode vadMode = getVADMode(config.vadMode);
-        if (vadMode != null) {
-            rustpotterBuilder.setVADMode(vadMode);
-            rustpotterBuilder.setVADSensitivity(config.vadSensitivity);
-            rustpotterBuilder.setVADDelay(config.vadDelay);
-        }
-        @Nullable
-        NoiseDetectionMode noiseDetectionMode = getNoiseMode(config.noiseDetectionMode);
-        if (noiseDetectionMode != null) {
-            rustpotterBuilder.setNoiseMode(noiseDetectionMode);
-            rustpotterBuilder.setNoiseSensitivity(config.noiseSensitivity);
-        }
-        rustpotterBuilder.setEagerMode(config.eagerMode);
+    private Rustpotter initRustpotter(long frequency, int bitDepth, int channels, Endianness endianness)
+            throws Exception {
+        var rustpotterConfig = initRustpotterConfig();
+        // audio format config just need to be set for initializing the instance, is ignored on config updates
+        rustpotterConfig.setSampleFormat(getIntSampleFormat(bitDepth));
+        rustpotterConfig.setSampleRate(frequency);
+        rustpotterConfig.setChannels(channels);
+        rustpotterConfig.setEndianness(endianness);
         // init the detector
-        var rustpotter = rustpotterBuilder.build();
-        rustpotterBuilder.delete();
+        var rustpotter = new Rustpotter(rustpotterConfig);
+        rustpotterConfig.delete();
         return rustpotter;
     }
 
-    private void processAudioStream(RustpotterJava rustpotter, KSListener ksListener, AudioStream audioStream,
-            AtomicBoolean aborted) {
+    private RustpotterConfig initRustpotterConfig() {
+        var rustpotterConfig = new RustpotterConfig();
+        // detector configs
+        rustpotterConfig.setThreshold(config.threshold);
+        rustpotterConfig.setAveragedThreshold(config.averagedThreshold);
+        rustpotterConfig.setScoreMode(getScoreMode(config.scoreMode));
+        rustpotterConfig.setMinScores(config.minScores);
+        rustpotterConfig.setEager(config.eager);
+        rustpotterConfig.setScoreRef(config.scoreRef);
+        rustpotterConfig.setBandSize(config.bandSize);
+        rustpotterConfig.setVADMode(getVADMode(config.vadMode));
+        rustpotterConfig.setRecordPath(config.record ? RUSTPOTTER_RECORDS_FOLDER.toString() : null);
+        // filter configs
+        rustpotterConfig.setGainNormalizerEnabled(config.gainNormalizer);
+        rustpotterConfig.setMinGain(config.minGain);
+        rustpotterConfig.setMaxGain(config.maxGain);
+        rustpotterConfig.setGainRef(config.gainRef);
+        rustpotterConfig.setBandPassFilterEnabled(config.bandPass);
+        rustpotterConfig.setBandPassLowCutoff(config.lowCutoff);
+        rustpotterConfig.setBandPassHighCutoff(config.highCutoff);
+
+        return rustpotterConfig;
+    }
+
+    private void processAudioStream(RustpotterMutex rustpotter, int bufferSize, long bytesPerMs, KSListener ksListener,
+            AudioStream audioStream, AtomicBoolean aborted) {
         int numBytesRead;
-        var bufferSize = (int) rustpotter.getBytesPerFrame();
         byte[] audioBuffer = new byte[bufferSize];
         int remaining = bufferSize;
+        boolean hasFailed = false;
         while (!aborted.get()) {
             try {
                 numBytesRead = audioStream.read(audioBuffer, bufferSize - remaining, remaining);
-                if (aborted.get()) {
+                if (aborted.get() || numBytesRead == -1) {
                     break;
                 }
                 if (numBytesRead != remaining) {
                     remaining = remaining - numBytesRead;
-                    Thread.sleep(100);
+                    try {
+                        Thread.sleep(remaining / bytesPerMs);
+                    } catch (InterruptedException ignored) {
+                        logger.warn("Thread interrupted while waiting for audio, aborting execution");
+                        aborted.set(true);
+                    }
+                    if (aborted.get()) {
+                        break;
+                    }
                     continue;
                 }
                 remaining = bufferSize;
-                var result = rustpotter.processBuffer(audioBuffer);
+                var result = rustpotter.processBytes(audioBuffer);
+                hasFailed = false;
                 if (result.isPresent()) {
                     var detection = result.get();
-                    logger.debug("keyword '{}' detected with score {}!", detection.getName(), detection.getScore());
+                    if (logger.isDebugEnabled()) {
+                        ArrayList<String> scores = new ArrayList<>();
+                        var scoreNames = detection.getScoreNames().split("\\|\\|");
+                        var scoreValues = detection.getScores();
+                        for (var i = 0; i < Integer.min(scoreNames.length, scoreValues.length); i++) {
+                            scores.add("'" + scoreNames[i] + "': " + scoreValues[i]);
+                        }
+                        logger.debug("Detected '{}' with: Score: {}, AvgScore: {}, Count: {}, Gain: {}, Scores: {}",
+                                detection.getName(), detection.getScore(), detection.getAvgScore(),
+                                detection.getCounter(), detection.getGain(), String.join(", ", scores));
+                    }
                     detection.delete();
                     ksListener.ksEventReceived(new KSpottedEvent());
                 }
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 String errorMessage = e.getMessage();
                 ksListener.ksEventReceived(new KSErrorEvent(errorMessage != null ? errorMessage : "Unexpected error"));
+                if (hasFailed) {
+                    logger.warn("Multiple consecutive errors, stopping service");
+                    break;
+                }
+                hasFailed = true;
             }
         }
+        synchronized (this.runningInstances) {
+            this.runningInstances.remove(rustpotter);
+        }
         rustpotter.delete();
-        logger.debug("rustpotter stopped");
+        logger.debug("Rustpotter stopped");
     }
 
-    private @Nullable VadMode getVADMode(String mode) {
-        switch (mode) {
-            case "low-bitrate":
-                return VadMode.LOW_BITRATE;
-            case "quality":
-                return VadMode.QUALITY;
-            case "aggressive":
-                return VadMode.AGGRESSIVE;
-            case "very-aggressive":
-                return VadMode.VERY_AGGRESSIVE;
-            default:
-                return null;
+    private void asyncUpdateActiveInstances() {
+        int nInstances;
+        synchronized (this.runningInstances) {
+            nInstances = this.runningInstances.size();
+        }
+        if (nInstances == 0) {
+            return;
+        }
+        var rustpotterConfig = initRustpotterConfig();
+        executor.submit(() -> {
+            logger.debug("Updating running instances");
+            synchronized (this.runningInstances) {
+                for (RustpotterMutex rustpotter : this.runningInstances) {
+                    rustpotter.updateConfig(rustpotterConfig);
+                }
+                logger.debug("{} running instances updated", this.runningInstances.size());
+            }
+            rustpotterConfig.delete();
+        });
+    }
+
+    private static SampleFormat getIntSampleFormat(int bitDepth) throws IOException {
+        return switch (bitDepth) {
+            case 8 -> SampleFormat.I8;
+            case 16 -> SampleFormat.I16;
+            case 32 -> SampleFormat.I32;
+            default -> throw new IOException("Unsupported audio bit depth: " + bitDepth);
+        };
+    }
+
+    private ScoreMode getScoreMode(String mode) {
+        return switch (mode) {
+            case "average" -> ScoreMode.AVG;
+            case "median" -> ScoreMode.MEDIAN;
+            case "p25" -> ScoreMode.P25;
+            case "p50" -> ScoreMode.P50;
+            case "p75" -> ScoreMode.P75;
+            case "p80" -> ScoreMode.P80;
+            case "p90" -> ScoreMode.P90;
+            case "p95" -> ScoreMode.P95;
+            default -> ScoreMode.MAX;
+        };
+    }
+
+    private @Nullable VADMode getVADMode(String mode) {
+        return switch (mode) {
+            case "easy" -> VADMode.EASY;
+            case "medium" -> VADMode.MEDIUM;
+            case "hard" -> VADMode.HARD;
+            default -> null;
+        };
+    }
+
+    private void tryCreateDir(Path rustpotterFolder) {
+        if (!Files.exists(rustpotterFolder) || !Files.isDirectory(rustpotterFolder)) {
+            try {
+                Files.createDirectory(rustpotterFolder);
+                logger.info("Folder {} created", rustpotterFolder);
+            } catch (IOException e) {
+                logger.warn("Unable to create folder {}", rustpotterFolder);
+            }
         }
     }
 
-    private @Nullable NoiseDetectionMode getNoiseMode(String mode) {
-        switch (mode) {
-            case "easiest":
-                return NoiseDetectionMode.EASIEST;
-            case "easy":
-                return NoiseDetectionMode.EASY;
-            case "normal":
-                return NoiseDetectionMode.NORMAL;
-            case "hard":
-                return NoiseDetectionMode.HARD;
-            case "hardest":
-                return NoiseDetectionMode.HARDEST;
-            default:
-                return null;
+    private record RustpotterMutex(Rustpotter rustpotter) {
+
+        public Optional<RustpotterDetection> processBytes(byte[] bytes) {
+            synchronized (this.rustpotter) {
+                return this.rustpotter.processBytes(bytes);
+            }
+        }
+
+        public void updateConfig(RustpotterConfig config) {
+            synchronized (this.rustpotter) {
+                this.rustpotter.updateConfig(config);
+            }
+        }
+
+        public void delete() {
+            synchronized (this.rustpotter) {
+                this.rustpotter.delete();
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ public class TapoBindingSettings {
     public static final Integer HTTP_MAX_CONNECTIONS = 10; // setMaxConnectionsPerDestination for HTTP-Client
     public static final Integer HTTP_MAX_QUEUED_REQUESTS = 10; // setMaxRequestsQueuedPerDestination for HTTP-Client
     public static final Integer TAPO_HTTP_TIMEOUT_MS = 5000; // http request timeout
+    public static final Integer TAPO_HTTP_CLOUD_TIMEOUT_MS = 10000; // http request cloud timeout
     public static final Integer TAPO_PING_TIMEOUT_MS = 2000; // ping timeout
     public static final Integer TAPO_REFRESH_MIN_GAP_MS = 5000; // min gap between sending refresh request
     public static final Integer TAPO_SEND_MIN_GAP_MS = 1000; // min gap between sending command request
@@ -52,5 +53,9 @@ public class TapoBindingSettings {
     public static final String DEVICE_CMD_GETINFO = "get_device_info";
     public static final String DEVICE_CMD_SETINFO = "set_device_info";
     public static final String DEVICE_CMD_GETENERGY = "get_energy_usage";
+    public static final String DEVICE_CMD_CHILD_DEVICE_LIST = "get_child_device_list";
+    public static final String DEVICE_CMD_CONTROL_CHILD = "control_child";
+    public static final String DEVICE_CMD_MULTIPLE_REQ = "multipleRequest";
     public static final String DEVICE_CMD_CUSTOM = "custom_command";
+    public static final String DEVICE_CMD_SET_LIGHT_FX = "set_dynamic_light_effect_rule_enable";
 }

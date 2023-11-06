@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,13 @@ package org.openhab.binding.evohome.internal.discovery;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evohome.internal.EvohomeBindingConstants;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
-import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Gateway;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Location;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Locations;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.TemperatureControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Zone;
 import org.openhab.binding.evohome.internal.handler.AccountStatusListener;
 import org.openhab.binding.evohome.internal.handler.EvohomeAccountBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Jasper van Zuijlen - Background discovery
  *
  */
+@NonNullByDefault
 public class EvohomeDiscoveryService extends AbstractDiscoveryService implements AccountStatusListener {
     private final Logger logger = LoggerFactory.getLogger(EvohomeDiscoveryService.class);
     private static final int TIMEOUT = 5;
@@ -86,18 +89,29 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
             logger.debug("Evohome Gateway not online, scanning postponed");
             return;
         }
+        Locations localEvohomeConfig = bridge.getEvohomeConfig();
 
-        for (Location location : bridge.getEvohomeConfig()) {
+        if (localEvohomeConfig == null) {
+            return;
+        }
+        for (Location location : localEvohomeConfig) {
+            if (location == null) {
+                continue;
+            }
             for (Gateway gateway : location.getGateways()) {
                 for (TemperatureControlSystem tcs : gateway.getTemperatureControlSystems()) {
+                    if (tcs == null) {
+                        continue;
+                    }
                     addDisplayDiscoveryResult(location, tcs);
                     for (Zone zone : tcs.getZones()) {
-                        addZoneDiscoveryResult(location, zone);
+                        if (zone != null) {
+                            addZoneDiscoveryResult(location, zone);
+                        }
                     }
                 }
             }
         }
-
         stopScan();
     }
 

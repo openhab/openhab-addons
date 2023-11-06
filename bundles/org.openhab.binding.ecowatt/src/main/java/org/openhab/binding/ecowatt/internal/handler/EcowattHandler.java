@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,6 +116,12 @@ public class EcowattHandler extends BaseThingHandler {
         }
     }
 
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
+    }
+
     /**
      * Schedule the next update of channels.
      *
@@ -195,10 +201,10 @@ public class EcowattHandler extends BaseThingHandler {
             // Invalidate the cache to be sure the next request will trigger the API
             cachedApiResponse.invalidateValue();
 
-            if (retryIfApiLimitReached && exception instanceof EcowattApiLimitException
-                    && ((EcowattApiLimitException) exception).getRetryAfter() > 0) {
+            if (retryIfApiLimitReached && exception instanceof EcowattApiLimitException limitException
+                    && limitException.getRetryAfter() > 0) {
                 // Will retry when the API is available again (just after the limit expired)
-                retryDelay = ((EcowattApiLimitException) exception).getRetryAfter();
+                retryDelay = limitException.getRetryAfter();
             }
         } else {
             updateStatus(ThingStatus.ONLINE);

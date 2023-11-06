@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,8 +72,8 @@ public class SolarMaxHandler extends BaseThingHandler {
      * This is called to start the refresh job and also to reset that refresh job when a config change is done.
      */
     private void configurePolling() {
-        logger.debug("Polling data from {} at {}:{} every {} seconds ", getThing().getUID(), this.config.host,
-                this.config.portNumber, this.config.refreshInterval);
+        logger.debug("Polling data from {} at {}:{} (Device Address {}) every {} seconds ", getThing().getUID(),
+                this.config.host, this.config.portNumber, this.config.deviceAddress, this.config.refreshInterval);
         if (this.config.refreshInterval > 0) {
             if (pollingJob == null || pollingJob.isCancelled()) {
                 pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, this.config.refreshInterval,
@@ -98,10 +98,12 @@ public class SolarMaxHandler extends BaseThingHandler {
     };
 
     private synchronized void updateValuesFromDevice() {
-        logger.debug("Updating data from {} at {}:{} ", getThing().getUID(), this.config.host, this.config.portNumber);
+        logger.debug("Updating data from {} at {}:{} (Device Address {}) ", getThing().getUID(), this.config.host,
+                this.config.portNumber, this.config.deviceAddress);
         // get the data from the SolarMax device
         try {
-            SolarMaxData solarMaxData = SolarMaxConnector.getAllValuesFromSolarMax(config.host, config.portNumber);
+            SolarMaxData solarMaxData = SolarMaxConnector.getAllValuesFromSolarMax(config.host, config.portNumber,
+                    this.config.deviceAddress);
 
             if (solarMaxData.wasCommunicationSuccessful()) {
                 updateStatus(ThingStatus.ONLINE);

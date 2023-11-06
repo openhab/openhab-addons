@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,9 +105,11 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     }
 
     private void cancelTransactionTimer() {
-        if (transactionTimeoutTimer != null) {
-            transactionTimeoutTimer.cancel(true);
-            transactionTimeoutTimer = null;
+        @Nullable
+        Future<?> transTimer = transactionTimeoutTimer;
+        if (transTimer != null) {
+            transTimer.cancel(true);
+            transTimer = null;
         }
     }
 
@@ -121,17 +123,12 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
         });
     }
 
-    @SuppressWarnings({ "null", "unused" })
     private Optional<BlueGigaUniqueCommand> getNextFrame() {
         while (!sendQueue.isEmpty()) {
+            @Nullable
             BlueGigaUniqueCommand frame = sendQueue.poll();
             if (frame != null) {
-                if (frame.getMessage() != null) {
-                    return Optional.of(frame);
-                } else {
-                    logger.debug("Null message found from queue, skip it");
-                    continue;
-                }
+                return Optional.of(frame);
             } else {
                 logger.debug("Null frame found from queue, skip it");
                 continue;
@@ -145,7 +142,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
      * FIFO queue. This method queues a {@link BlueGigaCommand} frame without
      * waiting for a response.
      *
-     * @param transaction
+     * @param request
      *            {@link BlueGigaUniqueCommand}
      */
     public void queueFrame(BlueGigaUniqueCommand request) {
@@ -157,7 +154,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     private void sendNextTransactionIfNoOngoing() {
         synchronized (this) {
             logger.trace("Send next transaction if no ongoing");
-            if (!ongoingTransactionId.isPresent()) {
+            if (ongoingTransactionId.isEmpty()) {
                 sendNextFrame();
             }
         }
@@ -246,10 +243,8 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
 
                 logger.trace("Expected frame: {}, received frame: {}", expected.getSimpleName(), bleResponse);
 
-                if (bleCommand instanceof BlueGigaDeviceCommand && bleResponse instanceof BlueGigaDeviceResponse) {
-                    BlueGigaDeviceCommand devCommand = (BlueGigaDeviceCommand) bleCommand;
-                    BlueGigaDeviceResponse devResponse = (BlueGigaDeviceResponse) bleResponse;
-
+                if (bleCommand instanceof BlueGigaDeviceCommand devCommand
+                        && bleResponse instanceof BlueGigaDeviceResponse devResponse) {
                     logger.trace("Expected connection id: {}, received connection id: {}", devCommand.getConnection(),
                             devResponse.getConnection());
 

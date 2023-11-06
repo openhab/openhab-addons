@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Possible states for a smoke detector.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
@@ -27,7 +27,6 @@ public enum SmokeDetectorCheckState {
     SMOKE_TEST_FAILED;
 
     public static SmokeDetectorCheckState from(String stateString) {
-
         try {
             return SmokeDetectorCheckState.valueOf(stateString);
         } catch (Exception a) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.openhab.binding.nanoleaf.internal.layout.PanelState;
 import org.openhab.binding.nanoleaf.internal.layout.Point2D;
 import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * Draws shapes, which are panels with a single LED.
@@ -77,7 +78,7 @@ public abstract class Shape extends Panel {
         }
 
         HSBType color = state.getHSBForPanel(getPanelId());
-        graphics.setColor(new Color(color.getRGB()));
+        graphics.setColor(new Color(ColorUtil.hsbTosRgb(color)));
         if (settings.shouldFillWithColor()) {
             graphics.fillPolygon(p);
         }

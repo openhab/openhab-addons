@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -193,6 +193,7 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
     /**
      * Build rest endpoint URL for request the planned timetable.
      */
+    @SuppressWarnings("PMD.UnsynchronizedStaticFormatter")
     private String buildPlanRequestURL(final String evaNr, final Date date) {
         synchronized (this) {
             final String dateParam = DATE_FORMAT.format(date);

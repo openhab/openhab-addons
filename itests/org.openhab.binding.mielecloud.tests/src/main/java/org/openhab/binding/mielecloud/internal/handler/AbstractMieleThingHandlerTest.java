@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,8 +20,8 @@ import static org.openhab.binding.mielecloud.internal.util.MieleCloudBindingInte
 import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.setPrivate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -170,7 +170,7 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         OAuthFactory oAuthFactory = mock(OAuthFactory.class);
         when(oAuthFactory
                 .getOAuthClientService(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString()))
-                        .thenReturn(oAuthClientService);
+                .thenReturn(oAuthClientService);
 
         OpenHabOAuthTokenRefresher tokenRefresher = getService(OAuthTokenRefresher.class,
                 OpenHabOAuthTokenRefresher.class);
@@ -181,9 +181,8 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
                 .withLabel("Miele@home Account")
-                .withConfiguration(
-                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
-                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
+                .withConfiguration(new Configuration(Map.of(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                        MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .build();
         assertNotNull(bridge);
 
@@ -209,15 +208,17 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
     }
 
     protected AbstractMieleThingHandler createThingHandler(ThingTypeUID thingTypeUid, ThingUID thingUid,
-            Class<? extends AbstractMieleThingHandler> expectedHandlerClass, String deviceIdentifier) {
+            Class<? extends AbstractMieleThingHandler> expectedHandlerClass, String deviceIdentifier,
+            String thingTypeVersion) {
         ThingRegistry registry = getThingRegistry();
 
         List<Channel> channels = createChannelsForThingHandler(thingTypeUid, thingUid);
 
         Thing thing = ThingBuilder.create(thingTypeUid, thingUid)
-                .withConfiguration(new Configuration(Collections
-                        .singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, deviceIdentifier)))
-                .withBridge(getBridge().getUID()).withChannels(channels).withLabel("DA-6996").build();
+                .withConfiguration(new Configuration(
+                        Map.of(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, deviceIdentifier)))
+                .withBridge(getBridge().getUID()).withChannels(channels).withLabel("DA-6996")
+                .withProperty("thingTypeVersion", thingTypeVersion).build();
         assertNotNull(thing);
 
         registry.add(thing);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,4 +38,5 @@ public class MailBindingConstants {
             Arrays.asList(THING_TYPE_SMTPSERVER, THING_TYPE_IMAPSERVER, THING_TYPE_POP3SERVER));
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_FOLDER_MAILCOUNT = new ChannelTypeUID(BINDING_ID, "mailcount");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_MAIL_CONTENT = new ChannelTypeUID(BINDING_ID, "content");
 }

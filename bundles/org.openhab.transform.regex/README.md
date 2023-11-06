@@ -8,7 +8,7 @@ A full regex is in the form `s/<regex>/<substitution>/g` whereat the delimiter `
 The regular expression in the format `s/<regex>/result/g`, replaces all occurrences of `<regex>` in the source string with `result`.
 The regular expression in the format `s/<regex>/result/` (without `g`), replaces the first occurrence of `<regex>` in the source string with `result`.
 
-If the regular expression contains a [capture group](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html#cg) defined by `()`, it returns the captured string. 
+If the regular expression contains a [capture group](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/regex/Pattern.html#cg) defined by `()`, it returns the captured string.
 Multiple capture groups can be used to retrieve multiple strings and can be combined as a result string defined in the `substitution`.
 
 The transformation can be set to be restricted to only match if the input string begins with a character by prepending `^` to the beginning of a pattern or to only match if the input string ends with a specified character by appending `$` at the end.
@@ -45,6 +45,7 @@ Number  Temperature "Temperature [%.1f °C]"
 ```
 
 The regex pattern is is defined as follows
+
 * `.*` match any character, zero and unlimited times
 * `=` match the equal sign literally, used to find the position
 *  `()` capture group match 

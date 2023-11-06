@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import javax.net.ssl.TrustManager;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -68,25 +69,27 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory) {
         this.localeProvider = localeProvider;
-        this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID);
-    }
-
-    @Override
-    protected void activate(ComponentContext componentContext) {
-        super.activate(componentContext);
-        httpClient.setFollowRedirects(false);
-        httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
-
+        SslContextFactory sslContextFactory = new SslContextFactory.Client();
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
-            httpClient.getSslContextFactory().setSslContext(sslContext);
-            httpClient.start();
+            sslContextFactory.setSslContext(sslContext);
         } catch (NoSuchAlgorithmException e) {
             logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'", e.getMessage(),
                     e);
         } catch (KeyManagementException e) {
             logger.warn("An exception occurred while initialising the SSL context : '{}'", e.getMessage(), e);
+        }
+        this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
+        httpClient.setFollowRedirects(false);
+        httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        try {
+            httpClient.start();
         } catch (Exception e) {
             logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
         }

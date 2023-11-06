@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -146,6 +146,9 @@ public class VeluxBindingConstants {
 
     // List of all virtual shutter channel ids
     public static final String CHANNEL_VSHUTTER_POSITION = "vposition";
+
+    public static final Set<String> POSITION_CHANNELS = Set.of(CHANNEL_ACTUATOR_POSITION, CHANNEL_ACTUATOR_STATE,
+            CHANNEL_VANE_POSITION, CHANNEL_VSHUTTER_POSITION);
 
     // Helper definitions
     public static final String BINDING_VALUES_SEPARATOR = ",";

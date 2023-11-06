@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,10 +18,11 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link DeviceBinaryInput} contains all information of a device binary input, e.g. binary input type id (see
- * {@link DeviceBinarayInputEnum}, state and so on.
+ * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum},
+ * state and so on.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  *
  */
 public class DeviceBinaryInput {
@@ -33,8 +34,11 @@ public class DeviceBinaryInput {
     private Short stateValue;
 
     /**
-     * Creates a new {@link DeviceBinarayInputEnum} through the {@link JsonObject} of the binary inputs at json response
-     * from digitalSTROM JSON-API or property-tree. Will be automatically added to a {@link DeviceImpl}, if binary
+     * Creates a new
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum}
+     * through the {@link JsonObject} of the binary inputs at json response
+     * from digitalSTROM JSON-API or property-tree. Will be automatically added to a
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.impl.DeviceImpl}, if binary
      * inputs exists.
      *
      * @param jsonObject must not be null
@@ -108,7 +112,7 @@ public class DeviceBinaryInput {
 
     /**
      * Returns the input type id of this {@link DeviceBinaryInput}. Available input types see
-     * {@link DeviceBinarayInputEnum}.
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum}.
      *
      * @return the inputType
      */

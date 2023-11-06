@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public class OnOffResponse implements LGSerialResponse {
         this.success = success;
 
         if (success) {
-            state = data.equals("01") ? OnOffType.ON : OnOffType.OFF;
+            state = "01".equals(data) ? OnOffType.ON : OnOffType.OFF;
         } else {
             state = new StringType(data);
         }

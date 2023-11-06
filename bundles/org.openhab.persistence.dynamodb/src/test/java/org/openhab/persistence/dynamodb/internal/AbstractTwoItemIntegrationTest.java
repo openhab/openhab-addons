@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -317,7 +317,10 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
 
             FilterCriteria criteria = new FilterCriteria();
             criteria.setOperator(Operator.GT);
-            criteria.setState(getQueryItemStateBetween());
+            State filterState = getQueryItemStateBetween();
+            if (filterState != null) {
+                criteria.setState(filterState);
+            }
             criteria.setItemName(getItemName());
             criteria.setBeginDate(beforeStore);
             criteria.setEndDate(afterStore2);

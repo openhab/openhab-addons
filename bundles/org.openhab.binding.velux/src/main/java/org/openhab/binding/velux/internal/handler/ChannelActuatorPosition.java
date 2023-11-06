@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,10 +95,18 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 break;
             }
 
+            final VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
+
             GetProduct bcp = null;
             switch (channelId) {
                 case CHANNEL_ACTUATOR_POSITION:
                 case CHANNEL_ACTUATOR_STATE:
+                    // apparently Somfy products do not to support new API; so use older API instead
+                    if (existingProducts.get(veluxActuator.getProductBridgeIndex()).isSomfyProduct()) {
+                        bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProduct();
+                        break;
+                    }
+                    // fall through
                 case CHANNEL_VANE_POSITION:
                     bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProductStatus();
                 default:
@@ -118,7 +126,6 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
 
             VeluxProduct newProduct = bcp.getProduct();
             ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
-            VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
             VeluxProduct existingProduct = existingProducts.get(productBridgeIndex);
             ProductState productState = newProduct.getProductState();
             switch (productState) {
@@ -221,10 +228,10 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
 
             switch (channelId) {
                 case CHANNEL_VANE_POSITION:
-                    if (command instanceof PercentType) {
+                    if (command instanceof PercentType percentCommand) {
                         VeluxProduct existingProductClone = existingProducts.get(productBridgeIndex).clone();
-                        existingProductClone.setVanePosition(
-                                new VeluxProductPosition((PercentType) command).getPositionAsVeluxType());
+                        existingProductClone
+                                .setVanePosition(new VeluxProductPosition(percentCommand).getPositionAsVeluxType());
                         functionalParameters = existingProductClone.getFunctionalParameters();
                     }
                     break;
@@ -236,12 +243,12 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                                 : new VeluxProductPosition(PercentType.HUNDRED);
                     } else if (command instanceof StopMoveType) {
                         mainParameter = StopMoveType.STOP.equals(command) ? new VeluxProductPosition() : mainParameter;
-                    } else if (command instanceof PercentType) {
-                        PercentType ptCommand = (PercentType) command;
+                    } else if (command instanceof PercentType percentCommand) {
                         if (veluxActuator.isInverted()) {
-                            ptCommand = new PercentType(PercentType.HUNDRED.intValue() - ptCommand.intValue());
+                            percentCommand = new PercentType(
+                                    PercentType.HUNDRED.intValue() - percentCommand.intValue());
                         }
-                        mainParameter = new VeluxProductPosition(ptCommand);
+                        mainParameter = new VeluxProductPosition(percentCommand);
                     }
                     break;
 
@@ -261,7 +268,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 LOGGER.debug("handleCommand(): sending command '{}' for channel id '{}'.", command, channelId);
                 RunProductCommand bcp = thisBridgeHandler.thisBridge.bridgeAPI().runProductCommand();
                 boolean success = false;
-                if (bcp instanceof SCrunProductCommand) {
+                if (bcp instanceof SCrunProductCommand productCommand) {
                     synchronized (bcp) {
                         if (bcp.setNodeIdAndParameters(productBridgeIndex.toInt(), mainParameter, functionalParameters)
                                 && thisBridgeHandler.thisBridge.bridgeCommunicate(bcp)
@@ -271,7 +278,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                                     .autoRefresh(thisBridgeHandler.thisBridge)) {
                                 LOGGER.trace("handleCommand(): actuator position will be updated via polling.");
                             }
-                            if (existingProducts.update(((SCrunProductCommand) bcp).getProduct())) {
+                            if (existingProducts.update(productCommand.getProduct())) {
                                 LOGGER.trace("handleCommand(): actuator position immediate update requested.");
                             }
                         }

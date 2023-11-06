@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
-import org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.AbstractGeneralDeviceInformations;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Circuit;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
@@ -72,8 +71,9 @@ public class StructureManagerImpl implements StructureManager {
     }
 
     /**
-     * Query to get all zone and group names. Can be executed with {@link DsAPI#query(String, String)} or
-     * {@link DsAPI#query2(String, String)}.
+     * Query to get all zone and group names. Can be executed with
+     * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI#query(String, String)} or
+     * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI#query2(String, String)}.
      */
     public static final String ZONE_GROUP_NAMES = "/apartment/zones/*(ZoneID,name)/groups/*(group,name)";
 

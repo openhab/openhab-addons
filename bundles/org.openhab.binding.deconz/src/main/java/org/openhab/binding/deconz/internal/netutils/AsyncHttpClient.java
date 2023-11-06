@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class AsyncHttpClient {
      * @param timeout A timeout
      * @return The result
      */
-    public CompletableFuture<Result> post(String address, String jsonString, int timeout) {
+    public CompletableFuture<Result> post(String address, @Nullable String jsonString, int timeout) {
         return doNetwork(HttpMethod.POST, address, jsonString, timeout);
     }
 
@@ -101,15 +101,16 @@ public class AsyncHttpClient {
         }
 
         request.method(method).timeout(timeout, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
-            @NonNullByDefault({})
+
             @Override
-            public void onComplete(org.eclipse.jetty.client.api.Result result) {
+            public void onComplete(@NonNullByDefault({}) org.eclipse.jetty.client.api.Result result) {
                 final HttpResponse response = (HttpResponse) result.getResponse();
                 if (result.getFailure() != null) {
                     f.completeExceptionally(result.getFailure());
                     return;
                 }
-                f.complete(new Result(getContentAsString(), response.getStatus()));
+                String content = getContentAsString();
+                f.complete(new Result(content != null ? content : "", response.getStatus()));
             }
         });
         return f;

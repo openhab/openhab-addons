@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,16 +27,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface TimetablesV1ImplTestHelper {
 
-    public static final String EVA_LEHRTE = "8000226";
-    public static final String EVA_HANNOVER_HBF = "8000152";
-    public static final String CLIENT_ID = "bdwrpmxuo6157jrekftlbcc6ju9awo";
-    public static final String CLIENT_SECRET = "354c8161cd7fb0936c840240280c131e";
+    static final String EVA_LEHRTE = "8000226";
+    static final String EVA_HANNOVER_HBF = "8000152";
+    static final String CLIENT_ID = "bdwrpmxuo6157jrekftlbcc6ju9awo";
+    static final String CLIENT_SECRET = "354c8161cd7fb0936c840240280c131e";
 
     /**
      * Creates a {@link TimetablesApiTestModule} that uses http response data from file system.
      * Uses default-testdata from directory /timetablesData
      */
-    public default TimetablesApiTestModule createApiWithTestdata() throws Exception {
+    default TimetablesApiTestModule createApiWithTestdata() throws Exception {
         return this.createApiWithTestdata("/timetablesData");
     }
 
@@ -45,7 +45,7 @@ public interface TimetablesV1ImplTestHelper {
      * 
      * @param dataDirectory Directory within test-resources containing the stub-data.
      */
-    public default TimetablesApiTestModule createApiWithTestdata(String dataDirectory) throws Exception {
+    default TimetablesApiTestModule createApiWithTestdata(String dataDirectory) throws Exception {
         final URL timetablesData = getClass().getResource(dataDirectory);
         assertNotNull(timetablesData);
         final File testDataDir = new File(timetablesData.toURI());

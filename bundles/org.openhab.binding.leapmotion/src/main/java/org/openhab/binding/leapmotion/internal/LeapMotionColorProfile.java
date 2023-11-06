@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,8 +48,8 @@ public class LeapMotionColorProfile implements TriggerProfile {
 
     @Override
     public void onStateUpdateFromItem(State state) {
-        if (state instanceof HSBType) {
-            lastState = (HSBType) state;
+        if (state instanceof HSBType hsbState) {
+            lastState = hsbState;
         } else {
             PercentType currentBrightness = state.as(PercentType.class);
             if (currentBrightness != null) {
@@ -94,7 +94,6 @@ public class LeapMotionColorProfile implements TriggerProfile {
         int hue = clockwise ? (color.getHue().toBigDecimal().intValue() - 20 + 360) % 360
                 : (color.getHue().toBigDecimal().intValue() + 20 + 360) % 360;
         logger.debug("New hue value: {}", hue);
-        HSBType newState = new HSBType(new DecimalType(hue), color.getSaturation(), color.getBrightness());
-        return newState;
+        return new HSBType(new DecimalType(hue), color.getSaturation(), color.getBrightness());
     }
 }

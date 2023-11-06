@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.verisure.internal.discovery;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -107,7 +107,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void activate() {
-        super.activate(Collections.singletonMap(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, true));
+        super.activate(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, true));
     }
 
     @Override
@@ -117,8 +117,8 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VerisureBridgeHandler) {
-            verisureBridgeHandler = (VerisureBridgeHandler) handler;
+        if (handler instanceof VerisureBridgeHandler verisureBridgeHandler) {
+            this.verisureBridgeHandler = verisureBridgeHandler;
             bridgeUID = verisureBridgeHandler.getUID();
         }
     }

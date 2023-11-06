@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Java bean used to return items queries results from InfluxDB.
@@ -30,8 +29,8 @@ import org.openhab.core.types.UnDefType;
 public class InfluxDBHistoricItem implements HistoricItem {
 
     private String name = "";
-    private State state = UnDefType.NULL;
-    private ZonedDateTime timestamp;
+    private final State state;
+    private final ZonedDateTime timestamp;
 
     public InfluxDBHistoricItem(String name, State state, ZonedDateTime timestamp) {
         this.name = name;
@@ -53,17 +52,9 @@ public class InfluxDBHistoricItem implements HistoricItem {
         return state;
     }
 
-    public void setState(State state) {
-        this.state = state;
-    }
-
     @Override
     public ZonedDateTime getTimestamp() {
         return timestamp;
-    }
-
-    public void setTimestamp(ZonedDateTime timestamp) {
-        this.timestamp = timestamp;
     }
 
     @Override

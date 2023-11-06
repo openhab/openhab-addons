@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -329,13 +329,13 @@ public enum Measurand {
             if (customizations.length == 0) {
                 this.customizations = null;
             } else {
-
                 this.customizations = Collections.unmodifiableMap(
                         Arrays.stream(customizations).collect(Collectors.toMap(ParserCustomization::getType,
                                 customization -> customization, (a, b) -> b, HashMap::new)));
             }
         }
 
+        @Override
         public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
                 @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
             MeasureType measureType = getMeasureType(customizationType);
@@ -348,8 +348,9 @@ public enum Measurand {
         }
 
         public MeasureType getMeasureType(@Nullable ParserCustomizationType customizationType) {
-            if (customizationType == null)
+            if (customizationType == null) {
                 return measureType;
+            }
             return Optional.ofNullable(customizations).map(m -> m.get(customizationType))
                     .map(ParserCustomization::getMeasureType).orElse(measureType);
         }

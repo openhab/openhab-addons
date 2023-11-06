@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,6 +100,8 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_HISTORY_DURATION = "cleaning#last_clean_duration";
     public static final String CHANNEL_HISTORY_ERROR = "cleaning#last_clean_error";
     public static final String CHANNEL_HISTORY_FINISH = "cleaning#last_clean_finish";
+    public static final String CHANNEL_HISTORY_FINISHREASON = "cleaning#last_clean_finish_reason";
+    public static final String CHANNEL_HISTORY_DUSTCOLLECTION = "cleaning#last_clean_dustcollection_status";
     public static final String CHANNEL_HISTORY_RECORD = "cleaning#last_clean_record";
     public static final String CHANNEL_VACUUM_MAP = "cleaning#map";
 

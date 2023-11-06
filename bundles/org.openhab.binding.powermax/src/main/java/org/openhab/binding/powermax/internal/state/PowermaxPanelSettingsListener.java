@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ public interface PowermaxPanelSettingsListener {
      *
      * @param settings the updated alarm panel settings or null if the panel settings are unknown
      */
-    public void onPanelSettingsUpdated(@Nullable PowermaxPanelSettings settings);
+    void onPanelSettingsUpdated(@Nullable PowermaxPanelSettings settings);
 
     /**
      * This method is called when the bridge thing handler identifies
@@ -39,5 +39,5 @@ public interface PowermaxPanelSettingsListener {
      * @param zoneNumber the zone number
      * @param settings the updated alarm panel settings or null if the panel settings are unknown
      */
-    public void onZoneSettingsUpdated(int zoneNumber, @Nullable PowermaxPanelSettings settings);
+    void onZoneSettingsUpdated(int zoneNumber, @Nullable PowermaxPanelSettings settings);
 }

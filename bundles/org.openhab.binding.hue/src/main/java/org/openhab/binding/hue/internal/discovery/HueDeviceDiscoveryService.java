@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HueBridgeServiceTracker} tracks for Hue lights, sensors and groups which are connected
+ * The {@link HueDeviceDiscoveryService} tracks for Hue lights, sensors and groups which are connected
  * to a paired Hue Bridge. The default search time for Hue is 60 seconds.
  *
  * @author Kai Kreuzer - Initial contribution
@@ -277,7 +277,7 @@ public class HueDeviceDiscoveryService extends AbstractDiscoveryService implemen
 
             String name;
             if ("0".equals(group.getId())) {
-                name = "@text/discovery.group.all_lights.label";
+                name = "@text/discovery.group.all-lights.label";
             } else if ("Room".equals(group.getType())) {
                 name = group.getName();
             } else {

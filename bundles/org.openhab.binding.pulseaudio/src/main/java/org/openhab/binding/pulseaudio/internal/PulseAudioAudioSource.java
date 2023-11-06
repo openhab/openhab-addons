@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -162,13 +162,13 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                                         // task has been ended while writing
                                         return;
                                     }
-                                    logger.warn("InterruptedIOException while writing to from pulse source pipe: {}",
+                                    logger.warn("InterruptedIOException while writing from pulse source to pipe: {}",
                                             getExceptionMessage(e));
                                 } catch (IOException e) {
-                                    logger.warn("IOException while writing to from pulse source pipe: {}",
+                                    logger.warn("IOException while writing from pulse source to pipe: {}",
                                             getExceptionMessage(e));
                                 } catch (RuntimeException e) {
-                                    logger.warn("RuntimeException while writing to pulse source pipe: {}",
+                                    logger.warn("RuntimeException while writing from pulse source to pipe: {}",
                                             getExceptionMessage(e));
                                 }
                             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.onewire.internal;
 
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -52,9 +52,9 @@ public class Util {
         if (temperatureDegC == null) {
             throw new IllegalArgumentException("could not change unit");
         }
-        Double theta = temperatureDegC.doubleValue();
+        double theta = temperatureDegC.doubleValue();
         // saturation vapor pressure in kg/(m s^2)
-        Double saturationVaporPressure = 611.2 * Math.exp(17.62 * theta / (243.12 + theta));
+        double saturationVaporPressure = 611.2 * Math.exp(17.62 * theta / (243.12 + theta));
         // absolute humidity in kg/m^3
         Double aH = relativeHumidity.doubleValue() / 100 * saturationVaporPressure / (461.52 * (273.15 + theta));
         State absoluteHumidity = new QuantityType<>(aH, Units.KILOGRAM_PER_CUBICMETRE).toUnit("g/m³");
@@ -78,24 +78,32 @@ public class Util {
         if (temperatureDegC == null) {
             throw new IllegalArgumentException("could not change unit");
         }
-        Double theta = temperatureDegC.doubleValue();
-        Double rH = relativeHumidity.doubleValue() / 100;
+        double theta = temperatureDegC.doubleValue();
+        double rH = relativeHumidity.doubleValue() / 100;
         // dewpoint in °C
         Double dP = 243.12 * (((17.62 * theta) / (243.12 + theta) + Math.log(rH))
                 / (((17.62 * 243.12) / (243.12 + theta) - Math.log(rH))));
-        State dewPoint = new QuantityType<>(dP, SIUnits.CELSIUS);
-        return dewPoint;
+        return new QuantityType<>(dP, SIUnits.CELSIUS);
     }
 
     public static Map<String, String> readPropertiesFile(String filename) {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource(filename);
+        ClassLoader classLoader = OwBindingConstants.class.getClassLoader();
+        if (classLoader == null) {
+            LOGGER.warn("Could not get classloader, binding will fail.");
+            return Map.of();
+        }
         Properties properties = new Properties();
-        try {
-            properties.load(resource.openStream());
+
+        try (InputStream inputStream = classLoader.getResourceAsStream(filename)) {
+            if (inputStream == null) {
+                LOGGER.warn("Could not get input stream for resource file '{}', binding will fail.", filename);
+                return Map.of();
+            }
+            properties.load(inputStream);
             return properties.entrySet().stream()
                     .collect(Collectors.toMap(e -> (String) e.getKey(), e -> (String) e.getValue()));
         } catch (IOException e) {
-            LOGGER.warn("Could not read resource file {}, binding will probably fail: {}", filename, e.getMessage());
+            LOGGER.warn("Could not read resource file {}, binding will fail: {}", filename, e.getMessage());
             return new HashMap<>();
         }
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,8 +40,7 @@ public class DoorTagChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        if (naThing instanceof HomeStatusModule) {
-            HomeStatusModule doorTag = (HomeStatusModule) naThing;
+        if (naThing instanceof HomeStatusModule doorTag) {
             if (CHANNEL_STATUS.equalsIgnoreCase(channelId)) {
                 return doorTag.getStatus().map(status -> (State) OpenClosedType.valueOf(status.toUpperCase()))
                         .orElse(UnDefType.UNDEF);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,8 +71,8 @@ public class MyQGarageDoorHandler extends BaseThingHandler implements MyQDeviceH
                 if (command instanceof UpDownType) {
                     cmd = command == UpDownType.UP ? "open" : "close";
                 }
-                if (command instanceof PercentType) {
-                    cmd = ((PercentType) command).as(UpDownType.class) == UpDownType.UP ? "open" : "close";
+                if (command instanceof PercentType percentage) {
+                    cmd = percentage.as(UpDownType.class) == UpDownType.UP ? "open" : "close";
                 }
                 if (command instanceof StringType) {
                     cmd = command.toString();

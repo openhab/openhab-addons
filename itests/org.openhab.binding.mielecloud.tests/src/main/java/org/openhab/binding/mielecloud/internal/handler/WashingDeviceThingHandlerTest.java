@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,17 +28,19 @@ import org.openhab.binding.mielecloud.internal.webservice.api.ActionsState;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.api.PowerStatus;
 import org.openhab.binding.mielecloud.internal.webservice.api.ProgramStatus;
+import org.openhab.binding.mielecloud.internal.webservice.api.Quantity;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.StateType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * @author Björn Lange - Initial contribution
  * @author Benjamin Bolte - Add info state channel and map signal flags from API tests
- * @author Björn Lange - Add elapsed time channel
+ * @author Björn Lange - Add elapsed time, current water and energy consumption channels
  */
 @NonNullByDefault
 public class WashingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
@@ -46,7 +48,7 @@ public class WashingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_WASHING_MACHINE, WASHING_MACHINE_THING_UID,
-                WashingDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                WashingDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "1");
     }
 
     @Test
@@ -71,6 +73,8 @@ public class WashingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
         when(deviceState.getTargetTemperature(0)).thenReturn(Optional.empty());
         when(deviceState.getLightState()).thenReturn(Optional.empty());
         when(deviceState.getDoorState()).thenReturn(Optional.empty());
+        when(deviceState.getCurrentWaterConsumption()).thenReturn(Optional.empty());
+        when(deviceState.getCurrentEnergyConsumption()).thenReturn(Optional.empty());
 
         // when:
         getBridgeHandler().onDeviceStateUpdated(deviceState);
@@ -92,6 +96,8 @@ public class WashingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
             assertEquals(NULL_VALUE_STATE, getChannelState(TEMPERATURE_TARGET));
             assertEquals(NULL_VALUE_STATE, getChannelState(LIGHT_SWITCH));
             assertEquals(NULL_VALUE_STATE, getChannelState(DOOR_STATE));
+            assertEquals(NULL_VALUE_STATE, getChannelState(WATER_CONSUMPTION_CURRENT));
+            assertEquals(NULL_VALUE_STATE, getChannelState(ENERGY_CONSUMPTION_CURRENT));
         });
     }
 
@@ -120,6 +126,8 @@ public class WashingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
         when(deviceState.hasInfo()).thenReturn(true);
         when(deviceState.getLightState()).thenReturn(Optional.of(false));
         when(deviceState.getDoorState()).thenReturn(Optional.of(true));
+        when(deviceState.getCurrentWaterConsumption()).thenReturn(Optional.of(new Quantity(0.5, "l")));
+        when(deviceState.getCurrentEnergyConsumption()).thenReturn(Optional.of(new Quantity(1.5, "kWh")));
 
         // when:
         getBridgeHandler().onDeviceStateUpdated(deviceState);
@@ -143,6 +151,8 @@ public class WashingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
             assertEquals(OnOffType.ON, getChannelState(INFO_STATE));
             assertEquals(OnOffType.OFF, getChannelState(LIGHT_SWITCH));
             assertEquals(OnOffType.ON, getChannelState(DOOR_STATE));
+            assertEquals(new QuantityType<>(0.5, Units.LITRE), getChannelState(WATER_CONSUMPTION_CURRENT));
+            assertEquals(new QuantityType<>(1.5, Units.KILOWATT_HOUR), getChannelState(ENERGY_CONSUMPTION_CURRENT));
         });
     }
 

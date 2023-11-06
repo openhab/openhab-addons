@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,10 +20,10 @@ import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -84,10 +84,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link LivisiBridgeHandler} is responsible for handling the LIVISI SmartHome controller including the connection
  * to the LIVISI SmartHome backend for all communications with the LIVISI SmartHome {@link DeviceDTO}s.
- * <p/>
+ * <p>
  * It implements the {@link AccessTokenRefreshListener} to handle updates of the oauth2 tokens and the
  * {@link EventListener} to handle {@link EventDTO}s, that are received by the {@link LivisiWebSocket}.
- * <p/>
+ * <p>
  * The {@link DeviceDTO}s are organized by the {@link DeviceStructureManager}, which is also responsible for the
  * connection
  * to the LIVISI SmartHome webservice via the {@link LivisiClient}.
@@ -114,7 +114,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private @Nullable ScheduledFuture<?> reInitJob;
     private @Nullable ScheduledFuture<?> bridgeRefreshJob;
     private @NonNullByDefault({}) LivisiBridgeConfiguration bridgeConfiguration;
-    private @NonNullByDefault({}) OAuthClientService oAuthService;
+    private @Nullable OAuthClientService oAuthService;
     private String configVersion = "";
 
     /**
@@ -137,7 +137,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(LivisiDeviceDiscoveryService.class);
+        return Set.of(LivisiDeviceDiscoveryService.class);
     }
 
     @Override
@@ -153,8 +153,9 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     private void initializeClient() {
         String tokenURL = URLCreator.createTokenURL(bridgeConfiguration.host);
-        oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), tokenURL, tokenURL,
-                "clientId", "clientPass", null, true);
+        OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), tokenURL,
+                tokenURL, "clientId", "clientPass", null, true);
+        this.oAuthService = oAuthService;
         client = createClient(oAuthService);
         deviceStructMan = new DeviceStructureManager(createFullDeviceManager(client));
         oAuthService.addAccessTokenRefreshListener(this);
@@ -349,11 +350,23 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         unregisterDeviceStatusListener(bridgeId);
         cancelJobs();
         stopWebSocket();
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService != null) {
+            oAuthService.removeAccessTokenRefreshListener(this);
+            oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+            this.oAuthService = null;
+        }
         client = null;
         deviceStructMan = null;
 
         super.dispose();
         logger.debug("LIVISI SmartHome bridge handler shut down.");
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
     }
 
     private synchronized void cancelJobs() {
@@ -551,8 +564,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onError(final Throwable cause) {
-        if (cause instanceof Exception) {
-            handleClientException((Exception) cause);
+        if (cause instanceof Exception exception) {
+            handleClientException(exception);
         }
     }
 
@@ -884,6 +897,10 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private void requestAccessToken() throws OAuthException, IOException, OAuthResponseException {
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService == null) {
+            throw new OAuthException("OAuth service is not initialized");
+        }
         oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(LivisiBindingConstants.USERNAME,
                 bridgeConfiguration.password, null);
     }

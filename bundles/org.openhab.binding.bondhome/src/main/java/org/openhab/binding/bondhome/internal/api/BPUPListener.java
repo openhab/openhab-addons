@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,8 +66,7 @@ public class BPUPListener implements Runnable {
     /**
      * Constructor of the receiver runnable thread.
      *
-     * @param address The address of the Bond Bridge
-     * @throws SocketException is some problem occurs opening the socket.
+     * @param bridgeHandler The handler of the Bond Bridge
      */
     public BPUPListener(BondBridgeHandler bridgeHandler) {
         logger.debug("Starting BPUP Listener...");

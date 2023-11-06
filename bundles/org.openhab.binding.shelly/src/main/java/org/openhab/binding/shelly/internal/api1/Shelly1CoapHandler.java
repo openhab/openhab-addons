@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,9 +107,9 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     /**
      * Initialize CoAP access, send discovery packet and start Status server
      *
-     * @parm thingName Thing name derived from Thing Type/hostname
-     * @parm config ShellyThingConfiguration
-     * @thows ShellyApiException
+     * @param thingName Thing name derived from Thing Type/hostname
+     * @param config ShellyThingConfiguration
+     * @throws ShellyApiException
      */
     public synchronized void start(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
         try {
@@ -176,7 +176,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
         List<Option> options = response.getOptions().asSortedList();
         String ip = response.getSourceContext().getPeerAddress().toString();
-        boolean match = ip.contains(config.deviceIp);
+        boolean match = ip.contains("/" + config.deviceIp + ":");
         if (!match) {
             // We can't identify device by IP, so we need to check the CoAP header's Global Device ID
             for (Option opt : options) {
@@ -208,6 +208,11 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
                         response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
             }
+            if (thingHandler.isStopping()) {
+                logger.debug("{}: Thing is shutting down, ignore CoIOT message", thingName);
+                return;
+            }
+
             if (response.isCanceled() || response.isDuplicate() || response.isRejected()) {
                 logger.debug("{} ({}): Packet was canceled, rejected or is a duplicate -> discard", thingName, devId);
                 thingHandler.incProtErrors();
@@ -266,7 +271,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             // The device changes the serial on every update, receiving a message with the same serial is a
             // duplicate, excep for battery devices! Those reset the serial every time when they wake-up
             if ((serial == lastSerial) && payload.equals(lastPayload) && (!profile.hasBattery
-                    || coiot.getLastWakeup().equalsIgnoreCase("ext_power") || ((serial & 0xFF) != 0))) {
+                    || "ext_power".equalsIgnoreCase(coiot.getLastWakeup()) || ((serial & 0xFF) != 0))) {
                 logger.debug("{}: Serial {} was already processed, ignore update", thingName, serial);
                 return;
             }

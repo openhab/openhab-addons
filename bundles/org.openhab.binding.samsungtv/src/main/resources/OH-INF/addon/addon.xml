@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="samsungtv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Samsung TV Binding</name>
+	<description>This is the binding for Samsung TV. Binding should support all Samsung TV C (2010), D (2011) and E (2012)
+		models</description>
+	<connection>local</connection>
+
+</addon:addon>

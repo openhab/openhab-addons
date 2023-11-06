@@ -5,6 +5,7 @@ This binding integrates the [Sony Audio Control API](https://developer.sony.com/
 ## Supported Things
 
 For the moment the devices that are supported by this binding are
+
 - STR-DN1080
 - HT-CT800
 - SRS-ZR5

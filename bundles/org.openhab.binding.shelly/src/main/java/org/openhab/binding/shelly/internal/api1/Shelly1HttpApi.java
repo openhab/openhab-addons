@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,9 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
-        return callApi(SHELLY_URL_DEVINFO, ShellySettingsDevice.class);
+        ShellySettingsDevice info = callApi(SHELLY_URL_DEVINFO, ShellySettingsDevice.class);
+        info.gen = 1;
+        return info;
     }
 
     @Override
@@ -172,8 +174,12 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void setRelayTurn(int id, String turnMode) throws ShellyApiException {
-        callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(),
-                ShellyShortLightStatus.class);
+        callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(), String.class);
+    }
+
+    @Override
+    public void resetMeterTotal(int id) throws ShellyApiException {
+        callApi(SHELLY_URL_STATUS_EMETER + "/" + id + "?reset_totals=true", ShellyStatusRelay.class);
     }
 
     @Override
@@ -241,7 +247,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         } else if (profile.isLight) {
             type = SHELLY_CLASS_LIGHT;
         }
-        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "=" + (int) value;
+        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "=" + value;
         httpRequest(uri);
     }
 
@@ -290,7 +296,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
-    public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
+    public void setLedStatus(String ledName, boolean value) throws ShellyApiException {
         httpRequest(SHELLY_URL_SETTINGS + "?" + ledName + "=" + (value ? SHELLY_API_TRUE : SHELLY_API_FALSE));
     }
 
@@ -501,7 +507,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * Set event callback URLs. Depending on the device different event types are supported. In fact all of them will be
      * redirected to the binding's servlet and act as a trigger to schedule a status update
      *
-     * @param ShellyApiException
      * @throws ShellyApiException
      */
     @Override
@@ -529,6 +534,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         } else if (profile.isLight) {
             setEventUrls(0);
         }
+    }
+
+    @Override
+    public void muteSmokeAlarm(int id) throws ShellyApiException {
+        throw new ShellyApiException("Request not supported");
     }
 
     /**
@@ -742,5 +752,9 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void close() {
+    }
+
+    @Override
+    public void startScan() {
     }
 }

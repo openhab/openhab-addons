@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,8 +57,8 @@ public class PentairSerialBridgeHandler extends PentairBaseBridgeHandler {
                 throw new IllegalStateException("cannot open serial port!");
             }
 
-            if (cp instanceof SerialPort) {
-                port = (SerialPort) cp;
+            if (cp instanceof SerialPort serialPort) {
+                port = serialPort;
             } else {
                 throw new IllegalStateException("unknown port type");
             }

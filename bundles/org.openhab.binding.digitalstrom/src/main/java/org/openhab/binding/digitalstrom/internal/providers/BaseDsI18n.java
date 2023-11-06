@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,8 +26,8 @@ import org.osgi.service.component.ComponentContext;
  * digitalSTROM-Bindings. So this class can be implement e.g. by provider implementations like the
  * {@link org.openhab.core.thing.type.ChannelTypeProvider}.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public abstract class BaseDsI18n {
 

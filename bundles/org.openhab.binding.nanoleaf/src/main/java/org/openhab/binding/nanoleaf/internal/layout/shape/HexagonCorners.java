@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.openhab.binding.nanoleaf.internal.layout.Point2D;
 import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * A hexagon shape.
@@ -132,7 +133,7 @@ public class HexagonCorners extends Panel {
 
     private static Color getColor(int panelId, PanelState state) {
         HSBType color = state.getHSBForPanel(panelId);
-        return new Color(color.getRGB());
+        return new Color(ColorUtil.hsbTosRgb(color));
     }
 
     private Color getAverageColor(PanelState state) {

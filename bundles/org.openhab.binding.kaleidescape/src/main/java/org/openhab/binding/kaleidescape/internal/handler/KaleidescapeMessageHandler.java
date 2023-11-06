@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeStatu
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -110,6 +111,8 @@ public enum KaleidescapeMessageHandler {
             if (matcher.find()) {
                 handler.updateChannel(PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
+
+                handler.updateChannel(CONTROL, "2".equals(matcher.group(1)) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
                 handler.updateChannel(PLAY_SPEED, new StringType(matcher.group(2)));
 
@@ -312,6 +315,9 @@ public enum KaleidescapeMessageHandler {
                 handler.updateChannel(MUSIC_PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
 
+                handler.updateChannel(MUSIC_CONTROL,
+                        "2".equals(matcher.group(1)) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+
                 handler.updateChannel(MUSIC_PLAY_SPEED, new StringType(matcher.group(2)));
 
                 handler.updateChannel(MUSIC_TRACK_LENGTH,
@@ -406,14 +412,14 @@ public enum KaleidescapeMessageHandler {
                     // special case for cover art image
                     if (DETAIL_COVER_URL.equals(metaType)) {
                         handler.updateDetailChannel(metaType, new StringType(value));
-                        if (!value.isEmpty()) {
+                        if (!value.isEmpty() && handler.isChannelLinked(DETAIL + DETAIL_COVER_ART)) {
                             try {
                                 ContentResponse contentResponse = handler.httpClient.newRequest(value).method(GET)
                                         .timeout(10, TimeUnit.SECONDS).send();
                                 int httpStatus = contentResponse.getStatus();
                                 if (httpStatus == OK_200) {
                                     handler.updateDetailChannel(DETAIL_COVER_ART,
-                                            new RawType(contentResponse.getContent(), RawType.DEFAULT_MIME_TYPE));
+                                            new RawType(contentResponse.getContent(), "image/jpeg"));
                                 } else {
                                     handler.updateDetailChannel(DETAIL_COVER_ART, UnDefType.NULL);
                                 }

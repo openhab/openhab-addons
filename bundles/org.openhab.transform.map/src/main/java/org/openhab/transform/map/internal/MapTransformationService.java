@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public class MapTransformationService
             if (!cachedTransformations.containsKey(transformation.getUID())) {
                 importConfiguration(transformation);
             }
-            Properties properties = cachedTransformations.get(function);
+            Properties properties = cachedTransformations.get(transformation.getUID());
             if (properties != null) {
                 String target = properties.getProperty(source);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,13 @@
 package org.openhab.voice.mimic.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +42,8 @@ import org.openhab.core.audio.AudioStream;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.HttpRequestBuilder;
+import org.openhab.core.voice.AbstractCachedTTSService;
+import org.openhab.core.voice.TTSCache;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
@@ -58,11 +66,11 @@ import com.google.gson.JsonSyntaxException;
  * @author Gwendal Roulleau - Initial contribution
  */
 @Component(configurationPid = MimicTTSService.SERVICE_PID, property = Constants.SERVICE_PID + "="
-        + MimicTTSService.SERVICE_PID)
+        + MimicTTSService.SERVICE_PID, service = TTSService.class)
 @ConfigurableService(category = MimicTTSService.SERVICE_CATEGORY, label = MimicTTSService.SERVICE_NAME
         + " Text-to-Speech", description_uri = MimicTTSService.SERVICE_CATEGORY + ":" + MimicTTSService.SERVICE_ID)
 @NonNullByDefault
-public class MimicTTSService implements TTSService {
+public class MimicTTSService extends AbstractCachedTTSService {
 
     private final Logger logger = LoggerFactory.getLogger(MimicTTSService.class);
 
@@ -98,7 +106,9 @@ public class MimicTTSService implements TTSService {
     private final HttpClient httpClient;
 
     @Activate
-    public MimicTTSService(final @Reference HttpClientFactory httpClientFactory, Map<String, Object> config) {
+    public MimicTTSService(final @Reference HttpClientFactory httpClientFactory, @Reference TTSCache ttsCache,
+            Map<String, Object> config) {
+        super(ttsCache);
         updateConfig(config);
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
@@ -211,8 +221,7 @@ public class MimicTTSService implements TTSService {
      * @throws TTSException in case the service is unavailable or a parameter is invalid.
      */
     @Override
-    public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
-
+    public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
         if (!availableVoices.contains(voice)) {
             // let a chance for the service to update :
             refreshVoices();
@@ -232,22 +241,29 @@ public class MimicTTSService implements TTSService {
             throw new TTSException("The passed AudioFormat is unsupported");
         }
 
-        String ssml = "";
-        if (text.startsWith("<speak>")) {
-            ssml = "&ssml=true";
+        String encodedVoice;
+        try {
+            encodedVoice = URLEncoder.encode(((MimicVoice) voice).getTechnicalName(),
+                    StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("Cannot encode voice in URL " + ((MimicVoice) voice).getTechnicalName());
         }
 
         // create the url for given locale, format
-        String urlTTS = config.url + SYNTHETIZE_URL + "?voice=" + ((MimicVoice) voice).getTechnicalName() + ssml
-                + "&noiseScale=" + config.audioVolatility + "&noiseW=" + config.phonemeVolatility + "&lengthScale="
-                + config.speakingRate + "&audioTarget=client";
+        String urlTTS = config.url + SYNTHETIZE_URL + "?voice=" + encodedVoice + "&noiseScale=" + config.audioVolatility
+                + "&noiseW=" + config.phonemeVolatility + "&lengthScale=" + config.speakingRate + "&audioTarget=client";
         logger.debug("Querying mimic with URL {}", urlTTS);
 
         // prepare the response as an inputstream
         InputStreamResponseListener inputStreamResponseListener = new InputStreamResponseListener();
         // we will use a POST method for the text
         StringContentProvider textContentProvider = new StringContentProvider(text, StandardCharsets.UTF_8);
-        httpClient.POST(urlTTS).content(textContentProvider).accept("audio/wav").send(inputStreamResponseListener);
+        if (text.startsWith("<speak>")) {
+            httpClient.POST(urlTTS).header("Content-Type", "application/ssml+xml").content(textContentProvider)
+                    .accept("audio/wav").send(inputStreamResponseListener);
+        } else {
+            httpClient.POST(urlTTS).content(textContentProvider).accept("audio/wav").send(inputStreamResponseListener);
+        }
 
         // compute the estimated timeout using a "stupid" method based on text length, as the response time depends on
         // the requested text. Average speaker speed estimated to 10/second.
@@ -269,7 +285,9 @@ public class MimicTTSService implements TTSService {
                             "Cannot get Content-Length header from mimic response. Are you sure to query a mimic TTS server at "
                                     + urlTTS + " ?");
                 }
-                return new InputStreamAudioStream(inputStreamResponseListener.getInputStream(), AUDIO_FORMAT, length);
+
+                InputStream inputStreamFromMimic = inputStreamResponseListener.getInputStream();
+                return new InputStreamAudioStream(inputStreamFromMimic, AUDIO_FORMAT, length);
             } else {
                 String errorMessage = "Cannot get wav from mimic url " + urlTTS + " with HTTP response code "
                         + response.getStatus() + " for reason " + response.getReason();
@@ -281,5 +299,18 @@ public class MimicTTSService implements TTSService {
             String errorMessage = "Cannot get wav from mimic url " + urlTTS;
             throw new TTSException(errorMessage, e);
         }
+    }
+
+    @Override
+    public String getCacheKey(String text, Voice voice, AudioFormat requestedFormat) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            return "nomd5algorithm";
+        }
+        byte[] binaryKey = ((text + voice.getUID() + requestedFormat.toString() + config.speakingRate
+                + config.audioVolatility + config.phonemeVolatility).getBytes());
+        return String.format("%032x", new BigInteger(1, md.digest(binaryKey)));
     }
 }

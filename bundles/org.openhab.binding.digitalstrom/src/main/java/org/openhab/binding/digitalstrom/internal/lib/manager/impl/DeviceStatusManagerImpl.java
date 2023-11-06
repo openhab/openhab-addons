@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -230,8 +230,8 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
     /**
      * Check and updates the {@link Device} structure, configurations and status.
      *
-     * @author Michael Ochel - initial contributer
-     * @author Matthias Siegele - initial contributer
+     * @author Michael Ochel - Initial contribution
+     * @author Matthias Siegele - Initial contribution
      */
     private class PollingRunnable implements Runnable {
         private boolean devicesLoaded = false;
@@ -610,9 +610,7 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
 
         @Override
         public boolean equals(Object object) {
-            return object instanceof TrashDevice
-                    ? this.device.getDSID().equals(((TrashDevice) object).getDevice().getDSID())
-                    : false;
+            return object instanceof TrashDevice td ? this.device.getDSID().equals(td.getDevice().getDSID()) : false;
         }
     }
 

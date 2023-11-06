@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,11 +66,13 @@ public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
         return priceSum;
     }
 
+    @Override
     public String toString() {
         return String.format("{%s, %s, %.2f}", formatDate(getStart(), zoneId), formatDate(getEnd(), zoneId),
                 priceSum / length);
     }
 
+    @Override
     public String getHours() {
         return hours;
     }

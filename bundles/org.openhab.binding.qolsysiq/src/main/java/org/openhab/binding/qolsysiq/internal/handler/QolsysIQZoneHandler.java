@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,12 +105,12 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
     private void initializeZone() {
         Bridge bridge = getBridge();
         BridgeHandler handler = bridge == null ? null : bridge.getHandler();
-        if (bridge != null && handler instanceof QolsysIQPartitionHandler) {
+        if (bridge != null && handler instanceof QolsysIQPartitionHandler partitionHandler) {
             if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 return;
             }
-            Zone z = ((QolsysIQPartitionHandler) handler).getZone(getZoneId());
+            Zone z = partitionHandler.getZone(getZoneId());
             if (z == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Zone not found in partition");
                 return;

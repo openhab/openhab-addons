@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Björn Lange - Initial contribution
  * @author Benjamin Bolte - Add plate step
- * @author Björn Lange - Add elapsed time channel
+ * @author Björn Lange - Add elapsed time channel, add eco feedback
  */
 @NonNullByDefault
 public class State {
@@ -73,6 +73,8 @@ public class State {
     private VentilationStep ventilationStep;
     @Nullable
     private final List<PlateStep> plateStep = null;
+    @Nullable
+    private EcoFeedback ecoFeedback;
     @Nullable
     private Integer batteryLevel;
 
@@ -189,6 +191,10 @@ public class State {
         return Collections.unmodifiableList(plateStep);
     }
 
+    public Optional<EcoFeedback> getEcoFeedback() {
+        return Optional.ofNullable(ecoFeedback);
+    }
+
     public Optional<Integer> getBatteryLevel() {
         return Optional.ofNullable(batteryLevel);
     }
@@ -197,7 +203,7 @@ public class State {
     public int hashCode() {
         return Objects.hash(dryingStep, elapsedTime, light, programPhase, ProgramID, programId, programType,
                 remainingTime, remoteEnable, signalDoor, signalFailure, signalInfo, startTime, status,
-                targetTemperature, temperature, ventilationStep, plateStep, batteryLevel);
+                targetTemperature, temperature, ventilationStep, plateStep, ecoFeedback, batteryLevel);
     }
 
     @Override
@@ -222,7 +228,7 @@ public class State {
                 && Objects.equals(targetTemperature, other.targetTemperature)
                 && Objects.equals(temperature, other.temperature)
                 && Objects.equals(ventilationStep, other.ventilationStep) && Objects.equals(plateStep, other.plateStep)
-                && Objects.equals(batteryLevel, other.batteryLevel);
+                && Objects.equals(ecoFeedback, other.ecoFeedback) && Objects.equals(batteryLevel, other.batteryLevel);
     }
 
     @Override
@@ -232,7 +238,7 @@ public class State {
                 + ", targetTemperature=" + targetTemperature + ", temperature=" + temperature + ", signalInfo="
                 + signalInfo + ", signalFailure=" + signalFailure + ", signalDoor=" + signalDoor + ", remoteEnable="
                 + remoteEnable + ", light=" + light + ", elapsedTime=" + elapsedTime + ", dryingStep=" + dryingStep
-                + ", ventilationStep=" + ventilationStep + ", plateStep=" + plateStep + ", batteryLevel=" + batteryLevel
-                + "]";
+                + ", ventilationStep=" + ventilationStep + ", plateStep=" + plateStep + ", ecoFeedback=" + ecoFeedback
+                + ", batteryLevel=" + batteryLevel + "]";
     }
 }

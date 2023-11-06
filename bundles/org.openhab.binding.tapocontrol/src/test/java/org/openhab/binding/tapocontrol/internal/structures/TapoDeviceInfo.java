@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,28 +102,28 @@ public class TapoDeviceInfo {
     }
 
     private void setData() {
-        this.brightness = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_BRIGHTNES);
-        this.colorTemp = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_COLORTEMP, BULB_MIN_COLORTEMP);
-        this.deviceId = jsonObjectToString(jsonObject, DEVICE_PROPERTY_ID);
-        this.deviceOn = jsonObjectToBool(jsonObject, DEVICE_PROPERTY_ON);
-        this.fwVer = jsonObjectToString(jsonObject, DEVICE_PROPERTY_FW);
-        this.hue = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_HUE);
-        this.hwVer = jsonObjectToString(jsonObject, DEVICE_PROPERTY_HW);
-        this.ip = jsonObjectToString(jsonObject, DEVICE_PROPERTY_IP);
+        this.brightness = jsonObjectToInt(jsonObject, JSON_KEY_BRIGHTNESS);
+        this.colorTemp = jsonObjectToInt(jsonObject, JSON_KEY_COLORTEMP, BULB_MIN_COLORTEMP);
+        this.deviceId = jsonObjectToString(jsonObject, JSON_KEY_ID);
+        this.deviceOn = jsonObjectToBool(jsonObject, JSON_KEY_ON);
+        this.fwVer = jsonObjectToString(jsonObject, JSON_KEY_FW);
+        this.hue = jsonObjectToInt(jsonObject, JSON_KEY_HUE);
+        this.hwVer = jsonObjectToString(jsonObject, JSON_KEY_HW_VER);
+        this.ip = jsonObjectToString(jsonObject, JSON_KEY_IP);
         this.lightEffect = lightEffect.setData(jsonObject);
-        this.mac = jsonObjectToString(jsonObject, DEVICE_PROPERTY_MAC);
-        this.model = jsonObjectToString(jsonObject, DEVICE_PROPERTY_MODEL);
-        this.nickname = jsonObjectToString(jsonObject, DEVICE_PROPERTY_NICKNAME);
-        this.onTime = jsonObjectToNumber(jsonObject, DEVICE_PROPERTY_ONTIME);
-        this.overheated = jsonObjectToBool(jsonObject, DEVICE_PROPERTY_OVERHEAT);
-        this.region = jsonObjectToString(jsonObject, DEVICE_PROPERTY_REGION);
-        this.saturation = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_SATURATION);
-        this.signalLevel = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_SIGNAL);
-        this.rssi = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_SIGNAL_RSSI);
-        this.timeUsagePast7 = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_USAGE_7);
-        this.timeUsagePast30 = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_USAGE_30);
-        this.timeUsageToday = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_USAGE_TODAY);
-        this.type = jsonObjectToString(jsonObject, DEVICE_PROPERTY_TYPE);
+        this.mac = jsonObjectToString(jsonObject, JSON_KEY_MAC);
+        this.model = jsonObjectToString(jsonObject, JSON_KEY_MODEL);
+        this.nickname = jsonObjectToString(jsonObject, JSON_KEY_NICKNAME);
+        this.onTime = jsonObjectToNumber(jsonObject, JSON_KEY_ONTIME);
+        this.overheated = jsonObjectToBool(jsonObject, JSON_KEY_OVERHEAT);
+        this.region = jsonObjectToString(jsonObject, JSON_KEY_REGION);
+        this.saturation = jsonObjectToInt(jsonObject, JSON_KEY_SATURATION);
+        this.signalLevel = jsonObjectToInt(jsonObject, JSON_KEY_SIGNAL_LEVEL);
+        this.rssi = jsonObjectToInt(jsonObject, JSON_KEY_RSSI);
+        this.timeUsagePast7 = jsonObjectToInt(jsonObject, JSON_KEY_USAGE_7);
+        this.timeUsagePast30 = jsonObjectToInt(jsonObject, JSON_KEY_USAGE_30);
+        this.timeUsageToday = jsonObjectToInt(jsonObject, JSON_KEY_USAGE_TODAY);
+        this.type = jsonObjectToString(jsonObject, JSON_KEY_TYPE);
     }
 
     /***********************************

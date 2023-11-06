@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,20 +41,20 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class TunableWhiteThingHandlerTest extends AbstractDmxThingTestParent {
-
     private static final String TEST_CHANNEL_CONFIG = "100/2";
     private static final int TEST_FADE_TIME = 1500;
+    private static final ThingUID THING_UID_DIMMER = new ThingUID(THING_TYPE_TUNABLEWHITE, "testdimmer");
+    private static final ChannelUID CHANNEL_UID_BRIGHTNESS = new ChannelUID(THING_UID_DIMMER, CHANNEL_BRIGHTNESS);
+    private static final ChannelUID CHANNEL_UID_BRIGHTNESS_CW = new ChannelUID(THING_UID_DIMMER, CHANNEL_BRIGHTNESS_CW);
+    private static final ChannelUID CHANNEL_UID_BRIGHTNESS_WW = new ChannelUID(THING_UID_DIMMER, CHANNEL_BRIGHTNESS_WW);
+    private static final ChannelUID CHANNEL_UID_COLOR_TEMP = new ChannelUID(THING_UID_DIMMER,
+            CHANNEL_COLOR_TEMPERATURE);
 
-    private Map<String, Object> thingProperties;
-    private Thing dimmerThing;
-    private TunableWhiteThingHandler dimmerThingHandler;
-
-    private final ThingUID THING_UID_DIMMER = new ThingUID(THING_TYPE_TUNABLEWHITE, "testdimmer");
-    private final ChannelUID CHANNEL_UID_BRIGHTNESS = new ChannelUID(THING_UID_DIMMER, CHANNEL_BRIGHTNESS);
-    private final ChannelUID CHANNEL_UID_BRIGHTNESS_CW = new ChannelUID(THING_UID_DIMMER, CHANNEL_BRIGHTNESS_CW);
-    private final ChannelUID CHANNEL_UID_BRIGHTNESS_WW = new ChannelUID(THING_UID_DIMMER, CHANNEL_BRIGHTNESS_WW);
-    private final ChannelUID CHANNEL_UID_COLOR_TEMP = new ChannelUID(THING_UID_DIMMER, CHANNEL_COLOR_TEMPERATURE);
+    private @NonNullByDefault({}) Map<String, Object> thingProperties;
+    private @NonNullByDefault({}) Thing dimmerThing;
+    private @NonNullByDefault({}) TunableWhiteThingHandler dimmerThingHandler;
 
     @BeforeEach
     public void setUp() {
@@ -90,7 +91,7 @@ public class TunableWhiteThingHandlerTest extends AbstractDmxThingTestParent {
     }
 
     @Test
-    public void testThingStatus_noBridge() {
+    public void testThingStatusNoBridge() {
         // check that thing is offline if no bridge found
         TunableWhiteThingHandler dimmerHandlerWithoutBridge = new TunableWhiteThingHandler(dimmerThing) {
             @Override

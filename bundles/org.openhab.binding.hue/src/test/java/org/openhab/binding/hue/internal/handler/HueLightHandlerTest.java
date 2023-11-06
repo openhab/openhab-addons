@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -265,13 +265,13 @@ public class HueLightHandlerTest {
 
     @Test
     public void assertXYCommandForColorChannelWhite() {
-        String expectedReply = "{\"xy\" : [ 0.31271592 , 0.32900152 ], \"bri\" : 254, \"transitiontime\" : 4}";
+        String expectedReply = "{\"xy\" : [ 0.3227 , 0.32900003 ], \"bri\" : 254, \"transitiontime\" : 4}";
         assertSendCommandForColor(HSBType.WHITE, new HueLightState().colormode(ColorMode.XY), expectedReply);
     }
 
     @Test
     public void assertXYCommandForColorChannelColorful() {
-        String expectedReply = "{\"xy\" : [ 0.16969365 , 0.12379659 ], \"bri\" : 127, \"transitiontime\" : 4}";
+        String expectedReply = "{\"xy\" : [ 0.14649999 , 0.115600005 ], \"bri\" : 127, \"transitiontime\" : 4}";
         assertSendCommandForColor(new HSBType("220,90,50"), new HueLightState().colormode(ColorMode.XY), expectedReply);
     }
 

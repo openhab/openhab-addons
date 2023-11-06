@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -171,9 +171,9 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                     if (command == RefreshType.REFRESH) {
                         StringType input = new StringType(device.getInputStatus().getResult().getValue());
                         updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT, input);
-                    } else if (command instanceof StringType) {
+                    } else if (command instanceof StringType stringCommand) {
                         logger.trace("Received input command {}", command);
-                        Input input = new Input(((StringType) command).toString());
+                        Input input = new Input(stringCommand.toString());
                         device.setInput(input);
                     } else {
                         logger.debug("Received unknown channel command {}", command);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -189,6 +189,26 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
 
     @Override
     public void genreChangeEvent(String mac, String genre) {
+    }
+
+    @Override
+    public void albumArtistChangeEvent(String mac, String albumArtist) {
+    }
+
+    @Override
+    public void trackArtistChangeEvent(String mac, String trackArtist) {
+    }
+
+    @Override
+    public void bandChangeEvent(String mac, String band) {
+    }
+
+    @Override
+    public void composerChangeEvent(String mac, String composer) {
+    }
+
+    @Override
+    public void conductorChangeEvent(String mac, String conductor) {
     }
 
     @Override

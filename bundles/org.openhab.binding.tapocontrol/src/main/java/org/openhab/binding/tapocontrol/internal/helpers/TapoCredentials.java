@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,8 +52,8 @@ public class TapoCredentials {
     /**
      * INIT CLASS
      *
-     * @param email E-Mail-adress of Tapo Cloud
-     * @param passowrd Password of Tapo Cloud
+     * @param eMail E-Mail-adress of Tapo Cloud
+     * @param password Password of Tapo Cloud
      */
     public TapoCredentials(String eMail, String password) {
         this.mimeEncoder = new MimeEncode();
@@ -63,8 +63,8 @@ public class TapoCredentials {
     /**
      * set credentials.
      *
-     * @param username username (eMail-adress) of Tapo Cloud
-     * @param passowrd Password of Tapo Cloud
+     * @param eMail username (eMail-adress) of Tapo Cloud
+     * @param password Password of Tapo Cloud
      */
     public void setCredectials(String eMail, String password) {
         try {

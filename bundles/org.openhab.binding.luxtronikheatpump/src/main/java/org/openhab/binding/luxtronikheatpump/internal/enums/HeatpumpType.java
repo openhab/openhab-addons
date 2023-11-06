@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -109,7 +109,7 @@ public enum HeatpumpType {
         this.name = name;
     }
 
-    public static final HeatpumpType fromCode(Integer code) {
+    public static HeatpumpType fromCode(Integer code) {
         for (HeatpumpType error : HeatpumpType.values()) {
             if (error.code.equals(code)) {
                 return error;

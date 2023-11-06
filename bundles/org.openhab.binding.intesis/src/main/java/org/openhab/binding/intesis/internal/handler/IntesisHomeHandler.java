@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,7 +137,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
         int value = 0;
         String channelId = channelUID.getId();
         if (command instanceof RefreshType) {
-            // Refresh command is not supported as the binding polls all values every 30 seconds
+            getAllUidValues();
         } else {
             switch (channelId) {
                 case CHANNEL_TYPE_POWER:
@@ -194,8 +194,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_TYPE_TARGETTEMP:
                     uid = 9;
-                    if (command instanceof QuantityType) {
-                        QuantityType<?> newVal = (QuantityType<?>) command;
+                    if (command instanceof QuantityType newVal) {
                         newVal = newVal.toUnit(SIUnits.CELSIUS);
                         if (newVal != null) {
                             value = newVal.intValue() * 10;
@@ -226,7 +225,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     if (data != null) {
                         Id id = gson.fromJson(data.id, Id.class);
                         if (id != null) {
-                            sessionId[0] = id.sessionID.toString();
+                            sessionId[0] = id.sessionID;
                         }
                     }
                 });
@@ -241,8 +240,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     public @Nullable String logout(String sessionId) {
         String contentString = "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}";
-        String response = api.postRequest(config.ipAddress, contentString);
-        return response;
+        return api.postRequest(config.ipAddress, contentString);
     }
 
     public void populateProperties() {
@@ -466,7 +464,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         logger.trace("Start Refresh Job");
-        refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, INTESIS_REFRESH_INTERVAL_SEC,
+        refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, config.pollingInterval,
                 TimeUnit.SECONDS);
     }
 
@@ -490,7 +488,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         switch (element.uid) {
                             case 1:
                                 updateState(CHANNEL_TYPE_POWER,
-                                        String.valueOf(element.value).equals("0") ? OnOffType.OFF : OnOffType.ON);
+                                        "0".equals(String.valueOf(element.value)) ? OnOffType.OFF : OnOffType.ON);
                                 break;
                             case 2:
                                 switch (element.value) {
@@ -554,7 +552,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                 break;
                             case 14:
                                 updateState(CHANNEL_TYPE_ERRORSTATUS,
-                                        String.valueOf(element.value).equals("0") ? OnOffType.OFF : OnOffType.ON);
+                                        "0".equals(String.valueOf(element.value)) ? OnOffType.OFF : OnOffType.ON);
                                 break;
                             case 15:
                                 updateState(CHANNEL_TYPE_ERRORCODE, StringType.valueOf(String.valueOf(element.value)));

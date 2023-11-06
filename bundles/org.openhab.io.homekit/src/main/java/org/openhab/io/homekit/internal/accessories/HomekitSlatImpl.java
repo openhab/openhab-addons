@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.homekit.internal.accessories;
 
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_SLAT_STATE;
 
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -43,11 +42,7 @@ public class HomekitSlatImpl extends AbstractHomekitAccessoryImpl implements Sla
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         final String slatTypeConfig = getAccessoryConfiguration(CONFIG_TYPE, "horizontal");
         slatType = "horizontal".equalsIgnoreCase(slatTypeConfig) ? SlatTypeEnum.HORIZONTAL : SlatTypeEnum.VERTICAL;
-        currentSlatStateMapping = new EnumMap<>(CurrentSlatStateEnum.class);
-        currentSlatStateMapping.put(CurrentSlatStateEnum.FIXED, "FIXED");
-        currentSlatStateMapping.put(CurrentSlatStateEnum.SWINGING, "SWINGING");
-        currentSlatStateMapping.put(CurrentSlatStateEnum.JAMMED, "JAMMED");
-        updateMapping(CURRENT_SLAT_STATE, currentSlatStateMapping);
+        currentSlatStateMapping = createMapping(CURRENT_SLAT_STATE, CurrentSlatStateEnum.class);
         getServices().add(new SlatService(this));
     }
 

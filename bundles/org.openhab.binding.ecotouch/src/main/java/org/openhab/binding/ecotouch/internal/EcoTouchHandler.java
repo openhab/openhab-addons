@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -122,10 +122,8 @@ public class EcoTouchHandler extends BaseThingHandler {
                     localConnector.setValue(ecoTouchTag.getTagName(), raw);
                 } else {
                     if (ecoTouchTag.getUnit() != ONE) {
-                        if (command instanceof QuantityType) {
-                            // convert from user unit to heat pump unit
-                            QuantityType<?> value = (QuantityType<?>) command;
-                            QuantityType<?> rawUnit = value.toUnit(ecoTouchTag.getUnit());
+                        if (command instanceof QuantityType quantityCommand) {
+                            QuantityType<?> rawUnit = quantityCommand.toUnit(ecoTouchTag.getUnit());
                             if (rawUnit != null) {
                                 int raw = (int) (rawUnit.doubleValue() * ecoTouchTag.getDivisor());
                                 localConnector.setValue(ecoTouchTag.getTagName(), raw);

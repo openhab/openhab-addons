@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,12 +19,12 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link SmokeDetectorCheckState}.
- * 
+ *
  * @author David Pace - Initial contribution
  *
  */
 @NonNullByDefault
-public class SmokeDetectorCheckStateTest {
+class SmokeDetectorCheckStateTest {
 
     @Test
     void testFrom() {

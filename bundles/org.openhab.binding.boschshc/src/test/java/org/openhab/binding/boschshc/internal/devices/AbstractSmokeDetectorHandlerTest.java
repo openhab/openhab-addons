@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,7 @@ package org.openhab.binding.boschshc.internal.devices;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -28,9 +27,14 @@ import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetector
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckState;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.dto.SmokeDetectorCheckServiceState;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -51,7 +55,6 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
     @Test
     public void testHandleCommand()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         // valid commands with valid thing & channel
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SMOKE_CHECK),
                 new StringType(SmokeDetectorCheckState.SMOKE_TEST_REQUESTED.toString()));
@@ -83,9 +86,8 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
     }
 
     @Test
-    public void testHandleCommand_PlayPauseType()
+    public void testHandleCommandPlayPauseType()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SMOKE_CHECK),
                 PlayPauseType.PLAY);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("SmokeDetectorCheck"),
@@ -95,7 +97,20 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
     }
 
     @Test
-    public void testUpdateChannel_SmokeDetectorCheckServiceState_none() {
+    public void testHandleCommandUnknownCommand()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SMOKE_CHECK),
+                OnOffType.ON);
+        ThingStatusInfo expectedThingStatusInfo = ThingStatusInfoBuilder
+                .create(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR)
+                .withDescription(
+                        "Error when service SmokeDetectorCheck should handle command org.openhab.core.library.types.OnOffType: SmokeDetectorCheck: Can not handle command org.openhab.core.library.types.OnOffType")
+                .build();
+        verify(getCallback()).statusUpdated(getThing(), expectedThingStatusInfo);
+    }
+
+    @Test
+    public void testUpdateChannelSmokeDetectorCheckServiceStateNone() {
         JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"smokeDetectorCheckState\",\"value\":NONE}");
         getFixture().processUpdate("SmokeDetectorCheck", jsonObject);
         verify(getCallback()).stateUpdated(
@@ -104,7 +119,7 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
     }
 
     @Test
-    public void testUpdateChannel_SmokeDetectorCheckServiceState_Requests() {
+    public void testUpdateChannelSmokeDetectorCheckServiceStateRequests() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\"@type\":\"smokeDetectorCheckState\",\"value\":SMOKE_TEST_REQUESTED}");
         getFixture().processUpdate("SmokeDetectorCheck", jsonObject);

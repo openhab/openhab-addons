@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class Hub {
     }
 
     public static Hub fromH05(String h05) throws NoboDataException {
-        String parts[] = h05.split(" ", 8);
+        String[] parts = h05.split(" ", 8);
 
         if (parts.length != 8) {
             throw new NoboDataException(

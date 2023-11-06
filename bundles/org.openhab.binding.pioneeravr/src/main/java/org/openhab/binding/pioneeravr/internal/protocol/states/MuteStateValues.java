@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,6 @@ package org.openhab.binding.pioneeravr.internal.protocol.states;
  */
 public interface MuteStateValues {
 
-    public static final String ON_VALUE = "0";
-    public static final String OFF_VALUE = "1";
+    static final String ON_VALUE = "0";
+    static final String OFF_VALUE = "1";
 }

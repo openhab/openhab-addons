@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,10 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -84,7 +84,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
     private @Nullable List<Event> eventHistory;
 
     private @NonNullByDefault({}) OAuthClientService oAuthClientService;
-    private @NonNullByDefault({}) String oAuthServiceHandleId;
+    private @Nullable String oAuthServiceHandleId;
     private @NonNullByDefault({}) HomeConnectApiClient apiClient;
     private @NonNullByDefault({}) HomeConnectEventSourceClient eventSourceClient;
 
@@ -222,8 +222,17 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
+    public void handleRemoval() {
+        String handleId = this.oAuthServiceHandleId;
+        if (handleId != null) {
+            oAuthFactory.deleteServiceAndAccessToken(handleId);
+        }
+        super.handleRemoval();
+    }
+
+    @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(HomeConnectDiscoveryService.class);
+        return Set.of(HomeConnectDiscoveryService.class);
     }
 
     /**
@@ -285,7 +294,10 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
         eventSourceClient.getLatestEvents().clear();
         eventSourceClient.dispose(immediate);
 
-        oAuthFactory.ungetOAuthService(oAuthServiceHandleId);
+        String handleId = this.oAuthServiceHandleId;
+        if (handleId != null) {
+            oAuthFactory.ungetOAuthService(handleId);
+        }
         homeConnectServlet.removeBridgeHandler(this);
     }
 

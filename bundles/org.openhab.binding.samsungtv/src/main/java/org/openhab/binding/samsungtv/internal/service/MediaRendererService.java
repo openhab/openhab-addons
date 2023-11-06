@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -208,7 +208,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
                 case "CurrentMute":
                     State newState = UnDefType.UNDEF;
                     if (value != null) {
-                        newState = value.equals("true") ? OnOffType.ON : OnOffType.OFF;
+                        newState = "true".equals(value) ? OnOffType.ON : OnOffType.OFF;
                     }
                     listener.valueReceived(MUTE, newState);
                     break;

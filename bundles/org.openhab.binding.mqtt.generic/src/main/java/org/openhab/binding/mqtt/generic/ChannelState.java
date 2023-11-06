@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,7 @@ import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.TypeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,22 +198,24 @@ public class ChannelState implements MqttMessageSubscriber {
             return;
         }
 
-        Command postOnlyCommand = cachedValue.isPostOnly(command);
-        if (postOnlyCommand != null) {
-            channelStateUpdateListener.postChannelCommand(channelUID, postOnlyCommand);
-            receivedOrTimeout();
-            return;
-        }
-
+        Command parsedCommand;
         // Map the string to a command, update the cached value and post the command to the framework
         try {
-            cachedValue.update(command);
+            parsedCommand = cachedValue.parseMessage(command);
         } catch (IllegalArgumentException | IllegalStateException e) {
             logger.warn("Command '{}' from channel '{}' not supported by type '{}': {}", strValue, channelUID,
                     cachedValue.getClass().getSimpleName(), e.getMessage());
             receivedOrTimeout();
             return;
         }
+
+        // things that are only Commands _must_ be posted as a command (like STOP)
+        if (!(parsedCommand instanceof State)) {
+            channelStateUpdateListener.postChannelCommand(channelUID, parsedCommand);
+            receivedOrTimeout();
+            return;
+        }
+        cachedValue.update((State) parsedCommand);
 
         if (config.postCommand) {
             channelStateUpdateListener.postChannelCommand(channelUID, (Command) cachedValue.getChannelState());
@@ -348,10 +351,6 @@ public class ChannelState implements MqttMessageSubscriber {
      *         and exceptionally otherwise.
      */
     public CompletableFuture<Boolean> publishValue(Command command) {
-        cachedValue.update(command);
-
-        Value mqttCommandValue = cachedValue;
-
         final MqttBrokerConnection connection = this.connection;
 
         if (connection == null) {
@@ -360,6 +359,9 @@ public class ChannelState implements MqttMessageSubscriber {
                     "The connection object has not been set. start() should have been called!"));
             return f;
         }
+
+        Command mqttCommandValue = cachedValue.parseCommand(command);
+        Value mqttFormatter = cachedValue;
 
         if (readOnly) {
             logger.debug(
@@ -370,12 +372,11 @@ public class ChannelState implements MqttMessageSubscriber {
 
         // Outgoing transformations
         for (ChannelStateTransformation t : transformationsOut) {
-            String commandString = mqttCommandValue.getMQTTpublishValue(null);
+            String commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, null);
             String transformedValue = t.processValue(commandString);
             if (transformedValue != null) {
-                Value textValue = new TextValue();
-                textValue.update(new StringType(transformedValue));
-                mqttCommandValue = textValue;
+                mqttFormatter = new TextValue();
+                mqttCommandValue = new StringType(transformedValue);
             } else {
                 logger.debug("Transformation '{}' returned null on '{}', discarding message", mqttCommandValue,
                         t.serviceName);
@@ -388,13 +389,13 @@ public class ChannelState implements MqttMessageSubscriber {
         // Formatter: Applied before the channel state value is published to the MQTT broker.
         if (config.formatBeforePublish.length() > 0) {
             try {
-                commandString = mqttCommandValue.getMQTTpublishValue(config.formatBeforePublish);
+                commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, config.formatBeforePublish);
             } catch (IllegalFormatException e) {
                 logger.debug("Format pattern incorrect for {}", channelUID, e);
-                commandString = mqttCommandValue.getMQTTpublishValue(null);
+                commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, null);
             }
         } else {
-            commandString = mqttCommandValue.getMQTTpublishValue(null);
+            commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, null);
         }
 
         int qos = (config.qos != null) ? config.qos : connection.getQos();

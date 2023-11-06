@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,11 +46,10 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService implements 
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof OpenUVBridgeHandler) {
-            OpenUVBridgeHandler localHandler = (OpenUVBridgeHandler) handler;
-            bridgeHandler = localHandler;
-            i18nProvider = localHandler.getI18nProvider();
-            localeProvider = localHandler.getLocaleProvider();
+        if (handler instanceof OpenUVBridgeHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
+            this.i18nProvider = bridgeHandler.getI18nProvider();
+            this.localeProvider = bridgeHandler.getLocaleProvider();
         }
     }
 

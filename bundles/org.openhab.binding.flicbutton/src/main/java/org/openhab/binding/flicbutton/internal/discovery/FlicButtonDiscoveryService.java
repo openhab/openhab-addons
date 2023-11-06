@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,9 +33,9 @@ public interface FlicButtonDiscoveryService extends DiscoveryService {
      * @param bdaddr Bluetooth address of the discovered Flic button
      * @return UID that was created by the discovery service
      */
-    public ThingUID flicButtonDiscovered(Bdaddr bdaddr);
+    ThingUID flicButtonDiscovered(Bdaddr bdaddr);
 
-    public void activate(FlicClient client);
+    void activate(FlicClient client);
 
-    public void deactivate();
+    void deactivate();
 }

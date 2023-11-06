@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,8 @@ import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
+
+import com.google.gson.Gson;
 
 /**
  * A HomeAssistant component is comparable to a channel group.
@@ -238,5 +240,13 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     @Nullable
     public TransformationServiceProvider getTransformationServiceProvider() {
         return componentConfiguration.getTransformationServiceProvider();
+    }
+
+    public boolean isEnabledByDefault() {
+        return channelConfiguration.isEnabledByDefault();
+    }
+
+    public Gson getGson() {
+        return componentConfiguration.getGson();
     }
 }

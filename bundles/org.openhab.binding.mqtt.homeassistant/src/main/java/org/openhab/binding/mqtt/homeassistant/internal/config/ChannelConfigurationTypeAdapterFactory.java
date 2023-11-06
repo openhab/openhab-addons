@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,8 +103,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
             @Override
             public @Nullable T read(JsonReader in) throws IOException {
                 /* read the object using the default adapter, but translate the names in the reader */
-                T result = delegate.read(MappingJsonReader.getDeviceMapper(in));
-                return result;
+                return delegate.read(MappingJsonReader.getDeviceMapper(in));
             }
 
             @Override

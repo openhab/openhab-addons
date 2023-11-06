@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.openhab.binding.digitalstrom.internal.handler.BridgeHandler;
-import org.openhab.binding.digitalstrom.internal.handler.SceneHandler;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalScene;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.SceneEnum;
@@ -39,7 +38,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link SceneDiscoveryService} discovers all digitalSTROM-scene of one supported scene-type. The scene-type has to
  * be given to the {@link #SceneDiscoveryService(BridgeHandler, ThingTypeUID)} as
- * {@link ThingTypeUID}. The supported {@link ThingTypeUID} can be found at {@link SceneHandler#SUPPORTED_THING_TYPES}
+ * {@link org.openhab.core.thing.ThingTypeUID}. The supported {@link org.openhab.core.thing.ThingTypeUID}
+ * can be found at {@link org.openhab.binding.digitalstrom.internal.handler.SceneHandler#SUPPORTED_THING_TYPES}
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -174,8 +174,7 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
 
         if (getSupportedThingTypes().contains(thingTypeUID)) {
             String thingSceneId = scene.getID();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingSceneId);
-            return thingUID;
+            return new ThingUID(thingTypeUID, bridgeUID, thingSceneId);
         } else {
             return null;
         }

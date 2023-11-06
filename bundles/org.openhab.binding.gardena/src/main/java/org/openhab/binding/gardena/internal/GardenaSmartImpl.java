@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,6 +56,8 @@ import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommand;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommandRequest;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +73,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartImpl.class);
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private Gson gson = new GsonBuilder().registerTypeAdapter(DataItem.class, new DataItemDeserializer()).create();
 
@@ -101,26 +104,28 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private final Object newDeviceTasksLock = new Object();
     private final List<ScheduledFuture<?>> newDeviceTasks = new ArrayList<>();
 
-    public GardenaSmartImpl(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
+    public GardenaSmartImpl(ThingUID uid, GardenaConfig config, GardenaSmartEventListener eventListener,
             ScheduledExecutorService scheduler, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory)
             throws GardenaException {
-        this.id = id;
+        this.id = uid.getId();
         this.config = config;
         this.eventListener = eventListener;
         this.scheduler = scheduler;
 
+        String name = ThingWebClientUtil.buildWebClientConsumerName(uid, null);
+        httpClient = httpClientFactory.createHttpClient(name);
+        httpClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
+        httpClient.setIdleTimeout(httpClient.getConnectTimeout());
+
+        name = ThingWebClientUtil.buildWebClientConsumerName(uid, "ws-");
+        webSocketClient = webSocketFactory.createWebSocketClient(name);
+        webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
+        webSocketClient.setStopTimeout(3000);
+        webSocketClient.setMaxIdleTimeout(150000);
+
         logger.debug("Starting GardenaSmart");
         try {
-            httpClient = httpClientFactory.createHttpClient(id);
-            httpClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
-            httpClient.setIdleTimeout(httpClient.getConnectTimeout());
             httpClient.start();
-
-            String webSocketId = String.valueOf(hashCode());
-            webSocketClient = webSocketFactory.createWebSocketClient(webSocketId);
-            webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
-            webSocketClient.setStopTimeout(3000);
-            webSocketClient.setMaxIdleTimeout(150000);
             webSocketClient.start();
 
             // initially load access token
@@ -195,8 +200,8 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             AbstractTypedContentProvider contentProvider = null;
             String contentType = "application/vnd.api+json";
             if (content != null) {
-                if (content instanceof Fields) {
-                    contentProvider = new FormContentProvider((Fields) content);
+                if (content instanceof Fields contentAsFields) {
+                    contentProvider = new FormContentProvider(contentAsFields);
                     contentType = "application/x-www-form-urlencoded";
                 } else {
                     contentProvider = new StringContentProvider(gson.toJson(content));
@@ -208,6 +213,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             }
 
             Request request = httpClient.newRequest(url).method(method).header(HttpHeader.CONTENT_TYPE, contentType)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .header(HttpHeader.ACCEPT, "application/vnd.api+json").header(HttpHeader.ACCEPT_ENCODING, "gzip");
 
             if (!URL_API_TOKEN.equals(url)) {

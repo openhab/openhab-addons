@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,26 +131,31 @@ public class WemoUtil {
     }
 
     public static String createBinaryStateContent(boolean binaryState) {
-        String binary = binaryState == true ? "1" : "0";
-        String content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<BinaryState>"
+        String binary = binaryState ? "1" : "0";
+        return """
+                <?xml version="1.0"?>\
+                <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                <s:Body>\
+                <u:SetBinaryState xmlns:u="urn:Belkin:service:basicevent:1">\
+                <BinaryState>\
+                """
                 + binary + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
-        return content;
     }
 
     public static String createStateRequestContent(String action, String actionService) {
-        String content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
-                + action + ">" + "</s:Body>" + "</s:Envelope>";
-        return content;
+        return """
+                <?xml version="1.0"?>\
+                <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                <s:Body>\
+                <u:\
+                """
+                + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:" + action + ">"
+                + "</s:Body>" + "</s:Envelope>";
     }
 
     public static String getCharacterDataFromElement(Element e) {
         Node child = e.getFirstChild();
-        if (child instanceof CharacterData) {
-            CharacterData cd = (CharacterData) child;
+        if (child instanceof CharacterData cd) {
             return cd.getData();
         }
         return "?";

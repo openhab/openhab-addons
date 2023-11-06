@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,6 +67,7 @@ public class FullHueObject extends HueObject {
     }
 
     public @Nullable String getNormalizedModelID() {
+        String modelid = this.modelid;
         return modelid != null ? modelid.replaceAll(NORMALIZE_ID_REGEX, "_") : modelid;
     }
 

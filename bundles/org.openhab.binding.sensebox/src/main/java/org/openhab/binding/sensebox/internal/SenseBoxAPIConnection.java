@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,86 +71,92 @@ public class SenseBoxAPIConnection {
             logger.trace("Fetched Data: {}", body);
             SenseBoxData parsedData = gson.fromJson(body, SenseBoxData.class);
 
-            // Assume all is well at first
-            parsedData.setStatus(ThingStatus.ONLINE);
+            if (parsedData != null) {
+                // Assume all is well at first
+                parsedData.setStatus(ThingStatus.ONLINE);
 
-            // Could perhaps be simplified via triply-nested arrays
-            // http://stackoverflow.com/questions/36946875/how-can-i-parse-geojson-with-gson
-            for (SenseBoxLoc loc : parsedData.getLocs()) {
-                if (loc.getGeometry() != null) {
-                    List<Double> locationData = loc.getGeometry().getData();
-                    if (locationData != null) {
-                        int locationDataCount = locationData.size();
-                        SenseBoxLocation location = new SenseBoxLocation();
+                // Could perhaps be simplified via triply-nested arrays
+                // http://stackoverflow.com/questions/36946875/how-can-i-parse-geojson-with-gson
+                for (SenseBoxLoc loc : parsedData.getLocs()) {
+                    if (loc.getGeometry() != null) {
+                        List<Double> locationData = loc.getGeometry().getData();
+                        if (locationData != null) {
+                            int locationDataCount = locationData.size();
+                            SenseBoxLocation location = new SenseBoxLocation();
 
-                        if (locationDataCount > 0) {
-                            location.setLongitude(locationData.get(0));
+                            if (locationDataCount > 0) {
+                                location.setLongitude(locationData.get(0));
+                            }
+
+                            if (locationDataCount > 1) {
+                                location.setLatitude(locationData.get(1));
+                            }
+
+                            if (locationDataCount > 2) {
+                                location.setHeight(locationData.get(2));
+                            }
+
+                            parsedData.setLocation(location);
                         }
-
-                        if (locationDataCount > 1) {
-                            location.setLatitude(locationData.get(1));
-                        }
-
-                        if (locationDataCount > 2) {
-                            location.setHeight(locationData.get(2));
-                        }
-
-                        parsedData.setLocation(location);
                     }
                 }
-            }
 
-            for (SenseBoxSensor sensor : parsedData.getSensors()) {
-                if ("VEML6070".equals(sensor.getSensorType())) {
-                    // "unit" is not nicely comparable, so use sensor type for now
-                    parsedData.setUvIntensity(sensor);
-                } else if ("SDS 011".equals(sensor.getSensorType())) {
-                    // "unit" is not nicely comparable, neither is type, so use sensor title for now
-                    if ("PM2.5".equals(sensor.getTitle())) {
-                        parsedData.setParticulateMatter2dot5(sensor);
-                    } else if ("PM10".equals(sensor.getTitle())) {
-                        parsedData.setParticulateMatter10(sensor);
-                    } else {
-                        logger.debug("SDS 011 sensor title is {}", sensor.getTitle());
-                    }
-                } else if ("lx".equals(sensor.getUnit())) {
-                    if (sensor.getLastMeasurement() != null) {
-                        if (!(INVALID_BRIGHTNESS.equals(sensor.getLastMeasurement().getValue()))) {
-                            parsedData.setLuminance(sensor);
+                for (SenseBoxSensor sensor : parsedData.getSensors()) {
+                    if ("VEML6070".equals(sensor.getSensorType())) {
+                        // "unit" is not nicely comparable, so use sensor type for now
+                        parsedData.setUvIntensity(sensor);
+                    } else if ("SDS 011".equals(sensor.getSensorType())) {
+                        // "unit" is not nicely comparable, neither is type, so use sensor title for now
+                        if ("PM2.5".equals(sensor.getTitle())) {
+                            parsedData.setParticulateMatter2dot5(sensor);
+                        } else if ("PM10".equals(sensor.getTitle())) {
+                            parsedData.setParticulateMatter10(sensor);
+                        } else {
+                            logger.debug("SDS 011 sensor title is {}", sensor.getTitle());
                         }
-                    }
-                } else if ("Pa".equals(sensor.getUnit()) || "hPa".equals(sensor.getUnit())) {
-                    parsedData.setPressure(sensor);
-                } else if ("%".equals(sensor.getUnit())) {
-                    parsedData.setHumidity(sensor);
-                } else if ("°C".equals(sensor.getUnit())) {
-                    parsedData.setTemperature(sensor);
-                } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("    Sensor: {}", sensor);
-                        logger.debug("    Sensor unit: {}", sensor.getUnit());
-                        logger.debug("    Sensor type: {}", sensor.getSensorType());
-                        logger.debug("    Sensor LM: {}", sensor.getLastMeasurement());
+                    } else if ("lx".equals(sensor.getUnit())) {
                         if (sensor.getLastMeasurement() != null) {
-                            logger.debug("    Sensor LM value: {}", sensor.getLastMeasurement().getValue());
-                            logger.debug("    Sensor LM date: '{}'", sensor.getLastMeasurement().getCreatedAt());
+                            if (!(INVALID_BRIGHTNESS.equals(sensor.getLastMeasurement().getValue()))) {
+                                parsedData.setLuminance(sensor);
+                            }
+                        }
+                    } else if ("Pa".equals(sensor.getUnit()) || "hPa".equals(sensor.getUnit())) {
+                        parsedData.setPressure(sensor);
+                    } else if ("%".equals(sensor.getUnit())) {
+                        parsedData.setHumidity(sensor);
+                    } else if ("°C".equals(sensor.getUnit())) {
+                        parsedData.setTemperature(sensor);
+                    } else {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("    Sensor: {}", sensor);
+                            logger.debug("    Sensor unit: {}", sensor.getUnit());
+                            logger.debug("    Sensor type: {}", sensor.getSensorType());
+                            logger.debug("    Sensor LM: {}", sensor.getLastMeasurement());
+                            if (sensor.getLastMeasurement() != null) {
+                                logger.debug("    Sensor LM value: {}", sensor.getLastMeasurement().getValue());
+                                logger.debug("    Sensor LM date: '{}'", sensor.getLastMeasurement().getCreatedAt());
+                            }
                         }
                     }
                 }
+
+                SenseBoxDescriptor descriptor = new SenseBoxDescriptor();
+                descriptor.setApiUrl(query);
+                String image = parsedData.getImage();
+                if (image != null && !image.isEmpty()) {
+                    descriptor.setImageUrl(SENSEMAP_IMAGE_URL_BASE + "/" + image);
+                }
+                descriptor.setMapUrl(SENSEMAP_MAP_URL_BASE + "/explore/" + senseBoxId);
+                parsedData.setDescriptor(descriptor);
+
+                logger.trace("=================================");
+
+                result = parsedData;
+            } else {
+                logger.debug("An error occurred while parsing the data into desired class: {} / {}", body,
+                        SenseBoxData.class.getName());
+                result.setStatus(ThingStatus.OFFLINE);
             }
-
-            SenseBoxDescriptor descriptor = new SenseBoxDescriptor();
-            descriptor.setApiUrl(query);
-            String image = parsedData.getImage();
-            if (image != null && !image.isEmpty()) {
-                descriptor.setImageUrl(SENSEMAP_IMAGE_URL_BASE + "/" + image);
-            }
-            descriptor.setMapUrl(SENSEMAP_MAP_URL_BASE + "/explore/" + senseBoxId);
-            parsedData.setDescriptor(descriptor);
-
-            logger.trace("=================================");
-
-            result = parsedData;
         } catch (JsonSyntaxException e) {
             logger.debug("An error occurred while parsing the data into desired class: {} / {} / {}", body,
                     SenseBoxData.class.getName(), e.getMessage());
@@ -159,7 +165,6 @@ public class SenseBoxAPIConnection {
             logger.debug("IO problems while fetching data: {} / {}", query, e.getMessage());
             result.setStatus(ThingStatus.OFFLINE);
         }
-
         return result;
     }
 }

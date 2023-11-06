@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -170,9 +170,8 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof DWDPollenflugRegionHandler) {
+        if (childHandler instanceof DWDPollenflugRegionHandler regionListener) {
             logger.debug("Register region listener.");
-            final DWDPollenflugRegionHandler regionListener = (DWDPollenflugRegionHandler) childHandler;
             if (regionListeners.add(regionListener)) {
                 final DWDPollenflug localPollenflug = pollenflug;
                 if (localPollenflug != null) {
@@ -187,9 +186,9 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof DWDPollenflugRegionHandler) {
+        if (childHandler instanceof DWDPollenflugRegionHandler handler) {
             logger.debug("Unregister region listener.");
-            if (!regionListeners.remove((DWDPollenflugRegionHandler) childHandler)) {
+            if (!regionListeners.remove(handler)) {
                 logger.warn("Tried to remove listener {} but it was not registered. This is probably an error.",
                         childHandler);
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CascadedValueTransformationImpl} implements {@link ValueTransformation for a cascaded set of
- * transformations}
+ * The {@link CascadedValueTransformationImpl} implements {@link ValueTransformation} for a cascaded set of
+ * transformations
  *
  * @author Jan N. Klug - Initial contribution
  */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -215,7 +215,7 @@ public class HydrawiseLocalHandler extends BaseThingHandler {
             }
 
             updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN,
-                    status.running.size() > 0 ? OnOffType.ON : OnOffType.OFF);
+                    !status.running.isEmpty() ? OnOffType.ON : OnOffType.OFF);
         });
     }
 

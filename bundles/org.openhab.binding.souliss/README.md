@@ -19,7 +19,7 @@ You can use SoulissApp and the Souliss binding at the same time, and generally u
 
 ### Sketches
 
-The easiest way is start with a simple example to control an ON/OFF light (though a relay).
+The easiest way is start with a simple example to control an ON/OFF light (through a relay).
 You can go to project [Souliss](https://github.com/souliss/souliss), see a lot of examples sketches: [Souliss examples](https://github.com/souliss/souliss/tree/friariello/examples)
 
 ## Discovery
@@ -128,7 +128,7 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 | Gateway    | gatewayLanAddress=""              | Mandatory - lan address of Gateway                                                                    |
 | "          | gatewayWanAddress=""              | (advanced) When gateway is outside local network can insert domain/ip in this field                   |
 | "          | gatewayPortNumber=230             | (advanced) Gateway UDP Port                                                                           |
-| "          | preferredLocalPortNumber=23000    | (advanced) Local UDP Port                                                                             |
+| "          | preferredLocalPortNumber=23000    | (advanced) Local UDP Port  **(don't use 0, check it if you come from previous versions like 2.x)**    |
 | "          | pingInterval=30                   | (advanced) Interval in seconds to check for device presence                                           |
 | "          | subscriptionInterval=2            | (advanced) Interval in minutes to subscribe Souliss Gateway                                           |
 | "          | healthyInterval=35                | (advanced) Interval in seconds to send nodes healthy                                                  |
@@ -156,7 +156,7 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 souliss.things:
 
 ```java
-Bridge souliss:gateway:105 "Souliss Gateway - 105" [gatewayLanAddress="192.168.1.105", gatewayPortNumber=230, preferredLocalPortNumber=0, pingInterval=30, subscriptionInterval=2, healthyInterval=38, userIndex=72, nodeIndex=38,  timeoutToRequeue=5000, timeoutToRemovePacket=20000]
+Bridge souliss:gateway:105 "Souliss Gateway - 105" [gatewayLanAddress="192.168.1.105", gatewayPortNumber=230, pingInterval=30, subscriptionInterval=2, healthyInterval=38, userIndex=72, nodeIndex=38,  timeoutToRequeue=5000, timeoutToRemovePacket=20000]
 {  
 Thing t14 1-6 "Portoncino"@"Rientro" [node=1,slot=6] //thing UID is named as node-slot only as mnemonic convention, but you are free to assign other values
 Thing t14 1-7 "Cancello"@"Rientro" [node=1,slot=7]
@@ -206,7 +206,7 @@ Group    Elettricita
 Group    Diagnostic
 Group    TermostatoSoggiorno
 
-Switch   tettoia                "Tettoia"                                   <light>     (Outside)   ["Lighting"]    {autoupdate="false", channel="souliss:t11:105:5-0:onoff"}
+Switch   tettoia                "Tettoia"                                   <light>     (Outside)   ["Lighting"]    {autoupdate="false", channel="souliss:t11:105:5-0:onOff"}
 String   tettoia_aggiornamento  "Agg [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring>   (Outside, Diagnostic)       {channel="souliss:t31:105:5-0:lastStatusStored"}
 
 Switch   portoncino             "Portoncino"            <light>         (FamilyRoom)         ["Lighting"]   {autoupdate="false",channel="souliss:t14:105:1-6:pulse"}
@@ -231,7 +231,7 @@ Number termostatosoggiorno_umidita      "Umidità [%.1f %%]"     <temperature>  
 Number termostatosoggiorno_umidita "Umidità" <humidity>   (TermostatoSoggiorno)  {channel="souliss:t53:105:6-7:value" }
 
 Number termostatosoggiorno_temperatura      "Temperatura"                   <temperature>   (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:measured"}
-Number termostatosoggiorno_setpoint         "Regola Set Point [%.1f °c]"    <heating>       (TermostatoSoggiorno) {autoupdate="false", channel="souliss:t31:105:6-0:sePpoint"}
+Number termostatosoggiorno_setpoint         "Regola Set Point [%.1f °c]"    <heating>       (TermostatoSoggiorno) {autoupdate="false", channel="souliss:t31:105:6-0:setPoint"}
 Switch termostatosoggiorno_setasmeasured    "Set temp. attuale"             <heating>       (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:setAsMeasured"}
 String termostatosoggiorno_modo             "Modo"                                          (TermostatoSoggiorno) {autoupdate="false", channel="souliss:t31:105:6-0:mode"}
 Switch termostatosoggiorno_power            "Termostato"                    <powerIcon>     (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:system"}

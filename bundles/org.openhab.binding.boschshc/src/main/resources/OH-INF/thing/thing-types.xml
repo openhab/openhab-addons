@@ -141,6 +141,7 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="silent-mode" typeId="silent-mode"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
@@ -498,13 +499,25 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Desired temperature.</description>
-		<state min="5" max="30" step="0.5" pattern="%.1f %unit%" readOnly="true"/>
+		<state min="5" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="child-lock">
 		<item-type>Switch</item-type>
 		<label>Child Lock</label>
-		<description>Indicates if it is possible to set the desired temperature on the device.</description>
+		<description>Enables or disables the child lock on the device.</description>
+	</channel-type>
+
+	<channel-type id="silent-mode">
+		<item-type>Switch</item-type>
+		<label>Silent Mode</label>
+		<description>Enables or disables silent mode on thermostats. When enabled, the battery usage is higher.</description>
+		<state>
+			<options>
+				<option value="MODE_NORMAL">Silent mode disabled (lower battery usage)</option>
+				<option value="MODE_SILENT">Silent mode enabled (higher battery usage)</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

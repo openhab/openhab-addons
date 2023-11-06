@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,9 @@ package org.openhab.binding.boschshc.internal.services.humiditylevel.dto;
 
 import javax.measure.quantity.Dimensionless;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.humiditylevel.HumidityLevelService;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -36,6 +38,6 @@ public class HumidityLevelServiceState extends BoschSHCServiceState {
     public double humidity;
 
     public State getHumidityState() {
-        return new QuantityType<Dimensionless>(this.humidity, Units.PERCENT);
+        return new QuantityType<@NonNull Dimensionless>(this.humidity, Units.PERCENT);
     }
 }

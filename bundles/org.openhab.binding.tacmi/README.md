@@ -6,42 +6,41 @@ Since I only have the new UVR16x2, it has only been tested with this controller.
 The binding supports two ways to interact with the C.M.I. and all devices connected to the C.M.I. via the CAN bus.
 These modes are:
 
-
 Via a "Schema API Page"
-  * Read values from output nodes
-  * Change values for controllable nodes
+
+- Read values from output nodes
+- Change values for controllable nodes
 
 CoE (CAN over Ethernet) Connection
-  * Receive data from analog CAN-outputs defined in TAPPS2
-  * Receive data from digital CAN-outputs defined in TAPPS2
-  * Send ON/OFF to digital CAN-inputs defined in TAPPS2
-  * Send numeric values to analog CAN-inputs defined in TAPPS2
 
+- Receive data from analog CAN-outputs defined in TAPPS2
+- Receive data from digital CAN-outputs defined in TAPPS2
+- Send ON/OFF to digital CAN-inputs defined in TAPPS2
+- Send numeric values to analog CAN-inputs defined in TAPPS2
 
 Depending on what you want to achieve, either the "Schema API Page" or the CoE way might be better.
 As rough guidance: Anything you want to provide to the TA equipment it has to work / operate with the CoE might be better.
 If you plan things mainly for user interaction the "Schema API Page" might be better.
 
-
 ## Prerequisites
 
 ### Setting up the "Schema API Page"
 
-The "Schema API page" is a special schema page created via TA's *TA-Designer* application available as download on their web site.
+The "Schema API page" is a special schema page created via TA's _TA-Designer_ application available as download on their web site.
 This page just needs to exist and be deployed on the C.M.I. but it dosn't need to be linked by the other schema pages you are using to control your TA installation.
 
 All objects from this special 'API' page are automatically mapped as channels of this thing, so the labels of the objects on this page have to follow a specific schema.
 
-When adding objects to this page, the schema for the Object's *Pre-Text* field has to follow the schema `<channelName> <channel description>: `.
+When adding objects to this page, the schema for the Object's _Pre-Text_ field has to follow the schema `<channelName> <channel description>:`.
 
 Maybe this screenshot shows it best:
 
 ![screenshot-channel-object-details](doc/images/channel-object-details.png)
 
-The Text from the *Pre-Text* will be used to define the channel.
-The first word *tempCollector* (highlighted in the screenshot) will be used as channel name, so it has to be unique.
-Everything else till the final *:* will be used as channel description.
-Be sure to have at least 2 words in the *Pre-Text* as we need both - the channel name and a description.
+The Text from the _Pre-Text_ will be used to define the channel.
+The first word _tempCollector_ (highlighted in the screenshot) will be used as channel name, so it has to be unique.
+Everything else till the final _:_ will be used as channel description.
+Be sure to have at least 2 words in the _Pre-Text_ as we need both - the channel name and a description.
 The binding will log an error otherwise.
 Also keep in mind: for the channel name we have to adhere to the openHAB channel name conventions - so just use letters and numbers without any special sings here.
 The type of the channel will be automatically determined by the type of the object added.
@@ -71,19 +70,19 @@ Don’t forget to reboot the CMI after you uploaded the coe.csv file.
 
 ## Supported Bridge and Things
 
-* TA C.M.I. schema API connection - Thing
+- TA C.M.I. schema API connection - Thing
 
 This thing reflecting one of our 'schema API page' as defined in the prerequisites.
 This thing doesn't need the bridge.
 Multiple of these pages on different C.M.I.'s could be defined within an openHAB instance.
 
-* TA C.M.I. CoE Bridge
+- TA C.M.I. CoE Bridge
 
 In order to get the CAN over Ethernet (COE) envionment working a `coe-bridge` has to be created.
 The bridge itself opens the UDP port 5441 for communication with the C.M.I. devices.
 The bridge could be used for multiple C.M.I. devices.
 
-* TA C.M.I. CoE Connection - Thing
+- TA C.M.I. CoE Connection - Thing
 
 This thing reflects a connection to a node behind a specific C.M.I..
 This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
@@ -139,9 +138,9 @@ The channels have a parameter allowing to configure their update behavior:
 
 The behavior in detail:
 
-* `Default` (`0`): When the channel is 'read-only' the update-policy defaults to _On-Fetch_ . When the channel is linked to something that can be modified it defaults to _On-Change_ .
-* `On-Fetch` (`1`): This is the default for read-only values. This means the channel is updated every time the schema page is polled. Ideally for values you want to monitor and log into charts.
-* `On-Change` (`2`): When channel values can be changed via OH it is better to only update the channel when the value changes. The binding will cache the previous value and only send an update when it changes to the previous known value. This is especially useful if you intend to link other things (like i.e. Zigbee or Shelly switches) to the TA via OH that can be controlled by different sources. This prevents unintended toggles or even toggle-loops.
+- `Default` (`0`): When the channel is 'read-only' the update-policy defaults to _On-Fetch_ . When the channel is linked to something that can be modified it defaults to _On-Change_ .
+- `On-Fetch` (`1`): This is the default for read-only values. This means the channel is updated every time the schema page is polled. Ideally for values you want to monitor and log into charts.
+- `On-Change` (`2`): When channel values can be changed via OH it is better to only update the channel when the value changes. The binding will cache the previous value and only send an update when it changes to the previous known value. This is especially useful if you intend to link other things (like i.e. Zigbee or Shelly switches) to the TA via OH that can be controlled by different sources. This prevents unintended toggles or even toggle-loops.
 
 ### TA C.M.I. CoE Connection
 
@@ -205,7 +204,6 @@ The known measure types are:
 | 12     | Megawatthours |                                               |
 | 13..21 | Unknown       |                                               |
 
-
 ## Full Example
 
 As there is no common configuration as everything depends on the configuration of the TA devices.
@@ -213,7 +211,7 @@ So we just can provide some samples providing the basics so you can build the co
 
 Example of a _.thing_ file:
 
-```
+```java
 Thing tacmi:cmiSchema:apiLab "CMIApiPage"@"lab" [ host="192.168.178.33", username="user", password="secret", schemaId=4 ]
 Bridge tacmi:coe-bridge:coe-bridge "TA C.M.I. Bridge"
 {
@@ -231,7 +229,7 @@ Bridge tacmi:coe-bridge:coe-bridge "TA C.M.I. Bridge"
 
 Sample _.items_-File:
 
-```
+```java
 # APIPage-items
 Number TACMI_Api_tempCollector "Collector temp [%.1f °C]" <temperature> {channel="tacmi:cmiSchema:apiLab:tempCollector"}
 String TACMI_Api_hc1OperationMode "Heating Curcuit 1 Operation Mode [%s]" {channel="tacmi:cmiSchema:apiLab:hc1OperationMode"}
@@ -246,7 +244,7 @@ Switch TACMI_Digital_Out_1   "TA output switch 1 [%s]"   {channel="tacmi:cmi:coe
 
 Sample _.sitemap_ snipplet
 
-```
+```perl
 sitemap heatingTA label="heatingTA"
 {
     Text item=TACMI_Api_tempCollector
@@ -267,7 +265,7 @@ You might already have noticed that some state information is in German.
 As I have set the `Accept-Language`-Http-Header to `en` for all request and found no other way setting a language for the schema pages I assume it is a lack of internationalization in the C.M.I.
 You could circumvent this by creating map files to map things properly to your language.
 
-If you want to see the possible options of a multi-state field you could open the *schema API page* with your web browser and click on the object.
+If you want to see the possible options of a multi-state field you could open the _schema API page_ with your web browser and click on the object.
 A Popup with an option field will be shown showing all possible options, like in this screenshot:
 
 ![screenshot-operation-mode-values](doc/images/operation-mode-values.png)

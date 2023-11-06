@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,8 @@
 package org.openhab.binding.snmp.internal;
 
 import static org.openhab.binding.snmp.internal.SnmpBindingConstants.THING_TYPE_TARGET;
+import static org.openhab.binding.snmp.internal.SnmpBindingConstants.THING_TYPE_TARGET3;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.snmp")
 public class SnmpHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TARGET);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_TARGET, THING_TYPE_TARGET3);
 
     private final SnmpService snmpService;
 
@@ -54,7 +54,7 @@ public class SnmpHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (THING_TYPE_TARGET.equals(thingTypeUID)) {
+        if (THING_TYPE_TARGET.equals(thingTypeUID) || THING_TYPE_TARGET3.equals(thingTypeUID)) {
             return new SnmpTargetHandler(thing, snmpService);
         }
         return null;

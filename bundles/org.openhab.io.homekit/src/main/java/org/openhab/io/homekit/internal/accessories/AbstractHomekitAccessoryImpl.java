@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -33,10 +32,10 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -44,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.characteristics.Characteristic;
+import io.github.hapjava.characteristics.CharacteristicEnum;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.base.BaseCharacteristic;
 import io.github.hapjava.services.Service;
@@ -71,6 +71,23 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         this.services = new ArrayList<>();
         this.settings = settings;
         this.rawCharacteristics = new HashMap<>();
+        // create raw characteristics for mandatory characteristics
+        characteristics.forEach(c -> {
+            var rawCharacteristic = HomekitCharacteristicFactory.createNullableCharacteristic(c, updater);
+            // not all mandatory characteristics are creatable via HomekitCharacteristicFactory (yet)
+            if (rawCharacteristic != null) {
+                rawCharacteristics.put(rawCharacteristic.getClass(), rawCharacteristic);
+            }
+        });
+    }
+
+    /**
+     * Gives an accessory an opportunity to populate additional characteristics after all optional
+     * charactericteristics have been added.
+     * 
+     * @throws HomekitException
+     */
+    public void init() throws HomekitException {
     }
 
     /**
@@ -203,7 +220,6 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         } else {
             logger.warn("Mandatory characteristic {} not found at accessory {}. ", characteristic,
                     accessory.getItem().getName());
-
         }
         return Optional.empty();
     }
@@ -253,37 +269,38 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 .map(homekitTaggedItem -> homekitTaggedItem.getConfiguration(key, defaultValue)).orElse(defaultValue);
     }
 
-    /**
-     * update mapping with values from item configuration.
-     * it checks for all keys from the mapping whether there is configuration at item with the same key and if yes,
-     * replace the value.
-     *
-     * @param characteristicType characteristicType to identify item
-     * @param map mapping to update
-     * @param customEnumList list to store custom state enumeration
-     */
     @NonNullByDefault
-    protected <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map,
-            @Nullable List<T> customEnumList) {
-        getCharacteristic(characteristicType).ifPresent(c -> {
-            final Map<String, Object> configuration = c.getConfiguration();
-            if (configuration != null) {
-                map.forEach((k, current_value) -> {
-                    final Object new_value = configuration.get(k.toString());
-                    if (new_value instanceof String) {
-                        map.put(k, (String) new_value);
-                        if (customEnumList != null) {
-                            customEnumList.add(k);
-                        }
-                    }
-                });
-            }
-        });
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+            HomekitCharacteristicType characteristicType, Class<T> klazz) {
+        return createMapping(characteristicType, klazz, null, false);
     }
 
     @NonNullByDefault
-    protected <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map) {
-        updateMapping(characteristicType, map, null);
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+            HomekitCharacteristicType characteristicType, Class<T> klazz, boolean inverted) {
+        return createMapping(characteristicType, klazz, null, inverted);
+    }
+
+    @NonNullByDefault
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+            HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList) {
+        return createMapping(characteristicType, klazz, customEnumList, false);
+    }
+
+    /**
+     * create mapping with values from item configuration
+     * 
+     * @param characteristicType to identify item; must be present
+     * @param customEnumList list to store custom state enumeration
+     * @param inverted if ON/OFF and OPEN/CLOSED should be inverted by default (inverted on the item will double-invert)
+     * @return mapping of enum values to custom string values
+     */
+    @NonNullByDefault
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+            HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList,
+            boolean inverted) {
+        HomekitTaggedItem item = getCharacteristic(characteristicType).get();
+        return HomekitCharacteristicFactory.createMapping(item, klazz, customEnumList, inverted);
     }
 
     /**
@@ -297,23 +314,11 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @return key for the value
      */
     @NonNullByDefault
-    protected <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, String> mapping,
+    public <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, String> mapping,
             T defaultValue) {
         final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
         if (c.isPresent()) {
-            final State state = c.get().getItem().getState();
-            logger.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", characteristicType.getTag(),
-                    state, mapping);
-            if (state instanceof StringType) {
-                return mapping.entrySet().stream().filter(entry -> state.toString().equalsIgnoreCase(entry.getValue()))
-                        .findAny().map(Entry::getKey).orElseGet(() -> {
-                            logger.warn(
-                                    "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
-                                    state.toString(), characteristicType.getTag(), c.get().getName(), mapping.values(),
-                                    defaultValue);
-                            return defaultValue;
-                        });
-            }
+            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), mapping, defaultValue);
         }
         return defaultValue;
     }
@@ -326,8 +331,13 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     /**
-     * @param type
+     * If the primary service does not yet exist, it won't be added to it. It's the resposibility
+     * of the caller to add characteristics when the primary service is created.
+     *
      * @param characteristic
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
      */
     @NonNullByDefault
     public void addCharacteristic(Characteristic characteristic)
@@ -339,9 +349,11 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         }
         rawCharacteristics.put(characteristic.getClass(), characteristic);
         var service = getPrimaryService();
-        // find the corresponding add method at service and call it.
-        service.getClass().getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
-                characteristic);
+        if (service != null) {
+            // find the corresponding add method at service and call it.
+            service.getClass().getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
+                    characteristic);
+        }
     }
 
     @NonNullByDefault
@@ -429,7 +441,7 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                         // Need to copy over everything except the current value, which we instead
                         // reach in and get the default value
                         cJson.forEach((k, v) -> {
-                            if (k.equals("value")) {
+                            if ("value".equals(k)) {
                                 Object defaultValue = ((BaseCharacteristic) c).getDefault();
                                 if (defaultValue instanceof Boolean) {
                                     cBuilder.add("value", (boolean) defaultValue);

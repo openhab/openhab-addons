@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.dmx.internal;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dmx.internal.multiverse.DmxChannel;
 import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ import org.slf4j.Logger;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class Util {
     /**
      * inRange checks if a value is between two other values
@@ -36,10 +39,7 @@ public class Util {
         if (value < min) {
             return false;
         }
-        if (value > max) {
-            return false;
-        }
-        return true;
+        return value <= max;
     }
 
     /**
@@ -52,7 +52,7 @@ public class Util {
      * @param var name of the variable (used for logging)
      * @return coerced value
      */
-    public static int coerceToRange(int value, int min, int max, Logger logger, String var) {
+    public static int coerceToRange(int value, int min, int max, @Nullable Logger logger, String var) {
         if (value < min) {
             if (logger != null) {
                 logger.warn("coerced {} {} to allowed range {}-{}", var, value, min, max);
@@ -77,8 +77,7 @@ public class Util {
      * @param logger logger that shall be used
      * @return coerced value
      */
-
-    public static int coerceToRange(int value, int min, int max, Logger logger) {
+    public static int coerceToRange(int value, int min, int max, @Nullable Logger logger) {
         return coerceToRange(value, min, max, logger, "");
     }
 
@@ -90,7 +89,6 @@ public class Util {
      * @param max
      * @return coerced value
      */
-
     public static int coerceToRange(int value, int min, int max) {
         return coerceToRange(value, min, max, null, "");
     }

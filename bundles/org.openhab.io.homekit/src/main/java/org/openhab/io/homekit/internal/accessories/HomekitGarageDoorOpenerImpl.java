@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,16 +17,10 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.OBSTRUCT
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_DOOR_STATE;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.items.Item;
-import org.openhab.core.library.items.StringItem;
-import org.openhab.core.library.items.SwitchItem;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitOHItemProxy;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -46,83 +40,29 @@ import io.github.hapjava.services.impl.GarageDoorOpenerService;
 public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl implements GarageDoorOpenerAccessory {
     private final Logger logger = LoggerFactory.getLogger(HomekitGarageDoorOpenerImpl.class);
     private final BooleanItemReader obstructionReader;
+    private final Map<CurrentDoorStateEnum, String> currentDoorStateMapping;
+    private final Map<TargetDoorStateEnum, String> targetDoorStateMapping;
 
     public HomekitGarageDoorOpenerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         obstructionReader = createBooleanReader(OBSTRUCTION_STATUS);
+        currentDoorStateMapping = createMapping(CURRENT_DOOR_STATE, CurrentDoorStateEnum.class, true);
+        targetDoorStateMapping = createMapping(TARGET_DOOR_STATE, TargetDoorStateEnum.class, true);
+
         getServices().add(new GarageDoorOpenerService(this));
     }
 
     @Override
     public CompletableFuture<CurrentDoorStateEnum> getCurrentDoorState() {
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(CURRENT_DOOR_STATE);
-        final HomekitSettings settings = getSettings();
-        String stringValue = settings.doorCurrentStateClosed;
-        if (characteristic.isPresent()) {
-            stringValue = characteristic.get().getItem().getState().toString();
-        } else {
-            logger.warn("Missing mandatory characteristic {}", CURRENT_DOOR_STATE);
-        }
-        CurrentDoorStateEnum mode;
-
-        if (stringValue.equalsIgnoreCase(settings.doorCurrentStateClosed)) {
-            mode = CurrentDoorStateEnum.CLOSED;
-        } else if (stringValue.equalsIgnoreCase(settings.doorCurrentStateClosing)) {
-            mode = CurrentDoorStateEnum.CLOSING;
-        } else if (stringValue.equalsIgnoreCase(settings.doorCurrentStateOpen)) {
-            mode = CurrentDoorStateEnum.OPEN;
-        } else if (stringValue.equalsIgnoreCase(settings.doorCurrentStateOpening)) {
-            mode = CurrentDoorStateEnum.OPENING;
-        } else if (stringValue.equalsIgnoreCase(settings.doorCurrentStateStopped)) {
-            mode = CurrentDoorStateEnum.STOPPED;
-        } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-            logger.warn("Current door state not available. Relaying value of CLOSED to HomeKit");
-            mode = CurrentDoorStateEnum.CLOSED;
-        } else {
-            logger.warn("Unrecognized current door state: {}. Expected {}, {}, {}, {} or {} strings in value.",
-                    stringValue, settings.doorCurrentStateClosed, settings.doorCurrentStateClosing,
-                    settings.doorCurrentStateOpen, settings.doorCurrentStateOpening, settings.doorCurrentStateStopped);
-            mode = CurrentDoorStateEnum.CLOSED;
-        }
-        return CompletableFuture.completedFuture(mode);
+        return CompletableFuture.completedFuture(
+                getKeyFromMapping(CURRENT_DOOR_STATE, currentDoorStateMapping, CurrentDoorStateEnum.CLOSED));
     }
 
     @Override
     public CompletableFuture<TargetDoorStateEnum> getTargetDoorState() {
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(TARGET_DOOR_STATE);
-        Item item;
-
-        if (characteristic.isPresent()) {
-            item = characteristic.get().getItem();
-        } else {
-            logger.warn("Missing mandatory characteristic {}", TARGET_DOOR_STATE);
-            return CompletableFuture.completedFuture(TargetDoorStateEnum.CLOSED);
-        }
-        TargetDoorStateEnum mode;
-
-        final Item baseItem = HomekitOHItemProxy.getBaseItem(item);
-        if (baseItem instanceof SwitchItem) {
-            mode = item.getState() == OnOffType.ON ? TargetDoorStateEnum.OPEN : TargetDoorStateEnum.CLOSED;
-        } else if (baseItem instanceof StringItem) {
-            final HomekitSettings settings = getSettings();
-            final String stringValue = item.getState().toString();
-            if (stringValue.equalsIgnoreCase(settings.doorTargetStateClosed)) {
-                mode = TargetDoorStateEnum.CLOSED;
-            } else if (stringValue.equalsIgnoreCase(settings.doorTargetStateOpen)) {
-                mode = TargetDoorStateEnum.OPEN;
-            } else {
-                logger.warn(
-                        "Unsupported value {} for {}. Only {} and {} supported. Check HomeKit settings if you want to change the mapping",
-                        stringValue, item.getName(), settings.doorTargetStateClosed, settings.doorTargetStateOpen);
-                mode = TargetDoorStateEnum.CLOSED;
-            }
-        } else {
-            logger.warn("Unsupported item type {} for {}. Only Switch and String are supported", baseItem.getType(),
-                    item.getName());
-            mode = TargetDoorStateEnum.CLOSED;
-        }
-        return CompletableFuture.completedFuture(mode);
+        return CompletableFuture.completedFuture(
+                getKeyFromMapping(TARGET_DOOR_STATE, targetDoorStateMapping, TargetDoorStateEnum.CLOSED));
     }
 
     @Override
@@ -132,26 +72,8 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
 
     @Override
     public CompletableFuture<Void> setTargetDoorState(TargetDoorStateEnum targetDoorStateEnum) {
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(TARGET_DOOR_STATE);
-        final HomekitTaggedItem taggedItem;
-        if (characteristic.isPresent()) {
-            taggedItem = characteristic.get();
-        } else {
-            logger.warn("Missing mandatory characteristic {}", TARGET_DOOR_STATE);
-            return CompletableFuture.completedFuture(null);
-        }
-
-        if (taggedItem.getBaseItem() instanceof SwitchItem) {
-            taggedItem.send(OnOffType.from(targetDoorStateEnum == TargetDoorStateEnum.OPEN));
-        } else if (taggedItem.getBaseItem() instanceof StringItem) {
-            final HomekitSettings settings = getSettings();
-            taggedItem
-                    .send(new StringType(targetDoorStateEnum == TargetDoorStateEnum.OPEN ? settings.doorTargetStateOpen
-                            : settings.doorTargetStateClosed));
-        } else {
-            logger.warn("Unsupported item type {} for {}. Only Switch and String are supported",
-                    taggedItem.getBaseItem().getType(), taggedItem.getName());
-        }
+        HomekitCharacteristicFactory.setValueFromEnum(getCharacteristic(TARGET_DOOR_STATE).get(), targetDoorStateEnum,
+                targetDoorStateMapping);
         return CompletableFuture.completedFuture(null);
     }
 

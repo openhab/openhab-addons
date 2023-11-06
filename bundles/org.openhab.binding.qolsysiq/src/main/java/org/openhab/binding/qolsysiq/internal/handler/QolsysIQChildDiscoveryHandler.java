@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,10 +28,10 @@ public interface QolsysIQChildDiscoveryHandler {
      *
      * @param service
      */
-    public void setDiscoveryService(QolsysIQChildDiscoveryService service);
+    void setDiscoveryService(QolsysIQChildDiscoveryService service);
 
     /**
      * Initiates the discovery process
      */
-    public void startDiscovery();
+    void startDiscovery();
 }

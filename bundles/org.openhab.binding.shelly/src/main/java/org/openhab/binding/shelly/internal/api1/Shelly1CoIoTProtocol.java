@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -207,11 +207,11 @@ public class Shelly1CoIoTProtocol {
             // event count
             updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(idx), getDecimal(count));
             logger.trace(
-                    "{}: Check button[{}] for event trigger (isButtonMode={}, isButton={}, hasBattery={}, serial={}, count={}, lastEventCount[{}]={}",
+                    "{}: Check button[{}] for event trigger (inButtonMode={}, isButton={}, hasBattery={}, serial={}, count={}, lastEventCount[{}]={}",
                     thingName, idx, profile.inButtonMode(idx), profile.isButton, profile.hasBattery, serial, count, idx,
                     lastEventCount[idx]);
-            if (profile.inButtonMode(idx) && ((profile.hasBattery && (count == 1))
-                    || ((lastEventCount[idx] != -1) && (count != lastEventCount[idx])))) {
+            if (profile.inButtonMode(idx) && ((profile.hasBattery && count == 1) || lastEventCount[idx] == -1
+                    || count != lastEventCount[idx])) {
                 if (!profile.isButton || (profile.isButton && (serial != 0x200))) { // skip duplicate on wake-up
                     logger.debug("{}: Trigger event {}", thingName, inputEvent[idx]);
                     thingHandler.triggerButton(group, idx, inputEvent[idx]);
@@ -225,14 +225,14 @@ public class Shelly1CoIoTProtocol {
      *
      * Handles the combined updated of the brightness channel:
      * brightness$Switch is the OnOffType (power state)
-     * brightness&Value is the brightness value
+     * brightness&amp;Value is the brightness value
      *
      * @param profile Device profile, required to select the channel group and name
-     * @param updates List of updates. updatePower will add brightness$Switch and brightness&Value if changed
+     * @param updates List of updates. updatePower will add brightness$Switch and brightness&amp;Value if changed
      * @param id Sensor id from the update
      * @param sen Sensor description from the update
      * @param s New sensor value
-     * @param allUpdatesList of updates. This is required, because we need to update both values at the same time
+     * @param allUpdates List of updates. This is required, because we need to update both values at the same time
      */
     protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
             CoIotSensor s, List<CoIotSensor> allUpdates) {
@@ -263,9 +263,9 @@ public class Shelly1CoIoTProtocol {
                     // continue until we find the correct one
                     continue;
                 }
-                if (d.desc.equalsIgnoreCase("brightness")) {
+                if ("brightness".equalsIgnoreCase(d.desc)) {
                     brightness = update.value;
-                } else if (d.desc.equalsIgnoreCase("output") || d.desc.equalsIgnoreCase("state")) {
+                } else if ("output".equalsIgnoreCase(d.desc) || "state".equalsIgnoreCase(d.desc)) {
                     power = update.value;
                 }
             }
@@ -294,7 +294,7 @@ public class Shelly1CoIoTProtocol {
     /**
      * Find index of Input id, which is required to map to channel name
      *
-     * @parm sensorDesc D field from sensor update
+     * @param sensorDesc D field from sensor update
      * @param sensorId The id from the sensor update
      * @return Index of found entry (+1 will be the suffix for the channel name) or null if sensorId is not found
      */
@@ -356,8 +356,8 @@ public class Shelly1CoIoTProtocol {
         int idx = 0;
         for (Map.Entry<String, CoIotDescrSen> se : sensorMap.entrySet()) {
             CoIotDescrSen sen = se.getValue();
-            if (sen.desc.equalsIgnoreCase("external_temperature") || sen.desc.equalsIgnoreCase("external temperature c")
-                    || (sen.desc.equalsIgnoreCase("extTemp") && !sen.unit.equalsIgnoreCase(SHELLY_TEMP_FAHRENHEIT))) {
+            if ("external_temperature".equalsIgnoreCase(sen.desc) || "external temperature c".equalsIgnoreCase(sen.desc)
+                    || ("extTemp".equalsIgnoreCase(sen.desc) && !sen.unit.equalsIgnoreCase(SHELLY_TEMP_FAHRENHEIT))) {
                 idx++; // iterate from temperature1..2..n
             }
             if (sen.id.equalsIgnoreCase(sensorId)) {

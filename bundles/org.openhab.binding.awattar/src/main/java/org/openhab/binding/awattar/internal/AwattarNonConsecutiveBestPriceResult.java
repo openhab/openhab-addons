@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,6 +52,7 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
         return members.stream().anyMatch(x -> x.contains(Instant.now().toEpochMilli()));
     }
 
+    @Override
     public String toString() {
         return String.format("NonConsecutiveBestpriceResult with %s", members.toString());
     }
@@ -67,6 +68,7 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
         }
     }
 
+    @Override
     public String getHours() {
         boolean second = false;
         sort();

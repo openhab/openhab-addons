@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,6 +86,10 @@ public final class NibeUplinkBindingConstants {
     public static final String CHANNEL_TYPE_HW_LUX_RW = "rwtype-hw-lux";
     public static final String CHANNEL_TYPE_HW_MODE_RW = "rwtype-hw-mode";
     public static final String CHANNEL_TYPE_FAN_SPEED_RW = "rwtype-fan-speed";
+
+    // Status Keys
+    public static final String STATUS_INVALID_NIBE_ID = "@text/status.invalid.nibeId";
+    public static final String STATUS_INVALID_CREDENTIALS = "@text/status.invalid.credentials";
 
     // URLs
     public static final String LOGIN_URL = "https://www.nibeuplink.com/LogIn";

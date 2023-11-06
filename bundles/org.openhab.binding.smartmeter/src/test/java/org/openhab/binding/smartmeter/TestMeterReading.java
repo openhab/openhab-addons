@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,10 +54,10 @@ public class TestMeterReading {
         MeterDevice<Object> meter = getMeterDevice(connector);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
         meter.addValueChangeListener(changeListener);
-        Disposable disposable = meter.readValues(5000, Executors.newScheduledThreadPool(1), period);
+        long executionTime = period.toMillis() * executionCount;
+        Disposable disposable = meter.readValues(executionTime, Executors.newScheduledThreadPool(1), period);
         try {
-            verify(changeListener, after(executionCount * period.toMillis() + period.toMillis() / 2).never())
-                    .errorOccurred(any());
+            verify(changeListener, after(executionTime + period.toMillis() / 2 + 50).never()).errorOccurred(any());
             verify(changeListener, times(executionCount)).valueChanged(any());
         } finally {
             disposable.dispose();
@@ -77,7 +77,7 @@ public class TestMeterReading {
         try {
             verify(changeListener, after(
                     period.toMillis() + 2 * period.toMillis() * ConnectorBase.NUMBER_OF_RETRIES + period.toMillis() / 2)
-                            .times(1)).errorOccurred(any());
+                    .times(1)).errorOccurred(any());
             verify(connector, times(ConnectorBase.NUMBER_OF_RETRIES)).retryHook(ArgumentMatchers.anyInt());
         } finally {
             disposable.dispose();
@@ -90,7 +90,7 @@ public class TestMeterReading {
         final int timeout = 5000;
         MockMeterReaderConnector connector = spy(getMockedConnector(true, () -> {
             try {
-                Thread.sleep(timeout + 2000);
+                Thread.sleep(timeout);
             } catch (InterruptedException e) {
             }
             return new Object();
@@ -98,9 +98,9 @@ public class TestMeterReading {
         MeterDevice<Object> meter = getMeterDevice(connector);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
         meter.addValueChangeListener(changeListener);
-        Disposable disposable = meter.readValues(5000, Executors.newScheduledThreadPool(2), period);
+        Disposable disposable = meter.readValues(timeout / 2, Executors.newScheduledThreadPool(2), period);
         try {
-            verify(changeListener, after(timeout + 3000).times(1)).errorOccurred(any(TimeoutException.class));
+            verify(changeListener, timeout(timeout)).errorOccurred(any(TimeoutException.class));
         } finally {
             disposable.dispose();
         }
@@ -112,7 +112,7 @@ public class TestMeterReading {
         final int timeout = 5000;
         MockMeterReaderConnector connector = spy(getMockedConnector(true, () -> {
             try {
-                Thread.sleep(timeout + 2000);
+                Thread.sleep(timeout);
             } catch (InterruptedException e) {
             }
             throw new RuntimeException(new IOException("fucked up"));
@@ -122,9 +122,9 @@ public class TestMeterReading {
         RxJavaPlugins.setErrorHandler(errorHandler);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
         meter.addValueChangeListener(changeListener);
-        Disposable disposable = meter.readValues(5000, Executors.newScheduledThreadPool(2), period);
+        Disposable disposable = meter.readValues(timeout / 2, Executors.newScheduledThreadPool(2), period);
         try {
-            verify(changeListener, after(timeout + 3000).times(1)).errorOccurred(any(TimeoutException.class));
+            verify(changeListener, timeout(timeout)).errorOccurred(any(TimeoutException.class));
             verifyNoMoreInteractions(errorHandler);
         } finally {
             disposable.dispose();

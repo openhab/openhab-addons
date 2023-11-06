@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,8 +68,8 @@ public class SMSModemActions implements ThingActions {
 
     public static void sendSMS(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String message,
             @Nullable String encoding) {
-        if (actions instanceof SMSModemActions) {
-            ((SMSModemActions) actions).sendSMS(recipient, message, encoding);
+        if (actions instanceof SMSModemActions smsModemActions) {
+            smsModemActions.sendSMS(recipient, message, encoding);
         } else {
             throw new IllegalArgumentException("Instance is not an SMSModemActions class.");
         }

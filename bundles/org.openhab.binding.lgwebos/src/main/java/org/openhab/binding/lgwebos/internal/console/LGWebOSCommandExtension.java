@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,8 +65,8 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension imp
             LGWebOSHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof LGWebOSHandler) {
-                    handler = (LGWebOSHandler) thingHandler;
+                if (thingHandler instanceof LGWebOSHandler webOSHandler) {
+                    handler = webOSHandler;
                 }
             }
             if (thing == null) {
@@ -116,8 +116,8 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension imp
         if (cursorArgumentIndex <= 0) {
             return new StringsCompleter(thingRegistry.getAll().stream()
                     .filter(t -> LGWebOSBindingConstants.THING_TYPE_WEBOSTV.equals(t.getThingTypeUID()))
-                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
-                            cursorArgumentIndex, cursorPosition, candidates);
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true)
+                    .complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
             Thing thing = getThing(args[0]);
             if (thing != null && LGWebOSBindingConstants.THING_TYPE_WEBOSTV.equals(thing.getThingTypeUID())) {

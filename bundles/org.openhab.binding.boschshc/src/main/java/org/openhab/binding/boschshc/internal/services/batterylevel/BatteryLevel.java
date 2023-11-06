@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,8 +88,7 @@ public enum BatteryLevel {
         switch (this) {
             case LOW_BATTERY:
                 return new DecimalType(10);
-            case CRITICAL_LOW:
-            case CRITICALLY_LOW_BATTERY:
+            case CRITICAL_LOW, CRITICALLY_LOW_BATTERY:
                 return new DecimalType(1);
             case NOT_AVAILABLE:
                 return UnDefType.UNDEF;
@@ -108,9 +107,7 @@ public enum BatteryLevel {
      */
     public OnOffType toLowBatteryState() {
         switch (this) {
-            case LOW_BATTERY:
-            case CRITICAL_LOW:
-            case CRITICALLY_LOW_BATTERY:
+            case LOW_BATTERY, CRITICAL_LOW, CRITICALLY_LOW_BATTERY:
                 return OnOffType.ON;
             default:
                 return OnOffType.OFF;

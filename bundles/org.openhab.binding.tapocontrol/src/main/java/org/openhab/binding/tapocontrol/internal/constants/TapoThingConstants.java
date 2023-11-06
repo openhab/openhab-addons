@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.constants;
 
-import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.BINDING_ID;
 
 import java.util.Collections;
 import java.util.Set;
@@ -38,6 +38,7 @@ public class TapoThingConstants {
     public static final String DEVICE_P105 = "P105";
     public static final String DEVICE_P110 = "P110";
     public static final String DEVICE_P115 = "P115";
+    public static final String DEVICE_P300 = "P300";
     public static final String DEVICE_L510 = "L510";
     public static final String DEVICE_L530 = "L530";
     public static final String DEVICE_L610 = "L610";
@@ -50,6 +51,7 @@ public class TapoThingConstants {
     /*** LIST OF SUPPORTED DEVICE DESCRIPTIONS ***/
     public static final String DEVICE_DESCRIPTION_BRIDGE = "TapoControl Cloud-Login";
     public static final String DEVICE_DESCRIPTION_SMART_PLUG = "SmartPlug";
+    public static final String DEVICE_DESCRIPTION_POWER_STRIP = "PowerStrip";
     public static final String DEVICE_DESCRIPTION_WHITE_BULB = "White-Light-Bulb";
     public static final String DEVICE_DESCRIPTION_COLOR_BULB = "Color-Light-Bulb";
     public static final String DEVICE_DESCRIPTION_LIGHTSTRIP = "LightStrip";
@@ -60,6 +62,7 @@ public class TapoThingConstants {
     public static final ThingTypeUID P105_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P105);
     public static final ThingTypeUID P110_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P110);
     public static final ThingTypeUID P115_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P115);
+    public static final ThingTypeUID P300_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P300);
     public static final ThingTypeUID L510_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L510);
     public static final ThingTypeUID L530_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L530);
     public static final ThingTypeUID L610_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L610);
@@ -72,7 +75,7 @@ public class TapoThingConstants {
     /*** SET OF SUPPORTED UIDS ***/
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_UIDS = Set.of(BRIDGE_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_SMART_PLUG_UIDS = Set.of(P100_THING_TYPE, P105_THING_TYPE,
-            P110_THING_TYPE, P115_THING_TYPE);
+            P110_THING_TYPE, P115_THING_TYPE, P300_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_WHITE_BULB_UIDS = Set.of(L510_THING_TYPE, L610_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_COLOR_BULB_UIDS = Set.of(L530_THING_TYPE, L630_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_LIGHT_STRIP_UIDS = Set.of(L900_THING_TYPE, L920_THING_TYPE,
@@ -85,6 +88,9 @@ public class TapoThingConstants {
     /*** THINGS WITH ENERGY DATA ***/
     public static final Set<ThingTypeUID> SUPPORTED_ENERGY_DATA_UIDS = Set.of(P110_THING_TYPE, P115_THING_TYPE);
 
+    /*** THINGS WITH CHILDS DATA ***/
+    public static final Set<ThingTypeUID> SUPPORTED_CHILDS_DATA_UIDS = Set.of(P300_THING_TYPE);
+
     /*** THINGS WITH CHANNEL GROUPS ***/
     public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections
             .unmodifiableSet(Stream
@@ -92,60 +98,66 @@ public class TapoThingConstants {
                             SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS)
                     .flatMap(Set::stream).collect(Collectors.toSet()));
 
-    /*** DEVICE PROPERTY STRINGS (CLOUD) ***/
-    public static final String CLOUD_PROPERTY_ALIAS = "alias";
-    public static final String CLOUD_PROPERTY_FW = "fwVer";
-    public static final String CLOUD_PROPERTY_HW = "deviceHwVer";
-    public static final String CLOUD_PROPERTY_ID = "deviceId";
-    public static final String CLOUD_PROPERTY_MAC = "deviceMac";
-    public static final String CLOUD_PROPERTY_MODEL = "deviceName"; // use name cause modell returns different values
-    public static final String CLOUD_PROPERTY_NAME = "deviceName";
-    public static final String CLOUD_PROPERTY_REGION = "deviceRegion";
-    public static final String CLOUD_PROPERTY_SERVER_URL = "appServerUrl";
-    public static final String CLOUD_PROPERTY_TYPE = "deviceType";
+    /*** DEVICE JSON STRINGS (CLOUD) ***/
+    public static final String CLOUD_JSON_KEY_ALIAS = "alias";
+    public static final String CLOUD_JSON_KEY_FW = "fwVer";
+    public static final String CLOUD_JSON_KEY_HW = "deviceHwVer";
+    public static final String CLOUD_JSON_KEY_ID = "deviceId";
+    public static final String CLOUD_JSON_KEY_MAC = "deviceMac";
+    public static final String CLOUD_JSON_KEY_MODEL = "deviceName"; // use name cause modell returns different values
+    public static final String CLOUD_JSON_KEY_NAME = "deviceName";
+    public static final String CLOUD_JSON_KEY_REGION = "deviceRegion";
+    public static final String CLOUD_JSON_KEY_SERVER_URL = "appServerUrl";
+    public static final String CLOUD_JSON_KEY_TYPE = "deviceType";
 
-    /*** DEVICE PROPERTY STRINGS (DEVICE) ***/
-    public static final String DEVICE_PROPERTY_BRIGHTNES = "brightness";
-    public static final String DEVICE_PROPERTY_COLORTEMP = "color_temp";
-    public static final String DEVICE_PROPERTY_FW = "fw_ver";
-    public static final String DEVICE_PROPERTY_HUE = "hue";
-    public static final String DEVICE_PROPERTY_HW = "hw_ver";
-    public static final String DEVICE_PROPERTY_ID = "device_id";
-    public static final String DEVICE_PROPERTY_IP = "ip";
-    public static final String DEVICE_PROPERTY_MAC = "mac";
-    public static final String DEVICE_PROPERTY_MODEL = "model";
-    public static final String DEVICE_PROPERTY_NICKNAME = "nickname";
-    public static final String DEVICE_PROPERTY_ON = "device_on";
-    public static final String DEVICE_PROPERTY_ONTIME = "on_time";
-    public static final String DEVICE_PROPERTY_OVERHEAT = "overheated";
-    public static final String DEVICE_PROPERTY_REGION = "region";
-    public static final String DEVICE_PROPERTY_SATURATION = "saturation";
-    public static final String DEVICE_PROPERTY_SIGNAL = "signal_level";
-    public static final String DEVICE_PROPERTY_SIGNAL_RSSI = "rssi";
-    public static final String DEVICE_PROPERTY_TYPE = "type";
-    public static final String DEVICE_PROPERTY_USAGE_7 = "time_usage_past7";
-    public static final String DEVICE_PROPERTY_USAGE_30 = "time_usage_past30";
-    public static final String DEVICE_PROPERTY_USAGE_TODAY = "time_usage_today";
+    /*** DEVICE JSON STRINGS (DEVICE) ***/
+    public static final String JSON_KEY_BRIGHTNESS = "brightness";
+    public static final String JSON_KEY_COLORTEMP = "color_temp";
+    public static final String JSON_KEY_FW = "fw_ver";
+    public static final String JSON_KEY_HUE = "hue";
+    public static final String JSON_KEY_HW_VER = "hw_ver";
+    public static final String JSON_KEY_ID = "device_id";
+    public static final String JSON_KEY_IP = "ip";
+    public static final String JSON_KEY_MAC = "mac";
+    public static final String JSON_KEY_MODEL = "model";
+    public static final String JSON_KEY_NICKNAME = "nickname";
+    public static final String JSON_KEY_ON = "device_on";
+    public static final String JSON_KEY_ONTIME = "on_time";
+    public static final String JSON_KEY_OVERHEAT = "overheated";
+    public static final String JSON_KEY_REGION = "region";
+    public static final String JSON_KEY_SATURATION = "saturation";
+    public static final String JSON_KEY_SIGNAL_LEVEL = "signal_level";
+    public static final String JSON_KEY_RSSI = "rssi";
+    public static final String JSON_KEY_TYPE = "type";
+    public static final String JSON_KEY_USAGE_7 = "time_usage_past7";
+    public static final String JSON_KEY_USAGE_30 = "time_usage_past30";
+    public static final String JSON_KEY_USAGE_TODAY = "time_usage_today";
     public static final String DEVICE_REPRESENTATION_PROPERTY = "macAddress";
     // lightning effects
-    public static final String DEVICE_PROPERTY_EFFECT = "lighting_effect";
-    public static final String PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS = "brightness";
-    public static final String PROPERTY_LIGHTNING_EFFECT_COLORTEMPRANGE = "color_temp_range";
-    public static final String PROPERTY_LIGHTNING_EFFECT_CUSTOM = "custom";
-    public static final String PROPERTY_LIGHTNING_EFFECT_DISPLAYCOLORS = "displayColors";
-    public static final String PROPERTY_LIGHTNING_EFFECT_ENABLE = "enable";
-    public static final String PROPERTY_LIGHTNING_EFFECT_ID = "id";
-    public static final String PROPERTY_LIGHTNING_EFFECT_NAME = "name";
+    public static final String JSON_KEY_LIGHTNING_EFFECT = "lighting_effect";
+    public static final String JSON_KEY_LIGHTNING_EFFECT_BRIGHNTESS = "brightness";
+    public static final String JSON_KEY_LIGHTNING_EFFECT_COLORTEMPRANGE = "color_temp_range";
+    public static final String JSON_KEY_LIGHTNING_EFFECT_CUSTOM = "custom";
+    public static final String JSON_KEY_LIGHTNING_EFFECT_OFF = "off";
+    public static final String JSON_KEY_LIGHTNING_EFFECT_DISPLAYCOLORS = "displayColors";
+    public static final String JSON_KEY_LIGHTNING_EFFECT_ENABLE = "enable";
+    public static final String JSON_KEY_LIGHTNING_EFFECT_ID = "id";
+    public static final String JSON_KEY_LIGHTNING_EFFECT_NAME = "name";
+    public static final String JSON_KEY_LIGHTNING_DYNAMIC_ENABLE = "dynamic_light_effect_enable";
+    public static final String JSON_KEY_LIGHTNING_DYNAMIC_ID = "dynamic_light_effect_id";
+
     // energy monitoring
-    public static final String ENERGY_PROPERTY_POWER = "current_power";
-    public static final String ENERGY_PROPERTY_RUNTIME_TODAY = "today_runtime";
-    public static final String ENERGY_PROPERTY_RUNTIME_MONTH = "month_runtime";
-    public static final String ENERGY_PROPERTY_ENERGY_TODAY = "today_energy";
-    public static final String ENERGY_PROPERTY_ENERGY_MONTH = "month_energy";
-    public static final String ENERGY_PROPERTY_PAST24H = "past24h";
-    public static final String ENERGY_PROPERTY_PAST7D = "past7d";
-    public static final String ENERGY_PROPERTY_PAST30D = "past30d";
-    public static final String ENERGY_PROPERTY_PAST1Y = "past1y";
+    public static final String JSON_KEY_ENERGY_POWER = "current_power";
+    public static final String JSON_KEY_ENERGY_RUNTIME_TODAY = "today_runtime";
+    public static final String JSON_KEY_ENERGY_RUNTIME_MONTH = "month_runtime";
+    public static final String JSON_KEY_ENERGY_ENERGY_TODAY = "today_energy";
+    public static final String JSON_KEY_ENERGY_ENERGY_MONTH = "month_energy";
+    public static final String JSON_KEY_ENERGY_PAST24H = "past24h";
+    public static final String JSON_KEY_ENERGY_PAST7D = "past7d";
+    public static final String JSON_KEY_ENERGY_PAST30D = "past30d";
+    public static final String JSON_KEY_ENERGY_PAST1Y = "past1y";
+    // childs management
+    public static final String JSON_KEY_CHILD_START_INDEX = "start_index";
 
     /*** DEVICE SETTINGS ***/
     public static final Integer BULB_MIN_COLORTEMP = 2500;
@@ -170,12 +182,10 @@ public class TapoThingConstants {
     public static final String CHANNEL_NRG_USAGE_TODAY = "todayEnergyUsage";
     public static final String CHANNEL_NRG_RUNTIME_TODAY = "todayRuntime";
     // channel group effect
-    public static final String CHANNEL_GROUP_EFFECTS = "effect";
-    public static final String CHANNEL_FX_BRIGHTNESS = "brightness";
-    public static final String CHANNEL_FX_COLORS = "displayColors";
-    public static final String CHANNEL_FX_CUSTOM = "custom";
-    public static final String CHANNEL_FX_ENABLE = "enable";
-    public static final String CHANNEL_FX_NAME = "name";
+    public static final String CHANNEL_GROUP_EFFECTS = "effects";
+    public static final String CHANNEL_FX_BRIGHTNESS = "fxBrightness";
+    public static final String CHANNEL_FX_COLORS = "fxColors";
+    public static final String CHANNEL_FX_NAME = "fxName";
 
     /*** LIST OF PROPERTY NAMES ***/
     public static final String PROPERTY_FAMILY = "deviceFamily";

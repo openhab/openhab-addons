@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -409,4 +409,5 @@ public class EcobeeBindingConstants {
     public static final String ECOBEE_AUTHORIZE_URL = ECOBEE_BASE_URL + "authorize";
     public static final String ECOBEE_TOKEN_URL = ECOBEE_BASE_URL + "token";
     public static final String ECOBEE_SCOPE = "smartWrite";
+    public static final String ECOBEE_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }

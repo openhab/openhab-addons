@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,11 @@ package org.openhab.binding.monopriceaudio.internal;
 
 import static org.openhab.binding.monopriceaudio.internal.MonopriceAudioBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.monopriceaudio.internal.communication.AmplifierModel;
 import org.openhab.binding.monopriceaudio.internal.handler.MonopriceAudioHandler;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Thing;
@@ -29,22 +29,28 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MonopriceAudioHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Michael Lobstein - Initial contribution
+ * @author Michael Lobstein - Add support for additional amplifier types
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.monopriceaudio", service = ThingHandlerFactory.class)
 public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AMP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_MP, THING_TYPE_MP70,
+            THING_TYPE_DAX88, THING_TYPE_XT);
 
     private final SerialPortManager serialPortManager;
 
     private final MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider;
+
+    private final Logger logger = LoggerFactory.getLogger(MonopriceAudioHandlerFactory.class);
 
     @Activate
     public MonopriceAudioHandlerFactory(final @Reference MonopriceAudioStateDescriptionOptionProvider provider,
@@ -62,10 +68,26 @@ public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new MonopriceAudioHandler(thing, stateDescriptionProvider, serialPortManager);
+        if (THING_TYPE_MP.equals(thingTypeUID)) {
+            return new MonopriceAudioHandler(thing, AmplifierModel.MONOPRICE, stateDescriptionProvider,
+                    serialPortManager);
         }
 
+        if (THING_TYPE_MP70.equals(thingTypeUID)) {
+            return new MonopriceAudioHandler(thing, AmplifierModel.MONOPRICE70, stateDescriptionProvider,
+                    serialPortManager);
+        }
+
+        if (THING_TYPE_DAX88.equals(thingTypeUID)) {
+            return new MonopriceAudioHandler(thing, AmplifierModel.DAX88, stateDescriptionProvider, serialPortManager);
+        }
+
+        if (THING_TYPE_XT.equals(thingTypeUID)) {
+            return new MonopriceAudioHandler(thing, AmplifierModel.XANTECH, stateDescriptionProvider,
+                    serialPortManager);
+        }
+
+        logger.warn("Unknown thing type: {}: {}", thingTypeUID.getId(), thingTypeUID.getBindingId());
         return null;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.solaredge.internal.config;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Bean holding configuration data according to bridge.xml
@@ -24,8 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class SolarEdgeConfiguration {
 
-    private @Nullable String tokenOrApiKey;
-    private @Nullable String solarId;
+    private String tokenOrApiKey = "";
+    private String solarId = "";
 
     private boolean meterInstalled = false;
     private boolean usePrivateApi = false;
@@ -35,7 +33,7 @@ public class SolarEdgeConfiguration {
     private Integer liveDataPollingInterval = 10;
     private Integer aggregateDataPollingInterval = 60;
 
-    public @Nullable String getTokenOrApiKey() {
+    public String getTokenOrApiKey() {
         return tokenOrApiKey;
     }
 
@@ -43,7 +41,7 @@ public class SolarEdgeConfiguration {
         this.tokenOrApiKey = tokenOrApiKey;
     }
 
-    public @Nullable String getSolarId() {
+    public String getSolarId() {
         return solarId;
     }
 
@@ -101,10 +99,10 @@ public class SolarEdgeConfiguration {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("tokenOrApiKey", getTokenOrApiKey()).append("solarId", getSolarId())
-                .append("meterInstalled", isMeterInstalled()).append("usePrivateApi", isUsePrivateApi())
-                .append("live data pollingInterval", getLiveDataPollingInterval())
-                .append("aggregate data pollingInterval", getAggregateDataPollingInterval())
-                .append("asyncTimeout", getAsyncTimeout()).append("syncTimeout", getSyncTimeout()).toString();
+        return getClass().getSimpleName() + "{ tokenOrApiKey=" + getTokenOrApiKey() + ", solarId=" + getSolarId()
+                + ", meterInstalled=" + isMeterInstalled() + ", usePrivateApi=" + isUsePrivateApi()
+                + ", live data pollingInterval=" + getLiveDataPollingInterval() + ", aggregate data pollingInterval="
+                + getAggregateDataPollingInterval() + ", asyncTimeout=" + getAsyncTimeout() + ", syncTimeout="
+                + getSyncTimeout() + "}";
     }
 }

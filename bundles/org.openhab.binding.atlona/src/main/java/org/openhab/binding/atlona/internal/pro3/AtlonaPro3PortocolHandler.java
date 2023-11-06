@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1253,10 +1253,10 @@ class AtlonaPro3PortocolHandler {
          */
         String getResponse() throws Exception {
             final Object lastResponse = responses.poll(5, TimeUnit.SECONDS);
-            if (lastResponse instanceof String) {
-                return (String) lastResponse;
-            } else if (lastResponse instanceof Exception) {
-                throw (Exception) lastResponse;
+            if (lastResponse instanceof String stringResponse) {
+                return stringResponse;
+            } else if (lastResponse instanceof Exception exceptionResponse) {
+                throw exceptionResponse;
             } else if (lastResponse == null) {
                 throw new Exception("Didn't receive response in time");
             } else {

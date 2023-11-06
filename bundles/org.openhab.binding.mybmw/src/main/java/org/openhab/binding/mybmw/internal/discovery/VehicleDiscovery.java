@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -161,8 +161,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof MyBMWBridgeHandler) {
-            bridgeHandler = Optional.of((MyBMWBridgeHandler) handler);
+        if (handler instanceof MyBMWBridgeHandler bmwBridgeHandler) {
+            bridgeHandler = Optional.of(bmwBridgeHandler);
             bridgeHandler.get().setDiscoveryService(this);
         }
     }
@@ -202,7 +202,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
      * Get all field names from a DTO with a specific value
      * Used to get e.g. all services which are "ACTIVATED"
      *
-     * @param DTO Object
+     * @param dto Object
      * @param compare String which needs to map with the value
      * @return String with all field names matching this value separated with Spaces
      */

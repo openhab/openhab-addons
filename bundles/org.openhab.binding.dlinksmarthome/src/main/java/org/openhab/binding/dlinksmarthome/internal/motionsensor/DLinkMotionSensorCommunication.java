@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dlinksmarthome.internal.motionsensor;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -43,9 +45,13 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
 
     // SOAP actions
     private static final String DETECTION_ACTION = "\"http://purenetworks.com/HNAP1/GetLatestDetection\"";
+    private static final String REBOOT_ACTION = "\"http://purenetworks.com/HNAP1/Reboot\"";
 
     private static final int DETECT_TIMEOUT_MS = 5000;
     private static final int DETECT_POLL_S = 1;
+
+    private static final int REBOOT_TIMEOUT_MS = 60000;
+    private static final int REBOOT_WAIT_S = 35;
 
     /**
      * Indicates the device status
@@ -64,6 +70,10 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
          * Problem communicating with device
          */
         COMMUNICATION_ERROR,
+        /**
+         * Device is being rebooted
+         */
+        REBOOTING,
         /**
          * Internal error
          */
@@ -84,18 +94,24 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
     private final Logger logger = LoggerFactory.getLogger(DLinkMotionSensorCommunication.class);
 
     private final DLinkMotionSensorListener listener;
+    private final ScheduledExecutorService scheduler;
+
+    private int rebootHour;
 
     private SOAPMessage detectionAction;
+    private SOAPMessage rebootAction;
 
     private boolean loginSuccess;
     private boolean detectSuccess;
+    private boolean rebootSuccess;
 
     private long prevDetection;
     private long lastDetection;
 
-    private final ScheduledFuture<?> detectFuture;
+    private ScheduledFuture<?> detectFuture;
+    private ScheduledFuture<?> rebootFuture;
 
-    private boolean online = true;
+    private boolean rebootRequired = false;
     private DeviceStatus status = DeviceStatus.INITIALISING;
 
     /**
@@ -104,35 +120,46 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
     private final Runnable detect = new Runnable() {
         @Override
         public void run() {
-            boolean updateStatus = false;
+            final DeviceStatus currentStatus = status;
+            final boolean tryReboot = rebootRequired;
 
             switch (status) {
                 case INITIALISING:
-                    online = false;
-                    updateStatus = true;
+                case REBOOTING:
+                    loginSuccess = false;
                     // FALL-THROUGH
                 case COMMUNICATION_ERROR:
                 case ONLINE:
-                    if (!loginSuccess) {
-                        login(detectionAction, DETECT_TIMEOUT_MS);
-                    }
+                    if (!tryReboot) {
+                        if (!loginSuccess) {
+                            login(detectionAction, DETECT_TIMEOUT_MS);
+                        }
 
-                    if (!getLastDetection(false)) {
-                        // Try login again in case the session has timed out
-                        login(detectionAction, DETECT_TIMEOUT_MS);
-                        getLastDetection(true);
+                        if (!getLastDetection(false)) {
+                            // Try login again in case the session has timed out
+                            login(detectionAction, DETECT_TIMEOUT_MS);
+                            getLastDetection(true);
+                        }
+                    } else {
+                        login(rebootAction, REBOOT_TIMEOUT_MS);
+                        reboot();
                     }
                     break;
                 default:
                     break;
             }
 
-            if (loginSuccess && detectSuccess) {
+            if (tryReboot) {
+                if (rebootSuccess) {
+                    rebootRequired = false;
+                    status = DeviceStatus.REBOOTING;
+                    detectFuture.cancel(false);
+                    detectFuture = scheduler.scheduleWithFixedDelay(detect, REBOOT_WAIT_S, DETECT_POLL_S,
+                            TimeUnit.SECONDS);
+                }
+            } else if (loginSuccess && detectSuccess) {
                 status = DeviceStatus.ONLINE;
-                if (!online) {
-                    online = true;
-                    listener.sensorStatus(status);
-
+                if (currentStatus != DeviceStatus.ONLINE) {
                     // Ignore old detections
                     prevDetection = lastDetection;
                 }
@@ -140,12 +167,22 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
                 if (lastDetection != prevDetection) {
                     listener.motionDetected();
                 }
-            } else {
-                if (online || updateStatus) {
-                    online = false;
-                    listener.sensorStatus(status);
-                }
             }
+
+            if (currentStatus != status) {
+                listener.sensorStatus(status);
+            }
+        }
+    };
+
+    /**
+     * Reboot the device
+     */
+    private final Runnable reboot = new Runnable() {
+        @Override
+        public void run() {
+            rebootRequired = true;
+            rebootFuture = scheduler.schedule(reboot, getNextRebootTime(), TimeUnit.MILLISECONDS);
         }
     };
 
@@ -153,6 +190,8 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
             final DLinkMotionSensorListener listener, final ScheduledExecutorService scheduler) {
         super(config.ipAddress, config.pin);
         this.listener = listener;
+        this.scheduler = scheduler;
+        this.rebootHour = config.rebootHour;
 
         if (getHNAPStatus() == HNAPStatus.INTERNAL_ERROR) {
             status = DeviceStatus.INTERNAL_ERROR;
@@ -161,8 +200,10 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
         try {
             final MessageFactory messageFactory = MessageFactory.newInstance();
             detectionAction = messageFactory.createMessage();
+            rebootAction = messageFactory.createMessage();
 
             buildDetectionAction();
+            buildRebootAction();
 
         } catch (final SOAPException e) {
             logger.debug("DLinkMotionSensorCommunication - Internal error", e);
@@ -170,6 +211,7 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
         }
 
         detectFuture = scheduler.scheduleWithFixedDelay(detect, 0, DETECT_POLL_S, TimeUnit.SECONDS);
+        rebootFuture = scheduler.schedule(reboot, getNextRebootTime(), TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -178,6 +220,7 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
     @Override
     public void dispose() {
         detectFuture.cancel(true);
+        rebootFuture.cancel(true);
         super.dispose();
     }
 
@@ -196,6 +239,40 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
 
         final MimeHeaders headers = detectionAction.getMimeHeaders();
         headers.addHeader(SOAPACTION, DETECTION_ACTION);
+    }
+
+    /**
+     * This is the SOAP message used to reboot the device. This message will
+     * only receive a successful response after the login process has been completed and the
+     * authentication data has been set. Device needs rebooting as it eventually becomes
+     * unresponsive due to cloud services being shutdown.
+     *
+     * @throws SOAPException
+     */
+    private void buildRebootAction() throws SOAPException {
+        rebootAction.getSOAPHeader().detachNode();
+        final SOAPBody soapBody = rebootAction.getSOAPBody();
+        soapBody.addChildElement("Reboot", "", HNAP_XMLNS);
+
+        final MimeHeaders headers = rebootAction.getMimeHeaders();
+        headers.addHeader(SOAPACTION, REBOOT_ACTION);
+    }
+
+    /**
+     * Get the number of milliseconds to the next reboot time
+     *
+     * @return Time in ms to next reboot
+     */
+    private long getNextRebootTime() {
+        final LocalDateTime now = LocalDateTime.now();
+        LocalDateTime nextReboot = LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), rebootHour, 0,
+                0);
+
+        if (!nextReboot.isAfter(now)) {
+            nextReboot = nextReboot.plusDays(1);
+        }
+
+        return now.until(nextReboot, ChronoUnit.MILLIS);
     }
 
     /**
@@ -291,5 +368,33 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
         }
 
         return detectSuccess;
+    }
+
+    /**
+     * Sends the reboot message
+     *
+     */
+    private void reboot() {
+        rebootSuccess = false;
+
+        if (loginSuccess) {
+            try {
+                final Document soapResponse = sendReceive(rebootAction, REBOOT_TIMEOUT_MS);
+
+                final Node result = soapResponse.getElementsByTagName("RebootResult").item(0);
+
+                if (result != null && OK.equals(result.getTextContent())) {
+                    rebootSuccess = true;
+                } else {
+                    unexpectedResult("reboot - Unexpected response", soapResponse);
+                }
+            } catch (final Exception e) {
+                // Assume there has been some problem trying to send one of the messages
+                if (status != DeviceStatus.COMMUNICATION_ERROR) {
+                    logger.debug("getLastDetection - Communication error", e);
+                    status = DeviceStatus.COMMUNICATION_ERROR;
+                }
+            }
+        }
     }
 }

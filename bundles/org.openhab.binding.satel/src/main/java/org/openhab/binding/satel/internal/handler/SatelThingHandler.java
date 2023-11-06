@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,9 +57,9 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
         final Bridge bridge = getBridge();
         if (bridge != null) {
             final ThingHandler handler = bridge.getHandler();
-            if (handler != null && handler instanceof SatelBridgeHandler) {
-                ((SatelBridgeHandler) handler).addEventListener(this);
-                this.bridgeHandler = (SatelBridgeHandler) handler;
+            if (handler instanceof SatelBridgeHandler satelBridgeHandler) {
+                satelBridgeHandler.addEventListener(this);
+                this.bridgeHandler = satelBridgeHandler;
             }
             if (bridge.getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);

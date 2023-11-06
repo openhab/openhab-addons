@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBin
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.PartitionCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommand;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.openhab.core.library.types.OnOffType;
@@ -48,6 +48,7 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
         if (partition != null) {
             updateState(PARTITION_LABEL_CHANNEL_UID, new StringType(partition.getLabel()));
             updateState(PARTITION_STATE_CHANNEL_UID, new StringType(partition.getState().getMainState()));
+            updateState(PARTITION_DETAILED_STATE_CHANNEL_UID, new StringType(partition.getState().getDetailedState()));
             updateState(PARTITION_ADDITIONAL_STATES_CHANNEL_UID,
                     new StringType("Deprecated field. Use direct channels instead"));
             updateState(PARTITION_READY_TO_ARM_CHANNEL_UID, booleanToSwitchState(partition.getState().isReadyToArm()));
@@ -78,26 +79,6 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
         }
     }
 
-    protected Partition getPartition() {
-        int index = calculateEntityIndex();
-        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
-        ParadoxPanel panel = bridge.getPanel();
-        List<Partition> partitions = panel.getPartitions();
-        if (partitions == null) {
-            logger.debug(
-                    "Partitions collection of Paradox Panel object is null. Probably not yet initialized. Skipping update.");
-            return null;
-        }
-        if (partitions.size() <= index) {
-            logger.debug("Attempted to access partition out of bounds of current partitions list. Index: {}, List: {}",
-                    index, partitions);
-            return null;
-        }
-
-        Partition partition = partitions.get(index);
-        return partition;
-    }
-
     private OpenClosedType booleanToContactState(boolean value) {
         return value ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
@@ -123,5 +104,24 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
         } else {
             super.handleCommand(channelUID, command);
         }
+    }
+
+    protected Partition getPartition() {
+        int index = calculateEntityIndex();
+        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
+        ParadoxPanel panel = bridge.getPanel();
+        List<Partition> partitions = panel.getPartitions();
+        if (partitions == null) {
+            logger.debug(
+                    "Partitions collection of Paradox Panel object is null. Probably not yet initialized. Skipping update.");
+            return null;
+        }
+        if (partitions.size() <= index) {
+            logger.debug("Attempted to access partition out of bounds of current partitions list. Index: {}, List: {}",
+                    index, partitions);
+            return null;
+        }
+
+        return partitions.get(index);
     }
 }

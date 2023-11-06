@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -189,11 +189,11 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         for (String deviceType : firmwaresByType.keySet()) {
             Set<String> firmwares = firmwaresByType.get(deviceType);
             if (firmwares.size() > 1) {
-                logger.info(
-                        "Multiple firmware versions for device type '{}' found ({}). "
-                                + "Make sure, all devices of the same type have the same firmware version, "
-                                + "otherwise you MAY have channel and/or datapoint errors in the logfile",
-                        deviceType, String.join(", ", firmwares));
+                logger.info("""
+                        Multiple firmware versions for device type '{}' found ({}). \
+                        Make sure, all devices of the same type have the same firmware version, \
+                        otherwise you MAY have channel and/or datapoint errors in the logfile\
+                        """, deviceType, String.join(", ", firmwares));
             }
         }
     }
@@ -335,7 +335,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                                     ParameterOption defaultOption = options.get(offset);
                                     logger.trace("Changing default option to {} (offset {})", defaultOption, offset);
                                     builder.withDefault(defaultOption.getValue());
-                                } else if (options.size() > 0) {
+                                } else if (!options.isEmpty()) {
                                     ParameterOption defaultOption = options.get(0);
                                     logger.trace("Changing default option to {} (first value)", defaultOption);
                                     builder.withDefault(defaultOption.getValue());
@@ -387,7 +387,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      */
     public static boolean isIgnoredDatapoint(HmDatapoint dp) {
         for (String testValue : IGNORE_DATAPOINT_NAMES) {
-            if (dp.getName().indexOf(testValue) > -1) {
+            if (dp.getName().contains(testValue)) {
                 return true;
             }
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.avmfritz.internal.actions;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +31,7 @@ import org.openhab.core.thing.binding.ThingHandler;
  * @author Christoph Weitkamp - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class AVMFritzHeatingActionsTest {
 
     private final ThingActions thingActionsStub = new ThingActions() {
@@ -37,14 +40,14 @@ public class AVMFritzHeatingActionsTest {
         }
 
         @Override
-        public ThingHandler getThingHandler() {
+        public @Nullable ThingHandler getThingHandler() {
             return null;
         }
     };
 
-    private @Mock AVMFritzHeatingActionsHandler heatingActionsHandler;
+    private @Mock @NonNullByDefault({}) AVMFritzHeatingActionsHandler heatingActionsHandlerMock;
 
-    private AVMFritzHeatingActions heatingActions;
+    private @NonNullByDefault({}) AVMFritzHeatingActions heatingActions;
 
     @BeforeEach
     public void setUp() {
@@ -65,13 +68,13 @@ public class AVMFritzHeatingActionsTest {
 
     @Test
     public void testSetBoostModeDurationNull() {
-        heatingActions.setThingHandler(heatingActionsHandler);
+        heatingActions.setThingHandler(heatingActionsHandlerMock);
         assertThrows(IllegalArgumentException.class, () -> AVMFritzHeatingActions.setBoostMode(heatingActions, null));
     }
 
     @Test
     public void testSetBoostMode() {
-        heatingActions.setThingHandler(heatingActionsHandler);
+        heatingActions.setThingHandler(heatingActionsHandlerMock);
         AVMFritzHeatingActions.setBoostMode(heatingActions, Long.valueOf(5L));
     }
 
@@ -89,14 +92,14 @@ public class AVMFritzHeatingActionsTest {
 
     @Test
     public void testSetWindowOpenModeDurationNull() {
-        heatingActions.setThingHandler(heatingActionsHandler);
+        heatingActions.setThingHandler(heatingActionsHandlerMock);
         assertThrows(IllegalArgumentException.class,
                 () -> AVMFritzHeatingActions.setWindowOpenMode(heatingActions, null));
     }
 
     @Test
     public void testSetWindowOpenMode() {
-        heatingActions.setThingHandler(heatingActionsHandler);
+        heatingActions.setThingHandler(heatingActionsHandlerMock);
         AVMFritzHeatingActions.setWindowOpenMode(heatingActions, Long.valueOf(5L));
     }
 }

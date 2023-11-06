@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.kaleidescape.internal.communication;
 
 import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants.*;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -24,6 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class KaleidescapeFormatter {
+    private static final String WITH_DELIMITER = "((?<=\\\\d[0-9]{3})|(?=\\\\d[0-9]{3}))";
+
     public static String formatString(String input) {
         if (!EMPTY.equals(input)) {
             // convert || back to :
@@ -45,13 +46,27 @@ public class KaleidescapeFormatter {
                 // convert \d147 & \d148 from review text into double quote
                 input = input.replace("\\d147", "\"");
                 input = input.replace("\\d148", "\"");
+            }
 
-                // fix the encoding for k mangled extended ascii characters (chars coming in as \dnnn)
-                // I.e. characters with accent, umlaut, etc., they need to be restored to the correct character
-                // example: Noel (with umlaut 'o') comes in as N\d246el
-                input = input.replaceAll("(?i)\\\\d([0-9]{3})", "\\&#$1;"); // first convert to html escaped codes
-                // then convert with unescapeHtml4, not sure how to do this without the Apache libraries :(
-                return StringEscapeUtils.unescapeHtml4(input);
+            // fix the encoding for k mangled extended ascii characters (chars coming in as \dnnn)
+            // I.e. characters with accent, umlaut, etc., they need to be restored to the correct character
+            // example: Noel (with umlaut 'o') comes in as N\d246el
+            if (input.contains("\\d")) {
+                StringBuilder fixedOutput = new StringBuilder();
+                String[] arr = input.split(WITH_DELIMITER);
+
+                for (String s : arr) {
+                    if (s.startsWith("\\d") && s.length() == 5) {
+                        try {
+                            fixedOutput.append((char) Integer.parseInt(s.substring(2, 5)));
+                        } catch (NumberFormatException e) {
+                            fixedOutput.append(s);
+                        }
+                    } else {
+                        fixedOutput.append(s);
+                    }
+                }
+                return fixedOutput.toString();
             }
         }
         return input;

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="pulseaudio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Pulseaudio Binding</name>
+	<description>This is the binding for Pulseaudio.</description>
+	<connection>local</connection>
+
+	<config-description>
+		<parameter name="sink" type="boolean">
+			<label>Import Sinks</label>
+			<description>Activate the import of sink elements.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="sinkInput" type="boolean">
+			<label>Import Sink Inputs</label>
+			<description>Activate the import of sink-input elements.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="source" type="boolean">
+			<label>Import Sources</label>
+			<description>Activate the import of source elements.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="sourceOutput" type="boolean">
+			<label>Import Source Outputs</label>
+			<description>Activate the import of source-output elements.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+</addon:addon>

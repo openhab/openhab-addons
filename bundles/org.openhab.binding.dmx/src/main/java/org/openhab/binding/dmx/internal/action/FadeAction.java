@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.dmx.internal.action;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dmx.internal.Util;
 import org.openhab.binding.dmx.internal.multiverse.DmxChannel;
 import org.openhab.core.library.types.PercentType;
@@ -24,6 +25,7 @@ import org.openhab.core.library.types.PercentType;
  * @author Davy Vanherbergen - Initial contribution
  * @author Jan N. Klug - Refactoring for ESH
  */
+@NonNullByDefault
 public class FadeAction extends BaseAction {
     /** Time in ms to hold the target value. -1 is indefinite */
     private long holdTime;
@@ -39,7 +41,7 @@ public class FadeAction extends BaseAction {
 
     private float stepDuration;
 
-    private FadeDirection fadeDirection;
+    private FadeDirection fadeDirection = FadeDirection.DOWN;
 
     /**
      * Create new fading action.
@@ -139,7 +141,6 @@ public class FadeAction extends BaseAction {
 
     @Override
     public String toString() {
-        return "FadeAction: " + String.valueOf(targetValue) + ", fade time " + String.valueOf(fadeTime)
-                + "ms, hold time " + String.valueOf(holdTime) + "ms";
+        return "FadeAction: " + targetValue + ", fade time " + fadeTime + "ms, hold time " + holdTime + "ms";
     }
 }

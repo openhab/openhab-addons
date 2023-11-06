@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.Base;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -19,13 +20,14 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public abstract class _RPSMessage extends EEP {
 
     protected boolean t21;
     protected boolean nu;
 
-    public static final byte T21Flag = 0x20;
-    public static final byte NUFlag = 0x10;
+    public static final byte T21_FLAG = 0x20;
+    public static final byte NU_FLAG = 0x10;
 
     public _RPSMessage() {
         super();
@@ -46,8 +48,8 @@ public abstract class _RPSMessage extends EEP {
     @Override
     public EEP setStatus(byte status) {
         super.setStatus(status);
-        t21 = (status & T21Flag) != 0;
-        nu = (status & NUFlag) != 0;
+        t21 = (status & T21_FLAG) != 0;
+        nu = (status & NU_FLAG) != 0;
 
         return this;
     }

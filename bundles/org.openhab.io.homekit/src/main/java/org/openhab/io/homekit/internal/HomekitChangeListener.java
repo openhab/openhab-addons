@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,9 +60,9 @@ import io.github.hapjava.server.impl.HomekitRoot;
 @NonNullByDefault
 public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final Logger logger = LoggerFactory.getLogger(HomekitChangeListener.class);
-    private final static String REVISION_CONFIG = "revision";
-    private final static String ACCESSORY_COUNT = "accessory_count";
-    private final static String KNOWN_ACCESSORIES = "known_accessories";
+    private static final String REVISION_CONFIG = "revision";
+    private static final String ACCESSORY_COUNT = "accessory_count";
+    private static final String KNOWN_ACCESSORIES = "known_accessories";
     private final ItemRegistry itemRegistry;
     private final HomekitAccessoryRegistry accessoryRegistry = new HomekitAccessoryRegistry();
     private final MetadataRegistry metadataRegistry;
@@ -230,8 +230,8 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         /*
          * if metadata of a group item was changed, mark all group member as dirty.
          */
-        if (item instanceof GroupItem) {
-            ((GroupItem) item).getMembers().forEach(groupMember -> pendingUpdates.add(groupMember.getName()));
+        if (item instanceof GroupItem itemAsGroupItem) {
+            itemAsGroupItem.getMembers().forEach(groupMember -> pendingUpdates.add(groupMember.getName()));
         }
         applyUpdatesDebouncer.call();
     }
@@ -291,7 +291,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
         try {
             boolean changed = false;
-            boolean removed = false;
             for (final String name : pendingUpdates) {
                 String oldValue = knownAccessories.get(name);
                 accessoryRegistry.remove(name);
@@ -387,10 +386,9 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             @Nullable Map<String, Object> configuration) {
         if (accessoryTypes.size() > 1 && configuration != null) {
             final @Nullable Object value = configuration.get(HomekitTaggedItem.PRIMARY_SERVICE);
-            if (value instanceof String) {
-                return accessoryTypes.stream()
-                        .filter(aType -> ((String) value).equalsIgnoreCase(aType.getKey().getTag())).findAny()
-                        .orElse(accessoryTypes.get(0)).getKey();
+            if (value instanceof String valueAsString) {
+                return accessoryTypes.stream().filter(aType -> valueAsString.equalsIgnoreCase(aType.getKey().getTag()))
+                        .findAny().orElse(accessoryTypes.get(0)).getKey();
             }
         }
         // no primary accessory found or there is only one type, so return the first type from the list
@@ -514,8 +512,8 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         if (value == null) {
             return (instance == 1);
         }
-        if (value instanceof Number) {
-            return (instance == ((Number) value).intValue());
+        if (value instanceof Number valueAsNumber) {
+            return (instance == valueAsNumber.intValue());
         }
         logger.warn("Unrecognized instance tag {} ({}) for item {}; assigning to default instance.", value,
                 value.getClass(), item.getName());

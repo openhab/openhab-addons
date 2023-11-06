@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,36 +31,36 @@ public interface VirtualDatapointHandler {
     /**
      * Returns the virtual datapoint name.
      */
-    public String getName();
+    String getName();
 
     /**
      * Adds the virtual datapoint to the device.
      */
-    public void initialize(HmDevice device);
+    void initialize(HmDevice device);
 
     /**
      * Returns true, if the virtual datapoint can handle a command for the given datapoint.
      */
-    public boolean canHandleCommand(HmDatapoint dp, Object value);
+    boolean canHandleCommand(HmDatapoint dp, Object value);
 
     /**
      * Handles the special functionality for the given virtual datapoint.
      */
-    public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
+    void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException;
 
     /**
      * Returns true, if the virtual datapoint can handle the event for the given datapoint.
      */
-    public boolean canHandleEvent(HmDatapoint dp);
+    boolean canHandleEvent(HmDatapoint dp);
 
     /**
      * Handles an event to extract data required for the virtual datapoint.
      */
-    public void handleEvent(VirtualGateway gateway, HmDatapoint dp);
+    void handleEvent(VirtualGateway gateway, HmDatapoint dp);
 
     /**
      * Returns the virtual datapoint in the given channel.
      */
-    public HmDatapoint getVirtualDatapoint(HmChannel channel);
+    HmDatapoint getVirtualDatapoint(HmChannel channel);
 }

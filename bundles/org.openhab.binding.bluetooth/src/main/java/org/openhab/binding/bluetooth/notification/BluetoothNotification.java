@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bluetooth.notification;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 
 /**
@@ -19,13 +21,15 @@ import org.openhab.binding.bluetooth.BluetoothAddress;
  *
  * @author Chris Jackson - Initial contribution
  */
+@NonNullByDefault
 public abstract class BluetoothNotification {
-    protected BluetoothAddress address;
+
+    protected @Nullable BluetoothAddress address;
 
     /**
      * Returns the bluetooth address for this frame
      */
-    public BluetoothAddress getAddress() {
+    public @Nullable BluetoothAddress getAddress() {
         return address;
     }
 }

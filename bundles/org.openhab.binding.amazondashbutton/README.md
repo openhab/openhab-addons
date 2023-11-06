@@ -128,8 +128,8 @@ For manual definition of a `dashbutton` Thing the MAC address can either be take
 ## Channels
 
 - **press:** Trigger channel for recognizing presses on the Amazon Dash Button.
-A trigger channel can directly be used in a rule, check the "Full Example" section for one example.
-Dispatches a `PRESSED` event when a button is pressed.
+  A trigger channel can directly be used in a rule, check the "Full Example" section for one example.
+  Dispatches a `PRESSED` event when a button is pressed.
 
 The trigger channel `press` is of type `system.rawbutton` to allow the usage of the `rawbutton-toggle-switch` profile.
 

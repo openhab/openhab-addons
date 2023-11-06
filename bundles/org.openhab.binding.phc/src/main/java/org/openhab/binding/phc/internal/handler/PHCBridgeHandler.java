@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.phc.internal.PHCBindingConstants;
@@ -48,6 +47,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.util.HexUtils;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,9 +77,9 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     private final BlockingQueue<QueueObject> sendQueue = new LinkedBlockingQueue<>();
     private final ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(3);
 
-    private final byte emLedOutputState[] = new byte[32];
-    private final byte amOutputState[] = new byte[32];
-    private final byte dmOutputState[] = new byte[32];
+    private final byte[] emLedOutputState = new byte[32];
+    private final byte[] amOutputState = new byte[32];
+    private final byte[] dmOutputState = new byte[32];
 
     private final List<Byte> modules = new ArrayList<>();
 
@@ -570,7 +570,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
     private void sendDim(byte moduleAddress, byte channel, Command command, short dimTime) {
         byte module = (byte) (moduleAddress | 0xA0);
-        byte[] cmd = new byte[(command instanceof PercentType && !(((PercentType) command).byteValue() == 0)) ? 3 : 1];
+        byte[] cmd = new byte[(command instanceof PercentType percentCommand && percentCommand.byteValue() != 0) ? 3
+                : 1];
 
         cmd[0] = (byte) (channel << 5);
 
@@ -712,7 +713,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     private void handleIncomingCommand(byte moduleAddress, int channel, OnOffType onOff) {
         ThingUID uid = PHCHelper.getThingUIDreverse(PHCBindingConstants.THING_TYPE_EM, moduleAddress);
         Thing thing = getThing().getThing(uid);
-        String channelId = "em#" + StringUtils.leftPad(Integer.toString(channel), 2, '0');
+        String channelId = "em#" + StringUtils.padLeft(Integer.toString(channel), 2, "0");
 
         if (thing != null && thing.getHandler() != null) {
             logger.debug("Input: {}, {}, {}", thing.getUID(), channelId, onOff);

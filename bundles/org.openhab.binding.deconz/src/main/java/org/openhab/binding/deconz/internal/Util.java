@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,9 +19,11 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.PercentType;
@@ -59,7 +61,7 @@ public class Util {
     }
 
     /**
-     * convert a brightness value from int to PercentType
+     * Convert a brightness value from int to PercentType
      *
      * @param val the value
      * @return the corresponding PercentType value
@@ -67,11 +69,11 @@ public class Util {
     public static PercentType toPercentType(int val) {
         int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
         return new PercentType(
-                Util.constrainToRange(scaledValue, PercentType.ZERO.intValue(), PercentType.HUNDRED.intValue()));
+                constrainToRange(scaledValue, PercentType.ZERO.intValue(), PercentType.HUNDRED.intValue()));
     }
 
     /**
-     * convert a brightness value from PercentType to int
+     * Convert a brightness value from PercentType to int
      *
      * @param val the value
      * @return the corresponding int value
@@ -81,7 +83,7 @@ public class Util {
     }
 
     /**
-     * convert a timestamp string to a DateTimeType
+     * Convert a timestamp string to a DateTimeType
      *
      * @param timestamp either in zoned date time or local date time format
      * @return the corresponding DateTimeType
@@ -94,5 +96,16 @@ public class Util {
                     ZonedDateTime.ofInstant(LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                             ZoneOffset.UTC, ZoneId.systemDefault()));
         }
+    }
+
+    /**
+     * Get all keys corresponding to a given value of a map
+     *
+     * @param map a map
+     * @param value the value to find in the map
+     * @return Stream of all keys for the value
+     */
+    public static <@NonNull K, @NonNull V> Stream<K> getKeysFromValue(Map<K, V> map, V value) {
+        return map.entrySet().stream().filter(e -> e.getValue().equals(value)).map(Map.Entry::getKey);
     }
 }

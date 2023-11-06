@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
 import org.openhab.binding.jeelink.internal.RollingAveragePublisher;
@@ -38,6 +38,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,8 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                         missingChannels.add(ChannelBuilder
                                 .create(new ChannelUID(getThing().getUID(), channelName + idSuffix), "Number")
                                 .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(), channelName))
-                                .withLabel(StringUtils.capitalize(channelName + labelSuffix)).build());
+                                .withLabel(Objects.requireNonNull(StringUtils.capitalize(channelName + labelSuffix)))
+                                .build());
                     }
                 }
                 missingChannels.addAll(getThing().getChannels());

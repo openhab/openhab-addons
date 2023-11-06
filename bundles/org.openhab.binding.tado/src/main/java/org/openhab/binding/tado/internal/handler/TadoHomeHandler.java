@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -179,8 +179,8 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         switch (id) {
             case TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE:
                 HomePresence presence = new HomePresence();
-                presence.setHomePresence(command.toFullString().toUpperCase().equals("ON")
-                        || command.toFullString().toUpperCase().equals("HOME") ? PresenceState.HOME
+                presence.setHomePresence("ON".equals(command.toFullString().toUpperCase())
+                        || "HOME".equals(command.toFullString().toUpperCase()) ? PresenceState.HOME
                                 : PresenceState.AWAY);
                 try {
                     api.updatePresenceLock(homeId, presence);

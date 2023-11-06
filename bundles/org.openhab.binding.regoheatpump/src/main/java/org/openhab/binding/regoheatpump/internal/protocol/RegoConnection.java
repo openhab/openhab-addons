@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,27 +29,27 @@ public interface RegoConnection {
      * Connect to the receiver. Return true if the connection has succeeded or if already connected.
      *
      **/
-    public void connect() throws IOException;
+    void connect() throws IOException;
 
     /**
      * Return true if this manager is connected to the AVR.
      *
      * @return
      */
-    public boolean isConnected();
+    boolean isConnected();
 
     /**
      * Closes the connection.
      **/
-    public void close();
+    void close();
 
     /**
      * Returns an output stream for this connection.
      */
-    public OutputStream outputStream() throws IOException;
+    OutputStream outputStream() throws IOException;
 
     /**
      * Returns an input stream for this connection.
      */
-    public InputStream inputStream() throws IOException;
+    InputStream inputStream() throws IOException;
 }

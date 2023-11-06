@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import tuwien.auto.calimero.secure.KnxSecureException;
  * directly defined on the bridge
  *
  * @author Karel Goderis - Initial contribution
- * @author Simon Kaufmann - Refactoring & cleanup
+ * @author Simon Kaufmann - Refactoring and cleanup
  */
 @NonNullByDefault
 public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
@@ -62,7 +62,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void initialize() {
-        // initialisation would take too long and show a warning during binding startup
+        // initialization would take too long and show a warning during binding startup
         // KNX secure is adding serious delay
         updateStatus(ThingStatus.UNKNOWN);
         initJob = scheduler.submit(this::initializeLater);
@@ -171,21 +171,24 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         if (!config.getLocalIp().isEmpty()) {
             localEndPoint = new InetSocketAddress(config.getLocalIp(), 0);
         } else {
-            if (networkAddressService == null) {
+            NetworkAddressService localNetworkAddressService = networkAddressService;
+            if (localNetworkAddressService == null) {
                 logger.debug("NetworkAddressService not available, cannot create bridge {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE);
                 return;
+            } else {
+                localEndPoint = new InetSocketAddress(localNetworkAddressService.getPrimaryIpv4HostAddress(), 0);
             }
-            localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
         }
 
         updateStatus(ThingStatus.UNKNOWN);
         client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT, autoReconnectPeriod,
                 secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs, secureTunnel.devKey,
                 secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
-                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), this);
+                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), getCommandExtensionData(),
+                this);
 
-        final var tmpClient = client;
+        IPClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.initialize();
         }
@@ -195,7 +198,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void dispose() {
-        final var tmpInitJob = initJob;
+        Future<?> tmpInitJob = initJob;
         if (tmpInitJob != null) {
             while (!tmpInitJob.isDone()) {
                 logger.trace("Bridge {}, shutdown during init, trying to cancel", thing.getUID());
@@ -208,7 +211,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             }
             initJob = null;
         }
-        final var tmpClient = client;
+        IPClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.dispose();
             client = null;

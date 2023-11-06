@@ -81,7 +81,7 @@ The following channels are supported for each bridge/thing
 #### Notes
 
 - The JSON will look like: `[{"id":1, "name":"XXX"},...]`.
-The controller channel will contain up to 6 controllers and the sources will contain up to 8 sources (depending on how the system is configured).
+  The controller channel will contain up to 6 controllers and the sources will contain up to 8 sources (depending on how the system is configured).
 
 ### Russound Source (please see source cross-reference below for what is supported by which sources)
 

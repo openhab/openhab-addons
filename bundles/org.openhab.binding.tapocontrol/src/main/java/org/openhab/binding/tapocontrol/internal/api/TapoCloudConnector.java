@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,10 @@
 package org.openhab.binding.tapocontrol.internal.api;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
-import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -139,11 +140,11 @@ public class TapoCloudConnector {
                     logger.trace("cloud returns error: '{}'", rBody);
                 }
             } else {
-                handleError(new TapoErrorHandler(ERR_JSON_DECODE_FAIL));
+                handleError(new TapoErrorHandler(ERR_API_JSON_DECODE_FAIL));
                 logger.trace("unexpected json-response '{}'", rBody);
             }
         } else {
-            handleError(new TapoErrorHandler(ERR_HTTP_RESPONSE, ERR_HTTP_RESPONSE_MSG));
+            handleError(new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE));
             logger.warn("invalid response while login");
             token = "";
         }
@@ -213,6 +214,7 @@ public class TapoCloudConnector {
     @Nullable
     protected ContentResponse sendCloudRequest(String url, String payload) {
         Request httpRequest = httpClient.newRequest(url).method(HttpMethod.POST.toString());
+        httpRequest.timeout(TAPO_HTTP_CLOUD_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         /* set header */
         httpRequest.header("content-type", CONTENT_TYPE_JSON);
@@ -222,14 +224,13 @@ public class TapoCloudConnector {
         httpRequest.content(new StringContentProvider(payload, CONTENT_CHARSET), CONTENT_TYPE_JSON);
 
         try {
-            ContentResponse httpResponse = httpRequest.send();
-            return httpResponse;
+            return httpRequest.send();
         } catch (InterruptedException e) {
             logger.debug("({}) sending request interrupted: {}", uid, e.toString());
             handleError(new TapoErrorHandler(e));
         } catch (TimeoutException e) {
             logger.debug("({}) sending request timeout: {}", uid, e.toString());
-            handleError(new TapoErrorHandler(ERR_CONNECT_TIMEOUT, e.toString()));
+            handleError(new TapoErrorHandler(ERR_BINDING_CONNECT_TIMEOUT, e.toString()));
         } catch (Exception e) {
             logger.debug("({}) sending request failed: {}", uid, e.toString());
             handleError(new TapoErrorHandler(e));

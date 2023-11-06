@@ -18,6 +18,7 @@
 		<label>Ceiling Fan</label>
 		<channels>
 			<channel id="speed" typeId="fanSpeedChannelType"/>
+			<channel id="rawSpeed" typeId="rawFanSpeedChannelType"/>
 			<channel id="breezeState" typeId="breezeStateChannelType"/>
 			<channel id="breezeMean" typeId="breezeMeanChannelType"/>
 			<channel id="breezeVariability" typeId="breezeVariabilityChannelType"/>

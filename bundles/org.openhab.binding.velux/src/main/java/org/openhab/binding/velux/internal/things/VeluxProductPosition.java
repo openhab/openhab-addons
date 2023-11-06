@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class VeluxProductPosition {
      *
      * @author AndrewFG - Initial contribution.
      */
-    public static enum PositionType {
+    public enum PositionType {
         ABSOLUTE_VALUE(0f),
         OFFSET_POSITIVE(1f),
         OFFSET_NEGATIVE(-1f);
@@ -140,7 +140,7 @@ public class VeluxProductPosition {
     }
 
     public static boolean isUnknownOrValid(int position) {
-        return (position == VeluxProductPosition.VPP_UNKNOWN) || isValid(position);
+        return (position == VeluxProductPosition.VPP_VELUX_UNKNOWN) || isValid(position);
     }
 
     /**

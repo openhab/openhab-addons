@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +36,6 @@ import org.openhab.binding.onkyo.internal.automation.modules.OnkyoThingActions;
 import org.openhab.binding.onkyo.internal.config.OnkyoDeviceConfiguration;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
-import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
@@ -77,7 +75,7 @@ import org.xml.sax.SAXException;
  * @author Pauli Anttila - lot of refactoring
  * @author Stewart Cossey - add dynamic state description provider
  */
-public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventListener {
+public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(OnkyoHandler.class);
 
@@ -98,9 +96,9 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private static final int NET_USB_ID = 43;
 
-    public OnkyoHandler(Thing thing, UpnpIOService upnpIOService, AudioHTTPServer audioHTTPServer, String callbackUrl,
+    public OnkyoHandler(Thing thing, UpnpIOService upnpIOService,
             OnkyoStateDescriptionProvider stateDescriptionProvider) {
-        super(thing, upnpIOService, audioHTTPServer, callbackUrl);
+        super(thing, upnpIOService);
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -180,8 +178,8 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 handleVolumeSet(EiscpCommand.Zone.ZONE1, volumeLevelZone1, command);
                 break;
             case CHANNEL_INPUT:
-                if (command instanceof DecimalType) {
-                    selectInput(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    selectInput(decimalCommand.intValue());
                 } else if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommand.SOURCE_QUERY);
                 }
@@ -794,11 +792,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             } else if (command instanceof StringType) {
                 val = String.format(valTemplate, command);
 
-            } else if (command instanceof DecimalType) {
-                val = String.format(valTemplate, ((DecimalType) command).intValue());
+            } else if (command instanceof DecimalType decimalCommand) {
+                val = String.format(valTemplate, decimalCommand.intValue());
 
-            } else if (command instanceof PercentType) {
-                val = String.format(valTemplate, ((DecimalType) command).intValue());
+            } else if (command instanceof PercentType percentCommand) {
+                val = String.format(valTemplate, percentCommand.intValue());
             } else {
                 val = valTemplate;
             }
@@ -858,12 +856,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     }
 
     private void handleVolumeSet(EiscpCommand.Zone zone, final State currentValue, final Command command) {
-        if (command instanceof PercentType) {
-            sendCommand(EiscpCommand.getCommandForZone(zone, EiscpCommand.VOLUME_SET),
-                    downScaleVolume((PercentType) command));
+        if (command instanceof PercentType percentCommand) {
+            sendCommand(EiscpCommand.getCommandForZone(zone, EiscpCommand.VOLUME_SET), downScaleVolume(percentCommand));
         } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
-            if (currentValue instanceof PercentType) {
-                if (((DecimalType) currentValue).intValue() < configuration.volumeLimit) {
+            if (currentValue instanceof PercentType percentCommand) {
+                if (percentCommand.intValue() < configuration.volumeLimit) {
                     sendCommand(EiscpCommand.getCommandForZone(zone, EiscpCommand.VOLUME_UP));
                 } else {
                     logger.info("Volume level is limited to {}, ignore volume up command.", configuration.volumeLimit);
@@ -882,8 +879,8 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     }
 
     private State handleReceivedVolume(State volume) {
-        if (volume instanceof DecimalType) {
-            return upScaleVolume(((DecimalType) volume));
+        if (volume instanceof DecimalType decimalCommand) {
+            return upScaleVolume(decimalCommand);
         }
         return volume;
     }
@@ -921,16 +918,14 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         return new PercentType(((Double) (volume.intValue() / configuration.volumeScale)).intValue());
     }
 
-    @Override
     public PercentType getVolume() throws IOException {
-        if (volumeLevelZone1 instanceof PercentType) {
-            return (PercentType) volumeLevelZone1;
+        if (volumeLevelZone1 instanceof PercentType percentCommand) {
+            return percentCommand;
         }
 
         throw new IOException();
     }
 
-    @Override
     public void setVolume(PercentType volume) throws IOException {
         handleVolumeSet(EiscpCommand.Zone.ZONE1, volumeLevelZone1, downScaleVolume(volume));
     }
@@ -947,6 +942,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(OnkyoThingActions.class);
+        return List.of(OnkyoThingActions.class);
     }
 }

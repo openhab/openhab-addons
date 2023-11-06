@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -90,7 +90,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
     // creates list of available Actions
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(WebexTeamsActions.class);
+        return List.of(WebexTeamsActions.class);
     }
 
     @Override
@@ -147,9 +147,15 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
         OAuthClientService authService = this.authService;
         if (authService != null) {
             authService.removeAccessTokenRefreshListener(this);
+            oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
         }
-        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
         cancelSchedulers();
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
     }
 
     private void createIntegrationOAuthClientService(WebexTeamsConfiguration config) {
@@ -369,7 +375,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     /**
      * Send a message to a specific room
-     * 
+     *
      * @param roomId roomId of the room to send to
      * @param msg markdown text string to be sent
      * @return <code>true</code>, if sending the message has been successful and
@@ -385,11 +391,11 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     /**
      * Send a message to a specific room, with attachment
-     * 
+     *
      * @param roomId roomId of the room to send to
      * @param msg markdown text string to be sent
      * @param attach URL of the attachment
-     * 
+     *
      * @return <code>true</code>, if sending the message has been successful and
      *         <code>false</code> in all other cases.
      */
@@ -404,7 +410,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     /**
      * Sends a message to a specific person, identified by email
-     * 
+     *
      * @param personEmail email address of the person to send to
      * @param msg markdown text string to be sent
      * @return <code>true</code>, if sending the message has been successful and
@@ -420,7 +426,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     /**
      * Sends a message to a specific person, identified by email, with attachment
-     * 
+     *
      * @param personEmail email address of the person to send to
      * @param msg markdown text string to be sent
      * @param attach URL of the attachment*
@@ -438,7 +444,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     /**
      * Sends a <code>Message</code>
-     * 
+     *
      * @param msg the <code>Message</code> to be sent
      * @return <code>true</code>, if sending the message has been successful and
      *         <code>false</code> in all other cases.

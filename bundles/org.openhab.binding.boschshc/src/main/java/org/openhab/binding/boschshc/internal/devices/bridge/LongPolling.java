@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,10 +30,9 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
+import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * Handles the long polling to the Smart Home Controller.
@@ -44,11 +43,6 @@ import com.google.gson.Gson;
 public class LongPolling {
 
     private final Logger logger = LoggerFactory.getLogger(LongPolling.class);
-
-    /**
-     * gson instance to convert a class to json string and back.
-     */
-    private final Gson gson = new Gson();
 
     /**
      * Executor to schedule long polls.
@@ -107,17 +101,15 @@ public class LongPolling {
     private String subscribe(BoschHttpClient httpClient) throws LongPollingFailedException {
         try {
             String url = httpClient.getBoschShcUrl("remote/json-rpc");
-            JsonRpcRequest request = new JsonRpcRequest("2.0", "RE/subscribe",
+            JsonRpcRequest subscriptionRequest = new JsonRpcRequest("2.0", "RE/subscribe",
                     new String[] { "com/bosch/sh/remote/*", null });
-            logger.debug("Subscribe: Sending request: {} - using httpClient {}", request.toString(),
-                    httpClient.toString());
-            Request httpRequest = httpClient.createRequest(url, POST, request);
+            logger.debug("Subscribe: Sending request: {} - using httpClient {}", subscriptionRequest, httpClient);
+            Request httpRequest = httpClient.createRequest(url, POST, subscriptionRequest);
             SubscribeResult response = httpClient.sendRequest(httpRequest, SubscribeResult.class,
                     SubscribeResult::isValid, null);
 
             logger.debug("Subscribe: Got subscription ID: {} {}", response.getResult(), response.getJsonrpc());
-            String subscriptionId = response.getResult();
-            return subscriptionId;
+            return response.getResult();
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
             throw new LongPollingFailedException(
                     String.format("Error on subscribe (Http client: %s): %s", httpClient.toString(), e.getMessage()),
@@ -141,7 +133,6 @@ public class LongPolling {
             this.executeLongPoll(httpClient, subscriptionId);
         } catch (LongPollingFailedException e) {
             this.handleFailure.accept(e);
-            return;
         }
     }
 
@@ -157,15 +148,15 @@ public class LongPolling {
 
         JsonRpcRequest requestContent = new JsonRpcRequest("2.0", "RE/longPoll", new String[] { subscriptionId, "20" });
         String url = httpClient.getBoschShcUrl("remote/json-rpc");
-        Request request = httpClient.createRequest(url, POST, requestContent);
+        Request longPollRequest = httpClient.createRequest(url, POST, requestContent);
 
         // Long polling responds after 20 seconds with an empty response if no update has happened.
         // 10 second threshold was added to not time out if response from controller takes a bit longer than 20 seconds.
-        request.timeout(30, TimeUnit.SECONDS);
+        longPollRequest.timeout(30, TimeUnit.SECONDS);
 
-        this.request = request;
+        this.request = longPollRequest;
         LongPolling longPolling = this;
-        request.send(new BufferingResponseListener() {
+        longPollRequest.send(new BufferingResponseListener() {
             @Override
             public void onComplete(@Nullable Result result) {
                 // NOTE: This handler runs inside the HTTP thread, so we schedule the response handling in a new thread
@@ -195,31 +186,20 @@ public class LongPolling {
         // Check if response was failure or success
         Throwable failure = result != null ? result.getFailure() : null;
         if (failure != null) {
-            if (failure instanceof ExecutionException) {
-                if (failure.getCause() instanceof AbortLongPolling) {
-                    logger.debug("Canceling long polling for subscription id {} because it was aborted",
-                            subscriptionId);
-                } else {
-                    this.handleFailure.accept(new LongPollingFailedException(
-                            "Unexpected exception during long polling request", failure));
-                }
-            } else {
-                this.handleFailure.accept(
-                        new LongPollingFailedException("Unexpected exception during long polling request", failure));
-            }
+            handleLongPollFailure(subscriptionId, failure);
         } else {
             logger.debug("Long poll response: {}", content);
 
             String nextSubscriptionId = subscriptionId;
 
-            LongPollResult longPollResult = gson.fromJson(content, LongPollResult.class);
+            LongPollResult longPollResult = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, LongPollResult.class);
             if (longPollResult != null && longPollResult.result != null) {
                 this.handleResult.accept(longPollResult);
             } else {
                 logger.debug("Long poll response contained no result: {}", content);
 
                 // Check if we got a proper result from the SHC
-                LongPollError longPollError = gson.fromJson(content, LongPollError.class);
+                LongPollError longPollError = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, LongPollError.class);
 
                 if (longPollError != null && longPollError.error != null) {
                     logger.debug("Got long poll error: {} (code: {})", longPollError.error.message,
@@ -235,6 +215,20 @@ public class LongPolling {
 
             // Execute next run
             this.longPoll(httpClient, nextSubscriptionId);
+        }
+    }
+
+    private void handleLongPollFailure(String subscriptionId, Throwable failure) {
+        if (failure instanceof ExecutionException) {
+            if (failure.getCause() instanceof AbortLongPolling) {
+                logger.debug("Canceling long polling for subscription id {} because it was aborted", subscriptionId);
+            } else {
+                this.handleFailure.accept(
+                        new LongPollingFailedException("Unexpected exception during long polling request", failure));
+            }
+        } else {
+            this.handleFailure.accept(
+                    new LongPollingFailedException("Unexpected exception during long polling request", failure));
         }
     }
 

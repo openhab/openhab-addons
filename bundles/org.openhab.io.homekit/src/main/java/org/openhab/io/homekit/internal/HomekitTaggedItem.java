@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -49,18 +50,18 @@ public class HomekitTaggedItem {
     private final Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
 
     /** configuration keywords at items level **/
-    public final static String DELAY = "commandDelay";
-    public final static String DIMMER_MODE = "dimmerMode";
+    public static final String DELAY = "commandDelay";
+    public static final String DIMMER_MODE = "dimmerMode";
     public static final String BATTERY_LOW_THRESHOLD = "lowThreshold";
-    public final static String INSTANCE = "instance";
-    public final static String INVERTED = "inverted";
-    public final static String MAX_VALUE = "maxValue";
-    public final static String MIN_VALUE = "minValue";
-    public final static String PRIMARY_SERVICE = "primary";
-    public final static String STEP = "step";
-    public final static String UNIT = "unit";
-    public final static String EMULATE_STOP_STATE = "stop";
-    public final static String EMULATE_STOP_SAME_DIRECTION = "stopSameDirection";
+    public static final String INSTANCE = "instance";
+    public static final String INVERTED = "inverted";
+    public static final String MAX_VALUE = "maxValue";
+    public static final String MIN_VALUE = "minValue";
+    public static final String PRIMARY_SERVICE = "primary";
+    public static final String STEP = "step";
+    public static final String UNIT = "unit";
+    public static final String EMULATE_STOP_STATE = "stop";
+    public static final String EMULATE_STOP_SAME_DIRECTION = "stopSameDirection";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
@@ -111,8 +112,8 @@ public class HomekitTaggedItem {
     }
 
     public boolean isGroup() {
-        return (isAccessory() && (proxyItem.getItem() instanceof GroupItem)
-                && ((GroupItem) proxyItem.getItem()).getBaseItem() == null);
+        return (isAccessory() && (proxyItem.getItem() instanceof GroupItem groupItem)
+                && groupItem.getBaseItem() == null);
     }
 
     public HomekitAccessoryType getAccessoryType() {
@@ -176,11 +177,11 @@ public class HomekitTaggedItem {
      * @param command
      */
     public void send(DecimalType command) {
-        if (getItem() instanceof GroupItem && getBaseItem() instanceof NumberItem) {
-            ((GroupItem) getItem()).send(command);
+        if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof NumberItem) {
+            groupItem.send(command);
             return;
-        } else if (getItem() instanceof NumberItem) {
-            ((NumberItem) getItem()).send(command);
+        } else if (getItem() instanceof NumberItem numberItem) {
+            numberItem.send(command);
             return;
         }
         logger.warn("Received DecimalType command for item {} that doesn't support it. This is probably a bug.",
@@ -193,11 +194,11 @@ public class HomekitTaggedItem {
      * @param command
      */
     public void send(QuantityType command) {
-        if (getItem() instanceof GroupItem && getBaseItem() instanceof NumberItem) {
-            ((GroupItem) getItem()).send(command);
+        if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof NumberItem) {
+            groupItem.send(command);
             return;
-        } else if (getItem() instanceof NumberItem) {
-            ((NumberItem) getItem()).send(command);
+        } else if (getItem() instanceof NumberItem numberItem) {
+            numberItem.send(command);
             return;
         }
         logger.warn("Received QuantityType command for item {} that doesn't support it. This is probably a bug.",
@@ -210,14 +211,30 @@ public class HomekitTaggedItem {
      * @param command
      */
     public void send(OnOffType command) {
-        if (getItem() instanceof GroupItem && getBaseItem() instanceof SwitchItem) {
-            ((GroupItem) getItem()).send(command);
+        if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof SwitchItem) {
+            groupItem.send(command);
             return;
-        } else if (getItem() instanceof SwitchItem) {
-            ((SwitchItem) getItem()).send(command);
+        } else if (getItem() instanceof SwitchItem switchItem) {
+            switchItem.send(command);
             return;
         }
         logger.warn("Received OnOffType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
+    }
+
+    /**
+     * Send IncreaseDecreaseType command to a DimmerItem (or a Group:Dimmer)
+     */
+    public void send(IncreaseDecreaseType command) {
+        if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof DimmerItem) {
+            groupItem.send(command);
+            return;
+        } else if (getItem() instanceof DimmerItem dimmerItem) {
+            dimmerItem.send(command);
+            return;
+        }
+        logger.warn(
+                "Received IncreaseDecreaseType command for item {} that doesn't support it. This is probably a bug.",
                 getName());
     }
 
@@ -227,15 +244,15 @@ public class HomekitTaggedItem {
      * @param command
      */
     public void send(PercentType command) {
-        if (getItem() instanceof GroupItem
+        if (getItem() instanceof GroupItem groupItem
                 && (getBaseItem() instanceof DimmerItem || getBaseItem() instanceof RollershutterItem)) {
-            ((GroupItem) getItem()).send(command);
+            groupItem.send(command);
             return;
-        } else if (getItem() instanceof DimmerItem) {
-            ((DimmerItem) getItem()).send(command);
+        } else if (getItem() instanceof DimmerItem dimmerItem) {
+            dimmerItem.send(command);
             return;
-        } else if (getItem() instanceof RollershutterItem) {
-            ((RollershutterItem) getItem()).send(command);
+        } else if (getItem() instanceof RollershutterItem rollerShutterItem) {
+            rollerShutterItem.send(command);
             return;
         }
         logger.warn("Received PercentType command for item {} that doesn't support it. This is probably a bug.",
@@ -248,11 +265,11 @@ public class HomekitTaggedItem {
      * @param command
      */
     public void send(StringType command) {
-        if (getItem() instanceof GroupItem && getBaseItem() instanceof StringItem) {
-            ((GroupItem) getItem()).send(command);
+        if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof StringItem) {
+            groupItem.send(command);
             return;
-        } else if (getItem() instanceof StringItem) {
-            ((StringItem) getItem()).send(command);
+        } else if (getItem() instanceof StringItem stringItem) {
+            stringItem.send(command);
             return;
         }
         logger.warn("Received StringType command for item {} that doesn't support it. This is probably a bug.",
@@ -333,8 +350,8 @@ public class HomekitTaggedItem {
                     return (T) value;
                 }
                 // fix for different handling of numbers via .items and via mainUI, see #1904
-                if ((value instanceof BigDecimal) && (defaultValue instanceof Double)) {
-                    return (T) Double.valueOf(((BigDecimal) value).doubleValue());
+                if ((value instanceof BigDecimal valueAsBigDecimal) && (defaultValue instanceof Double)) {
+                    return (T) Double.valueOf(valueAsBigDecimal.doubleValue());
                 }
                 if ((value instanceof Double) && (defaultValue instanceof BigDecimal)) {
                     return (T) BigDecimal.valueOf(((Double) value).doubleValue());
@@ -369,12 +386,11 @@ public class HomekitTaggedItem {
         if (value == null) {
             return defaultValue;
         }
-        if (value instanceof Boolean) {
-            return (Boolean) value;
+        if (value instanceof Boolean valueAsBoolean) {
+            return valueAsBoolean;
         }
-        if (value instanceof String) {
-            final String valueString = (String) value;
-            return valueString.equalsIgnoreCase("yes") || valueString.equalsIgnoreCase("true");
+        if (value instanceof String valueString) {
+            return "yes".equalsIgnoreCase(valueString) || "true".equalsIgnoreCase(valueString);
         }
         return defaultValue;
     }
@@ -434,7 +450,7 @@ public class HomekitTaggedItem {
         // not convertible? just assume it's in the item's unit
         if (convertedValue == null) {
             Unit unit;
-            if (getBaseItem() instanceof NumberItem && (unit = ((NumberItem) getBaseItem()).getUnit()) != null) {
+            if (getBaseItem() instanceof NumberItem numberItem && (unit = numberItem.getUnit()) != null) {
                 var bdValue = new BigDecimal(stringValue);
                 parsedValue = new QuantityType(bdValue, unit);
                 if (relativeConversion) {
@@ -457,12 +473,12 @@ public class HomekitTaggedItem {
     private void parseConfiguration() {
         if (configuration != null) {
             final @Nullable Object dimmerModeConfig = configuration.get(DIMMER_MODE);
-            if (dimmerModeConfig instanceof String) {
-                HomekitDimmerMode.valueOfTag((String) dimmerModeConfig).ifPresent(proxyItem::setDimmerMode);
+            if (dimmerModeConfig instanceof String dimmerModeConfigAsString) {
+                HomekitDimmerMode.valueOfTag(dimmerModeConfigAsString).ifPresent(proxyItem::setDimmerMode);
             }
             final @Nullable Object delayConfig = configuration.get(DELAY);
-            if (delayConfig instanceof Number) {
-                proxyItem.setDelay(((Number) delayConfig).intValue());
+            if (delayConfig instanceof Number delayConfigNumber) {
+                proxyItem.setDelay(delayConfigNumber.intValue());
             }
         }
     }
@@ -490,6 +506,7 @@ public class HomekitTaggedItem {
         return id;
     }
 
+    @Override
     public String toString() {
         return "Item:" + proxyItem.getItem() + "  HomeKit type: '" + homekitAccessoryType.getTag()
                 + "' characteristic: '" + homekitCharacteristicType.getTag() + "'";

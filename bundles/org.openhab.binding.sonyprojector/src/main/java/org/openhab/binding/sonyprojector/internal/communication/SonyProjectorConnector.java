@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1102,7 +1102,7 @@ public abstract class SonyProjectorConnector {
      * Validate the content of a returned message
      *
      * @param responseMessage the buffer containing the returned message
-     * @param the projector setting to get or set
+     * @param item the projector setting to get or set
      *
      * @throws CommunicationException if the message has unexpected content
      */

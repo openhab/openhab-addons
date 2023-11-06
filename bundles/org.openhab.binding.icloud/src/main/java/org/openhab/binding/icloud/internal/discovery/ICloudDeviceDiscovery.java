@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,19 +63,23 @@ public class ICloudDeviceDiscovery extends AbstractDiscoveryService implements I
             String deviceOwnerName = deviceInformationRecord.getName();
 
             String thingLabel = deviceOwnerName + " (" + deviceTypeName + ")";
-            String deviceId = deviceInformationRecord.getId();
-            String deviceIdHash = Integer.toHexString(deviceId.hashCode());
+            String deviceDiscoveryId = deviceInformationRecord.getDeviceDiscoveryId();
+            if (deviceDiscoveryId == null || deviceDiscoveryId.isBlank()) {
+                logger.debug("deviceDiscoveryId is empty, using device name for identification.");
+                deviceDiscoveryId = deviceOwnerName;
+            }
+            String deviceIdHash = Integer.toHexString(deviceDiscoveryId.hashCode());
 
             logger.debug("iCloud device discovery for [{}]", deviceInformationRecord.getDeviceDisplayName());
 
             ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, deviceIdHash);
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                    .withProperty(DEVICE_PROPERTY_ID, deviceId)
-                    .withProperty(translatorService.getText(DEVICE_PROPERTY_ID_LABEL), deviceId)
+                    .withProperty(DEVICE_PROPERTY_ID, deviceDiscoveryId)
+                    .withProperty(translatorService.getText(DEVICE_PROPERTY_ID_LABEL), deviceDiscoveryId)
                     .withProperty(translatorService.getText(DEVICE_PROPERTY_OWNER_LABEL), deviceOwnerName)
                     .withRepresentationProperty(DEVICE_PROPERTY_ID).withLabel(thingLabel).build();
 
-            logger.debug("Device [{}, {}] found.", deviceIdHash, deviceId);
+            logger.debug("Device [{}, {}] found.", deviceIdHash, deviceDiscoveryId);
 
             thingDiscovered(result);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -370,24 +370,6 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         // 1) should first unregister poll task
         verify(comms).unregisterRegularPoll(eq(pollTask));
-
-        verifyNoMoreInteractions(mockedModbusManager);
-    }
-
-    @Test
-    public void testInitializeWithNoBridge()
-            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-        Configuration pollerConfig = new Configuration();
-        pollerConfig.put("refresh", 150L);
-        pollerConfig.put("start", 5);
-        pollerConfig.put("length", 13);
-        pollerConfig.put("type", "coil");
-        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).build();
-        addThing(poller);
-        verifyEndpointBasicInitInteraction();
-
-        assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
-        assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.BRIDGE_OFFLINE)));
 
         verifyNoMoreInteractions(mockedModbusManager);
     }
@@ -807,7 +789,6 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     @Test
     public void testRefreshWithOldPreviousData() throws IllegalArgumentException, IllegalAccessException,
             NoSuchFieldException, SecurityException, InterruptedException {
-
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 0L);
         pollerConfig.put("start", 5);

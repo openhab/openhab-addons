@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,11 +28,11 @@ import org.openhab.binding.benqprojector.internal.BenqProjectorException;
  */
 @NonNullByDefault
 public interface BenqProjectorConnector {
-    public static final int TIMEOUT_MS = 5 * 1000;
+    static final int TIMEOUT_MS = 5 * 1000;
 
-    public static final String START = "\r*";
-    public static final String END = "#\r";
-    public static final String BLANK = "";
+    static final String START = "\r*";
+    static final String END = "#\r";
+    static final String BLANK = "";
 
     /**
      * Procedure for connecting to projector.

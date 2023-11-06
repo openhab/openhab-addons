@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,13 +22,12 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 import org.openhab.core.thing.CommonTriggerEvents;
-import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A virtual String datapoint which adds a BUTTON datapoint. It will forward key events to the
- * system channel {@link DefaultSystemChannelTypeProvider#SYSTEM_BUTTON}.
+ * system channel {@link org.openhab.core.thing.DefaultSystemChannelTypeProvider#SYSTEM_BUTTON}.
  *
  * @author Michael Reitler - Initial contribution
  */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -110,13 +110,13 @@ public class AirQualityStationHandler extends BaseThingHandler {
     private void discoverAttributes() {
         getAirQualityData().ifPresent(data -> {
             // Update thing properties
-            Map<String, String> properties = new HashMap<>();
-            properties.put(ATTRIBUTIONS, data.getAttributions());
+            Map<String, String> properties = new HashMap<>(Map.of(ATTRIBUTIONS, data.getAttributions()));
             PointType serverLocation = locationProvider.getLocation();
             if (serverLocation != null) {
-                PointType stationLocation = new PointType(data.getCity().getGeo());
-                double distance = serverLocation.distanceFrom(stationLocation).doubleValue();
-                properties.put(DISTANCE, new QuantityType<>(distance / 1000, KILO(SIUnits.METRE)).toString());
+                data.getCity().ifPresent(city -> {
+                    double distance = serverLocation.distanceFrom(new PointType(city.getGeo())).doubleValue();
+                    properties.put(DISTANCE, new QuantityType<>(distance / 1000, KILO(SIUnits.METRE)).toString());
+                });
             }
 
             // Search and remove missing pollutant channels
@@ -132,8 +132,8 @@ public class AirQualityStationHandler extends BaseThingHandler {
             config.put(AirQualityConfiguration.STATION_ID, data.getStationId());
 
             ThingBuilder thingBuilder = editThing();
-            thingBuilder.withChannels(channels).withConfiguration(config).withProperties(properties)
-                    .withLocation(data.getCity().getName());
+            thingBuilder.withChannels(channels).withConfiguration(config).withProperties(properties);
+            data.getCity().map(city -> thingBuilder.withLocation(city.getName()));
             updateThing(thingBuilder.build());
         });
     }
@@ -190,7 +190,7 @@ public class AirQualityStationHandler extends BaseThingHandler {
         if (apiBridge != null) {
             AirQualityConfiguration config = getConfigAs(AirQualityConfiguration.class);
             try {
-                result = apiBridge.getData(config.stationId, config.location, 0);
+                result = apiBridge.getData(config.stationId, config.location);
                 updateStatus(ThingStatus.ONLINE);
             } catch (AirQualityException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -253,24 +253,26 @@ public class AirQualityStationHandler extends BaseThingHandler {
         switch (channelId) {
             case TEMPERATURE:
                 double temp = data.getIaqiValue("t");
-                return temp != -1 ? new QuantityType<>(temp, SIUnits.CELSIUS) : UnDefType.UNDEF;
+                return temp != -1 ? new QuantityType<>(temp, SIUnits.CELSIUS) : UnDefType.NULL;
             case PRESSURE:
                 double press = data.getIaqiValue("p");
-                return press != -1 ? new QuantityType<>(press, HECTO(SIUnits.PASCAL)) : UnDefType.UNDEF;
+                return press != -1 ? new QuantityType<>(press, HECTO(SIUnits.PASCAL)) : UnDefType.NULL;
             case HUMIDITY:
                 double hum = data.getIaqiValue("h");
-                return hum != -1 ? new QuantityType<>(hum, Units.PERCENT) : UnDefType.UNDEF;
+                return hum != -1 ? new QuantityType<>(hum, Units.PERCENT) : UnDefType.NULL;
             case TIMESTAMP:
-                return new DateTimeType(
-                        data.getTime().getObservationTime().withZoneSameLocal(timeZoneProvider.getTimeZone()));
+                return data.getTime()
+                        .map(time -> (State) new DateTimeType(
+                                time.getObservationTime().withZoneSameLocal(timeZoneProvider.getTimeZone())))
+                        .orElse(UnDefType.NULL);
             case DOMINENT:
                 return new StringType(data.getDominentPol());
             case DEW_POINT:
                 double dp = data.getIaqiValue("dew");
-                return dp != -1 ? new QuantityType<>(dp, SIUnits.CELSIUS) : UnDefType.UNDEF;
+                return dp != -1 ? new QuantityType<>(dp, SIUnits.CELSIUS) : UnDefType.NULL;
             case WIND_SPEED:
                 double w = data.getIaqiValue("w");
-                return w != -1 ? new QuantityType<>(w, Units.METRE_PER_SECOND) : UnDefType.UNDEF;
+                return w != -1 ? new QuantityType<>(w, Units.METRE_PER_SECOND) : UnDefType.NULL;
             default:
                 if (groupId != null) {
                     double idx = -1;
@@ -283,7 +285,7 @@ public class AirQualityStationHandler extends BaseThingHandler {
                     }
                     return indexedValue(channelId, idx, pollutant);
                 }
-                return UnDefType.UNDEF;
+                return UnDefType.NULL;
         }
     }
 

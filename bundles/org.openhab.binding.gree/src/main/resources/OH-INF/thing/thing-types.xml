@@ -66,7 +66,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.gree.targettemperature.label</label>
 		<description>@text/channel-type.gree.targettemperature.description</description>
-		<state min="16" max="86" step="1" pattern="%d %unit%"></state>
+		<state min="5" max="86" step="1" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="currentTemperature">
 		<item-type>Number:Temperature</item-type>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,7 +92,6 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
 
             if (jsonObject.has("outputs")) {
                 jsonOutputs = jsonObject.get("outputs");
-
             }
 
             if (ctd != null && cmd != null) {
@@ -115,7 +114,6 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
                         }
                         ((QbusMessageListMap) message).setOutputs(outputsList);
                     }
-
                 } else {
                     message = new QbusMessageMap();
 
@@ -145,7 +143,6 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
                     if (setpoint != null) {
                         message.setSetPoint(setpoint);
                     }
-
                 }
             }
             return message;

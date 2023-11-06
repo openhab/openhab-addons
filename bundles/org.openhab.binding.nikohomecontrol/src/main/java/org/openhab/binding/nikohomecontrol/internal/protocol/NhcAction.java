@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public abstract class NhcAction {
     }
 
     /**
-     * This method should be called when an object implementing the {@NhcActionEvent} interface is initialized.
+     * This method should be called when an object implementing the {@link NhcActionEvent} interface is initialized.
      * It keeps a record of the event handler in that object so it can be updated when the action receives an update
      * from the Niko Home Control IP-interface.
      *
@@ -66,7 +66,7 @@ public abstract class NhcAction {
     }
 
     /**
-     * This method should be called when an object implementing the {@NhcActionEvent} interface is disposed.
+     * This method should be called when an object implementing the {@link NhcActionEvent} interface is disposed.
      * It resets the reference, so no updates go to the handler anymore.
      *
      */

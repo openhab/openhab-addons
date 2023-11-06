@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,32 +14,23 @@ package org.openhab.binding.onewire.internal;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.SUPPORTED_THING_TYPES;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.onewire.internal.discovery.OwDiscoveryService;
 import org.openhab.binding.onewire.internal.handler.AdvancedMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BAE091xSensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BasicThingHandler;
 import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OwHandlerFactory} is responsible for creating things and thing
@@ -50,11 +41,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewire")
 public class OwHandlerFactory extends BaseThingHandlerFactory {
-    Logger logger = LoggerFactory.getLogger(OwHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final OwDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
 
-    @NonNullByDefault({})
-    private OwDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
+    @Activate
+    public OwHandlerFactory(@Reference OwDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
+        this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -66,9 +58,7 @@ public class OwHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (OwserverBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            OwserverBridgeHandler owserverBridgeHandler = new OwserverBridgeHandler((Bridge) thing);
-            registerDiscoveryService(owserverBridgeHandler);
-            return owserverBridgeHandler;
+            return new OwserverBridgeHandler((Bridge) thing);
         } else if (BasicMultisensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new BasicMultisensorThingHandler(thing, dynamicStateDescriptionProvider);
         } else if (AdvancedMultisensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -82,42 +72,5 @@ public class OwHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Override
-    public void unregisterHandler(Thing thing) {
-        super.unregisterHandler(thing);
-        logger.error("factory {} deleting thing {}", this, thing);
-    }
-
-    private synchronized void registerDiscoveryService(OwserverBridgeHandler owserverBridgeHandler) {
-        OwDiscoveryService owDiscoveryService = new OwDiscoveryService(owserverBridgeHandler);
-
-        this.discoveryServiceRegs.put(owserverBridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), owDiscoveryService, new Hashtable<>()));
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof OwserverBridgeHandler) {
-            // remove discovery service, if bridge handler is removed
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                OwDiscoveryService service = (OwDiscoveryService) bundleContext.getService(serviceReg.getReference());
-                serviceReg.unregister();
-                if (service != null) {
-                    service.deactivate();
-                }
-            }
-        }
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(OwDynamicStateDescriptionProvider provider) {
-        this.dynamicStateDescriptionProvider = provider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(OwDynamicStateDescriptionProvider provider) {
-        this.dynamicStateDescriptionProvider = null;
     }
 }

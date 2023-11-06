@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link $AirqHandler} is responsible for retrieving all information from the air-Q device
+ * The {@link AirqHandler} is responsible for retrieving all information from the air-Q device
  * and change properties and channels accordingly.
  *
  * @author Aurelio Caliaro - Initial contribution

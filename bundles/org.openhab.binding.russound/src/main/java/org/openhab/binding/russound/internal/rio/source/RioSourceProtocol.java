@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -468,8 +468,8 @@ class RioSourceProtocol extends AbstractRioProtocol {
 
         infoLock.lock();
         try {
-            infoText.append(infoTextValue.toString());
-            if (attr != null && attr.toString().indexOf("E") >= 0) {
+            infoText.append(infoTextValue);
+            if (attr != null && attr.toString().contains("E")) {
                 final String text = infoText.toString();
 
                 infoText.setLength(0);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,8 @@ package org.openhab.binding.onewire.internal.handler;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.DS2438Configuration;
@@ -44,10 +41,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BasicMultisensorThingHandler extends OwBaseThingHandler {
     public Logger logger = LoggerFactory.getLogger(BasicMultisensorThingHandler.class);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MS_TX);
-    public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Collections
-            .unmodifiableSet(Stream.of(OwSensorType.MS_TH, OwSensorType.MS_TC, OwSensorType.MS_TL, OwSensorType.MS_TV,
-                    OwSensorType.DS1923, OwSensorType.DS2438).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MS_TX);
+    public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Set.of(OwSensorType.MS_TH, OwSensorType.MS_TC,
+            OwSensorType.MS_TL, OwSensorType.MS_TV, OwSensorType.DS1923, OwSensorType.DS2438);
 
     public BasicMultisensorThingHandler(Thing thing,
             OwDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
@@ -74,24 +70,17 @@ public class BasicMultisensorThingHandler extends OwBaseThingHandler {
             sensors.add(new DS2438(sensorId, this));
         }
 
-        scheduler.execute(() -> {
-            configureThingChannels();
-        });
+        scheduler.execute(this::configureThingChannels);
     }
 
     @Override
     protected void configureThingChannels() {
         switch (sensorType) {
-            case DS2438:
-                ((DS2438) sensors.get(0)).setCurrentSensorType(CurrentSensorType.INTERNAL);
-                break;
-            case MS_TC:
-                ((DS2438) sensors.get(0)).setCurrentSensorType(CurrentSensorType.IBUTTONLINK);
-                break;
-            case MS_TL:
-                ((DS2438) sensors.get(0)).setLightSensorType(LightSensorType.IBUTTONLINK);
-                break;
-            default:
+            case DS2438 -> ((DS2438) sensors.get(0)).setCurrentSensorType(CurrentSensorType.INTERNAL);
+            case MS_TC -> ((DS2438) sensors.get(0)).setCurrentSensorType(CurrentSensorType.IBUTTONLINK);
+            case MS_TL -> ((DS2438) sensors.get(0)).setLightSensorType(LightSensorType.IBUTTONLINK);
+            default -> {
+            }
         }
 
         super.configureThingChannels();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,7 +74,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
         try {
             if (command instanceof RefreshType) {
                 refresh();
-            } else if (channelUID.getId().equals("run")) {
+            } else if ("run".equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     sendCommand("unpause");
                 } else if (command == OnOffType.OFF) {
@@ -82,7 +82,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
                 }
                 refresh();
                 delayedRefresh();
-            } else if (channelUID.getId().equals("finish")) {
+            } else if ("finish".equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     sendCommand("finish");
                 } else if (command == OnOffType.OFF) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,80 +28,55 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SensorState {
-    /** Some presence sensors, the daylight sensor and all light sensors provide the "dark" boolean. */
-    public @Nullable Boolean dark;
-    /** The daylight sensor and all light sensors provides the "daylight" boolean. */
-    public @Nullable Boolean daylight;
-    /** Light sensors provide a light level value. */
-    public @Nullable Integer lightlevel;
-    /** Light sensors provide a lux value. */
-    public @Nullable Integer lux;
-    /** Temperature sensors provide a degrees value. */
-    public @Nullable Float temperature;
-    /** Humidity sensors provide a percent value. */
-    public @Nullable Float humidity;
-    /** OpenClose sensors provide a boolean value. */
-    public @Nullable Boolean open;
-    /** fire sensors provide a boolean value. */
-    public @Nullable Boolean fire;
-    /** water sensors provide a boolean value. */
-    public @Nullable Boolean water;
-    /** alarm sensors provide a boolean value. */
-    public @Nullable Boolean alarm;
-    /** IAS Zone sensors provide a boolean value. */
-    public @Nullable Boolean tampered;
-    /** vibration sensors provide a boolean value. */
-    public @Nullable Boolean vibration;
-    /** carbonmonoxide sensors provide a boolean value. */
-    public @Nullable Boolean carbonmonoxide;
-    /** airquality sensors provide a string value. */
     public @Nullable String airquality;
-    /** airquality sensors provide an integer value. */
     public @Nullable Integer airqualityppb;
-    /** Pressure sensors provide a hPa value. */
-    public @Nullable Integer pressure;
-    /** Presence sensors provide this boolean. */
-    public @Nullable Boolean presence;
-    /** Power sensors provide this value in Watts. */
-    public @Nullable Float power;
-    /** Batttery sensors provide this value */
+    public @Nullable Boolean alarm;
     public @Nullable Integer battery;
-    /**
-     * Some battery sensors (especially Tuya driven devices) provide this boolean
-     * instead of battery level
-     */
-    public @Nullable Boolean lowbattery;
-    /** Consumption sensors provide this value in Watts/hour. */
-    public @Nullable Float consumption;
-    /** Power sensors provide this value in Volt. */
-    public @Nullable Float voltage;
-    /** Power sensors provide this value in Milliampere. */
-    public @Nullable Float current;
-    /** Light sensors and the daylight sensor provide a status integer that can have various semantics. */
-    public @Nullable Integer status;
-    /** Switches provide this value. */
     public @Nullable Integer buttonevent;
-    /** Switches may provide this value. */
+    public @Nullable Boolean carbonmonoxide;
+    public @Nullable Double consumption;
+    public @Nullable Double consumption2;
+    public @Nullable Double current;
+    public @Nullable Boolean dark;
+    public @Nullable Boolean daylight;
+    public @Nullable Boolean fire;
     public @Nullable Integer gesture;
-    /** Thermostat may provide this value. */
-    public @Nullable Integer valve;
-    /** Thermostats may provide this value */
-    public @Nullable String windowopen;
-    /** deCONZ sends a last update string with every event. */
+    public @Nullable Double humidity;
     public @Nullable String lastupdated;
-    /** color controllers send xy values */
+    public @Nullable Integer lightlevel;
+    public @Nullable Boolean lowbattery;
+    public @Nullable Integer lux;
+    public @Nullable Integer moisture;
+    public @Nullable Boolean on;
+    public @Nullable Boolean open;
+    public Integer @Nullable [] orientation;
+    public @Nullable Double power;
+    public @Nullable Boolean presence;
+    public @Nullable Integer pressure;
+    public @Nullable Integer status;
+    public @Nullable Boolean tampered;
+    public @Nullable Double temperature;
+    public @Nullable Integer tiltangle;
+    public @Nullable Integer valve;
+    public @Nullable Boolean vibration;
+    public @Nullable Integer vibrationstrength;
+    public @Nullable Double voltage;
+    public @Nullable Boolean water;
+    public @Nullable String windowopen;
     public double @Nullable [] xy;
 
     @Override
     public String toString() {
-        return "SensorState{" + "dark=" + dark + ", daylight=" + daylight + ", lightlevel=" + lightlevel + ", lux="
-                + lux + ", temperature=" + temperature + ", humidity=" + humidity + ", open=" + open + ", fire=" + fire
-                + ", water=" + water + ", alarm=" + alarm + ", tampered=" + tampered + ", vibration=" + vibration
-                + ", carbonmonoxide=" + carbonmonoxide + ", airquality=" + airquality + ", airqualityppb="
-                + airqualityppb + ", pressure=" + pressure + ", presence=" + presence + ", power=" + power
-                + ", battery=" + battery + ", consumption=" + consumption + ", voltage=" + voltage + ", current="
-                + current + ", status=" + status + ", buttonevent=" + buttonevent + ", gesture=" + gesture + ", valve="
-                + valve + ", windowopen='" + windowopen + '\'' + ", lastupdated='" + lastupdated + '\'' + ", xy="
-                + Arrays.toString(xy) + '}';
+        return "SensorState{" + "airquality='" + airquality + "'" + ", airqualityppb=" + airqualityppb + ", alarm="
+                + alarm + ", battery=" + battery + ", buttonevent=" + buttonevent + ", carbonmonoxide=" + carbonmonoxide
+                + ", consumption=" + consumption + ", consumption2=" + consumption2 + ", current=" + current + ", dark="
+                + dark + ", daylight=" + daylight + ", fire=" + fire + ", gesture=" + gesture + ", humidity=" + humidity
+                + ", lastupdated='" + lastupdated + "'" + ", lightlevel=" + lightlevel + ", lowbattery=" + lowbattery
+                + ", lux=" + lux + ", moisture=" + moisture + ", on=" + on + ", open=" + open + ", orientation="
+                + Arrays.toString(orientation) + ", power=" + power + ", presence=" + presence + ", pressure="
+                + pressure + ", status=" + status + ", tampered=" + tampered + ", temperature=" + temperature
+                + ", tiltangle=" + tiltangle + ", valve=" + valve + ", vibration=" + vibration + ", vibrationstrength="
+                + vibrationstrength + ", voltage=" + voltage + ", water=" + water + ", windowopen='" + windowopen + "'"
+                + ", xy=" + Arrays.toString(xy) + "}";
     }
 }

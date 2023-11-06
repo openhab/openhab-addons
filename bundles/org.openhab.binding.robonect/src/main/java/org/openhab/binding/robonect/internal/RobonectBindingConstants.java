@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 public class RobonectBindingConstants {
 
-    private static final String BINDING_ID = "robonect";
+    public static final String BINDING_ID = "robonect";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "mower");

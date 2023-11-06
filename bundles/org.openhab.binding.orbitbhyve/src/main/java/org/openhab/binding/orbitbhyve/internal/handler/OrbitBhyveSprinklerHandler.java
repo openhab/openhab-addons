@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,8 +81,8 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
                 handler.stopWatering(deviceId);
                 return;
             }
-            if (CHANNEL_WATERING_TIME.equals(channelUID.getId()) && command instanceof QuantityType) {
-                final QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.MINUTE);
+            if (CHANNEL_WATERING_TIME.equals(channelUID.getId()) && command instanceof QuantityType quantityCommand) {
+                final QuantityType<?> value = quantityCommand.toUnit(Units.MINUTE);
                 if (value != null) {
                     wateringTime = value.intValue();
                 }

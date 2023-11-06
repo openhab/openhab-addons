@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.boschshc.internal.services.intrusion;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,23 +36,21 @@ import com.google.gson.JsonParser;
 
 /**
  * Unit tests for {@link IntrusionDetectionControlStateService}.
- * 
+ *
  * @author David Pace - Initial contribution
  *
  */
+@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 class IntrusionDetectionControlStateServiceTest {
 
-    private IntrusionDetectionControlStateService fixture;
+    private @NonNullByDefault({}) IntrusionDetectionControlStateService fixture;
 
-    @Mock
-    private BridgeHandler bridgeHandler;
+    private @Mock @NonNullByDefault({}) BridgeHandler bridgeHandler;
 
-    @Mock
-    private Consumer<IntrusionDetectionControlState> consumer;
+    private @Mock @NonNullByDefault({}) Consumer<IntrusionDetectionControlState> consumer;
 
-    @Mock
-    private IntrusionDetectionControlState testState;
+    private @Mock @NonNullByDefault({}) IntrusionDetectionControlState testState;
 
     @BeforeEach
     void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
@@ -90,13 +86,35 @@ class IntrusionDetectionControlStateServiceTest {
 
     @Test
     void onStateUpdate() {
-        final String json = "{\n" + "\"@type\": \"intrusionDetectionControlState\",\n" + "\"activeProfile\": \"0\",\n"
-                + "\"alarmActivationDelayTime\": 30,\n" + "\"actuators\": [\n" + "{\n" + "\"readonly\": false,\n"
-                + "\"active\": true,\n" + "\"id\": \"intrusion:video\"\n" + "},\n" + "{\n" + "\"readonly\": false,\n"
-                + "\"active\": false,\n" + "\"id\": \"intrusion:siren\"\n" + "}\n" + "],\n"
-                + "\"remainingTimeUntilArmed\": 28959,\n" + "\"armActivationDelayTime\": 30,\n" + "\"triggers\": [\n"
-                + "{\n" + "\"readonly\": false,\n" + "\"active\": true,\n" + "\"id\": \"hdm:ZigBee:000d6f0422f42378\"\n"
-                + "}\n" + "],\n" + "\"value\": \"SYSTEM_ARMING\"\n" + "}";
+        final String json = """
+                {
+                    "@type":"intrusionDetectionControlState",
+                    "activeProfile":"0",
+                    "alarmActivationDelayTime":30,
+                    "actuators":[
+                        {
+                            "readonly":false,
+                            "active":true,
+                            "id":"intrusion:video"
+                        },
+                        {
+                            "readonly":false,
+                            "active":false,
+                            "id":"intrusion:siren"
+                        }
+                    ],
+                    "remainingTimeUntilArmed":28959,
+                    "armActivationDelayTime":30,
+                    "triggers":[
+                        {
+                            "readonly":false,
+                            "active":true,
+                            "id":"hdm:ZigBee:000d6f0422f42378"
+                        }
+                    ],
+                    "value":"SYSTEM_ARMING"
+                }\
+                """;
         JsonElement jsonElement = JsonParser.parseString(json);
         fixture.onStateUpdate(jsonElement);
         verify(consumer).accept(any());

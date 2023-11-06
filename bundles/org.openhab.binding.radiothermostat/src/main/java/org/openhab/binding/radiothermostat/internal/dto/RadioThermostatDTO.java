@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ package org.openhab.binding.radiothermostat.internal.dto;
  * @author Michael Lobstein - Initial contribution
  */
 public class RadioThermostatDTO {
-    private RadioThermostatTstatDTO thermostatData;
+    private RadioThermostatTstatDTO thermostatData = new RadioThermostatTstatDTO();
     private Integer humidity;
     private RadioThermostatRuntimeDTO runtime;
 

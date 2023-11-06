@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,7 @@ public class XiaomiItemDiscoveryService extends AbstractDiscoveryService impleme
 
     @Override
     public void onItemUpdate(String sid, String command, JsonObject data) {
-        if (command.equals("read_ack") || command.equals("report") || command.equals("heartbeat")) {
+        if ("read_ack".equals(command) || "report".equals(command) || "heartbeat".equals(command)) {
             String model = data.get("model").getAsString();
 
             ThingTypeUID thingType = getThingTypeForModel(model);

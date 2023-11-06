@@ -36,6 +36,13 @@
 		<category>Heating</category>
 	</channel-type>
 
+	<channel-type id="rawFanSpeedChannelType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Raw Fan Speed</label>
+		<description>Sets fan speed using raw Bond values</description>
+		<category>Heating</category>
+	</channel-type>
+
 	<channel-type id="breezeStateChannelType">
 		<item-type>Switch</item-type>
 		<label>Breeze Mode</label>

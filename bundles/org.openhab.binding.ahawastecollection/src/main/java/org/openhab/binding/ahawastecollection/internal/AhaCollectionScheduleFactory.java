@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,6 @@ public interface AhaCollectionScheduleFactory {
     /**
      * Creates a new {@link AhaCollectionSchedule} for the given location.
      */
-    public AhaCollectionSchedule create(final String commune, final String street, final String houseNumber,
+    AhaCollectionSchedule create(final String commune, final String street, final String houseNumber,
             final String houseNumberAddon, final String collectionPlace);
 }

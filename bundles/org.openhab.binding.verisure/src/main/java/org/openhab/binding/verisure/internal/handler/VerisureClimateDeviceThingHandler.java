@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,7 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
 
     private void updateClimateDeviceState(VerisureClimatesDTO climateJSON) {
         getThing().getChannels().stream().map(Channel::getUID)
-                .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                .filter(channelUID -> isLinked(channelUID) && !"timestamp".equals(channelUID.getId()))
                 .forEach(channelUID -> {
                     State state = getValue(channelUID.getId(), climateJSON);
                     updateState(channelUID, state);

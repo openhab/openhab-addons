@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,9 +83,10 @@ public class KM200Cryption {
         try {
             /* Check whether the length of the decryptData is NOT multiplies of 16 */
             if ((decodedB64.length & 0xF) != 0) {
+                logger.debug("Length of message is {}.", decodedB64.length);
                 /* Return the data */
                 retString = new String(decodedB64, remoteDevice.getCharSet());
-                logger.debug("Did NOT decrypt message");
+                logger.debug("Did NOT decrypt message, returning {}.", retString);
                 return retString;
             }
             // --- create cipher
@@ -95,7 +96,7 @@ public class KM200Cryption {
             byte[] decryptedDataWOZP = removeZeroPadding(decryptedData);
             return (new String(decryptedDataWOZP, remoteDevice.getCharSet()));
         } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            logger.warn("Exception on encoding", e);
+            logger.warn("Exception on encoding ({})", e.getMessage());
             return null;
         }
     }
@@ -119,7 +120,7 @@ public class KM200Cryption {
                 logger.debug("Base64encoding not possible: {}", e.getMessage());
             }
         } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            logger.warn("Exception on encoding", e);
+            logger.warn("Exception on encoding ({})", e.getMessage());
         }
         return null;
     }

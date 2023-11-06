@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Thrown when the API returns an unknown error.
@@ -28,5 +29,9 @@ public class ApiException extends Exception {
 
     public ApiException(String message) {
         super(message);
+    }
+
+    public ApiException(String message, @Nullable Throwable e) {
+        super(message, e);
     }
 }

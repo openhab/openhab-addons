@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,8 +56,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     /**
      * INIT CLASS
-     * 
-     * @param bridgeHandler
      */
     public TapoDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_S, false);
@@ -84,8 +82,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TapoBridgeHandler) {
-            TapoBridgeHandler tapoBridge = (TapoBridgeHandler) handler;
+        if (handler instanceof TapoBridgeHandler tapoBridge) {
             tapoBridge.setDiscoveryService(this);
             this.bridge = tapoBridge;
         }
@@ -131,17 +128,17 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         TapoBridgeHandler tapoBridge = this.bridge;
         String deviceModel = getDeviceModel(device);
         String label = getDeviceLabel(device);
-        String deviceMAC = device.get(CLOUD_PROPERTY_MAC).getAsString();
+        String deviceMAC = device.get(CLOUD_JSON_KEY_MAC).getAsString();
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, deviceModel);
 
         /* create properties */
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_VENDOR, DEVICE_VENDOR);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, formatMac(deviceMAC, MAC_DIVISION_CHAR));
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.get(CLOUD_PROPERTY_FW).getAsString());
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.get(CLOUD_PROPERTY_HW).getAsString());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.get(CLOUD_JSON_KEY_FW).getAsString());
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.get(CLOUD_JSON_KEY_HW).getAsString());
         properties.put(Thing.PROPERTY_MODEL_ID, deviceModel);
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.get(CLOUD_PROPERTY_ID).getAsString());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.get(CLOUD_JSON_KEY_ID).getAsString());
 
         logger.debug("device {} discovered", deviceModel);
         if (tapoBridge != null) {
@@ -190,7 +187,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      */
     protected String getDeviceModel(JsonObject device) {
         try {
-            String deviceModel = device.get(CLOUD_PROPERTY_MODEL).getAsString();
+            String deviceModel = device.get(CLOUD_JSON_KEY_MODEL).getAsString();
             deviceModel = deviceModel.replaceAll("\\(.*\\)", ""); // replace (DE)
             deviceModel = deviceModel.replace("Tapo", "");
             deviceModel = deviceModel.replace("Series", "");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.robonect.internal;
 
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.THING_TYPE_AUTOMOWER;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.robonect.internal.handler.RobonectHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -36,18 +36,19 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.robonect")
 public class RobonectHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AUTOMOWER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AUTOMOWER);
 
-    private HttpClient httpClient;
+    private HttpClientFactory httpClientFactory;
     private TimeZoneProvider timeZoneProvider;
 
     @Activate
     public RobonectHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TimeZoneProvider timeZoneProvider) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -57,11 +58,11 @@ public class RobonectHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_AUTOMOWER)) {
-            return new RobonectHandler(thing, httpClient, timeZoneProvider);
+            return new RobonectHandler(thing, httpClientFactory, timeZoneProvider);
         }
 
         return null;

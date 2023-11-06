@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -202,17 +202,17 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     updateState(channelUID, new StringType(String.valueOf(-1)));
                     break;
                 case PANEL_TIME_STAMP:
-                    if (command instanceof OnOffType) {
+                    if (command instanceof OnOffType onOffCommand) {
                         cmd = command == OnOffType.ON ? 1 : 0;
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.TimeStampControl, String.valueOf(cmd));
-                        updateState(channelUID, (OnOffType) command);
+                        updateState(channelUID, onOffCommand);
                     }
                     break;
                 case PANEL_TIME_BROADCAST:
-                    if (command instanceof OnOffType) {
+                    if (command instanceof OnOffType onOffCommand) {
                         cmd = command == OnOffType.ON ? 1 : 0;
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.TimeDateBroadcastControl, String.valueOf(cmd));
-                        updateState(channelUID, (OnOffType) command);
+                        updateState(channelUID, onOffCommand);
                     }
                     break;
                 default:
@@ -380,7 +380,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         String[] channelTypes = { PANEL_SERVICE_REQUIRED, PANEL_AC_TROUBLE, PANEL_TELEPHONE_TROUBLE, PANEL_FTC_TROUBLE,
                 PANEL_ZONE_FAULT, PANEL_ZONE_TAMPER, PANEL_ZONE_LOW_BATTERY, PANEL_TIME_LOSS };
 
-        String channel;
         ChannelUID channelUID = null;
 
         int bitCount = 8;

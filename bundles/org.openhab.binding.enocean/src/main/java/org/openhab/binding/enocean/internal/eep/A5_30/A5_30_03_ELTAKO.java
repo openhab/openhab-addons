@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -27,6 +29,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_30_03_ELTAKO extends A5_30_03 {
 
     protected static final byte ALARM_ON = 0x0F;
@@ -46,8 +49,8 @@ public class A5_30_03_ELTAKO extends A5_30_03 {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-        byte db1 = getDB_1();
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+        byte db1 = getDB1();
         switch (channelId) {
             case CHANNEL_SMOKEDETECTION:
                 return db1 == ALARM_ON ? OnOffType.ON : (db1 == ALARM_OFF ? OnOffType.OFF : UnDefType.UNDEF);

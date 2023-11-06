@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,8 +61,8 @@ public class LeapDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof LeapBridgeHandler) {
-            bridgeHandler = (LeapBridgeHandler) handler;
+        if (handler instanceof LeapBridgeHandler leapBridgeHandler) {
+            bridgeHandler = leapBridgeHandler;
             bridgeHandler.setDiscoveryService(this);
         }
     }
@@ -91,6 +91,11 @@ public class LeapDeviceDiscoveryService extends AbstractDiscoveryService
                         case "RA2SelectMainRepeater":
                             notifyDiscovery(THING_TYPE_VIRTUALKEYPAD, deviceId, label, "model", "Caseta");
                             break;
+                        case "RadioRa3Processor":
+                            notifyDiscovery(THING_TYPE_VIRTUALKEYPAD, deviceId, label, "model", "RadioRA 3");
+                            break;
+                        case "MaestroDimmer":
+                        case "SunnataDimmer":
                         case "WallDimmer":
                         case "PlugInDimmer":
                             notifyDiscovery(THING_TYPE_DIMMER, deviceId, label);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,8 @@ public interface ModbusEndpointThingHandler extends Identifiable<ThingUID> {
      *
      * @return communication interface represented by this thing handler
      */
-    public @Nullable ModbusCommunicationInterface getCommunicationInterface();
+    @Nullable
+    ModbusCommunicationInterface getCommunicationInterface();
 
     /**
      * Get Slave ID, also called as unit id, represented by the thing
@@ -42,12 +43,12 @@ public interface ModbusEndpointThingHandler extends Identifiable<ThingUID> {
      * @return slave id represented by this thing handler
      * @throws EndpointNotInitializedException in case the initialization is not complete
      */
-    public int getSlaveId() throws EndpointNotInitializedException;
+    int getSlaveId() throws EndpointNotInitializedException;
 
     /**
      * Return true if auto discovery is enabled for this endpoint
      *
      * @return boolean true if the discovery is enabled
      */
-    public boolean isDiscoveryEnabled();
+    boolean isDiscoveryEnabled();
 }

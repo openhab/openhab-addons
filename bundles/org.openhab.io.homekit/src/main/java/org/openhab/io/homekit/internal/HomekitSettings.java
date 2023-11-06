@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,20 +34,6 @@ public class HomekitSettings {
     public boolean useFahrenheitTemperature = false;
     public boolean useOHmDNS = false;
     public boolean blockUserDeletion = false;
-    public String thermostatTargetModeHeat = "HeatOn";
-    public String thermostatTargetModeCool = "CoolOn";
-    public String thermostatTargetModeAuto = "Auto";
-    public String thermostatTargetModeOff = "Off";
-    public String thermostatCurrentModeHeating = "HeatOn";
-    public String thermostatCurrentModeCooling = "CoolOn";
-    public String thermostatCurrentModeOff = "Off";
-    public String doorCurrentStateOpen = "OPEN";
-    public String doorCurrentStateOpening = "OPENING";
-    public String doorCurrentStateClosed = "CLOSED";
-    public String doorCurrentStateClosing = "CLOSING";
-    public String doorCurrentStateStopped = "STOPPED";
-    public String doorTargetStateClosed = "CLOSED";
-    public String doorTargetStateOpen = "OPEN";
     public String networkInterface;
 
     @Override
@@ -57,15 +43,12 @@ public class HomekitSettings {
         result = prime * result + ((pin == null) ? 0 : pin.hashCode());
         result = prime * result + ((setupId == null) ? 0 : setupId.hashCode());
         result = prime * result + port;
-        result = prime * result + ((thermostatTargetModeAuto == null) ? 0 : thermostatTargetModeAuto.hashCode());
-        result = prime * result + ((thermostatTargetModeCool == null) ? 0 : thermostatTargetModeCool.hashCode());
-        result = prime * result + ((thermostatTargetModeHeat == null) ? 0 : thermostatTargetModeHeat.hashCode());
-        result = prime * result + ((thermostatTargetModeOff == null) ? 0 : thermostatTargetModeOff.hashCode());
         result = prime * result + (useFahrenheitTemperature ? 1231 : 1237);
         result = prime * result + (useDummyAccessories ? 1249 : 1259);
         return result;
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -95,34 +78,6 @@ public class HomekitSettings {
             return false;
         }
         if (instances != other.instances) {
-            return false;
-        }
-        if (thermostatTargetModeAuto == null) {
-            if (other.thermostatTargetModeAuto != null) {
-                return false;
-            }
-        } else if (!thermostatTargetModeAuto.equals(other.thermostatTargetModeAuto)) {
-            return false;
-        }
-        if (thermostatTargetModeCool == null) {
-            if (other.thermostatTargetModeCool != null) {
-                return false;
-            }
-        } else if (!thermostatTargetModeCool.equals(other.thermostatTargetModeCool)) {
-            return false;
-        }
-        if (thermostatTargetModeHeat == null) {
-            if (other.thermostatTargetModeHeat != null) {
-                return false;
-            }
-        } else if (!thermostatTargetModeHeat.equals(other.thermostatTargetModeHeat)) {
-            return false;
-        }
-        if (thermostatTargetModeOff == null) {
-            if (other.thermostatTargetModeOff != null) {
-                return false;
-            }
-        } else if (!thermostatTargetModeOff.equals(other.thermostatTargetModeOff)) {
             return false;
         }
         if (useFahrenheitTemperature != other.useFahrenheitTemperature) {

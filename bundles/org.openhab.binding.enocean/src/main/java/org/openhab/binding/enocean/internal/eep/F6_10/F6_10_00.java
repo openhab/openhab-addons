@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -29,12 +31,13 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class F6_10_00 extends _RPSMessage {
 
-    public final byte Closed = (byte) 0xF0; // 1111xxxx
-    public final byte Open1 = (byte) 0xE0; // 1110xxxx
-    public final byte Open2 = (byte) 0xC0; // 1100xxxx
-    public final byte Tilted = (byte) 0xD0; // 1101xxxx
+    public static final byte CLOSED = (byte) 0xF0; // 1111xxxx
+    public static final byte OPEN_1 = (byte) 0xE0; // 1110xxxx
+    public static final byte OPEN_2 = (byte) 0xC0; // 1100xxxx
+    public static final byte TILTED = (byte) 0xD0; // 1101xxxx
 
     public F6_10_00() {
         super();
@@ -46,28 +49,27 @@ public class F6_10_00 extends _RPSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         byte data = (byte) (bytes[0] & 0xF0);
 
         // todo localization
         switch (channelId) {
             case CHANNEL_WINDOWHANDLESTATE:
-                if (data == Closed) {
+                if (data == CLOSED) {
                     return new StringType("CLOSED");
-                } else if (data == Tilted) {
+                } else if (data == TILTED) {
                     return new StringType("TILTED");
-                } else if (data == Open1 || data == Open2) {
+                } else if (data == OPEN_1 || data == OPEN_2) {
                     return new StringType("OPEN");
                 }
 
             case CHANNEL_CONTACT:
                 EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
-                if (data == Closed) {
+                if (data == CLOSED) {
                     return c.inverted ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-                } else if (data == Tilted) {
+                } else if (data == TILTED) {
                     return c.inverted ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-                } else if (data == Open1 || data == Open2) {
+                } else if (data == OPEN_1 || data == OPEN_2) {
                     return c.inverted ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                 }
         }

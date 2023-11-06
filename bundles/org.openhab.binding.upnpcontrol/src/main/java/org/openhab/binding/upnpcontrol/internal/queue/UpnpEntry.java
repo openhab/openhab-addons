@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,14 @@ package org.openhab.binding.upnpcontrol.internal.queue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.util.StringUtils;
 
 /**
  *
@@ -178,7 +179,7 @@ public class UpnpEntry {
      * @return the URI for the album art.
      */
     public String getAlbumArtUri() {
-        return StringEscapeUtils.unescapeXml(albumArtUri);
+        return Objects.requireNonNull(StringUtils.unEscapeXml(albumArtUri));
     }
 
     /**

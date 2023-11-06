@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,11 +45,9 @@ public class Util {
         String contentString = contentProvider == null ? "null"
                 : StreamSupport.stream(contentProvider.spliterator(), false)
                         .map(b -> StandardCharsets.UTF_8.decode(b).toString()).collect(Collectors.joining(", "));
-        String logString = "Method = {" + request.getMethod() + "}, Headers = {"
+        return "Method = {" + request.getMethod() + "}, Headers = {"
                 + request.getHeaders().stream().map(HttpField::toString).collect(Collectors.joining(", "))
                 + "}, Content = {" + contentString + "}";
-
-        return logString;
     }
 
     /**

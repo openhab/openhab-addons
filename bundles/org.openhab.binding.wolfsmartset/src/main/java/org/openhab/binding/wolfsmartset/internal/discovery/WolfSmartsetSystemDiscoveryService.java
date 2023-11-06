@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,8 +57,8 @@ public class WolfSmartsetSystemDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof WolfSmartsetSystemBridgeHandler) {
-            this.bridgeHandler = (WolfSmartsetSystemBridgeHandler) handler;
+        if (handler instanceof WolfSmartsetSystemBridgeHandler systemBridgeHandler) {
+            this.bridgeHandler = systemBridgeHandler;
         }
     }
 
@@ -151,7 +151,7 @@ public class WolfSmartsetSystemDiscoveryService extends AbstractDiscoveryService
         properties.put(CONFIG_UNIT_ID, unit.menuItemTabViewDTO.bundleId.toString());
         var tabName = unit.menuItemTabViewDTO.tabName;
         var menuName = unit.subMenuEntryDTO.getName();
-        tabName = tabName.isEmpty() || tabName.equalsIgnoreCase("NULL") || menuName.equalsIgnoreCase(tabName) ? ""
+        tabName = tabName.isEmpty() || "NULL".equalsIgnoreCase(tabName) || menuName.equalsIgnoreCase(tabName) ? ""
                 : "-" + tabName;
 
         return DiscoveryResultBuilder.create(unitUID).withProperties(properties)

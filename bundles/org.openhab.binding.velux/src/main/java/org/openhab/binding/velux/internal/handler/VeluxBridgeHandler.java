@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -163,6 +165,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     private VeluxBridgeConfiguration veluxBridgeConfiguration = new VeluxBridgeConfiguration();
 
     private Duration offlineDelay = Duration.ofMinutes(5);
+    private int initializeRetriesDone = 0;
 
     /*
      * ************************
@@ -298,6 +301,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         offlineDelay = Duration.ofMillis(
                 ((long) Math.pow(2, veluxBridgeConfiguration.retries + 1) - 1) * veluxBridgeConfiguration.refreshMSecs);
 
+        initializeRetriesDone = 0;
+
         scheduler.execute(() -> {
             disposing = false;
             initializeSchedulerJob();
@@ -315,6 +320,17 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         synchronized (LOCK_MODIFIER.concat(veluxBridgeConfiguration.ipAddress).intern()) {
             logger.trace("initializeSchedulerJob(): adopt new bridge configuration parameters.");
             bridgeParamsUpdated();
+
+            if ((thing.getStatus() == ThingStatus.OFFLINE)
+                    && (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)) {
+                if (initializeRetriesDone <= veluxBridgeConfiguration.retries) {
+                    initializeRetriesDone++;
+                    scheduler.schedule(() -> initializeSchedulerJob(),
+                            ((long) Math.pow(2, initializeRetriesDone) * veluxBridgeConfiguration.timeoutMsecs),
+                            TimeUnit.MILLISECONDS);
+                }
+                return;
+            }
 
             long mSecs = veluxBridgeConfiguration.refreshMSecs;
             logger.trace("initializeSchedulerJob(): scheduling refresh at {} milliseconds.", mSecs);
@@ -448,7 +464,16 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             logger.trace("bridgeParamsUpdated() done.");
             return;
         }
-
+        try {
+            InetAddress bridgeAddress = InetAddress.getByName(veluxBridgeConfiguration.ipAddress);
+            if (!bridgeAddress.isReachable(veluxBridgeConfiguration.timeoutMsecs)) {
+                throw new IOException();
+            }
+        } catch (IOException e) {
+            logger.debug("bridgeParamsUpdated(): Bridge ip address not reachable.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
         logger.trace("bridgeParamsUpdated(): Trying to authenticate towards bridge.");
 
         if (!thisBridge.bridgeLogin()) {
@@ -549,6 +574,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             ProductBridgeIndex productPbi = product.getBridgeProductIndex();
             logger.trace("syncChannelsWithProducts(): bridge index is {}.", productPbi);
             for (ChannelUID channelUID : BridgeChannels.getAllLinkedChannelUIDs(this)) {
+                if (!VeluxBindingConstants.POSITION_CHANNELS.contains(channelUID.getId())) {
+                    logger.trace("syncChannelsWithProducts(): skipping channel {}.", channelUID);
+                    continue;
+                }
                 if (!channel2VeluxActuator.containsKey(channelUID)) {
                     logger.trace("syncChannelsWithProducts(): channel {} not found.", channelUID);
                     continue;
@@ -885,7 +914,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * Exported method (called by an OpenHAB Rules Action) to move an actuator relative to its current position
      *
      * @param nodeId the node to be moved
-     * @param relativePercent relative position change to the current position (-100% <= relativePercent <= +100%)
+     * @param relativePercent relative position change to the current position
+     *            ({@code -100% <= relativePercent <= +100%})
      * @return true if the command could be issued
      */
     public boolean moveRelative(int nodeId, int relativePercent) {
@@ -1000,8 +1030,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     private void updateDynamicChannels() {
         getThing().getThings().stream().forEach(thing -> {
             ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler instanceof VeluxHandler) {
-                ((VeluxHandler) thingHandler).updateDynamicChannels(this);
+            if (thingHandler instanceof VeluxHandler veluxHandler) {
+                veluxHandler.updateDynamicChannels(this);
             }
         });
     }

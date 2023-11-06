@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 
 /**
@@ -29,19 +30,23 @@ import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 @NonNullByDefault
 public interface LeapMessageParserCallbacks {
 
-    public void validMessageReceived(String communiqueType);
+    void handleProjectDefinition(Project project);
 
-    public void handleEmptyButtonGroupDefinition();
+    void handleDeviceDefinition(Device device);
 
-    public void handleZoneUpdate(ZoneStatus zoneStatus);
+    void validMessageReceived(String communiqueType);
 
-    public void handleGroupUpdate(int groupNumber, String occupancyStatus);
+    void handleEmptyButtonGroupDefinition();
 
-    public void handleMultipleButtonGroupDefinition(List<ButtonGroup> buttonGroupList);
+    void handleZoneUpdate(ZoneStatus zoneStatus);
 
-    public void handleMultipleDeviceDefintion(List<Device> deviceList);
+    void handleGroupUpdate(int groupNumber, String occupancyStatus);
 
-    public void handleMultipleAreaDefinition(List<Area> areaList);
+    void handleMultipleButtonGroupDefinition(List<ButtonGroup> buttonGroupList);
 
-    public void handleMultipleOccupancyGroupDefinition(List<OccupancyGroup> oGroupList);
+    void handleMultipleDeviceDefinition(List<Device> deviceList);
+
+    void handleMultipleAreaDefinition(List<Area> areaList);
+
+    void handleMultipleOccupancyGroupDefinition(List<OccupancyGroup> oGroupList);
 }

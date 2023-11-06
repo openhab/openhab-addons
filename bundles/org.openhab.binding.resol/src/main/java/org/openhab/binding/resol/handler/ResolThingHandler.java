@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,8 +113,8 @@ public class ResolThingHandler extends ResolBaseThingHandler {
         ResolBridgeHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof ResolBridgeHandler) {
-            bridgeHandler = (ResolBridgeHandler) handler;
+        if (handler instanceof ResolBridgeHandler resolBridgeHandler) {
+            bridgeHandler = resolBridgeHandler;
         } else {
             logger.debug("No available bridge handler found yet. Bridge: {} .", bridge.getUID());
         }
@@ -308,6 +308,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
     }
 
     /* check if the given value is a special one like 888.8 or 999.9 for shortcut or open load on a sensor wire */
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     private boolean isSpecialValue(Double dd) {
         if ((Math.abs(dd - 888.8) < 0.1) || (Math.abs(dd - (-888.8)) < 0.1)) {
             /* value out of range */

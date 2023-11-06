@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,18 +44,19 @@ import org.slf4j.LoggerFactory;
 public class RadioThermostatConnector {
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatConnector.class);
 
-    private static final String URL = "http://%hostName%/%resource%";
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
+    private static final String URL = "http://%s/%s";
 
     private final HttpClient httpClient;
     private final List<RadioThermostatEventListener> listeners = new CopyOnWriteArrayList<>();
 
-    private @Nullable String hostName;
+    private String hostName = BLANK;
 
     public RadioThermostatConnector(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
-    public void setThermostatHostName(@Nullable String hostName) {
+    public void setThermostatHostName(String hostName) {
         this.hostName = hostName;
     }
 
@@ -81,31 +82,28 @@ public class RadioThermostatConnector {
      * Send an asynchronous http call to the thermostat, the response will be send to the
      * event listeners as a RadioThermostat event when it is finally received
      *
-     * @param resouce the url of the json resource on the thermostat
+     * @param resource the url of the json resource on the thermostat
      */
     public void getAsyncThermostatData(String resource) {
-        String urlStr = buildRequestURL(resource);
-
-        httpClient.newRequest(urlStr).method(GET).timeout(30, TimeUnit.SECONDS).send(new BufferingResponseListener() {
-            @Override
-            public void onComplete(@Nullable Result result) {
-                if (result != null && !result.isFailed()) {
-                    String response = getContentAsString();
-                    logger.debug("thermostatResponse = {}", response);
-                    dispatchKeyValue(resource, response);
-                } else {
-                    dispatchKeyValue(KEY_ERROR, "");
-                }
-            }
-        });
+        httpClient.newRequest(buildRequestURL(resource)).method(GET).timeout(30, TimeUnit.SECONDS)
+                .send(new BufferingResponseListener() {
+                    @Override
+                    public void onComplete(@Nullable Result result) {
+                        if (result != null && !result.isFailed()) {
+                            dispatchKeyValue(resource, getContentAsString());
+                        } else {
+                            dispatchKeyValue(KEY_ERROR, BLANK);
+                        }
+                    }
+                });
     }
 
     /**
      * Sends a command to the thermostat
      *
-     * @param the JSON attribute key for the value to be updated
-     * @param the value to be updated in the thermostat
-     * @param the end point URI to use for the command
+     * @param cmdKey the JSON attribute key for the value to be updated
+     * @param cmdVal the value to be updated in the thermostat
+     * @param resource the end point URI to use for the command
      * @return the JSON response string from the thermostat
      */
     public String sendCommand(String cmdKey, @Nullable String cmdVal, String resource) {
@@ -115,38 +113,38 @@ public class RadioThermostatConnector {
     /**
      * Sends a command to the thermostat
      *
-     * @param the JSON attribute key for the value to be updated
-     * @param the value to be updated in the thermostat
-     * @param JSON string to send directly to the thermostat instead of a key/value pair
-     * @param the end point URI to use for the command
+     * @param cmdKey the JSON attribute key for the value to be updated
+     * @param cmdVal the value to be updated in the thermostat
+     * @param cmdJson JSON string to send directly to the thermostat instead of a key/value pair
+     * @param resource the end point URI to use for the command
      * @return the JSON response string from the thermostat
      */
     public String sendCommand(@Nullable String cmdKey, @Nullable String cmdVal, @Nullable String cmdJson,
             String resource) {
         // if we got a cmdJson string send that, otherwise build the json from the key and val params
         String postJson = cmdJson != null ? cmdJson : "{\"" + cmdKey + "\":" + cmdVal + "}";
-        String urlStr = buildRequestURL(resource);
-
-        String output = "";
 
         try {
-            Request request = httpClient.POST(urlStr);
+            Request request = httpClient.POST(buildRequestURL(resource)).timeout(REQUEST_TIMEOUT_MS,
+                    TimeUnit.MILLISECONDS);
             request.header(HttpHeader.ACCEPT, "text/plain");
             request.header(HttpHeader.CONTENT_TYPE, "text/plain");
             request.content(new StringContentProvider(postJson), "application/json");
+            logger.trace("Sending POST request to '{}', data: {}", resource, postJson);
 
             ContentResponse contentResponse = request.send();
-            int httpStatus = contentResponse.getStatus();
 
-            if (httpStatus != OK_200) {
-                throw new RadioThermostatHttpException("Thermostat HTTP response code was: " + httpStatus);
+            if (contentResponse.getStatus() != OK_200) {
+                throw new RadioThermostatHttpException(
+                        "Thermostat HTTP response code was: " + contentResponse.getStatus());
             }
-            output = contentResponse.getContentAsString();
-        } catch (RadioThermostatHttpException | InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error executing thermostat command: {}, {}", postJson, e.getMessage());
-        }
 
-        return output;
+            logger.trace("Response: {}", contentResponse.getContentAsString());
+            return contentResponse.getContentAsString();
+        } catch (RadioThermostatHttpException | InterruptedException | TimeoutException | ExecutionException e) {
+            logger.debug("Error executing thermostat command: {}, {}", postJson, e.getMessage());
+            return BLANK;
+        }
     }
 
     /**
@@ -155,14 +153,7 @@ public class RadioThermostatConnector {
      * @return a valid URL for the thermostat's JSON interface
      */
     private String buildRequestURL(String resource) {
-        String hostName = this.hostName;
-        if (hostName == null) {
-            throw new IllegalStateException("hostname must not be null");
-        }
-        String urlStr = URL.replace("%hostName%", hostName);
-        urlStr = urlStr.replace("%resource%", resource);
-
-        return urlStr;
+        return String.format(URL, hostName, resource);
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,23 +87,23 @@ public class OmnikInverterMessage {
     }
 
     /**
-     * @return the amperage for AC1
+     * @return the current for AC1
      */
-    public double getAmperageAC1() {
+    public double getCurrentAC1() {
         return getShort(45, 10);
     }
 
     /**
-     * @return the amperage for AC2
+     * @return the current for AC2
      */
-    public double getAmperageAC2() {
+    public double getCurrentAC2() {
         return getShort(47, 10);
     }
 
     /**
-     * @return the amperage for AC3
+     * @return the current for AC3
      */
-    public double getAmperageAC3() {
+    public double getCurrentAC3() {
         return getShort(49, 10);
     }
 
@@ -141,7 +141,7 @@ public class OmnikInverterMessage {
      * @deprecated
      */
     public double getPower() {
-        return getShort(59, 1);
+        return getPowerAC1();
     }
 
     /**
@@ -193,5 +193,21 @@ public class OmnikInverterMessage {
      */
     public double getTotalEnergy() {
         return getInt(71, 10);
+    }
+
+    /**
+     *
+     * @return the current temperature in Celsius
+     */
+    public double getTemperature() {
+        return getShort(31, 10);
+    }
+
+    /**
+     *
+     * @return the total amount of hours the inverter produced energy
+     */
+    public double getHoursTotal() {
+        return getInt(75, 1);
     }
 }

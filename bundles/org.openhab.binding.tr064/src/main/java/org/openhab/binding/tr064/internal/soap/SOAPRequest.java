@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,6 @@ public class SOAPRequest {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         SOAPRequest that = (SOAPRequest) o;
 
         if (!service.equals(that.service)) {
@@ -57,6 +56,7 @@ public class SOAPRequest {
         if (!soapAction.equals(that.soapAction)) {
             return false;
         }
+
         return arguments.equals(that.arguments);
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matthew Skinner - Initial contribution
  */
-
 @NonNullByDefault
 public class StreamOutput {
     public final Logger logger = LoggerFactory.getLogger(getClass());
@@ -79,7 +78,7 @@ public class StreamOutput {
         try {
             fifo.add(frame);
         } catch (IllegalStateException e) {
-            logger.debug("FIFO buffer has run out of space:{}", e.getMessage());
+            logger.debug("FIFO buffer has run out of space: {}", e.getMessage());
             fifo.remove();
             fifo.add(frame);
         }

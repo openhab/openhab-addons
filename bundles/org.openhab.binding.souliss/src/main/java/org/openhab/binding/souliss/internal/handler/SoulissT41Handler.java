@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,8 +75,8 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     }
 
     public void setState(PrimitiveType state) {
-        if (state instanceof OnOffType) {
-            this.updateState(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL, (OnOffType) state);
+        if (state instanceof OnOffType onOffState) {
+            this.updateState(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL, onOffState);
         } else if (state instanceof StringType) {
             switch (String.valueOf(state)) {
                 case SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL:

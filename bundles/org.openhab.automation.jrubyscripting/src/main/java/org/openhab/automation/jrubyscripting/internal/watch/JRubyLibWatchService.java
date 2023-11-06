@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,47 +12,48 @@
  */
 package org.openhab.automation.jrubyscripting.internal.watch;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import static org.openhab.core.service.WatchService.Kind.*;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.WatchEvent;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.service.AbstractWatchService;
+import org.openhab.core.service.WatchService;
+import org.openhab.core.service.WatchService.Kind;
 
 /**
  * Watches a Ruby lib dir
  *
  * @author Cody Cutrer - Initial contribution
+ * @author Jan N. Klug - Refactored to new WatchService
  */
 @NonNullByDefault
-public class JRubyLibWatchService extends AbstractWatchService {
-    private JRubyDependencyTracker dependencyTracker;
+public class JRubyLibWatchService implements JRubyWatchService, WatchService.WatchEventListener {
+    private final JRubyDependencyTracker dependencyTracker;
+    private final WatchService watchService;
+    private final List<Path> paths;
 
-    JRubyLibWatchService(String path, JRubyDependencyTracker dependencyTracker) {
-        super(path);
+    JRubyLibWatchService(WatchService watchService, List<Path> paths, JRubyDependencyTracker dependencyTracker) {
+        this.watchService = watchService;
         this.dependencyTracker = dependencyTracker;
+        this.paths = paths;
     }
 
     @Override
-    protected boolean watchSubDirectories() {
-        return true;
+    public void activate() {
+        watchService.registerListener(this, paths);
     }
 
     @Override
-    protected WatchEvent.Kind<?> @Nullable [] getWatchEventKinds(Path path) {
-        return new WatchEvent.Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
+    public void deactivate() {
+        watchService.unregisterListener(this);
     }
 
     @Override
-    protected void processWatchEvent(WatchEvent<?> watchEvent, WatchEvent.Kind<?> kind, Path path) {
+    public void processWatchEvent(Kind kind, Path path) {
         File file = path.toFile();
-        if (!file.isHidden() && (kind.equals(ENTRY_DELETE)
-                || (file.canRead() && (kind.equals(ENTRY_CREATE) || kind.equals(ENTRY_MODIFY))))) {
+        if (!file.isHidden() && (kind == DELETE || (file.canRead() && (kind == CREATE || kind == MODIFY)))) {
             dependencyTracker.dependencyChanged(file.getPath());
         }
     }

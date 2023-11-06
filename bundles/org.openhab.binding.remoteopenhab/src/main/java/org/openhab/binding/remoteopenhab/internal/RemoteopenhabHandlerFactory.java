@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.remoteopenhab.internal.handler.RemoteopenhabBridgeHandler;
 import org.openhab.binding.remoteopenhab.internal.handler.RemoteopenhabThingHandler;
 import org.openhab.core.config.core.Configuration;
@@ -92,7 +93,6 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
             final @Reference RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider,
             final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.httpClientTrustingCert = httpClientFactory.createHttpClient(RemoteopenhabBindingConstants.BINDING_ID);
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
         this.channelTypeProvider = channelTypeProvider;
@@ -102,6 +102,7 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
 
+        SslContextFactory sslContextFactory = new SslContextFactory.Client();
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
 
@@ -142,14 +143,15 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
                 }
             } };
             sslContext.init(null, trustAllCerts, null);
-
-            this.httpClientTrustingCert.getSslContextFactory().setSslContext(sslContext);
+            sslContextFactory.setSslContext(sslContext);
         } catch (NoSuchAlgorithmException e) {
             logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'", e.getMessage(),
                     e);
         } catch (KeyManagementException e) {
             logger.warn("An exception occurred while initialising the SSL context : '{}'", e.getMessage(), e);
         }
+        this.httpClientTrustingCert = httpClientFactory.createHttpClient(RemoteopenhabBindingConstants.BINDING_ID,
+                sslContextFactory);
     }
 
     @Override

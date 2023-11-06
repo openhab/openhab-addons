@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,8 +34,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
  */
 @NonNullByDefault
 public class BlueGigaUpdateCommand extends BlueGigaDeviceCommand {
-    public static int COMMAND_CLASS = 0x03;
-    public static int COMMAND_METHOD = 0x02;
+    public static final int COMMAND_CLASS = 0x03;
+    public static final int COMMAND_METHOD = 0x02;
 
     /**
      * Minimum connection interval (units of 1.25ms)

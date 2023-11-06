@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,12 +21,15 @@ import java.util.stream.Stream;
 
 import org.openhab.binding.oceanic.internal.handler.NetworkOceanicThingHandler;
 import org.openhab.binding.oceanic.internal.handler.SerialOceanicThingHandler;
+import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link OceanicHandlerFactory} is responsible for creating things and
@@ -40,6 +43,13 @@ public class OceanicHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_SERIAL, THING_TYPE_NETWORK).collect(Collectors.toSet()));
 
+    private final SerialPortManager serialPortManager;
+
+    @Activate
+    public OceanicHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -50,7 +60,7 @@ public class OceanicHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_SERIAL)) {
-            return new SerialOceanicThingHandler(thing);
+            return new SerialOceanicThingHandler(thing, serialPortManager);
         }
         if (thingTypeUID.equals(THING_TYPE_NETWORK)) {
             return new NetworkOceanicThingHandler(thing);

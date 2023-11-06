@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,8 +52,8 @@ public class VolvoVehicleDiscoveryService extends AbstractDiscoveryService imple
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VolvoOnCallBridgeHandler) {
-            this.handler = (VolvoOnCallBridgeHandler) handler;
+        if (handler instanceof VolvoOnCallBridgeHandler volvoOnCallBridgeHandler) {
+            this.handler = volvoOnCallBridgeHandler;
         }
     }
 
@@ -104,7 +104,6 @@ public class VolvoVehicleDiscoveryService extends AbstractDiscoveryService imple
                     logger.warn("Error while discovering vehicle: {}", e.getMessage());
                 }
             }
-            ;
         }
         stopScan();
     }

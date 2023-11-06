@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lametrictime.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LaMetricTimeConfigStatusMessage} defines the keys to be used for configuration status messages.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class LaMetricTimeConfigStatusMessage {
     public static final String HOST_MISSING = "missing-host-configuration";
     public static final String API_KEY_MISSING = "missing-api-key-configuration";

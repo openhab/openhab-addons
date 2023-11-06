@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
+import org.openhab.binding.netatmo.internal.api.dto.Device;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.MeasureConfiguration;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
@@ -42,12 +44,12 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class MeasureCapability extends RestCapability<WeatherApi> {
+public class MeasureCapability extends CacheWeatherCapability {
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();
 
     public MeasureCapability(CommonInterface handler, List<ChannelHelper> helpers) {
-        super(handler, WeatherApi.class);
+        super(handler, Duration.ofMinutes(30));
         MeasuresChannelHelper measureChannelHelper = (MeasuresChannelHelper) helpers.stream()
                 .filter(c -> c instanceof MeasuresChannelHelper).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -56,12 +58,10 @@ public class MeasureCapability extends RestCapability<WeatherApi> {
     }
 
     @Override
-    public List<NAObject> updateReadings(WeatherApi api) {
-        String bridgeId = handler.getBridgeId();
-        String deviceId = bridgeId != null ? bridgeId : handler.getId();
-        String moduleId = bridgeId != null ? handler.getId() : null;
-        updateMeasures(api, deviceId, moduleId);
-        return List.of();
+    protected void updateNADevice(Device newData) {
+        // Resolution of issue #15684 :
+        // Do not transfer newData to superclass - MeasureCapability pulls its own data based on measurement channels
+        // configuration and store them in 'measures' for the channel helper.
     }
 
     private void updateMeasures(WeatherApi api, String deviceId, @Nullable String moduleId) {
@@ -69,27 +69,34 @@ public class MeasureCapability extends RestCapability<WeatherApi> {
         handler.getActiveChannels().filter(channel -> !channel.getConfiguration().getProperties().isEmpty())
                 .forEach(channel -> {
                     ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-                    if (channelTypeUID != null) {
-                        MeasureConfiguration measureDef = channel.getConfiguration().as(MeasureConfiguration.class);
-                        String descriptor = channelTypeUID.getId().split("-")[0];
-                        try {
-                            Object result = measureDef.limit.isBlank()
-                                    ? api.getMeasures(deviceId, moduleId, measureDef.period, descriptor)
-                                    : api.getMeasures(deviceId, moduleId, measureDef.period, descriptor,
-                                            measureDef.limit);
-                            MeasureClass.AS_SET.stream().filter(mc -> mc.apiDescriptor.equals(descriptor)).findFirst()
-                                    .ifPresent(mc -> {
-                                        State state = result instanceof ZonedDateTime
-                                                ? toDateTimeType((ZonedDateTime) result)
+                    if (channelTypeUID == null) {
+                        return;
+                    }
+
+                    MeasureConfiguration measureDef = channel.getConfiguration().as(MeasureConfiguration.class);
+                    String descriptor = channelTypeUID.getId().split("-")[0];
+                    try {
+                        Object result = measureDef.limit.isBlank()
+                                ? api.getMeasures(deviceId, moduleId, measureDef.period, descriptor)
+                                : api.getMeasures(deviceId, moduleId, measureDef.period, descriptor, measureDef.limit);
+                        MeasureClass.AS_SET.stream().filter(mc -> mc.apiDescriptor.equals(descriptor))
+                                .reduce((first, second) -> second)
+                                .ifPresent(mc -> measures.put(channel.getUID().getIdWithoutGroup(),
+                                        result instanceof ZonedDateTime zonedDateTime ? toDateTimeType(zonedDateTime)
                                                 : result instanceof Double ? toQuantityType((Double) result, mc)
-                                                        : UnDefType.UNDEF;
-                                        measures.put(channel.getUID().getIdWithoutGroup(), state);
-                                    });
-                        } catch (NetatmoException e) {
-                            logger.warn("Error getting measures for channel {}, check configuration",
-                                    channel.getLabel());
-                        }
+                                                        : UnDefType.UNDEF));
+                    } catch (NetatmoException e) {
+                        logger.warn("Error getting measures for channel {}, check configuration", channel.getLabel());
                     }
                 });
+    }
+
+    @Override
+    protected List<NAObject> getFreshData(WeatherApi api) {
+        String bridgeId = handler.getBridgeId();
+        String deviceId = bridgeId != null ? bridgeId : handler.getId();
+        String moduleId = bridgeId != null ? handler.getId() : null;
+        updateMeasures(api, deviceId, moduleId);
+        return List.of();
     }
 }

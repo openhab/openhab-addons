@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,17 +24,17 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public enum Appreciation {
-    GOOD(HSBType.fromRGB(0, 228, 0)),
-    MODERATE(HSBType.fromRGB(255, 255, 0)),
-    UNHEALTHY_FSG(HSBType.fromRGB(255, 126, 0)),
-    UNHEALTHY(HSBType.fromRGB(255, 0, 0)),
-    VERY_UNHEALTHY(HSBType.fromRGB(143, 63, 151)),
-    HAZARDOUS(HSBType.fromRGB(126, 0, 35));
+    GOOD(0, 228, 0),
+    MODERATE(255, 255, 0),
+    UNHEALTHY_FSG(255, 126, 0),
+    UNHEALTHY(255, 0, 0),
+    VERY_UNHEALTHY(143, 63, 151),
+    HAZARDOUS(126, 0, 35);
 
     private HSBType color;
 
-    Appreciation(HSBType color) {
-        this.color = color;
+    Appreciation(int r, int g, int b) {
+        this.color = HSBType.fromRGB(r, g, b);
     }
 
     public State getColor() {

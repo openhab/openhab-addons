@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,6 @@ import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -149,7 +147,6 @@ public class KM200ThingHandler extends BaseThingHandler {
     Channel createChannel(ChannelTypeUID channelTypeUID, ChannelUID channelUID, String root, String type,
             @Nullable String currentPathName, String description, String label, boolean addProperties,
             boolean switchProgram, StateDescriptionFragment state, String unitOfMeasure) {
-        URI configDescriptionUriChannel = null;
         Channel newChannel = null;
         ChannelType channelType = null;
         Map<String, String> chProperties = new HashMap<>();
@@ -162,20 +159,11 @@ public class KM200ThingHandler extends BaseThingHandler {
             logger.info("Channeltype {} not supported", type);
             return null;
         }
-        try {
-            configDescriptionUriChannel = new URI(CONFIG_DESCRIPTION_URI_CHANNEL);
-            channelType = ChannelTypeBuilder.state(channelTypeUID, label, type) //
-                    .withDescription(description) //
-                    .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())) //
-                    .withStateDescriptionFragment(state) //
-                    .withConfigDescriptionURI(configDescriptionUriChannel).build();
-        } catch (URISyntaxException ex) {
-            logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not avilable!",
-                    CONFIG_DESCRIPTION_URI_CHANNEL);
-            channelType = ChannelTypeBuilder.state(channelTypeUID, label, type) //
-                    .withDescription(description) //
-                    .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())).build();
-        }
+        channelType = ChannelTypeBuilder.state(channelTypeUID, label, type) //
+                .withDescription(description) //
+                .withCategory(checkCategory(unitOfMeasure, category, state.isReadOnly())) //
+                .withStateDescriptionFragment(state).build();
+
         channelTypeProvider.addChannelType(channelType);
 
         chProperties.put("root", KM200Utils.translatesPathToName(root));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ public class ZoneStateFlags {
     private byte[] zonesOpened;
     private byte[] zonesTampered;
     private byte[] zonesLowBattery;
+    private byte[] zoneSpecialFlags;
 
     public byte[] getZonesOpened() {
         return zonesOpened;
@@ -44,5 +45,13 @@ public class ZoneStateFlags {
 
     public void setZonesLowBattery(byte[] zonesLowBattery) {
         this.zonesLowBattery = zonesLowBattery;
+    }
+
+    public byte[] getZoneSpecialFlags() {
+        return zoneSpecialFlags;
+    }
+
+    public void setZoneSpecialFlags(byte[] zoneSpecialFlags) {
+        this.zoneSpecialFlags = zoneSpecialFlags;
     }
 }

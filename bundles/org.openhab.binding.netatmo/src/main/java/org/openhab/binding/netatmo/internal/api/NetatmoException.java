@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,11 +29,11 @@ public class NetatmoException extends IOException {
     private ServiceError statusCode = ServiceError.UNKNOWN;
 
     public NetatmoException(String format, Object... args) {
-        super(String.format(format, args));
+        super(format.formatted(args));
     }
 
     public NetatmoException(Exception e, String format, Object... args) {
-        super(String.format(format, args), e);
+        super(format.formatted(args), e);
     }
 
     public NetatmoException(String message) {
@@ -54,6 +54,6 @@ public class NetatmoException extends IOException {
         String message = super.getMessage();
         return message == null ? null
                 : ServiceError.UNKNOWN.equals(statusCode) ? message
-                        : String.format("Rest call failed: statusCode=%s, message=%s", statusCode, message);
+                        : "Rest call failed: statusCode=%s, message=%s".formatted(statusCode, message);
     }
 }

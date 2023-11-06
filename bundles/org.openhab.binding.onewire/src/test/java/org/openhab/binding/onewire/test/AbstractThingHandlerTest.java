@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,10 +42,13 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * Base class for thing handler tests.
@@ -98,6 +101,13 @@ public abstract class AbstractThingHandlerTest extends JavaTest {
             ((Thing) answer.getArgument(0)).setStatusInfo(answer.getArgument(1));
             return null;
         }).when(thingHandlerCallback).statusUpdated(any(), any());
+
+        Mockito.when(thingHandlerCallback.createChannelBuilder(any(), any())).thenAnswer(invocation -> {
+            ChannelUID channelUID = (ChannelUID) invocation.getArguments()[0];
+            ChannelTypeUID channelTypeUID = (ChannelTypeUID) invocation.getArguments()[1];
+
+            return ChannelBuilder.create(channelUID).withType(channelTypeUID);
+        });
 
         inOrder = Mockito.inOrder(bridgeHandler);
     }

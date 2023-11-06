@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,19 +50,19 @@ public interface VeluxBridgeInstance {
      *
      * @return VeluxBridgeConfiguration containing all bridge configuration settings.
      */
-    public VeluxBridgeConfiguration veluxBridgeConfiguration();
+    VeluxBridgeConfiguration veluxBridgeConfiguration();
 
     /**
      * Information retrieved by {@link org.openhab.binding.velux.internal.bridge.VeluxBridgeActuators#getProducts}
      *
      * @return VeluxExistingProducts containing all registered products, or <B>null</B> in case of any error.
      */
-    public VeluxExistingProducts existingProducts();
+    VeluxExistingProducts existingProducts();
 
     /**
      * Information retrieved by {@link org.openhab.binding.velux.internal.bridge.VeluxBridgeScenes#getScenes}
      *
      * @return VeluxExistingScenes containing all registered scenes, or <B>null</B> in case of any error.
      */
-    public VeluxExistingScenes existingScenes();
+    VeluxExistingScenes existingScenes();
 }

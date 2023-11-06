@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -109,7 +109,7 @@ public class TouchWandRestClient {
         String command = buildUrl(CMD_LOGIN) + "user=" + encodedUser + "&" + "psw=" + encodedPass;
         response = sendCommand(command, METHOD_GET, "");
 
-        return !response.equals("Unauthorized");
+        return !"Unauthorized".equals(response);
     }
 
     public String cmdListUnits() {
@@ -203,8 +203,7 @@ public class TouchWandRestClient {
     }
 
     private String buildUrl(String command) {
-        String url = "http://" + touchWandIpAddr + ":" + touchWandPort + COMMAND_MAP.get(command);
-        return url;
+        return "http://" + touchWandIpAddr + ":" + touchWandPort + COMMAND_MAP.get(command);
     }
 
     private synchronized String sendCommand(String command, HttpMethod method, String content) {

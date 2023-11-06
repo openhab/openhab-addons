@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,9 +156,9 @@ public class BondDeviceHandler extends BaseThingHandler {
 
             case CHANNEL_FAN_SPEED:
                 logger.trace("Fan speed command");
-                if (command instanceof PercentType) {
+                if (command instanceof PercentType percentCommand) {
                     if (devInfo.actions.contains(BondDeviceAction.SET_FP_FAN)) {
-                        value = ((PercentType) command).intValue();
+                        value = percentCommand.intValue();
                         if (value == 0) {
                             action = BondDeviceAction.TURN_FP_FAN_OFF;
                             value = null;
@@ -169,7 +169,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                         BondDeviceProperties devProperties = this.deviceProperties;
                         if (devProperties != null) {
                             int maxSpeed = devProperties.maxSpeed;
-                            value = (int) Math.ceil(((PercentType) command).intValue() * maxSpeed / 100);
+                            value = (int) Math.ceil(percentCommand.intValue() * maxSpeed / 100);
                         } else {
                             value = 1;
                         }
@@ -182,11 +182,10 @@ public class BondDeviceHandler extends BaseThingHandler {
                     }
                     logger.trace("Fan speed command with speed set as {}", value);
                     api.executeDeviceAction(deviceId, action, value);
-                } else if (command instanceof IncreaseDecreaseType) {
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     logger.trace("Fan increase/decrease speed command");
                     api.executeDeviceAction(deviceId,
-                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
-                                    ? BondDeviceAction.INCREASE_SPEED
+                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? BondDeviceAction.INCREASE_SPEED
                                     : BondDeviceAction.DECREASE_SPEED),
                             null);
                 } else if (command instanceof OnOffType) {
@@ -202,6 +201,27 @@ public class BondDeviceHandler extends BaseThingHandler {
                     }
                 } else {
                     logger.info("Unsupported command on fan speed channel");
+                }
+                break;
+
+            case CHANNEL_RAW_FAN_SPEED:
+                if (command instanceof DecimalType decimalCommand) {
+                    value = decimalCommand.intValue();
+                    BondDeviceProperties devProperties = this.deviceProperties;
+                    if (devProperties != null) {
+                        if (value < 1) {
+                            // Interpret any 0 or less value as a request to turn off
+                            action = BondDeviceAction.TURN_OFF;
+                            value = null;
+                        } else {
+                            action = BondDeviceAction.SET_SPEED;
+                            value = Math.min(value, devProperties.maxSpeed);
+                        }
+                        logger.trace("Fan raw speed command with speed set as {}, action as {}", value, action);
+                        api.executeDeviceAction(deviceId, action, value);
+                    }
+                } else {
+                    logger.info("Unsupported command on raw fan speed channel");
                 }
                 break;
 
@@ -225,7 +245,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                 logger.trace("Fan direction command {}", command.toString());
                 if (command instanceof StringType) {
                     api.executeDeviceAction(deviceId, BondDeviceAction.SET_DIRECTION,
-                            command.toString().equals("winter") ? -1 : 1);
+                            "winter".equals(command.toString()) ? -1 : 1);
                 }
                 break;
 
@@ -237,9 +257,8 @@ public class BondDeviceHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_LIGHT_BRIGHTNESS:
-                if (command instanceof PercentType) {
-                    PercentType pctCommand = (PercentType) command;
-                    value = pctCommand.intValue();
+                if (command instanceof PercentType percentCommand) {
+                    value = percentCommand.intValue();
                     if (value == 0) {
                         action = BondDeviceAction.TURN_LIGHT_OFF;
                         value = null;
@@ -248,10 +267,10 @@ public class BondDeviceHandler extends BaseThingHandler {
                     }
                     logger.trace("Fan light brightness command with value of {}", value);
                     api.executeDeviceAction(deviceId, action, value);
-                } else if (command instanceof IncreaseDecreaseType) {
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     logger.trace("Fan light brightness increase/decrease command {}", command);
                     api.executeDeviceAction(deviceId,
-                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
+                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE
                                     ? BondDeviceAction.INCREASE_BRIGHTNESS
                                     : BondDeviceAction.DECREASE_BRIGHTNESS),
                             null);
@@ -280,9 +299,8 @@ public class BondDeviceHandler extends BaseThingHandler {
 
             case CHANNEL_UP_LIGHT_BRIGHTNESS:
                 enableUpLight();
-                if (command instanceof PercentType) {
-                    PercentType pctCommand = (PercentType) command;
-                    value = pctCommand.intValue();
+                if (command instanceof PercentType percentCommand) {
+                    value = percentCommand.intValue();
                     if (value == 0) {
                         action = BondDeviceAction.TURN_LIGHT_OFF;
                         value = null;
@@ -291,10 +309,10 @@ public class BondDeviceHandler extends BaseThingHandler {
                     }
                     logger.trace("Fan up light brightness command with value of {}", value);
                     api.executeDeviceAction(deviceId, action, value);
-                } else if (command instanceof IncreaseDecreaseType) {
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     logger.trace("Fan uplight brightness increase/decrease command {}", command);
                     api.executeDeviceAction(deviceId,
-                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
+                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE
                                     ? BondDeviceAction.INCREASE_UP_LIGHT_BRIGHTNESS
                                     : BondDeviceAction.DECREASE_UP_LIGHT_BRIGHTNESS),
                             null);
@@ -323,9 +341,8 @@ public class BondDeviceHandler extends BaseThingHandler {
 
             case CHANNEL_DOWN_LIGHT_BRIGHTNESS:
                 enableDownLight();
-                if (command instanceof PercentType) {
-                    PercentType pctCommand = (PercentType) command;
-                    value = pctCommand.intValue();
+                if (command instanceof PercentType percentCommand) {
+                    value = percentCommand.intValue();
                     if (value == 0) {
                         action = BondDeviceAction.TURN_LIGHT_OFF;
                         value = null;
@@ -334,10 +351,10 @@ public class BondDeviceHandler extends BaseThingHandler {
                     }
                     logger.trace("Fan down light brightness command with value of {}", value);
                     api.executeDeviceAction(deviceId, action, value);
-                } else if (command instanceof IncreaseDecreaseType) {
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     logger.trace("Fan down light brightness increase/decrease command");
                     api.executeDeviceAction(deviceId,
-                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
+                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE
                                     ? BondDeviceAction.INCREASE_DOWN_LIGHT_BRIGHTNESS
                                     : BondDeviceAction.DECREASE_DOWN_LIGHT_BRIGHTNESS),
                             null);
@@ -352,9 +369,8 @@ public class BondDeviceHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_FLAME:
-                if (command instanceof PercentType) {
-                    PercentType pctCommand = (PercentType) command;
-                    value = pctCommand.intValue();
+                if (command instanceof PercentType percentCommand) {
+                    value = percentCommand.intValue();
                     if (value == 0) {
                         action = BondDeviceAction.TURN_OFF;
                         value = null;
@@ -363,11 +379,10 @@ public class BondDeviceHandler extends BaseThingHandler {
                     }
                     logger.trace("Fireplace flame command with value of {}", value);
                     api.executeDeviceAction(deviceId, action, value);
-                } else if (command instanceof IncreaseDecreaseType) {
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     logger.trace("Fireplace flame increase/decrease command");
                     api.executeDeviceAction(deviceId,
-                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
-                                    ? BondDeviceAction.INCREASE_FLAME
+                            (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? BondDeviceAction.INCREASE_FLAME
                                     : BondDeviceAction.DECREASE_FLAME),
                             null);
                 } else if (command instanceof OnOffType) {
@@ -519,7 +534,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         updateProperty(thingProperties, PROPERTIES_TEMPLATE_NAME, devInfo.template);
         thingProperties.put(PROPERTIES_MAX_SPEED, String.valueOf(devProperties.maxSpeed));
         thingProperties.put(PROPERTIES_TRUST_STATE, String.valueOf(devProperties.trustState));
-        thingProperties.put(PROPERTIES_ADDRESS, String.valueOf(devProperties.addr));
+        thingProperties.put(PROPERTIES_ADDRESS, devProperties.addr);
         thingProperties.put(PROPERTIES_RF_FREQUENCY, String.valueOf(devProperties.freq));
         logger.trace("Saving properties for {} ({})", config.deviceId, this.getThing().getLabel());
         updateProperties(thingProperties);
@@ -548,6 +563,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         logger.trace("Deleting channels based on the available actions");
         // Get the thing to edit
         ThingBuilder thingBuilder = editThing();
+        final BondDevice devInfo = this.deviceInfo;
 
         // Now, look at the whole list of possible channels
         List<Channel> possibleChannels = this.getThing().getChannels();
@@ -561,10 +577,14 @@ public class BondDeviceHandler extends BaseThingHandler {
             }
         }
         // Remove power channels if we have a dimmer channel for them;
-        // the dimmer channel already covers the power case
+        // the dimmer channel already covers the power case.
+        // Add the raw channel for advanced users if we're a ceiling fan.
         if (availableChannelIds.contains(CHANNEL_FAN_SPEED)) {
             availableChannelIds.remove(CHANNEL_POWER);
             availableChannelIds.remove(CHANNEL_FAN_POWER);
+            if (devInfo != null && devInfo.type == BondDeviceType.CEILING_FAN) {
+                availableChannelIds.add(CHANNEL_RAW_FAN_SPEED);
+            }
         }
         if (availableChannelIds.contains(CHANNEL_LIGHT_BRIGHTNESS)) {
             availableChannelIds.remove(CHANNEL_LIGHT_POWER);
@@ -631,6 +651,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                 logger.info("Unable to convert fan speed to a percent for {}!", this.getThing().getLabel());
             }
             updateState(CHANNEL_FAN_SPEED, formPercentType(fanOn, value));
+            updateState(CHANNEL_RAW_FAN_SPEED, fanOn ? new DecimalType(updateState.speed) : DecimalType.ZERO);
         }
         updateState(CHANNEL_FAN_BREEZE_STATE, updateState.breeze[0] == 0 ? OnOffType.OFF : OnOffType.ON);
         updateState(CHANNEL_FAN_BREEZE_MEAN, new PercentType(updateState.breeze[1]));

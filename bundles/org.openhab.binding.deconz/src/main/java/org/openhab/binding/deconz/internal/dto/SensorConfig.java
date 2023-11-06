@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,10 +35,13 @@ public class SensorConfig {
     public @Nullable Integer heatsetpoint;
     public @Nullable ThermostatMode mode;
     public @Nullable Integer offset;
+    public @Nullable Boolean locked;
+    public @Nullable Boolean externalwindowopen;
 
     @Override
     public String toString() {
         return "SensorConfig{" + "on=" + on + ", reachable=" + reachable + ", battery=" + battery + ", temperature="
-                + temperature + ", heatsetpoint=" + heatsetpoint + ", mode=" + mode + ", offset=" + offset + "}";
+                + temperature + ", heatsetpoint=" + heatsetpoint + ", mode=" + mode + ", offset=" + offset + ", locked="
+                + locked + ", externalwindowopen=" + externalwindowopen + "}";
     }
 }

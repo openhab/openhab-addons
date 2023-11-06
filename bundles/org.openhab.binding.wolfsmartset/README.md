@@ -1,16 +1,16 @@
 # Wolf Smartset Binding
 
-This binding communicates with the www.wolf-smartset.de API and provides values readonly. 
-Wolf systems are connected with official gateways (Wolf Link Home or Wolf Link Pro) https://www.wolf.eu/produkte/smarthome/ 
+This binding communicates with the www.wolf-smartset.de API and provides values readonly.
+Wolf systems are connected with official gateways (Wolf Link Home or Wolf Link Pro) <https://www.wolf.eu/produkte/smarthome/>
 
 ## Supported Things
 
 - Account (``thing-type:wolfsmartset:account``)
-    * holding the credentials to connect to the wolf-smartset online portal.
+  - holding the credentials to connect to the wolf-smartset online portal.
 - System (``thing-type:wolfsmartset:system``)
-    *  represents one wolf system connected to the wolf-smartset online portal.
+  - represents one wolf system connected to the wolf-smartset online portal.
 - Unit (``thing-type:wolfsmartset:unit``)
-    * unit is a part of the system with values and parameter
+  - unit is a part of the system with values and parameter
 
 ## Discovery
 
@@ -33,8 +33,8 @@ The account thing holds the credentials to connect to the wolf-smartset online p
 
 ### System (bridge)
 
-The system thing represents one wolf system connected via a WOLF Link home or a WOLF Link pro to the wolf-smartset online portal. 
-You have access to your own or to shared systems. 
+The system thing represents one wolf system connected via a WOLF Link home or a WOLF Link pro to the wolf-smartset online portal.
+You have access to your own or to shared systems.
 
 | Parameter       | Type    | Defaut | Description                                                         |
 |-----------------|---------|----------|---------------------------------------------------------------------|
@@ -42,7 +42,7 @@ You have access to your own or to shared systems.
 
 ### Unit
 
-A system is divided into different units. 
+A system is divided into different units.
 In the wolf-smartset portal, the system has an "Expert" section, each submenu item within the "Expert" section has multiple tabs.
 Each of these tabs is treated as one unit.
 
@@ -56,7 +56,6 @@ Each of these tabs is treated as one unit.
 |-------------------|-----------------|---------------|
 | CSZ (CGB and SM1) | 3.1             | WOLF Link Pro |
 | CGB-2             | 3.1             | WOLF Link home|
-
 
 ## Channels
 
@@ -72,7 +71,7 @@ Each of these tabs is treated as one unit.
 
 ### Things
 
-````
+````java
 Bridge wolfsmartset:account:account "Wolf Smartset Account" [ username="User", password="Password" ] {
     Bridge system 32122305166 "WolfSmartset System CSZ" [ systemId="32122305166" ] {
         Thing unitId uinit0 "CSZ Heizgerät" [ unitId="unit0" ] {
@@ -80,11 +79,12 @@ Bridge wolfsmartset:account:account "Wolf Smartset Account" [ username="User", p
     }
 }
 ````
-_You need to use the corrosponding systemId and unitId returned by the discovery_
+
+You need to use the corrosponding systemId and unitId returned by the discovery.
 
 ### Items
 
-````
+````java
 "Number CSZHeizgerat_Raumtemperatur "Raumtemperatur" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900000"}
 Number CSZHeizgerat_Flamme "Flamme" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900001"}
 Number CSZHeizgerat_AnalogeFernbedienung "Analoge Fernbedienung" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900002"}
@@ -117,7 +117,7 @@ All devices able to be connected to www.wolf-smartset.de
 
 ### Related Documentation from WOLF
 
-https://oxomi.com/service/json/catalog/pdf?portal=2024876&catalog=10406695
+<https://oxomi.com/service/json/catalog/pdf?portal=2024876&catalog=10406695>
 
 | Heating system                            | WOLF Link home        | WOLF Link pro      |
 |-------------------------------------------|-----------------------|--------------------|
@@ -139,8 +139,7 @@ https://oxomi.com/service/json/catalog/pdf?portal=2024876&catalog=10406695
 | Air handling units CKL, CFL, CRL``*`` |   | ✅ |
 | Combined heat and power units | | ✅ |
 
-
-Note: 
+Note:
 
 ⬜ possible in connection with a WOLF Link home compatible heater,
 full functionality only for devices with current software version.

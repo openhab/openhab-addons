@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,8 +55,7 @@ public class VehicleStatusUtils {
         if (serviceDate.equals(farFuture)) {
             return UnDefType.UNDEF;
         } else {
-            DateTimeType dt = DateTimeType.valueOf(serviceDate.format(Converter.DATE_INPUT_PATTERN));
-            return dt;
+            return DateTimeType.valueOf(serviceDate.format(Converter.DATE_INPUT_PATTERN));
         }
     }
 
@@ -148,7 +147,7 @@ public class VehicleStatusUtils {
      * 3) take a guess from fuel indicators
      *
      * @param unitJson
-     * @param indicators
+     * @param vehicle
      * @return
      */
     public static int getRange(String unitJson, Vehicle vehicle) {
@@ -166,7 +165,7 @@ public class VehicleStatusUtils {
      * -- smaller one is assigned to fuel range
      * -- bigger one is assigned to hybrid range
      *
-     * @see VehicleStatusTest testGuessRange
+     * @see org.openhab.binding.mybmw.internal.dto.VehicleStatusTest testGuessRange
      *
      * @param unitJson
      * @param vehicle

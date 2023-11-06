@@ -47,3 +47,7 @@ In case you would like to setup these settings via a text file, you can edit the
 org.openhab.voice:defaultTTS=mimictts
 org.openhab.voice:defaultVoice=mimictts:fr_FR_siwis_low
 ```
+
+## Caching
+
+The mimic TTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,17 +32,17 @@ public interface NhcEnergyMeterEvent {
      *
      * @param power current power consumption/production in W (positive for consumption), null for an empty reading
      */
-    public void energyMeterEvent(@Nullable Integer power);
+    void energyMeterEvent(@Nullable Integer power);
 
     /**
      * Called to indicate the energyMeter has been initialized.
      *
      */
-    public void energyMeterInitialized();
+    void energyMeterInitialized();
 
     /**
      * Called to indicate the energyMeter has been removed from the Niko Home Control controller.
      *
      */
-    public void energyMeterRemoved();
+    void energyMeterRemoved();
 }

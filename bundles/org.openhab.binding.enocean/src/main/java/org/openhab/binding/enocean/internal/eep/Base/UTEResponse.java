@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,18 +14,20 @@ package org.openhab.binding.enocean.internal.eep.Base;
 
 import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class UTEResponse extends _VLDMessage {
 
-    public static final byte TeachIn_MASK = 0x3f;
-    public static final byte CommunicationType_MASK = (byte) 0x80;
-    public static final byte ResponseNeeded_MASK = 0x40;
-    public static final byte TeachIn_NotSpecified = 0x20;
+    public static final byte TEACHIN_MASK = 0x3f;
+    public static final byte COMMUNICATION_TYPE_MASK = (byte) 0x80;
+    public static final byte RESPONSE_NEEDED_MASK = 0x40;
+    public static final byte TEACHIN_NPTSPECIFIED = 0x20;
 
     public UTEResponse(ERP1Message packet, boolean teachIn) {
         int dataLength = packet.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;

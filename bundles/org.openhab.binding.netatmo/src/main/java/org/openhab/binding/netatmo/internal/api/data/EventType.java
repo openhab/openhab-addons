@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public enum EventType {
     UNKNOWN(),
+    @SerializedName("webhook_activation") // Ack of a 'webhook set' Api Call
+    WEBHOOK_ACTIVATION(ModuleType.ACCOUNT),
 
     @SerializedName("person") // When the Indoor Camera detects a face
     PERSON(ModuleType.PERSON, ModuleType.WELCOME),
@@ -44,17 +46,20 @@ public enum EventType {
     @SerializedName("daily_summary") // When the Outdoor Camera video summary of the last 24 hours is available
     DAILY_SUMMARY(ModuleType.PRESENCE),
 
+    @SerializedName("vehicle") // When the Outdoor Camera detects a car
+    VEHICLE(ModuleType.PRESENCE),
+
     @SerializedName("movement") // When the Indoor Camera detects motion
     MOVEMENT(ModuleType.WELCOME),
 
+    @SerializedName("alarm_started") // When the Indoor Camera triggers alarm
+    ALARM_STARTED(ModuleType.WELCOME),
+
     @SerializedName("human") // When the camera detects human motion
-    HUMAN(ModuleType.WELCOME, ModuleType.OUTDOOR, ModuleType.DOORBELL),
+    HUMAN(ModuleType.WELCOME, ModuleType.PRESENCE, ModuleType.DOORBELL),
 
     @SerializedName("animal") // When the camera detects animal motion
-    ANIMAL(ModuleType.WELCOME, ModuleType.OUTDOOR),
-
-    @SerializedName("vehicle") // When the Outdoor Camera detects a car
-    VEHICLE(ModuleType.OUTDOOR),
+    ANIMAL(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("new_module") // A new Module has been paired with the Indoor Camera
     NEW_MODULE(ModuleType.WELCOME),
@@ -70,6 +75,15 @@ public enum EventType {
 
     @SerializedName("module_end_update") // Module's firmware update is over
     MODULE_END_UPDATE(ModuleType.WELCOME),
+
+    @SerializedName("tag_big_move") // Module's firmware update is over
+    TAG_BIG_MOVE(ModuleType.WELCOME),
+
+    @SerializedName("tag_open") // Module's firmware update is over
+    TAG_OPEN(ModuleType.WELCOME),
+
+    @SerializedName("tag_small_move") // Module's firmware update is over
+    TAG_SMALL_MOVE(ModuleType.WELCOME),
 
     @SerializedName("connection") // When the camera connects to Netatmo servers
     CONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
@@ -92,6 +106,9 @@ public enum EventType {
     @SerializedName("alim") // When Camera power supply status changes
     ALIM(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+    @SerializedName("siren_tampered") // When the siren has been tampered
+    SIREN_TAMPERED(ModuleType.WELCOME),
+
     @SerializedName("accepted_call") // When a call is incoming
     ACCEPTED_CALL(ModuleType.DOORBELL),
 
@@ -111,22 +128,43 @@ public enum EventType {
     SMOKE(ModuleType.SMOKE_DETECTOR),
 
     @SerializedName("tampered") // When smoke detector is ready or tampered
-    TAMPERED(ModuleType.SMOKE_DETECTOR),
+    TAMPERED(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
     @SerializedName("wifi_status") // When wifi status is updated
-    WIFI_STATUS(ModuleType.SMOKE_DETECTOR),
+    WIFI_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
     @SerializedName("battery_status") // When battery status is too low
-    BATTERY_STATUS(ModuleType.SMOKE_DETECTOR),
+    BATTERY_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
     @SerializedName("detection_chamber_status") // When the detection chamber is dusty or clean
     DETECTION_CHAMBER_STATUS(ModuleType.SMOKE_DETECTOR),
 
     @SerializedName("sound_test") // Sound test result
-    SOUND_TEST(ModuleType.SMOKE_DETECTOR),
+    SOUND_TEST(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
     @SerializedName("new_device")
-    NEW_DEVICE(ModuleType.HOME);
+    NEW_DEVICE(ModuleType.HOME),
+
+    @SerializedName("co_detected")
+    CO_DETECTED(ModuleType.CO_DETECTOR),
+
+    @SerializedName("alarm_event") // an alarm event arrived on a weather station module
+    ALARM_EVENT(ModuleType.WEATHER_STATION),
+
+    @SerializedName("entered") // the alarm was raised
+    ALARM_ENTERED(ModuleType.WEATHER_STATION),
+
+    @SerializedName("exited") // the alarm is stopped
+    ALARM_EXITED(ModuleType.WEATHER_STATION),
+
+    @SerializedName("display_change") // a manual action has been done on the thermostat
+    DISPLAY_CHANGE(ModuleType.THERMOSTAT),
+
+    @SerializedName("set_point") // a setpoint has been set
+    SET_POINT(ModuleType.THERMOSTAT),
+
+    @SerializedName("cancel_set_point") // manual setpoint ended
+    CANCEL_SET_POINT(ModuleType.THERMOSTAT);
 
     public static final EnumSet<EventType> AS_SET = EnumSet.allOf(EventType.class);
 
@@ -143,5 +181,9 @@ public enum EventType {
 
     public boolean validFor(ModuleType searched) {
         return appliesTo.contains(searched);
+    }
+
+    public ModuleType getFirstModule() {
+        return appliesTo.iterator().next();
     }
 }

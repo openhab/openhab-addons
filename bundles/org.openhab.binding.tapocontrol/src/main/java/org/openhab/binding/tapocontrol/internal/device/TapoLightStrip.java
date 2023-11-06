@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,28 +72,28 @@ public class TapoLightStrip extends TapoDevice {
         } else {
             switch (channel) {
                 case CHANNEL_OUTPUT:
-                    connector.sendDeviceCommand(DEVICE_PROPERTY_ON, command == OnOffType.ON);
+                    connector.sendDeviceCommand(JSON_KEY_ON, command == OnOffType.ON);
                     refreshInfo = true;
                     break;
                 case CHANNEL_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        Float percent = ((PercentType) command).floatValue();
+                    if (command instanceof PercentType percentCommand) {
+                        Float percent = percentCommand.floatValue();
                         setBrightness(percent.intValue()); // 0..100% = 0..100
                         refreshInfo = true;
-                    } else if (command instanceof DecimalType) {
-                        setBrightness(((DecimalType) command).intValue());
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        setBrightness(decimalCommand.intValue());
                         refreshInfo = true;
                     }
                     break;
                 case CHANNEL_COLOR_TEMP:
-                    if (command instanceof DecimalType) {
-                        setColorTemp(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        setColorTemp(decimalCommand.intValue());
                         refreshInfo = true;
                     }
                     break;
                 case CHANNEL_COLOR:
-                    if (command instanceof HSBType) {
-                        setColor((HSBType) command);
+                    if (command instanceof HSBType hsbCommand) {
+                        setColor(hsbCommand);
                         refreshInfo = true;
                     }
                     break;
@@ -117,11 +117,11 @@ public class TapoLightStrip extends TapoDevice {
     protected void setBrightness(Integer newBrightness) {
         /* switch off if 0 */
         if (newBrightness == 0) {
-            connector.sendDeviceCommand(DEVICE_PROPERTY_ON, false);
+            connector.sendDeviceCommand(JSON_KEY_ON, false);
         } else {
             HashMap<String, Object> newState = new HashMap<>();
-            newState.put(DEVICE_PROPERTY_ON, true);
-            newState.put(DEVICE_PROPERTY_BRIGHTNES, newBrightness);
+            newState.put(JSON_KEY_ON, true);
+            newState.put(JSON_KEY_BRIGHTNESS, newBrightness);
             connector.sendDeviceCommands(newState);
         }
     }
@@ -133,10 +133,10 @@ public class TapoLightStrip extends TapoDevice {
      */
     protected void setColor(HSBType command) {
         HashMap<String, Object> newState = new HashMap<>();
-        newState.put(DEVICE_PROPERTY_ON, true);
-        newState.put(DEVICE_PROPERTY_HUE, command.getHue());
-        newState.put(DEVICE_PROPERTY_SATURATION, command.getSaturation());
-        newState.put(DEVICE_PROPERTY_BRIGHTNES, command.getBrightness());
+        newState.put(JSON_KEY_ON, true);
+        newState.put(JSON_KEY_HUE, command.getHue().intValue());
+        newState.put(JSON_KEY_SATURATION, command.getSaturation().intValue());
+        newState.put(JSON_KEY_BRIGHTNESS, command.getBrightness().intValue());
         connector.sendDeviceCommands(newState);
     }
 
@@ -148,8 +148,8 @@ public class TapoLightStrip extends TapoDevice {
     protected void setColorTemp(Integer colorTemp) {
         HashMap<String, Object> newState = new HashMap<>();
         colorTemp = limitVal(colorTemp, BULB_MIN_COLORTEMP, BULB_MAX_COLORTEMP);
-        newState.put(DEVICE_PROPERTY_ON, true);
-        newState.put(DEVICE_PROPERTY_COLORTEMP, colorTemp);
+        newState.put(JSON_KEY_ON, true);
+        newState.put(JSON_KEY_COLORTEMP, colorTemp);
         connector.sendDeviceCommands(newState);
     }
 
@@ -163,11 +163,11 @@ public class TapoLightStrip extends TapoDevice {
         TapoLightEffect lightEffect = deviceInfo.getLightEffect();
         switch (channel) {
             case CHANNEL_FX_BRIGHTNESS:
-                if (command instanceof PercentType) {
-                    Float percent = ((PercentType) command).floatValue();
+                if (command instanceof PercentType percentCommand) {
+                    Float percent = percentCommand.floatValue();
                     lightEffect.setBrightness(percent.intValue()); // 0..100% = 0..100
-                } else if (command instanceof DecimalType) {
-                    lightEffect.setBrightness(((DecimalType) command).intValue());
+                } else if (command instanceof DecimalType decimalCommand) {
+                    lightEffect.setBrightness(decimalCommand.intValue());
                 }
                 break;
             case CHANNEL_FX_COLORS:
@@ -175,9 +175,6 @@ public class TapoLightStrip extends TapoDevice {
                 break;
             case CHANNEL_FX_NAME:
                 lightEffect.setName(command.toString());
-                break;
-            case CHANNEL_FX_ENABLE:
-                lightEffect.setEnable(command == OnOffType.ON);
                 break;
         }
         setLightEffects(lightEffect);
@@ -190,20 +187,20 @@ public class TapoLightStrip extends TapoDevice {
      */
     protected void setLightEffects(TapoLightEffect lightEffect) {
         JsonObject newEffect = new JsonObject();
-        newEffect.addProperty(PROPERTY_LIGHTNING_EFFECT_ENABLE, lightEffect.getEnable());
-        newEffect.addProperty(PROPERTY_LIGHTNING_EFFECT_NAME, lightEffect.getName());
-        newEffect.addProperty(PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS, lightEffect.getBrightness());
-        newEffect.addProperty(PROPERTY_LIGHTNING_EFFECT_COLORTEMPRANGE, lightEffect.getColorTempRange().toString());
-        newEffect.addProperty(PROPERTY_LIGHTNING_EFFECT_DISPLAYCOLORS, lightEffect.getDisplayColors().toString());
-        newEffect.addProperty(PROPERTY_LIGHTNING_EFFECT_CUSTOM, lightEffect.getCustom());
+        newEffect.addProperty(JSON_KEY_LIGHTNING_EFFECT_ENABLE, lightEffect.getEnable());
+        newEffect.addProperty(JSON_KEY_LIGHTNING_EFFECT_NAME, lightEffect.getName());
+        newEffect.addProperty(JSON_KEY_LIGHTNING_EFFECT_BRIGHNTESS, lightEffect.getBrightness());
+        newEffect.addProperty(JSON_KEY_LIGHTNING_EFFECT_COLORTEMPRANGE, lightEffect.getColorTempRange().toString());
+        newEffect.addProperty(JSON_KEY_LIGHTNING_EFFECT_DISPLAYCOLORS, lightEffect.getDisplayColors().toString());
+        newEffect.addProperty(JSON_KEY_LIGHTNING_EFFECT_CUSTOM, lightEffect.getCustom());
 
-        connector.sendDeviceCommand(DEVICE_PROPERTY_EFFECT, newEffect.toString());
+        connector.sendDeviceCommand(JSON_KEY_LIGHTNING_EFFECT, newEffect.toString());
     }
 
     /**
      * UPDATE PROPERTIES
      * 
-     * @param TapoDeviceInfo
+     * @param deviceInfo TapoDeviceInfo
      */
     @Override
     protected void devicePropertiesChanged(TapoDeviceInfo deviceInfo) {
@@ -224,7 +221,5 @@ public class TapoLightStrip extends TapoDevice {
         publishState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_BRIGHTNESS),
                 getPercentType(lightEffect.getBrightness()));
         publishState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_NAME), getStringType(lightEffect.getName()));
-        publishState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_ENABLE), getOnOffType(lightEffect.getEnable()));
-        publishState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_CUSTOM), getOnOffType(lightEffect.getCustom()));
     }
 }

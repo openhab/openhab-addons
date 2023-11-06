@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -287,7 +287,7 @@ public class BAE0910Test extends DeviceTestParent<BAE0910> {
      *
      * @param registerIndex number of register to return
      * @return this register's BitSet
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     private BitSet checkConfiguration(int registerIndex) throws OwException {
         ArgumentCaptor<BitSet> configArgumentCaptor = ArgumentCaptor.forClass(BitSet.class);

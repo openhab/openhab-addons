@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ public class FroniusHttpUtil {
      * @return the response body
      * @throws FroniusCommunicationException when the request execution failed or interrupted
      */
-    public synchronized static String executeUrl(String url, int timeout) throws FroniusCommunicationException {
+    public static synchronized String executeUrl(String url, int timeout) throws FroniusCommunicationException {
         int attemptCount = 1;
         try {
             while (true) {

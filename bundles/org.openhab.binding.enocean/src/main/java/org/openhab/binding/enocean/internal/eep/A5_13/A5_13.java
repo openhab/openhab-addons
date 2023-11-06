@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_13;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -20,16 +21,17 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  * 
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public abstract class A5_13 extends _4BSMessage {
     public A5_13(ERP1Message packet) {
         super(packet);
     }
 
-    protected final int PARTONE = 0x10;
-    protected final int PARTTWO = 0x20;
+    protected static final int PARTONE = 0x10;
+    protected static final int PARTTWO = 0x20;
 
     protected int getMessageIdentifier() {
-        return getDB_0Value() & 0xF0;
+        return getDB0Value() & 0xF0;
     }
 
     protected boolean isPartOne() {

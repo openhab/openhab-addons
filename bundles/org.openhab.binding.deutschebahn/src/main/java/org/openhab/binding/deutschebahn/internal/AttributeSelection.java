@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,17 +31,17 @@ public interface AttributeSelection {
      * Returns the value for this attribute.
      */
     @Nullable
-    public abstract Object getValue(TimetableStop stop);
+    Object getValue(TimetableStop stop);
 
     /**
      * Returns the {@link State} that should be set for the channels'value for this attribute.
      */
     @Nullable
-    public abstract State getState(TimetableStop stop);
+    State getState(TimetableStop stop);
 
     /**
      * Returns a list of values as string list.
      * Returns empty list if value is not present, singleton list if attribute is not single-valued.
      */
-    public abstract List<String> getStringValues(TimetableStop t);
+    List<String> getStringValues(TimetableStop t);
 }

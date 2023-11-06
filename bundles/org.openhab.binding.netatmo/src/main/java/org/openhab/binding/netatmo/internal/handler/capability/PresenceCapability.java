@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_FLOODLIGHT;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -50,18 +51,21 @@ public class PresenceCapability extends CameraCapability {
                 return;
             } else if (command instanceof StringType) {
                 try {
-                    FloodLightMode mode = FloodLightMode.valueOf(command.toString());
-                    changeFloodlightMode(mode);
+                    changeFloodlightMode(FloodLightMode.valueOf(command.toString()));
                 } catch (IllegalArgumentException e) {
                     logger.info("Incorrect command '{}' received for channel '{}'", command, channelName);
                 }
                 return;
             }
+        } else if (CHANNEL_SIREN.equals(channelName) && command instanceof OnOffType) {
+            getSecurityCapability().ifPresent(cap -> cap.changeSirenStatus(handler.getId(),
+                    command == OnOffType.ON ? SirenStatus.SOUND : SirenStatus.NO_SOUND));
+            return;
         }
         super.handleCommand(channelName, command);
     }
 
     private void changeFloodlightMode(FloodLightMode mode) {
-        securityCapability.ifPresent(cap -> cap.changeFloodlightMode(handler.getId(), mode));
+        getSecurityCapability().ifPresent(cap -> cap.changeFloodlightMode(handler.getId(), mode));
     }
 }

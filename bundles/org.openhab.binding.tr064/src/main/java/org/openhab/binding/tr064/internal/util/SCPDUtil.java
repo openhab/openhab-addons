@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,22 +36,23 @@ import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDScpdType;
  */
 @NonNullByDefault
 public class SCPDUtil {
-    private SCPDRootType scpdRoot;
+    private final SCPDRootType scpdRoot;
     private final List<SCPDDeviceType> scpdDevicesList = new ArrayList<>();
     private final Map<String, SCPDScpdType> serviceMap = new HashMap<>();
 
-    public SCPDUtil(HttpClient httpClient, String endpoint) throws SCPDException {
-        SCPDRootType scpdRoot = Util.getAndUnmarshalXML(httpClient, endpoint + "/tr64desc.xml", SCPDRootType.class);
+    public SCPDUtil(HttpClient httpClient, String endpoint, int timeout) throws SCPDException {
+        SCPDRootType scpdRoot = Util.getAndUnmarshalXML(httpClient, endpoint + "/tr64desc.xml", SCPDRootType.class,
+                timeout);
         if (scpdRoot == null) {
             throw new SCPDException("could not get SCPD root");
         }
         this.scpdRoot = scpdRoot;
 
-        scpdDevicesList.addAll(flatDeviceList(scpdRoot.getDevice()).collect(Collectors.toList()));
+        scpdDevicesList.addAll(flatDeviceList(scpdRoot.getDevice()).toList());
         for (SCPDDeviceType device : scpdDevicesList) {
             for (SCPDServiceType service : device.getServiceList()) {
                 SCPDScpdType scpd = serviceMap.computeIfAbsent(service.getServiceId(), serviceId -> Util
-                        .getAndUnmarshalXML(httpClient, endpoint + service.getSCPDURL(), SCPDScpdType.class));
+                        .getAndUnmarshalXML(httpClient, endpoint + service.getSCPDURL(), SCPDScpdType.class, timeout));
                 if (scpd == null) {
                     throw new SCPDException("could not get SCPD service");
                 }
@@ -80,7 +81,7 @@ public class SCPDUtil {
     }
 
     /**
-     * get a single device by it's UDN
+     * get a single device by its UDN
      *
      * @param udn the device UDN
      * @return the device
@@ -94,7 +95,7 @@ public class SCPDUtil {
     }
 
     /**
-     * get a single service by it's serviceId
+     * get a single service by its serviceId
      *
      * @param serviceId the service id
      * @return the service

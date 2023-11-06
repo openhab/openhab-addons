@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,8 +49,7 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
     public @Nullable V put(K key, V value) {
         Date date = new Date();
         timeMap.put(key, date.getTime());
-        V returnVal = super.put(key, value);
-        return returnVal;
+        return super.put(key, value);
     }
 
     @Override
@@ -87,6 +86,7 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
             }
         }
 
+        @SuppressWarnings("null")
         private void cleanMap() {
             long currentTime = new Date().getTime();
             for (K key : timeMap.keySet()) {

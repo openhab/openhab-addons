@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -68,18 +69,18 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     private static final String SCOPE = "all";
     private final List<HydrawiseControllerListener> controllerListeners = Collections
             .synchronizedList(new ArrayList<HydrawiseControllerListener>());
-    private final HydrawiseGraphQLClient apiClient;
-    private final OAuthClientService oAuthService;
+    private final HttpClient httpClient;
+    private final OAuthFactory oAuthFactory;
+    private @Nullable OAuthClientService oAuthService;
+    private @Nullable HydrawiseGraphQLClient apiClient;
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable Customer lastData;
     private int refresh;
 
     public HydrawiseAccountHandler(final Bridge bridge, final HttpClient httpClient, final OAuthFactory oAuthFactory) {
         super(bridge);
-        this.oAuthService = oAuthFactory.createOAuthClientService(getThing().toString(), AUTH_URL, AUTH_URL, CLIENT_ID,
-                CLIENT_SECRET, SCOPE, false);
-        oAuthService.addAccessTokenRefreshListener(this);
-        this.apiClient = new HydrawiseGraphQLClient(httpClient, oAuthService);
+        this.httpClient = httpClient;
+        this.oAuthFactory = oAuthFactory;
     }
 
     @Override
@@ -88,14 +89,31 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
 
     @Override
     public void initialize() {
+        OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(getThing().toString(), AUTH_URL,
+                AUTH_URL, CLIENT_ID, CLIENT_SECRET, SCOPE, false);
+        this.oAuthService = oAuthService;
+        oAuthService.addAccessTokenRefreshListener(this);
+        this.apiClient = new HydrawiseGraphQLClient(httpClient, oAuthService);
         logger.debug("Handler initialized.");
-        scheduler.schedule(this::configure, 0, TimeUnit.SECONDS);
+        scheduler.schedule(() -> configure(oAuthService), 0, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
         clearPolling();
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService != null) {
+            oAuthService.removeAccessTokenRefreshListener(this);
+            oAuthFactory.ungetOAuthService(getThing().toString());
+            this.oAuthService = null;
+        }
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(getThing().toString());
+        super.handleRemoval();
     }
 
     @Override
@@ -105,7 +123,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(HydrawiseCloudControllerDiscoveryService.class);
+        return Set.of(HydrawiseCloudControllerDiscoveryService.class);
     }
 
     public void addControllerListeners(HydrawiseControllerListener listener) {
@@ -134,7 +152,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
         initPolling(delaySeconds, this.refresh);
     }
 
-    private void configure() {
+    private void configure(OAuthClientService oAuthService) {
         HydrawiseAccountConfiguration config = getConfig().as(HydrawiseAccountConfiguration.class);
         try {
             if (!config.userName.isEmpty() && !config.password.isEmpty()) {
@@ -192,7 +210,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
             if (response == null) {
                 throw new HydrawiseConnectionException("Malformed response");
             }
-            if (response.errors != null && response.errors.size() > 0) {
+            if (response.errors != null && !response.errors.isEmpty()) {
                 throw new HydrawiseConnectionException(response.errors.stream().map(error -> error.message).reduce("",
                         (messages, message) -> messages + message + ". "));
             }

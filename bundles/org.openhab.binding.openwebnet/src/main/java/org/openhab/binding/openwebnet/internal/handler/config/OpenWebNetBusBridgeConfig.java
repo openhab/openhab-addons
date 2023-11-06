@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ public class OpenWebNetBusBridgeConfig {
     private @Nullable String host;
     private String passwd = "12345";
     private boolean discoveryByActivation = false;
+    private boolean dateTimeSynch = false;
 
     public BigDecimal getPort() {
         return port;
@@ -45,5 +46,9 @@ public class OpenWebNetBusBridgeConfig {
 
     public Boolean getDiscoveryByActivation() {
         return discoveryByActivation;
+    }
+
+    public Boolean getDateTimeSynch() {
+        return dateTimeSynch;
     }
 }

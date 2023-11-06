@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,9 @@ import static org.openhab.binding.tr064.internal.util.Util.getSOAPElement;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -28,7 +28,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.xml.soap.MessageFactory;
-import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPElement;
@@ -39,6 +38,7 @@ import javax.xml.soap.SOAPPart;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
@@ -67,19 +67,20 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SOAPConnector {
-    private static final int SOAP_TIMEOUT = 5; // in
     private final Logger logger = LoggerFactory.getLogger(SOAPConnector.class);
     private final HttpClient httpClient;
     private final String endpointBaseURL;
     private final SOAPValueConverter soapValueConverter;
+    private final int timeout;
 
     private final ExpiringCacheMap<SOAPRequest, SOAPMessage> soapMessageCache = new ExpiringCacheMap<>(
             Duration.ofMillis(2000));
 
-    public SOAPConnector(HttpClient httpClient, String endpointBaseURL) {
+    public SOAPConnector(HttpClient httpClient, String endpointBaseURL, int timeout) {
         this.httpClient = httpClient;
         this.endpointBaseURL = endpointBaseURL;
-        this.soapValueConverter = new SOAPValueConverter(httpClient);
+        this.timeout = timeout;
+        this.soapValueConverter = new SOAPValueConverter(httpClient, timeout);
     }
 
     /**
@@ -118,7 +119,7 @@ public class SOAPConnector {
         // create Request and add headers and content
         Request request = httpClient.newRequest(endpointBaseURL + soapRequest.service.getControlURL())
                 .method(HttpMethod.POST);
-        ((Iterator<MimeHeader>) soapMessage.getMimeHeaders().getAllHeaders())
+        soapMessage.getMimeHeaders().getAllHeaders()
                 .forEachRemaining(header -> request.header(header.getName(), header.getValue()));
         try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             soapMessage.writeTo(os);
@@ -152,8 +153,8 @@ public class SOAPConnector {
             return soapMessage;
         } catch (IllegalArgumentException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof Tr064CommunicationException) {
-                throw (Tr064CommunicationException) cause;
+            if (cause instanceof Tr064CommunicationException tr064CommunicationException) {
+                throw tr064CommunicationException;
             } else {
                 throw e;
             }
@@ -169,7 +170,7 @@ public class SOAPConnector {
      */
     public synchronized SOAPMessage doSOAPRequestUncached(SOAPRequest soapRequest) throws Tr064CommunicationException {
         try {
-            Request request = prepareSOAPRequest(soapRequest).timeout(SOAP_TIMEOUT, TimeUnit.SECONDS);
+            Request request = prepareSOAPRequest(soapRequest).timeout(timeout, TimeUnit.SECONDS);
             if (logger.isTraceEnabled()) {
                 request.getContent().forEach(buffer -> logger.trace("Request: {}", new String(buffer.array())));
             }
@@ -178,8 +179,12 @@ public class SOAPConnector {
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 // retry once if authentication expired
                 logger.trace("Re-Auth needed.");
-                httpClient.getAuthenticationStore().clearAuthenticationResults();
-                request = prepareSOAPRequest(soapRequest).timeout(SOAP_TIMEOUT, TimeUnit.SECONDS);
+                Authentication.Result authResult = httpClient.getAuthenticationStore()
+                        .findAuthenticationResult(URI.create(endpointBaseURL));
+                if (authResult != null) {
+                    httpClient.getAuthenticationStore().removeAuthenticationResult(authResult);
+                }
+                request = prepareSOAPRequest(soapRequest).timeout(timeout, TimeUnit.SECONDS);
                 response = request.send();
             }
             try (final ByteArrayInputStream is = new ByteArrayInputStream(response.getContent())) {
@@ -247,14 +252,11 @@ public class SOAPConnector {
             final SCPDActionType getAction = channelConfig.getGetAction();
             if (getAction == null) {
                 // channel has no get action, return a default
-                switch (channelConfig.getDataType()) {
-                    case "boolean":
-                        return OnOffType.OFF;
-                    case "string":
-                        return StringType.EMPTY;
-                    default:
-                        return UnDefType.UNDEF;
-                }
+                return switch (channelConfig.getDataType()) {
+                    case "boolean" -> OnOffType.OFF;
+                    case "string" -> StringType.EMPTY;
+                    default -> UnDefType.UNDEF;
+                };
             }
 
             // get value(s) from remote device
@@ -290,11 +292,13 @@ public class SOAPConnector {
         } catch (Tr064CommunicationException e) {
             if (e.getHttpError() == 500) {
                 switch (e.getSoapError()) {
-                    case "714":
+                    case "714" -> {
                         // NoSuchEntryInArray usually is an unknown entry in the MAC list
                         logger.debug("Failed to get {}: {}", channelConfig, e.getMessage());
                         return UnDefType.UNDEF;
-                    default:
+                    }
+                    default -> {
+                    }
                 }
             }
             // all other cases are an error

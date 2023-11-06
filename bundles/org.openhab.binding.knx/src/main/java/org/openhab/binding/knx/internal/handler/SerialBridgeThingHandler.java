@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.NoOpClient;
 import org.openhab.binding.knx.internal.client.SerialClient;
 import org.openhab.binding.knx.internal.config.SerialBridgeConfiguration;
+import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * directly defined on the bridge
  *
  * @author Karel Goderis - Initial contribution
- * @author Simon Kaufmann - Refactoring & cleanup
+ * @author Simon Kaufmann - Refactoring and cleanup
  */
 @NonNullByDefault
 public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
@@ -42,8 +43,11 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SerialBridgeThingHandler.class);
 
-    public SerialBridgeThingHandler(Bridge bridge) {
+    private final SerialPortManager serialPortManager;
+
+    public SerialBridgeThingHandler(Bridge bridge, final SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -53,7 +57,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
         SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
         client = new SerialClient(config.getAutoReconnectPeriod(), thing.getUID(), config.getResponseTimeout(),
                 config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), config.getSerialPort(),
-                config.useCemi(), this);
+                config.useCemi(), serialPortManager, getCommandExtensionData(), this);
 
         updateStatus(ThingStatus.UNKNOWN);
         // delay actual initialization, allow for longer runtime of actual initialization
@@ -61,7 +65,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
     }
 
     public void initializeLater() {
-        final var tmpClient = client;
+        SerialClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.initialize();
         }
@@ -69,7 +73,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void dispose() {
-        final var tmpInitJob = initJob;
+        Future<?> tmpInitJob = initJob;
         if (tmpInitJob != null) {
             if (!tmpInitJob.isDone()) {
                 logger.trace("Bridge {}, shutdown during init, trying to cancel", thing.getUID());
@@ -83,7 +87,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
             initJob = null;
         }
 
-        final var tmpClient = client;
+        SerialClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.dispose();
             client = null;

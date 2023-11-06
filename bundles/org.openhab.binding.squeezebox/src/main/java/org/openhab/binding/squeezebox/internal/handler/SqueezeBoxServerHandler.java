@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,8 +84,7 @@ import com.google.gson.JsonSyntaxException;
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(SQUEEZEBOXSERVER_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SQUEEZEBOXSERVER_THING_TYPE);
 
     // time in seconds to try to reconnect
     private static final int RECONNECT_TIME = 60;
@@ -262,7 +261,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         int newVolume = volume;
         newVolume = Math.min(100, newVolume);
         newVolume = Math.max(0, newVolume);
-        sendCommand(mac + " mixer volume " + String.valueOf(newVolume));
+        sendCommand(mac + " mixer volume " + newVolume);
     }
 
     public void showString(String mac, String line) {
@@ -270,7 +269,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void showString(String mac, String line, int duration) {
-        sendCommand(mac + " show line1:" + line + " duration:" + String.valueOf(duration));
+        sendCommand(mac + " show line1:" + line + " duration:" + duration);
     }
 
     public void showStringHuge(String mac, String line) {
@@ -278,7 +277,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void showStringHuge(String mac, String line, int duration) {
-        sendCommand(mac + " show line1:" + line + " font:huge duration:" + String.valueOf(duration));
+        sendCommand(mac + " show line1:" + line + " font:huge duration:" + duration);
     }
 
     public void showStrings(String mac, String line1, String line2) {
@@ -286,7 +285,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void showStrings(String mac, String line1, String line2, int duration) {
-        sendCommand(mac + " show line1:" + line1 + " line2:" + line2 + " duration:" + String.valueOf(duration));
+        sendCommand(mac + " show line1:" + line1 + " line2:" + line2 + " duration:" + duration);
     }
 
     public void playFavorite(String mac, String favorite) {
@@ -300,13 +299,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void sleep(String mac, Duration sleepDuration) {
-        sendCommand(mac + " sleep " + String.valueOf(sleepDuration.toSeconds()));
+        sendCommand(mac + " sleep " + sleepDuration.toSeconds());
     }
 
     /**
      * Send a generic command to a given player
      *
-     * @param playerId
+     * @param mac
      * @param command
      */
     public void playerCommand(String mac, String command) {
@@ -576,7 +575,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     players.put(macAddress, player);
                     updatePlayer(listener -> listener.playerAdded(player));
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.macAddress + " status - 1 subscribe:10 tags:yagJlNKjc");
+                    sendCommand(player.macAddress + " status - 1 subscribe:10 tags:yagJlNKjcA");
                 }
             }
             for (final SqueezeBoxPlayer player : players.values()) {
@@ -674,7 +673,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handleStatusMessage(final String mac, String[] messageParts) {
-            String remoteTitle = "", artist = "", album = "", genre = "", year = "";
+            String remoteTitle = "", artist = "", album = "", genre = "", year = "", albumArtist = "", trackArtist = "",
+                    band = "", composer = "", conductor = "";
             boolean coverart = false;
             String coverid = null;
             String artworkUrl = null;
@@ -745,6 +745,26 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     else if ("genre".equals(entry.key)) {
                         genre = entry.value;
                     }
+                    // Parameter Album Artist
+                    else if ("albumartist".equals(entry.key)) {
+                        albumArtist = entry.value;
+                    }
+                    // Parameter Track Artist
+                    else if ("trackartist".equals(entry.key)) {
+                        trackArtist = entry.value;
+                    }
+                    // Parameter Band
+                    else if ("band".equals(entry.key)) {
+                        band = entry.value;
+                    }
+                    // Parameter Composer
+                    else if ("composer".equals(entry.key)) {
+                        composer = entry.value;
+                    }
+                    // Parameter Conductor
+                    else if ("conductor".equals(entry.key)) {
+                        conductor = entry.value;
+                    }
                     // Parameter Year
                     else if ("year".equals(entry.key)) {
                         year = entry.value;
@@ -776,6 +796,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             final String finalAlbum = album;
             final String finalGenre = genre;
             final String finalYear = year;
+            final String finalAlbumArtist = albumArtist;
+            final String finalTrackArtist = trackArtist;
+            final String finalBand = band;
+            final String finalComposer = composer;
+            final String finalConductor = conductor;
 
             updatePlayer(listener -> {
                 listener.coverArtChangeEvent(mac, finalUrl);
@@ -784,6 +809,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 listener.albumChangeEvent(mac, finalAlbum);
                 listener.genreChangeEvent(mac, finalGenre);
                 listener.yearChangeEvent(mac, finalYear);
+                listener.albumArtistChangeEvent(mac, finalAlbumArtist);
+                listener.trackArtistChangeEvent(mac, finalTrackArtist);
+                listener.bandChangeEvent(mac, finalBand);
+                listener.composerChangeEvent(mac, finalComposer);
+                listener.conductorChangeEvent(mac, finalConductor);
             });
         }
 
@@ -825,18 +855,18 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
             String action = messageParts[2];
             String mode;
-            if (action.equals("newsong")) {
+            if ("newsong".equals(action)) {
                 mode = "play";
                 // Execute in separate thread to avoid delaying listener
                 scheduler.execute(() -> updateCustomButtons(mac));
                 // Set the track duration to 0
                 updatePlayer(listener -> listener.durationEvent(mac, 0));
-            } else if (action.equals("pause")) {
+            } else if ("pause".equals(action)) {
                 if (messageParts.length < 4) {
                     return;
                 }
-                mode = messageParts[3].equals("0") ? "play" : "pause";
-            } else if (action.equals("stop")) {
+                mode = "0".equals(messageParts[3]) ? "play" : "pause";
+            } else if ("stop".equals(action)) {
                 mode = "stop";
             } else if ("play".equals(action) && "playlist".equals(messageParts[1])) {
                 if (messageParts.length >= 4) {
@@ -853,7 +883,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handleSourceChangeMessage(String mac, String rawSource) {
-            String source = URLDecoder.decode(rawSource);
+            String source = URLDecoder.decode(rawSource, StandardCharsets.UTF_8);
             updatePlayer(listener -> listener.sourceChangeEvent(mac, source));
         }
 
@@ -862,13 +892,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 return;
             }
             // server prefsets
-            if (messageParts[2].equals("server")) {
+            if ("server".equals(messageParts[2])) {
                 String function = messageParts[3];
                 String value = messageParts[4];
-                if (function.equals("power")) {
-                    final boolean power = value.equals("1");
+                if ("power".equals(function)) {
+                    final boolean power = "1".equals(value);
                     updatePlayer(listener -> listener.powerChangeEvent(mac, power));
-                } else if (function.equals("volume")) {
+                } else if ("volume".equals(function)) {
                     final int volume = (int) Double.parseDouble(value);
                     updatePlayer(listener -> listener.absoluteVolumeChangeEvent(mac, volume));
                 }
@@ -908,7 +938,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     boolean hasitems = "1".equals(entry.value);
                     if (f != null) {
                         // Except for some favorites (e.g. Spotify) use hasitems:1 and type:playlist
-                        if (hasitems && isTypePlaylist == false) {
+                        if (hasitems && !isTypePlaylist) {
                             // Skip subfolders
                             favorites.remove(f);
                             f = null;
@@ -936,7 +966,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             String quote = includeQuotes.booleanValue() ? "\"" : "";
             StringBuilder sb = new StringBuilder();
             for (Favorite favorite : favorites) {
-                sb.append(favorite.shortId).append("=").append(quote).append(favorite.name.replaceAll(",", ""))
+                sb.append(favorite.shortId).append("=").append(quote).append(favorite.name.replace(",", ""))
                         .append(quote).append(",");
             }
 
@@ -1032,8 +1062,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         List<Thing> things = bridge.getThings();
         for (Thing thing : things) {
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof SqueezeBoxPlayerEventListener && !squeezeBoxPlayerListeners.contains(handler)) {
-                event.updateListener((SqueezeBoxPlayerEventListener) handler);
+            if (handler instanceof SqueezeBoxPlayerEventListener playerEventListener
+                    && !squeezeBoxPlayerListeners.contains(handler)) {
+                event.updateListener(playerEventListener);
             }
         }
     }

@@ -1,0 +1,23 @@
+{
+    "errors": [],
+    "data": [
+        {
+            "id": "00000000-0000-0000-0000-000000000002",
+            "id_v1": "/sensors/4",
+            "owner": {
+                "rid": "00000000-0000-0000-0000-000000000000",
+                "rtype": "device"
+            },
+            "enabled": true,
+            "light": {
+                "light_level": 2578,
+                "light_level_valid": true,
+                "light_level_report": {
+                    "changed": "2023-09-11T19:20:02.958Z",
+                    "light_level": 3578
+                }
+            },
+            "type": "light_level"
+        }
+    ]
+}

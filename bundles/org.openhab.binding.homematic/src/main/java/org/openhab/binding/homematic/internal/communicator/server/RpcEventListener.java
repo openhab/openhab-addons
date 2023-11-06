@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,15 +26,15 @@ public interface RpcEventListener {
     /**
      * Called when a new event is received from a Homeamtic gateway.
      */
-    public void eventReceived(HmDatapointInfo dpInfo, Object newValue);
+    void eventReceived(HmDatapointInfo dpInfo, Object newValue);
 
     /**
      * Called when new devices has been detected on the Homeamtic gateway.
      */
-    public void newDevices(List<String> adresses);
+    void newDevices(List<String> adresses);
 
     /**
      * Called when devices has been deleted from the Homeamtic gateway.
      */
-    public void deleteDevices(List<String> addresses);
+    void deleteDevices(List<String> addresses);
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.dmx.internal;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dmx.internal.action.ActionState;
 import org.openhab.binding.dmx.internal.action.FadeAction;
@@ -25,15 +26,15 @@ import org.openhab.binding.dmx.internal.multiverse.DmxChannel;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class FadeActionTest {
-
-    private static final int testValue = 200;
-    private static final int testFadeTime = 1000;
-    private static final int testHoldTime = 1000;
+    private static final int TEST_VALUE = 200;
+    private static final int TEST_FADE_TIME = 1000;
+    private static final int TEST_HOLD_TIME = 1000;
 
     @Test
     public void checkWithFadingWithoutHold() {
-        FadeAction fadeAction = new FadeAction(testFadeTime, testValue, 0);
+        FadeAction fadeAction = new FadeAction(TEST_FADE_TIME, TEST_VALUE, 0);
         DmxChannel testChannel = new DmxChannel(0, 1, 0);
         testChannel.setValue(0);
 
@@ -42,8 +43,8 @@ public class FadeActionTest {
         assertThat(fadeAction.getState(), is(ActionState.WAITING));
         assertThat(fadeAction.getNewValue(testChannel, startTime), is(0));
         assertThat(fadeAction.getState(), is(ActionState.RUNNING));
-        assertThat(fadeAction.getNewValue(testChannel, startTime + testFadeTime / 2), is(256 * testValue / 2));
-        assertThat(fadeAction.getNewValue(testChannel, startTime + 1000), is(256 * testValue));
+        assertThat(fadeAction.getNewValue(testChannel, startTime + TEST_FADE_TIME / 2), is(256 * TEST_VALUE / 2));
+        assertThat(fadeAction.getNewValue(testChannel, startTime + 1000), is(256 * TEST_VALUE));
         assertThat(fadeAction.getState(), is(ActionState.COMPLETED));
 
         fadeAction.reset();
@@ -52,7 +53,7 @@ public class FadeActionTest {
 
     @Test
     public void checkWithFadingWithHold() {
-        FadeAction fadeAction = new FadeAction(testFadeTime, testValue, testHoldTime);
+        FadeAction fadeAction = new FadeAction(TEST_FADE_TIME, TEST_VALUE, TEST_HOLD_TIME);
         DmxChannel testChannel = new DmxChannel(0, 1, 0);
         testChannel.setValue(0);
 
@@ -61,13 +62,14 @@ public class FadeActionTest {
         assertThat(fadeAction.getState(), is(ActionState.WAITING));
         assertThat(fadeAction.getNewValue(testChannel, startTime), is(0));
         assertThat(fadeAction.getState(), is(ActionState.RUNNING));
-        assertThat(fadeAction.getNewValue(testChannel, startTime + testFadeTime / 2), is(256 * testValue / 2));
-        assertThat(fadeAction.getNewValue(testChannel, startTime + testFadeTime), is(256 * testValue));
+        assertThat(fadeAction.getNewValue(testChannel, startTime + TEST_FADE_TIME / 2), is(256 * TEST_VALUE / 2));
+        assertThat(fadeAction.getNewValue(testChannel, startTime + TEST_FADE_TIME), is(256 * TEST_VALUE));
         assertThat(fadeAction.getState(), is(ActionState.RUNNING));
-        assertThat(fadeAction.getNewValue(testChannel, startTime + testFadeTime + testHoldTime / 2),
-                is(256 * testValue));
+        assertThat(fadeAction.getNewValue(testChannel, startTime + TEST_FADE_TIME + TEST_HOLD_TIME / 2),
+                is(256 * TEST_VALUE));
         assertThat(fadeAction.getState(), is(ActionState.RUNNING));
-        assertThat(fadeAction.getNewValue(testChannel, startTime + testFadeTime + testHoldTime), is(256 * testValue));
+        assertThat(fadeAction.getNewValue(testChannel, startTime + TEST_FADE_TIME + TEST_HOLD_TIME),
+                is(256 * TEST_VALUE));
         assertThat(fadeAction.getState(), is(ActionState.COMPLETED));
 
         fadeAction.reset();
@@ -76,7 +78,7 @@ public class FadeActionTest {
 
     @Test
     public void checkWithFadingWithInfiniteHold() {
-        FadeAction fadeAction = new FadeAction(testFadeTime, testValue, -1);
+        FadeAction fadeAction = new FadeAction(TEST_FADE_TIME, TEST_VALUE, -1);
         DmxChannel testChannel = new DmxChannel(0, 1, 0);
         testChannel.setValue(0);
 
@@ -85,8 +87,8 @@ public class FadeActionTest {
         assertThat(fadeAction.getState(), is(ActionState.WAITING));
         assertThat(fadeAction.getNewValue(testChannel, startTime), is(0));
         assertThat(fadeAction.getState(), is(ActionState.RUNNING));
-        assertThat(fadeAction.getNewValue(testChannel, startTime + testFadeTime / 2), is(256 * testValue / 2));
-        assertThat(fadeAction.getNewValue(testChannel, startTime + testFadeTime), is(256 * testValue));
+        assertThat(fadeAction.getNewValue(testChannel, startTime + TEST_FADE_TIME / 2), is(256 * TEST_VALUE / 2));
+        assertThat(fadeAction.getNewValue(testChannel, startTime + TEST_FADE_TIME), is(256 * TEST_VALUE));
         assertThat(fadeAction.getState(), is(ActionState.COMPLETEDFINAL));
 
         fadeAction.reset();
@@ -95,18 +97,18 @@ public class FadeActionTest {
 
     @Test
     public void checkWithoutFadingWithHold() {
-        FadeAction fadeAction = new FadeAction(0, testValue, testHoldTime);
+        FadeAction fadeAction = new FadeAction(0, TEST_VALUE, TEST_HOLD_TIME);
         DmxChannel testChannel = new DmxChannel(0, 1, 0);
         testChannel.setValue(0);
 
         long startTime = System.currentTimeMillis();
 
         assertThat(fadeAction.getState(), is(ActionState.WAITING));
-        assertThat(fadeAction.getNewValue(testChannel, startTime), is(256 * testValue));
+        assertThat(fadeAction.getNewValue(testChannel, startTime), is(256 * TEST_VALUE));
         assertThat(fadeAction.getState(), is(ActionState.RUNNING));
-        assertThat(fadeAction.getNewValue(testChannel, startTime + testHoldTime / 2), is(256 * testValue));
+        assertThat(fadeAction.getNewValue(testChannel, startTime + TEST_HOLD_TIME / 2), is(256 * TEST_VALUE));
         assertThat(fadeAction.getState(), is(ActionState.RUNNING));
-        assertThat(fadeAction.getNewValue(testChannel, startTime + testHoldTime), is(256 * testValue));
+        assertThat(fadeAction.getNewValue(testChannel, startTime + TEST_HOLD_TIME), is(256 * TEST_VALUE));
         assertThat(fadeAction.getState(), is(ActionState.COMPLETED));
 
         fadeAction.reset();
@@ -115,14 +117,14 @@ public class FadeActionTest {
 
     @Test
     public void checkWithoutFadingWithoutHold() {
-        FadeAction fadeAction = new FadeAction(0, testValue, 0);
+        FadeAction fadeAction = new FadeAction(0, TEST_VALUE, 0);
         DmxChannel testChannel = new DmxChannel(0, 1, 0);
         testChannel.setValue(0);
 
         long startTime = System.currentTimeMillis();
 
         assertThat(fadeAction.getState(), is(ActionState.WAITING));
-        assertThat(fadeAction.getNewValue(testChannel, startTime), is(256 * testValue));
+        assertThat(fadeAction.getNewValue(testChannel, startTime), is(256 * TEST_VALUE));
         assertThat(fadeAction.getState(), is(ActionState.COMPLETED));
 
         fadeAction.reset();
@@ -131,14 +133,14 @@ public class FadeActionTest {
 
     @Test
     public void checkWithoutFadingWithInfiniteHold() {
-        FadeAction fadeAction = new FadeAction(0, testValue, -1);
+        FadeAction fadeAction = new FadeAction(0, TEST_VALUE, -1);
         DmxChannel testChannel = new DmxChannel(0, 1, 0);
         testChannel.setValue(0);
 
         long startTime = System.currentTimeMillis();
 
         assertThat(fadeAction.getState(), is(ActionState.WAITING));
-        assertThat(fadeAction.getNewValue(testChannel, startTime), is(256 * testValue));
+        assertThat(fadeAction.getNewValue(testChannel, startTime), is(256 * TEST_VALUE));
         assertThat(fadeAction.getState(), is(ActionState.COMPLETEDFINAL));
 
         fadeAction.reset();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
 import org.openhab.binding.neohub.internal.NeoHubBindingConstants.NeoHubReturnResult;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -65,6 +66,8 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     private final Map<String, Boolean> connectionStates = new HashMap<>();
 
+    private WebSocketFactory webSocketFactory;
+
     private @Nullable NeoHubConfiguration config;
     private @Nullable NeoHubSocketBase socket;
     private @Nullable ScheduledFuture<?> lazyPollingScheduler;
@@ -89,8 +92,9 @@ public class NeoHubHandler extends BaseBridgeHandler {
     private boolean isApiOnline = false;
     private int failedSendAttempts = 0;
 
-    public NeoHubHandler(Bridge bridge) {
+    public NeoHubHandler(Bridge bridge, WebSocketFactory webSocketFactory) {
         super(bridge);
+        this.webSocketFactory = webSocketFactory;
     }
 
     @Override
@@ -148,7 +152,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         NeoHubSocketBase socket;
         try {
             if (config.useWebSocket) {
-                socket = new NeoHubWebSocket(config, thing.getUID().getAsString());
+                socket = new NeoHubWebSocket(config, webSocketFactory, thing.getUID());
             } else {
                 socket = new NeoHubSocket(config, thing.getUID().getAsString());
             }
@@ -310,14 +314,14 @@ public class NeoHubHandler extends BaseBridgeHandler {
             // check if we also need to discard and update systemData
             NeoHubReadDcbResponse systemData = this.systemData;
             if (systemData != null) {
-                if (deviceData instanceof NeoHubLiveDeviceData) {
+                if (deviceData instanceof NeoHubLiveDeviceData liveDeviceData) {
                     /*
                      * note: time-stamps are measured in seconds from 1970-01-01T00:00:00Z
                      *
                      * new API: discard systemData if its time-stamp is older than the system
                      * time-stamp on the hub
                      */
-                    if (systemData.timeStamp < ((NeoHubLiveDeviceData) deviceData).getTimestampSystem()) {
+                    if (systemData.timeStamp < liveDeviceData.getTimestampSystem()) {
                         this.systemData = null;
                     }
                 } else {
@@ -412,8 +416,8 @@ public class NeoHubHandler extends BaseBridgeHandler {
             List<Thing> children = getThing().getThings();
             for (Thing child : children) {
                 ThingHandler device = child.getHandler();
-                if (device instanceof NeoBaseHandler) {
-                    ((NeoBaseHandler) device).toBaseSendPollResponse(deviceData);
+                if (device instanceof NeoBaseHandler neoBaseHandler) {
+                    neoBaseHandler.toBaseSendPollResponse(deviceData);
                 }
             }
 

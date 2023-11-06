@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,7 +129,7 @@ public class ShadeCapabilitiesDatabase {
         protected Type() {
         }
 
-        protected Type(int type) {
+        public Type(int type) {
             intValue = type;
         }
 
@@ -418,9 +418,9 @@ public class ShadeCapabilitiesDatabase {
      * @param propertyValue
      */
     public void logPropertyMismatch(String propertyKey, int type, int capabilities, boolean propertyValue) {
-        logger.warn(
-                "The '{}:{}' property actually reported by shade 'type:{}' is different "
-                        + "than expected from its 'capabilities:{}' in the database!{}",
-                propertyKey, propertyValue, type, capabilities, REQUEST_DEVELOPERS_TO_UPDATE);
+        logger.warn("""
+                The '{}:{}' property actually reported by shade 'type:{}' is different \
+                than expected from its 'capabilities:{}' in the database!{}\
+                """, propertyKey, propertyValue, type, capabilities, REQUEST_DEVELOPERS_TO_UPDATE);
     }
 }

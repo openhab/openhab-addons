@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ public final class DSMRBindingConstants {
     public static final String CONFIGURATION_DECRYPTION_KEY = "decryptionKey";
     public static final String CONFIGURATION_DECRYPTION_KEY_EMPTY = "";
     public static final String CONFIGURATION_ADDITIONAL_KEY = "additionalKey";
-    public static final String ADDITIONAL_KEY_DEFAULT = "3000112233445566778899AABBCCDDEEFF";
+    public static final String CONFIGURATION_ADDITIONAL_KEY_DEFAULT = "3000112233445566778899AABBCCDDEEFF";
 
     private DSMRBindingConstants() {
         // Constants class

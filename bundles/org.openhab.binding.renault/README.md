@@ -7,7 +7,7 @@ The binding translates the [python based renault-api](https://renault-api.readth
 
 ## Supported Things
 
-Supports MyRenault registered cars with an active Connected-Services account.
+Supports MyRenault (and MyDacia) registered cars with an active Connected-Services account.
 
 This binding can only retrieve information that is available in the MyRenault App.
 
@@ -19,15 +19,16 @@ No discovery
 
 You require your MyRenault credential, locale and VIN for your MyRenault registered car.
 
-| Parameter         | Description                                                                | Required |
-|-------------------|----------------------------------------------------------------------------|----------|
-| myRenaultUsername | MyRenault Username.                                                        | yes      |
-| myRenaultPassword | MyRenault Password.                                                        | yes      |
-| locale            | MyRenault Location (language_country).                                     | yes      |
-| vin               | Vehicle Identification Number.                                             | yes      |
-| refreshInterval   | Interval the car is polled in minutes.                                     | no       |
-| updateDelay       | How long to wait for commands to reach car and update to server in seconds.| no       |
-| kamereonApiKey    | Kamereon API Key.                                                          | no       |
+| Parameter         | Description                                                                | Default                          |
+|-------------------|----------------------------------------------------------------------------|----------------------------------|
+| accountType       | Account Type. (MYDACIA,MYRENAULT)                                          | MYRENAULT                        |
+| myRenaultUsername | MyRenault Username.                                                        |                                  |
+| myRenaultPassword | MyRenault Password.                                                        |                                  |
+| locale            | MyRenault Location (language_country).                                     |                                  |
+| vin               | Vehicle Identification Number.                                             |                                  |
+| refreshInterval   | Interval the car is polled in minutes.                                     |                               10 |
+| updateDelay       | How long to wait for commands to reach car and update to server in seconds.|                               30 |
+| kamereonApiKey    | Kamereon API Key.                                                          | VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss |
 
 ## Channels
 
@@ -35,7 +36,9 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 |------------------------|--------------------|-------------------------------------------------|-----------|
 | batteryavailableEnergy | Number:Energy      | Battery Energy Available                        | Yes       |
 | batterylevel           | Number             | State of the battery in %                       | Yes       |
+| batterystatusupdated   | DateTime           | Timestamp of the last battery status update     | Yes       |
 | chargingmode           | String             | Charging mode. always_charging or schedule_mode | No        |
+| pause                  | Switch             | Pause the charge.                               | No        |
 | chargingstatus         | String             | Charging status                                 | Yes       |
 | chargingremainingtime  | Number:Time        | Charging time remaining                         | Yes       |
 | plugstatus             | String             | Status of charging plug                         | Yes       |
@@ -47,6 +50,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | image                  | String             | Image URL of MyRenault                          | Yes       |
 | location               | Location           | The GPS position of the vehicle                 | Yes       |
 | locationupdated        | DateTime           | Timestamp of the last location update           | Yes       |
+| locked                 | Switch             | Locked status of the car                        | Yes       |
 
 ## Limitations
 
@@ -56,6 +60,9 @@ The "externaltemperature" only works on a few cars.
 
 The "hvactargettemperature" is used by the hvacstatus ON command for pre-conditioning the car.
 This seams to only allow values 19, 20 and 21 or else the pre-conditioning command will not work.
+
+The 'pause' and 'chargingmode' may not work on some cars. 
+As an example, 'chargingmode' does not work on Dacia Spring cars.
 
 The Kamereon API Key changes periodically, which causes a communication error.
 To fix this error update the API Key in the bindings configuration.
@@ -69,23 +76,24 @@ renaultcar.sitemap:
 sitemap renaultcar label="Renault Car" {
     Frame {
         Image item=RenaultCar_ImageURL
-        Default item=RenaultCar_BatteryLevel icon="batterylevel"
-        Default item=RenaultCar_BatteryEnergyAvailable icon="energy"
-        Default item=RenaultCar_PlugStatus icon="poweroutlet"
-        Default item=RenaultCar_ChargingStatus icon="switch"
-        Selection item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"] icon="switch"
-        Default item=RenaultCar_ChargingTimeRemaining icon="time"
-        Default item=RenaultCar_EstimatedRange
-        Default item=RenaultCar_Odometer
-        Selection item=RenaultCar_HVACStatus mappings=[ON="ON"] icon="switch"
-        Setpoint item=RenaultCar_HVACTargetTemperature minValue=19 maxValue=21 step=1 icon="temperature"
-        Default item=RenaultCar_LocationUpdate icon="time"
-        Default item=RenaultCar_Location
+        Default icon="batterylevel" item=RenaultCar_BatteryLevel
+        Default item=RenaultCar_BatteryEnergyAvailable
+        Default item=RenaultCar_BatteryStatusUpdated
+        Default icon="poweroutlet" item=RenaultCar_PlugStatus
+        Default icon="switch" item=RenaultCar_ChargingStatus
+        Selection icon="switch" item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"]
+        Default icon="switch" item=RenaultCar_Pause
+        Default item=RenaultCar_ChargingTimeRemaining
+        Default icon="pressure" item=RenaultCar_EstimatedRange
+        Default icon="pressure" item=RenaultCar_Odometer
+        Selection icon="switch" item=RenaultCar_HVACStatus mappings=[ON="ON"]
+        Setpoint icon="temperature" item=RenaultCar_HVACTargetTemperature maxValue=21 minValue=19 step=1
+        Default icon="lock" item=RenaultCar_Locked
+        Default item=RenaultCar_LocationUpdate
+        Default icon="zoom" item=RenaultCar_Location
     }
 }
 ```
-
-![Sitemap](doc/sitemap.png)
 
 If you want to limit the charge of the car battery to less than 100%, this can be done as follows.
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.homekit.internal.accessories;
 
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.AIR_QUALITY;
 
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -34,22 +33,12 @@ import io.github.hapjava.services.impl.AirQualityService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitAirQualitySensorImpl extends AbstractHomekitAccessoryImpl implements AirQualityAccessory {
-    private final Map<AirQualityEnum, String> qualityStateMapping = new EnumMap<AirQualityEnum, String>(
-            AirQualityEnum.class) {
-        {
-            put(AirQualityEnum.UNKNOWN, "UNKNOWN");
-            put(AirQualityEnum.EXCELLENT, "EXCELLENT");
-            put(AirQualityEnum.GOOD, "GOOD");
-            put(AirQualityEnum.FAIR, "FAIR");
-            put(AirQualityEnum.INFERIOR, "INFERIOR");
-            put(AirQualityEnum.POOR, "POOR");
-        }
-    };
+    private final Map<AirQualityEnum, String> qualityStateMapping;
 
     public HomekitAirQualitySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        updateMapping(AIR_QUALITY, qualityStateMapping);
+        qualityStateMapping = createMapping(AIR_QUALITY, AirQualityEnum.class);
         getServices().add(new AirQualityService(this));
     }
 

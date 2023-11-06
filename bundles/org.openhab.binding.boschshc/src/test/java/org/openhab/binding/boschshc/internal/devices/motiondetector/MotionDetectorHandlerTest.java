@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,18 @@
  */
 package org.openhab.binding.boschshc.internal.devices.motiondetector;
 
+import static org.mockito.Mockito.verify;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 /**
  * Unit Tests for {@link MotionDetectorHandler}.
@@ -24,7 +32,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
-public class MotionDetectorHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<MotionDetectorHandler> {
+class MotionDetectorHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<MotionDetectorHandler> {
 
     @Override
     protected MotionDetectorHandler createFixture() {
@@ -39,5 +47,19 @@ public class MotionDetectorHandlerTest extends AbstractBatteryPoweredDeviceHandl
     @Override
     protected ThingTypeUID getThingTypeUID() {
         return BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR;
+    }
+
+    @Test
+    void testUpdateChannelsLatestMotionService() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "latestMotionState",
+                   "latestMotionDetected": "2020-04-03T19:02:19.054Z"
+                 }\
+                """);
+        getFixture().processUpdate("LatestMotion", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_LATEST_MOTION),
+                new DateTimeType("2020-04-03T19:02:19.054Z"));
     }
 }

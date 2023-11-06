@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,10 @@ package org.openhab.binding.tr064.internal.soap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link CallListType} is used for post processing the retrieved call list
+ * The {@link CallListType} is used for post-processing the retrieved call list
  *
  * @author Jan N. Klug - Initial contribution
  */
-
 @NonNullByDefault
 public enum CallListType {
     MISSED_COUNT("2"),

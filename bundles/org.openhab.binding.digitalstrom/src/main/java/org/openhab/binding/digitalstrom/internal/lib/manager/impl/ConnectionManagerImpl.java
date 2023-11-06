@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
      * Query to get all enabled application tokens. Can be executed with {@link DsAPI#query(String, String)} or
      * {@link DsAPI#query2(String, String)}.
      */
-    public final String QUERY_GET_ENABLED_APPLICATION_TOKENS = "/system/security/applicationTokens/enabled/*(*)";
+    public static final String QUERY_GET_ENABLED_APPLICATION_TOKENS = "/system/security/applicationTokens/enabled/*(*)";
     private final Logger logger = LoggerFactory.getLogger(ConnectionManagerImpl.class);
 
     private Config config;

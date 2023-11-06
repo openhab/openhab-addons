@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.phc.internal;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.StringUtils;
 
 /**
  * The {@link PHCHelper} is responsible for finding the appropriate Thing(UID)
@@ -35,24 +35,22 @@ public class PHCHelper {
      */
     public static ThingUID getThingUIDreverse(ThingTypeUID thingTypeUID, byte moduleAddr) {
         // convert to 5-bit binary string and reverse in second step
-        String thingID = StringUtils.leftPad(StringUtils.trim(Integer.toBinaryString(moduleAddr & 0xFF)), 5, '0');
+        String thingID = StringUtils.padLeft(Integer.toBinaryString(moduleAddr & 0xFF).trim(), 5, "0");
         thingID = new StringBuilder(thingID).reverse().toString();
 
-        ThingUID thingUID = new ThingUID(thingTypeUID, thingID);
-
-        return thingUID;
+        return new ThingUID(thingTypeUID, thingID);
     }
 
     /**
      * Convert the byte b into a binary String
      *
-     * @param b
+     * @param bytes
      * @return
      */
     public static Object bytesToBinaryString(byte[] bytes) {
         StringBuilder bin = new StringBuilder();
         for (byte b : bytes) {
-            bin.append(StringUtils.leftPad(StringUtils.trim(Integer.toBinaryString(b & 0xFF)), 8, '0'));
+            bin.append(StringUtils.padLeft(Integer.toBinaryString(b & 0xFF).trim(), 8, "0"));
             bin.append(' ');
         }
 

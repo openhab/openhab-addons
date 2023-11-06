@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -45,7 +46,7 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public class CloudUtil {
 
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     /**
      * Saves the Xiaomi cloud device info with tokens to file
@@ -71,11 +72,11 @@ public class CloudUtil {
     /**
      * Generate signature for the request.
      *
-     * @param method http request method. GET or POST
      * @param requestUrl the full request url. e.g.: http://api.xiaomi.com/getUser?id=123321
+     * @param signedNonce secret key for encryption.
+     * @param nonce
      * @param params request params. This should be a TreeMap because the
      *            parameters are required to be in lexicographic order.
-     * @param signedNonce secret key for encryption.
      * @return hash value for the values provided
      * @throws MiIoCryptoException
      */

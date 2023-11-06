@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,11 +99,10 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
 
         if (CHANNEL_HUB_ACTIVE_OVERRIDE_NAME.equals(channelUID.getId())) {
             if (ht != null && h != null) {
-                if (command instanceof StringType) {
-                    StringType strCommand = (StringType) command;
-                    logger.debug("Changing override for hub {} to {}", channelUID, strCommand);
+                if (command instanceof StringType stringCommand) {
+                    logger.debug("Changing override for hub {} to {}", channelUID, stringCommand);
                     try {
-                        OverrideMode mode = OverrideMode.getByName(strCommand.toFullString());
+                        OverrideMode mode = OverrideMode.getByName(stringCommand.toFullString());
                         ht.getConnection().setOverride(h, mode);
                     } catch (NoboCommunicationException nce) {
                         logger.debug("Failed setting override mode", nce);

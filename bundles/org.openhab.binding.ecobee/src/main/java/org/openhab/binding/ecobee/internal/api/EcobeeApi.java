@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,18 +20,20 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ecobee.internal.dto.AbstractResponseDTO;
 import org.openhab.binding.ecobee.internal.dto.SelectionDTO;
 import org.openhab.binding.ecobee.internal.dto.SelectionType;
+import org.openhab.binding.ecobee.internal.dto.thermostat.InstantDeserializer;
+import org.openhab.binding.ecobee.internal.dto.thermostat.LocalDateTimeDeserializer;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatRequestDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatResponseDTO;
@@ -43,6 +45,7 @@ import org.openhab.binding.ecobee.internal.dto.thermostat.summary.RunningDTODese
 import org.openhab.binding.ecobee.internal.dto.thermostat.summary.SummaryResponseDTO;
 import org.openhab.binding.ecobee.internal.function.FunctionRequest;
 import org.openhab.binding.ecobee.internal.handler.EcobeeAccountBridgeHandler;
+import org.openhab.binding.ecobee.internal.util.ExceptionUtils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -66,7 +69,8 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class EcobeeApi implements AccessTokenRefreshListener {
 
-    private static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
             .registerTypeAdapter(RevisionDTO.class, new RevisionDTODeserializer())
             .registerTypeAdapter(RunningDTO.class, new RunningDTODeserializer()).create();
 
@@ -311,7 +315,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     }
 
     private void logIOException(Exception e) {
-        Throwable rootCause = ExceptionUtils.getRootCause(e);
+        Throwable rootCause = ExceptionUtils.getRootThrowable(e);
         if (rootCause instanceof TimeoutException || rootCause instanceof EOFException) {
             // These are "normal" errors and should be logged as DEBUG
             logger.debug("API: Call to Ecobee API failed with exception: {}: {}", rootCause.getClass().getSimpleName(),

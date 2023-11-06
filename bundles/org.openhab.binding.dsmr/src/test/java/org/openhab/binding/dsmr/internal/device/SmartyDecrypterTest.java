@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramParser;
+import org.openhab.binding.dsmr.internal.device.p1telegram.TelegramParser;
 
 /**
  * Test class for the {@link SmartyDecrypter}.
@@ -96,10 +95,13 @@ public class SmartyDecrypterTest {
      */
     @Test
     public void testSmartyDecrypter() {
-        final AtomicReference<String> telegramResult = new AtomicReference<>("");
-        final P1TelegramListener telegramListener = telegram -> telegramResult.set(telegram.getRawTelegram());
-        final SmartyDecrypter decoder = new SmartyDecrypter(new P1TelegramParser(telegramListener),
-                new DSMRTelegramListener(KEY, ""), KEY, "");
+        final AtomicReference<String> dataRead = new AtomicReference<>();
+        final SmartyDecrypter decoder = new SmartyDecrypter(new TelegramParser() {
+            @Override
+            public void parse(final byte[] data, final int length) {
+                dataRead.set(new String(data, StandardCharsets.UTF_8));
+            }
+        }, new DSMRTelegramListener(KEY, ""), KEY, "");
         decoder.setLenientMode(true);
         final byte[] data = new byte[TELEGRAM.length];
 
@@ -110,6 +112,6 @@ public class SmartyDecrypterTest {
         decoder.parse(data, data.length);
         final String expected = new String(TelegramReaderUtil.readRawTelegram("smarty_long"), StandardCharsets.UTF_8);
 
-        assertThat("Should have correctly decrypted the telegram", telegramResult.get(), is(equalTo(expected)));
+        assertThat("Should have correctly decrypted the telegram", dataRead.get(), is(equalTo(expected)));
     }
 }

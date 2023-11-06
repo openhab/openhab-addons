@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,7 +77,6 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     @NonNullByDefault({})
     public void handleStandaloneElement(final String elementName, final Map<String, String> attributes,
             final boolean minimized, final int line, final int col) throws ParseException {
-
         logger.debug("Error parsing options for {}: Unexpected StandaloneElement in {}{}: {} [{}]", channelName, line,
                 col, elementName, attributes);
     }
@@ -86,7 +85,6 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     @NonNullByDefault({})
     public void handleOpenElement(final String elementName, final Map<String, String> attributes, final int line,
             final int col) throws ParseException {
-
         String id = attributes == null ? null : attributes.get("id");
 
         if (this.parserState == ParserState.INIT && "input".equals(elementName) && "changeadr".equals(id)) {
@@ -206,7 +204,6 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     @Override
     public void handleText(final char @Nullable [] buffer, final int offset, final int len, final int line,
             final int col) throws ParseException {
-
         if (buffer == null) {
             return;
         }

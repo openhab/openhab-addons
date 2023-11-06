@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.enocean.internal.messages;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.messages.BasePacket.ESPPacketType;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.messages.ESP2Packet.ESP2PacketType;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class ESP2PacketConverter {
 
     protected static Logger logger = LoggerFactory.getLogger(ESP2PacketConverter.class);
@@ -34,19 +37,19 @@ public class ESP2PacketConverter {
     private static final int ESP3PACKET_BASE_LENGTH = ESP3Packet.ESP3_RORG_LENGTH + ESP3Packet.ESP3_SENDERID_LENGTH
             + ESP3Packet.ESP3_STATUS_LENGTH;
 
-    private static BasePacket handleRadioTelegram(int dataLength, byte packetType, byte[] payload) {
+    private static @Nullable BasePacket handleRadioTelegram(int dataLength, byte packetType, byte[] payload) {
         switch (ESP2Packet.ORG.getORG(payload[1])) {
             case _RPS:
-                return ESP3PacketFactory.BuildPacket(ESP3PACKET_BASE_LENGTH + RORG.RPS.getDataLength(), 0,
+                return ESP3PacketFactory.buildPacket(ESP3PACKET_BASE_LENGTH + RORG.RPS.getDataLength(), 0,
                         ESPPacketType.RADIO_ERP1.getValue(), new byte[] { RORG.RPS.getValue(), payload[2], payload[6],
                                 payload[7], payload[8], payload[9], payload[10] });
             case _1BS:
-                return ESP3PacketFactory.BuildPacket(ESP3PACKET_BASE_LENGTH + RORG._1BS.getDataLength(), 0,
+                return ESP3PacketFactory.buildPacket(ESP3PACKET_BASE_LENGTH + RORG._1BS.getDataLength(), 0,
                         ESPPacketType.RADIO_ERP1.getValue(), new byte[] { RORG._1BS.getValue(), payload[2], payload[6],
                                 payload[7], payload[8], payload[9], payload[10] });
 
             case _4BS:
-                return ESP3PacketFactory.BuildPacket(ESP3PACKET_BASE_LENGTH + RORG._4BS.getDataLength(), 0,
+                return ESP3PacketFactory.buildPacket(ESP3PACKET_BASE_LENGTH + RORG._4BS.getDataLength(), 0,
                         ESPPacketType.RADIO_ERP1.getValue(), new byte[] { RORG._4BS.getValue(), payload[2], payload[3],
                                 payload[4], payload[5], payload[6], payload[7], payload[8], payload[9], payload[10] });
             default:
@@ -55,13 +58,13 @@ public class ESP2PacketConverter {
         }
     }
 
-    private static BasePacket handleMessageTelegram(int dataLength, byte packetType, byte[] payload) {
+    private static @Nullable BasePacket handleMessageTelegram(int dataLength, byte packetType, byte[] payload) {
         switch (ESP2Packet.ESP2Response.getResponse(payload[1])) {
             case OK:
-                return ESP3PacketFactory.BuildPacket(1, 0, ESPPacketType.RESPONSE.getValue(),
+                return ESP3PacketFactory.buildPacket(1, 0, ESPPacketType.RESPONSE.getValue(),
                         new byte[] { ResponseType.RET_OK.getValue() });
             case ERR:
-                return ESP3PacketFactory.BuildPacket(1, 0, ESPPacketType.RESPONSE.getValue(),
+                return ESP3PacketFactory.buildPacket(1, 0, ESPPacketType.RESPONSE.getValue(),
                         new byte[] { ResponseType.RET_ERROR.getValue() });
             case INF_SW_VERSION: {
                 byte[] data = new byte[33];
@@ -71,7 +74,7 @@ public class ESP2PacketConverter {
 
                 byte[] description = "TCM 210".getBytes(Charset.forName("ASCII"));
                 System.arraycopy(description, 0, data, 17, description.length);
-                return ESP3PacketFactory.BuildPacket(data.length, 0, ESPPacketType.RESPONSE.getValue(), data);
+                return ESP3PacketFactory.buildPacket(data.length, 0, ESPPacketType.RESPONSE.getValue(), data);
             }
             case UNKOWN: // try to interpret it as a radio telegram
                 return handleRadioTelegram(dataLength, packetType, payload);
@@ -95,7 +98,7 @@ public class ESP2PacketConverter {
         }
     }
 
-    public static BasePacket BuildPacket(int dataLength, byte packetType, byte[] payload) {
+    public static @Nullable BasePacket buildPacket(int dataLength, byte packetType, byte[] payload) {
         ESP2PacketType type = ESP2PacketType.getPacketType(packetType);
 
         switch (type) {

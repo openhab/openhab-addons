@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,8 +41,8 @@ public class DoorbirdActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DoorbellHandler) {
-            this.handler = (DoorbellHandler) handler;
+        if (handler instanceof DoorbellHandler doorbellHandler) {
+            this.handler = doorbellHandler;
         }
     }
 
@@ -54,6 +54,7 @@ public class DoorbirdActions implements ThingActions {
     @RuleAction(label = "restart the Doorbird", description = "Restarts the Doorbird device.")
     public void restart() {
         logger.debug("Doorbird action 'restart' called");
+        DoorbellHandler handler = this.handler;
         if (handler != null) {
             handler.actionRestart();
         } else {
@@ -68,6 +69,7 @@ public class DoorbirdActions implements ThingActions {
     @RuleAction(label = "hangup a SIP call", description = "Hangup SIP call.")
     public void sipHangup() {
         logger.debug("Doorbird action 'sipHangup' called");
+        DoorbellHandler handler = this.handler;
         if (handler != null) {
             handler.actionSIPHangup();
         } else {
@@ -82,6 +84,7 @@ public class DoorbirdActions implements ThingActions {
     @RuleAction(label = "get the ring time limit", description = "Get the value of RING_TIME_LIMIT.")
     public @ActionOutput(name = "getRingTimeLimit", type = "java.lang.String") String getRingTimeLimit() {
         logger.debug("Doorbird action 'getRingTimeLimit' called");
+        DoorbellHandler handler = this.handler;
         if (handler != null) {
             return handler.actionGetRingTimeLimit();
         } else {
@@ -97,6 +100,7 @@ public class DoorbirdActions implements ThingActions {
     @RuleAction(label = "get the call time limit", description = "Get the value of CALL_TIME_LIMIT.")
     public @ActionOutput(name = "getCallTimeLimit", type = "java.lang.String") String getCallTimeLimit() {
         logger.debug("Doorbird action 'getCallTimeLimit' called");
+        DoorbellHandler handler = this.handler;
         if (handler != null) {
             return handler.actionGetCallTimeLimit();
         } else {
@@ -112,6 +116,7 @@ public class DoorbirdActions implements ThingActions {
     @RuleAction(label = "get the last error code", description = "Get the value of LASTERRORCODE.")
     public @ActionOutput(name = "getLastErrorCode", type = "java.lang.String") String getLastErrorCode() {
         logger.debug("Doorbird action 'getLastErrorCode' called");
+        DoorbellHandler handler = this.handler;
         if (handler != null) {
             return handler.actionGetLastErrorCode();
         } else {
@@ -127,6 +132,7 @@ public class DoorbirdActions implements ThingActions {
     @RuleAction(label = "get the last error text", description = "Get the value of LASTERRORTEXT.")
     public @ActionOutput(name = "getLastErrorText", type = "java.lang.String") String getLastErrorText() {
         logger.debug("Doorbird action 'getLastErrorText' called");
+        DoorbellHandler handler = this.handler;
         if (handler != null) {
             return handler.actionGetLastErrorText();
         } else {

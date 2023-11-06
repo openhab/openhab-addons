@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.hue.internal.dto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,6 +44,6 @@ public class SetAttributesRequest {
         }
 
         this.name = name;
-        this.lights = lights == null ? null : lights.stream().map(l -> l.getId()).collect(Collectors.toList());
+        this.lights = lights == null ? null : lights.stream().map(l -> l.getId()).toList();
     }
 }

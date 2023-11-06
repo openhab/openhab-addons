@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,12 +27,12 @@ public interface SocketSessionListener {
      *
      * @param response a non-null, possibly empty response
      */
-    public void responseReceived(String response);
+    void responseReceived(String response);
 
     /**
      * Called when a command finished with an exception or a general exception occurred while reading
      *
      * @param e a non-null exception
      */
-    public void responseException(Exception e);
+    void responseException(Exception e);
 }

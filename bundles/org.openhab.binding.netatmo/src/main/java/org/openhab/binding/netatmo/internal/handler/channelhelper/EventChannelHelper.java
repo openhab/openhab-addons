@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,8 +56,7 @@ public class EventChannelHelper extends ChannelHelper {
 
     @Override
     public void setNewData(@Nullable NAObject data) {
-        if (data instanceof Event) {
-            Event event = (Event) data;
+        if (data instanceof Event event) {
             if (!event.getEventType().validFor(moduleType)) {
                 return;
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Detailed bridge info available if authenticated.
@@ -37,7 +39,8 @@ public class Config {
     private String gateway;
     private String proxyaddress;
     private int proxyport;
-    private Date UTC;
+    @SerializedName("UTC")
+    private Date utc;
     private boolean linkbutton;
     private Map<String, User> whitelist;
     private SoftwareUpdate swupdate;
@@ -150,7 +153,7 @@ public class Config {
      * @return time on the bridge
      */
     public Date getUTCTime() {
-        return UTC;
+        return utc;
     }
 
     /**

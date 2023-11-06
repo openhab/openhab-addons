@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.BasePacket.ESPPacketType;
@@ -23,6 +25,7 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class ESP3PacketFactory {
 
     public static final BasePacket CO_RD_VERSION = new CCMessage(CCMessageType.CO_RD_VERSION);
@@ -49,7 +52,7 @@ public class ESP3PacketFactory {
                 new byte[] { SAMessageType.SA_WR_LEARNMODE.getValue(), (byte) (activate ? 1 : 0), 0, 0, 0, 0, 0 });
     }
 
-    public final static BasePacket SA_RD_LEARNEDCLIENTS = new SAMessage(SAMessageType.SA_RD_LEARNEDCLIENTS);
+    public static final BasePacket SA_RD_LEARNEDCLIENTS = new SAMessage(SAMessageType.SA_RD_LEARNEDCLIENTS);
 
     public static BasePacket SA_RD_MAILBOX_STATUS(byte[] clientId, byte[] controllerId) {
         return new SAMessage(SAMessageType.SA_RD_MAILBOX_STATUS,
@@ -66,7 +69,8 @@ public class ESP3PacketFactory {
                 new byte[] { SAMessageType.SA_WR_CLIENTLEARNRQ.getValue(), manu1, manu2, rorg, func, type });
     }
 
-    public static BasePacket BuildPacket(int dataLength, int optionalDataLength, byte packetType, byte[] payload) {
+    public static @Nullable BasePacket buildPacket(int dataLength, int optionalDataLength, byte packetType,
+            byte[] payload) {
         ESPPacketType type = ESPPacketType.getPacketType(packetType);
 
         switch (type) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_TYPE_VOLT = "Number:ElectricPotential";
     public static final String CHANNEL_TYPE_AMPERE = "Number:ElectricCurrent";
     public static final String CHANNEL_TYPE_KWH = "Number:Energy";
-    public static final String CHANNEL_TYPE_KW = "Number:Power";
+    public static final String CHANNEL_TYPE_POWER = "Number:Power";
     public static final String CHANNEL_TYPE_DATE = "DateTime";
     public static final String CHANNEL_TYPE_STRING = "String";
     public static final String CHANNEL_TYPE_NUMBER = "Number";
@@ -63,6 +63,7 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_TYPEPREFIX_RW = "rw";
 
     public static final String CHANNEL_TYPENAME_INTEGER = "type-integer";
+    public static final String CHANNEL_TYPENAME_RSSI = "type-rssi";
 
     // Channels with specific handling
     public static final String CHANNEL_CHARGER_OP_MODE = "chargerOpMode";
@@ -88,6 +89,7 @@ public class EaseeBindingConstants {
     public static final String JSON_KEY_GENERIC_NAME = "name";
     public static final String JSON_KEY_CIRCUIT_NAME = "panelName";
     public static final String JSON_KEY_CIRCUIT_ID = "circuitId";
+    public static final String JSON_KEY_CHARGER_ID = "chargerID";
     public static final String JSON_KEY_CIRCUITS = "circuits";
     public static final String JSON_KEY_CHARGERS = "chargers";
     public static final String JSON_KEY_BACK_PLATE = "backPlate";
@@ -99,11 +101,15 @@ public class EaseeBindingConstants {
     public static final String JSON_KEY_AUTH_ACCESS_TOKEN = "accessToken";
     public static final String JSON_KEY_AUTH_REFRESH_TOKEN = "refreshToken";
     public static final String JSON_KEY_AUTH_EXPIRES_IN = "expiresIn";
+    public static final String JSON_KEY_CIRCUIT_STATES = "circuitStates";
+    public static final String JSON_KEY_CHARGER_STATES = "chargerStates";
+    public static final String JSON_KEY_CHARGER_STATE = "chargerState";
 
     // Write Commands
     public static final String COMMAND_CHANGE_CONFIGURATION = "ChangeConfiguration";
     public static final String COMMAND_SEND_COMMAND = "SendCommand";
     public static final String COMMAND_SEND_COMMAND_START_STOP = "SendCommandStartStop";
+    public static final String COMMAND_SEND_COMMAND_PAUSE_RESUME = "SendCommandPauseResume";
     public static final String COMMAND_SET_CIRCUIT_SETTINGS = "SetCircuitSettings";
     public static final String COMMAND_SET_DYNAMIC_CIRCUIT_CURRENTS = "SetDynamicCircuitCurrents";
     public static final String COMMAND_SET_MAX_CIRCUIT_CURRENTS = "SetMaxCircuitCurrents";
@@ -124,17 +130,19 @@ public class EaseeBindingConstants {
     public static final String WEB_REQUEST_BEARER_TOKEN_PREFIX = "Bearer ";
 
     // URLs
-    public static final String LOGIN_URL = "https://api.easee.cloud/api/accounts/login";
-    public static final String REFRESH_TOKEN_URL = "https://api.easee.cloud/api/accounts/refresh_token";
-    public static final String GET_SITE_URL = "https://api.easee.cloud/api/sites/{siteId}";
-    public static final String CHARGER_URL = "https://api.easee.cloud/api/chargers/{id}";
-    public static final String STATE_URL = "https://api.easee.cloud/api/chargers/{id}/state";
-    public static final String GET_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/config";
-    public static final String CHANGE_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/settings";
-    public static final String COMMANDS_URL = "https://api.easee.cloud/api/chargers/{id}/commands/{command}";
-    public static final String LATEST_CHARGING_SESSION_URL = "https://api.easee.cloud/api/chargers/{id}/sessions/latest";
-    public static final String DYNAMIC_CIRCUIT_CURRENT_URL = "https://api.easee.cloud/api/sites/{siteId}/circuits/{circuitId}/dynamicCurrent";
-    public static final String CIRCUIT_SETTINGS_URL = "https://api.easee.cloud/api/sites/{siteId}/circuits/{circuitId}/settings";
+    private static final String API_BASE_URL = "https://api.easee.com/api";
+    public static final String LOGIN_URL = API_BASE_URL + "/accounts/login";
+    public static final String REFRESH_TOKEN_URL = API_BASE_URL + "/accounts/refresh_token";
+    public static final String GET_SITE_URL = API_BASE_URL + "/sites/{siteId}";
+    public static final String CHARGER_URL = API_BASE_URL + "/chargers/{id}";
+    public static final String SITE_STATE_URL = API_BASE_URL + "/sites/{siteId}/state";
+    public static final String GET_CONFIGURATION_URL = API_BASE_URL + "/chargers/{id}/config";
+    public static final String CHANGE_CONFIGURATION_URL = API_BASE_URL + "/chargers/{id}/settings";
+    public static final String COMMANDS_URL = API_BASE_URL + "/chargers/{id}/commands/{command}";
+    public static final String LATEST_CHARGING_SESSION_URL = API_BASE_URL + "/chargers/{id}/sessions/latest";
+    public static final String DYNAMIC_CIRCUIT_CURRENT_URL = API_BASE_URL
+            + "/sites/{siteId}/circuits/{circuitId}/dynamicCurrent";
+    public static final String CIRCUIT_SETTINGS_URL = API_BASE_URL + "/sites/{siteId}/circuits/{circuitId}/settings";
 
     // Status Keys
     public static final String STATUS_TOKEN_VALIDATED = "@text/status.token.validated";
@@ -148,10 +156,9 @@ public class EaseeBindingConstants {
 
     public static final String GENERIC_YES = "Yes";
     public static final String GENERIC_NO = "No";
-    public static final int CHARGER_OP_STATE_WAITING = 2;
-    public static final int CHARGER_OP_STATE_CHARGING = 3;
     public static final double CHARGER_DYNAMIC_CURRENT_PAUSE = 0;
-    public static final int CHARGER_REASON_FOR_NO_CURRENT_PAUSED = 52;
+    public static final int CHARGER_REASON_FOR_NO_CURRENT_CIRCUIT_LIMIT = 2;
+    public static final int CHARGER_REASON_FOR_NO_CURRENT_CHARGER_LIMIT = 52;
 
     public static final String THING_CONFIG_ID = "id";
     public static final String THING_CONFIG_SITE_ID = "siteId";
@@ -161,7 +168,7 @@ public class EaseeBindingConstants {
     public static final String THING_CONFIG_BACK_PLATE_ID = "backPlateId";
     public static final String THING_CONFIG_MASTER_BACK_PLATE_ID = "masterBackPlateId";
 
-    public static final Instant OUTDATED_DATE = Instant.MIN;
+    public static final Instant OUTDATED_DATE = Instant.EPOCH;
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static final String PARAMETER_NAME_WRITE_COMMAND = "writeCommand";

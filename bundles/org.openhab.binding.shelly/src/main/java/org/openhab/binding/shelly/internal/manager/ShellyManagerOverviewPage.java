@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,7 +126,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
 
         properties.clear();
         properties.put("numberDevices", "<span class=\"footerDevices\">" + "Number of devices: " + filteredDevices
-                + " of " + String.valueOf(getThingHandlers().size()) + "&nbsp;</span>");
+                + " of " + getThingHandlers().size() + "&nbsp;</span>");
         properties.put(ATTRIBUTE_CSS_FOOTER, loadHTML(OVERVIEW_FOOTER, properties));
         html += deviceHtml + loadHTML(FOOTER_HTML, properties);
         return new ShellyMgrResponse(fillAttributes(html, properties), HttpStatus.OK_200);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,43 +23,43 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface AvailableSources {
 
-    public boolean isBluetoothAvailable();
+    boolean isBluetoothAvailable();
 
-    public boolean isAUXAvailable();
+    boolean isAUXAvailable();
 
-    public boolean isAUX1Available();
+    boolean isAUX1Available();
 
-    public boolean isAUX2Available();
+    boolean isAUX2Available();
 
-    public boolean isAUX3Available();
+    boolean isAUX3Available();
 
-    public boolean isTVAvailable();
+    boolean isTVAvailable();
 
-    public boolean isHDMI1Available();
+    boolean isHDMI1Available();
 
-    public boolean isInternetRadioAvailable();
+    boolean isInternetRadioAvailable();
 
-    public boolean isStoredMusicAvailable();
+    boolean isStoredMusicAvailable();
 
-    public boolean isBassAvailable();
+    boolean isBassAvailable();
 
-    public void setAUXAvailable(boolean aux);
+    void setAUXAvailable(boolean aux);
 
-    public void setAUX1Available(boolean aux1);
+    void setAUX1Available(boolean aux1);
 
-    public void setAUX2Available(boolean aux2);
+    void setAUX2Available(boolean aux2);
 
-    public void setAUX3Available(boolean aux3);
+    void setAUX3Available(boolean aux3);
 
-    public void setStoredMusicAvailable(boolean storedMusic);
+    void setStoredMusicAvailable(boolean storedMusic);
 
-    public void setInternetRadioAvailable(boolean internetRadio);
+    void setInternetRadioAvailable(boolean internetRadio);
 
-    public void setBluetoothAvailable(boolean bluetooth);
+    void setBluetoothAvailable(boolean bluetooth);
 
-    public void setTVAvailable(boolean tv);
+    void setTVAvailable(boolean tv);
 
-    public void setHDMI1Available(boolean hdmi1);
+    void setHDMI1Available(boolean hdmi1);
 
-    public void setBassAvailable(boolean bass);
+    void setBassAvailable(boolean bass);
 }

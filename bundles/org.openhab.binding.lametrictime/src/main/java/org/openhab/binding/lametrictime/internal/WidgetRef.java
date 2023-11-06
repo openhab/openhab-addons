@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lametrictime.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This bean represents the information necessary to uniquely reference a widget on the LaMetric Time platform.
  *
  * @author Gregor Moyer - Initial contribution
  */
+@NonNullByDefault
 public class WidgetRef {
     private final String packageName;
     private final String widgetId;

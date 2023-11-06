@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,47 +12,45 @@
  */
 package org.openhab.automation.jrubyscripting.internal.watch;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
-
 import java.nio.file.Path;
-import java.nio.file.WatchEvent;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.service.AbstractWatchService;
+import org.openhab.core.service.WatchService;
 
 /**
  * Watches a gem home
  *
  * @author Cody Cutrer - Initial contribution
+ * @author Jan N. Klug - Refactored to new WatchService
  */
 @NonNullByDefault
-public class JRubyGemWatchService extends AbstractWatchService {
+public class JRubyGemWatchService implements JRubyWatchService, WatchService.WatchEventListener {
 
     private static final String GEMSPEC = ".gemspec";
+    private final WatchService watchService;
+    private final Path path;
 
     private JRubyDependencyTracker dependencyTracker;
 
-    JRubyGemWatchService(String path, JRubyDependencyTracker dependencyTracker) {
-        super(path);
+    JRubyGemWatchService(WatchService watchService, String path, JRubyDependencyTracker dependencyTracker) {
+        this.watchService = watchService;
         this.dependencyTracker = dependencyTracker;
+        this.path = Path.of(path);
     }
 
     @Override
-    protected boolean watchSubDirectories() {
-        return true;
+    public void activate() {
+        watchService.registerListener(this, path);
     }
 
     @Override
-    protected WatchEvent.Kind<?> @Nullable [] getWatchEventKinds(Path path) {
-        return new WatchEvent.Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
+    public void deactivate() {
+        watchService.unregisterListener(this);
     }
 
     @Override
-    protected void processWatchEvent(WatchEvent<?> watchEvent, WatchEvent.Kind<?> kind, Path path) {
+    public void processWatchEvent(WatchService.Kind kind, Path path) {
         String file = path.toFile().getName();
         if (file.endsWith(GEMSPEC)) {
             // This seems really lazy, but you can't definitively tell the name

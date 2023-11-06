@@ -11,7 +11,7 @@ The system information binding provides operating system and hardware informatio
 - Battery information - estimated remaining time, capacity, name;
 - Sensors information - CPU voltage and temperature, fan speeds;
 - Display information;
-- Network IP,name and adapter name, mac, data sent and received, packets sent and received;
+- Network IP, name and adapter name, mac, data sent and received, packets sent and received;
 - Process information - size of RAM memory used, CPU load, process name, path, number of threads.
 
 The binding uses the [OSHI](https://github.com/oshi/oshi) library to access this information regardless of the underlying OS and hardware.
@@ -50,6 +50,8 @@ That means that by default configuration:
 - channels with priority set to 'High' are updated every second
 - channels with priority set to 'Medium' are updated every minute
 - channels with priority set to 'Low' are updated only at initialization or if the `REFRESH` command is sent to the channel.
+
+Channels, not linked to an item, do not get updates, and do not periodically consume resources.
 
 For more info see [channel configuration](#channel-configuration)
 
@@ -199,8 +201,8 @@ String Network_AdapterName         "Adapter name"        <network>       { chann
 String Network_Name                "Name"                <network>       { channel="systeminfo:computer:work:network#networkName" }
 String Network_IP                  "IP address"          <network>       { channel="systeminfo:computer:work:network#ip" }
 String Network_Mac                 "Mac address"         <network>       { channel="systeminfo:computer:work:network#mac" }
-Number Network_DataSent            "Data sent"           <flowpipe>      { channel="systeminfo:computer:work:network#dataSent" }
-Number Network_DataReceived        "Data received"       <returnpipe>    { channel="systeminfo:computer:work:network#dataReceived" }
+Number:DataAmount Network_DataSent "Data sent"           <flowpipe>      { channel="systeminfo:computer:work:network#dataSent" }
+Number:DataAmount Network_DataReceived "Data received"   <returnpipe>    { channel="systeminfo:computer:work:network#dataReceived" }
 Number Network_PacketsSent         "Packets sent"        <flowpipe>      { channel="systeminfo:computer:work:network#packetsSent" }
 Number Network_PacketsReceived     "Packets received"    <returnpipe>    { channel="systeminfo:computer:work:network#packetsReceived" }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,10 +21,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.GroupItem;
@@ -70,6 +73,9 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
     private final ItemRegistry itemRegistry;
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1,
+            new NamedThreadFactory(JdbcPersistenceServiceConstants.SERVICE_ID));
 
     @Activate
     public JdbcPersistenceService(final @Reference ItemRegistry itemRegistry,
@@ -131,21 +137,21 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
 
     @Override
     public void store(Item item) {
-        internalStore(item, null, item.getState());
+        scheduler.execute(() -> internalStore(item, null, item.getState()));
     }
 
     @Override
     public void store(Item item, @Nullable String alias) {
         // alias is not supported
-        internalStore(item, null, item.getState());
+        scheduler.execute(() -> internalStore(item, null, item.getState()));
     }
 
     @Override
     public void store(Item item, ZonedDateTime date, State state) {
-        internalStore(item, date, state);
+        scheduler.execute(() -> internalStore(item, date, state));
     }
 
-    private void internalStore(Item item, @Nullable ZonedDateTime date, State state) {
+    private synchronized void internalStore(Item item, @Nullable ZonedDateTime date, State state) {
         // Do not store undefined/uninitialized data
         if (state instanceof UnDefType) {
             logger.debug("JDBC::store: ignore Item '{}' because it is UnDefType", item.getName());
@@ -193,6 +199,10 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         // Also get the Item object so we can determine the type
         Item item = null;
         String itemName = filter.getItemName();
+        if (itemName == null) {
+            logger.warn("Item name is missing in filter {}", filter);
+            return List.of();
+        }
         logger.debug("JDBC::query: item is {}", itemName);
         try {
             item = itemRegistry.getItem(itemName);
@@ -313,7 +323,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
     }
 
     /**
-     * Check schema for integrity issues.
+     * Check schema of specific item table for integrity issues.
      *
      * @param tableName for which columns should be checked
      * @param itemName that corresponds to table
@@ -347,7 +357,8 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                 if (!"time".equals(columnName)) {
                     issues.add("Column name 'time' expected, but is '" + columnName + "'");
                 }
-                if (!timeDataType.equalsIgnoreCase(column.getColumnType())) {
+                if (!timeDataType.equalsIgnoreCase(column.getColumnType())
+                        && !timeDataType.equalsIgnoreCase(column.getColumnTypeAlias())) {
                     issues.add("Column type '" + timeDataType + "' expected, but is '"
                             + column.getColumnType().toUpperCase() + "'");
                 }
@@ -358,7 +369,8 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                 if (!"value".equals(columnName)) {
                     issues.add("Column name 'value' expected, but is '" + columnName + "'");
                 }
-                if (!valueDataType.equalsIgnoreCase(column.getColumnType())) {
+                if (!valueDataType.equalsIgnoreCase(column.getColumnType())
+                        && !valueDataType.equalsIgnoreCase(column.getColumnTypeAlias())) {
                     issues.add("Column type '" + valueDataType + "' expected, but is '"
                             + column.getColumnType().toUpperCase() + "'");
                 }
@@ -403,13 +415,17 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         for (Column column : columns) {
             String columnName = column.getColumnName();
             if ("time".equalsIgnoreCase(columnName)) {
-                if (!"time".equals(columnName) || !timeDataType.equalsIgnoreCase(column.getColumnType())
+                if (!"time".equals(columnName)
+                        || (!timeDataType.equalsIgnoreCase(column.getColumnType())
+                                && !timeDataType.equalsIgnoreCase(column.getColumnTypeAlias()))
                         || column.getIsNullable()) {
                     alterTableColumn(tableName, "time", timeDataType, false);
                     isFixed = true;
                 }
             } else if ("value".equalsIgnoreCase(columnName)) {
-                if (!"value".equals(columnName) || !valueDataType.equalsIgnoreCase(column.getColumnType())
+                if (!"value".equals(columnName)
+                        || (!valueDataType.equalsIgnoreCase(column.getColumnType())
+                                && !valueDataType.equalsIgnoreCase(column.getColumnTypeAlias()))
                         || !column.getIsNullable()) {
                     alterTableColumn(tableName, "value", valueDataType, true);
                     isFixed = true;

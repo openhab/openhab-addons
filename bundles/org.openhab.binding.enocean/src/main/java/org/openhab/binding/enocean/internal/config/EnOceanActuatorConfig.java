@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,22 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanActuatorConfig extends EnOceanBaseConfig {
 
     public int channel;
-    public Integer senderIdOffset = null;
-    public String manufacturerId;
-    public String teachInType;
+    public @Nullable Integer senderIdOffset = null;
+    public String manufacturerId = "";
+    public String teachInType = "";
 
-    public String sendingEEPId;
+    public String sendingEEPId = "";
 
     public int pollingInterval;
 

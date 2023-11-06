@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -381,18 +381,18 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
             list.put(ACTION_PROTECT, "Protect Device");
         }
 
-        if ((profile.settings.coiot != null) && profile.settings.coiot.peer != null) {
+        if (profile.settings.coiot != null && profile.settings.coiot.peer != null) {
             boolean mcast = profile.settings.coiot.peer.isEmpty()
                     || SHELLY_COIOT_MCAST.equalsIgnoreCase(profile.settings.coiot.peer) || profile.isMotion;
             list.put(mcast ? ACTION_SETCOIOT_PEER : ACTION_SETCOIOT_MCAST,
                     mcast ? "Set CoIoT Peer Mode" : "Set CoIoT Multicast Mode");
         }
         if (profile.isSensor && !profile.isMotion && profile.settings.wifiSta != null
-                && profile.settings.wifiSta.enabled) {
+                && getBool(profile.settings.wifiSta.enabled)) {
             // FW 1.10+: Reset STA list, force WiFi rescan and connect to stringest AP
             list.put(ACTION_RESSTA, "Reconnect WiFi");
         }
-        if (!gen2 && profile.settings.apRoaming != null) {
+        if (!gen2 && profile.settings.apRoaming != null && profile.settings.apRoaming.enabled != null) {
             list.put(!profile.settings.apRoaming.enabled ? ACTION_ENAPROAMING : ACTION_DISAPROAMING,
                     !profile.settings.apRoaming.enabled ? "Enable WiFi Roaming" : "Disable WiFi Roaming");
         }
@@ -413,7 +413,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     !profile.settings.bluetooth ? "Enable Bluetooth" : "Disable Bluetooth");
         }
 
-        boolean set = profile.settings.cloud != null && profile.settings.cloud.enabled;
+        boolean set = profile.settings.cloud != null && getBool(profile.settings.cloud.enabled);
         list.put(set ? ACTION_DISCLOUD : ACTION_ENCLOUD, set ? "Disable Cloud" : "Enable Cloud");
 
         list.put(ACTION_RESET, "-Factory Reset");

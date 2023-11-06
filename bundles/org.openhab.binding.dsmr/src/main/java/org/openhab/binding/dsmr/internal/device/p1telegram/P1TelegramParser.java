@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,12 +18,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dsmr.internal.device.connector.DSMRErrorStatus;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObjectFactory;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +107,7 @@ public class P1TelegramParser implements TelegramParser {
     /**
      * Current telegram state
      */
-    private volatile TelegramState telegramState;
+    private volatile Optional<DSMRErrorStatus> telegramState = Optional.empty();
 
     /**
      * CosemObjectFactory helper class
@@ -116,7 +117,7 @@ public class P1TelegramParser implements TelegramParser {
     /**
      * Received Cosem Objects in the P1Telegram that is currently received
      */
-    private final List<CosemObject> cosemObjects = new ArrayList<>();
+    private final List<Entry<String, String>> cosemObjects = new ArrayList<>();
 
     /**
      * List of Cosem Object values that are not known to this binding.
@@ -138,18 +139,18 @@ public class P1TelegramParser implements TelegramParser {
      *
      * @param telegramListener
      */
-    public P1TelegramParser(P1TelegramListener telegramListener) {
+    public P1TelegramParser(final P1TelegramListener telegramListener) {
         this(telegramListener, false);
     }
 
-    public P1TelegramParser(P1TelegramListener telegramListener, boolean test) {
+    public P1TelegramParser(final P1TelegramListener telegramListener, final boolean test) {
         this.telegramListener = telegramListener;
         this.test = test;
 
         factory = new CosemObjectFactory();
         state = State.WAIT_FOR_START;
         crc = new CRC16(CRC16.Polynom.CRC16_IBM);
-        telegramState = TelegramState.OK;
+        telegramState = Optional.empty();
     }
 
     /**
@@ -159,7 +160,7 @@ public class P1TelegramParser implements TelegramParser {
      * @param length number of bytes to parse
      */
     @Override
-    public void parse(byte[] data, int length) {
+    public void parse(final byte[] data, final int length) {
         if (lenientMode || logger.isTraceEnabled()) {
             final String rawBlock = new String(data, 0, length, StandardCharsets.UTF_8);
 
@@ -254,10 +255,11 @@ public class P1TelegramParser implements TelegramParser {
                     if (c == '\r' || c == '/') {
                         logger.trace("telegramState {}, crcValue to check 0x{}", telegramState, crcValue);
                         // Only perform CRC check if telegram is still ok
-                        if (telegramState == TelegramState.OK && crcValue.length() > 0) {
-                            telegramState = checkCRC(telegramState);
+
+                        if (telegramState.isEmpty() && crcValue.length() > 0) {
+                            telegramState = checkCRC();
                         }
-                        telegramListener.telegramReceived(constructTelegram());
+                        processTelegram();
                         reset();
                         if (c == '/') {
                             /*
@@ -275,8 +277,8 @@ public class P1TelegramParser implements TelegramParser {
         logger.trace("State after parsing: {}", state);
     }
 
-    private TelegramState checkCRC(TelegramState currentState) {
-        final TelegramState telegramState;
+    private Optional<DSMRErrorStatus> checkCRC() {
+        final Optional<DSMRErrorStatus> telegramState;
 
         if (Pattern.matches(CRC_PATTERN, crcValue)) {
             final int crcP1Telegram = Integer.parseInt(crcValue.toString(), 16);
@@ -293,24 +295,45 @@ public class P1TelegramParser implements TelegramParser {
                 }
                 logger.trace("CRC value does not match, p1 Telegram failed");
 
-                telegramState = TelegramState.CRC_ERROR;
+                telegramState = Optional.of(DSMRErrorStatus.TELEGRAM_CRC_ERROR);
             } else {
-                telegramState = currentState;
+                telegramState = Optional.empty();
             }
         } else {
-            telegramState = TelegramState.CRC_ERROR;
+            telegramState = Optional.of(DSMRErrorStatus.TELEGRAM_CRC_ERROR);
         }
         return telegramState;
     }
 
-    private P1Telegram constructTelegram() {
-        final List<CosemObject> cosemObjectsCopy = new ArrayList<>(cosemObjects);
+    private void processTelegram() {
+        telegramState.ifPresentOrElse(error -> telegramListener.onError(error, ""),
+                () -> telegramListener.telegramReceived(constructTelegram()));
+    }
 
+    private P1Telegram constructTelegram() {
+        final List<CosemObject> cosemObjectsCopy = new ArrayList<>();
+
+        cosemObjects.stream().forEach(e -> addCosemObject(cosemObjectsCopy, e));
         if (lenientMode) {
-            return new P1Telegram(cosemObjectsCopy, telegramState, rawData.toString(),
+            return new P1Telegram(cosemObjectsCopy, rawData.toString(),
                     unknownCosemObjects.isEmpty() ? Collections.emptyList() : new ArrayList<>(unknownCosemObjects));
         } else {
-            return new P1Telegram(cosemObjectsCopy, telegramState);
+            return new P1Telegram(cosemObjectsCopy);
+        }
+    }
+
+    private void addCosemObject(final List<CosemObject> objects, final Entry<String, String> cosemEntry) {
+        final String obisIdString = cosemEntry.getKey();
+        final String obisValueString = cosemEntry.getValue();
+        final CosemObject cosemObject = factory.getCosemObject(obisIdString, obisValueString);
+
+        if (cosemObject == null) {
+            if (lenientMode) {
+                unknownCosemObjects.add(new SimpleEntry<>(obisIdString, obisValueString));
+            }
+        } else {
+            logger.trace("Adding {} to list of Cosem Objects", cosemObject);
+            objects.add(cosemObject);
         }
     }
 
@@ -324,10 +347,11 @@ public class P1TelegramParser implements TelegramParser {
      *
      * @param c the unexpected character
      */
-    private void handleUnexpectedCharacter(char c) {
+    private void handleUnexpectedCharacter(final char c) {
         logger.debug("Unexpected character '{}' in state: {}. This P1 telegram is marked as failed", c, state);
 
-        telegramState = TelegramState.DATA_CORRUPTION;
+        telegramState = Optional.of(DSMRErrorStatus.TELEGRAM_DATA_CORRUPTION);
+        telegramListener.onError(DSMRErrorStatus.TELEGRAM_DATA_CORRUPTION, "");
     }
 
     /**
@@ -335,7 +359,7 @@ public class P1TelegramParser implements TelegramParser {
      *
      * @param c the character to process
      */
-    private void handleCharacter(char c) {
+    private void handleCharacter(final char c) {
         switch (state) {
             case WAIT_FOR_START:
                 // ignore the data
@@ -401,17 +425,7 @@ public class P1TelegramParser implements TelegramParser {
         final String obisIdString = obisId.toString();
 
         if (!obisIdString.isEmpty()) {
-            final String obisValueString = obisValue.toString();
-            final CosemObject cosemObject = factory.getCosemObject(obisIdString, obisValueString);
-
-            if (cosemObject == null) {
-                if (lenientMode) {
-                    unknownCosemObjects.add(new SimpleEntry<>(obisIdString, obisValueString));
-                }
-            } else {
-                logger.trace("Adding {} to list of Cosem Objects", cosemObject);
-                cosemObjects.add(cosemObject);
-            }
+            cosemObjects.add(new SimpleEntry<String, String>(obisIdString, obisValue.toString()));
         }
         clearObisData();
     }
@@ -419,7 +433,7 @@ public class P1TelegramParser implements TelegramParser {
     /**
      * @param newState the new state to set
      */
-    private void setState(State newState) {
+    private void setState(final State newState) {
         synchronized (state) {
             switch (newState) {
                 case HEADER:
@@ -429,7 +443,7 @@ public class P1TelegramParser implements TelegramParser {
                 case WAIT_FOR_START:
                     // Clears internal state data and mark current telegram as OK
                     clearInternalData();
-                    telegramState = TelegramState.OK;
+                    telegramState = Optional.empty();
                     break;
                 case DATA_OBIS_ID:
                     // If the current state is CRLF we are processing the header and don't have a cosem object yet
@@ -448,7 +462,7 @@ public class P1TelegramParser implements TelegramParser {
     }
 
     @Override
-    public void setLenientMode(boolean lenientMode) {
+    public void setLenientMode(final boolean lenientMode) {
         this.lenientMode = lenientMode;
     }
 }

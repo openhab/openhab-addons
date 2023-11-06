@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,27 +76,24 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
                 channelConfiguration.stateTriggered };
         buildChannel(STATE_CHANNEL_ID, new TextValue(stateEnum), channelConfiguration.getName(),
                 componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
-                        .build();
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
+                .build();
 
         String commandTopic = channelConfiguration.commandTopic;
         if (commandTopic != null) {
             buildChannel(SWITCH_DISARM_CHANNEL_ID, new TextValue(new String[] { channelConfiguration.payloadDisarm }),
                     channelConfiguration.getName(), componentConfiguration.getUpdateListener())
-                            .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos())
-                            .build();
+                    .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
 
             buildChannel(SWITCH_ARM_HOME_CHANNEL_ID,
                     new TextValue(new String[] { channelConfiguration.payloadArmHome }), channelConfiguration.getName(),
                     componentConfiguration.getUpdateListener())
-                            .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos())
-                            .build();
+                    .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
 
             buildChannel(SWITCH_ARM_AWAY_CHANNEL_ID,
                     new TextValue(new String[] { channelConfiguration.payloadArmAway }), channelConfiguration.getName(),
                     componentConfiguration.getUpdateListener())
-                            .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos())
-                            .build();
+                    .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
         }
     }
 }

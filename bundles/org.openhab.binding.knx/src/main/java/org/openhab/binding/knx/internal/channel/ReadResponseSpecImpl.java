@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.core.types.Type;
 
@@ -26,28 +27,34 @@ import tuwien.auto.calimero.GroupAddress;
  *
  */
 @NonNullByDefault
-public class ReadResponseSpecImpl extends AbstractSpec implements OutboundSpec {
+public class ReadResponseSpecImpl implements OutboundSpec {
+    private final String dpt;
+    private final GroupAddress groupAddress;
+    private final Type value;
 
-    private final @Nullable GroupAddress groupAddress;
-    private final Type type;
-
-    public ReadResponseSpecImpl(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT, Type state) {
-        super(channelConfiguration, defaultDPT);
-        if (channelConfiguration != null) {
-            this.groupAddress = toGroupAddress(channelConfiguration.getMainGA());
-        } else {
-            this.groupAddress = null;
-        }
-        this.type = state;
+    public ReadResponseSpecImpl(GroupAddressConfiguration groupAddressConfiguration, String defaultDPT, Type state) {
+        this.dpt = Objects.requireNonNullElse(groupAddressConfiguration.getDPT(), defaultDPT);
+        this.groupAddress = groupAddressConfiguration.getMainGA();
+        this.value = state;
     }
 
     @Override
-    public @Nullable GroupAddress getGroupAddress() {
+    public String getDPT() {
+        return dpt;
+    }
+
+    @Override
+    public GroupAddress getGroupAddress() {
         return groupAddress;
     }
 
     @Override
-    public Type getType() {
-        return type;
+    public Type getValue() {
+        return value;
+    }
+
+    @Override
+    public boolean matchesDestination(GroupAddress groupAddress) {
+        return groupAddress.equals(this.groupAddress);
     }
 }

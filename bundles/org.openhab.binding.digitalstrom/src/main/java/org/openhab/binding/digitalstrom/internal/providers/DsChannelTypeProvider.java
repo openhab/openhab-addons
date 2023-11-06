@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,6 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
 import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
@@ -49,7 +48,7 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link DsChannelTypeProvider} implements the {@link ChannelTypeProvider}
- * generates all supported {@link Channel}'s for digitalSTROM.
+ * generates all supported {@link org.openhab.core.thing.Channel}'s for digitalSTROM.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -119,8 +118,8 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
      * channel type exists for the given {@link ApplicationGroup.Color} and
      * {@link OutputModeEnum}.
      *
-     * @param functionalGroup of the {@link Device}
-     * @param outputMode of the {@link Device}
+     * @param functionalGroup of the {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device}
+     * @param outputMode of the {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device}
      * @return the output channel type id or null
      */
     public static String getOutputChannelTypeID(ApplicationGroup.Color functionalGroup, OutputModeEnum outputMode,
@@ -336,7 +335,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
         // sensor-events and cached values are
         // shown in °C so we will use this unit for temperature sensors
         String unitShortCut = sensorType.getUnitShortcut();
-        if (unitShortCut.equals("%")) {
+        if ("%".equals(unitShortCut)) {
             unitShortCut = "%%";
         }
         if (sensorType.toString().contains("TEMPERATURE")) {
@@ -542,7 +541,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     }
 
     /**
-     * Returns the {@link ChannelGroupTypeUID} for the given {@link SensorEnum}.
+     * Returns the {@link ChannelTypeUID} for the given {@link SensorEnum}.
      *
      * @param sensorType (must not be null)
      * @return the channel type uid
@@ -552,7 +551,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     }
 
     /**
-     * Returns the {@link ChannelGroupTypeUID} for the given
+     * Returns the {@link ChannelTypeUID} for the given
      * {@link DeviceBinarayInputEnum}.
      *
      * @param binaryInputType (must not be null)

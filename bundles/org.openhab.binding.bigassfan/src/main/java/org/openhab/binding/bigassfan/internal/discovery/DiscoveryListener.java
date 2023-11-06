@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,8 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,19 +33,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class DiscoveryListener {
     private final Logger logger = LoggerFactory.getLogger(DiscoveryListener.class);
 
-    private final String BCAST_ADDRESS = "255.255.255.255";
-    private final int SOCKET_RECEIVE_TIMEOUT = 500;
+    private static final String BCAST_ADDRESS = "255.255.255.255";
+    private static final int SOCKET_RECEIVE_TIMEOUT = 500;
+    private static final String POLL_MESSAGE = "<ALL;DEVICE;ID;GET>";
 
-    private final String POLL_MESSAGE = "<ALL;DEVICE;ID;GET>";
-
+    @Nullable
     DatagramSocket dSocket;
+    @Nullable
     DatagramPacket rcvPacket;
-    byte[] rcvBuffer;
+    byte[] rcvBuffer = new byte[0];
+    @Nullable
     InetAddress bcastAddress;
-    byte[] bcastBuffer;
+    byte[] bcastBuffer = new byte[0];
+    @Nullable
     DatagramPacket bcastPacket;
 
     BigAssFanDevice device;
@@ -54,52 +60,66 @@ public class DiscoveryListener {
         device = new BigAssFanDevice();
         try {
             // Create a socket on the UDP port and get send & receive buffers
-            dSocket = new DatagramSocket(BAF_PORT);
-            dSocket.setSoTimeout(SOCKET_RECEIVE_TIMEOUT);
-            dSocket.setBroadcast(true);
+            DatagramSocket localDatagramSocket = new DatagramSocket(BAF_PORT);
+            localDatagramSocket.setSoTimeout(SOCKET_RECEIVE_TIMEOUT);
+            localDatagramSocket.setBroadcast(true);
+            dSocket = localDatagramSocket;
             rcvBuffer = new byte[256];
             rcvPacket = new DatagramPacket(rcvBuffer, rcvBuffer.length);
             bcastAddress = InetAddress.getByName(BCAST_ADDRESS);
             bcastBuffer = POLL_MESSAGE.getBytes(StandardCharsets.US_ASCII);
             bcastPacket = new DatagramPacket(bcastBuffer, bcastBuffer.length, bcastAddress, BAF_PORT);
-        } catch (UnknownHostException uhe) {
-            logger.warn("UnknownHostException sending poll request for fans: {}", uhe.getMessage(), uhe);
+        } catch (UnknownHostException | SocketException | SecurityException e) {
+            logger.warn("Unexpected exception sending poll request for fans: {}", e.getMessage(), e);
         }
     }
 
     public BigAssFanDevice waitForMessage() throws IOException, SocketTimeoutException {
         // Wait to receive a packet
-        rcvPacket.setLength(rcvBuffer.length);
-        dSocket.receive(rcvPacket);
+        DatagramPacket localPacket = rcvPacket;
+        DatagramSocket localDatagramSocket = dSocket;
 
-        // Process the received packet
-        device.reset();
-        device.setIpAddress(rcvPacket.getAddress().getHostAddress());
-        String message = (new String(rcvBuffer, 0, rcvPacket.getLength()));
-        device.setDiscoveryMessage(message);
-        logger.debug("RECEIVED packet of length {} from {}: {}", message.length(), device.getIpAddress(), message);
+        if (localPacket != null) {
+            localPacket.setLength(rcvBuffer.length);
+        }
+
+        if (localDatagramSocket != null && localPacket != null) {
+            localDatagramSocket.receive(localPacket);
+
+            // Process the received packet
+            device.reset();
+
+            String address = localPacket.getAddress().getHostAddress();
+            device.setIpAddress(address != null ? address : "");
+
+            String message = (new String(rcvBuffer, 0, localPacket.getLength()));
+            device.setDiscoveryMessage(message);
+            logger.debug("RECEIVED packet of length {} from {}: {}", message.length(), device.getIpAddress(), message);
+        }
 
         return device;
     }
 
     public void pollForDevices() {
-        if (dSocket == null) {
+        DatagramSocket localDatagramSocket = dSocket;
+        if (localDatagramSocket == null) {
             logger.debug("Socket is null in discoveryListener.pollForDevices()");
             return;
         }
 
         logger.debug("Sending poll request for fans: {}", POLL_MESSAGE);
         try {
-            dSocket.send(bcastPacket);
-        } catch (IOException ioe) {
-            logger.warn("IOException sending poll request for fans: {}", ioe.getMessage(), ioe);
+            localDatagramSocket.send(bcastPacket);
+        } catch (IllegalArgumentException | SecurityException | IOException e) {
+            logger.warn("Unexpected exception while sending poll request for fans: {}", e.getMessage(), e);
         }
     }
 
     public void shutdown() {
         logger.debug("DiscoveryListener closing socket");
-        if (dSocket != null) {
-            dSocket.close();
+        DatagramSocket localDatagramSocket = dSocket;
+        if (localDatagramSocket != null) {
+            localDatagramSocket.close();
             dSocket = null;
         }
     }

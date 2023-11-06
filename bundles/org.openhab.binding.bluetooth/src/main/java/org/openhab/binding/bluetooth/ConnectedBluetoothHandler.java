@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,6 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void initialize() {
-
         // super.initialize adds callbacks that might require the connectionTaskExecutor to be present, so we initialize
         // the connectionTaskExecutor first
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1,
@@ -81,8 +80,8 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
         Object idleDisconnectDelayRaw = getConfig().get(BluetoothBindingConstants.CONFIGURATION_IDLE_DISCONNECT_DELAY);
         idleDisconnectDelay = 1000;
-        if (idleDisconnectDelayRaw instanceof Number) {
-            idleDisconnectDelay = ((Number) idleDisconnectDelayRaw).intValue();
+        if (idleDisconnectDelayRaw instanceof Number numberCommand) {
+            idleDisconnectDelay = numberCommand.intValue();
         }
 
         // Start the recurrent job if the device is always connected
@@ -203,11 +202,11 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
             return CompletableFuture.failedFuture(new IllegalStateException("connectionTaskExecutor is shut down"));
         }
         // we use a RetryFuture because it supports running Callable instances
-        return RetryFuture.callWithRetry(() -> {
-            // we block for completion here so that we keep the lock on the connectionTaskExecutor active.
-            return callable.apply(connectAndGetCharacteristic(serviceUUID, characteristicUUID)).get();
-        }, connectionTaskExecutor)// we make this completion async so that operations chained off the returned future
-                                  // will not run on the connectionTaskExecutor
+        return RetryFuture.callWithRetry(() ->
+        // we block for completion here so that we keep the lock on the connectionTaskExecutor active.
+        callable.apply(connectAndGetCharacteristic(serviceUUID, characteristicUUID)).get(), connectionTaskExecutor)
+                // we make this completion async so that operations chained off the returned future
+                // will not run on the connectionTaskExecutor
                 .whenCompleteAsync((r, th) -> {
                     // we us a while loop here in case the exceptions get nested
                     while (th instanceof CompletionException || th instanceof ExecutionException) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,7 +99,7 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
                 .thenReturn(ThingTypeBuilder.instance(HA_TYPE_UID, HA_TYPE_LABEL).build());
         when(transformationServiceProvider
                 .getTransformationService(JinjaTransformationProfile.PROFILE_TYPE_UID.getId()))
-                        .thenReturn(jinjaTransformationService);
+                .thenReturn(jinjaTransformationService);
 
         channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistry));
 

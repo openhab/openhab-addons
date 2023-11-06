@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,9 +45,11 @@ public class RoomCapability extends Capability {
         super(handler);
     }
 
-    @Override
-    public void initialize() {
-        energyCapability = handler.getHomeCapability(EnergyCapability.class);
+    protected Optional<EnergyCapability> getEnergyCapability() {
+        if (energyCapability.isEmpty()) {
+            energyCapability = handler.getHomeCapability(EnergyCapability.class);
+        }
+        return energyCapability;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class RoomCapability extends Capability {
                 if (targetMode == SetpointMode.MANUAL) {
                     logger.info("Switch to 'Manual' mode is done by setting a setpoint temp, command ignored");
                 } else {
-                    energyCapability.ifPresent(cap -> cap.setRoomThermMode(handler.getId(), targetMode));
+                    getEnergyCapability().ifPresent(cap -> cap.setRoomThermMode(handler.getId(), targetMode));
                 }
             } catch (IllegalArgumentException e) {
                 logger.info("Command '{}' is not a valid setpoint mode for channel '{}'", command, channelName);
@@ -66,7 +68,7 @@ public class RoomCapability extends Capability {
         } else if (CHANNEL_VALUE.equals(channelName)) {
             QuantityType<?> quantity = commandToQuantity(command, MeasureClass.INSIDE_TEMPERATURE);
             if (quantity != null) {
-                energyCapability.ifPresent(cap -> cap.setRoomThermTemp(handler.getId(), quantity.doubleValue()));
+                getEnergyCapability().ifPresent(cap -> cap.setRoomThermTemp(handler.getId(), quantity.doubleValue()));
             } else {
                 logger.warn("Incorrect command '{}' on channel '{}'", command, channelName);
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -58,7 +57,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoDimmerHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIMMER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DIMMER);
 
     private final Object jobLock = new Object();
 
@@ -74,9 +73,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
      */
     private static final int DIM_STEPSIZE = 5;
 
-    public WemoDimmerHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
-            WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, upnpService, wemoHttpCaller);
+    public WemoDimmerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
+        super(thing, upnpIOService, wemoHttpCaller);
 
         logger.debug("Creating a WemoDimmerHandler for thing '{}'", getThing().getUID());
     }
@@ -159,8 +157,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                             State brightnessState = new PercentType(currentBrightness);
                             updateState(CHANNEL_BRIGHTNESS, brightnessState);
                         }
-                    } else if (command instanceof PercentType) {
-                        int newBrightness = ((PercentType) command).intValue();
+                    } else if (command instanceof PercentType percentCommand) {
+                        int newBrightness = percentCommand.intValue();
                         value = String.valueOf(newBrightness);
                         currentBrightness = newBrightness;
                         argument = "brightness";
@@ -219,20 +217,36 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         int commandValue = Integer.valueOf(String.valueOf(command));
                         commandValue = commandValue * 60;
                         String commandString = String.valueOf(commandValue);
-                        value = "<BinaryState></BinaryState>" + "<Duration></Duration>" + "<EndAction></EndAction>"
-                                + "<brightness></brightness>" + "<fader>" + commandString + ":-1:1:0:0</fader>"
-                                + "<UDN></UDN>";
+                        value = """
+                                <BinaryState></BinaryState>\
+                                <Duration></Duration>\
+                                <EndAction></EndAction>\
+                                <brightness></brightness>\
+                                <fader>\
+                                """ + commandString + ":-1:1:0:0</fader><UDN></UDN>";
                         setBinaryState(action, argument, value);
                     }
                     break;
                 case CHANNEL_FADER_ENABLED:
                     argument = "Fader";
                     if (command.equals(OnOffType.ON)) {
-                        value = "<BinaryState></BinaryState>" + "<Duration></Duration>" + "<EndAction></EndAction>"
-                                + "<brightness></brightness>" + "<fader>600:-1:1:0:0</fader>" + "<UDN></UDN>";
+                        value = """
+                                <BinaryState></BinaryState>\
+                                <Duration></Duration>\
+                                <EndAction></EndAction>\
+                                <brightness></brightness>\
+                                <fader>600:-1:1:0:0</fader>\
+                                <UDN></UDN>\
+                                """;
                     } else if (command.equals(OnOffType.OFF)) {
-                        value = "<BinaryState></BinaryState>" + "<Duration></Duration>" + "<EndAction></EndAction>"
-                                + "<brightness></brightness>" + "<fader>600:-1:0:0:0</fader>" + "<UDN></UDN>";
+                        value = """
+                                <BinaryState></BinaryState>\
+                                <Duration></Duration>\
+                                <EndAction></EndAction>\
+                                <brightness></brightness>\
+                                <fader>600:-1:0:0:0</fader>\
+                                <UDN></UDN>\
+                                """;
                     }
                     setBinaryState(action, argument, value);
                     break;
@@ -255,14 +269,23 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     }
                     if (faderSeconds != null && faderEnabled != null) {
                         if (OnOffType.ON.equals(command)) {
-                            value = "<BinaryState></BinaryState>" + "<Duration></Duration>" + "<EndAction></EndAction>"
-                                    + "<brightness></brightness>" + "<fader>" + faderSeconds + ":" + timeStamp + ":"
-                                    + faderEnabled + ":0:0</fader>" + "<UDN></UDN>";
+                            value = """
+                                    <BinaryState></BinaryState>\
+                                    <Duration></Duration>\
+                                    <EndAction></EndAction>\
+                                    <brightness></brightness>\
+                                    <fader>\
+                                    """ + faderSeconds + ":" + timeStamp + ":" + faderEnabled + ":0:0</fader>"
+                                    + "<UDN></UDN>";
                             updateState(CHANNEL_STATE, OnOffType.ON);
                         } else if (OnOffType.OFF.equals(command)) {
-                            value = "<BinaryState></BinaryState>" + "<Duration></Duration>" + "<EndAction></EndAction>"
-                                    + "<brightness></brightness>" + "<fader>" + faderSeconds + ":-1:" + faderEnabled
-                                    + ":0:0</fader>" + "<UDN></UDN>";
+                            value = """
+                                    <BinaryState></BinaryState>\
+                                    <Duration></Duration>\
+                                    <EndAction></EndAction>\
+                                    <brightness></brightness>\
+                                    <fader>\
+                                    """ + faderSeconds + ":-1:" + faderEnabled + ":0:0</fader>" + "<UDN></UDN>";
                         }
                     }
                     setBinaryState(action, argument, value);
@@ -283,8 +306,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                 case CHANNEL_NIGHT_MODE_BRIGHTNESS:
                     action = "ConfigureNightMode";
                     argument = "NightModeConfiguration";
-                    if (command instanceof PercentType) {
-                        int newBrightness = ((PercentType) command).intValue();
+                    if (command instanceof PercentType percentCommand) {
+                        int newBrightness = percentCommand.intValue();
                         String newNightModeBrightness = String.valueOf(newBrightness);
                         value = "&lt;startTime&gt;0&lt;/startTime&gt; \\n&lt;nightMode&gt;" + currentNightModeState
                                 + "&lt;/nightMode&gt; \\n&lt;endTime&gt;23400&lt;/endTime&gt; \\n&lt;nightModeBrightness&gt;"
@@ -363,7 +386,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         updateState(CHANNEL_FADER_COUNT_DOWN_TIME, faderMinutes);
                     }
                     if (splitFader[1] != null) {
-                        State isTimerRunning = splitFader[1].equals("-1") ? OnOffType.OFF : OnOffType.ON;
+                        State isTimerRunning = "-1".equals(splitFader[1]) ? OnOffType.OFF : OnOffType.ON;
                         logger.debug("isTimerRunning '{}' for device '{}' received", isTimerRunning,
                                 getThing().getUID());
                         updateState(CHANNEL_TIMER_START, isTimerRunning);
@@ -372,7 +395,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         }
                     }
                     if (splitFader[2] != null) {
-                        State isFaderEnabled = splitFader[1].equals("0") ? OnOffType.OFF : OnOffType.ON;
+                        State isFaderEnabled = "0".equals(splitFader[1]) ? OnOffType.OFF : OnOffType.ON;
                         logger.debug("isFaderEnabled '{}' for device '{}' received", isFaderEnabled,
                                 getThing().getUID());
                         updateState(CHANNEL_FADER_ENABLED, isFaderEnabled);
@@ -480,8 +503,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
             return null;
         }
         ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochSecond(value), TimeZone.getDefault().toZoneId());
-        State dateTimeState = new DateTimeType(zoned);
-        return dateTimeState;
+        return new DateTimeType(zoned);
     }
 
     public void setBinaryState(String action, String argument, String value) {
@@ -492,10 +514,14 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         }
         try {
             String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-            String content = "<?xml version=\"1.0\"?>"
-                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                    + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<" + argument
-                    + ">" + value + "</" + argument + ">" + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
+            String content = """
+                    <?xml version="1.0"?>\
+                    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                    <s:Body>\
+                    <u:\
+                    """
+                    + action + " xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<" + argument + ">" + value + "</"
+                    + argument + ">" + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
 
             wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
@@ -514,10 +540,13 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         }
         try {
             String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-            String content = "<?xml version=\"1.0\"?>"
-                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                    + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + value
-                    + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
+            String content = """
+                    <?xml version="1.0"?>\
+                    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                    <s:Body>\
+                    <u:SetBinaryState xmlns:u="urn:Belkin:service:basicevent:1">\
+                    """
+                    + value + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
             wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {

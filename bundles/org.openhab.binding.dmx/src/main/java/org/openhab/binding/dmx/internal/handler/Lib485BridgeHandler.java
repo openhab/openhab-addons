@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,11 +16,12 @@ import static org.openhab.binding.dmx.internal.DmxBindingConstants.THING_TYPE_LI
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dmx.internal.DmxBridgeHandler;
 import org.openhab.binding.dmx.internal.config.Lib485BridgeHandlerConfiguration;
 import org.openhab.binding.dmx.internal.dmxoverethernet.IpNode;
@@ -38,15 +39,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public class Lib485BridgeHandler extends DmxBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_LIB485_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_LIB485_BRIDGE);
     public static final int MIN_UNIVERSE_ID = 0;
     public static final int MAX_UNIVERSE_ID = 0;
     public static final int DEFAULT_PORT = 9020;
 
     private final Logger logger = LoggerFactory.getLogger(Lib485BridgeHandler.class);
-    private final Map<IpNode, Socket> receiverNodes = new HashMap<>();
+    private final Map<IpNode, @Nullable Socket> receiverNodes = new HashMap<>();
 
     public Lib485BridgeHandler(Bridge lib485Bridge) {
         super(lib485Bridge);
@@ -104,7 +105,7 @@ public class Lib485BridgeHandler extends DmxBridgeHandler {
             universe.calculateBuffer(now);
             for (IpNode receiverNode : receiverNodes.keySet()) {
                 Socket socket = receiverNodes.get(receiverNode);
-                if (socket.isConnected()) {
+                if (socket != null && socket.isConnected()) {
                     try {
                         socket.getOutputStream().write(universe.getBuffer());
                     } catch (IOException e) {

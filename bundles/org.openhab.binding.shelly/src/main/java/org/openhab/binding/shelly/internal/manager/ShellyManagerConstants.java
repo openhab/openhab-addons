@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,6 @@ public class ShellyManagerConstants {
     public static final String ACTION_GETDEB1 = "getdebug1";
     public static final String ACTION_NONE = "-";
 
-    public static final String TEMPLATE_PATH = "sniplets/";
     public static final String HEADER_HTML = "header.html";
     public static final String OVERVIEW_HTML = "overview.html";
     public static final String OVERVIEW_HEADER = "ov_header.html";

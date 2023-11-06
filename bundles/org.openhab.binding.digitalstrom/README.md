@@ -380,8 +380,8 @@ _Generally:_
 
 - The digitalSTROM-Server only informs the binding about scene-commands. So if you set the output value of devices e.g. through  the dSS-App, the binding will not be informed about the changes and you have to send a "refresh-command" to update the channel.
 - If you press a physical switch at your digitalSTROM-installation and the called scene-value is not red out yet, it can take a bit time to read it out and change the state of the channel.
-It the scene-value is red out, the state will change immediately.
-See also _General-Informations/digitalSTROM-Scenes_.
+  It the scene-value is red out, the state will change immediately.
+  See also _General-Informations/digitalSTROM-Scenes_.
 
 _Channels with accepted command type increase and decrease:_
 

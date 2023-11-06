@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author Björn Lange - Initial contribution
  * @author Benjamin Bolte - Add plate step
+ * @author Björn Lange - Add eco feedback
  */
 @NonNullByDefault
 public class DeviceCollectionTest {
@@ -286,5 +287,33 @@ public class DeviceCollectionTest {
         assertEquals(Integer.valueOf(80), targetTemperature.getValueRaw().get());
         assertEquals(Integer.valueOf(0), targetTemperature.getValueLocalized().get());
         assertEquals("Celsius", targetTemperature.getUnit().get());
+    }
+
+    @Test
+    public void testCreateDeviceCollectionWithEcoFeedback() throws IOException {
+        // given:
+        String json = getResourceAsString(
+                "/org/openhab/binding/mielecloud/internal/webservice/api/json/deviceCollectionWithEcoFeedback.json");
+
+        // when:
+        DeviceCollection collection = DeviceCollection.fromJson(json);
+
+        // then:
+        assertEquals(1, collection.getDeviceIdentifiers().size());
+        Device device = collection.getDevice(collection.getDeviceIdentifiers().iterator().next());
+
+        State state = device.getState().get();
+        EcoFeedback ecoFeedback = state.getEcoFeedback().get();
+
+        WaterConsumption currentWaterConsumption = ecoFeedback.getCurrentWaterConsumption().get();
+        assertEquals("l", currentWaterConsumption.getUnit().get());
+        assertEquals(0.0, currentWaterConsumption.getValue().get());
+
+        EnergyConsumption currentEnergyConsumption = ecoFeedback.getCurrentEnergyConsumption().get();
+        assertEquals("kWh", currentEnergyConsumption.getUnit().get());
+        assertEquals(0.5, currentEnergyConsumption.getValue().get());
+
+        assertEquals(0.0, ecoFeedback.getWaterForecast().get());
+        assertEquals(0.6, ecoFeedback.getEnergyForecast().get());
     }
 }

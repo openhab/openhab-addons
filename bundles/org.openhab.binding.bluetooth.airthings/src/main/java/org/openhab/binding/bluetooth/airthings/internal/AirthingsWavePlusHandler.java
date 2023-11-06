@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.dimension.Density;
+import org.openhab.core.library.dimension.RadiationSpecificActivity;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -77,13 +77,13 @@ public class AirthingsWavePlusHandler extends AbstractAirthingsHandler {
             }
             Number radonShortTermAvg = data.get(AirthingsDataParser.RADON_SHORT_TERM_AVG);
             if (radonShortTermAvg != null) {
-                updateState(CHANNEL_ID_RADON_ST_AVG,
-                        new QuantityType<Density>(radonShortTermAvg, Units.BECQUEREL_PER_CUBIC_METRE));
+                updateState(CHANNEL_ID_RADON_ST_AVG, new QuantityType<RadiationSpecificActivity>(radonShortTermAvg,
+                        Units.BECQUEREL_PER_CUBIC_METRE));
             }
             Number radonLongTermAvg = data.get(AirthingsDataParser.RADON_LONG_TERM_AVG);
             if (radonLongTermAvg != null) {
                 updateState(CHANNEL_ID_RADON_LT_AVG,
-                        new QuantityType<Density>(radonLongTermAvg, Units.BECQUEREL_PER_CUBIC_METRE));
+                        new QuantityType<RadiationSpecificActivity>(radonLongTermAvg, Units.BECQUEREL_PER_CUBIC_METRE));
             }
         } catch (AirthingsParserException e) {
             logger.error("Failed to parse data received from Airthings sensor: {}", e.getMessage());

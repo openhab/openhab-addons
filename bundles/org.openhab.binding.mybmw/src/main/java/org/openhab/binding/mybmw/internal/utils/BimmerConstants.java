@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link BimmerConstants} This class holds the important constants for the BMW Connected Drive Authorization. They
- * are taken from the Bimmercode from github {@link https://github.com/bimmerconnected/bimmer_connected}
+ * are taken from the Bimmercode from github <a href="https://github.com/bimmerconnected/bimmer_connected">
+ * https://github.com/bimmerconnected/bimmer_connected</a>.
  * File defining these constants
- * {@link https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py}
- * https://customer.bmwgroup.com/one/app/oauth.js
+ * <a href="https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py">
+ * https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py</a>
+ * <a href="https://customer.bmwgroup.com/one/app/oauth.js">https://customer.bmwgroup.com/one/app/oauth.js</a>
  *
  * @author Bernd Weymann - Initial contribution
  */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,18 +14,23 @@ package org.openhab.binding.knx.internal.factory;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.internal.client.SerialTransportAdapter;
 import org.openhab.binding.knx.internal.handler.DeviceThingHandler;
 import org.openhab.binding.knx.internal.handler.IPBridgeThingHandler;
+import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
 import org.openhab.binding.knx.internal.handler.SerialBridgeThingHandler;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -36,6 +41,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -45,19 +51,31 @@ import org.osgi.service.component.annotations.Reference;
  * @author Simon Kaufmann - Initial contribution and API
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.knx")
+@Component(service = { ThingHandlerFactory.class, KNXHandlerFactory.class }, configurationPid = "binding.knx")
 public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_DEVICE,
+    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE,
             THING_TYPE_IP_BRIDGE, THING_TYPE_SERIAL_BRIDGE);
 
     @Nullable
-    private NetworkAddressService networkAddressService;
+    private final NetworkAddressService networkAddressService;
+    private final SerialPortManager serialPortManager;
+    private final Map<ThingUID, KNXBridgeBaseThingHandler> bridges = new ConcurrentHashMap<>();
 
     @Activate
-    public KNXHandlerFactory(final @Reference TranslationProvider translationProvider,
-            final @Reference LocaleProvider localeProvider) {
+    public KNXHandlerFactory(final @Reference NetworkAddressService networkAddressService, Map<String, Object> config,
+            final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider,
+            final @Reference SerialPortManager serialPortManager) {
         KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
+        this.networkAddressService = networkAddressService;
+        this.serialPortManager = serialPortManager;
+        SerialTransportAdapter.setSerialPortManager(serialPortManager);
+        modified(config);
+    }
+
+    @Modified
+    protected void modified(Map<String, Object> config) {
+        disableUoM = (boolean) config.getOrDefault(CONFIG_DISABLE_UOM, false);
     }
 
     @Override
@@ -79,19 +97,30 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
-        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the KNX binding.");
+        return null;
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (thing.getThingTypeUID().equals(THING_TYPE_IP_BRIDGE)) {
-            return new IPBridgeThingHandler((Bridge) thing, networkAddressService);
-        } else if (thing.getThingTypeUID().equals(THING_TYPE_SERIAL_BRIDGE)) {
-            return new SerialBridgeThingHandler((Bridge) thing);
-        } else if (thing.getThingTypeUID().equals(THING_TYPE_DEVICE)) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (thingTypeUID.equals(THING_TYPE_IP_BRIDGE)) {
+            KNXBridgeBaseThingHandler bridgeHandler = new IPBridgeThingHandler((Bridge) thing, networkAddressService);
+            bridges.put(thing.getUID(), bridgeHandler);
+            return bridgeHandler;
+        } else if (thingTypeUID.equals(THING_TYPE_SERIAL_BRIDGE)) {
+            KNXBridgeBaseThingHandler bridgeHandler = new SerialBridgeThingHandler((Bridge) thing, serialPortManager);
+            bridges.put(thing.getUID(), bridgeHandler);
+            return bridgeHandler;
+        } else if (thingTypeUID.equals(THING_TYPE_DEVICE)) {
             return new DeviceThingHandler(thing);
         }
         return null;
+    }
+
+    @Override
+    public void unregisterHandler(Thing thing) {
+        bridges.remove(thing.getUID());
+        super.unregisterHandler(thing);
     }
 
     private ThingUID getIPBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
@@ -112,12 +141,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         return new ThingUID(thingTypeUID, serialPort);
     }
 
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
+    public Collection<KNXBridgeBaseThingHandler> getBridges() {
+        return Set.copyOf(bridges.values());
     }
 }

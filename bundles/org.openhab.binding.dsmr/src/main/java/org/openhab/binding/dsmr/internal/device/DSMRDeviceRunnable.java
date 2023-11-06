@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.dsmr.internal.device;
 
+import java.util.Optional;
 import java.util.concurrent.Semaphore;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
+import org.openhab.binding.dsmr.internal.device.connector.DSMRErrorStatus;
+import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +34,7 @@ public class DSMRDeviceRunnable implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(DSMRDeviceRunnable.class);
     private final Semaphore semaphore = new Semaphore(0);
     private final DSMRDevice device;
-    private final DSMREventListener portEventListener;
+    private final P1TelegramListener portEventListener;
 
     /**
      * Keeps state of running. If false run will stop.
@@ -45,7 +47,7 @@ public class DSMRDeviceRunnable implements Runnable {
      * @param device the device to control
      * @param eventListener listener to used ot report errors.
      */
-    public DSMRDeviceRunnable(DSMRDevice device, DSMREventListener eventListener) {
+    public DSMRDeviceRunnable(final DSMRDevice device, final P1TelegramListener eventListener) {
         this.device = device;
         this.portEventListener = eventListener;
     }
@@ -83,10 +85,11 @@ public class DSMRDeviceRunnable implements Runnable {
                 }
             }
             logger.trace("Device shutdown");
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             logger.warn("DSMRDeviceRunnable stopped with a RuntimeException", e);
-            portEventListener.handleErrorEvent(DSMRConnectorErrorEvent.READ_ERROR);
-        } catch (InterruptedException e) {
+            portEventListener.onError(DSMRErrorStatus.SERIAL_DATA_READ_ERROR,
+                    Optional.ofNullable(e.getMessage()).orElse(""));
+        } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
             device.stop();

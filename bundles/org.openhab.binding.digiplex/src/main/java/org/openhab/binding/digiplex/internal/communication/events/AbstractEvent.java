@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,9 +41,6 @@ public abstract class AbstractEvent implements DigiplexResponse {
         // TODO: According to documentation: areaNo = 255 - Occurs in at least one area enabled in the system.
         // I did never encounter 255 on my system though (EVO192).
         // 15 is returned instead, which (I believe) has the same meaning.
-        if (this.areaNo == 15 || this.areaNo == 255) {
-            return true;
-        }
-        return false;
+        return (this.areaNo == 15 || this.areaNo == 255);
     }
 }

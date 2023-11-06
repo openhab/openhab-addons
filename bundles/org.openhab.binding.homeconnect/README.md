@@ -285,7 +285,7 @@ Please check log UI (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect) and ask for
 
 ### Rate limit reached
 
-The Home Connect API enforces rate [limits](https://developer.home-connect.com/docs/general/ratelimiting). If you have a lot of `429` response codes in your request log section (http(s)://[YOUROPENHAB]:[YOURPORT]/log/requests), please check the error response.
+The Home Connect API enforces rate [limits](https://developer.home-connect.com/docs/general/ratelimiting). If you have a lot of `429` response codes in your request log section (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect/log/requests), please check the error response.
 
 ### Error message 'Program not supported', 'Unsupported operation' or 'SDK.Error.UnsupportedOption'
 

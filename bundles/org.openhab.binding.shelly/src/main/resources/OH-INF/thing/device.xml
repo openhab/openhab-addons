@@ -59,6 +59,13 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="gatewayDevice" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.gatewayDevice.label</label>
+		<description>@text/channel-type.shelly.gatewayDevice.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="calibrated" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.calibrated.label</label>

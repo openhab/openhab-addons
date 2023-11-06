@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -172,7 +172,8 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_ALARM_SYSTEM_NETWORK = "network";
     public static final String CHANNEL_ALARM_SYSTEM_BATTERY = "battery";
     public static final String CHANNEL_ALARM_ZONE_STATE = "state";
-    public static final String CHANNEL_ALARM_ZONE_ALARM_STATE = "alarm";
+    public static final String CHANNEL_ALARM_ZONE_ALARM = "alarm";
+    public static final String CHANNEL_ALARM_ZONE_ALARM_TIMESTAMP = "timestamp";
 
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";

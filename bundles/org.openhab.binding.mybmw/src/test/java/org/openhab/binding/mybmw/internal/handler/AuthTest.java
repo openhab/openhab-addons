@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,7 @@ import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,16 +79,14 @@ class AuthTest {
             AuthQueryResponse aqr = Converter.getGson().fromJson(firstResponse.getContentAsString(),
                     AuthQueryResponse.class);
 
-            // String verifier_bytes = RandomStringUtils.randomAlphanumeric(64);
-            String verifierBytes = Converter.getRandomString(64);
+            String verifierBytes = StringUtils.getRandomAlphabetic(64).toLowerCase();
             String codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(verifierBytes.getBytes());
 
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
             String codeChallenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
 
-            // String state_bytes = RandomStringUtils.randomAlphanumeric(16);
-            String stateBytes = Converter.getRandomString(16);
+            String stateBytes = StringUtils.getRandomAlphabetic(16).toLowerCase();
             String state = Base64.getUrlEncoder().withoutPadding().encodeToString(stateBytes.getBytes());
 
             String authUrl = aqr.gcdmBaseUrl + BimmerConstants.OAUTH_ENDPOINT;
@@ -313,10 +312,10 @@ class AuthTest {
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         final StringBuilder codeFound = new StringBuilder();
         tokenMap.forEach((key, value) -> {
-            if (value.size() > 0) {
+            if (!value.isEmpty()) {
                 String val = value.get(0);
                 if (key.endsWith(CODE)) {
-                    codeFound.append(val.toString());
+                    codeFound.append(val);
                 }
             }
         });

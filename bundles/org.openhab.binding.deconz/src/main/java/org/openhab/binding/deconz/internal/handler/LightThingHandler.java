@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,18 +41,20 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
-import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,8 +96,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
      */
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
-    @Nullable
-    private Integer onTime = null; // in 0.1s
+    private @Nullable Integer onTime = null; // in 0.1s
     private String colorMode = "";
 
     // set defaults, we can override them later if we receive better values
@@ -139,8 +140,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_ONTIME)) {
-            if (command instanceof QuantityType<?>) {
-                QuantityType<?> onTimeSeconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
+            if (command instanceof QuantityType<?> quantity) {
+                QuantityType<?> onTimeSeconds = quantity.toUnit(Units.SECOND);
                 if (onTimeSeconds != null) {
                     onTime = 10 * onTimeSeconds.intValue();
                 } else {
@@ -152,7 +153,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         }
 
         if (command instanceof RefreshType) {
-            valueUpdated(channelUID.getId(), lightStateCache);
+            valueUpdated(channelUID, lightStateCache);
             return;
         }
 
@@ -161,14 +162,14 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         Integer currentBri = lightStateCache.bri;
 
         switch (channelUID.getId()) {
-            case CHANNEL_ALERT:
+            case CHANNEL_ALERT -> {
                 if (command instanceof StringType) {
                     newLightState.alert = command.toString();
                 } else {
                     return;
                 }
-                break;
-            case CHANNEL_EFFECT:
+            }
+            case CHANNEL_EFFECT -> {
                 if (command instanceof StringType) {
                     // effect command only allowed for lights that are turned on
                     newLightState.on = true;
@@ -176,25 +177,23 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 } else {
                     return;
                 }
-                break;
-            case CHANNEL_EFFECT_SPEED:
+            }
+            case CHANNEL_EFFECT_SPEED -> {
                 if (command instanceof DecimalType) {
                     newLightState.on = true;
                     newLightState.effectSpeed = Util.constrainToRange(((DecimalType) command).intValue(), 0, 10);
                 } else {
                     return;
                 }
-                break;
-            case CHANNEL_SWITCH:
-            case CHANNEL_LOCK:
+            }
+            case CHANNEL_SWITCH, CHANNEL_LOCK -> {
                 if (command instanceof OnOffType) {
                     newLightState.on = (command == OnOffType.ON);
                 } else {
                     return;
                 }
-                break;
-            case CHANNEL_BRIGHTNESS:
-            case CHANNEL_COLOR:
+            }
+            case CHANNEL_BRIGHTNESS, CHANNEL_COLOR -> {
                 if (command instanceof OnOffType) {
                     newLightState.on = (command == OnOffType.ON);
                 } else if (command instanceof IncreaseDecreaseType) {
@@ -208,21 +207,18 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                         newLightState.bri = Util.constrainToRange(oldBri - BRIGHTNESS_DIM_STEP, BRIGHTNESS_MIN,
                                 BRIGHTNESS_MAX);
                     }
-                } else if (command instanceof HSBType) {
-                    HSBType hsbCommand = (HSBType) command;
+                } else if (command instanceof HSBType hsbCommand) {
                     // XY color is the implicit default: Use XY color mode if i) no color mode is set or ii) if the bulb
                     // is in CT mode or iii) already in XY mode. Only if the bulb is in HS mode, use this one.
                     if ("hs".equals(colorMode)) {
                         newLightState.hue = (int) (hsbCommand.getHue().doubleValue() * HUE_FACTOR);
                         newLightState.sat = Util.fromPercentType(hsbCommand.getSaturation());
+                        newLightState.bri = Util.fromPercentType(hsbCommand.getBrightness());
                     } else {
-                        PercentType[] xy = hsbCommand.toXY();
-                        if (xy.length < 2) {
-                            logger.warn("Failed to convert {} to xy-values", command);
-                        }
-                        newLightState.xy = new double[] { xy[0].doubleValue() / 100.0, xy[1].doubleValue() / 100.0 };
+                        double[] xy = ColorUtil.hsbToXY(hsbCommand);
+                        newLightState.xy = new double[] { xy[0], xy[1] };
+                        newLightState.bri = (int) (xy[2] * BRIGHTNESS_MAX);
                     }
-                    newLightState.bri = Util.fromPercentType(hsbCommand.getBrightness());
                 } else if (command instanceof PercentType) {
                     newLightState.bri = Util.fromPercentType((PercentType) command);
                 } else if (command instanceof DecimalType) {
@@ -241,40 +237,34 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 if (newBri != null && newBri == 0 && currentOn != null && !currentOn) {
                     return;
                 }
-
                 Double transitiontime = config.transitiontime;
                 if (transitiontime != null) {
                     // value is in 1/10 seconds
                     newLightState.transitiontime = (int) Math.round(10 * transitiontime);
                 }
-                break;
-            case CHANNEL_COLOR_TEMPERATURE:
+            }
+            case CHANNEL_COLOR_TEMPERATURE -> {
                 if (command instanceof DecimalType) {
                     int miredValue = kelvinToMired(((DecimalType) command).intValue());
                     newLightState.ct = constrainToRange(miredValue, ctMin, ctMax);
                     newLightState.on = true;
                 }
-                break;
-            case CHANNEL_POSITION:
+            }
+            case CHANNEL_POSITION -> {
                 if (command instanceof UpDownType) {
-                    newLightState.on = (command == UpDownType.DOWN);
+                    newLightState.open = (command == UpDownType.UP);
                 } else if (command == StopMoveType.STOP) {
-                    if (currentOn != null && currentOn && currentBri != null && currentBri <= BRIGHTNESS_MAX) {
-                        // going down or currently stop (254 because of rounding error)
-                        newLightState.on = true;
-                    } else if (currentOn != null && !currentOn && currentBri != null && currentBri > BRIGHTNESS_MIN) {
-                        // going up or currently stopped
-                        newLightState.on = false;
-                    }
+                    newLightState.stop = true;
                 } else if (command instanceof PercentType) {
-                    newLightState.bri = fromPercentType((PercentType) command);
+                    newLightState.lift = ((PercentType) command).intValue();
                 } else {
                     return;
                 }
-                break;
-            default:
+            }
+            default -> {
                 // no supported command
                 return;
+            }
         }
 
         Boolean newOn = newLightState.on;
@@ -296,11 +286,9 @@ public class LightThingHandler extends DeconzBaseThingHandler {
 
     @Override
     protected void processStateResponse(DeconzBaseMessage stateResponse) {
-        if (!(stateResponse instanceof LightMessage)) {
+        if (!(stateResponse instanceof LightMessage lightMessage)) {
             return;
         }
-
-        LightMessage lightMessage = (LightMessage) stateResponse;
 
         if (needsPropertyUpdate) {
             // if we did not receive a ctmin/ctmax, then we probably don't need it
@@ -316,41 +304,60 @@ public class LightThingHandler extends DeconzBaseThingHandler {
             }
         }
 
+        ThingBuilder thingBuilder = editThing();
+        boolean thingEdited = false;
+
         LightState lightState = lightMessage.state;
-        if (lightState != null && lightState.effect != null) {
-            checkAndUpdateEffectChannels(lightMessage);
+        if (lightState != null && lightState.effect != null
+                && checkAndUpdateEffectChannels(thingBuilder, lightMessage)) {
+            thingEdited = true;
         }
 
-        messageReceived(config.id, lightMessage);
+        if (checkLastSeen(thingBuilder, stateResponse.lastseen)) {
+            thingEdited = true;
+        }
+        if (thingEdited) {
+            updateThing(thingBuilder.build());
+        }
+
+        messageReceived(lightMessage);
     }
 
     private enum EffectLightModel {
         LIDL_MELINARA,
         TINT_MUELLER,
-        UNKNOWN;
+        UNKNOWN
     }
 
-    private void checkAndUpdateEffectChannels(LightMessage lightMessage) {
-        EffectLightModel model = EffectLightModel.UNKNOWN;
+    private boolean checkAndUpdateEffectChannels(ThingBuilder thingBuilder, LightMessage lightMessage) {
         // try to determine which model we have
-        if (lightMessage.manufacturername.equals("_TZE200_s8gkrkxk")) {
-            // the LIDL Melinara string does not report a proper model name
-            model = EffectLightModel.LIDL_MELINARA;
-        } else if (lightMessage.manufacturername.equals("MLI")) {
-            model = EffectLightModel.TINT_MUELLER;
-        } else {
+        EffectLightModel model = switch (lightMessage.manufacturername) {
+            case "_TZE200_s8gkrkxk" -> EffectLightModel.LIDL_MELINARA;
+            case "MLI" -> EffectLightModel.TINT_MUELLER;
+            default -> EffectLightModel.UNKNOWN;
+        };
+        if (model == EffectLightModel.UNKNOWN) {
             logger.debug(
                     "Could not determine effect light type for thing {}, if you feel this is wrong request adding support on GitHub.",
                     thing.getUID());
         }
 
         ChannelUID effectChannelUID = new ChannelUID(thing.getUID(), CHANNEL_EFFECT);
-        createChannel(CHANNEL_EFFECT, ChannelKind.STATE);
+
+        boolean thingEdited = false;
+
+        if (thing.getChannel(CHANNEL_EFFECT) == null) {
+            createChannel(thingBuilder, CHANNEL_EFFECT, ChannelKind.STATE);
+            thingEdited = true;
+        }
 
         switch (model) {
             case LIDL_MELINARA:
-                // additional channels
-                createChannel(CHANNEL_EFFECT_SPEED, ChannelKind.STATE);
+                if (thing.getChannel(CHANNEL_EFFECT_SPEED) == null) {
+                    // additional channels
+                    createChannel(thingBuilder, CHANNEL_EFFECT_SPEED, ChannelKind.STATE);
+                    thingEdited = true;
+                }
 
                 List<String> options = List.of("none", "steady", "snow", "rainbow", "snake", "tinkle", "fireworks",
                         "flag", "waves", "updown", "vintage", "fading", "collide", "strobe", "sparkles", "carnival",
@@ -366,84 +373,43 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 options = List.of("none", "colorloop");
                 commandDescriptionProvider.setCommandOptions(effectChannelUID, toCommandOptionList(options));
         }
+
+        return thingEdited;
     }
 
     private List<CommandOption> toCommandOptionList(List<String> options) {
         return options.stream().map(c -> new CommandOption(c, c)).collect(Collectors.toList());
     }
 
-    private void valueUpdated(String channelId, LightState newState) {
-        Integer bri = newState.bri;
-        Integer hue = newState.hue;
-        Integer sat = newState.sat;
+    private void valueUpdated(ChannelUID channelUID, LightState newState) {
         Boolean on = newState.on;
 
-        switch (channelId) {
-            case CHANNEL_ALERT:
-                String alert = newState.alert;
-                if (alert != null) {
-                    updateState(channelId, new StringType(alert));
-                }
-                break;
-            case CHANNEL_SWITCH:
-            case CHANNEL_LOCK:
-                if (on != null) {
-                    updateState(channelId, OnOffType.from(on));
-                }
-                break;
-            case CHANNEL_COLOR:
-                if (on != null && on == false) {
-                    updateState(channelId, OnOffType.OFF);
-                } else if (bri != null && "xy".equals(newState.colormode)) {
-                    final double @Nullable [] xy = newState.xy;
-                    if (xy != null && xy.length == 2) {
-                        HSBType color = HSBType.fromXY((float) xy[0], (float) xy[1]);
-                        updateState(channelId, new HSBType(color.getHue(), color.getSaturation(), toPercentType(bri)));
-                    }
-                } else if (bri != null && hue != null && sat != null) {
-                    updateState(channelId,
-                            new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
-                }
-                break;
-            case CHANNEL_BRIGHTNESS:
-                if (bri != null && on != null && on) {
-                    updateState(channelId, toPercentType(bri));
-                } else {
-                    updateState(channelId, OnOffType.OFF);
-                }
-                break;
-            case CHANNEL_COLOR_TEMPERATURE:
+        switch (channelUID.getId()) {
+            case CHANNEL_ALERT -> updateStringChannel(channelUID, newState.alert);
+            case CHANNEL_SWITCH, CHANNEL_LOCK -> updateSwitchChannel(channelUID, on);
+            case CHANNEL_COLOR -> updateColorChannel(channelUID, newState);
+            case CHANNEL_BRIGHTNESS -> updatePercentTypeChannel(channelUID, newState.bri, newState.on);
+            case CHANNEL_COLOR_TEMPERATURE -> {
                 Integer ct = newState.ct;
                 if (ct != null && ct >= ctMin && ct <= ctMax) {
-                    updateState(channelId, new DecimalType(miredToKelvin(ct)));
+                    updateState(channelUID, new DecimalType(miredToKelvin(ct)));
                 }
-                break;
-            case CHANNEL_POSITION:
-                if (bri != null) {
-                    updateState(channelId, toPercentType(bri));
+            }
+            case CHANNEL_POSITION -> {
+                Integer lift = newState.lift;
+                if (lift != null) {
+                    updateState(channelUID, new PercentType(lift));
                 }
-                break;
-            case CHANNEL_EFFECT:
-                String effect = newState.effect;
-                if (effect != null) {
-                    updateState(channelId, new StringType(effect));
-                }
-                break;
-            case CHANNEL_EFFECT_SPEED:
-                Integer effectSpeed = newState.effectSpeed;
-                if (effectSpeed != null) {
-                    updateState(channelId, new DecimalType(effectSpeed));
-                }
-                break;
-            default:
+            }
+            case CHANNEL_EFFECT -> updateStringChannel(channelUID, newState.effect);
+            case CHANNEL_EFFECT_SPEED -> updateDecimalTypeChannel(channelUID, newState.effectSpeed);
         }
     }
 
     @Override
-    public void messageReceived(String sensorID, DeconzBaseMessage message) {
-        if (message instanceof LightMessage) {
-            LightMessage lightMessage = (LightMessage) message;
-            logger.trace("{} received {}", thing.getUID(), lightMessage);
+    public void messageReceived(DeconzBaseMessage message) {
+        logger.trace("{} received {}", thing.getUID(), message);
+        if (message instanceof LightMessage lightMessage) {
             LightState lightState = lightMessage.state;
             if (lightState != null) {
                 if (lastCommandExpireTimestamp > System.currentTimeMillis()
@@ -462,12 +428,34 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 lightStateCache = lightState;
                 if (Boolean.TRUE.equals(lightState.reachable)) {
                     updateStatus(ThingStatus.ONLINE);
-                    thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, lightState));
+                    thing.getChannels().stream().map(Channel::getUID).forEach(c -> valueUpdated(c, lightState));
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-not-reachable");
-                    thing.getChannels().stream().map(c -> c.getUID()).forEach(c -> updateState(c, UnDefType.UNDEF));
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
                 }
             }
+        }
+    }
+
+    private void updateColorChannel(ChannelUID channelUID, LightState newState) {
+        Boolean on = newState.on;
+        Integer bri = newState.bri;
+        Integer hue = newState.hue;
+        Integer sat = newState.sat;
+
+        if (on != null && !on) {
+            updateState(channelUID, OnOffType.OFF);
+        } else if (bri != null && "xy".equals(newState.colormode)) {
+            final double @Nullable [] xy = newState.xy;
+            if (xy != null && xy.length == 2) {
+                double[] xyY = new double[3];
+                xyY[0] = xy[0];
+                xyY[1] = xy[1];
+                xyY[2] = ((double) bri) / BRIGHTNESS_MAX;
+                updateState(channelUID, ColorUtil.xyToHsb(xyY));
+            }
+        } else if (bri != null && hue != null && sat != null) {
+            updateState(channelUID,
+                    new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
         }
     }
 }

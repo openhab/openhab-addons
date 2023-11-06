@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,13 @@ import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolCon
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
@@ -56,6 +58,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
+
+    public static final String DEV_FAMILY_UNKNOWN = "UNKNOWN";
+
+    public static final VeSyncDeviceMetadata UNKNOWN = new VeSyncDeviceMetadata(DEV_FAMILY_UNKNOWN,
+            Collections.emptyList(), Collections.emptyList());
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncBaseDeviceHandler.class);
 
@@ -141,10 +148,9 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
     protected boolean isDeviceOnline() {
         BridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null && bridgeHandler instanceof VeSyncBridgeHandler) {
-            VeSyncBridgeHandler vesyncBridgeHandler = (VeSyncBridgeHandler) bridgeHandler;
+        if (bridgeHandler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
             @Nullable
-            VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
+            VeSyncManagedDeviceBase metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
 
             if (metadata == null) {
                 return false;
@@ -159,10 +165,9 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         Map<String, String> newProps = null;
 
         BridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null && bridgeHandler instanceof VeSyncBridgeHandler) {
-            VeSyncBridgeHandler vesyncBridgeHandler = (VeSyncBridgeHandler) bridgeHandler;
+        if (bridgeHandler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
             @Nullable
-            VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
+            VeSyncManagedDeviceBase metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
 
             if (metadata == null) {
                 return;
@@ -228,6 +233,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         newProps.put(DEVICE_PROP_DEVICE_MAC_ID, metadata.getMacId());
         newProps.put(DEVICE_PROP_DEVICE_NAME, metadata.getDeviceName());
         newProps.put(DEVICE_PROP_DEVICE_TYPE, metadata.getDeviceType());
+        newProps.put(DEVICE_PROP_DEVICE_FAMILY,
+                getDeviceFamilyMetadata(metadata.getDeviceType()).getDeviceFamilyName());
         newProps.put(DEVICE_PROP_DEVICE_UUID, metadata.getUuid());
         return newProps;
     }
@@ -239,8 +246,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof VeSyncClient) {
-                veSyncClient = (VeSyncClient) handler;
+            if (handler instanceof VeSyncClient client) {
+                veSyncClient = client;
             } else {
                 return null;
             }
@@ -251,8 +258,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     protected void requestBridgeFreqScanMetadataIfReq() {
         if (requiresMetaDataFrequentUpdates()) {
             BridgeHandler bridgeHandler = getBridgeHandler();
-            if (bridgeHandler != null && bridgeHandler instanceof VeSyncBridgeHandler) {
-                VeSyncBridgeHandler vesyncBridgeHandler = (VeSyncBridgeHandler) bridgeHandler;
+            if (bridgeHandler instanceof VeSyncBridgeHandler vesyncBridgeHandler) {
                 vesyncBridgeHandler.checkIfIncreaseScanRateRequired();
             }
         }
@@ -263,9 +269,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         final VeSyncDeviceConfiguration config = getConfigAs(VeSyncDeviceConfiguration.class);
 
         BridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null && bridgeHandler instanceof VeSyncBridgeHandler) {
-            VeSyncBridgeHandler vesyncBridgeHandler = (VeSyncBridgeHandler) bridgeHandler;
-
+        if (bridgeHandler instanceof VeSyncBridgeHandler vesyncBridgeHandler) {
             final String configMac = config.macId;
 
             // Try to use the mac directly
@@ -436,7 +440,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
     /**
      * Send a BypassV2 command to the device. The body of the response is returned.
-     * 
+     *
      * @param method - the V2 bypass method
      * @param payload - The payload to send in within the V2 bypass command
      * @return - The body of the response, or EMPTY_STRING if the command could not be issued.
@@ -497,12 +501,50 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     public void updateBridgeBasedPolls(VeSyncBridgeConfiguration config) {
     }
 
+    protected boolean isDeviceSupported() {
+        final String deviceType = getThing().getProperties().get(DEVICE_PROP_DEVICE_TYPE);
+        return !getDeviceFamilyMetadata(deviceType).getDeviceFamilyName().equals(DEV_FAMILY_UNKNOWN);
+    }
+
     /**
-     * Subclasses should implement this method, and return true if the device is a model it can support
-     * interoperability with. If it cannot be determind to be a mode
+     * Subclasses should return the protocol prefix for the device type being modelled.
+     * E.g. LUH = The Humidifier Devices; LAP = The Air Purifiers;
+     * if irrelevant return a string that will not be used in the protocol e.g. __??__
      *
-     * @return - true if the device is supported, false if the device isn't. E.g. Unknown model id in meta-data would
-     *         return false.
+     * @return - The device type prefix for the device being modelled. E.g. LAP or LUH
      */
-    protected abstract boolean isDeviceSupported();
+    public abstract String getDeviceFamilyProtocolPrefix();
+
+    /**
+     * Subclasses should return list of VeSyncDeviceMetadata definitions that define the
+     * supported devices by their implementation.
+     *
+     * @return - List of VeSyncDeviceMetadata definitions, that defines groups of devices which
+     *         are operationally the same device.
+     */
+    public abstract List<VeSyncDeviceMetadata> getSupportedDeviceMetadata();
+
+    public static VeSyncDeviceMetadata getDeviceFamilyMetadata(final @Nullable String deviceType,
+            final String deviceProtocolPrefix, final List<VeSyncDeviceMetadata> metadata) {
+        if (deviceType == null) {
+            return UNKNOWN;
+        }
+        final String[] idParts = deviceType.split("-");
+        if (idParts.length == 3) {
+            if (!deviceProtocolPrefix.equals(idParts[0])) {
+                return UNKNOWN;
+            }
+        }
+        List<VeSyncDeviceMetadata> foundMatch = metadata.stream()
+                .filter(x -> x.deviceTypeIdMatches(deviceType, idParts)).collect(Collectors.toList());
+        if (foundMatch.size() == 1) {
+            return foundMatch.get(0);
+        } else {
+            return UNKNOWN;
+        }
+    }
+
+    public VeSyncDeviceMetadata getDeviceFamilyMetadata(final @Nullable String deviceType) {
+        return getDeviceFamilyMetadata(deviceType, getDeviceFamilyProtocolPrefix(), getSupportedDeviceMetadata());
+    }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.handler.BridgeHandler;
-import org.openhab.binding.digitalstrom.internal.handler.ZoneTemperatureControlHandler;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -35,11 +34,13 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ZoneTemperatureControlDiscoveryService} discovers all digitalSTROM zones which have temperature control
  * configured. The thing-type has to be given to the
- * {@link #ZoneTemperatureControlDiscoveryService(BridgeHandler, ThingTypeUID)} as {@link ThingTypeUID}. The supported
- * {@link ThingTypeUID} can be found at {@link ZoneTemperatureControlHandler#SUPPORTED_THING_TYPES}
+ * {@link #ZoneTemperatureControlDiscoveryService(BridgeHandler, ThingTypeUID)} as
+ * {@link org.openhab.core.thing.ThingTypeUID}. The supported {@link org.openhab.core.thing.ThingTypeUID}
+ * can be found at
+ * {@link org.openhab.binding.digitalstrom.internal.handler.ZoneTemperatureControlHandler#SUPPORTED_THING_TYPES}
  *
- * @author Michael Ochel
- * @author Matthias Siegele
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class ZoneTemperatureControlDiscoveryService extends AbstractDiscoveryService {
 
@@ -118,8 +119,7 @@ public class ZoneTemperatureControlDiscoveryService extends AbstractDiscoverySer
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, thingTypeID);
         if (getSupportedThingTypes().contains(thingTypeUID)) {
             String thingID = tempControlStatus.getZoneID().toString();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingID);
-            return thingUID;
+            return new ThingUID(thingTypeUID, bridgeUID, thingID);
         } else {
             return null;
         }

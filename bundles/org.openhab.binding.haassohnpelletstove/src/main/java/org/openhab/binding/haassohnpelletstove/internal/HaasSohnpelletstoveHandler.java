@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,11 +82,9 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
                 updateOvenData(postData);
             }
         } else if (channelUID.getId().equals(CHANNELSPTEMP)) {
-            if (command instanceof QuantityType<?>) {
-                QuantityType<?> value = (QuantityType<?>) command;
-
+            if (command instanceof QuantityType<?> quantityCommand) {
                 Unit<Temperature> unit = SIUnits.CELSIUS;
-                value = value.toUnit(unit);
+                QuantityType<?> value = quantityCommand.toUnit(unit);
                 if (value != null) {
                     double a = value.doubleValue();
                     String postdata = "{\"sp_temp\":" + a + "}";

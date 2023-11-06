@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -150,7 +150,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                             updateData(HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM, rpmSpeed.toString());
                         }
 
-                        if (data.get(i).equals("0")) {
+                        if ("0".equals(data.get(i))) {
                             updateData(HaywardBindingConstants.CHANNEL_PUMP_ENABLE, "0");
                         } else {
                             updateData(HaywardBindingConstants.CHANNEL_PUMP_ENABLE, "1");
@@ -213,6 +213,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                                     cmdString = pumpMaxSpeed;
                                 }
                             }
+                            break;
                         case HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM:
                             // Convert cmdString from RPM to Percent
                             if (pumpMaxRpm != null && pumpMaxSpeed != null && pumpMinSpeed != null) {

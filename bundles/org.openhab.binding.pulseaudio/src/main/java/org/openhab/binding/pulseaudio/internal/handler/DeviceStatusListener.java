@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,5 +31,5 @@ public interface DeviceStatusListener {
      * @param bridge The Pulseaudio bridge the added device was connected to.
      * @param device The device which is added.
      */
-    public void onDeviceAdded(Thing bridge, AbstractAudioDeviceConfig device);
+    void onDeviceAdded(Thing bridge, AbstractAudioDeviceConfig device);
 }

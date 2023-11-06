@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,12 +30,12 @@ import com.google.gson.JsonObject;
 /**
  * The {@link DeviceSensorValue} contains all needed information of a device sensor, e.g. the sensor type, to detect
  * which kind of sensor it is (see {@link SensorEnum}), the sensor index to read out sensor at the digitalSTROM device
- * by calling {@link DsAPI#getDeviceSensorValue(String, DSID, String, String, Short)} and as well as of course the value
- * and
- * timestamp of the last sensor update.
+ * by calling
+ * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI#getDeviceSensorValue(String, DSID, String, String, Short)}
+ * and as well as of course the value and timestamp of the last sensor update.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class DeviceSensorValue {
 
@@ -85,7 +85,7 @@ public class DeviceSensorValue {
 
     /**
      * Creates a new {@link DeviceSensorValue} through the properties of a digitalSTROM
-     * {@link EventNames#DEVICE_SENSOR_VALUE} event.
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.constants.EventNames#DEVICE_SENSOR_VALUE} event.
      *
      * @param eventProperties must not be null
      */
@@ -212,7 +212,7 @@ public class DeviceSensorValue {
 
     /**
      * Returns the sensor index to read the sensor value out though
-     * {@link DsAPI#getDeviceSensorValue(String, DSID, String, String, Short)}.
+     * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI#getDeviceSensorValue(String, DSID, String, String, Short)}.
      *
      * @return the sensorIndex
      */
@@ -267,6 +267,7 @@ public class DeviceSensorValue {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

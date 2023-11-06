@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,7 +95,7 @@ public class VoskSTTService implements STTService {
         try {
             String osName = System.getProperty("os.name", "generic").toLowerCase();
             String osArch = System.getProperty("os.arch", "").toLowerCase();
-            if (osName.contains("linux") && (osArch.equals("arm") || osArch.equals("armv7l"))) {
+            if (osName.contains("linux") && ("arm".equals(osArch) || "armv7l".equals(osArch))) {
                 // workaround for loading required shared libraries
                 loadSharedLibrariesArmv7l();
             }

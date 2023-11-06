@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link WolfSmartsetCloudConnector} class is used for connecting to the Wolf Smartset cloud service
+ * The {@link WolfSmartsetApi} class is used for connecting to the Wolf Smartset cloud service
  *
  * @author Bo Biene - Initial contribution
  */
@@ -125,7 +125,6 @@ public class WolfSmartsetApi {
                 logger.trace("Login succeeded but failed to create session {}", loginFailedCounter);
                 return false;
             }
-
         } catch (WolfSmartsetCloudException e) {
             logger.debug("Error logging on to Wolf Smartset ({}): {}", loginFailedCounter, e.getMessage());
             loginFailedCounter++;

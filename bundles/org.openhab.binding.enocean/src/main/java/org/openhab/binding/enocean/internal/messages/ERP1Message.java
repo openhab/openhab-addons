@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.enocean.internal.messages;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
 import org.openhab.binding.enocean.internal.eep.Base._1BSMessage;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
@@ -23,6 +24,7 @@ import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class ERP1Message extends BasePacket {
 
     // these are just ESP3 RORGs, ESP2 ORGs are converted by ESP2PacketConverter
@@ -87,13 +89,13 @@ public class ERP1Message extends BasePacket {
                 case _1BS:
                     if (dataLength >= 6) {
                         senderId = Arrays.copyOfRange(payload, 2, 6);
-                        teachIn = ((_1BSMessage.TeachInBit & payload[1]) == 0);
+                        teachIn = ((_1BSMessage.TEACHIN_BIT & payload[1]) == 0);
                     }
                     break;
                 case _4BS:
                     if (dataLength >= 9) {
                         senderId = Arrays.copyOfRange(payload, 5, 9);
-                        teachIn = (_4BSMessage.TeachInBit & payload[4]) == 0;
+                        teachIn = (_4BSMessage.TEACHIN_BIT & payload[4]) == 0;
                     }
                     break;
                 case VLD:
@@ -102,8 +104,8 @@ public class ERP1Message extends BasePacket {
                     break;
                 case UTE:
                     if (dataLength >= 6) {
-                        teachIn = (payload[1] & UTEResponse.TeachIn_MASK) == 0
-                                || (payload[1] & UTEResponse.TeachIn_MASK) == UTEResponse.TeachIn_NotSpecified;
+                        teachIn = (payload[1] & UTEResponse.TEACHIN_MASK) == 0
+                                || (payload[1] & UTEResponse.TEACHIN_MASK) == UTEResponse.TEACHIN_NPTSPECIFIED;
                         senderId = Arrays.copyOfRange(payload, dataLength - 5, dataLength - 1);
                     }
                     break;
