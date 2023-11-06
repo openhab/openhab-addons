@@ -36,9 +36,6 @@
 			<channel id="fan" typeId="fan"/>
 			<channel id="vacuum" typeId="vacuum"/>
 			<channel id="segment" typeId="segment"/>
-			<channel id="collect_dust" typeId="collect_dust"/>
-			<channel id="clean_mop_start" typeId="clean_mop_start"/>
-			<channel id="clean_mop_stop" typeId="clean_mop_stop"/>
 		</channels>
 	</channel-group-type>
 
@@ -59,10 +56,6 @@
 			<channel id="segment_status" typeId="segment_status"/>
 			<channel id="map_status" typeId="map_status"/>
 			<channel id="led_status" typeId="led_status"/>
-			<channel id="mop_drying_time" typeId="mop_drying_time"/>
-			<channel id="is_mop_drying" typeId="is_mop_drying"/>
-			<channel id="dock_state" typeId="dock_state"/>
-			<channel id="dock_state_id" typeId="dock_state_id"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
@@ -192,16 +185,6 @@
 		<label>Led Status</label>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
-	<channel-type id="mop_drying_time">
-		<item-type>Number:Time</item-type>
-		<label>Mop Drying Time</label>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="is_mop_drying">
-		<item-type>Switch</item-type>
-		<label>Mop Cleaning Active</label>
-		<state readOnly="true"/>
-	</channel-type>
 
 
 	<!-- Dynamic Status Channels -->
@@ -245,6 +228,31 @@
 		<label>Dock State ID</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="mop_drying_time">
+		<item-type>Number:Time</item-type>
+		<label>Mop Drying Time</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="is_mop_drying">
+		<item-type>Switch</item-type>
+		<label>Mop Cleaning Active</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="collect_dust">
+		<item-type>Switch</item-type>
+		<label>Start Collect Dust</label>
+		<description>Once the vacuum cleaner is back in place, you can start collecting the dust</description>
+	</channel-type>
+	<channel-type id="clean_mop_start">
+		<item-type>Switch</item-type>
+		<label>Start Mop Wash</label>
+		<description>Once the vacuum cleaner is back in place, you can start cleaning the mop</description>
+	</channel-type>
+	<channel-type id="clean_mop_stop">
+		<item-type>Switch</item-type>
+		<label>Stop mop wash</label>
+	</channel-type>
+
 
 	<!-- Consumables channels -->
 	<channel-type id="main_brush_percent">
@@ -329,20 +337,7 @@
 		<item-type>String</item-type>
 		<label>Vacuum Room [room#]</label>
 	</channel-type>
-	<channel-type id="collect_dust" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Start Collect Dust</label>
-		<description>Once the vacuum cleaner is back in place, you can start collecting the dust</description>
-	</channel-type>
-	<channel-type id="clean_mop_start" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Start Mop Wash</label>
-		<description>Once the vacuum cleaner is back in place, you can start cleaning the mop</description>
-	</channel-type>
-	<channel-type id="clean_mop_stop" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Stop mop wash</label>
-	</channel-type>
+
 
 	<channel-type id="consumable_reset">
 		<item-type>String</item-type>
