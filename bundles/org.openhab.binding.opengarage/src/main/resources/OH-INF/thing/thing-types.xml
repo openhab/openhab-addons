@@ -142,7 +142,8 @@
 	<channel-type id="opengarage-status-text">
 		<item-type>String</item-type>
 		<label>Text status</label>
-		<description>Describe the current state textually, including the current transition (OPEN/OPENING/CLOSED/CLOSING)</description>
+		<description>Text status of the current door state, including transition, using values from configuration:
+			doorOpeningState, doorOpenState, doorClosingState, doorClosedState.</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

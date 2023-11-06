@@ -111,6 +111,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         if (config.hostname == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
         } else {
+            updateStatus(ThingStatus.UNKNOWN);
             int requestTimeout = Math.max(OpenGarageWebTargets.DEFAULT_TIMEOUT_MS, config.refresh * 1000);
             webTargets = new OpenGarageWebTargets(config.hostname, config.port, config.password, requestTimeout);
             this.pollScheduledFuture = this.scheduler.scheduleWithFixedDelay(this::poll, 1, config.refresh,

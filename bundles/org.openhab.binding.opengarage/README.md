@@ -23,9 +23,9 @@ As a minimum, the IP address is needed:
 to fully open / close after triggering it from OpenGarage, including auditory
 beeps. Recommend to round up or pad by a second or two.
 - `doorOpeningState` - Text state to report when garage is opening. Defaults to "OPENING".
-- `doorOpenState` - Text state to report when garage is open (and not transitioning). Defaults to "OPEN".
+- `doorOpenState` - Text state to report when garage is open (and not in transition). Defaults to "OPEN".
 - `doorClosingState` - Text state to report when garage is closing. Defaults to "CLOSING".
-- `doorClosedState` - Text state to report when garage is closed (and not transitioning). Defaults to "CLOSED".
+- `doorClosedState` - Text state to report when garage is closed (and not in transition). Defaults to "CLOSED".
 
 ## Channels
 
@@ -33,7 +33,7 @@ beeps. Recommend to round up or pad by a second or two.
 |----------------------|---------------|---------------------------------------------------------------------------------------|
 | distance             | Number:Length | Distance reading from the OpenGarage controller (default in cm)                       |
 | status-switch        | Switch        | Door status (OFF = Closed, ON = Open), set "invert=true" on channel to invert switch  |
-| status-text          | String        | Text status of the current door state, including transition.                          |
+| status-text          | String        | Text status of the current door state, including transition, using values from configuration: doorOpeningState, doorOpenState, doorClosingState, doorClosedState.                          |
 | status-contact       | Contact       | Door status (Open or Closed)                                                          |
 | status-rollershutter | Rollershutter | Door status (DOWN = Closed, UP = Open)                                                |
 | vehicle-status       | Number        | Report vehicle presence (0=Not Detected, 1=Detected, 2=Unknown)                       |
