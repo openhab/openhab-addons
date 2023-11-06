@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.core.util.HexUtils;
@@ -32,9 +33,11 @@ import org.openhab.core.util.HexUtils;
 class FineOffsetDataParserTest {
     @Test
     void testLiveDataWH45() {
-        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(HexUtils.hexToBytes(
-                "FFFF2700510100D306280827EF0927EF020045074F0A00150B00000C0000150000000016000117001900000E0000100000110021120000002113000005850D00007000D12E0060005A005B005502AE028F0633"),
-                new ConversionContext(ZoneOffset.UTC));
+        byte[] bytes = HexUtils.hexToBytes(
+                "FFFF2700510100D306280827EF0927EF020045074F0A00150B00000C0000150000000016000117001900000E0000100000110021120000002113000005850D00007000D12E0060005A005B005502AE028F0633");
+        DebugDetails debugDetails = new DebugDetails(bytes, Command.CMD_GW1000_LIVEDATA, Protocol.DEFAULT);
+        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(bytes,
+                new ConversionContext(ZoneOffset.UTC), debugDetails);
         Assertions.assertThat(data)
                 .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
                 .containsExactly(new Tuple("temperature-indoor", "21.1 °C"), new Tuple("humidity-indoor", "40 %"),
@@ -58,8 +61,9 @@ class FineOffsetDataParserTest {
     void testLiveDataELV() {
         byte[] data = HexUtils.hexToBytes(
                 "FFFF0B00500401010B0201120300620401120501120629072108254B09254B0A01480B00040C000A0E000000001000000021110000002E120000014F130000100714000012FD15000B4BB816086917056D35");
+        DebugDetails debugDetails = new DebugDetails(data, Command.CMD_WS980_LIVEDATA, Protocol.ELV);
         List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.ELV).getMeasuredValues(data,
-                new ConversionContext(ZoneOffset.UTC));
+                new ConversionContext(ZoneOffset.UTC), debugDetails);
         Assertions.assertThat(measuredValues)
                 .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
                 .containsExactly(new Tuple("temperature-indoor", "26.7 °C"),
@@ -79,8 +83,9 @@ class FineOffsetDataParserTest {
     void testRainData() {
         byte[] data = HexUtils
                 .hexToBytes("FFFF5700290E000010000000001100000024120000003113000005030D00000F0064880000017A017B0030");
+        DebugDetails debugDetails = new DebugDetails(data, Command.CMD_READ_RAIN, Protocol.DEFAULT);
         List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.DEFAULT).getRainData(data,
-                new ConversionContext(ZoneOffset.UTC));
+                new ConversionContext(ZoneOffset.UTC), debugDetails);
         Assertions.assertThat(measuredValues)
                 .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
                 .containsExactly(new Tuple("rain-rate", "0 mm/h"), new Tuple("rain-day", "0 mm"),
@@ -94,8 +99,9 @@ class FineOffsetDataParserTest {
         byte[] data = HexUtils.hexToBytes(
                 "FFFF5700398000008300000009840000000985000000C786000000C7810000870064006400640064006400640064006400640064880900007A02BF");
         Assertions.assertThat(Command.CMD_READ_RAIN.isResponseValid(data)).isTrue();
+        DebugDetails debugDetails = new DebugDetails(data, Command.CMD_READ_RAIN, Protocol.DEFAULT);
         List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.DEFAULT).getRainData(data,
-                new ConversionContext(ZoneOffset.UTC));
+                new ConversionContext(ZoneOffset.UTC), debugDetails);
         Assertions.assertThat(measuredValues)
                 .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
                 .containsExactly(new Tuple("piezo-rain-rate", "0 mm/h"), new Tuple("piezo-rain-day", "0.9 mm"),

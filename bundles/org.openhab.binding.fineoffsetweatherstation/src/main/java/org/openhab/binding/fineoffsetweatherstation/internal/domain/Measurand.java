@@ -240,18 +240,20 @@ public enum Measurand {
     }
 
     private int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
-            @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
+            @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
+            DebugDetails debugDetails) {
         int subOffset = 0;
         for (Parser parser : parsers) {
             subOffset += parser.extractMeasuredValues(data, offset + subOffset, channel, context, customizationType,
-                    result);
+                    result, debugDetails);
         }
         return subOffset;
     }
 
     private interface Parser {
         int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result);
+                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
+                DebugDetails debugDetails);
     }
 
     private static class Skip implements Parser {
@@ -263,7 +265,9 @@ public enum Measurand {
 
         @Override
         public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
+                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
+                DebugDetails debugDetails) {
+            debugDetails.addDebugDetails(offset, skip, "skipped");
             return skip;
         }
     }
@@ -302,8 +306,14 @@ public enum Measurand {
         }
 
         public int extractMeasuredValues(byte[] data, int offset, ConversionContext context,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
-            return measurand.extractMeasuredValues(data, offset, channel, context, customizationType, result);
+                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
+                DebugDetails debugDetails) {
+            return measurand.extractMeasuredValues(data, offset, channel, context, customizationType, result,
+                    debugDetails);
+        }
+
+        public String getDebugString() {
+            return measurand.name() + (channel == null ? "" : " channel " + channel);
         }
     }
 
@@ -337,12 +347,17 @@ public enum Measurand {
 
         @Override
         public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
+                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
+                DebugDetails debugDetails) {
             MeasureType measureType = getMeasureType(customizationType);
             State state = measureType.toState(data, offset, context);
             if (state != null) {
+                debugDetails.addDebugDetails(offset, measureType.getByteSize(),
+                        measureType.name() + ": " + state.toFullString());
                 ChannelTypeUID channelType = channelTypeUID == null ? measureType.getChannelTypeId() : channelTypeUID;
                 result.add(new MeasuredValue(measureType, channelPrefix, channel, channelType, state, name));
+            } else {
+                debugDetails.addDebugDetails(offset, measureType.getByteSize(), measureType.name() + ": null");
             }
             return measureType.getByteSize();
         }
