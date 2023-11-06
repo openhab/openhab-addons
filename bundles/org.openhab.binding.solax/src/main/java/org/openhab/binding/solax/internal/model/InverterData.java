@@ -35,11 +35,11 @@ public interface InverterData {
     String getRawData();
 
     default double getPV1Voltage() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getPV1Current() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default short getPV1Power() {
@@ -47,11 +47,11 @@ public interface InverterData {
     }
 
     default double getPV2Voltage() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getPV2Current() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default short getPV2Power() {
@@ -67,11 +67,11 @@ public interface InverterData {
     }
 
     default double getBatteryVoltage() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     };
 
     default double getBatteryCurrent() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     };
 
     default short getBatteryPower() {
@@ -95,7 +95,7 @@ public interface InverterData {
     }
 
     default double getTotalEnergy() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default short getTotalBatteryDischargeEnergy() {
@@ -107,7 +107,7 @@ public interface InverterData {
     }
 
     default double getTotalPVEnergy() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default short getTotalFeedInEnergy() {
@@ -115,35 +115,35 @@ public interface InverterData {
     }
 
     default double getTotalConsumption() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getTodayEnergy() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getTodayFeedInEnergy() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getTodayConsumption() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getTodayBatteryDischargeEnergy() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getTodayBatteryChargeEnergy() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getInverterVoltage() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getInverterCurrent() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default short getInverterOutputPower() {
@@ -151,31 +151,31 @@ public interface InverterData {
     }
 
     default double getInverterFrequency() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getVoltagePhase1() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getVoltagePhase2() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getVoltagePhase3() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getCurrentPhase1() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getCurrentPhase2() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getCurrentPhase3() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default short getOutputPowerPhase1() {
@@ -195,15 +195,15 @@ public interface InverterData {
     }
 
     default double getFrequencyPhase1() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getFrequencyPhase2() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default double getFrequencyPhase3() {
-        return Integer.MIN_VALUE;
+        return Short.MIN_VALUE;
     }
 
     default String toStringDetailed() {

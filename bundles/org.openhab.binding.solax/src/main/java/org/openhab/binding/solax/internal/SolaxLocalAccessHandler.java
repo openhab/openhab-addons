@@ -14,11 +14,11 @@ package org.openhab.binding.solax.internal;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -67,6 +67,8 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     private boolean alreadyRemovedUnsupportedChannels;
 
+    private final Set<String> unsupportedExistingChannels = new HashSet<String>();
+
     public SolaxLocalAccessHandler(Thing thing) {
         super(thing);
     }
@@ -113,7 +115,9 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
                     alreadyRemovedUnsupportedChannels = true;
                 }
 
-                updateChannels(rawDataBean, parser);
+                InverterData genericInverterData = parser.getData(rawDataBean);
+                updateChannels(parser, genericInverterData);
+                updateProperties(genericInverterData);
 
                 if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
@@ -140,12 +144,9 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         return InverterType.fromIndex(type);
     }
 
-    private void updateChannels(LocalConnectRawDataBean rawDataBean, RawDataParser parser) {
-        InverterData genericInverterData = parser.getData(rawDataBean);
+    private void updateProperties(InverterData genericInverterData) {
         updateProperty(Thing.PROPERTY_SERIAL_NUMBER, genericInverterData.getWifiSerial());
         updateProperty(SolaxBindingConstants.PROPERTY_INVERTER_TYPE, genericInverterData.getInverterType().name());
-
-        updateChannels(parser, genericInverterData);
     }
 
     private void updateChannels(RawDataParser parser, InverterData inverterData) {
@@ -263,7 +264,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         }
         List<Channel> channels = getThing().getChannels();
         List<Channel> channelsToRemove = channels.stream()
-                .filter(channel -> !supportedChannels.contains(channel.getUID().getId())).collect(Collectors.toList());
+                .filter(channel -> !supportedChannels.contains(channel.getUID().getId())).toList();
 
         if (!channelsToRemove.isEmpty()) {
             if (logger.isDebugEnabled()) {
@@ -276,7 +277,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
     private void logRemovedChannels(List<Channel> channelsToRemove) {
         List<String> channelsToRemoveForLog = channelsToRemove.stream().map(channel -> channel.getUID().getId())
                 .toList();
-        logger.debug("Detected not supported channels for the current inverter. Channels to be removed:{}",
+        logger.debug("Detected unsupported channels for the current inverter. Channels to be removed:{}",
                 channelsToRemoveForLog);
     }
 
@@ -304,8 +305,9 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         if (supportedChannels.contains(channelID)) {
             if (value > Short.MIN_VALUE) {
                 updateState(channelID, new QuantityType<>(value, unit));
-            } else {
+            } else if (!unsupportedExistingChannels.contains(channelID)) {
                 updateState(channelID, UnDefType.UNDEF);
+                unsupportedExistingChannels.add(channelID);
                 logger.warn(
                         "Channel {} is marked as supported, but its value is out of the defined range. Value = {}. This is unexpected behaviour. Please file a bug.",
                         channelID, value);
