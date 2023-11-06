@@ -192,7 +192,8 @@ public class OpenGarageHandler extends BaseThingHandler {
             }
         } catch (IOException e) {
             logger.debug("Could not connect to OpenGarage controller", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not connect to OpenGarage controller");
         } catch (RuntimeException e) {
             logger.debug("Unexpected error connecting to OpenGarage controller", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
