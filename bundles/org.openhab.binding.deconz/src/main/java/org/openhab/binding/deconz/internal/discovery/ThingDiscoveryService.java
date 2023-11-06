@@ -193,7 +193,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             case COLOR_TEMPERATURE_LIGHT -> thingTypeUID = THING_TYPE_COLOR_TEMPERATURE_LIGHT;
             case COLOR_DIMMABLE_LIGHT, COLOR_LIGHT -> thingTypeUID = THING_TYPE_COLOR_LIGHT;
             case EXTENDED_COLOR_LIGHT -> thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
-            case WINDOW_COVERING_DEVICE -> thingTypeUID = THING_TYPE_WINDOW_COVERING;
+            case WINDOW_COVERING_DEVICE, WINDOW_COVERING_CONTROLLER -> thingTypeUID = THING_TYPE_WINDOW_COVERING;
             case WARNING_DEVICE -> thingTypeUID = THING_TYPE_WARNING_DEVICE;
             case DOORLOCK -> thingTypeUID = THING_TYPE_DOORLOCK;
             case CONFIGURATION_TOOL -> {
