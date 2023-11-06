@@ -938,7 +938,7 @@ public enum HeatpumpChannel {
      * Control signal circulating pump
      * (original: Steuersignal Umwälzpumpe)
      */
-    CHANNEL_HZIO_PWM(183, "controlSignalCirculatingPump", NumberItem.class, Units.PERCENT, false, null),
+    CHANNEL_HZIO_PWM(183, "controlSignalCirculatingPump", NumberItem.class, null, false, null),
 
     /**
      * Fan speed

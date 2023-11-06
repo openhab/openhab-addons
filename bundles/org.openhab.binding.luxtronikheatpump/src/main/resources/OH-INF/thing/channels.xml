@@ -1572,10 +1572,9 @@
 	</channel-type>
 
 	<channel-type id="controlSignalCirculatingPump" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number</item-type>
 		<label>Control Signal Circulating Pump</label>
-		<category>Energy</category>
-		<state pattern="%.1f %%" readOnly="true"/>
+		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fanSpeed" advanced="true">
