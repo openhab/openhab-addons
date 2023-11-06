@@ -156,7 +156,9 @@ public class SerialTransportAdapter implements SerialCom {
         if (tmpSerialPortManager == null) {
             return Collections.emptyList();
         }
-        return tmpSerialPortManager.getIdentifiers().map(SerialPortIdentifier::getName).collect(Collectors.toList());
+        // typecast only required to avoid warning about less-annotated type
+        return (List<String>) tmpSerialPortManager.getIdentifiers().map(SerialPortIdentifier::getName)
+                .collect(Collectors.toList());
     }
 
     @Override

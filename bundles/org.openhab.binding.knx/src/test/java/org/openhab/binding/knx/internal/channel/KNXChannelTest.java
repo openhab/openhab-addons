@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -139,7 +140,7 @@ class KNXChannelTest {
 
     @Test
     public void testChannelGaParsing() throws KNXFormatException {
-        Channel channel = mock(Channel.class);
+        Channel channel = Objects.requireNonNull(mock(Channel.class));
         Configuration configuration = new Configuration(
                 Map.of("key1", "5.001:<1/2/3+4/5/6+1/5/6", "key2", "1.001:7/1/9+1/1/2"));
         when(channel.getChannelTypeUID()).thenReturn(new ChannelTypeUID("a:b:c"));
