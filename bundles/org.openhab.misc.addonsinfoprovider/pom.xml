@@ -10,9 +10,9 @@
     <version>4.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.misc.addonsuggestionfinder</artifactId>
+  <artifactId>org.openhab.misc.addonsinfoprovider</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Addon Suggestion Candidate Finder</name>
+  <name>openHAB Add-ons :: Bundles :: Addons Information Provider</name>
 
   <build>
     <plugins>

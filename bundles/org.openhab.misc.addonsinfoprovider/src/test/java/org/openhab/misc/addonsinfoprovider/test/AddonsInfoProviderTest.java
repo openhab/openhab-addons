@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.misc.addonsuggestionfinder.test;
+package org.openhab.misc.addonsinfoprovider.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,21 +25,21 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.addon.AddonDiscoveryMethod;
 import org.openhab.core.addon.AddonInfo;
 import org.openhab.core.addon.AddonMatchProperty;
-import org.openhab.misc.addonsuggestionfinder.AddonSuggestionInfoProvider;
+import org.openhab.misc.addonsinfoprovider.AddonsInfoProvider;
 
 /**
- * JUnit test for {@link AddonSuggestionInfoProvider}.
+ * JUnit test for {@link AddonsInfoProvider}.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-class AddonSuggestionFinderTest {
+class AddonsInfoProviderTest {
 
     private static final String DELIMITER = "\n\t";
 
     @Test
     void testAddonSuggestionInfoProvider() {
-        AddonSuggestionInfoProvider provider = new AddonSuggestionInfoProvider();
+        AddonsInfoProvider provider = new AddonsInfoProvider();
         assertNotNull(provider);
         Set<AddonInfo> addonInfos = provider.getAddonInfos(Locale.US);
         assertNotNull(addonInfos);

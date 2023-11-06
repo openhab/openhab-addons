@@ -2143,7 +2143,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.misc.addonsuggestionfinder</artifactId>
+      <artifactId>org.openhab.misc.addonsinfoprovider</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

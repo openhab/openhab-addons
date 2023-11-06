@@ -449,8 +449,8 @@
     <module>org.openhab.voice.voicerss</module>
     <module>org.openhab.voice.voskstt</module>
     <module>org.openhab.voice.watsonstt</module>
-    <!-- addonsuggestionfinder BUILD THIS LAST -->
-    <module>org.openhab.misc.addonsuggestionfinder</module>
+    <!-- addonsinfoprovider BUILD THIS LAST -->
+    <module>org.openhab.misc.addonsinfoprovider</module>
   </modules>
 
   <properties>

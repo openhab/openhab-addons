@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.misc.addonsuggestionfinder;
+package org.openhab.misc.addonsinfoprovider;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,19 +33,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AddonSuggestionInfoProvider} provides a list of candidate suggested addons to be installed.
+ * The {@link AddonsInfoProvider} provides information about other addons in the openhab-addons .kar file.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@Component(name = "addon-suggestion-info-provider", service = AddonInfoProvider.class)
-public class AddonSuggestionInfoProvider implements AddonInfoProvider {
+@Component(name = "addons-info-provider", service = AddonInfoProvider.class)
+public class AddonsInfoProvider implements AddonInfoProvider {
 
-    private final Logger logger = LoggerFactory.getLogger(AddonSuggestionInfoProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(AddonsInfoProvider.class);
     private final Set<AddonInfo> candidateAddonInfos = new HashSet<>();
 
     @Activate
-    public AddonSuggestionInfoProvider() {
+    public AddonsInfoProvider() {
         setCandidates(getResourceXml());
     }
 
