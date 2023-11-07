@@ -38,7 +38,6 @@ The Smart Home Controller is the central hub that allows you to monitor and cont
 | scenario-triggered | String    | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex)      | 
 | trigger-scenario   | String    | &#9745;  | Name of a scenario to be triggered on the Bosch Smart Home Controller.  |
 
-
 ### In-Wall Switch
 
 A simple light control.
