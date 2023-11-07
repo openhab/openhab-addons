@@ -26,4 +26,6 @@ public class TasmotaPlugConfiguration {
     public @Nullable String hostName;
     public @Nullable Integer refresh;
     public @Nullable Integer numChannels;
+    public @Nullable String username;
+    public @Nullable String password;
 }

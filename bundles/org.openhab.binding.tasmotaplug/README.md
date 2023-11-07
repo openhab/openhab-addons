@@ -2,6 +2,7 @@
 
 This binding connects Tasmota flashed smart plugs with 1, 2, 3 or 4 relay channels to openHAB.
 The plug must report the status of the relay via the url `http://$PLUG_IP/cm?cmnd=Power` in order for the binding to work.
+See the [Tasmota Supported Devices Repository](https://templates.blakadder.com/plug.html) for a list of supported plugs.
 
 ## Supported Things
 
@@ -22,14 +23,16 @@ The refresh interval and number of channels can be overridden from the default.
 |-------------|-----------------------------------------------------------------------------------------|
 | hostName    | The host name or IP address of the plug. Mandatory.                                     |
 | refresh     | Overrides the refresh interval of the plug status. Optional, the default is 30 seconds. |
-| numChannels | Number of channels on the Tasmota Plug (1-4) default 1                                  |
+| numChannels | Number of channels on the Tasmota Plug (1-4). default 1                                 |
+| username    | Username for authentication with the Tasmota Plug. default 'admin'                      |
+| password    | Password for authentication with the Tasmota Plug, if not supplied auth is disabled.    |
 
 ## Channels
 
 The number of channels depends of on the `numChannels` configuration parameter.
 Channels above the number specified are automatically removed.
-Therefore `numChannels` cannot be changed upward after thing creation.
-If the number of channels must be increased, delete the thing and re-create it with the correct number.
+Therefore `numChannels` cannot be changed upward after Thing creation.
+If the number of channels must be increased, delete the Thing and re-create it with the correct number.
 
 | Channel ID | Item Type | Description                             |
 |------------|-----------|-----------------------------------------|
@@ -45,6 +48,7 @@ tasmotaplug.things:
 ```java
 tasmotaplug:plug:plug1 "Plug 1" [ hostName="192.168.10.1", refresh=30 ]
 tasmotaplug:plug:plug2 "Plug 2" [ hostName="myplug2", refresh=30 ]
+
 ```
 
 tasmotaplug.items:
@@ -56,6 +60,7 @@ Switch Plug2a "4ch Power 1" { channel="tasmotaplug:plug:plug2:power" }
 Switch Plug2b "4ch Power 2" { channel="tasmotaplug:plug:plug2:power2" }
 Switch Plug2c "4ch Power 3" { channel="tasmotaplug:plug:plug2:power3" }
 Switch Plug2d "4ch Power 4" { channel="tasmotaplug:plug:plug2:power4" }
+
 ```
 
 tasmotaplug.sitemap:

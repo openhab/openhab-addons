@@ -34,6 +34,18 @@
 				<description>Number of channels on the Tasmota plug (1-4) default 1</description>
 				<default>1</default>
 			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Tasmota username</description>
+				<default>admin</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Tasmota password</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</thing-type>

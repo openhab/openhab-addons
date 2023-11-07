@@ -50,6 +50,9 @@ import org.slf4j.LoggerFactory;
 public class TasmotaPlugHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_PERIOD_SEC = 30;
 
+    private static final String PASSWORD_REGEX = "&password=(.*)&";
+    private static final String PASSWORD_MASK = "&password=xxxx&";
+
     private final Logger logger = LoggerFactory.getLogger(TasmotaPlugHandler.class);
     private final HttpClient httpClient;
 
@@ -58,6 +61,9 @@ public class TasmotaPlugHandler extends BaseThingHandler {
     private String plugHost = BLANK;
     private int refreshPeriod = DEFAULT_REFRESH_PERIOD_SEC;
     private int numChannels = 1;
+    private boolean isAuth = false;
+    private String user = BLANK;
+    private String pass = BLANK;
 
     public TasmotaPlugHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -72,6 +78,8 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         final String hostName = config.hostName;
         final Integer refresh = config.refresh;
         final Integer numChannels = config.numChannels;
+        final String username = config.username;
+        final String password = config.password;
 
         if (hostName == null || hostName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -85,6 +93,12 @@ public class TasmotaPlugHandler extends BaseThingHandler {
 
         if (numChannels != null) {
             this.numChannels = numChannels;
+        }
+
+        if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
+            isAuth = true;
+            user = username;
+            pass = password;
         }
 
         plugHost = "http://" + hostName;
@@ -121,7 +135,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().contains(POWER)) {
             if (command instanceof OnOffType) {
-                sendCommand(channelUID.getId(), CMD_URI + "%%20" + command);
+                getCommand(channelUID.getId(), command);
             } else {
                 updateChannelState(channelUID.getId());
             }
@@ -138,26 +152,38 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         if (refreshJob == null || refreshJob.isCancelled()) {
             refreshJob = null;
             this.refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-                SUPPORTED_CHANNEL_IDS.stream().limit(numChannels).forEach(channel -> {
-                    updateChannelState(channel);
+                SUPPORTED_CHANNEL_IDS.stream().limit(numChannels).forEach(channelId -> {
+                    updateChannelState(channelId);
                 });
             }, 0, refreshPeriod, TimeUnit.SECONDS);
         }
     }
 
-    private void updateChannelState(String channel) {
-        final String plugState = sendCommand(channel, CMD_URI);
+    private void updateChannelState(String channelId) {
+        final String plugState = getCommand(channelId, null);
         if (plugState.contains(ON)) {
-            updateState(channel, OnOffType.ON);
+            updateState(channelId, OnOffType.ON);
         } else if (plugState.contains(OFF)) {
-            updateState(channel, OnOffType.OFF);
+            updateState(channelId, OnOffType.OFF);
         }
     }
 
-    private String sendCommand(String channel, String cmdUri) {
+    private String getCommand(String channelId, @Nullable Command command) {
+        final String plugChannel = channelId.substring(0, 1).toUpperCase() + channelId.substring(1);
+        String url;
+
+        if (isAuth) {
+            url = String.format(CMD_URI_AUTH, user, pass, plugChannel);
+        } else {
+            url = String.format(CMD_URI, plugChannel);
+        }
+
+        if (command != null) {
+            url += "%20" + command;
+        }
+
         try {
-            final String url = String.format(cmdUri, channel.substring(0, 1).toUpperCase() + channel.substring(1));
-            logger.trace("Sending GET request to {}{}", plugHost, url);
+            logger.trace("Sending GET request to {}{}", plugHost, maskPassword(url));
             ContentResponse contentResponse = httpClient.GET(plugHost + url);
             logger.trace("Response: {}", contentResponse.getContentAsString());
 
@@ -168,9 +194,14 @@ public class TasmotaPlugHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             return contentResponse.getContentAsString();
         } catch (IllegalStateException | InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error executing Tasmota GET request: '{}{}', {}", plugHost, cmdUri, e.getMessage());
+            logger.debug("Error executing Tasmota GET request: '{}{}', {}", plugHost, maskPassword(url),
+                    e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
         return BLANK;
+    }
+
+    private String maskPassword(String input) {
+        return isAuth ? input.replaceAll(PASSWORD_REGEX, PASSWORD_MASK) : input;
     }
 }

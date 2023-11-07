@@ -29,6 +29,7 @@ public class TasmotaPlugBindingConstants {
     public static final String BINDING_ID = "tasmotaplug";
 
     public static final String CMD_URI = "/cm?cmnd=%s";
+    public static final String CMD_URI_AUTH = "/cm?user=%s&password=%s&cmnd=%s";
 
     public static final String ON = "ON";
     public static final String OFF = "OFF";
