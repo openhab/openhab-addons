@@ -203,6 +203,23 @@ public class NetatmoConstants {
         UNKNOWN
     }
 
+    // Topology Changes
+    public enum TopologyChange {
+        @SerializedName("home_owner_added")
+        HOME_OWNER_ADDED,
+        @SerializedName("device_associated_to_user")
+        DEVICE_ASSOCIATED_TO_USER,
+        @SerializedName("device_associated_to_home")
+        DEVICE_ASSOCIATED_TO_HOME,
+        @SerializedName("device_updated")
+        DEVICE_UPDATED,
+        @SerializedName("device_associated_to_room")
+        DEVICE_ASSOCIATED_TO_ROOM,
+        @SerializedName("room_created")
+        ROOM_CREATED,
+        UNKNOWN
+    }
+
     private static final Scope[] SMOKE_SCOPES = { Scope.READ_SMOKEDETECTOR };
     private static final Scope[] CARBON_MONOXIDE_SCOPES = { Scope.READ_CARBONMONOXIDEDETECTOR };
     private static final Scope[] AIR_CARE_SCOPES = { Scope.READ_HOMECOACH };
