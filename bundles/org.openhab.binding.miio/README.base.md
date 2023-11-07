@@ -252,7 +252,7 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
 | Switch  | status#is_locating                | Robot is locating          |
 | Number  | actions#segment                   | Room Clean  (enter room #) |
-| Switch  | actions#collect_dust              | Start collect the dust     |
+| Switch  | actions#collect_dust              | Start collecting dust      |
 | Switch  | actions#clean_mop_star            | Start mop wash             |
 | Switch  | actions#clean_mop_stop            | Stop mop wash              |
 | Number  | status#mop_drying_time            | Mop drying Time            |

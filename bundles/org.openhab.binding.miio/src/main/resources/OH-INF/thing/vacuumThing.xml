@@ -19,7 +19,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="vendor">Xiaomi</property>			
+			<property name="vendor">Xiaomi</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:miio:config"/>
@@ -237,7 +237,7 @@
 	</channel-type>
 	<channel-type id="collect_dust">
 		<item-type>Switch</item-type>
-		<label>Start collecting dust</label>
+		<label>Start Collecting Dust</label>
 		<description>Once the vacuum cleaner is back in place, you can start collecting the dust</description>
 	</channel-type>
 	<channel-type id="clean_mop_start">
@@ -247,9 +247,9 @@
 	</channel-type>
 	<channel-type id="clean_mop_stop">
 		<item-type>Switch</item-type>
-		<label>Stop Mop wash</label>
+		<label>Stop Mop Wash</label>
 	</channel-type>
-	
+
 	<!-- Consumables channels -->
 	<channel-type id="main_brush_percent">
 		<item-type>Number</item-type>
