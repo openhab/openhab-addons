@@ -18,10 +18,8 @@
 			<channel-group id="info" typeId="info"/>
 		</channel-groups>
 
-
 		<properties>
-			<property name="vendor">Xiaomi</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="vendor">Xiaomi</property>			
 		</properties>
 
 		<config-description-ref uri="thing-type:miio:config"/>
@@ -186,7 +184,6 @@
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 
-
 	<!-- Dynamic Status Channels -->
 	<channel-type id="water_box_mode">
 		<item-type>Number</item-type>
@@ -240,7 +237,7 @@
 	</channel-type>
 	<channel-type id="collect_dust">
 		<item-type>Switch</item-type>
-		<label>Start Collect Dust</label>
+		<label>Start collecting dust</label>
 		<description>Once the vacuum cleaner is back in place, you can start collecting the dust</description>
 	</channel-type>
 	<channel-type id="clean_mop_start">
@@ -250,10 +247,9 @@
 	</channel-type>
 	<channel-type id="clean_mop_stop">
 		<item-type>Switch</item-type>
-		<label>Stop mop wash</label>
+		<label>Stop Mop wash</label>
 	</channel-type>
-
-
+	
 	<!-- Consumables channels -->
 	<channel-type id="main_brush_percent">
 		<item-type>Number</item-type>
@@ -337,7 +333,6 @@
 		<item-type>String</item-type>
 		<label>Vacuum Room [room#]</label>
 	</channel-type>
-
 
 	<channel-type id="consumable_reset">
 		<item-type>String</item-type>
