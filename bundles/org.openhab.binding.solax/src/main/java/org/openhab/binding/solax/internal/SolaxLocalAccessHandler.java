@@ -277,7 +277,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
     private void logRemovedChannels(List<Channel> channelsToRemove) {
         List<String> channelsToRemoveForLog = channelsToRemove.stream().map(channel -> channel.getUID().getId())
                 .toList();
-        logger.debug("Detected unsupported channels for the current inverter. Channels to be removed:{}",
+        logger.debug("Detected unsupported channels for the current inverter. Channels to be removed: {}",
                 channelsToRemoveForLog);
     }
 
