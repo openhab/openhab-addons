@@ -58,6 +58,36 @@ class FineOffsetDataParserTest {
     }
 
     @Test
+    void testLiveDataWH34AndWh45() {
+        byte[] bytes = HexUtils.hexToBytes(
+                "FFFF2700540100CA063E0826EC0926EC02007A074C0A002F0B001F0C0023150000032016000017001A0086225558005A00620000000661654A5AF1601B1900266300884B7000CE3F001D00240016001E041A037B0695");
+        DebugDetails debugDetails = new DebugDetails(bytes, Command.CMD_GW1000_LIVEDATA, Protocol.DEFAULT);
+        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(bytes,
+                new ConversionContext(ZoneOffset.UTC), debugDetails);
+        Assertions.assertThat(data)
+                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .containsExactly(new Tuple("temperature-indoor", "20.2 °C"), new Tuple("humidity-indoor", "62 %"),
+                        new Tuple("pressure-absolute", "996.4 hPa"), new Tuple("pressure-relative", "996.4 hPa"),
+                        new Tuple("temperature-outdoor", "12.2 °C"), new Tuple("humidity-outdoor", "76 %"),
+                        new Tuple("direction-wind", "47 °"), new Tuple("speed-wind", "3.1 m/s"),
+                        new Tuple("speed-gust", "3.5 m/s"), new Tuple("illumination", "80 lx"),
+                        new Tuple("irradiation-uv", "0 mW/m²"), new Tuple("uv-index", "0"),
+                        new Tuple("temperature-channel-1", "13.4 °C"), new Tuple("humidity-channel-1", "85 %"),
+                        new Tuple("water-leak-channel-1", "OFF"), new Tuple("water-leak-channel-3", "OFF"),
+                        new Tuple("lightning-counter", "6"),
+                        new Tuple("lightning-time", "2023-11-07T15:42:41.000+0000"),
+                        new Tuple("lightning-distance", "27 km"), new Tuple("wind-max-day", "3.8 m/s"),
+                        new Tuple("temperature-external-channel-1", "13.6 °C"),
+                        new Tuple("sensor-co2-temperature", "20.6 °C"), new Tuple("sensor-co2-humidity", "63 %"),
+                        new Tuple("sensor-co2-pm10", "2.9 µg/m³"),
+                        new Tuple("sensor-co2-pm10-24-hour-average", "3.6 µg/m³"),
+                        new Tuple("sensor-co2-pm25", "2.2 µg/m³"),
+                        new Tuple("sensor-co2-pm25-24-hour-average", "3 µg/m³"),
+                        new Tuple("sensor-co2-co2", "1050 ppm"),
+                        new Tuple("sensor-co2-co2-24-hour-average", "891 ppm"));
+    }
+
+    @Test
     void testLiveDataELV() {
         byte[] data = HexUtils.hexToBytes(
                 "FFFF0B00500401010B0201120300620401120501120629072108254B09254B0A01480B00040C000A0E000000001000000021110000002E120000014F130000100714000012FD15000B4BB816086917056D35");

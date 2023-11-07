@@ -138,8 +138,10 @@ public enum Measurand {
     // `LIGHTNING_POWER` is the name in the spec, so we keep it here as it
     LIGHTNING_POWER("lightning-counter", 0x62, "lightning counter for the day", MeasureType.LIGHTNING_COUNTER),
 
-    TF_USRX("temperature-external-channel", new int[] { 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A },
-            "Soil or Water temperature", MeasureType.TEMPERATURE),
+    TF_USRX(new int[] { 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A },
+            new MeasurandParser("temperature-external-channel", "Soil or Water temperature", MeasureType.TEMPERATURE),
+            // skip battery-level, since it is read via Command.CMD_READ_SENSOR_ID_NEW
+            new Skip(1)),
 
     ITEM_SENSOR_CO2(0x70,
             new MeasurandParser("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE),
