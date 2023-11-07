@@ -10,6 +10,7 @@
 		<description>The inverter representation that supports local connections via HTTP</description>
 
 		<channels>
+			<!-- Single phase specific channels -->
 			<channel id="inverter-output-power" typeId="system.electric-power">
 				<label>Inverter Input/Output Power</label>
 				<description>Power to/from the inverter</description>
@@ -24,6 +25,61 @@
 			</channel>
 			<channel id="inverter-frequency" typeId="frequency"/>
 
+			<!-- Three phase specific channels -->
+			<channel id="inverter-output-power-phase1" typeId="system.electric-power">
+				<label>Inverter Input/Output Power Phase 1</label>
+				<description>Power to/from the inverter phase 1</description>
+			</channel>
+			<channel id="inverter-output-power-phase2" typeId="system.electric-power">
+				<label>Inverter Input/Output Power Phase 2</label>
+				<description>Power to/from the inverter phase 2</description>
+			</channel>
+			<channel id="inverter-output-power-phase3" typeId="system.electric-power">
+				<label>Inverter Input/Output Power Phase 3</label>
+				<description>Power to/from the inverter phase 3</description>
+			</channel>
+			<channel id="inverter-total-output-power" typeId="system.electric-power">
+				<label>Inverter Input/Output Total Power</label>
+				<description>Power to/from the inverter on all phases</description>
+			</channel>
+			<channel id="inverter-current-phase1" typeId="system.electric-current">
+				<label>Inverter Input/Output Current Phase 1</label>
+				<description>Current to/from the inverter phase 1</description>
+			</channel>
+			<channel id="inverter-current-phase2" typeId="system.electric-current">
+				<label>Inverter Input/Output Current Phase 2</label>
+				<description>Current to/from the inverter phase 2</description>
+			</channel>
+			<channel id="inverter-current-phase3" typeId="system.electric-current">
+				<label>Inverter Input/Output Current Phase 3</label>
+				<description>Current to/from the inverter phase 3</description>
+			</channel>
+			<channel id="inverter-voltage-phase1" typeId="system.electric-voltage">
+				<label>Inverter Voltage Phase 1</label>
+				<description>Voltage of the inverter's phase 1</description>
+			</channel>
+			<channel id="inverter-voltage-phase2" typeId="system.electric-voltage">
+				<label>Inverter Voltage Phase 2</label>
+				<description>Voltage of the inverter's phase 2</description>
+			</channel>
+			<channel id="inverter-voltage-phase3" typeId="system.electric-voltage">
+				<label>Inverter Voltage Phase 3</label>
+				<description>Voltage of the inverter's phase 3</description>
+			</channel>
+			<channel id="inverter-frequency-phase1" typeId="frequency">
+				<label>Inverter Voltage Phase 3</label>
+				<description>Voltage of the inverter's phase 3</description>
+			</channel>
+			<channel id="inverter-frequency-phase2" typeId="frequency">
+				<label>Inverter Voltage Phase 2</label>
+				<description>Voltage of the inverter's phase 3</description>
+			</channel>
+			<channel id="inverter-frequency-phase3" typeId="frequency">
+				<label>Inverter Voltage Phase 3</label>
+				<description>Voltage of the inverter's phase 3</description>
+			</channel>
+
+			<!-- Generic channels -->
 			<channel id="pv1-voltage" typeId="system.electric-voltage">
 				<label>PV 1 Voltage</label>
 				<description>Electric voltage of PV String 1</description>
@@ -77,16 +133,68 @@
 				<label>Battery Level</label>
 				<description>The battery state of charge in percent</description>
 			</channel>
-
 			<channel id="feed-in-power" typeId="system.electric-power">
-				<label>Feed-in Power</label>
+				<label>Feed-In Power</label>
 				<description>Power to/from the electricity network.</description>
+			</channel>
+
+			<channel id="power-usage" typeId="system.electric-power">
+				<label>Power Usage</label>
+				<description>Current power consumption of the building</description>
+			</channel>
+			<channel id="total-energy" typeId="system.electric-energy">
+				<label>Total Energy</label>
+				<description>Total energy output from the inverter</description>
+			</channel>
+			<channel id="total-battery-discharge-energy" typeId="system.electric-energy">
+				<label>Total Battery Discharge Energy</label>
+				<description>Total energy from the battery output</description>
+			</channel>
+			<channel id="total-battery-charge-energy" typeId="system.electric-energy">
+				<label>Total Battery Charge Energy</label>
+				<description>Total energy charged to the battery</description>
+			</channel>
+			<channel id="total-pv-energy" typeId="system.electric-energy">
+				<label>Total PV Energy</label>
+				<description>Total energy produced by the PV</description>
+			</channel>
+			<channel id="total-consumption" typeId="system.electric-energy">
+				<label>Total Consumption</label>
+				<description>Total energy consumed from the building</description>
+			</channel>
+			<channel id="total-feed-in-energy" typeId="system.electric-energy">
+				<label>Total Feed-In Consumption</label>
+				<description>Total energy consumed from the electricity provider</description>
+			</channel>
+			<channel id="today-energy" typeId="system.electric-energy">
+				<label>Today Energy</label>
+				<description>Energy output from the inverter for the day</description>
+			</channel>
+			<channel id="today-battery-discharge-energy" typeId="system.electric-energy">
+				<label>Today Battery Discharge Energy</label>
+				<description>Total energy from the battery output for the day</description>
+			</channel>
+			<channel id="today-battery-charge-energy" typeId="system.electric-energy">
+				<label>Today Battery Charge Energy</label>
+				<description>Total energy charged to the battery for the day</description>
+			</channel>
+			<channel id="today-feed-in-energy" typeId="system.electric-energy">
+				<label>Today Feed-In Energy</label>
+				<description>Energy consumed from the electricity provider for the day</description>
+			</channel>
+			<channel id="today-consumption" typeId="system.electric-energy">
+				<label>Today Consumption</label>
+				<description>Energy consumed for the day</description>
 			</channel>
 
 			<channel id="last-update-time" typeId="last-retrieve-time-stamp"/>
 
 			<channel id="raw-data" typeId="raw-data-type"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="refreshInterval" type="integer" min="1" max="600">
