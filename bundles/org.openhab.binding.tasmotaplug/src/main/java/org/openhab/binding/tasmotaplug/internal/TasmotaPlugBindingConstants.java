@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tasmotaplug.internal;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,8 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class TasmotaPlugBindingConstants {
     public static final String BINDING_ID = "tasmotaplug";
 
-    public static final String GET_POWER = "/cm?cmnd=Power";
-    public static final String SET_POWER = "/cm?cmnd=Power%20";
+    public static final String CMD_URI = "/cm?cmnd=%s";
 
     public static final String ON = "ON";
     public static final String OFF = "OFF";
@@ -40,7 +39,10 @@ public class TasmotaPlugBindingConstants {
 
     // List of all Channel id's
     public static final String POWER = "power";
+    public static final String POWER2 = "power2";
+    public static final String POWER3 = "power3";
+    public static final String POWER4 = "power4";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLUG);
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Collections.singleton(POWER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLUG);
+    public static final List<String> SUPPORTED_CHANNEL_IDS = List.of(POWER, POWER2, POWER3, POWER4);
 }

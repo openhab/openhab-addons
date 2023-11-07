@@ -15,10 +15,14 @@ package org.openhab.binding.tasmotaplug.internal.handler;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.openhab.binding.tasmotaplug.internal.TasmotaPlugBindingConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,6 +30,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.tasmotaplug.internal.TasmotaPlugConfiguration;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -52,6 +57,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
 
     private String plugHost = BLANK;
     private int refreshPeriod = DEFAULT_REFRESH_PERIOD_SEC;
+    private int numChannels = 1;
 
     public TasmotaPlugHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -65,8 +71,9 @@ public class TasmotaPlugHandler extends BaseThingHandler {
 
         final String hostName = config.hostName;
         final Integer refresh = config.refresh;
+        final Integer numChannels = config.numChannels;
 
-        if (hostName == null || BLANK.equals(hostName)) {
+        if (hostName == null || hostName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-hostname");
             return;
@@ -76,9 +83,26 @@ public class TasmotaPlugHandler extends BaseThingHandler {
             this.refreshPeriod = refresh;
         }
 
-        plugHost = "http://" + hostName;
-        updateStatus(ThingStatus.UNKNOWN);
+        if (numChannels != null) {
+            this.numChannels = numChannels;
+        }
 
+        plugHost = "http://" + hostName;
+
+        // remove the channels we are not using
+        if (this.numChannels < SUPPORTED_CHANNEL_IDS.size()) {
+            List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
+
+            List<Integer> channelsToRemove = IntStream.range(this.numChannels + 1, SUPPORTED_CHANNEL_IDS.size() + 1)
+                    .boxed().collect(Collectors.toList());
+
+            channelsToRemove.forEach(channel -> {
+                channels.removeIf(c -> (c.getUID().getId().equals(POWER + channel)));
+            });
+            updateThing(editThing().withChannels(channels).build());
+        }
+
+        updateStatus(ThingStatus.UNKNOWN);
         startAutomaticRefresh();
     }
 
@@ -95,11 +119,11 @@ public class TasmotaPlugHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (POWER.equals(channelUID.getId())) {
+        if (channelUID.getId().contains(POWER)) {
             if (command instanceof OnOffType) {
-                sendCommand(SET_POWER + command);
+                sendCommand(channelUID.getId(), CMD_URI + "%%20" + command);
             } else {
-                updateChannelState();
+                updateChannelState(channelUID.getId());
             }
         } else {
             logger.warn("Unsupported command: {}", command.toString());
@@ -113,24 +137,28 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
             refreshJob = null;
-            this.refreshJob = scheduler.scheduleWithFixedDelay(this::updateChannelState, 0, refreshPeriod,
-                    TimeUnit.SECONDS);
+            this.refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+                SUPPORTED_CHANNEL_IDS.stream().limit(numChannels).forEach(channel -> {
+                    updateChannelState(channel);
+                });
+            }, 0, refreshPeriod, TimeUnit.SECONDS);
         }
     }
 
-    private void updateChannelState() {
-        String plugState = sendCommand(GET_POWER);
+    private void updateChannelState(String channel) {
+        final String plugState = sendCommand(channel, CMD_URI);
         if (plugState.contains(ON)) {
-            updateState(POWER, OnOffType.ON);
+            updateState(channel, OnOffType.ON);
         } else if (plugState.contains(OFF)) {
-            updateState(POWER, OnOffType.OFF);
+            updateState(channel, OnOffType.OFF);
         }
     }
 
-    private String sendCommand(String cmdUri) {
+    private String sendCommand(String channel, String cmdUri) {
         try {
-            logger.trace("Sending GET request to {}{}", plugHost, cmdUri);
-            ContentResponse contentResponse = httpClient.GET(plugHost + cmdUri);
+            final String url = String.format(cmdUri, channel.substring(0, 1).toUpperCase() + channel.substring(1));
+            logger.trace("Sending GET request to {}{}", plugHost, url);
+            ContentResponse contentResponse = httpClient.GET(plugHost + url);
             logger.trace("Response: {}", contentResponse.getContentAsString());
 
             if (contentResponse.getStatus() != OK_200) {

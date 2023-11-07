@@ -1,6 +1,6 @@
 # TasmotaPlug Binding
 
-This binding connects smart plugs flashed with Tasmota to openHAB.
+This binding connects Tasmota flashed smart plugs with 1, 2, 3 or 4 relay channels to openHAB.
 The plug must report the status of the relay via the url `http://$PLUG_IP/cm?cmnd=Power` in order for the binding to work.
 
 ## Supported Things
@@ -15,20 +15,28 @@ Discovery is not supported. All things must be added manually.
 
 ## Thing Configuration
 
-The thing has only two configuration parameters:
+At minimum, the host name must be specified.
+The refresh interval and number of channels can be overridden from the default.
 
-| Parameter | Description                                                                                                                                                                                                                                                                                                                |
-|-----------|-----------------------------------------------------------------------------------------|
-| hostName  | The host name or IP address of the plug. Mandatory.                                     |
-| refresh   | Overrides the refresh interval of the plug status. Optional, the default is 30 seconds. |
+| Parameter   | Description                                                                             |
+|-------------|-----------------------------------------------------------------------------------------|
+| hostName    | The host name or IP address of the plug. Mandatory.                                     |
+| refresh     | Overrides the refresh interval of the plug status. Optional, the default is 30 seconds. |
+| numChannels | Number of channels on the Tasmota Plug (1-4) default 1                                  |
 
 ## Channels
 
-There is only one channel that controls the smart plug relay:
+The number of channels depends of on the `numChannels` configuration parameter.
+Channels above the number specified are automatically removed.
+Therefore `numChannels` cannot be changed upward after thing creation.
+If the number of channels must be increased, delete the thing and re-create it with the correct number.
 
-| Channel ID | Item Type | Description                          |
-|------------|-----------|--------------------------------------|
-| power      | Switch    | Turns the smart plug relay ON or OFF |
+| Channel ID | Item Type | Description                             |
+|------------|-----------|-----------------------------------------|
+| power      | Switch    | Turns the smart plug relay #1 ON or OFF |
+| power2     | Switch    | Turns the smart plug relay #2 ON or OFF |
+| power3     | Switch    | Turns the smart plug relay #3 ON or OFF |
+| power4     | Switch    | Turns the smart plug relay #4 ON or OFF |
 
 ## Full Example
 
@@ -43,7 +51,11 @@ tasmotaplug.items:
 
 ```java
 Switch Plug1 "Plug 1 Power" { channel="tasmotaplug:plug:plug1:power" }
-Switch Plug2 "Plug 2 Power" { channel="tasmotaplug:plug:plug2:power" }
+
+Switch Plug2a "4ch Power 1" { channel="tasmotaplug:plug:plug2:power" }
+Switch Plug2b "4ch Power 2" { channel="tasmotaplug:plug:plug2:power2" }
+Switch Plug2c "4ch Power 3" { channel="tasmotaplug:plug:plug2:power3" }
+Switch Plug2d "4ch Power 4" { channel="tasmotaplug:plug:plug2:power4" }
 ```
 
 tasmotaplug.sitemap:
@@ -52,7 +64,11 @@ tasmotaplug.sitemap:
 sitemap tasmotaplug label="My Tasmota Plugs" {
     Frame label="Plugs" {
         Switch item=Plug1
-		Switch item=Plug2
+
+        Switch item=Plug2a
+        Switch item=Plug2b
+        Switch item=Plug2c
+        Switch item=Plug2d
     }
 }
 ```
