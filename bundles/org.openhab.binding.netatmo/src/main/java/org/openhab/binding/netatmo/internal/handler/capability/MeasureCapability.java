@@ -51,9 +51,9 @@ public class MeasureCapability extends CacheWeatherCapability {
     public MeasureCapability(CommonInterface handler, List<ChannelHelper> helpers) {
         super(handler, Duration.ofMinutes(30));
         MeasuresChannelHelper measureChannelHelper = (MeasuresChannelHelper) helpers.stream()
-                .filter(c -> c instanceof MeasuresChannelHelper).findFirst()
+                .filter(MeasuresChannelHelper.class::isInstance).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "MeasureCapability must find a MeasuresChannelHelper, please file a bug report."));
+                        "MeasureCapability needs a MeasuresChannelHelper, please file a bug report."));
         measureChannelHelper.setMeasures(measures);
     }
 
@@ -83,7 +83,7 @@ public class MeasureCapability extends CacheWeatherCapability {
                                 .reduce((first, second) -> second)
                                 .ifPresent(mc -> measures.put(channel.getUID().getIdWithoutGroup(),
                                         result instanceof ZonedDateTime zonedDateTime ? toDateTimeType(zonedDateTime)
-                                                : result instanceof Double ? toQuantityType((Double) result, mc)
+                                                : result instanceof Double quantity ? toQuantityType(quantity, mc)
                                                         : UnDefType.UNDEF));
                     } catch (NetatmoException e) {
                         logger.warn("Error getting measures for channel {}, check configuration", channel.getLabel());
@@ -92,11 +92,11 @@ public class MeasureCapability extends CacheWeatherCapability {
     }
 
     @Override
-    protected List<NAObject> getFreshData(WeatherApi api) {
+    protected @Nullable NAObject getFreshData(WeatherApi api) {
         String bridgeId = handler.getBridgeId();
         String deviceId = bridgeId != null ? bridgeId : handler.getId();
         String moduleId = bridgeId != null ? handler.getId() : null;
         updateMeasures(api, deviceId, moduleId);
-        return List.of();
+        return null;
     }
 }

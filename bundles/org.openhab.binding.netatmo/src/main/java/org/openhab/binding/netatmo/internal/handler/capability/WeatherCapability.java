@@ -13,9 +13,9 @@
 package org.openhab.binding.netatmo.internal.handler.capability;
 
 import java.time.Duration;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
@@ -34,16 +34,16 @@ public class WeatherCapability extends CacheWeatherCapability {
     private final Logger logger = LoggerFactory.getLogger(WeatherCapability.class);
 
     public WeatherCapability(CommonInterface handler) {
-        super(handler, Duration.ofSeconds(2));
+        super(handler, Duration.ofSeconds(3));
     }
 
     @Override
-    protected List<NAObject> getFreshData(WeatherApi api) {
+    protected @Nullable NAObject getFreshData(WeatherApi api) {
         try {
-            return List.of(owned ? api.getOwnedStationData(handler.getId()) : api.getStationData(handler.getId()));
+            return owned ? api.getOwnedStationData(handler.getId()) : api.getStationData(handler.getId());
         } catch (NetatmoException e) {
-            logger.warn("Error retrieving weather data '{}' : {}", handler.getId(), e.getMessage());
+            logger.warn("Error retrieving weather data '{}': {}", handler.getId(), e.getMessage());
         }
-        return List.of();
+        return null;
     }
 }

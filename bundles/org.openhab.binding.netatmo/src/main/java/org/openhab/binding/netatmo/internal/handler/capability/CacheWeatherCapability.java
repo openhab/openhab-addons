@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
@@ -34,8 +35,8 @@ public abstract class CacheWeatherCapability extends RestCapability<WeatherApi> 
     private final Logger logger = LoggerFactory.getLogger(CacheWeatherCapability.class);
     private final Duration validity;
 
-    private List<NAObject> lastResult = List.of();
-    private Instant requestTS = Instant.MIN;
+    private List<NAObject> buffer = List.of();
+    private Instant bufferEol = Instant.MIN;
 
     public CacheWeatherCapability(CommonInterface handler, Duration validity) {
         super(handler, WeatherApi.class);
@@ -43,17 +44,18 @@ public abstract class CacheWeatherCapability extends RestCapability<WeatherApi> 
     }
 
     @Override
-    protected List<NAObject> updateReadings(WeatherApi api) {
-        Instant now = Instant.now();
-
-        if (requestTS.plus(validity).isBefore(now)) {
+    protected synchronized List<NAObject> updateReadings(WeatherApi api) {
+        if (bufferEol.isBefore(Instant.now())) {
             logger.debug("Requesting fresh data");
-            lastResult = getFreshData(api);
-            requestTS = now;
+            NAObject data = getFreshData(api);
+            buffer = data != null ? List.of(data) : List.of();
+            bufferEol = Instant.now().plus(validity);
+        } else {
+            logger.debug("Serving cached data");
         }
 
-        return lastResult;
+        return buffer;
     }
 
-    protected abstract List<NAObject> getFreshData(WeatherApi api);
+    protected abstract @Nullable NAObject getFreshData(WeatherApi api);
 }
