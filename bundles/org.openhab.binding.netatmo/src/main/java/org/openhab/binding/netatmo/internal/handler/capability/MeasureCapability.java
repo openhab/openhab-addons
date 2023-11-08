@@ -83,7 +83,7 @@ public class MeasureCapability extends CacheWeatherCapability {
                                 .reduce((first, second) -> second)
                                 .ifPresent(mc -> measures.put(channel.getUID().getIdWithoutGroup(),
                                         result instanceof ZonedDateTime zonedDateTime ? toDateTimeType(zonedDateTime)
-                                                : result instanceof Double quantity ? toQuantityType(quantity, mc)
+                                                : result instanceof Double ? toQuantityType((Double) result, mc)
                                                         : UnDefType.UNDEF));
                     } catch (NetatmoException e) {
                         logger.warn("Error getting measures for channel {}, check configuration", channel.getLabel());
