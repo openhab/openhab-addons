@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Tasmota Plug Binding</name>
-	<description>Controls WIFI Smart Plugs flashed with Tasmota</description>
+	<description>Controls Wi-Fi Smart Plugs flashed with Tasmota</description>
 	<connection>local</connection>
 
 </addon:addon>

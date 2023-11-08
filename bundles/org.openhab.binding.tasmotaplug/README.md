@@ -48,7 +48,6 @@ tasmotaplug.things:
 ```java
 tasmotaplug:plug:plug1 "Plug 1" [ hostName="192.168.10.1", refresh=30 ]
 tasmotaplug:plug:plug2 "Plug 2" [ hostName="myplug2", refresh=30 ]
-
 ```
 
 tasmotaplug.items:
@@ -60,7 +59,6 @@ Switch Plug2a "4ch Power 1" { channel="tasmotaplug:plug:plug2:power" }
 Switch Plug2b "4ch Power 2" { channel="tasmotaplug:plug:plug2:power2" }
 Switch Plug2c "4ch Power 3" { channel="tasmotaplug:plug:plug2:power3" }
 Switch Plug2d "4ch Power 4" { channel="tasmotaplug:plug:plug2:power4" }
-
 ```
 
 tasmotaplug.sitemap:

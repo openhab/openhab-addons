@@ -12,10 +12,10 @@
 		</description>
 
 		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="power2" typeId="system.power"/>
-			<channel id="power3" typeId="system.power"/>
-			<channel id="power4" typeId="system.power"/>
+			<channel id="power" typeId="power"/>
+			<channel id="power2" typeId="power2"/>
+			<channel id="power3" typeId="power3"/>
+			<channel id="power4" typeId="power4"/>
 		</channels>
 
 		<config-description>
@@ -49,4 +49,29 @@
 		</config-description>
 
 	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Controls the smart plug relay for the 1st channel</description>
+	</channel-type>
+
+	<channel-type id="power2">
+		<item-type>Switch</item-type>
+		<label>Power 2</label>
+		<description>Controls the smart plug relay for the 2nd channel</description>
+	</channel-type>
+
+	<channel-type id="power3">
+		<item-type>Switch</item-type>
+		<label>Power 3</label>
+		<description>Controls the smart plug relay for the 3rd channel</description>
+	</channel-type>
+
+	<channel-type id="power4">
+		<item-type>Switch</item-type>
+		<label>Power 4</label>
+		<description>Controls the smart plug relay for the 4th channel</description>
+	</channel-type>
+
 </thing:thing-descriptions>

@@ -81,7 +81,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         final String username = config.username;
         final String password = config.password;
 
-        if (hostName == null || hostName.isEmpty()) {
+        if (hostName.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-hostname");
             return;
@@ -95,7 +95,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
             this.numChannels = numChannels;
         }
 
-        if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
+        if (!username.isBlank() && !password.isBlank()) {
             isAuth = true;
             user = username;
             pass = password;
@@ -188,15 +188,21 @@ public class TasmotaPlugHandler extends BaseThingHandler {
             logger.trace("Response: {}", contentResponse.getContentAsString());
 
             if (contentResponse.getStatus() != OK_200) {
-                throw new IllegalStateException("Tasmota http response code was: " + contentResponse.getStatus());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.communication-error.http-failure [\"" + contentResponse.getStatus() + "\"]");
+                return BLANK;
             }
 
             updateStatus(ThingStatus.ONLINE);
             return contentResponse.getContentAsString();
-        } catch (IllegalStateException | InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("Error executing Tasmota GET request: '{}{}', {}", plugHost, maskPassword(url),
                     e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        } catch (InterruptedException e) {
+            logger.debug("InterruptedException executing Tasmota GET request: '{}{}', {}", plugHost, maskPassword(url),
+                    e.getMessage());
+            Thread.currentThread().interrupt();
         }
         return BLANK;
     }

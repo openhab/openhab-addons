@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class TasmotaPlugConfiguration {
-    public @Nullable String hostName;
+    public String hostName = "";
     public @Nullable Integer refresh;
     public @Nullable Integer numChannels;
-    public @Nullable String username;
-    public @Nullable String password;
+    public String username = "";
+    public String password = "";
 }
