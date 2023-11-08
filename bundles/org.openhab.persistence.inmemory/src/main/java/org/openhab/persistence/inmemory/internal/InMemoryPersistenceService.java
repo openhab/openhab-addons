@@ -132,6 +132,11 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     }
 
     @Override
+    public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
+        internalStore(Objects.requireNonNullElse(alias, item.getName()), date, state);
+    }
+
+    @Override
     public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
         String itemName = filter.getItemName();
         if (itemName == null) {
