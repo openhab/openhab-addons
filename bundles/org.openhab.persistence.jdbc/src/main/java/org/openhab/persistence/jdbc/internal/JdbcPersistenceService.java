@@ -151,6 +151,12 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         scheduler.execute(() -> internalStore(item, date, state));
     }
 
+    @Override
+    public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
+        // alias is not supported
+        scheduler.execute(() -> internalStore(item, null, item.getState()));
+    }
+
     private synchronized void internalStore(Item item, @Nullable ZonedDateTime date, State state) {
         // Do not store undefined/uninitialized data
         if (state instanceof UnDefType) {
