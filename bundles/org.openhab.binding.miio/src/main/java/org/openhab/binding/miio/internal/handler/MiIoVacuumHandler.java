@@ -377,8 +377,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (this.deviceCapabilities.containsKey(RobotCababilities.DOCK_STATE_ID)) {
             DockStatusType state = DockStatusType.getType(statusInfo.getDockErrorStatus().intValue());
-            updateState("status#dock_state", new StringType(state.getDescription()));
-            updateState("status#dock_state_id", new DecimalType(state.getId()));
+            updateState(CHANNEL_DOCK_STATE, new StringType(state.getDescription()));
+            updateState(CHANNEL_DOCK_STATE_ID, new DecimalType(state.getId()));
         }
         if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_MODE)) {
             safeUpdateState(RobotCababilities.WATERBOX_MODE.getChannel(), statusInfo.getWaterBoxMode());

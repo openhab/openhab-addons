@@ -61,6 +61,8 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_MAP_PRESENT = "status#map_present";
     public static final String CHANNEL_STATE = "status#state";
     public static final String CHANNEL_STATE_ID = "status#state_id";
+    public static final String CHANNEL_DOCK_STATE = "status#dock_state";
+    public static final String CHANNEL_DOCK_STATE_ID = "status#dock_state_id";
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
