@@ -28,6 +28,9 @@ import org.openhab.core.thing.ThingTypeUID;
 public class TasmotaPlugBindingConstants {
     public static final String BINDING_ID = "tasmotaplug";
 
+    public static final int DEFAULT_REFRESH_PERIOD_SEC = 30;
+    public static final int DEFAULT_NUM_CHANNELS = 1;
+
     public static final String CMD_URI = "/cm?cmnd=%s";
     public static final String CMD_URI_AUTH = "/cm?user=%s&password=%s&cmnd=%s";
 

@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.tasmotaplug.internal;
 
+import static org.openhab.binding.tasmotaplug.internal.TasmotaPlugBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link TasmotaPlugConfiguration} is the class used to match the
@@ -23,9 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class TasmotaPlugConfiguration {
-    public String hostName = "";
-    public @Nullable Integer refresh;
-    public @Nullable Integer numChannels;
-    public String username = "";
-    public String password = "";
+    public String hostName = BLANK;
+    public int refresh = DEFAULT_REFRESH_PERIOD_SEC;
+    public int numChannels = DEFAULT_NUM_CHANNELS;
+    public String username = BLANK;
+    public String password = BLANK;
 }

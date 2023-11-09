@@ -48,8 +48,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TasmotaPlugHandler extends BaseThingHandler {
-    private static final int DEFAULT_REFRESH_PERIOD_SEC = 30;
-
     private static final String PASSWORD_REGEX = "&password=(.*)&";
     private static final String PASSWORD_MASK = "&password=xxxx&";
 
@@ -60,7 +58,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
 
     private String plugHost = BLANK;
     private int refreshPeriod = DEFAULT_REFRESH_PERIOD_SEC;
-    private int numChannels = 1;
+    private int numChannels = DEFAULT_NUM_CHANNELS;
     private boolean isAuth = false;
     private String user = BLANK;
     private String pass = BLANK;
@@ -76,23 +74,15 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         TasmotaPlugConfiguration config = getConfigAs(TasmotaPlugConfiguration.class);
 
         final String hostName = config.hostName;
-        final Integer refresh = config.refresh;
-        final Integer numChannels = config.numChannels;
         final String username = config.username;
         final String password = config.password;
+        refreshPeriod = config.refresh;
+        numChannels = config.numChannels;
 
         if (hostName.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-hostname");
             return;
-        }
-
-        if (refresh != null) {
-            this.refreshPeriod = refresh;
-        }
-
-        if (numChannels != null) {
-            this.numChannels = numChannels;
         }
 
         if (!username.isBlank() && !password.isBlank()) {
