@@ -44,14 +44,17 @@ public class TextValue extends Value {
      * @param states Allowed states. Empty states are filtered out. If the resulting set is empty, all string values
      *            will be allowed.
      */
-    public TextValue(String[] states) {
+    public TextValue(Set<String> states) {
         super(CoreItemFactory.STRING, List.of(StringType.class));
-        Set<String> s = Stream.of(states).filter(not(String::isBlank)).collect(Collectors.toSet());
-        if (!s.isEmpty()) {
-            this.states = s;
+        if (!states.isEmpty()) {
+            this.states = states;
         } else {
             this.states = null;
         }
+    }
+
+    public TextValue(String[] states) {
+        this(Stream.of(states).filter(not(String::isBlank)).collect(Collectors.toSet()));
     }
 
     public TextValue() {
