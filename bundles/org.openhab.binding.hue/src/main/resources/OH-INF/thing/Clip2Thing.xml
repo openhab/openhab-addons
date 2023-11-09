@@ -62,6 +62,25 @@
 			<channel id="temperature-enabled" typeId="sensor-enabled">
 				<description>Temperature sensor enabled.</description>
 			</channel>
+			<channel id="security-contact" typeId="security-contact">
+				<label>Security Contact</label>
+				<description>Open or closed state of the contact.</description>
+			</channel>
+			<channel id="security-contact-enabled" typeId="sensor-enabled">
+				<description>Security contact enabled.</description>
+			</channel>
+			<channel id="security-contact-last-updated" typeId="last-updated-v2">
+				<label>Security Contact Last Updated</label>
+				<description>The date and time when the contact state was last updated.</description>
+			</channel>
+			<channel id="security-tamper" typeId="security-tamper">
+				<label>Security Tamper Contact</label>
+				<description>Tamper or no tamper state of the sensor.</description>
+			</channel>
+			<channel id="security-tamper-last-updated" typeId="last-updated-v2">
+				<label>Tamper Contact Last Updated</label>
+				<description>The date and time when the tamper contact state was last updated.</description>
+			</channel>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="battery-low" typeId="system.low-battery"/>
 			<channel id="last-updated" typeId="last-updated-v2"/>
