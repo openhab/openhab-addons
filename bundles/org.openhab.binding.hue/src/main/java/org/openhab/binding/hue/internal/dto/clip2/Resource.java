@@ -28,17 +28,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ButtonEventType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.ContactStateType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.SceneRecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneState;
+import org.openhab.binding.hue.internal.dto.clip2.enums.TamperStateType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -103,6 +106,8 @@ public class Resource {
     private @Nullable List<ResourceReference> children;
     private @Nullable JsonElement status;
     private @Nullable @SuppressWarnings("unused") Dynamics dynamics;
+    private @Nullable @SerializedName("contact_report") ContactReport contactReport;
+    private @Nullable @SerializedName("tamper_reports") List<TamperReport> tamperReports;
     private @Nullable String state;
 
     /**
@@ -323,6 +328,20 @@ public class Resource {
             }
         }
         return UnDefType.NULL;
+    }
+
+    public State getContactLastUpdatedState(ZoneId zoneId) {
+        ContactReport contactReport = this.contactReport;
+        return Objects.nonNull(contactReport)
+                ? new DateTimeType(ZonedDateTime.ofInstant(contactReport.getLastChanged(), zoneId))
+                : UnDefType.NULL;
+    }
+
+    public State getContactState() {
+        ContactReport contactReport = this.contactReport;
+        return Objects.isNull(contactReport) ? UnDefType.NULL
+                : ContactStateType.CONTACT == contactReport.getContactState() ? OpenClosedType.CLOSED
+                        : OpenClosedType.OPEN;
     }
 
     public int getControlId() {
@@ -649,6 +668,33 @@ public class Resource {
         return new JsonObject();
     }
 
+    public State getTamperLastUpdatedState(ZoneId zoneId) {
+        TamperReport report = getTamperReportsLatest();
+        return Objects.nonNull(report) ? new DateTimeType(ZonedDateTime.ofInstant(report.getLastChanged(), zoneId))
+                : UnDefType.NULL;
+    }
+
+    /**
+     * The the Hue bridge could return its raw list of tamper reports in any order, so sort the list (latest entry
+     * first) according to the respective 'changed' instant and return the first entry i.e. the latest changed entry.
+     *
+     * @return the latest changed tamper report
+     */
+    private @Nullable TamperReport getTamperReportsLatest() {
+        List<TamperReport> reports = this.tamperReports;
+        return Objects.nonNull(reports)
+                ? reports.stream().sorted((e1, e2) -> e2.getLastChanged().compareTo(e1.getLastChanged())).findFirst()
+                        .orElse(null)
+                : null;
+    }
+
+    public State getTamperState() {
+        TamperReport report = getTamperReportsLatest();
+        return Objects.nonNull(report)
+                ? TamperStateType.TAMPERED == report.getTamperState() ? OpenClosedType.OPEN : OpenClosedType.CLOSED
+                : UnDefType.NULL;
+    }
+
     public @Nullable Temperature getTemperature() {
         return temperature;
     }
@@ -736,6 +782,11 @@ public class Resource {
         return this;
     }
 
+    public Resource setContactReport(ContactReport contactReport) {
+        this.contactReport = contactReport;
+        return this;
+    }
+
     public Resource setDimming(Dimming dimming) {
         this.dimming = dimming;
         return this;
@@ -812,6 +863,11 @@ public class Resource {
     public Resource setRecallDuration(Duration recallDuration) {
         Recall recall = this.recall;
         this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setDuration(recallDuration);
+        return this;
+    }
+
+    public Resource setTamperReports(List<TamperReport> tamperReports) {
+        this.tamperReports = tamperReports;
         return this;
     }
 

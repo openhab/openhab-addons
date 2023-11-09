@@ -433,6 +433,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResource = new Resource(ResourceType.LIGHT_LEVEL).setEnabled(command);
                 break;
 
+            case CHANNEL_2_SECURITY_CONTACT_ENABLED:
+                putResource = new Resource(ResourceType.CONTACT).setEnabled(command);
+                break;
+
             case CHANNEL_2_SCENE:
                 if (command instanceof StringType) {
                     Resource scene = sceneResourceEntries.get(((StringType) command).toString());
@@ -888,6 +892,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case MOTION:
+            case CAMERA_MOTION:
                 updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_LAST_UPDATED,
                         resource.getMotionLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
@@ -918,6 +923,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case SCENE:
                 updateState(CHANNEL_2_SCENE, resource.getSceneState(), fullUpdate);
+                break;
+
+            case CONTACT:
+                updateState(CHANNEL_2_SECURITY_CONTACT, resource.getContactState(), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED,
+                        resource.getContactLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_CONTACT_ENABLED, resource.getEnabledState(), fullUpdate);
+                break;
+
+            case TAMPER:
+                updateState(CHANNEL_2_SECURITY_TAMPER, resource.getTamperState(), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_TAMPER_LAST_UPDATED,
+                        resource.getTamperLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
                 break;
 
             case SMART_SCENE:

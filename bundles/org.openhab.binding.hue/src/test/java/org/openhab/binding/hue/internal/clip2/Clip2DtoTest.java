@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.dto.clip2.ActionEntry;
 import org.openhab.binding.hue.internal.dto.clip2.Alerts;
 import org.openhab.binding.hue.internal.dto.clip2.Button;
+import org.openhab.binding.hue.internal.dto.clip2.ContactReport;
 import org.openhab.binding.hue.internal.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.dto.clip2.Event;
@@ -46,6 +48,7 @@ import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.dto.clip2.Rotation;
 import org.openhab.binding.hue.internal.dto.clip2.RotationEvent;
+import org.openhab.binding.hue.internal.dto.clip2.TamperReport;
 import org.openhab.binding.hue.internal.dto.clip2.Temperature;
 import org.openhab.binding.hue.internal.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
@@ -63,6 +66,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -707,6 +711,91 @@ class Clip2DtoTest {
     }
 
     @Test
+    void testSecurityContact() {
+        String json = load(ResourceType.CONTACT.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource resource = list.get(0);
+        assertEquals(ResourceType.CONTACT, resource.getType());
+
+        assertEquals(OpenClosedType.CLOSED, resource.getContactState());
+        assertEquals(new DateTimeType("2023-10-10T19:10:55.919Z"),
+                resource.getContactLastUpdatedState(ZoneId.of("UTC")));
+
+        resource.setContactReport(new ContactReport().setLastChanged(Instant.now()).setContactState("no_contact"));
+        assertEquals(OpenClosedType.OPEN, resource.getContactState());
+        assertTrue(resource.getContactLastUpdatedState(ZoneId.of("UTC")) instanceof DateTimeType);
+    }
+
+    @Test
+    void testSecurityTamper() {
+        String json = load(ResourceType.TAMPER.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource resource = list.get(0);
+        assertEquals(ResourceType.TAMPER, resource.getType());
+
+        assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
+        assertEquals(new DateTimeType("2023-01-01T00:00:00.001Z"),
+                resource.getTamperLastUpdatedState(ZoneId.of("UTC")));
+
+        Instant start = Instant.now();
+        List<TamperReport> tamperReports;
+        State state;
+
+        tamperReports = new ArrayList<>();
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
+        resource.setTamperReports(tamperReports);
+        assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
+        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
+        assertTrue(state instanceof DateTimeType);
+        assertEquals(start, ((DateTimeType) state).getInstant());
+
+        tamperReports = new ArrayList<>();
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
+        tamperReports.add(new TamperReport().setTamperState("tampered").setLastChanged(start.plusSeconds(1)));
+        resource.setTamperReports(tamperReports);
+        assertEquals(OpenClosedType.OPEN, resource.getTamperState());
+        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
+        assertTrue(state instanceof DateTimeType);
+        assertEquals(start.plusSeconds(1), ((DateTimeType) state).getInstant());
+
+        tamperReports = new ArrayList<>();
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
+        tamperReports.add(new TamperReport().setTamperState("tampered").setLastChanged(start.plusSeconds(1)));
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start.plusSeconds(2)));
+        resource.setTamperReports(tamperReports);
+        assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
+        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
+        assertTrue(state instanceof DateTimeType);
+        assertEquals(start.plusSeconds(2), ((DateTimeType) state).getInstant());
+    }
+
+    @Test
+    void testCameraMotion() {
+        String json = load(ResourceType.CAMERA_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource resource = list.get(0);
+        assertEquals(ResourceType.CAMERA_MOTION, resource.getType());
+
+        Boolean enabled = resource.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
+        assertEquals(OnOffType.ON, resource.getMotionState());
+        assertEquals(new DateTimeType("2020-04-01T20:04:30.395Z"),
+                resource.getMotionLastUpdatedState(ZoneId.of("UTC")));
+    }
+
     void testFixedEffectSetter() {
         Resource source;
         Resource target;
