@@ -21,7 +21,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -98,7 +97,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
             List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
             List<Integer> channelsToRemove = IntStream.range(this.numChannels + 1, SUPPORTED_CHANNEL_IDS.size() + 1)
-                    .boxed().collect(Collectors.toList());
+                    .boxed().toList();
 
             channelsToRemove.forEach(channel -> {
                 channels.removeIf(c -> (c.getUID().getId().equals(POWER + channel)));

@@ -41,7 +41,7 @@
 				<description>Specifies the refresh interval in seconds</description>
 				<default>30</default>
 			</parameter>
-			<parameter name="numChannels" type="integer" min="1" max="4" required="true">
+			<parameter name="numChannels" type="integer" min="1" max="4" required="false">
 				<label>Number of Channels</label>
 				<description>Number of channels on the Tasmota plug (1-4) default 1</description>
 				<default>1</default>

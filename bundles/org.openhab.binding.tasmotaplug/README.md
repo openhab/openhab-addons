@@ -23,7 +23,7 @@ The refresh interval and number of channels can be overridden from the default.
 |-------------|-----------------------------------------------------------------------------------------|
 | hostName    | The host name or IP address of the plug. Mandatory.                                     |
 | refresh     | Overrides the refresh interval of the plug status. Optional, the default is 30 seconds. |
-| numChannels | Number of channels on the Tasmota Plug (1-4). default 1                                 |
+| numChannels | Number of channels on the Tasmota Plug (1-4). Optional, the default is 1                |
 | username    | Username for authentication with the Tasmota Plug. default 'admin'                      |
 | password    | Password for authentication with the Tasmota Plug, if not supplied auth is disabled.    |
 
