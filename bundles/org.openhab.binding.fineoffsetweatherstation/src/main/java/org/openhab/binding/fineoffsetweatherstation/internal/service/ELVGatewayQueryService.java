@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
@@ -79,6 +80,10 @@ public class ELVGatewayQueryService extends GatewayQueryService {
         if (data == null) {
             return Collections.emptyList();
         }
-        return fineOffsetDataParser.getMeasuredValues(data, conversionContext);
+        DebugDetails debugDetails = new DebugDetails(data, Command.CMD_WS980_LIVEDATA, Protocol.ELV);
+        List<MeasuredValue> measuredValues = fineOffsetDataParser.getMeasuredValues(data, conversionContext,
+                debugDetails);
+        logger.trace("{}", debugDetails);
+        return measuredValues;
     }
 }
