@@ -192,7 +192,7 @@ public class ChannelState implements MqttMessageSubscriber {
 
         Command command = TypeParser.parseCommand(cachedValue.getSupportedCommandTypes(), strValue);
         if (command == null) {
-            logger.warn("Incoming payload '{}' not supported by type '{}'", strValue,
+            logger.warn("Incoming payload '{}' on '{}' not supported by type '{}'", strValue, topic,
                     cachedValue.getClass().getSimpleName());
             receivedOrTimeout();
             return;
