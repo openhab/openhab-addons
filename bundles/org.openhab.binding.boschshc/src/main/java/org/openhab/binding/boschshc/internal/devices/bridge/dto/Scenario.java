@@ -51,4 +51,14 @@ public class Scenario extends BoschSHCServiceState {
     public static Boolean isValid(Scenario[] scenarios) {
         return Arrays.stream(scenarios).allMatch(scenario -> (scenario.id != null));
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Scenario{");
+        sb.append("name='").append(name).append("'");
+        sb.append(", id='").append(id).append("'");
+        sb.append(", lastTimeTriggered='").append(lastTimeTriggered).append("'");
+        sb.append('}');
+        return sb.toString();
+    }
 }

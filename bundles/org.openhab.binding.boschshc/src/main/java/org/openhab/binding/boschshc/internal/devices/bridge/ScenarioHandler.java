@@ -56,7 +56,10 @@ public class ScenarioHandler {
             sendPOSTRequest(httpClient.getBoschSmartHomeUrl(String.format("scenarios/%s/triggers", scenario.get().id)),
                     httpClient);
         } else {
-            logger.debug("Scenario '{}' could not be found on the Bosch Smart Home Controller.", scenarioName);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Scenario '{}' was not found in the list of available scenarios {}", scenarioName,
+                        prettyLogScenarios(scenarios));
+            }
         }
     }
 
@@ -92,5 +95,16 @@ public class ScenarioHandler {
         } catch (ExecutionException e) {
             logger.debug("Exception occurred during scenario call", e);
         }
+    }
+
+    private String prettyLogScenarios(final Scenario[] scenarios) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        for (Scenario scenario : scenarios) {
+            builder.append("\n  ");
+            builder.append(scenario);
+        }
+        builder.append("\n]");
+        return builder.toString();
     }
 }
