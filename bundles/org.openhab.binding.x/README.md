@@ -1,6 +1,6 @@
 # X Binding
 
-The X (formerly known as Twitter) binding allows your home to Tweet 280 characters at a time. It also supports direct messages and tweeting with media.
+The X (formerly known as Twitter) binding allows your home to post 280 characters at a time. It also supports direct messages and posting with media.
 
 ## Supported Things
 
@@ -18,13 +18,13 @@ The X Account Thing requires you to create a X App in the X Developer Page.
 | consumerSecret    |         |   Yes    | Consumer API Secret               |
 | accessToken       |         |   Yes    | Access Token                      |
 | accessTokenSecret |         |   Yes    | Access Token Secret               |
-| refresh           | 30      |   No     | Tweet refresh interval in minutes |
+| refresh           | 30      |   No     | Post refresh interval in minutes |
 
 ## Channels
 
 | channel    | type   | description                                    |
 |------------|--------|------------------------------------------------|
-| lasttweet  | String | This channel provides the Latest Tweet message |
+| lastpost  | String | This channel provides the Latest post message |
 
 ## Full Example
 
@@ -38,26 +38,26 @@ Thing x:account:sampleaccount [ consumerKey="11111", consumerSecret="22222", acc
 x.items:
 
 ```java
-String sample_tweet   "Latest Tweet: [%s]" { channel="x:account:sampleaccount:lasttweet" }
+String sample_post   "Latest post: [%s]" { channel="x:account:sampleaccount:lastpost" }
 
 ```
 
 ## Rule Action
 
-This binding includes rule actions for sending tweets and direct messages.
+This binding includes rule actions for sending posts and direct messages.
 
-- `boolean success = sendTweet(String text)`
-- `boolean success = sendTweetWithAttachment(String text, String URL)`
+- `boolean success = sendPost(String text)`
+- `boolean success = sendPostWithAttachment(String text, String URL)`
 - `boolean success = sendDirectMessage(String recipientID, String text)`
 
 Examples:
 
 ```java
-val tweetActions = getActions("x","x:account:sampleaccount")
-val success  = tweetActions.sendTweet("This is A Tweet")
-val success2 = tweetActions.sendTweetWithAttachment("This is A Tweet with a Pic", file:///tmp/201601011031.jpg)
-val success3 = tweetActions.sendTweetWithAttachment("Windows Picture", "D:\\Test.png" )
-val success4 = tweetActions.sendTweetWithAttachment("HTTP Picture", "http://www.mywebsite.com/Test.png" )
-val success5 = tweetActions.sendDirectMessage("1234567", "Wake Up" )
+val postpostActions = getActions("x","x:account:sampleaccount")
+val success  = postActions.sendPost("This is A Post")
+val success2 = postActions.sendPostWithAttachment("This is A Post with a Pic", file:///tmp/201601011031.jpg)
+val success3 = postActions.sendPostWithAttachment("Windows Picture", "D:\\Test.png" )
+val success4 = postActions.sendPostWithAttachment("HTTP Picture", "http://www.mywebsite.com/Test.png" )
+val success5 = postActions.sendDirectMessage("1234567", "Wake Up" )
 
 ```

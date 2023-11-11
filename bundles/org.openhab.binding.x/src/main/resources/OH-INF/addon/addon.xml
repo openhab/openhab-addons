@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>X Binding</name>
-	<description>Supports adding Thing for getting the Last Tweet. Send Tweets and Pictures with Actions.</description>
+	<description>Supports adding Thing for getting the Last Post. Send Posts and Pictures with Actions.</description>
 	<connection>cloud</connection>
 
 </addon:addon>

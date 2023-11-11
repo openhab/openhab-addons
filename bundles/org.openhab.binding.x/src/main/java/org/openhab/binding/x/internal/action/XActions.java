@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TweetActions} class defines rule actions for sending tweet
+ * The {@link XActions} class defines rule actions for sending post
  *
  * @author Scott Hanson - Initial contribution
  */
@@ -37,41 +37,41 @@ public class XActions implements ThingActions {
 
     private @Nullable XHandler handler;
 
-    @RuleAction(label = "@text/sendTweetActionLabel", description = "@text/sendTweetActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendTweet(
+    @RuleAction(label = "@text/sendPostActionLabel", description = "@text/sendPostActionDescription")
+    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPost(
             @ActionInput(name = "text") @Nullable String text) {
         if (text == null) {
-            logger.warn("Cannot send Tweet as text is missing.");
+            logger.warn("Cannot send Post as text is missing.");
             return false;
         }
 
         final XHandler handler = this.handler;
         if (handler == null) {
-            logger.debug("Handler is null, cannot tweet.");
+            logger.debug("Handler is null, cannot post.");
             return false;
         } else {
-            return handler.sendTweet(text);
+            return handler.sendPost(text);
         }
     }
 
-    @RuleAction(label = "@text/sendAttachmentTweetActionLabel", description = "@text/sendAttachmentTweetActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendTweetWithAttachment(
+    @RuleAction(label = "@text/sendAttachmentPostActionLabel", description = "@text/sendAttachmentPostActionDescription")
+    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPostWithAttachment(
             @ActionInput(name = "text") @Nullable String text, @ActionInput(name = "url") @Nullable String urlString) {
         if (text == null) {
-            logger.warn("Cannot send Tweet as text is missing.");
+            logger.warn("Cannot send Post as text is missing.");
             return false;
         }
         if (urlString == null) {
-            logger.warn("Cannot send Tweet as urlString is missing.");
+            logger.warn("Cannot send Post as urlString is missing.");
             return false;
         }
 
         final XHandler handler = this.handler;
         if (handler == null) {
-            logger.debug("Handler is null, cannot tweet.");
+            logger.debug("Handler is null, cannot post.");
             return false;
         } else {
-            return handler.sendTweet(text, urlString);
+            return handler.sendPost(text, urlString);
         }
     }
 
@@ -90,20 +90,20 @@ public class XActions implements ThingActions {
 
         final XHandler handler = this.handler;
         if (handler == null) {
-            logger.debug("Handler is null, cannot tweet.");
+            logger.debug("Handler is null, cannot post.");
             return false;
         } else {
             return handler.sendDirectMessage(recipient, text);
         }
     }
 
-    public static boolean sendTweet(ThingActions actions, @Nullable String text) {
-        return ((XActions) actions).sendTweet(text);
+    public static boolean sendPost(ThingActions actions, @Nullable String text) {
+        return ((XActions) actions).sendPost(text);
     }
 
-    public static boolean sendTweetWithAttachment(ThingActions actions, @Nullable String text,
+    public static boolean sendPostWithAttachment(ThingActions actions, @Nullable String text,
             @Nullable String urlString) {
-        return ((XActions) actions).sendTweetWithAttachment(text, urlString);
+        return ((XActions) actions).sendPostWithAttachment(text, urlString);
     }
 
     public static boolean sendDirectMessage(ThingActions actions, @Nullable String recipient, @Nullable String text) {

@@ -30,5 +30,5 @@ public class XBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
 
     // List of all Channel ids
-    public static final String CHANNEL_LASTTWEET = "lasttweet";
+    public static final String CHANNEL_LASTPOST = "lastpost";
 }

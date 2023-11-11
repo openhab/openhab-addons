@@ -5,10 +5,10 @@
 
 	<thing-type id="account">
 		<label>X Account</label>
-		<description>Account uses for sending Tweets</description>
+		<description>Account uses for sending posts</description>
 
 		<channels>
-			<channel id="lasttweet" typeId="lasttweet"/>
+			<channel id="lastpost" typeId="lastpost"/>
 		</channels>
 
 		<config-description>
@@ -37,10 +37,10 @@
 
 	</thing-type>
 
-	<channel-type id="lasttweet">
+	<channel-type id="lastpost">
 		<item-type>String</item-type>
-		<label>Last Tweet</label>
-		<description>Users Last Tweet</description>
+		<label>Last Post</label>
+		<description>Users Last Post</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

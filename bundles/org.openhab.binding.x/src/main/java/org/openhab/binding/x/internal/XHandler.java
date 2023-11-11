@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.x.internal;
 
-import static org.openhab.binding.x.internal.XBindingConstants.CHANNEL_LASTTWEET;
+import static org.openhab.binding.x.internal.XBindingConstants.CHANNEL_LASTPOST;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -117,7 +117,7 @@ public class XHandler extends BaseThingHandler {
             if (localClient != null) {
                 ResponseList<Status> statuses = localClient.v1().timelines().getUserTimeline();
                 if (statuses.size() > 0) {
-                    updateState(CHANNEL_LASTTWEET, StringType.valueOf(statuses.get(0).getText()));
+                    updateState(CHANNEL_LASTPOST, StringType.valueOf(statuses.get(0).getText()));
                 } else {
                     logger.debug("No Statuses Found");
                 }
@@ -128,70 +128,70 @@ public class XHandler extends BaseThingHandler {
     }
 
     /**
-     * Internal method for sending a tweet, with or without image
+     * Internal method for sending a post, with or without image
      *
-     * @param tweetTxt
-     *            text string to be sent as a Tweet
+     * @param postTxt
+     *            text string to be sent as a Post
      * @param fileToAttach
      *            the file to attach. May be null if no attached file.
      *
-     * @return <code>true</code>, if sending the tweet has been successful and
+     * @return <code>true</code>, if sending the post has been successful and
      *         <code>false</code> in all other cases.
      */
-    private boolean sendTweet(final String tweetTxt, final @Nullable File fileToAttach) {
+    private boolean sendPost(final String postTxt, final @Nullable File fileToAttach) {
         if (!checkPrerequisites()) {
             return false;
         }
-        // abbreviate the Tweet to meet the 280 character limit ...
-        String abbreviatedTweetTxt = abbreviateString(tweetTxt, CHARACTER_LIMIT);
+        // abbreviate the Post to meet the 280 character limit ...
+        String abbreviatedPostTxt = abbreviateString(postTxt, CHARACTER_LIMIT);
         try {
             Twitter localClient = client;
             if (localClient != null) {
-                // send the Tweet
-                StatusUpdate status = StatusUpdate.of(abbreviatedTweetTxt);
+                // send the Post
+                StatusUpdate status = StatusUpdate.of(abbreviatedPostTxt);
                 if (fileToAttach != null && fileToAttach.isFile()) {
                     status = status.media(fileToAttach);
                 }
                 Status updatedStatus = localClient.v1().tweets().updateStatus(status);
-                logger.debug("Successfully sent Tweet '{}'", updatedStatus.getText());
-                updateState(CHANNEL_LASTTWEET, StringType.valueOf(updatedStatus.getText()));
+                logger.debug("Successfully sent Post '{}'", updatedStatus.getText());
+                updateState(CHANNEL_LASTPOST, StringType.valueOf(updatedStatus.getText()));
                 return true;
             }
         } catch (TwitterException e) {
-            logger.warn("Failed to send Tweet '{}' because of : {}", abbreviatedTweetTxt, e.getLocalizedMessage());
+            logger.warn("Failed to send Post '{}' because of : {}", abbreviatedPostTxt, e.getLocalizedMessage());
         }
         return false;
     }
 
     /**
-     * Sends a standard Tweet.
+     * Sends a standard Post.
      *
-     * @param tweetTxt
-     *            text string to be sent as a Tweet
+     * @param postTxt
+     *            text string to be sent as a Post
      *
-     * @return <code>true</code>, if sending the tweet has been successful and
+     * @return <code>true</code>, if sending the post has been successful and
      *         <code>false</code> in all other cases.
      */
-    public boolean sendTweet(String tweetTxt) {
+    public boolean sendPost(String postTxt) {
         if (!checkPrerequisites()) {
             return false;
         }
-        return sendTweet(tweetTxt, (File) null);
+        return sendPost(postTxt, (File) null);
     }
 
     /**
-     * Sends a Tweet with an image
+     * Sends a Post with an image
      *
-     * @param tweetTxt
-     *            text string to be sent as a Tweet
-     * @param tweetPicture
+     * @param postTxt
+     *            text string to be sent as a Post
+     * @param postPicture
      *            the path of the picture that needs to be attached (either an url,
      *            either a path pointing to a local file)
      *
-     * @return <code>true</code>, if sending the tweet has been successful and
+     * @return <code>true</code>, if sending the post has been successful and
      *         <code>false</code> in all other cases.
      */
-    public boolean sendTweet(String tweetTxt, String tweetPicture) {
+    public boolean sendPost(String postTxt, String postPicture) {
         if (!checkPrerequisites()) {
             return false;
         }
@@ -199,18 +199,18 @@ public class XHandler extends BaseThingHandler {
         // prepare the image attachment
         File fileToAttach = null;
         boolean deleteTemporaryFile = false;
-        if (tweetPicture.startsWith("http://") || tweetPicture.startsWith("https://")) {
+        if (postPicture.startsWith("http://") || postPicture.startsWith("https://")) {
             try {
                 // we have a remote url and need to download the remote file to a temporary location
                 Path tDir = Files.createTempDirectory("TempDirectory");
                 String path = tDir + File.separator + "openhab-x-remote_attached_file" + "."
-                        + getExtension(tweetPicture);
+                        + getExtension(postPicture);
 
-                // URL url = new URL(tweetPicture);
+                // URL url = new URL(postPicture);
                 fileToAttach = new File(path);
                 deleteTemporaryFile = true;
 
-                RawType rawPicture = HttpUtil.downloadImage(tweetPicture);
+                RawType rawPicture = HttpUtil.downloadImage(postPicture);
                 if (rawPicture != null) {
                     try (FileOutputStream fos = new FileOutputStream(path)) {
                         fos.write(rawPicture.getBytes(), 0, rawPicture.getBytes().length);
@@ -220,24 +220,24 @@ public class XHandler extends BaseThingHandler {
                         logger.debug("Could not write {} to temp dir. {}", path, ex.getMessage());
                     }
                 } else {
-                    logger.debug("Could not download tweet file from {}", tweetPicture);
+                    logger.debug("Could not download post file from {}", postPicture);
                 }
             } catch (IOException ex) {
-                logger.debug("Could not write {} to temp dir. {}", tweetPicture, ex.getMessage());
+                logger.debug("Could not write {} to temp dir. {}", postPicture, ex.getMessage());
             }
         } else {
             // we have a local file and can just use it directly
-            fileToAttach = new File(tweetPicture);
+            fileToAttach = new File(postPicture);
         }
 
         if (fileToAttach != null && fileToAttach.isFile()) {
-            logger.debug("Image '{}' correctly found, will be included in tweet", tweetPicture);
+            logger.debug("Image '{}' correctly found, will be included in post", postPicture);
         } else {
-            logger.warn("Image '{}' not found, will only tweet text", tweetPicture);
+            logger.warn("Image '{}' not found, will only post text", postPicture);
         }
 
-        // send the Tweet
-        boolean result = sendTweet(tweetTxt, fileToAttach);
+        // send the Post
+        boolean result = sendPost(postTxt, fileToAttach);
         // delete temp file (if needed)
         if (deleteTemporaryFile) {
             if (fileToAttach != null) {
@@ -270,7 +270,7 @@ public class XHandler extends BaseThingHandler {
         try {
             Twitter localClient = client;
             if (localClient != null) {
-                // abbreviate the Tweet to meet the allowed character limit ...
+                // abbreviate the Post to meet the allowed character limit ...
                 String abbreviatedMessageTxt = abbreviateString(messageTxt, CHARACTER_LIMIT);
                 // send the direct message
                 DirectMessage message = localClient.v1().directMessages().sendDirectMessage(recipientId,
