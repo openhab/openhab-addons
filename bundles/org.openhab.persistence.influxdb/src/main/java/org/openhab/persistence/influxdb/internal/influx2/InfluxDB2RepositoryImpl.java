@@ -25,8 +25,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.influxdb.client.domain.HealthCheck;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBIOException;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
@@ -76,7 +78,8 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
 
     @Override
     public boolean isConnected() {
-        return client != null;
+        InfluxDBClient client = this.client;
+        return client != null && client.health().getStatus() == HealthCheck.StatusEnum.PASS;
     }
 
     @Override
