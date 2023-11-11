@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: X Binding</name>
 
   <properties>
-    <bnd.importpackage>!android.*,!com.android.org.*,!dalvik.*,!javax.annotation.meta.*,!org.apache.harmony.*,!org.conscrypt.*,!sun.*,!com.google.appengine.api.*</bnd.importpackage>
+    <bnd.importpackage>!org.slf4j.impl.*,!android.*,!com.android.org.*,!dalvik.*,!javax.annotation.meta.*,!org.apache.harmony.*,!org.conscrypt.*,!sun.*,!com.google.appengine.api.*</bnd.importpackage>
   </properties>
 
   <dependencies>
