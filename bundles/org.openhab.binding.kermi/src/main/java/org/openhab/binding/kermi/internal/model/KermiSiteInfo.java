@@ -35,6 +35,7 @@ import org.openhab.binding.kermi.internal.api.DeviceInfo;
 import org.openhab.binding.kermi.internal.api.KermiHttpUtil;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -151,25 +152,35 @@ public class KermiSiteInfo {
         }
 
         int datapointType = datapoint.getConfig().getDatapointType();
-        if (1 == datapointType) {
+        Object value = datapointValue.getValue();
+        if (0 == datapointType) {
+            if (value instanceof Double dValue) {
+                value = dValue.intValue();
+            }
+            // enumeration, needs to translate via "PossibleValues"
+            String valueString = null;
+            Map<String, String> possibleValues = datapoint.getConfig().getPossibleValues();
+            if (possibleValues != null) {
+                valueString = possibleValues.get(value.toString());
+            }
+            String finalValue = (valueString != null) ? "(" + value + ") " + valueString : "(" + value + ")";
+            return new StringType(finalValue);
+        } else if (1 == datapointType) {
             // Numeric value or "NaN"
-            Object value = datapointValue.getValue();
             if (Objects.equals("NaN", value)) {
                 return new QuantityType<>();
             }
             Unit<?> unit = KermiSiteInfoUtil.determineUnitByString(datapoint.getConfig().getUnit());
-            if (value instanceof Double) {
-                double _value = (double) datapointValue.getValue();
+            if (value instanceof Double dValue) {
                 if (Units.WATT.equals(unit)) {
-                    _value *= 1000;
+                    dValue *= 1000;
                 }
-                return new QuantityType<>(_value, unit);
+                return new QuantityType<>(dValue, unit);
             }
         } else if (2 == datapointType) {
             // OnOff Type
-            Object value = datapointValue.getValue();
-            if (value instanceof Boolean) {
-                return ((Boolean) value) ? OnOffType.ON : OnOffType.OFF;
+            if (value instanceof Boolean bool) {
+                return bool ? OnOffType.ON : OnOffType.OFF;
             }
         }
 
