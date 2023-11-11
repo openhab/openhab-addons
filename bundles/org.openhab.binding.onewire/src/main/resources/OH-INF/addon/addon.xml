@@ -6,4 +6,27 @@
 	<name>OneWire Binding</name>
 	<description>This is the binding for OneWire.</description>
 	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_owserver._tcp.local.</mdns-service-type>
+			<match-properties>
+				<match-property>
+					<name>name</name>
+					<regex>OWFS (1-wire) Server</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>command</name>
+					<regex>(?i).*[/\\](owserver)(\.exe)?$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>
