@@ -28,14 +28,13 @@ public class SenecHomeResponse implements Serializable {
     public @SerializedName("PV1") SenecHomePower power = new SenecHomePower();
     public @SerializedName("ENERGY") SenecHomeEnergy energy = new SenecHomeEnergy();
     public @SerializedName("PM1OBJ1") SenecHomeGrid grid = new SenecHomeGrid();
-    public @SerializedName("STATISTIC") SenecHomeStatistics statistics = new SenecHomeStatistics();
     public @SerializedName("BMS") SenecHomeBattery battery = new SenecHomeBattery();
     public @SerializedName("TEMPMEASURE") SenecHomeTemperature temperature = new SenecHomeTemperature();
     public @SerializedName("WALLBOX") SenecHomeWallbox wallbox = new SenecHomeWallbox();
 
     @Override
     public String toString() {
-        return "SenecHomeResponse [power=" + power + ", energy=" + energy + ", grid=" + grid + ", statistics="
-                + statistics + "battery" + battery + "temperature" + temperature + "wallbox" + wallbox + "]";
+        return "SenecHomeResponse [power=" + power + ", energy=" + energy + ", grid=" + grid + ", battery" + battery
+                + "temperature" + temperature + "wallbox" + wallbox + "]";
     }
 }
