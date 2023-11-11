@@ -13,6 +13,8 @@
 
 package org.openhab.binding.ism8.internal.util;
 
+import java.util.Objects;
+
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Pressure;
@@ -32,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DataPointBase} is the base class for all data points
+ * The {@link Ism8DomainMap} class holds static methods for domain mapping
  *
  * @author Leo Siepel - Initial contribution
  */
@@ -77,7 +79,7 @@ public final class Ism8DomainMap {
         if (command instanceof QuantityType) {
             Unit<?> expectedUnit = dataPoint.getUnit();
             if (expectedUnit != null) {
-                QuantityType<?> state = ((QuantityType<?>) command).toUnit(expectedUnit);
+                QuantityType<?> state = Objects.requireNonNull(((QuantityType<?>) command).toUnit(expectedUnit));
                 return dataPoint.createWriteData(state.doubleValue());
             }
             return dataPoint.createWriteData(command);

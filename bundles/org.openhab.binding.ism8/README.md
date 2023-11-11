@@ -34,9 +34,9 @@ The ISM8 does currently support 4 different devices at the same moment of time (
 Once you have an overview of your heating system set you can start to create the channels accordingly.
 Each channel should be created in the following way:
 
-| Type   | Name    | Description        | Configuration |
-|--------|---------|--------------------|---------------|
-| Number | DpId004 | "Kesseltemperatur" |               |
+| Type               | Name    | Description        | Configuration |
+|--------------------|---------|--------------------|---------------|
+| Number:Temperature | DpId004 | "Kesseltemperatur" |               |
 
 Name:
 
@@ -71,7 +71,6 @@ For the moment the following data types are implemented:
 | flowrate-r     | Flowrate Readonly DataPoint    | Number:VolumetricFlowRate | R   | 13.002                     |
 | mode-rw        | Mode DataPoint                 | Number:Dimensionless      | R/W | 20.102, 20.103, 20.105     |
 | mode-r         | Mode Readonly DataPoint        | Number:Dimensionless      | R   | 20.102, 20.103, 20.105     |
-
 
 ## Full Example
 
