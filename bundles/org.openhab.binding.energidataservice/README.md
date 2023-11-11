@@ -75,6 +75,13 @@ To include VAT for items linked to the `Number` channels, the [VAT profile](http
 This must be installed separately.
 Once installed, simply select "Value-Added Tax" as Profile when linking an item.
 
+#### Persisting Time Series
+
+The binding offers support for persisting both historical and upcoming prices.
+The recommended persistence strategy is `forecast`, as it ensures a clean history without redundancy.
+Prices from the past 24 hours and all forthcoming prices will be stored.
+Any changes that impact published prices (e.g. selecting or deselecting VAT Profile) will result in the replacement of persisted prices within this period.
+
 #### Net Tariff
 
 Discounts are automatically taken into account for channel `net-tariff` so that it represents the actual price.
