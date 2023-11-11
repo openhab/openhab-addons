@@ -286,6 +286,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
             if (!influxDBRepository.write(points)) {
                 logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
                 pointsQueue.addAll(points);
+                influxDBRepository.disconnect();
             } else {
                 logger.trace("Wrote {} elements to database", points.size());
             }
