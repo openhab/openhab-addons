@@ -25,10 +25,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.influxdb.client.domain.HealthCheck;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBIOException;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
@@ -46,6 +44,7 @@ import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.InfluxDBClientOptions;
 import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApi;
+import com.influxdb.client.domain.HealthCheck;
 import com.influxdb.client.domain.Ready;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
