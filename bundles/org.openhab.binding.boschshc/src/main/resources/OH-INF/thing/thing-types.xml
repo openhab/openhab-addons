@@ -9,6 +9,15 @@
 		<label>Smart Home Controller</label>
 		<description>The Bosch Smart Home Bridge representing the Bosch Smart Home Controller.</description>
 
+		<channels>
+			<channel id="scenario-triggered" typeId="scenario-triggered"/>
+			<channel id="trigger-scenario" typeId="trigger-scenario"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
 	</bridge-type>
 
@@ -518,6 +527,18 @@
 				<option value="MODE_SILENT">Silent mode enabled (higher battery usage)</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="scenario-triggered">
+		<item-type>String</item-type>
+		<label>Scenario Triggered</label>
+		<description>Name of the triggered scenario</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="trigger-scenario">
+		<item-type>String</item-type>
+		<label>Trigger Scenario</label>
+		<description>Name of the scenario to trigger</description>
 	</channel-type>
 
 </thing:thing-descriptions>
