@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tasmotaplug"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Tasmota Plug Thing -->
+	<thing-type id="plug">
+		<label>Plug</label>
+		<description>
+			Tasmota Smart Plug
+		</description>
+
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Controls the smart plug relay for the 1st channel</description>
+			</channel>
+			<channel id="power2" typeId="system.power">
+				<label>Power 2</label>
+				<description>Controls the smart plug relay for the 2nd channel</description>
+			</channel>
+			<channel id="power3" typeId="system.power">
+				<label>Power 3</label>
+				<description>Controls the smart plug relay for the 3rd channel</description>
+			</channel>
+			<channel id="power4" typeId="system.power">
+				<label>Power 4</label>
+				<description>Controls the smart plug relay for the 4th channel</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="hostName" type="text" required="true">
+				<context>network-address</context>
+				<label>Plug Host Name/IP Address</label>
+				<description>Host name or IP address of the plug</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1" required="false" unit="s">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="numChannels" type="integer" min="1" max="4" required="false">
+				<label>Number of Channels</label>
+				<description>Number of channels on the Tasmota plug (1-4) default 1</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Tasmota username</description>
+				<default>admin</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Tasmota password</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -10,16 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gpio.internal;
+package org.openhab.binding.hue.internal.dto.clip2.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Is thrown when invalid GPIO pin Pull Up/Down resistor configuration is set
+ * Enum for tamper switch states.
  *
- * @author Martin Dagarin - Initial contribution
+ * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class InvalidPullUpDownException extends Exception {
-    private static final long serialVersionUID = -1281107134439928767L;
+public enum TamperStateType {
+    NOT_TAMPERED,
+    TAMPERED
 }

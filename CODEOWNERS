@@ -343,6 +343,7 @@
 /bundles/org.openhab.binding.tado/ @dfrommi @andrewfg
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /bundles/org.openhab.binding.tapocontrol/ @wildcs
+/bundles/org.openhab.binding.tasmotaplug/ @mlobstein
 /bundles/org.openhab.binding.telegram/ @ZzetT
 /bundles/org.openhab.binding.teleinfo/ @Nokyyz @olivierkeke
 /bundles/org.openhab.binding.tellstick/ @openhab/add-ons-maintainers
@@ -379,7 +380,7 @@
 /bundles/org.openhab.binding.webexteams/ @tdeckers
 /bundles/org.openhab.binding.webthing/ @grro
 /bundles/org.openhab.binding.wemo/ @hmerk @jlaur
-/bundles/org.openhab.binding.wifiled/ @rvt @xylo
+/bundles/org.openhab.binding.wifiled/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.windcentrale/ @marcelrv @wborn
 /bundles/org.openhab.binding.wlanthermo/ @CSchlipp
 /bundles/org.openhab.binding.wled/ @Skinah

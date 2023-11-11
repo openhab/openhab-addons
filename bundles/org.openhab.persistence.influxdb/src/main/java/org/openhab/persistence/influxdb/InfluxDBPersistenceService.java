@@ -199,6 +199,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
         store(item, date, state, null);
     }
 
+    @Override
     public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
         if (!serviceActivated) {
             logger.warn("InfluxDB service not ready. Storing {} rejected.", item);
