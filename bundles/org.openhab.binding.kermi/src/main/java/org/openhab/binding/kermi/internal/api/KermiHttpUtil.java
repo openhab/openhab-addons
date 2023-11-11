@@ -37,7 +37,7 @@ import com.google.gson.JsonObject;
 import io.micrometer.core.instrument.util.StringUtils;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 public class KermiHttpUtil {
 
@@ -78,7 +78,6 @@ public class KermiHttpUtil {
     @SuppressWarnings("null")
     public synchronized String executeUrl(String httpMethod, String url, String content, String contentType)
             throws KermiCommunicationException {
-
         if (StringUtils.isBlank(hostname)) {
             return "Not connected";
         }
@@ -89,10 +88,10 @@ public class KermiHttpUtil {
                 Throwable lastException = null;
                 String result = null;
                 try {
-                    InputStream _content = (content != null)
+                    InputStream inputStream = (content != null)
                             ? new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))
                             : null;
-                    result = HttpUtil.executeUrl(httpMethod, url, httpHeaders, _content, contentType, 5000);
+                    result = HttpUtil.executeUrl(httpMethod, url, httpHeaders, inputStream, contentType, 5000);
                     logger.debug("[{} {}] {}", httpMethod, url, result);
                 } catch (IOException e) {
                     // HttpUtil::executeUrl wraps InterruptedException into IOException.
@@ -169,15 +168,14 @@ public class KermiHttpUtil {
      */
     public DatapointReadValuesResponse getDatapointReadValues(Set<String[]> idTuples)
             throws KermiCommunicationException {
-
         JsonObject jsonObject = new JsonObject();
         JsonArray datapointValues = new JsonArray(idTuples.size());
         jsonObject.add("DatapointValues", datapointValues);
         idTuples.forEach(idt -> {
-            JsonObject _entryObject = new JsonObject();
-            _entryObject.addProperty("DeviceId", idt[0]);
-            _entryObject.addProperty("DatapointConfigId", idt[1]);
-            datapointValues.add(_entryObject);
+            JsonObject entryObject = new JsonObject();
+            entryObject.addProperty("DeviceId", idt[0]);
+            entryObject.addProperty("DatapointConfigId", idt[1]);
+            datapointValues.add(entryObject);
         });
 
         String response = executeUrl("POST", parseUrl(KermiBindingConstants.HPM_DATAPOINT_READVALUES_URL, hostname),

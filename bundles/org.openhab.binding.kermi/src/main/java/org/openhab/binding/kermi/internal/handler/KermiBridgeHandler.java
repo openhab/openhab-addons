@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 @NonNullByDefault
 public class KermiBridgeHandler extends BaseBridgeHandler {
@@ -98,7 +98,6 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
             }
 
             // TODO add channels
-
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
@@ -162,9 +161,9 @@ public class KermiBridgeHandler extends BaseBridgeHandler {
     private void initializeKermiSiteInfo() throws KermiCommunicationException {
         GetDevicesResponse getDevicesResponse = httpUtil.getAllDevices();
         List<DeviceInfo> deviceInfo = getDevicesResponse.getResponseData();
-        Map<String, DeviceInfo> _deviceInfo = deviceInfo.stream()
+        Map<String, DeviceInfo> deviceInfoMap = deviceInfo.stream()
                 .collect(Collectors.toMap(DeviceInfo::getDeviceId, Function.identity()));
-        kermiSiteInfo.initializeSiteInfo(httpUtil, _deviceInfo);
+        kermiSiteInfo.initializeSiteInfo(httpUtil, deviceInfoMap);
     }
 
     private void updateData() throws KermiCommunicationException {

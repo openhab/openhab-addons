@@ -13,7 +13,7 @@
 package org.openhab.binding.kermi.internal;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 public class KermiBridgeConfiguration {
     public String hostname;

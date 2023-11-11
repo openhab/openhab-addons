@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 public class KermiBaseThingHandler extends BaseThingHandler {
 
@@ -94,7 +94,6 @@ public class KermiBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         if (KermiBindingConstants.THING_TYPE_HEATPUMP_MANAGER.equals(getThing().getThingTypeUID())) {
             deviceId = KermiBindingConstants.DEVICE_ID_HEATPUMP_MANAGER;
             logger.debug("Initializing heatpump-manager with deviceId {}", deviceId);
@@ -136,7 +135,7 @@ public class KermiBaseThingHandler extends BaseThingHandler {
         });
     }
 
-    private void addDatapointAsChannel(@NonNull ThingUID thingUID, Datapoint datapoint, ThingBuilder thingBuilder) {
+    private void addDatapointAsChannel(ThingUID thingUID, Datapoint datapoint, ThingBuilder thingBuilder) {
         Config datapointConfig = datapoint.getConfig();
         ChannelTypeUID channelTypeUID = kermiBaseThingHandlerUtil.determineChannelTypeUID(datapointConfig);
         if (channelTypeUID != null) {

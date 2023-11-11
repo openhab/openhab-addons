@@ -13,7 +13,7 @@
 package org.openhab.binding.kermi.internal.api;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 public class GetDeviceResponse extends BaseResponse<DeviceInfo> {
 

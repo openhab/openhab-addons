@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import tech.units.indriya.unit.Units;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 @Component
 public class KermiSiteInfo {

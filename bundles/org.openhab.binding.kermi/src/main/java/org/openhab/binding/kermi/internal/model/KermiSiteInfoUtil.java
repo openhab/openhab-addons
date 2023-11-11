@@ -41,7 +41,7 @@ import com.google.gson.stream.JsonReader;
 import tech.units.indriya.unit.Units;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 public class KermiSiteInfoUtil {
 
@@ -120,16 +120,14 @@ public class KermiSiteInfoUtil {
         if (!menuEntry.getBundles().isEmpty()) {
             menuEntry.getBundles().forEach(bundle -> dataPoints.addAll(bundle.getDatapoints()));
         }
-
         List<MenuEntry> menuEntries = menuEntry.getMenuEntries();
-        for (MenuEntry _menuEntry : menuEntries) {
+        for (MenuEntry me : menuEntries) {
             try {
                 Thread.sleep(25);
             } catch (InterruptedException e) {
                 // just some throttling
             }
-            MenuGetChildEntriesResponse menuChildEntry = httpUtil.getMenuChildEntries(deviceId,
-                    _menuEntry.getMenuEntryId());
+            MenuGetChildEntriesResponse menuChildEntry = httpUtil.getMenuChildEntries(deviceId, me.getMenuEntryId());
             collectAndTraverse(httpUtil, deviceId, dataPoints, menuChildEntry.getResponseData());
         }
     }

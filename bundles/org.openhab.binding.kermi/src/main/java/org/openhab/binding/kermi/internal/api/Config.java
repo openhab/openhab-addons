@@ -17,7 +17,7 @@ import java.util.Map;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 public class Config {
 

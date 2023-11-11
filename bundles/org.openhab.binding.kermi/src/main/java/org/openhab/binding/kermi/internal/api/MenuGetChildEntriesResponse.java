@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.kermi.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
+@NonNullByDefault
 public class MenuGetChildEntriesResponse extends BaseResponse<MenuEntryResponse> {
 
 }

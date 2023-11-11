@@ -15,7 +15,7 @@ package org.openhab.binding.kermi.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 public class DeviceOption {
 

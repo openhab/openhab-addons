@@ -15,7 +15,7 @@ package org.openhab.binding.kermi.internal.api;
 import java.util.List;
 
 /**
- * @author Marco Descher - intial implementation
+ * @author Marco Descher - Initial contribution
  */
 public class GetDevicesResponse extends BaseResponse<List<DeviceInfo>> {
 
