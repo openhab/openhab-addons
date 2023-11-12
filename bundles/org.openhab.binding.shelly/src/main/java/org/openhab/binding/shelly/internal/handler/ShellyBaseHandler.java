@@ -191,28 +191,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         config.eventsSensorReport, config.eventsCoIoT, bindingConfig.autoCoIoT);
                 start = initializeThing();
             } catch (ShellyApiException e) {
-<<<<<<< HEAD
                 start = handleApiException(e);
-=======
-                ShellyApiResult res = e.getApiResult();
-                ThingStatusDetail errorCode = ThingStatusDetail.COMMUNICATION_ERROR;
-                String mid = "";
-                if (e.isJsonError()) { // invalid JSON format
-                    mid = "offline.status-error-unexpected-error";
-                    start = false;
-                } else if (isAuthorizationFailed(res)) {
-                    mid = "offline.conf-error-access-denied";
-                    errorCode = ThingStatusDetail.CONFIGURATION_ERROR;
-                    start = false;
-                } else if (profile.alwaysOn && e.isConnectionError()) {
-                    mid = "offline.status-error-connect";
-                }
-                if (!mid.isEmpty()) {
-                    setThingOffline(errorCode, mid, e.toString());
-                } else {
-                    logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
-                }
->>>>>>> aa60a436f4 (Implement channel upgrade when typeId or acceptedItemType doesn't match)
             } catch (IllegalArgumentException e) {
                 logger.debug("{}: Unable to initialize, retrying later", thingName, e);
             } finally {
