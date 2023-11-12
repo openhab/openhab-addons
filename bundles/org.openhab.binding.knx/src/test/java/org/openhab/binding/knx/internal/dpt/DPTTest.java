@@ -331,13 +331,13 @@ class DPTTest {
     @Test
     public void dpt252EncoderTest() {
         // input data
-        byte[] data = new byte[] { 0x26, 0x2b, 0x31, 0x00, 0x00, 0x0e };
+        byte[] data = new byte[] { 0x26, 0x2b, 0x31, 0x00, 0x00, 0x0f };
         HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
 
         assertNotNull(hsbType);
-        assertEquals(207, hsbType.getHue().doubleValue(), 0.5);
-        assertEquals(23, hsbType.getSaturation().doubleValue(), 0.5);
-        assertEquals(19, hsbType.getBrightness().doubleValue(), 0.5);
+        assertEquals(210, hsbType.getHue().doubleValue(), 0.5);
+        assertEquals(22, hsbType.getSaturation().doubleValue(), 0.5);
+        assertEquals(3.5, hsbType.getBrightness().doubleValue(), 0.5);
     }
 
     // This test checks all our overrides for units. It allows to detect unnecessary overrides when we
@@ -452,7 +452,7 @@ class DPTTest {
         // for back to back test, compare numerical values to allow tolerances
         double dx = (((value[0] & 0xff) << 8) | (value[1] & 0xff)) / 65535.0;
         double dy = (((value[2] & 0xff) << 8) | (value[3] & 0xff)) / 65535.0;
-        double dY = ((double) (value[4] & 0xff)) * 100.0 / 255.0;
+        double dY = (value[4] & 0xff) * 100.0 / 255.0;
 
         Matcher matcher = ValueDecoder.XYY_PATTERN.matcher(result);
         Assertions.assertTrue(matcher.matches());

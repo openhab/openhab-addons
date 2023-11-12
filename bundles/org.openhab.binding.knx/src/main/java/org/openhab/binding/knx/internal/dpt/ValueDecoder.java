@@ -327,13 +327,14 @@ public class ValueDecoder {
             String bString = rgbw.group("b");
             String wString = rgbw.group("w");
 
-            if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
-                // does not support PercentType and r,g,b valid -> HSBType
-                int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
-                int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
-                int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
+            if (rString != null && gString != null && bString != null && wString != null
+                    && HSBType.class.equals(preferredType)) {
+                int r = coerceToRange((int) Math.round(Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
+                int g = coerceToRange((int) Math.round(Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
+                int b = coerceToRange((int) Math.round(Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
+                int w = coerceToRange((int) Math.round(Double.parseDouble(wString.replace(",", ".")) * 2.55), 0, 255);
 
-                return HSBType.fromRGB(r, g, b);
+                return ColorUtil.rgbToHsb(new int[] { r, g, b, w });
             } else if (wString != null && PercentType.class.equals(preferredType)) {
                 // does support PercentType and w valid -> PercentType
                 BigDecimal w = new BigDecimal(wString.replace(",", "."));
