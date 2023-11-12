@@ -348,13 +348,11 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
         properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, whereConfig);
         properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID, ownId);
 
-        thingLabel = thingLabel + " (WHERE=" + whereConfig
-                + ")";
+        thingLabel = thingLabel + " (WHERE=" + whereConfig + ")";
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties)
-                .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_OWNID).withBridge(bridgeUID)
-                .withLabel(thingLabel).build();
+                .withProperties(properties).withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_OWNID)
+                .withBridge(bridgeUID).withLabel(thingLabel).build();
         thingDiscovered(discoveryResult);
     }
 

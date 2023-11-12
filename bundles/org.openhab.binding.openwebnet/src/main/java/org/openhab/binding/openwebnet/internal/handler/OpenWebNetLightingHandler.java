@@ -292,7 +292,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 }
             }
         }
-
     }
 
     protected void handleMultipleMessage(Lighting msg) {
@@ -319,7 +318,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 // }
             }
         }
-
     }
 
     /**

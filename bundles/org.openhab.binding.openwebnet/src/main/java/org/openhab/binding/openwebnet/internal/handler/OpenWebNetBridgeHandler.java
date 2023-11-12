@@ -527,7 +527,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Register a device ThingHandler to this BridgHandler
      *
-     * @param ownId        the device OpenWebNet id
+     * @param ownId the device OpenWebNet id
      * @param thingHandler the thing handler to be registered
      */
     protected void registerDevice(String ownId, OpenWebNetThingHandler thingHandler) {
@@ -565,7 +565,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Adds a light handler to the light map for this bridge, grouped by Area
      *
-     * @param area         the light area
+     * @param area the light area
      * @param lightHandler the light handler to be added
      */
     protected void addLight(int area, OpenWebNetThingHandler lightHandler) {
@@ -582,7 +582,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Remove a light handler to the light map for this bridge
      *
-     * @param area         the light area
+     * @param area the light area
      * @param lightHandler the light handler to be removed
      */
     protected void removeLight(int area, OpenWebNetThingHandler lightHandler) {
@@ -874,7 +874,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Return a ownId string (=WHO.WHERE) from the device Where address and handler
      *
-     * @param where   the Where address (to be normalized)
+     * @param where the Where address (to be normalized)
      * @param handler the device handler
      * @return the ownId String
      */
@@ -886,7 +886,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Returns a ownId string (=WHO.WHERE) from a Who and Where address
      *
-     * @param who   the Who
+     * @param who the Who
      * @param where the Where address (to be normalized)
      * @return the ownId String
      */
@@ -916,7 +916,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Given a Who and a Where address, return a Thing id string
      *
-     * @param who   the Who
+     * @param who the Who
      * @param where the Where address
      * @return the thing Id string
      */
@@ -927,7 +927,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Normalize, based on Who, a Where address. Used to generate ownId and Thing id
      *
-     * @param who   the Who
+     * @param who the Who
      * @param where the Where address
      * @return the normalized address as String
      */
