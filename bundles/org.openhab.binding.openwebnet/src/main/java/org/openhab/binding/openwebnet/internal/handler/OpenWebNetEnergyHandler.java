@@ -167,7 +167,8 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             ScheduledFuture<?> ns = powerSchedule;
             ns.cancel(false);
             logger.debug("dispose() power scheduler stopped.");
-        } else if (energySchedule != null) {
+        }
+        if (energySchedule != null) {
             ScheduledFuture<?> ns = energySchedule;
             ns.cancel(false);
             logger.debug("dispose() energy scheduler stopped.");
@@ -241,7 +242,6 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
      * Updates energy power state based on an EnergyManagement message received from the OWN network
      *
      * @param msg the EnergyManagement message received
-     * @throws FrameException
      */
     private void updateActivePower(BaseOpenMessage msg) {
         Integer activePower;
@@ -251,6 +251,9 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         } catch (FrameException e) {
             logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
             updateState(CHANNEL_POWER, UnDefType.UNDEF);
+        } catch (NumberFormatException e) {
+            logger.warn("NumberFormatException on frame {}: {}", msg, e.getMessage());
+            updateState(CHANNEL_POWER, UnDefType.UNDEF);
         }
     }
 
@@ -258,7 +261,6 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
      * Updates current day totalizer
      *
      * @param msg the EnergyManagement message received
-     * @throws FrameException
      */
     private void updateCurrentDayTotalizer(BaseOpenMessage msg) {
         Double currentDayEnergy;
@@ -268,6 +270,9 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         } catch (FrameException e) {
             logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
             updateState(CHANNEL_ENERGY_TOTALIZER_DAY, UnDefType.UNDEF);
+        } catch (NumberFormatException e) {
+            logger.warn("NumberFormatException on frame {}: {}", msg, e.getMessage());
+            updateState(CHANNEL_ENERGY_TOTALIZER_DAY, UnDefType.UNDEF);
         }
     }
 
@@ -275,7 +280,6 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
      * Updates current month totalizer
      *
      * @param msg the EnergyManagement message received
-     * @throws FrameException
      */
     private void updateCurrentMonthTotalizer(BaseOpenMessage msg) {
         Double currentMonthEnergy;
@@ -285,6 +289,9 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
                     new QuantityType<Energy>(currentMonthEnergy, Units.KILOWATT_HOUR));
         } catch (FrameException e) {
             logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
+            updateState(CHANNEL_ENERGY_TOTALIZER_MONTH, UnDefType.UNDEF);
+        } catch (NumberFormatException e) {
+            logger.warn("NumberFormatException on frame {}: {}", msg, e.getMessage());
             updateState(CHANNEL_ENERGY_TOTALIZER_MONTH, UnDefType.UNDEF);
         }
     }
