@@ -140,16 +140,11 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
         return Who.LIGHTING;
     }
 
-    @Override
-    protected void handleMessage(BaseOpenMessage msg) {
-        logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
-        super.handleMessage(msg);
+    protected void handlePropagatedMessage(Lighting lmsg, String oId) {
+        logger.debug("handlePropagatedMessage({}) for thing: {}", lmsg, thing.getUID());
 
         WhereLightAutom dw = (WhereLightAutom) deviceWhere;
         if (dw != null) {
-            // handle message for GEN/GR/A handler
-            Lighting lmsg = (Lighting) msg;
-            String oId = getAPLorAreaFromMessage(lmsg);
             int sizeBefore = listOn.size();
             if (!lmsg.isOff()) {
                 if (listOn.add(oId)) {
@@ -167,12 +162,12 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
 
             if (listOn.size() > 0) {
                 // some light still on
-                logger.debug("/////////// some light is ON for {}... switching group to ON", dw);
+                logger.debug("/////////// some light ON... switching group {} to ON", dw);
                 updateState(CHANNEL_SWITCH, OnOffType.ON);
                 listOnChanged = (sizeBefore == 0);
             } else {
                 // no light is ON anymore
-                logger.debug("/////////// all lights OFF for {}... switching group to OFF", dw);
+                logger.debug("/////////// all lights OFF ... switching group {} to OFF ", dw);
                 updateState(CHANNEL_SWITCH, OnOffType.OFF);
                 listOnChanged = (sizeBefore > 0);
             }
@@ -183,12 +178,20 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
                 OpenWebNetLightingGroupHandler genHandler = (OpenWebNetLightingGroupHandler) brH
                         .getRegisteredDevice(genOwnId);
                 if (genHandler != null) {
-                    logger.debug("//////////////////// Device {} is Propagating msg {} to GEN handler", dw, msg);
-                    genHandler.handleMessage(msg);
+                    logger.debug("//////////////////// device {} is Propagating msg {} to GEN handler", dw, lmsg);
+                    genHandler.handlePropagatedMessage(lmsg, this.ownId);
 
                 }
             }
+
+            handleMessage(lmsg); // to make handler come online when a light of its group comes online
         }
+    }
+
+    @Override
+    protected void handleMessage(BaseOpenMessage msg) {
+        logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
+        super.handleMessage(msg);
 
     }
 
