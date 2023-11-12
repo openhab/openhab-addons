@@ -671,6 +671,7 @@ public class ShellyChannelDefinitions {
             this.itemType = itemType;
             this.typeId = typeId;
 
+            // Auto-Naming if there are multiple instances of the same group, e.g. relay, meter...
             groupLabel = getText(PREFIX_GROUP + group + ".label");
             if (groupLabel.startsWith(PREFIX_GROUP)) {
                 groupLabel = "";
