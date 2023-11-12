@@ -22,9 +22,9 @@ The X Account Thing requires you to create a X App in the X Developer Page.
 
 ## Channels
 
-| channel    | type   | description                                    |
-|------------|--------|------------------------------------------------|
-| lastpost  | String | This channel provides the Latest post message |
+| channel  | type   | description                                   |
+|----------|--------|-----------------------------------------------|
+| lastpost | String | This channel provides the Latest post message |
 
 ## Full Example
 
@@ -32,14 +32,12 @@ x.things:
 
 ```java
 Thing x:account:sampleaccount [ consumerKey="11111", consumerSecret="22222", accessToken="33333", accessTokenSecret="444444" ]
-
 ```
 
 x.items:
 
 ```java
 String sample_post   "Latest post: [%s]" { channel="x:account:sampleaccount:lastpost" }
-
 ```
 
 ## Rule Action
@@ -53,7 +51,7 @@ This binding includes rule actions for sending posts and direct messages.
 Examples:
 
 ```java
-val postpostActions = getActions("x","x:account:sampleaccount")
+val postActions = getActions("x","x:account:sampleaccount")
 val success  = postActions.sendPost("This is A Post")
 val success2 = postActions.sendPostWithAttachment("This is A Post with a Pic", file:///tmp/201601011031.jpg)
 val success3 = postActions.sendPostWithAttachment("Windows Picture", "D:\\Test.png" )
