@@ -152,8 +152,7 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
                 }
             } else {
                 if (listOn.remove(oId)) {
-                    logger.debug("/////////// REMOVED {} from listOn for {}", oId,
-                            dw);
+                    logger.debug("/////////// REMOVED {} from listOn for {}", oId, dw);
                 }
             }
             logger.debug("/////////// listOn for {}: {}", dw, listOn);
@@ -192,22 +191,23 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         super.handleMessage(msg);
-
     }
 
-    private String getAPLorAreaFromMessage(Lighting lmsg) {
-        String oId = null;
-        if (!isGeneral) {
-            oId = bridgeHandler.ownIdFromMessage(lmsg);
-        } else { // add A to GEN
-            WhereLightAutom wl = (WhereLightAutom) lmsg.getWhere();
-            int area = wl.getArea();
-            if (area > 0) {
-                oId = this.getManagedWho().value() + "." + area;
-            }
-        }
-        return oId;
-    }
+    /*
+     * private String getAPLorAreaFromMessage(Lighting lmsg) {
+     * String oId = null;
+     * if (!isGeneral) {
+     * oId = bridgeHandler.ownIdFromMessage(lmsg);
+     * } else { // add A to GEN
+     * WhereLightAutom wl = (WhereLightAutom) lmsg.getWhere();
+     * int area = wl.getArea();
+     * if (area > 0) {
+     * oId = this.getManagedWho().value() + "." + area;
+     * }
+     * }
+     * return oId;
+     * }
+     */
 
     @Override
     protected Where buildBusWhere(String wStr) throws IllegalArgumentException {

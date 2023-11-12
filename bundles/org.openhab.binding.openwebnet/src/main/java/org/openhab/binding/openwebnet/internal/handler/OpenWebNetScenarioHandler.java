@@ -296,7 +296,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
      * pressString and button number
      *
      * @param pressString one START_PRESS, SHORT_PRESS etc.
-     * @param button      number [0-31]
+     * @param button number [0-31]
      * @return CEN message
      * @throws IllegalArgumentException if button number or pressString are invalid
      */
