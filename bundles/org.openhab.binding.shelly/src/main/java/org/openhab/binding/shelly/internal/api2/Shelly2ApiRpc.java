@@ -55,6 +55,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2ConfigParms;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DeviceConfigSta;
@@ -222,6 +223,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.settings.wifiSta1 = new ShellySettingsWiFiNetwork();
         fillWiFiSta(dc.wifi.sta, profile.settings.wifiSta);
         fillWiFiSta(dc.wifi.sta1, profile.settings.wifiSta1);
+        if (dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
+            profile.settings.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
+        }
 
         profile.numMeters = 0;
         if (profile.hasRelays) {
@@ -793,6 +797,20 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         fillDeviceStatus(status, ds, false);
+        if (getBool(profile.settings.rangeExtender)) {
+            try {
+                // Get List of AP clients
+                profile.status.apClients = apiRequest(SHELLYRPC_METHOD_WIFILISTAPCLIENTS, null,
+                        Shelly2APClientList.class);
+                int sz = profile.status.apClients.apClients.size();
+                if (sz > 0) {
+                    logger.debug("{}: Range extender is enabled, {} clients connected", thingName, sz);
+                }
+            } catch (ShellyApiException e) {
+                logger.debug("{}: Range extender is enabled, but unable to read AP client list", e);
+            }
+        }
+
         return status;
     }
 

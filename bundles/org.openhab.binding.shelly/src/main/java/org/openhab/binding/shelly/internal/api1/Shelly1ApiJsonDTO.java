@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
 import org.openhab.core.thing.CommonTriggerEvents;
 
 import com.google.gson.annotations.SerializedName;
@@ -589,6 +590,7 @@ public class Shelly1ApiJsonDTO {
         public Boolean wifiRecoveryReboot; // FW 1.10+
         @SerializedName("ap_roaming")
         public ShellyApRoaming apRoaming; // FW 1.10+
+        public Boolean rangeExtender; // Gen2: Range extender
 
         public ShellySettingsMqtt mqtt = new ShellySettingsMqtt();
         public ShellySettingsSntp sntp = new ShellySettingsSntp();
@@ -730,9 +732,10 @@ public class Shelly1ApiJsonDTO {
     public static class ShellySettingsStatus {
         public String name; // FW 1.8: Symbolic Device name is configurable
 
-        @SerializedName("wifi_sta")
-        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork(); // WiFi client configuration. See
-                                                                                    // /settings/sta for details
+        @SerializedName("wifi_sta") // WiFi client configuration. See
+        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork();
+        public Shelly2APClientList apClients;
+
         public ShellyStatusCloud cloud = new ShellyStatusCloud();
         public ShellyStatusMqtt mqtt = new ShellyStatusMqtt();
 
