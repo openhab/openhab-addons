@@ -807,7 +807,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.debug("{}: Range extender is enabled, {} clients connected", thingName, sz);
                 }
             } catch (ShellyApiException e) {
-                logger.debug("{}: Range extender is enabled, but unable to read AP client list", e);
+                logger.debug("{}: Range extender is enabled, but unable to read AP client list", thingName, e);
             }
         }
 
