@@ -176,15 +176,15 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      *
      * @param msg the OpenMessage to be sent
      */
-    public @Nullable Response send(OpenMessage msg) throws OWNException {
+    public @Nullable Response send(@Nullable OpenMessage msg) throws OWNException {
         OpenWebNetBridgeHandler bh = bridgeHandler;
-        if (bh != null) {
+        if (msg != null && bh != null) {
             OpenGateway gw = bh.gateway;
             if (gw != null) {
                 return gw.send(msg);
             }
         }
-        logger.warn("Couldn't send message {}: handler or gateway is null", msg);
+        logger.warn("Couldn't send message {}: handler, gateway or message is null", msg);
         return null;
     }
 
