@@ -14,12 +14,8 @@ package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,120 +54,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetLightingHandler.class);
 
-    /**
-     * A map to store handlers for lights and automations. The map is organised by
-     * AREA.
-     *
-     */
-    protected class LightAutomHandlersMap {
-
-        private Map<Integer, Map<String, OpenWebNetThingHandler>> hndlrsMap;
-        private @Nullable OpenWebNetThingHandler oneHandler = null;
-
-        protected LightAutomHandlersMap() {
-            hndlrsMap = new ConcurrentHashMap<>();
-        }
-
-        protected void add(int area, OpenWebNetThingHandler h) {
-            if (!hndlrsMap.containsKey(area)) {
-                hndlrsMap.put(area, new ConcurrentHashMap<>());
-            }
-            Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
-            final String oId = h.ownId;
-            if (oId != null) {
-                areaHndlrs.put(oId, h);
-                if (oneHandler == null) {
-                    oneHandler = h;
-                }
-                logger.warn("/////////////////////// Added handler {} to Area {}", oId, area);
-                logger.warn("Map: {}", this.toString());
-            }
-        }
-
-        protected void remove(int area, OpenWebNetThingHandler h) {
-            if (hndlrsMap.containsKey(area)) {
-                Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
-                if (areaHndlrs != null) {
-                    boolean removed = areaHndlrs.remove(h.ownId, h);
-                    if (removed && oneHandler.equals(h)) {
-                        oneHandler = getFirst();
-                    }
-                    logger.warn("/////////////////////// ^^^^^^^^^^^^ Removed handler {} from Area {}", h.ownId, area);
-                    logger.warn("Map: {}", this.toString());
-                }
-            }
-        }
-
-        protected @Nullable List<OpenWebNetThingHandler> getAreaHandlers(int area) {
-            Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(area);
-            if (areaHndlrs != null) {
-                List<OpenWebNetThingHandler> list = new ArrayList<OpenWebNetThingHandler>(areaHndlrs.values());
-                return list;
-            } else {
-                return null;
-            }
-        }
-
-        protected @Nullable List<OpenWebNetThingHandler> getAllHandlers() {
-            List<OpenWebNetThingHandler> list = new ArrayList<OpenWebNetThingHandler>();
-            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
-                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
-                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
-                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
-                    if (hndlr != null) {
-                        list.add(hndlr);
-                    }
-                }
-            }
-            return list;
-        }
-
-        protected boolean isEmpty() {
-            return oneHandler == null;
-        }
-
-        protected @Nullable OpenWebNetThingHandler getOne() {
-            if (oneHandler == null) {
-                oneHandler = getFirst();
-            }
-            return oneHandler;
-        }
-
-        private @Nullable OpenWebNetThingHandler getFirst() {
-            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
-                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
-                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
-                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
-                    if (hndlr != null) {
-                        return hndlr;
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public String toString() {
-            String log = "\n---- LightAutomHandlersMap ----";
-            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
-                log += "\n- Area: " + entry.getKey() + "\n   -";
-                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
-                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
-                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
-                    if (hndlr != null) {
-                        log += " " + hndlr.ownId;
-                    }
-                }
-            }
-            log += "\n# getAllHandlers: ";
-            for (OpenWebNetThingHandler e : getAllHandlers()) {
-                log += " " + e.ownId;
-            }
-            log += "\n# oneH = " + (oneHandler == null ? "null" : oneHandler.ownId);
-            return log;
-        }
-    }
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.LIGHTING_SUPPORTED_THING_TYPES;
 
     // interval to interpret ON as response to requestStatus
@@ -189,12 +71,10 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     private int brightness = UNKNOWN_STATE; // current brightness percent value for this device
     private int brightnessBeforeOff = UNKNOWN_STATE; // latest brightness before device was set to off
 
-    /**
-     * Reference to {@link OpenWebNetBridgeHandler#lightsMap}
-     */
-    private @Nullable LightAutomHandlersMap lightsMap;
-
-    Set<String> listOn = new HashSet<String>();
+    // Set<String> listOn = new HashSet<String>();
+    @Nullable
+    String areaOwnId = null;
+    int area = -1;
 
     public OpenWebNetLightingHandler(Thing thing) {
         super(thing);
@@ -206,13 +86,11 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         Where w = deviceWhere;
         OpenWebNetBridgeHandler bridge = bridgeHandler;
         if (w != null && bridge != null) {
-            if (bridge.lightsMap == null) {
-                bridge.lightsMap = new LightAutomHandlersMap();
+            area = ((WhereLightAutom) w).getArea();
+            if (area > 0) {
+                areaOwnId = this.getManagedWho().value() + "." + area;
             }
-            lightsMap = bridge.lightsMap;
-
-            int area = ((WhereLightAutom) w).getArea();
-            lightsMap.add(area, this);
+            bridge.addLight(area, this);
         }
     }
 
@@ -378,61 +256,12 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         return Who.LIGHTING;
     }
 
-    protected void handleMultipleMessage(Lighting msg) {
-        WhereLightAutom w = (WhereLightAutom) msg.getWhere();
-        LightAutomHandlersMap map = lightsMap;
-        if (map != null) {
-            List<OpenWebNetThingHandler> l = null;
-            if (w.isGeneral()) {
-                l = map.getAllHandlers();
-            } else if (w.getArea() > 0) {
-                // l = map.getAreaHandlers(w.getArea());
-
-                try {
-                    send(Lighting.requestStatus(w.getArea() + ""));
-                } catch (OWNException e) {
-                    // Auto-generated catch block
-                    // e.printStackTrace();
-                }
-
-            }
-            if (l != null) {
-                for (OpenWebNetThingHandler hndlr : l) {
-                    hndlr.handleMessage(msg);
-                }
-            }
-        }
-    }
-
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
         logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         super.handleMessage(msg);
 
         WhereLightAutom dw = (WhereLightAutom) deviceWhere;
-        if (dw != null && !dw.isAPL()) {
-            // handle message for GEN/GR/A handler
-            Lighting lmsg = (Lighting) msg;
-            if (!lmsg.isOff()) {
-                listOn.add(bridgeHandler.ownIdFromMessage(lmsg));
-                logger.debug("/////////// ADDED {} to listOn for {}", bridgeHandler.ownIdFromMessage(lmsg), dw);
-            } else {
-                listOn.remove(bridgeHandler.ownIdFromMessage(lmsg));
-                logger.debug("/////////// REMOVED {} from listOn for {}", bridgeHandler.ownIdFromMessage(lmsg),
-                        dw);
-            }
-            logger.debug("/////////// listOn for {}: {}", dw, listOn);
-            if (listOn.size() > 0) {
-                // some light still on
-                logger.debug("/////////// some light is ON for {}", dw);
-                updateState(CHANNEL_SWITCH, OnOffType.ON);
-            } else {
-                // no light is ON anymore
-                logger.debug("/////////// all lights OFF for {}... switching group to OFF", dw);
-                updateState(CHANNEL_SWITCH, OnOffType.OFF);
-            }
-            return;
-        }
 
         ThingTypeUID thingType = thing.getThingTypeUID();
         if (THING_TYPE_ZB_DIMMER.equals(thingType) || THING_TYPE_BUS_DIMMER.equals(thingType)) {
@@ -442,26 +271,52 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         }
 
         WhereLightAutom msgWhere = (WhereLightAutom) msg.getWhere();
-        if (msgWhere.isAPL()) {
-            OpenWebNetBridgeHandler brH = this.bridgeHandler;
-            if (brH != null && dw != null && dw.isAPL()) {
-                // Propagate APL msg to AREA handler, if exists
-                String areaOwnId = this.getManagedWho().value() + "." + dw.getArea();
-                OpenWebNetLightingHandler areaHandler = (OpenWebNetLightingHandler) brH.getRegisteredDevice(areaOwnId);
-                if (areaHandler != null) {
-                    logger.debug("//////////////////// Propagating msg {} to AREA handler {}", msg, areaOwnId);
-                    areaHandler.handleMessage(msg);
-                }
+
+        OpenWebNetBridgeHandler brH = this.bridgeHandler;
+        if (brH != null && dw != null && dw.isAPL() && !msgWhere.isGeneral()) {
+            // Propagate APL msg to AREA handler, if exists
+            OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
+                    .getRegisteredDevice(areaOwnId);
+            if (areaHandler != null) {
+                logger.debug("//////////////////// Device {} is Propagating msg {} to AREA handler {}", dw, msg,
+                        areaOwnId);
+                areaHandler.handleMessage(msg);
+            } else {
                 // Propagate APL msg to GEN handler, if exists
                 String genOwnId = this.getManagedWho().value() + ".0";
-                OpenWebNetLightingHandler genHandler = (OpenWebNetLightingHandler) brH.getRegisteredDevice(genOwnId);
+                OpenWebNetLightingGroupHandler genHandler = (OpenWebNetLightingGroupHandler) brH
+                        .getRegisteredDevice(genOwnId);
                 if (genHandler != null) {
-                    logger.debug("//////////////////// Propagating msg {} to GEN handler", msg);
+                    logger.debug("////////////////////  Device {} is Propagating msg {} to GEN handler", dw, msg);
                     genHandler.handleMessage(msg);
                 }
             }
+        }
+
+    }
+
+    protected void handleMultipleMessage(Lighting msg) {
+        WhereLightAutom w = (WhereLightAutom) msg.getWhere();
+        List<OpenWebNetThingHandler> l = null;
+        if (w.isGeneral()) {
+            l = this.bridgeHandler.getAllLights();
+        } else if (w.getArea() > 0) {
+            // l = map.getAreaHandlers(w.getArea());
+
+            try {
+                send(Lighting.requestStatus(w.getArea() + ""));
+            } catch (OWNException e) {
+                // TODO Auto-generated catch block
+                // e.printStackTrace();
+            }
 
         }
+        if (l != null) {
+            for (OpenWebNetThingHandler hndlr : l) {
+                hndlr.handleMessage(msg);
+            }
+        }
+
     }
 
     /**
@@ -622,17 +477,16 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
             // remove light from listOn for Area
             OpenWebNetBridgeHandler brH = this.bridgeHandler;
-            String areaOwnId = this.getManagedWho().value() + "." + area;
-            OpenWebNetLightingHandler areaHandler = (OpenWebNetLightingHandler) brH.getRegisteredDevice(areaOwnId);
+            OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
+                    .getRegisteredDevice(areaOwnId);
             if (areaHandler != null) {
-                areaHandler.listOn.remove(ownId);
-                logger.debug("//////////////////// Removed {} from listOn for {}", ownId, areaOwnId);
+                if (areaHandler.listOn.remove(ownId)) {
+                    logger.debug("//////////////////// Removed {} from listOn for {}", ownId, areaOwnId);
+                }
             }
 
             // remove light from lightsMap
-            lightsMap.remove(area, this);
-            logger.debug("Light.dispose() - removed APL {} from lightsMap", w);
-
+            brH.removeLight(area, this);
         }
         super.dispose();
     }

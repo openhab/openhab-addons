@@ -22,6 +22,7 @@ import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAuxiliaryHandle
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetEnergyHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetGenericHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetLightingGroupHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetLightingHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetScenarioBasicHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetScenarioHandler;
@@ -37,7 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetHandlerFactory} is responsible for creating thing handlers.
+ * The {@link OpenWebNetHandlerFactory} is responsible for creating thing
+ * handlers.
  *
  * @author Massimo Valla - Initial contribution, updates
  * @author Andrea Conte - Energy management, Thermoregulation
@@ -66,6 +68,9 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         } else if (OpenWebNetLightingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("creating NEW LIGHTING Handler --- {}", thing.getUID());
             return new OpenWebNetLightingHandler(thing);
+        } else if (OpenWebNetLightingGroupHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("creating NEW LIGHTING GROUP Handler --- {}", thing.getUID());
+            return new OpenWebNetLightingGroupHandler(thing);
         } else if (OpenWebNetAutomationHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("creating NEW AUTOMATION Handler --- {}", thing.getUID());
             return new OpenWebNetAutomationHandler(thing);

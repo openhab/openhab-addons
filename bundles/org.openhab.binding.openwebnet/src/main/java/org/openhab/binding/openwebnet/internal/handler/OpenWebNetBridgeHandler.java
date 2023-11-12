@@ -16,6 +16,7 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +32,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.internal.actions.OpenWebNetBridgeActions;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
-import org.openhab.binding.openwebnet.internal.handler.OpenWebNetLightingHandler.LightAutomHandlersMap;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetBusBridgeConfig;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetZigBeeBridgeConfig;
 import org.openhab.binding.openwebnet.internal.serial.SerialPortProviderAdapter;
@@ -83,9 +83,127 @@ import org.slf4j.LoggerFactory;
  * @author Giovanni Fabiani - Aux
  */
 @NonNullByDefault
+
 public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implements GatewayListener {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetBridgeHandler.class);
+
+    /**
+     * A map to store handlers for lights and automations. The map is organised by
+     * AREA.
+     *
+     */
+    protected class LightAutomHandlersMap {
+
+        private Map<Integer, Map<String, OpenWebNetThingHandler>> hndlrsMap;
+        private @Nullable OpenWebNetThingHandler oneHandler = null;
+
+        protected LightAutomHandlersMap() {
+            hndlrsMap = new ConcurrentHashMap<>();
+        }
+
+        protected void add(int area, OpenWebNetThingHandler h) {
+            if (!hndlrsMap.containsKey(area)) {
+                hndlrsMap.put(area, new ConcurrentHashMap<>());
+            }
+            Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
+            final String oId = h.ownId;
+            if (oId != null) {
+                areaHndlrs.put(oId, h);
+                if (oneHandler == null) {
+                    oneHandler = h;
+                }
+                logger.warn("/////////////////////// Added handler {} to Area {}", oId, area);
+                logger.warn("Map: {}", this.toString());
+            }
+        }
+
+        protected void remove(int area, OpenWebNetThingHandler h) {
+            if (hndlrsMap.containsKey(area)) {
+                Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
+                if (areaHndlrs != null) {
+                    boolean removed = areaHndlrs.remove(h.ownId, h);
+                    if (removed && oneHandler.equals(h)) {
+                        oneHandler = getFirst();
+                    }
+                    logger.warn("/////////////////////// ^^^^^^^^^^^^ Removed handler {} from Area {}", h.ownId, area);
+                    logger.warn("Map: {}", this.toString());
+                }
+            }
+        }
+
+        protected @Nullable List<OpenWebNetThingHandler> getAreaHandlers(int area) {
+            Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(area);
+            if (areaHndlrs != null) {
+                List<OpenWebNetThingHandler> list = new ArrayList<OpenWebNetThingHandler>(areaHndlrs.values());
+                return list;
+            } else {
+                return null;
+            }
+        }
+
+        protected @Nullable List<OpenWebNetThingHandler> getAllHandlers() {
+            List<OpenWebNetThingHandler> list = new ArrayList<OpenWebNetThingHandler>();
+            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
+                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
+                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
+                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
+                    if (hndlr != null) {
+                        list.add(hndlr);
+                    }
+                }
+            }
+            return list;
+        }
+
+        protected boolean isEmpty() {
+            return oneHandler == null;
+        }
+
+        protected @Nullable OpenWebNetThingHandler getOne() {
+            if (oneHandler == null) {
+                oneHandler = getFirst();
+            }
+            return oneHandler;
+        }
+
+        private @Nullable OpenWebNetThingHandler getFirst() {
+            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
+                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
+                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
+                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
+                    if (hndlr != null) {
+                        WhereLightAutom wl = (WhereLightAutom) hndlr.deviceWhere;
+                        if (!wl.isGroup()) {
+                            return hndlr;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            String log = "\n---- LightAutomHandlersMap ----";
+            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
+                log += "\n- Area: " + entry.getKey() + "\n   -";
+                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
+                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
+                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
+                    if (hndlr != null) {
+                        log += " " + hndlr.ownId;
+                    }
+                }
+            }
+            log += "\n# getAllHandlers: ";
+            for (OpenWebNetThingHandler e : getAllHandlers()) {
+                log += " " + e.ownId;
+            }
+            log += "\n# oneH = " + (oneHandler == null ? "null" : oneHandler.ownId);
+            return log;
+        }
+    }
 
     private static final int GATEWAY_ONLINE_TIMEOUT_SEC = 20; // Time to wait for the gateway to become connected
 
@@ -439,6 +557,47 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      */
     public @Nullable OpenWebNetThingHandler getRegisteredDevice(String ownId) {
         return registeredDevices.get(ownId);
+    }
+
+    /**
+     * Adds a light handler to the light map for this bridge, grouped by Area
+     *
+     * @param area         the light area
+     * @param lightHandler the light handler to be added
+     */
+    protected void addLight(int area, OpenWebNetThingHandler lightHandler) {
+        if (lightsMap == null) {
+            lightsMap = new LightAutomHandlersMap();
+        }
+        LightAutomHandlersMap lm = lightsMap;
+        if (lm != null) {
+            lm.add(area, lightHandler);
+            logger.debug("added APL {} from lightsMap", lightHandler.ownId);
+        }
+    }
+
+    /**
+     * Remove a light handler to the light map for this bridge
+     *
+     * @param area         the light area
+     * @param lightHandler the light handler to be removed
+     */
+    protected void removeLight(int area, OpenWebNetThingHandler lightHandler) {
+        LightAutomHandlersMap lm = lightsMap;
+        if (lm != null) {
+            lm.remove(area, lightHandler);
+            logger.debug("removed APL {} from lightsMap", lightHandler.ownId);
+        }
+    }
+
+    @Nullable
+    protected List<OpenWebNetThingHandler> getAllLights() {
+        LightAutomHandlersMap lm = lightsMap;
+        if (lm != null) {
+            return lm.getAllHandlers();
+        } else {
+            return null;
+        }
     }
 
     private void refreshAllBridgeDevices() {
