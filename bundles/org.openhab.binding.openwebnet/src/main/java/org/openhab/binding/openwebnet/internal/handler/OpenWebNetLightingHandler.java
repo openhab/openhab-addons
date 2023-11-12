@@ -273,14 +273,14 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         WhereLightAutom msgWhere = (WhereLightAutom) msg.getWhere();
 
         OpenWebNetBridgeHandler brH = this.bridgeHandler;
-        if (brH != null && dw != null && dw.isAPL() && !msgWhere.isGeneral()) {
+        if (brH != null && dw != null && dw.isAPL()) {
             // Propagate APL msg to AREA handler, if exists
             OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
                     .getRegisteredDevice(areaOwnId);
             if (areaHandler != null) {
                 logger.debug("//////////////////// Device {} is Propagating msg {} to AREA handler {}", dw, msg,
                         areaOwnId);
-                areaHandler.handleMessage(msg);
+                areaHandler.handlePropagatedMessage((Lighting) msg, this.ownId);
             } else {
                 // Propagate APL msg to GEN handler, if exists
                 String genOwnId = this.getManagedWho().value() + ".0";
@@ -288,7 +288,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                         .getRegisteredDevice(genOwnId);
                 if (genHandler != null) {
                     logger.debug("////////////////////  Device {} is Propagating msg {} to GEN handler", dw, msg);
-                    genHandler.handleMessage(msg);
+                    genHandler.handlePropagatedMessage((Lighting) msg, this.ownId);
                 }
             }
         }
@@ -296,6 +296,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     protected void handleMultipleMessage(Lighting msg) {
+        logger.debug("//// handleMultipleMessage {}", msg);
         WhereLightAutom w = (WhereLightAutom) msg.getWhere();
         List<OpenWebNetThingHandler> l = null;
         if (w.isGeneral()) {
@@ -313,7 +314,9 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         }
         if (l != null) {
             for (OpenWebNetThingHandler hndlr : l) {
+                // TODO if (hndlr instanceof OpenWebNetLightingHandler) {
                 hndlr.handleMessage(msg);
+                // }
             }
         }
 
