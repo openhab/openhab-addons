@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -288,9 +287,8 @@ public class XHandler extends BaseThingHandler {
 
     /**
      * check if X account was created with prerequisites
+     * 
      * @return <code>true</code>, if X account was initialized
-     *
-     * @return <code>true</code>, if x account was initialized
      *         <code>false</code> in all other cases.
      */
     private boolean checkPrerequisites() {
