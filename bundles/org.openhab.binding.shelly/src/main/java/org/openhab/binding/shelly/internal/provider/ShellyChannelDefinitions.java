@@ -669,7 +669,7 @@ public class ShellyChannelDefinitions {
                 label = "";
             }
             description = getText(PREFIX_CHANNEL + typeId + ".description");
-            if (description.startsWith(PREFIX_CHANNEL)) {
+            if (description.contains(PREFIX_CHANNEL)) {
                 description = ""; // no resource found
             }
         }
