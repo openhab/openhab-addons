@@ -31,9 +31,9 @@ import org.openhab.core.types.CommandOption;
 @NonNullByDefault
 public class OnOffValue extends Value {
     private final String onState;
-    private final String offState;
+    private final @Nullable String offState;
     private final String onCommand;
-    private final String offCommand;
+    private final @Nullable String offCommand;
 
     /**
      * Creates a switch On/Off type, that accepts "ON", "1" for on and "OFF","0" for off.
@@ -59,8 +59,8 @@ public class OnOffValue extends Value {
      *
      * @param onState The ON value string. This will be compared to MQTT messages.
      * @param offState The OFF value string. This will be compared to MQTT messages.
-     * @param onCommand The ON value string. This will be send in MQTT messages.
-     * @param offCommand The OFF value string. This will be send in MQTT messages.
+     * @param onCommand The ON value string. This will be sent in MQTT messages.
+     * @param offCommand The OFF value string. This will be sent in MQTT messages.
      */
     public OnOffValue(@Nullable String onState, @Nullable String offState, @Nullable String onCommand,
             @Nullable String offCommand) {
@@ -71,15 +71,28 @@ public class OnOffValue extends Value {
         this.offCommand = offCommand == null ? OnOffType.OFF.name() : offCommand;
     }
 
+    /**
+     * Creates a new SWITCH On/Off value that can only send one command, and has no state
+     *
+     * @param command The ON value string. This will be sent in MQTT messages.
+     */
+    public OnOffValue(String command) {
+        super(CoreItemFactory.SWITCH, List.of(OnOffType.class, StringType.class));
+        this.onCommand = command;
+        this.offCommand = null;
+        this.onState = command;
+        this.offState = null;
+    }
+
     @Override
     public OnOffType parseCommand(Command command) throws IllegalArgumentException {
         if (command instanceof OnOffType onOffCommand) {
             return onOffCommand;
         } else {
             final String updatedValue = command.toString();
-            if (onState.equals(updatedValue)) {
+            if (updatedValue.equals(onState)) {
                 return OnOffType.ON;
-            } else if (offState.equals(updatedValue)) {
+            } else if (updatedValue.equals(offState)) {
                 return OnOffType.OFF;
             } else {
                 return OnOffType.valueOf(updatedValue);
@@ -94,6 +107,10 @@ public class OnOffValue extends Value {
             formatPattern = "%s";
         }
 
+        if (command == OnOffType.OFF && offCommand == null) {
+            return "";
+        }
+
         return String.format(formatPattern, command == OnOffType.ON ? onCommand : offCommand);
     }
 
@@ -101,7 +118,10 @@ public class OnOffValue extends Value {
     public CommandDescriptionBuilder createCommandDescription() {
         CommandDescriptionBuilder builder = super.createCommandDescription();
         builder = builder.withCommandOption(new CommandOption(onCommand, onCommand));
-        builder = builder.withCommandOption(new CommandOption(offCommand, offCommand));
+        String offCommand = this.offCommand;
+        if (offCommand != null) {
+            builder = builder.withCommandOption(new CommandOption(offCommand, offCommand));
+        }
         return builder;
     }
 }

@@ -57,6 +57,8 @@ public class ComponentFactory {
                 return new AlarmControlPanel(componentConfiguration);
             case "binary_sensor":
                 return new BinarySensor(componentConfiguration);
+            case "button":
+                return new Button(componentConfiguration);
             case "camera":
                 return new Camera(componentConfiguration);
             case "cover":
