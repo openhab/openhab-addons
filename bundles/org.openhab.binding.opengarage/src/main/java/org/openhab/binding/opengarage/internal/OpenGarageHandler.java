@@ -85,7 +85,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                     if (command.equals(StopMoveType.STOP) || command.equals(StopMoveType.MOVE)) {
                         changeStatus(OpenGarageCommand.CLICK);
                     } else {
-                        var doorOpen = command.equals(OnOffType.ON) || command.equals(UpDownType.UP);
+                        boolean doorOpen = command.equals(OnOffType.ON) || command.equals(UpDownType.UP);
                         changeStatus(maybeInvert.apply(doorOpen) ? OpenGarageCommand.OPEN : OpenGarageCommand.CLOSE);
                         this.lastTransition = Instant.now();
                         this.lastTransitionText = doorOpen ? this.config.doorOpeningState
@@ -108,7 +108,7 @@ public class OpenGarageHandler extends BaseThingHandler {
     public void initialize() {
         this.config = getConfigAs(OpenGarageConfiguration.class);
         logger.debug("config.hostname = {}, refresh = {}, port = {}", config.hostname, config.refresh, config.port);
-        if (config.hostname == null) {
+        if (config.hostname == "") {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
@@ -121,9 +121,9 @@ public class OpenGarageHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
         this.pollScheduledFuture.cancel(true);
         this.pollScheduledFutureTransition.cancel(true);
+        super.dispose();
     }
 
     /**
@@ -135,8 +135,8 @@ public class OpenGarageHandler extends BaseThingHandler {
         try {
             logger.debug("Polling for state");
             ControllerVariables controllerVariables = webTargets.getControllerVariables();
-            var lastTransitionAgoSecs = Duration.between(lastTransition, Instant.now()).getSeconds();
-            var inTransition = lastTransitionAgoSecs < this.config.doorTransitionTimeSeconds;
+            long lastTransitionAgoSecs = Duration.between(lastTransition, Instant.now()).getSeconds();
+            boolean inTransition = lastTransitionAgoSecs < this.config.doorTransitionTimeSeconds;
             if (controllerVariables != null) {
                 updateStatus(ThingStatus.ONLINE);
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
@@ -147,10 +147,10 @@ public class OpenGarageHandler extends BaseThingHandler {
                 if ((controllerVariables.door != 0) && (controllerVariables.door != 1)) {
                     logger.debug("Received unknown door value: {}", controllerVariables.door);
                 } else {
-                    var doorOpen = controllerVariables.door == 1;
-                    var onOff = maybeInvert.apply(doorOpen) ? OnOffType.ON : OnOffType.OFF;
-                    var upDown = doorOpen ? UpDownType.UP : UpDownType.DOWN;
-                    var contact = doorOpen ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                    boolean doorOpen = controllerVariables.door == 1;
+                    OnOffType onOff = maybeInvert.apply(doorOpen) ? OnOffType.ON : OnOffType.OFF;
+                    UpDownType upDown = doorOpen ? UpDownType.UP : UpDownType.DOWN;
+                    OpenClosedType contact = doorOpen ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
 
                     String transitionText;
                     if (inTransition) {
@@ -206,7 +206,7 @@ public class OpenGarageHandler extends BaseThingHandler {
 
     private Function<Boolean, Boolean> getInverter(String channelUID) {
         Channel channel = getThing().getChannel(channelUID);
-        var invert = channel != null && channel.getConfiguration().as(OpenGarageChannelConfiguration.class).invert;
+        boolean invert = channel != null && channel.getConfiguration().as(OpenGarageChannelConfiguration.class).invert;
         if (invert) {
             return onOff -> !onOff;
         } else {
