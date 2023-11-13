@@ -519,7 +519,7 @@ public class ShellyChannelDefinitions {
                     CHANNEL_SENSOR_VIBRATION);
         }
         // Create tilt for DW/DW2, for BLU DW create channel even tilt is currently not reported
-        if (sdata.accel != null || (profile.isBlu && sdata.lux != null)) {
+        if (sdata.accel != null || (profile.isBlu && profile.isDW && sdata.lux != null)) {
             addChannel(thing, newChannels, sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT);
         }
 
@@ -670,7 +670,7 @@ public class ShellyChannelDefinitions {
             }
             description = getText(PREFIX_CHANNEL + typeId + ".description");
             if (description.contains(PREFIX_CHANNEL)) {
-                description = "";
+                description = ""; // no resource found
             }
         }
 

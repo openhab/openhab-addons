@@ -149,11 +149,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         Map<String, String> properties = thing.getProperties();
         String gen = getString(properties.get(PROPERTY_DEV_GEN));
         String thingType = getThingType();
-        if (gen.isEmpty() && thingType.startsWith("shellyplus") || thingType.startsWith("shellypro")) {
-            gen = "2";
-        }
-        gen2 = "2".equals(gen);
-        blu = thingType.startsWith("shellyblu");
+        gen2 = "2".equals(gen) || ShellyDeviceProfile.isGeneration2(thingType);
+        blu = ShellyDeviceProfile.isBluSeries(thingType);
         this.api = !blu ? !gen2 ? new Shelly1HttpApi(thingName, this) : new Shelly2ApiRpc(thingName, thingTable, this)
                 : new ShellyBluApi(thingName, thingTable, this);
         if (gen2) {
@@ -568,7 +565,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 status = "offline.conf-error-access-denied";
             } else if (isWatchdogStarted()) {
                 if (!isWatchdogExpired()) {
-                    logger.debug("{}: Ignore API Timeout on {} {}, retry later", thingName, res.method, res.url);
+                    if (profile.alwaysOn) { // suppress for battery powered sensors
+                        logger.debug("{}: Ignore API Timeout on {} {}, retry later", thingName, res.method, res.url);
+                    }
                 } else {
                     if (isThingOnline()) {
                         status = "offline.status-error-watchdog";
@@ -794,7 +793,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private boolean checkRestarted(ShellySettingsStatus status) {
         if (profile.isInitialized() && profile.alwaysOn /* exclude battery powered devices */
                 && (status.uptime != null && status.uptime < stats.lastUptime
-                        || (!profile.status.update.oldVersion.isEmpty()
+                        || (profile.status.update != null && !getString(profile.status.update.oldVersion).isEmpty()
                                 && !status.update.oldVersion.equals(profile.status.update.oldVersion)))) {
             logger.debug("{}: Device has been restarted, uptime={}/{}, firmware={}/{}", thingName, stats.lastUptime,
                     getLong(status.uptime), profile.status.update.oldVersion, status.update.oldVersion);
@@ -1014,10 +1013,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         config.serviceName = getString(properties.get(PROPERTY_SERVICE_NAME));
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
-        if (config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
+        if (!profile.isGen2 && config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
+            // Gen2 has hard coded user "admin"
             config.userId = bindingConfig.defaultUserId;
+            logger.debug("{}: Using default userId {} from binding config", thingName, config.userId);
+        }
+        if (config.password.isEmpty() && !bindingConfig.defaultPassword.isEmpty()) {
             config.password = bindingConfig.defaultPassword;
-            logger.debug("{}: Using userId {} from bindingConfig", thingName, config.userId);
+            logger.debug("{}: Using default password from bindingConfig (userId={})", thingName, config.userId);
         }
         if (config.updateInterval == 0) {
             config.updateInterval = UPDATE_STATUS_INTERVAL_SECONDS * UPDATE_SKIP_COUNT;
@@ -1044,6 +1047,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     private void checkVersion(ShellyDeviceProfile prf, ShellySettingsStatus status) {
         try {
+            if (prf.fwVersion.isEmpty()) {
+                // no fw version available (e.g. BLU device)
+                return;
+            }
+
             ShellyVersionDTO version = new ShellyVersionDTO();
             if (version.checkBeta(getString(prf.fwVersion))) {
                 logger.info("{}: {}", prf.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
