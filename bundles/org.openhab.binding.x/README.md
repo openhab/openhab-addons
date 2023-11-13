@@ -57,5 +57,4 @@ val success2 = postActions.sendPostWithAttachment("This is A Post with a Pic", f
 val success3 = postActions.sendPostWithAttachment("Windows Picture", "D:\\Test.png" )
 val success4 = postActions.sendPostWithAttachment("HTTP Picture", "http://www.mywebsite.com/Test.png" )
 val success5 = postActions.sendDirectMessage("1234567", "Wake Up" )
-
 ```

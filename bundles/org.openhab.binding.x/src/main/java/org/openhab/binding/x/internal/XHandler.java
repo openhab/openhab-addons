@@ -116,7 +116,7 @@ public class XHandler extends BaseThingHandler {
             Twitter localClient = client;
             if (localClient != null) {
                 ResponseList<Status> statuses = localClient.v1().timelines().getUserTimeline();
-                if (statuses.size() > 0) {
+                if (!statuses.isEmpty()) {
                     updateState(CHANNEL_LASTPOST, StringType.valueOf(statuses.get(0).getText()));
                 } else {
                     logger.debug("No Statuses Found");
