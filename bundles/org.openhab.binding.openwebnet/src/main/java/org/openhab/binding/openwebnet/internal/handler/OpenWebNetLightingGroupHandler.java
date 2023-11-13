@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -51,7 +52,7 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
 
     protected Set<String> listOn = new HashSet<String>();
 
-    private boolean isGeneral = false;
+    // TODO private boolean isGeneral = false;
 
     public OpenWebNetLightingGroupHandler(Thing thing) {
         super(thing);
@@ -61,7 +62,7 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
     public void initialize() {
         super.initialize();
         WhereLightAutom w = (WhereLightAutom) deviceWhere;
-        isGeneral = w.isGeneral();
+        // isGeneral = w.isGeneral();
 
         OpenWebNetBridgeHandler bridge = bridgeHandler;
         if (w != null && bridge != null) {
@@ -94,7 +95,6 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
             }
         } else {
             logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
-            ThingTypeUID thingType = thing.getThingTypeUID();
 
             requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_SWITCH_01));
         }
@@ -140,11 +140,11 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
         return Who.LIGHTING;
     }
 
-    protected void handlePropagatedMessage(Lighting lmsg, String oId) {
+    protected void handlePropagatedMessage(Lighting lmsg, @Nullable String oId) {
         logger.debug("handlePropagatedMessage({}) for thing: {}", lmsg, thing.getUID());
 
         WhereLightAutom dw = (WhereLightAutom) deviceWhere;
-        if (dw != null) {
+        if (dw != null && oId != null) {
             int sizeBefore = listOn.size();
             if (!lmsg.isOff()) {
                 if (listOn.add(oId)) {
@@ -159,7 +159,7 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
 
             boolean listOnChanged = false;
 
-            if (listOn.size() > 0) {
+            if (!listOn.isEmpty()) {
                 // some light still on
                 logger.debug("/////////// some light ON... switching group {} to ON", dw);
                 updateState(CHANNEL_SWITCH, OnOffType.ON);
@@ -176,10 +176,9 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
                 String genOwnId = this.getManagedWho().value() + ".0";
                 OpenWebNetLightingGroupHandler genHandler = (OpenWebNetLightingGroupHandler) brH
                         .getRegisteredDevice(genOwnId);
-                if (genHandler != null) {
+                if (genHandler != null && this.ownId != null) {
                     logger.debug("//////////////////// device {} is Propagating msg {} to GEN handler", dw, lmsg);
                     genHandler.handlePropagatedMessage(lmsg, this.ownId);
-
                 }
             }
 

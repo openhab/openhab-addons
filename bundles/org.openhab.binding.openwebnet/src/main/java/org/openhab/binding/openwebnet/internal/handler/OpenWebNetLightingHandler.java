@@ -270,10 +270,10 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             updateOnOffState((Lighting) msg);
         }
 
-        WhereLightAutom msgWhere = (WhereLightAutom) msg.getWhere();
+        // TODO WhereLightAutom msgWhere = (WhereLightAutom) msg.getWhere();
 
         OpenWebNetBridgeHandler brH = this.bridgeHandler;
-        if (brH != null && dw != null && dw.isAPL()) {
+        if (brH != null && dw != null && ownId != null && dw.isAPL()) {
             // Propagate APL msg to AREA handler, if exists
             OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
                     .getRegisteredDevice(areaOwnId);
@@ -309,7 +309,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 // TODO Auto-generated catch block
                 // e.printStackTrace();
             }
-
         }
         if (l != null) {
             for (OpenWebNetThingHandler hndlr : l) {
@@ -476,13 +475,16 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         if (w != null) {
             int area = ((WhereLightAutom) w).getArea();
 
-            // remove light from listOn for Area
             OpenWebNetBridgeHandler brH = this.bridgeHandler;
-            OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
-                    .getRegisteredDevice(areaOwnId);
-            if (areaHandler != null) {
-                if (areaHandler.listOn.remove(ownId)) {
-                    logger.debug("//////////////////// Removed {} from listOn for {}", ownId, areaOwnId);
+
+            if (areaOwnId != null) {
+                // remove light from listOn for Area
+                OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
+                        .getRegisteredDevice(areaOwnId);
+                if (areaHandler != null) {
+                    if (areaHandler.listOn.remove(ownId)) {
+                        logger.debug("//////////////////// Removed {} from listOn for {}", ownId, areaOwnId);
+                    }
                 }
             }
 
