@@ -113,6 +113,8 @@ public class ShellyHttpClient {
         while (retries > 0) {
             try {
                 apiResult = innerRequest(HttpMethod.GET, uri, null, "");
+
+                // If call doesn't throw an exception the device is reachable == no timeout
                 if (timeout) {
                     logger.debug("{}: API timeout #{}/{} recovered ({})", thingName, timeoutErrors, timeoutsRecovered,
                             apiResult.getUrl());
@@ -128,9 +130,10 @@ public class ShellyHttpClient {
                 }
 
                 timeout = true;
-                retries--;
                 timeoutErrors++; // count the retries
                 logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
+
+                retries--;
             }
         }
         throw new ShellyApiException("API Timeout or inconsistent result"); // successful
@@ -174,7 +177,7 @@ public class ShellyHttpClient {
                 }
             }
             fillPostData(request, data);
-            logger.trace("{}: HTTP {} for {} {}\n{}", thingName, method, url, data, request.getHeaders());
+            logger.trace("{}: HTTP {} {}\n{}\n{}", thingName, method, url, request.getHeaders(), data);
 
             // Do request and get response
             ContentResponse contentResponse = request.send();

@@ -20,20 +20,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
-import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
@@ -258,7 +249,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void setValveTemperature(int valveId, int value) throws ShellyApiException {
-        request("/thermostat/" + valveId + "?target_t_enabled=1&target_t=" + value);
+        httpRequest("/thermostat/" + valveId + "?target_t_enabled=1&target_t=" + value);
     }
 
     @Override
@@ -273,17 +264,17 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     @Override
     public void setValveProfile(int valveId, int value) throws ShellyApiException {
         String uri = "/settings/thermostat/" + valveId + "?";
-        request(uri + (value == 0 ? "schedule=0" : "schedule=1&schedule_profile=" + value));
+        httpRequest(uri + (value == 0 ? "schedule=0" : "schedule=1&schedule_profile=" + value));
     }
 
     @Override
     public void setValvePosition(int valveId, double value) throws ShellyApiException {
-        request("/thermostat/" + valveId + "?pos=" + value); // percentage to open the valve
+        httpRequest("/thermostat/" + valveId + "?pos=" + value); // percentage to open the valve
     }
 
     @Override
     public void setValveBoostTime(int valveId, int value) throws ShellyApiException {
-        request("/settings/thermostat/" + valveId + "?boost_minutes=" + value);
+        httpRequest("/settings/thermostat/" + valveId + "?boost_minutes=" + value);
     }
 
     @Override
@@ -639,86 +630,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     private static String mkEventUrl(String eventType) {
         return eventType + SHELLY_EVENTURL_SUFFIX;
-    }
-
-    /**
-     * Submit GET request and return response, check for invalid responses
-     *
-     * @param uri: URI (e.g. "/settings")
-     */
-    @Override
-    public <T> T callApi(String uri, Class<T> classOfT) throws ShellyApiException {
-        String json = request(uri);
-        return fromJson(gson, json, classOfT);
-    }
-
-    private String request(String uri) throws ShellyApiException {
-        ShellyApiResult apiResult = new ShellyApiResult();
-        int retries = 3;
-        boolean timeout = false;
-        while (retries > 0) {
-            try {
-                apiResult = innerRequest(HttpMethod.GET, uri);
-                if (timeout) {
-                    logger.debug("{}: API timeout #{}/{} recovered ({})", thingName, timeoutErrors, timeoutsRecovered,
-                            apiResult.getUrl());
-                    timeoutsRecovered++;
-                }
-                return apiResult.response; // successful
-            } catch (ShellyApiException e) {
-                if ((!e.isTimeout() && !apiResult.isHttpServerError()) || profile.hasBattery || (retries == 0)) {
-                    // Sensor in sleep mode or API exception for non-battery device or retry counter expired
-                    throw e; // non-timeout exception
-                }
-
-                timeout = true;
-                retries--;
-                timeoutErrors++; // count the retries
-                logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
-            }
-        }
-        throw new ShellyApiException("API Timeout or inconsistent result"); // successful
-    }
-
-    private ShellyApiResult innerRequest(HttpMethod method, String uri) throws ShellyApiException {
-        Request request = null;
-        String url = "http://" + config.deviceIp + uri;
-        ShellyApiResult apiResult = new ShellyApiResult(method.toString(), url);
-
-        try {
-            request = httpClient.newRequest(url).method(method.toString()).timeout(SHELLY_API_TIMEOUT_MS,
-                    TimeUnit.MILLISECONDS);
-
-            if (!config.userId.isEmpty()) {
-                String value = config.userId + ":" + config.password;
-                request.header(HTTP_HEADER_AUTH,
-                        HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(value.getBytes()));
-            }
-            request.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON);
-            logger.trace("{}: HTTP {} for {}", thingName, method, url);
-
-            // Do request and get response
-            ContentResponse contentResponse = request.send();
-            apiResult = new ShellyApiResult(contentResponse);
-            String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
-            logger.trace("{}: HTTP Response {}: {}", thingName, contentResponse.getStatus(), response);
-
-            // validate response, API errors are reported as Json
-            if (contentResponse.getStatus() != HttpStatus.OK_200) {
-                throw new ShellyApiException(apiResult);
-            }
-            if (response.isEmpty() || !response.startsWith("{") && !response.startsWith("[") && !url.contains("/debug/")
-                    && !url.contains("/sta_cache_reset")) {
-                throw new ShellyApiException("Unexpected response: " + response);
-            }
-        } catch (ExecutionException | InterruptedException | TimeoutException | IllegalArgumentException e) {
-            ShellyApiException ex = new ShellyApiException(apiResult, e);
-            if (!ex.isTimeout()) { // will be handled by the caller
-                logger.trace("{}: API call returned exception", thingName, ex);
-            }
-            throw ex;
-        }
-        return apiResult;
     }
 
     @Override

@@ -182,7 +182,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             for (Option opt : options) {
                 if (opt.getNumber() == COIOT_OPTION_GLOBAL_DEVID) {
                     String devid = opt.getStringValue();
-                    if (devid.contains("#")) {
+                    if (devid.contains("#") && profile.mac != null) {
                         // Format: <device type>#<mac address>#<coap version>
                         String macid = substringBetween(devid, "#", "#");
                         if (profile.mac.toUpperCase().contains(macid.toUpperCase())) {

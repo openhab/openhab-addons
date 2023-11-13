@@ -126,6 +126,9 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                         thingHandler.requestUpdates(1, false);
                     }
                     break;
+                case "3122": // boost mode, Type=S, Range=0/1
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BCONTROL, getOnOff(value > 0));
+                    break;
                 default:
                     processed = false;
             }
