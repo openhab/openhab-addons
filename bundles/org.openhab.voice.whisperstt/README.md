@@ -48,6 +48,39 @@ You should place the downloaded .bin model in '\<openHAB userdata\>/whisper/' so
 
 Remember to check that you have enough RAM to load the model, estimated RAM consumption can be checked on the huggingface link.
 
+## Using alternative whisper.cpp library
+
+It's possible to use your own build of the whisper.cpp shared library with this add-on.
+
+On `Linux/macOs` you need to place the `libwhisper.so/libwhisper.dydib` at `/usr/local/lib/`.
+
+On `Windows` the `whisper.dll` file can be placed at in any directory listed at the variable `$env:PATH`, for example `X:\\Windows\System32\`.
+
+These is sample script for building a device specific whisper.cpp shared library using cmake in debian:
+
+```bash
+#!/bin/bash
+sudo apt update
+sudo apt install -y git build-essential
+git clone https://github.com/ggerganov/whisper.cpp
+cd whisper.cpp
+# Tells the compiler to optimize the build for our device cpu.
+COMMON_FLAGS="-mcpu=native -march=native"
+
+cmake -B build \
+-DCMAKE_C_FLAGS="$COMMON_FLAGS" \
+-DCMAKE_CXX_FLAGS="$COMMON_FLAGS"
+
+cmake --build build -j --config Release
+
+sudo mv build/libwhisper.so /usr/local/lib/
+```
+
+In the [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) README you can find information about the required flags to enable different acceleration methods on the cmake build and other relevant information.
+
+Note: You need to restart OpenHAB to reload the library.
+
+
 ## Configuration
 
 Use your favorite configuration UI to edit the Whisper settings:
@@ -56,32 +89,35 @@ Use your favorite configuration UI to edit the Whisper settings:
 
 * **Model Name** - Model name. The 'ggml-' prefix and '.bin' extension are optional here but required on the filename. (ex: tiny.en -> ggml-tiny.en.bin)
 * **Preload Model** - Keep whisper model loaded.
-* **Audio Step** - Audio processing step in seconds. Defines the time precision in seconds, allows: 0.1, 0.2, 0.5 and 1.
+* **Audio Step** - Audio processing step in seconds for the voice activity detection.
 * **Single Utterance Mode** - When enabled recognition stops listening after a single utterance.
 * **Voice Activity Detection Mode** - Selected VAD Mode.
 * **Voice Activity Detection Sensitivity** - Percentage in range 0-1 of voice activity in one second to consider it as voice.
-* **Voice Activity Detection Step** - VAD detector internal step in ms (only allows 10, 20 or 30).
-* **Max Transcription Seconds** - Max seconds to wait to force stop the transcription.
-* **Initial Silence Seconds** - Max seconds of silence before voice activity to abort the transcription.
-* **Max Silence Seconds** - Max seconds to wait to stop the audio caching and run the transcription.
-* **Remove Silence** - Remove start and end silence frames before transcribe the audio.
-* **Remove Specials** - Remove some characters from the transcription: ",", ".", "¿", "?", "¡", "!".
-* **Create WAV File** - Create wav audio file on each transcription call. Useful for checking the audio quality or collecting private samples.
+* **Voice Activity Detection Step** - VAD detector internal step in ms (only allows 10, 20 or 30). (Audio Step / Voice Activity Detection Step = number of vad executions per audio step).
+* **Max Transcription Seconds** - Max seconds for force trigger the transcription, without wait for detect silence.
+* **Initial Silence Seconds** - Max seconds without any voice activity to abort the transcription.
+* **Max Silence Seconds** - Max consecutive silence seconds to trigger the transcription.
+* **Remove Silence** - Remove start and end silence from the audio to transcribe.
 
 ### Whisper Configuration
 
 * **Threads** - Number of threads used by whisper. (0 for default)
-* **Speed Up** - Speed up audio by x2. (Reduced accuracy)
-* **Audio Context** - Overwrite the audio context size. (0 for default)
-* **Temperature** - Temperature threshold.
 * **Sampling Strategy** - Sampling strategy used.
 * **Beam Size** - Beam Size configuration for sampling strategy Bean Search.
 * **Greedy Best Of** - Best Of configuration for sampling strategy Greedy.
+* **Speed Up** - Speed up audio by x2. (Reduced accuracy)
+* **Audio Context** - Overwrite the audio context size. (0 for default)
+* **Temperature** - Temperature threshold.
+* **Initial Prompt** - Initial prompt for whisper.
 
 ### Messages Configuration
 
-* **No Results Message** - Message to be told when no results.
-* **Error Message** - Message to be told when an error has happened.
+* **Error Message** - Message to be told on exception.
+
+### Developer Configuration
+
+* **Create WAV Record** - Create wav audio file on each transcription call. Useful for checking the audio quality or collecting private samples.
+* **Record Sample Format** - Changes the record sample format. (allows i16 or f32)
 
 ### Configuration via a text file
 
@@ -97,15 +133,16 @@ org.openhab.voice.whisperstt:preloadModel=false
 org.openhab.voice.whisperstt:vadMode=LOW_BITRATE
 org.openhab.voice.whisperstt:vadSentivity=0.1
 org.openhab.voice.whisperstt:maxSilenceSeconds=2
+org.openhab.voice.whisperstt:minSeconds=2
+org.openhab.voice.whisperstt:maxSeconds=10
 org.openhab.voice.whisperstt:threads=0
-org.openhab.voice.whisperstt:audioContextSize=512
+org.openhab.voice.whisperstt:audioContextSize=0
 org.openhab.voice.whisperstt:samplingStrategy=GREEDY
 org.openhab.voice.whisperstt:temperature=0
 org.openhab.voice.whisperstt:singleUtteranceMode=true
-org.openhab.voice.whisperstt:removeSpecials=true
-org.openhab.voice.whisperstt:noResultsMessage="Sorry, I didn't understand you"
 org.openhab.voice.whisperstt:errorMessage="Sorry, something went wrong"
-org.openhab.voice.whisperstt:createWAVFile=false
+org.openhab.voice.whisperstt:createWAVRecord=false
+org.openhab.voice.whisperstt:recordSampleFormat=i16
 ```
 
 ### Default Speech-to-Text Configuration

@@ -18,14 +18,15 @@ import static org.openhab.voice.whisperstt.internal.WhisperSTTConstants.SERVICE_
 import static org.openhab.voice.whisperstt.internal.WhisperSTTConstants.SERVICE_PID;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -68,6 +69,7 @@ import org.slf4j.LoggerFactory;
 
 import io.github.givimad.libfvadjni.VoiceActivityDetector;
 import io.github.givimad.whisperjni.WhisperContext;
+import io.github.givimad.whisperjni.WhisperContextParams;
 import io.github.givimad.whisperjni.WhisperFullParams;
 import io.github.givimad.whisperjni.WhisperJNI;
 import io.github.givimad.whisperjni.WhisperSamplingStrategy;
@@ -87,16 +89,6 @@ public class WhisperSTTService implements STTService {
     private static final Path SAMPLES_FOLDER = Path.of(WHISPER_FOLDER.toString(), "samples");
     private static final int WHISPER_SAMPLE_RATE = 16000;
 
-    static {
-        Logger logger = LoggerFactory.getLogger(WhisperSTTService.class);
-        File directory = WHISPER_FOLDER.toFile();
-        if (!directory.exists()) {
-            if (directory.mkdir()) {
-                logger.info("Whisper dir created {}", WHISPER_FOLDER);
-            }
-        }
-    }
-
     private final Logger logger = LoggerFactory.getLogger(WhisperSTTService.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-whisperstt");
     private final LocaleService localeService;
@@ -112,13 +104,44 @@ public class WhisperSTTService implements STTService {
     @Activate
     protected void activate(Map<String, Object> config) {
         try {
-            WhisperJNI.loadLibrary();
+            if (!Files.exists(WHISPER_FOLDER)) {
+                Files.createDirectory(WHISPER_FOLDER);
+            }
+            WhisperJNI.loadLibrary(getLoadOptions());
             VoiceActivityDetector.loadLibrary();
             whisper = new WhisperJNI();
         } catch (IOException | RuntimeException e) {
             logger.warn("Unable to register native library: {}", e.getMessage());
         }
         configChange(config);
+    }
+
+    private WhisperJNI.LoadOptions getLoadOptions() {
+        Path libFolder = Paths.get("/usr/local/lib");
+        Path libFolderWin = Paths.get("/Windows/System32");
+        var options = new WhisperJNI.LoadOptions();
+        // Overwrite whisper jni shared library
+        Path whisperJNILinuxLibrary = libFolder.resolve("libwhisperjni.so");
+        Path whisperJNIMacLibrary = libFolder.resolve("libwhisperjni.dylib");
+        Path whisperJNIWinLibrary = libFolderWin.resolve("libwhisperjni.dll");
+        if (Files.exists(whisperJNILinuxLibrary)) {
+            options.whisperJNILib = whisperJNILinuxLibrary;
+        } else if (Files.exists(whisperJNIMacLibrary)) {
+            options.whisperJNILib = whisperJNIMacLibrary;
+        } else if (Files.exists(whisperJNIWinLibrary)) {
+            options.whisperJNILib = whisperJNIWinLibrary;
+        }
+        // Overwrite whisper shared library, Windows searches library in $env:PATH
+        Path whisperLinuxLibrary = libFolder.resolve("libwhisper.so");
+        Path whisperMacLibrary = libFolder.resolve("libwhisper.dylib");
+        if (Files.exists(whisperLinuxLibrary)) {
+            options.whisperLib = whisperLinuxLibrary;
+        } else if (Files.exists(whisperMacLibrary)) {
+            options.whisperLib = whisperMacLibrary;
+        }
+        // Log library registration
+        options.logger = (msg) -> logger.debug("Library load: {}", msg);
+        return options;
     }
 
     @Modified
@@ -133,10 +156,12 @@ public class WhisperSTTService implements STTService {
         } catch (IOException e) {
             logger.warn("IOException unloading model: {}", e.getMessage());
         }
+        WhisperJNI.setLibraryLogger(null);
     }
 
     private void configChange(Map<String, Object> config) {
         this.config = new Configuration(config).as(WhisperSTTConfiguration.class);
+        WhisperJNI.setLibraryLogger(this.config.enableWhisperLog ? this::onWhisperLog : null);
         if (this.config.preloadModel) {
             try {
                 loadContext();
@@ -240,18 +265,29 @@ public class WhisperSTTService implements STTService {
         if (!modelFilename.endsWith(modelExtension)) {
             modelFilename = modelFilename + modelExtension;
         }
-        Path modelPath = Path.of(WHISPER_FOLDER.toString(), modelFilename).toAbsolutePath();
-        File modelFile = modelPath.toFile();
-        if (!modelFile.exists() || modelFile.isDirectory()) {
-            throw new IOException("Missing model file: " + modelFile.getAbsolutePath());
+        Path modelPath = WHISPER_FOLDER.resolve(modelFilename);
+        if (!Files.exists(modelPath) || Files.isDirectory(modelPath)) {
+            throw new IOException("Missing model file: " + modelPath);
         }
         logger.debug("Loading whisper context...");
-        var context = getWhisper().initNoState(modelPath);
+        WhisperJNI whisper = getWhisper();
+        var context = whisper.initNoState(modelPath, getWhisperContextParams());
         logger.debug("Whisper context loaded");
         if (config.preloadModel) {
             this.context = context;
         }
+        if (!config.openvinoDevice.isBlank()) {
+            // has no effect is OpenVINO is not enabled in whisper library.
+            logger.debug("Init OpenVINO device");
+            whisper.initOpenVINO(context, config.openvinoDevice);
+        }
         return context;
+    }
+
+    private WhisperContextParams getWhisperContextParams() {
+        var params = new WhisperContextParams();
+        params.useGPU = config.useGPU;
+        return params;
     }
 
     private void unloadContext() throws IOException {
@@ -268,9 +304,11 @@ public class WhisperSTTService implements STTService {
             AtomicBoolean aborted) {
         var releaseContext = !config.preloadModel;
         final int nSamplesMax = config.maxSeconds * WHISPER_SAMPLE_RATE;
+        final int nSamplesMin = (int) (config.minSeconds * (float) WHISPER_SAMPLE_RATE);
         final int nInitSilenceSamples = (int) (config.initSilenceSeconds * (float) WHISPER_SAMPLE_RATE);
         final int nMaxSilenceSamples = (int) (config.maxSilenceSeconds * (float) WHISPER_SAMPLE_RATE);
         logger.debug("Samples per step {}", nSamplesStep);
+        logger.debug("Min transcription samples {}", nSamplesMin);
         logger.debug("Max transcription samples {}", nSamplesMax);
         logger.debug("Max init silence samples {}", nInitSilenceSamples);
         logger.debug("Max silence samples {}", nMaxSilenceSamples);
@@ -286,6 +324,8 @@ public class WhisperSTTService implements STTService {
             boolean voiceDetected = false;
             String transcription = "";
             String tempTranscription = "";
+            VAD.@Nullable VADResult lastVADResult;
+            VAD.@Nullable VADResult firstConsecutiveSilenceVADResult = null;
             try {
                 try (state; //
                         audioStream; //
@@ -323,12 +363,17 @@ public class WhisperSTTService implements STTService {
                         if (nProcessedSamples + nSamplesStep > nSamplesMax - nSamplesStep) {
                             logger.debug("VAD: Skipping, max length reached");
                         } else {
-                            if (vad.isVoice(stepAudioSamples)) {
+                            lastVADResult = vad.analyze(stepAudioSamples);
+                            if (lastVADResult.isVoice()) {
                                 voiceDetected = true;
                                 logger.debug("VAD: voice detected");
                                 silenceSamplesCounter = 0;
+                                firstConsecutiveSilenceVADResult = null;
                                 continue;
                             } else {
+                                if (firstConsecutiveSilenceVADResult == null) {
+                                    firstConsecutiveSilenceVADResult = lastVADResult;
+                                }
                                 silenceSamplesCounter += nSamplesStep;
                                 int maxSilenceSamples = voiceDetected ? nMaxSilenceSamples : nInitSilenceSamples;
                                 if (silenceSamplesCounter < maxSilenceSamples) {
@@ -340,11 +385,25 @@ public class WhisperSTTService implements STTService {
                                     }
                                     if (!voiceDetected && config.removeSilence) {
                                         logger.debug("removing start silence");
-                                        audioSamplesOffset = 0;
+                                        int samplesToKeep = lastVADResult.voiceSamplesInTail();
+                                        if (samplesToKeep > 0) {
+                                            for (int i = 0; i < samplesToKeep; i++) {
+                                                audioSamples[i] = audioSamples[audioSamplesOffset
+                                                        - (samplesToKeep - i)];
+                                            }
+                                            audioSamplesOffset = samplesToKeep;
+                                            logger.debug("some audio was kept");
+                                        } else {
+                                            audioSamplesOffset = 0;
+                                        }
                                     }
                                     continue;
                                 } else {
                                     logger.debug("VAD: silence detected");
+                                    if (audioSamplesOffset < nSamplesMin) {
+                                        logger.debug("Not enough samples, continue");
+                                        continue;
+                                    }
                                     if (config.singleUtteranceMode) {
                                         // close the audio stream to avoid keep getting audio we don't need
                                         try {
@@ -355,9 +414,20 @@ public class WhisperSTTService implements STTService {
                                 }
                             }
                             if (config.removeSilence) {
-                                logger.debug("removing end silence");
                                 if (voiceDetected) {
-                                    audioSamplesOffset -= silenceSamplesCounter;
+                                    logger.debug("removing end silence");
+                                    int samplesToKeep = firstConsecutiveSilenceVADResult.voiceSamplesInHead();
+                                    if (samplesToKeep > 0) {
+                                        logger.debug("some audio was kept");
+                                    }
+                                    var samplesToRemove = silenceSamplesCounter - samplesToKeep;
+                                    if (audioSamplesOffset - samplesToRemove < nSamplesMin) {
+                                        logger.debug("avoid removing under min audio seconds");
+                                        samplesToRemove = audioSamplesOffset - nSamplesMin;
+                                    }
+                                    if (samplesToRemove > 0) {
+                                        audioSamplesOffset -= samplesToRemove;
+                                    }
                                 } else {
                                     audioSamplesOffset = 0;
                                 }
@@ -373,24 +443,22 @@ public class WhisperSTTService implements STTService {
                             }
                         }
                         // run whisper
-                        logger.debug("running whisper...");
+                        logger.debug("running whisper with {} seconds of audio...",
+                                Math.round((((float) audioSamplesOffset) / (float) WHISPER_SAMPLE_RATE) * 100f) / 100f);
+                        long execStartTime = System.currentTimeMillis();
                         var result = whisper.fullWithState(ctx, state, params, audioSamples, audioSamplesOffset);
-                        logger.debug("whisper result code {}", result);
+                        logger.debug("whisper ended in {}ms with result code {}",
+                                System.currentTimeMillis() - execStartTime, result);
                         // process result
                         if (result != 0) {
-                            if (config.errorMessage.isBlank()) {
-                                sttListener.sttEventReceived(
-                                        new SpeechRecognitionErrorEvent("Unable to transcript audio"));
-                            } else {
-                                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
-                            }
+                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
                             break;
                         }
                         int nSegments = whisper.fullNSegmentsFromState(state);
                         logger.debug("Available transcription segments {}", nSegments);
                         if (nSegments == 1) {
                             tempTranscription = whisper.fullGetSegmentTextFromState(state, 0);
-                            if (config.createWAVFile) {
+                            if (config.createWAVRecord) {
                                 createAudioFile(audioSamples, audioSamplesOffset, tempTranscription,
                                         locale.getLanguage());
                             }
@@ -428,19 +496,10 @@ public class WhisperSTTService implements STTService {
                     sttListener.sttEventReceived(new RecognitionStopEvent());
                     String transcript = transcription.trim();
                     logger.debug("Final text: {}", transcript);
-                    if (config.removeSpecials) {
-                        transcript = transcript.replaceAll(", ", " ").replaceAll(",", " ").replaceAll("\\. ", " ")
-                                .replaceAll("\\.", " ").replaceAll("¿|\\?", "").replaceAll("¡|!", "").trim();
-                        logger.debug("Final text no specials: {}", transcript);
-                    }
                     if (!transcript.isBlank()) {
                         sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, 1));
                     } else {
-                        if (!config.noResultsMessage.isBlank()) {
-                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
-                        } else {
-                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
-                        }
+                        sttListener.sttEventReceived(new SpeechRecognitionEvent(" ", 1));
                     }
                 }
             } catch (IOException e) {
@@ -461,7 +520,7 @@ public class WhisperSTTService implements STTService {
         });
     }
 
-    private WhisperFullParams getWhisperFullParams(WhisperContext context, Locale locale) {
+    private WhisperFullParams getWhisperFullParams(WhisperContext context, Locale locale) throws IOException {
         WhisperSamplingStrategy strategy = WhisperSamplingStrategy.valueOf(config.samplingStrategy);
         var params = new WhisperFullParams(strategy);
         params.temperature = config.temperature;
@@ -470,8 +529,11 @@ public class WhisperSTTService implements STTService {
         params.speedUp = config.speedUp;
         params.beamSearchBeamSize = config.beamSize;
         params.greedyBestOf = config.greedyBestOf;
+        if (!config.initialPrompt.isBlank()) {
+            params.initialPrompt = config.initialPrompt;
+        }
         // there is no single language models other than the english ones
-        params.language = whisper.isMultilingual(context) ? locale.getLanguage() : "en";
+        params.language = getWhisper().isMultilingual(context) ? locale.getLanguage() : "en";
         params.translate = false;
         params.detectLanguage = false;
         // implementation assume this options
@@ -487,25 +549,38 @@ public class WhisperSTTService implements STTService {
     }
 
     private void createSamplesDir() {
-        File samples = SAMPLES_FOLDER.toFile();
-        if (!samples.exists()) {
-            if (samples.mkdir()) {
-                logger.info("Whisper samples dir created {}", WHISPER_FOLDER);
-            } else {
-                logger.warn("Unable to create whisper samples dir {}", WHISPER_FOLDER);
+        if (!Files.exists(SAMPLES_FOLDER)) {
+            try {
+                Files.createDirectory(SAMPLES_FOLDER);
+                logger.info("Whisper samples dir created {}", SAMPLES_FOLDER);
+            } catch (IOException ignored) {
+                logger.warn("Unable to create whisper samples dir {}", SAMPLES_FOLDER);
             }
         }
     }
 
     private void createAudioFile(float[] samples, int size, String transcription, String language) {
         createSamplesDir();
-        var jAudioFormat = new javax.sound.sampled.AudioFormat(javax.sound.sampled.AudioFormat.Encoding.PCM_FLOAT,
-                WHISPER_SAMPLE_RATE, 32, 1, 4, WHISPER_SAMPLE_RATE, false);
-        var buffer = ByteBuffer.allocate(size * 4).order(ByteOrder.LITTLE_ENDIAN);
-        for (int i = 0; i < size; i++) {
-            buffer.putFloat(samples[i]);
+        javax.sound.sampled.AudioFormat jAudioFormat;
+        ByteBuffer byteBuffer;
+        if ("i16".equals(config.recordSampleFormat)) {
+            logger.debug("Saving audio file with sample format i16");
+            jAudioFormat = new javax.sound.sampled.AudioFormat(javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED,
+                    WHISPER_SAMPLE_RATE, 16, 1, 2, WHISPER_SAMPLE_RATE, false);
+            byteBuffer = ByteBuffer.allocate(size * 2).order(ByteOrder.LITTLE_ENDIAN);
+            for (int i = 0; i < size; i++) {
+                byteBuffer.putShort((short) (samples[i] * (float) Short.MAX_VALUE));
+            }
+        } else {
+            logger.debug("Saving audio file with sample format f32");
+            jAudioFormat = new javax.sound.sampled.AudioFormat(javax.sound.sampled.AudioFormat.Encoding.PCM_FLOAT,
+                    WHISPER_SAMPLE_RATE, 32, 1, 4, WHISPER_SAMPLE_RATE, false);
+            byteBuffer = ByteBuffer.allocate(size * 4).order(ByteOrder.LITTLE_ENDIAN);
+            for (int i = 0; i < size; i++) {
+                byteBuffer.putFloat(samples[i]);
+            }
         }
-        AudioInputStream audioInputStreamTemp = new AudioInputStream(new ByteArrayInputStream(buffer.array()),
+        AudioInputStream audioInputStreamTemp = new AudioInputStream(new ByteArrayInputStream(byteBuffer.array()),
                 jAudioFormat, samples.length);
         try {
             var scapedTranscription = transcription.replaceAll("[^a-zA-ZÀ-ú0-9.-]", "_");
@@ -527,5 +602,9 @@ public class WhisperSTTService implements STTService {
         } catch (IOException e) {
             logger.warn("Unable to store sample.", e);
         }
+    }
+
+    private void onWhisperLog(String text) {
+        logger.debug("[whisper.cpp] {}", text);
     }
 }

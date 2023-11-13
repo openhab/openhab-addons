@@ -52,20 +52,44 @@ public class VAD implements AutoCloseable {
         this.detectionThreshold = (int) ((((float) totalPartialDetections) / 100f) * (sensitivity * 100));
     }
 
-    public boolean isVoice(short[] samples) throws IOException {
+    public VADResult analyze(short[] samples) throws IOException {
+        int voiceInHead = 0;
+        int voiceInTail = 0;
+        boolean silenceFound = false;
         int partialVADCounter = 0;
         for (int i = 0; i < totalPartialDetections; i++) {
             System.arraycopy(samples, i * stepSamples.length, stepSamples, 0, stepSamples.length);
             if (libfvad.process(stepSamples, stepSamples.length)) {
                 partialVADCounter++;
+                if (!silenceFound) {
+                    voiceInHead++;
+                }
+                voiceInTail++;
+            } else {
+                silenceFound = true;
+                voiceInTail = 0;
             }
         }
         logger.debug("VAD: {}/{} - required: {}", partialVADCounter, totalPartialDetections, detectionThreshold);
-        return partialVADCounter >= detectionThreshold;
+        return new VADResult( //
+                partialVADCounter >= detectionThreshold, //
+                voiceInHead * stepSamples.length, //
+                voiceInTail * stepSamples.length //
+        );
     }
 
     @Override
     public void close() {
         libfvad.close();
+    }
+
+    /**
+     * Voice activity detection result.
+     *
+     * @param isVoice Does the block contain enough voice
+     * @param voiceSamplesInHead Number of samples consecutively reported as voice from the beginning of the chunk
+     * @param voiceSamplesInTail Number of samples consecutively reported as voice from the end of the chunk
+     */
+    public record VADResult(boolean isVoice, int voiceSamplesInHead, int voiceSamplesInTail) {
     }
 }

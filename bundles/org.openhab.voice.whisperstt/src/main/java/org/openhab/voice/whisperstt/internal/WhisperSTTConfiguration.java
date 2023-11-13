@@ -37,17 +37,21 @@ public class WhisperSTTConfiguration {
      */
     public float stepSeconds = 1f;
     /**
+     * Min audio seconds to call whisper with.
+     */
+    public float minSeconds = 2f;
+    /**
      * Max seconds to wait to force stop the transcription.
      */
-    public int maxSeconds = 20;
+    public int maxSeconds = 5;
     /**
      * Voice activity detection mode.
      */
-    public String vadMode = VoiceActivityDetector.Mode.AGGRESSIVE.toString();
+    public String vadMode = VoiceActivityDetector.Mode.VERY_AGGRESSIVE.toString();
     /**
      * Voice activity detection sensitivity.
      */
-    public float vadSensitivity = 0.25f;
+    public float vadSensitivity = 0.2f;
     /**
      * Voice activity detection step in ms (vad dependency only allows 10, 20 or 30 ms steps).
      */
@@ -59,7 +63,7 @@ public class WhisperSTTConfiguration {
     /**
      * Max silence seconds for triggering transcription.
      */
-    public float maxSilenceSeconds = 2;
+    public float maxSilenceSeconds = 0.5f;
     /**
      * Remove silence frames.
      */
@@ -71,7 +75,7 @@ public class WhisperSTTConfiguration {
     /**
      * Overwrite the audio context size (0 = use default).
      */
-    public int audioContextSize = 512;
+    public int audioContextSize;
     /**
      * Speed up audio by x2 (reduced accuracy).
      */
@@ -79,7 +83,7 @@ public class WhisperSTTConfiguration {
     /**
      * Sampling strategy.
      */
-    public String samplingStrategy = "GREEDY";
+    public String samplingStrategy = "BEAN_SEARCH";
     /**
      * Beam Size configuration for sampling strategy Bean Search.
      */
@@ -93,23 +97,35 @@ public class WhisperSTTConfiguration {
      */
     public float temperature;
     /**
+     * Initial whisper prompt
+     */
+    public String initialPrompt = "";
+    /**
+     * Enables GPU usage. (built-in binaries do not support GPU usage)
+     */
+    public boolean useGPU = true;
+    /**
+     * OpenVINO device name
+     */
+    public String openvinoDevice = "CPU";
+    /**
      * Single phrase mode.
      */
     public boolean singleUtteranceMode = true;
-    /**
-     * Remove some characters from the transcription: ",", ".", "¿", "?", "¡", "!".
-     */
-    public boolean removeSpecials = true;
-    /**
-     * Message to be told when no results.
-     */
-    public String noResultsMessage = "Sorry, I didn't understand you";
     /**
      * Message to be told when an error has happened.
      */
     public String errorMessage = "Sorry, something went wrong";
     /**
-     * Create wav audio file for each transcription call.
+     * Create wav audio record for each whisper invocation.
      */
-    public boolean createWAVFile;
+    public boolean createWAVRecord;
+    /**
+     * Record sample format. Values: i16, f32.
+     */
+    public String recordSampleFormat = "i16";
+    /**
+     * Print whisper.cpp library logs as binding debug logs.
+     */
+    public boolean enableWhisperLog;
 }
