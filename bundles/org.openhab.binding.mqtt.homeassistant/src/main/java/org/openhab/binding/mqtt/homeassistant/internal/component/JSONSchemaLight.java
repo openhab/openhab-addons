@@ -75,20 +75,19 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
     public JSONSchemaLight(ComponentFactory.ComponentConfiguration builder) {
         super(builder);
+        colorModeValue = new TextValue();
+    }
+
+    @Override
+    protected void buildChannels() {
         List<LightColorMode> supportedColorModes = channelConfiguration.supportedColorModes;
         if (supportedColorModes != null && supportedColorModes.contains(LightColorMode.COLOR_MODE_COLOR_TEMP)) {
             colorModeValue = new TextValue(
                     supportedColorModes.stream().map(LightColorMode::serializedName).toArray(String[]::new));
             buildChannel(COLOR_MODE_CHANNEL_ID, colorModeValue, "Color Mode", this).isAdvanced(true).build();
-        } else {
-            colorModeValue = new TextValue();
         }
-    }
 
-    @Override
-    protected void buildChannels() {
         if (channelConfiguration.colorMode) {
-            List<LightColorMode> supportedColorModes = channelConfiguration.supportedColorModes;
             if (supportedColorModes == null || channelConfiguration.supportedColorModes.isEmpty()) {
                 throw new UnsupportedComponentException("JSON schema light with color modes '" + getHaID()
                         + "' does not define supported_color_modes!");

@@ -67,7 +67,7 @@ public enum LightColorMode {
             return LightColorMode.class.getDeclaredField(toString()).getAnnotation(SerializedName.class).value();
         } catch (NoSuchFieldException e) {
             // can't happen
-            return "";
+            throw new IllegalStateException(e);
         }
     }
 }
