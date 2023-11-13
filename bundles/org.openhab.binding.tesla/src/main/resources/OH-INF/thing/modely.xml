@@ -73,6 +73,7 @@
 			<channel id="honkhorn" typeId="honkhorn"/>
 			<channel id="idealbatteryrange" typeId="idealbatteryrange"/>
 			<channel id="insidetemp" typeId="insidetemp"/>
+			<channel id="jsonresponse" typeId="jsonresponse"/>
 			<channel id="leftrearbackseatheater" typeId="leftrearbackseatheater"/>
 			<channel id="leftrearseatheater" typeId="leftrearseatheater"/>
 			<channel id="leftseatheater" typeId="leftseatheater"/>
@@ -131,7 +132,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>

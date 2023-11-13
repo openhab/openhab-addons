@@ -142,6 +142,7 @@ Additionally, these advanced channels are available (not all are available on al
 | honkhorn                  | Switch                   | Honk the Horn                 | Honk the horn of the vehicle, when ON is received                                                                |
 | homelink                  | Switch                   | Homelink Nearby               | Indicates if the Home Link is nearby                                                                             |
 | idealbatteryrange         | Number:Length            | Ideal Battery Range           | Indicates the Battery Range                                                                                      |
+| jsonresponse              | String                   | JSON response                 | JSON string as returned from the Tesla API                                                                       |
 | lefttempdirection         | Number                   | Left Temperature Direction    | Not documented / To be defined                                                                                   |
 | lastautoparkerror         | String                   | Last Autopark Error           | Not documented / To be defined                                                                                   |
 | location                  | Location                 | Location                      | The actual position of the vehicle                                                                               |

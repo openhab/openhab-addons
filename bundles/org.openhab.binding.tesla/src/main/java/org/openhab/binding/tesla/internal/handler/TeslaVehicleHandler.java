@@ -882,6 +882,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         }
                     }
                 } else if ("vehicleData".equals(request)) {
+                    // Put the response into the raw data channel even if it might not be mappable to VehicleData
+                    updateState(CHANNEL_JSON_RESPONSE, new StringType(result));
+
                     VehicleData vehicleData = gson.fromJson(result, VehicleData.class);
                     if (vehicleData == null) {
                         logger.error("Not able to parse response '{}'", result);

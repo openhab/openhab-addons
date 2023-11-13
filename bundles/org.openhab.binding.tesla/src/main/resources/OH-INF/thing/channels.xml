@@ -390,7 +390,14 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Inside Temperature</label>
 		<description>Indicates the inside temperature of the vehicle</description>
-		<state pattern="%.1f %unit%" readOnly="true"></state>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="jsonresponse" advanced="true">
+		<item-type>String</item-type>
+		<label>JSON response</label>
+		<description>JSON string as returned from the Tesla API</description>
+		<category>Text</category>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="lefttempdirection" advanced="true">
 		<item-type>Number</item-type>
