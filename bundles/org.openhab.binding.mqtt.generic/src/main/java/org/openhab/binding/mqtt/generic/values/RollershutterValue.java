@@ -36,6 +36,14 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class RollershutterValue extends Value {
+    // openHAB interprets open rollershutters as 0, and closed as 100
+    private static final String UP_VALUE = "0";
+    private static final String DOWN_VALUE = "100";
+    // other devices may interpret it the opposite, so we need to be able
+    // to invert it
+    private static final String INVERTED_UP_VALUE = DOWN_VALUE;
+    private static final String INVERTED_DOWN_VALUE = UP_VALUE;
+
     private final @Nullable String upCommandString;
     private final @Nullable String downCommandString;
     private final @Nullable String stopCommandString;
@@ -93,12 +101,14 @@ public class RollershutterValue extends Value {
                 if (upString != null) {
                     return command;
                 } else {
+                    // Do not handle inversion here. See parseCommand below
                     return PercentType.ZERO;
                 }
             } else {
                 if (downString != null) {
                     return command;
                 } else {
+                    // Do not handle inversion here. See parseCommand below
                     return PercentType.HUNDRED;
                 }
             }
@@ -119,6 +129,9 @@ public class RollershutterValue extends Value {
 
     @Override
     public Command parseCommand(Command command) throws IllegalArgumentException {
+        // Do not handle inversion in this code path. parseCommand might be called
+        // multiple times when sending a command TO an MQTT topic. The inversion is
+        // handled _only_ in getMQTTpublishValue
         return parseType(command, upCommandString, downCommandString);
     }
 
@@ -144,13 +157,13 @@ public class RollershutterValue extends Value {
             if (upCommandString != null) {
                 return upCommandString;
             } else {
-                return (inverted ? "100" : "0");
+                return (inverted ? INVERTED_UP_VALUE : UP_VALUE);
             }
         } else if (command == UpDownType.DOWN) {
             if (downCommandString != null) {
                 return downCommandString;
             } else {
-                return (inverted ? "0" : "100");
+                return (inverted ? INVERTED_DOWN_VALUE : DOWN_VALUE);
             }
         } else if (command == StopMoveType.STOP) {
             if (stopCommandString != null) {
