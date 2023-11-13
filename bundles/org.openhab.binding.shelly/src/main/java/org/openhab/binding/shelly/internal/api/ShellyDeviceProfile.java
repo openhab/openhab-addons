@@ -196,7 +196,8 @@ public class ShellyDeviceProfile {
             return;
         }
 
-        isBlu = thingType.startsWith("shellyblu"); // e.g. SBBT for BU Button
+        isGen2 = isGeneration2(thingType);
+        isBlu = isBluSeries(thingType); // e.g. SBBT for BLU Button
 
         isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2)
                 || deviceType.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS)
@@ -395,6 +396,14 @@ public class ShellyDeviceProfile {
             }
         }
         return "";
+    }
+
+    public static boolean isGeneration2(String thingType) {
+        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || isBluSeries(thingType);
+    }
+
+    public static boolean isBluSeries(String thingType) {
+        return thingType.startsWith("shellyblu");
     }
 
     public boolean coiotEnabled() {

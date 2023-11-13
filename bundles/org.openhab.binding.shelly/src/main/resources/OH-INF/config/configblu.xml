@@ -7,7 +7,7 @@
 	<config-description uri="thing-type:shelly:blubattery">
 		<parameter name="deviceAddress" type="text" required="true">
 			<label>@text/thing-type.config.shelly.deviceAddress.label</label>
-			<description>@text/thing-type.config.shelly.@text/thing-type.config.shelly.deviceAddress.label.description</description>
+			<description>@text/thing-type.config.shelly.deviceAddress.description</description>
 		</parameter>
 		<parameter name="lowBattery" type="integer" required="false">
 			<label>@text/thing-type.config.shelly.battery.lowBattery.label</label>
