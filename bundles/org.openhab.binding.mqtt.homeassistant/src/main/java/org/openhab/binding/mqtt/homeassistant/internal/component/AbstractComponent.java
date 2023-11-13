@@ -32,6 +32,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -198,8 +199,9 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     public String getName() {
         String result = channelConfiguration.getName();
 
-        if (result == null && channelConfiguration.getDevice() != null) {
-            result = channelConfiguration.getDevice().getName();
+        Device device = channelConfiguration.getDevice();
+        if (result == null && device != null) {
+            result = device.getName();
         }
         if (result == null) {
             result = haID.objectID;
