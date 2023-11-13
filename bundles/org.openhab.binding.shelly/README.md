@@ -122,7 +122,7 @@ The binding provides the same feature set across all devices as good as possible
 | ----------------- | ------------------------------------------------------ | --------- |
 | shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
-| shellyblumotion   | Shelly BLU Motion                                      | SBM       |
+| shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
 
 ## Binding Configuration
 

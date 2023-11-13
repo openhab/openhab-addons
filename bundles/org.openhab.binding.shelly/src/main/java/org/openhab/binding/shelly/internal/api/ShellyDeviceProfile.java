@@ -124,9 +124,6 @@ public class ShellyDeviceProfile {
         }
 
         initFromThingType(thingType);
-        if (device != null) {
-            this.device = device;
-        }
 
         String json = jsonIn;
         // It is not guaranteed, that the array entries are in order. Check all
