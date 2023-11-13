@@ -273,45 +273,41 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                 messages.get("status.unknown.initializing"));
 
-        profile.initFromThingType(thingType); // do some basic initialization
-
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
         // Action URL does when enabled)
+        profile.initFromThingType(thingType);
         if (coap != null && config.eventsCoIoT && !profile.alwaysOn) {
             coap.start(thingName, config);
         }
 
         // Initialize API access, exceptions will be catched by initialize()
         api.initialize();
-        ShellySettingsDevice devInfo = api.getDeviceInfo();
-        if (getBool(devInfo.auth) && config.password.isEmpty()) {
+        ShellySettingsDevice device = profile.device = api.getDeviceInfo();
+        if (getBool(device.auth) && config.password.isEmpty()) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
             return false;
         }
         if (config.serviceName.isEmpty()) {
-            config.serviceName = getString(profile.hostname).toLowerCase();
+            config.serviceName = getString(device.hostname).toLowerCase();
         }
 
         api.setConfig(thingName, config);
-        ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType);
-        tmpPrf.isGen2 = gen2;
-        tmpPrf.auth = devInfo.auth; // missing in /settings
-
+        ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType, profile.device);
+        String mode = getString(tmpPrf.device.mode);
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
-            changeThingType(thingName, tmpPrf.mode);
+            changeThingType(thingName, mode);
             return false; // force re-initialization
         }
         // Validate device mode
         String reqMode = thingType.contains("-") ? substringAfter(thingType, "-") : "";
-        if (!reqMode.isEmpty() && !tmpPrf.mode.equals(reqMode)) {
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode", tmpPrf.mode,
-                    reqMode);
+        if (!reqMode.isEmpty() && !mode.equals(reqMode)) {
+            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode", mode, reqMode);
             return false;
         }
-        if (!getString(devInfo.coiot).isEmpty()) {
+        if (!getString(tmpPrf.device.coiot).isEmpty()) {
             // New Shelly devices might use a different endpoint for the CoAP listener
-            tmpPrf.coiotEndpoint = devInfo.coiot;
+            tmpPrf.coiotEndpoint = tmpPrf.device.coiot;
         }
         if (tmpPrf.settings.sleepMode != null && !tmpPrf.isTRV) {
             // Sensor, usually 12h, H&T in USB mode 10min
@@ -566,12 +562,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 status = "offline.conf-error-access-denied";
             } else if (isWatchdogStarted()) {
                 if (!isWatchdogExpired()) {
+                    logger.debug("{}: Ignore API Timeout on {} {}, retry later", thingName, res.method, res.url);
                     if (profile.alwaysOn) { // suppress for battery powered sensors
                         logger.debug("{}: Ignore API Timeout on {} {}, retry later", thingName, res.method, res.url);
-                    }
-                } else {
-                    if (isThingOnline()) {
-                        status = "offline.status-error-watchdog";
                     }
                 }
             } else if (e.isJSONException()) {
@@ -606,22 +599,18 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     private void showThingConfig(ShellyDeviceProfile profile) {
         logger.debug("{}: Initializing device {}, type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {}", thingName,
-                profile.hostname, profile.deviceType, profile.hwRev, profile.hwBatchId, profile.fwVersion,
+                profile.device.hostname, profile.device.type, profile.hwRev, profile.hwBatchId, profile.fwVersion,
                 profile.fwDate);
-        logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.hostname, profile.settingsJson);
-        logger.debug(
-                """
-                        {}: Device \
-                        hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{}), ext. Switch Add-On: {}\
-                        ,isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}, BLU Gateway support: {}\
-                        ,alwaysOn:{}, updatePeriod:{}sec\
-                        """,
-                thingName, profile.hasRelays, profile.numRelays, profile.isRoller, profile.numRollers, profile.isDimmer,
-                profile.numMeters, profile.isEMeter, profile.settings.extSwitch != null ? "installed" : "n/a",
-                profile.isSensor, profile.isDW, profile.hasBattery,
-                profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
-                profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
-                profile.alwaysOn, profile.updatePeriod, config.enableBluGateway);
+        logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.device.hostname, profile.settingsJson);
+        logger.debug("{}: Device "
+                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{}), ext. Switch Add-On: {}"
+                + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}, BLU Gateway support: {}"
+                + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
+                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
+                profile.settings.extSwitch != null ? "installed" : "n/a", profile.isSensor, profile.isDW,
+                profile.hasBattery, profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "",
+                profile.isSense, profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2,
+                profile.inColor, profile.alwaysOn, profile.updatePeriod, config.enableBluGateway);
         if (profile.status.extTemperature != null || profile.status.extHumidity != null
                 || profile.status.extVoltage != null || profile.status.extAnalogInput != null) {
             logger.debug("{}: Shelly Add-On detected with at least 1 external sensor", thingName);
@@ -1030,7 +1019,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             config.password = bindingConfig.defaultPassword;
             logger.debug("{}: Using default password from bindingConfig (userId={})", thingName, config.userId);
         }
-        if (config.updateInterval == 0) {
+
+        if (config.updateInterval == 0)
+
+        {
             config.updateInterval = UPDATE_STATUS_INTERVAL_SECONDS * UPDATE_SKIP_COUNT;
         }
         if (config.updateInterval < UPDATE_MIN_DELAY) {
@@ -1059,15 +1051,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 // no fw version available (e.g. BLU device)
                 return;
             }
-
             ShellyVersionDTO version = new ShellyVersionDTO();
             if (version.checkBeta(getString(prf.fwVersion))) {
-                logger.info("{}: {}", prf.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
+                logger.info("{}: {}", prf.device.hostname,
+                        messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
             } else {
                 String minVersion = !gen2 ? SHELLY_API_MIN_FWVERSION : SHELLY2_API_MIN_FWVERSION;
                 if (version.compare(prf.fwVersion, minVersion) < 0) {
-                    logger.warn("{}: {}", prf.hostname,
-                            messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, minVersion));
+                    logger.warn("{}: {}", prf.device.hostname,
+                            messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
                 }
             }
             if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
@@ -1450,10 +1442,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         Map<String, Object> properties = new TreeMap<>();
         properties.put(PROPERTY_VENDOR, VENDOR);
         if (profile.isInitialized()) {
-            properties.put(PROPERTY_MODEL_ID, getString(profile.settings.device.type));
-            properties.put(PROPERTY_MAC_ADDRESS, profile.mac);
+            properties.put(PROPERTY_MODEL_ID, getString(profile.device.type));
+            properties.put(PROPERTY_MAC_ADDRESS, profile.device.mac);
             properties.put(PROPERTY_FIRMWARE_VERSION, profile.fwVersion + "/" + profile.fwDate);
-            properties.put(PROPERTY_DEV_MODE, profile.mode);
+            properties.put(PROPERTY_DEV_MODE, profile.device.mode);
             if (profile.hasRelays) {
                 properties.put(PROPERTY_NUM_RELAYS, String.valueOf(profile.numRelays));
                 properties.put(PROPERTY_NUM_ROLLERS, String.valueOf(profile.numRollers));
@@ -1481,7 +1473,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         try {
             refreshSettings |= forceRefresh;
             if (refreshSettings) {
-                profile = api.getDeviceProfile(thingType);
+                profile = api.getDeviceProfile(thingType, null);
                 if (!isThingOnline()) {
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
                 }

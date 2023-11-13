@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
@@ -80,9 +81,25 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
+    public void initialize() throws ShellyApiException {
+        profile.device = getDeviceInfo();
+    }
+
+    @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         ShellySettingsDevice info = callApi(SHELLY_URL_DEVINFO, ShellySettingsDevice.class);
         info.gen = 1;
+        basicAuth = info.auth;
+
+        if (getString(info.mode).isEmpty()) { // older Gen1 Firmware
+            if (getInteger(info.numRollers) > 0) {
+                info.mode = SHELLY_CLASS_ROLLER;
+            } else if (getInteger(info.numOutputs) > 0) {
+                info.mode = SHELLY_CLASS_RELAY;
+            } else {
+                info.mode = "";
+            }
+        }
         return info;
     }
 
@@ -104,7 +121,14 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * @throws ShellyApiException
      */
     @Override
-    public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
+    public ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice device)
+            throws ShellyApiException {
+        if (device != null) {
+            profile.device = device;
+        }
+        if (profile.device.type == null) {
+            profile.device = getDeviceInfo();
+        }
         String json = httpRequest(SHELLY_URL_SETTINGS);
         if (json.contains("\"type\":\"SHDM-")) {
             logger.trace("{}: Detected a Shelly Dimmer: fix Json (replace lights[] tag with dimmers[]", thingName);
@@ -112,10 +136,10 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         }
 
         // Map settings to device profile for Light and Sense
-        profile.initialize(thingType, json);
+        profile.initialize(thingType, json, profile.device);
 
         // 2nd level initialization
-        profile.thingName = profile.hostname;
+        profile.thingName = profile.device.hostname;
         if (profile.isLight && (profile.numMeters == 0)) {
             logger.debug("{}: Get number of meters from light status", thingName);
             ShellyStatusLight status = getLightStatus();
@@ -396,10 +420,10 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      */
     @Override
     public void setLightMode(String mode) throws ShellyApiException {
-        if (!mode.isEmpty() && !profile.mode.equals(mode)) {
+        if (!mode.isEmpty() && !profile.device.mode.equals(mode)) {
             setLightSetting(SHELLY_API_MODE, mode);
-            profile.mode = mode;
-            profile.inColor = profile.isLight && profile.mode.equalsIgnoreCase(SHELLY_MODE_COLOR);
+            profile.device.mode = mode;
+            profile.inColor = profile.isLight && mode.equalsIgnoreCase(SHELLY_MODE_COLOR);
         }
     }
 
