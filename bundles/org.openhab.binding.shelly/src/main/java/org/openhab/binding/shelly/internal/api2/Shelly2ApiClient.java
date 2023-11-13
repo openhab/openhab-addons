@@ -150,8 +150,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
     protected static final Map<String, String> MAP_PROFILE = new HashMap<>();
     static {
-        MAP_ROLLER_STATE.put(SHELLY_CLASS_RELAY, SHELLY2_PROFILE_RELAY);
-        MAP_ROLLER_STATE.put(SHELLY_CLASS_ROLLER, SHELLY2_PROFILE_COVER);
+        MAP_PROFILE.put(SHELLY_CLASS_RELAY, SHELLY2_PROFILE_RELAY);
+        MAP_PROFILE.put(SHELLY_CLASS_ROLLER, SHELLY2_PROFILE_COVER);
     }
 
     protected @Nullable ArrayList<@Nullable ShellySettingsRelay> fillRelaySettings(ShellyDeviceProfile profile,
