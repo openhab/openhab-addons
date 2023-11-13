@@ -122,6 +122,8 @@ public class RollershutterValue extends Value {
                 return UpDownType.DOWN;
             } else if (updatedValue.equals(stopCommandString)) {
                 return StopMoveType.STOP;
+            } else {
+                return PercentType.valueOf(updatedValue);
             }
         }
         throw new IllegalStateException("Cannot call parseCommand() with " + command.toString());
