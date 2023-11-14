@@ -194,7 +194,7 @@ public class BondHttpApi {
         try {
             response = request.send();
         } catch (Exception e) {
-            logger.warn("Unable to execute device action {} against device {}: {}", deviceId, action, e.getMessage());
+            logger.debug("Unable to execute device action {} against device {}: {}", deviceId, action, e.getMessage());
             return;
         }
 
