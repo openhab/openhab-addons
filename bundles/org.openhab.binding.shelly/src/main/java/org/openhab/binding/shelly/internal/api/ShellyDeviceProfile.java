@@ -401,8 +401,7 @@ public class ShellyDeviceProfile {
     }
 
     public static boolean isGeneration2(String thingType) {
-        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro")
-                || thingType.startsWith("shellymini") || isBluSeries(thingType);
+        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || isBluSeries(thingType);
     }
 
     public static boolean isBluSeries(String thingType) {

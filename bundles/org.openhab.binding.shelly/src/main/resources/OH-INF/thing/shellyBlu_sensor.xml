@@ -31,4 +31,5 @@
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:blubattery"/>
 	</thing-type>
+
 </thing:thing-descriptions>
