@@ -126,7 +126,10 @@ public class ShellyDeviceProfile {
         initFromThingType(thingType);
 
         String json = jsonIn;
-        if (json.contains("\"ext_temperature\":{\"0\":[{")) {
+        // It is not guaranteed, that the array entries are in order. Check all
+        // possible variants. See openhab#15514.
+        if (json.contains("\"ext_temperature\":{\"0\":[{") || json.contains("\"ext_temperature\":{\"1\":[{")
+                || json.contains("\"ext_temperature\":{\"2\":[{")) {
             // Shelly UNI uses ext_temperature array, reformat to avoid GSON exception
             json = json.replace("ext_temperature", "ext_temperature_array");
         }
@@ -193,7 +196,8 @@ public class ShellyDeviceProfile {
             return;
         }
 
-        isBlu = thingType.startsWith("shellyblu"); // e.g. SBBT for BU Button
+        isGen2 = isGeneration2(thingType);
+        isBlu = isBluSeries(thingType); // e.g. SBBT for BLU Button
 
         isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2)
                 || deviceType.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS)
@@ -392,6 +396,14 @@ public class ShellyDeviceProfile {
             }
         }
         return "";
+    }
+
+    public static boolean isGeneration2(String thingType) {
+        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || isBluSeries(thingType);
+    }
+
+    public static boolean isBluSeries(String thingType) {
+        return thingType.startsWith("shellyblu");
     }
 
     public boolean coiotEnabled() {

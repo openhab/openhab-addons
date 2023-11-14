@@ -256,4 +256,16 @@
 		<category>Switch</category>
 	</channel-type>
 
+	<channel-type id="security-contact">
+		<item-type>Contact</item-type>
+		<label>Open/Closed</label>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="security-tamper">
+		<item-type>Contact</item-type>
+		<label>Normal/Tamper</label>
+		<category>Siren</category>
+	</channel-type>
+
 </thing:thing-descriptions>

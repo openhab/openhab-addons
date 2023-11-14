@@ -13,6 +13,7 @@
 package org.openhab.binding.energidataservice.internal.handler;
 
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
+import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -24,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,6 +67,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +96,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
 
     private record Price(String hourStart, BigDecimal spotPrice, String spotPriceCurrency,
             @Nullable BigDecimal netTariff, @Nullable BigDecimal systemTariff, @Nullable BigDecimal electricityTax,
-            @Nullable BigDecimal transmissionNetTariff) {
+            @Nullable BigDecimal reducedElectricityTax, @Nullable BigDecimal transmissionNetTariff) {
     }
 
     public EnergiDataServiceHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
@@ -180,6 +183,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
             updatePrices();
+            updateTimeSeries();
 
             if (isLinked(CHANNEL_SPOT_PRICE) || isLinked(CHANNEL_HOURLY_PRICES)) {
                 if (cacheManager.getNumberOfFutureSpotPrices() < 13) {
@@ -246,6 +250,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
                 case NET_TARIFF -> getNetTariffFilter();
                 case SYSTEM_TARIFF -> DatahubTariffFilterFactory.getSystemTariff();
                 case ELECTRICITY_TAX -> DatahubTariffFilterFactory.getElectricityTax();
+                case REDUCED_ELECTRICITY_TAX -> DatahubTariffFilterFactory.getReducedElectricityTax();
                 case TRANSMISSION_NET_TARIFF -> DatahubTariffFilterFactory.getTransmissionNetTariff();
             };
             cacheManager.putTariffs(datahubTariff, downloadPriceLists(globalLocationNumber, filter));
@@ -339,11 +344,56 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             BigDecimal netTariff = cacheManager.getTariff(DatahubTariff.NET_TARIFF, hourStart);
             BigDecimal systemTariff = cacheManager.getTariff(DatahubTariff.SYSTEM_TARIFF, hourStart);
             BigDecimal electricityTax = cacheManager.getTariff(DatahubTariff.ELECTRICITY_TAX, hourStart);
+            BigDecimal reducedElectricityTax = cacheManager.getTariff(DatahubTariff.REDUCED_ELECTRICITY_TAX, hourStart);
             BigDecimal transmissionNetTariff = cacheManager.getTariff(DatahubTariff.TRANSMISSION_NET_TARIFF, hourStart);
             targetPrices[i++] = new Price(hourStart.toString(), sourcePrice.getValue(), config.currencyCode, netTariff,
-                    systemTariff, electricityTax, transmissionNetTariff);
+                    systemTariff, electricityTax, reducedElectricityTax, transmissionNetTariff);
         }
         updateState(CHANNEL_HOURLY_PRICES, new StringType(gson.toJson(targetPrices)));
+    }
+
+    private void updateTimeSeries() {
+        TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
+        Map<DatahubTariff, TimeSeries> datahubTimeSeriesMap = new HashMap<>();
+        for (DatahubTariff datahubTariff : DatahubTariff.values()) {
+            datahubTimeSeriesMap.put(datahubTariff, new TimeSeries(REPLACE));
+        }
+
+        Map<Instant, BigDecimal> spotPriceMap = cacheManager.getSpotPrices();
+        List<Entry<Instant, BigDecimal>> spotPrices = spotPriceMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey()).toList();
+        for (Entry<Instant, BigDecimal> spotPrice : spotPrices) {
+            Instant hourStart = spotPrice.getKey();
+            if (isLinked(CHANNEL_SPOT_PRICE)) {
+                spotPriceTimeSeries.add(hourStart, new DecimalType(spotPrice.getValue()));
+            }
+            for (Map.Entry<DatahubTariff, TimeSeries> entry : datahubTimeSeriesMap.entrySet()) {
+                DatahubTariff datahubTariff = entry.getKey();
+                String channelId = datahubTariff.getChannelId();
+                if (!isLinked(channelId)) {
+                    continue;
+                }
+                BigDecimal tariff = cacheManager.getTariff(datahubTariff, hourStart);
+                if (tariff != null) {
+                    TimeSeries timeSeries = entry.getValue();
+                    timeSeries.add(hourStart, new DecimalType(tariff));
+                }
+            }
+        }
+        if (spotPriceTimeSeries.size() > 0) {
+            sendTimeSeries(CHANNEL_SPOT_PRICE, spotPriceTimeSeries);
+        }
+        for (Map.Entry<DatahubTariff, TimeSeries> entry : datahubTimeSeriesMap.entrySet()) {
+            DatahubTariff datahubTariff = entry.getKey();
+            String channelId = datahubTariff.getChannelId();
+            if (!isLinked(channelId)) {
+                continue;
+            }
+            TimeSeries timeSeries = entry.getValue();
+            if (timeSeries.size() > 0) {
+                sendTimeSeries(channelId, timeSeries);
+            }
+        }
     }
 
     /**
@@ -397,6 +447,15 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         }
 
         return cacheManager.getTariffs(datahubTariff);
+    }
+
+    /**
+     * Return whether reduced electricity tax is set in configuration.
+     *
+     * @return true if reduced electricity tax applies
+     */
+    public boolean isReducedElectricityTax() {
+        return config.reducedElectricityTax;
     }
 
     private void reschedulePriceUpdateJob() {

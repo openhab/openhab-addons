@@ -20,6 +20,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Stack;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -27,13 +28,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.id.InstanceUUID;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.io.neeo.internal.models.NeeoAdapterRegistration;
 import org.openhab.io.neeo.internal.models.NeeoRecipe;
@@ -69,7 +70,13 @@ public class NeeoApi implements AutoCloseable {
     /** The brain's IP address */
     private final String brainIpAddress;
 
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
+
+    private final HttpClientFactory httpClientFactory;
+
+    private Stack httpClientStack = new Stack<HttpClient>();
+
+    private int httpClientId = 0;
 
     /** The URL of the brain */
     private final String brainUrl;
@@ -122,25 +129,26 @@ public class NeeoApi implements AutoCloseable {
      * @param context the non-null {@link ServiceContext}
      * @throws IOException if an exception occurs connecting to the brain
      */
-    public NeeoApi(String ipAddress, String brainId, ServiceContext context, ClientBuilder clientBuilder)
-            throws IOException {
+    public NeeoApi(String ipAddress, String brainId, ServiceContext context, HttpClient httpClient,
+            HttpClientFactory httpClientFactory) throws IOException {
         NeeoUtil.requireNotEmpty(ipAddress, "ipAddress cannot be empty");
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
         Objects.requireNonNull(context, "context cannot be null");
 
         this.brainIpAddress = ipAddress;
         this.brainId = brainId;
-        this.clientBuilder = clientBuilder;
+        this.httpClient = httpClient;
+        this.httpClientFactory = httpClientFactory;
         this.brainUrl = NeeoConstants.PROTOCOL + (ipAddress.startsWith("/") ? ipAddress.substring(1) : ipAddress) + ":"
                 + NeeoConstants.DEFAULT_BRAIN_PORT;
-        deviceKeys = new NeeoDeviceKeys(brainUrl, clientBuilder);
+        deviceKeys = new NeeoDeviceKeys(brainUrl, httpClient);
 
-        request = new AtomicReference<>(new HttpRequest(clientBuilder));
+        request = new AtomicReference<>(new HttpRequest(httpClient));
 
-        this.systemInfo = getSystemInfo(ipAddress, clientBuilder);
+        this.systemInfo = getSystemInfo(ipAddress, httpClient);
 
         String name = brainId;
-        try (HttpRequest request = new HttpRequest(clientBuilder)) {
+        try (HttpRequest request = new HttpRequest(httpClient)) {
             logger.debug("Getting existing device mappings from {}{}", brainUrl, NeeoConstants.PROJECTS_HOME);
             final HttpResponse resp = request.sendGetCommand(brainUrl + NeeoConstants.PROJECTS_HOME);
             if (resp.getHttpCode() != HttpStatus.OK_200) {
@@ -201,12 +209,12 @@ public class NeeoApi implements AutoCloseable {
      * @return the non-null {@link NeeoSystemInfo} for the address
      * @throws IOException Signals that an I/O exception has occurred or the URL is not a brain
      */
-    public static NeeoSystemInfo getSystemInfo(String ipAddress, ClientBuilder clientBuilder) throws IOException {
+    public static NeeoSystemInfo getSystemInfo(String ipAddress, HttpClient httpClient) throws IOException {
         NeeoUtil.requireNotEmpty(ipAddress, "ipAddress cannot be empty");
         final String sysInfo = NeeoConstants.PROTOCOL + (ipAddress.startsWith("/") ? ipAddress.substring(1) : ipAddress)
                 + ":" + NeeoConstants.DEFAULT_BRAIN_PORT + NeeoConstants.SYSTEMINFO;
 
-        try (HttpRequest req = new HttpRequest(clientBuilder)) {
+        try (HttpRequest req = new HttpRequest(httpClient)) {
             final HttpResponse res = req.sendGetCommand(sysInfo);
             if (res.getHttpCode() == HttpStatus.OK_200) {
                 return Objects.requireNonNull(GSON.fromJson(res.getContent(), NeeoSystemInfo.class));
@@ -392,7 +400,7 @@ public class NeeoApi implements AutoCloseable {
         try {
             setConnected(false);
 
-            NeeoUtil.close(request.getAndSet(new HttpRequest(clientBuilder)));
+            NeeoUtil.close(request.getAndSet(new HttpRequest(httpClient)));
 
             NeeoUtil.checkInterrupt();
             registerApi();
@@ -461,6 +469,41 @@ public class NeeoApi implements AutoCloseable {
         return deviceKeys;
     }
 
+    private synchronized HttpClient getHttpClient() {
+        int stackSize = httpClientStack.size();
+        if (stackSize == 0) {
+            int httpClientId = this.httpClientId + 1;
+            this.httpClientId = httpClientId;
+            String httpClientIdString = "neeo-" + brainId.substring(5) + "-" + httpClientId;
+            logger.debug("getHttpClient created new client {} for brain {}", httpClientIdString, brainId);
+            HttpClient httpClient = httpClientFactory.createHttpClient(httpClientIdString);
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                logger.debug("Exception while starting HttpClient: {}", e.getMessage(), e);
+            }
+            return httpClient;
+        } else {
+            logger.debug("getHttpClient popped a client from the stack for brain {} depth {}", brainId, stackSize);
+            return (HttpClient) httpClientStack.pop();
+        }
+    }
+
+    private synchronized void returnHttpClient(HttpClient httpClient) {
+        int stackSize = httpClientStack.size();
+        if (stackSize <= NeeoConstants.HTTPCLIENT_POOL_SIZE) {
+            logger.debug("getHttpClient returned a client for brain {} depth {}", brainId, stackSize);
+            httpClientStack.push(httpClient);
+        } else {
+            try {
+                logger.debug("getHttpClient destroyed a client for brain {}", brainId);
+                httpClient.stop();
+            } catch (Exception e) {
+                logger.debug("Exception while stopping HttpClient: {}", e.getMessage(), e);
+            }
+        }
+    }
+
     /**
      * Send a notification to the brain
      *
@@ -469,12 +512,17 @@ public class NeeoApi implements AutoCloseable {
      */
     public void notify(String msg) throws IOException {
         if (isConnected()) {
-            final HttpRequest rqst = request.get();
+            HttpClient httpClient = getHttpClient();
+            final HttpRequest rqst = new HttpRequest(httpClient);
             logger.debug("Sending Notification to brain ({}): {}", brainId, msg);
             final HttpResponse resp = rqst.sendPostJsonCommand(brainUrl + NeeoConstants.NOTIFICATION, msg);
             if (resp.getHttpCode() != HttpStatus.OK_200) {
+                returnHttpClient(httpClient);
                 throw resp.createException();
+            } else {
+                logger.debug("Response from brain ({}): {} - {}", brainId, resp.getHttpCode(), resp.getContent());
             }
+            returnHttpClient(httpClient);
         } else {
             logger.debug("Notification ignored - brain not connected");
         }
@@ -553,8 +601,15 @@ public class NeeoApi implements AutoCloseable {
         NeeoUtil.cancel(connect.getAndSet(null));
 
         try {
+            int stackSize = httpClientStack.size();
+            while (stackSize > 0) {
+                HttpClient httpClient = (HttpClient) httpClientStack.pop();
+                httpClient.stop();
+                httpClient = null;
+                stackSize--;
+            }
             deregisterApi();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.debug("Exception while deregistring api during close - ignoring: {}", e.getMessage(), e);
         } finally {
             // Do this regardless if a runtime exception was thrown

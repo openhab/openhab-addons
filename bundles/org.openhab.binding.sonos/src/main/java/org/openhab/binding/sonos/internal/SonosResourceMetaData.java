@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Contains the resource meta data within a browse response result
- * "<r:resMD>..</r:resMD>". This is used for SONOS favorites.
+ * {@code "<r:resMD>..</r:resMD>"}. This is used for SONOS favorites.
  *
  * @author Dan Cunningham - Initial contribution
  *

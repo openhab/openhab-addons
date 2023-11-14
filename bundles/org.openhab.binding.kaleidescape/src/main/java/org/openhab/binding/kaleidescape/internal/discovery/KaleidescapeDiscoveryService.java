@@ -158,7 +158,7 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
      * {@inheritDoc}
      *
      * Stops the discovery scan. We set {@link #scanning} to false (allowing the listening thread to end naturally
-     * within {@link #TIMEOUT) * 5 time then shutdown the {@link #executorService}
+     * within {@link #DISCOVERY_DEFAULT_TIMEOUT_RATE_MS} * 5 time then shutdown the {@link #ExecutorService}
      */
     @Override
     protected synchronized void stopScan() {

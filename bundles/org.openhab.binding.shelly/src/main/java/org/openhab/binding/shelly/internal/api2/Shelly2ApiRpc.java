@@ -141,10 +141,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             rpcSocket.addMessageHandler(this);
             initialized = true;
         } else {
-            if (rpcSocket.isConnected()) {
-                logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
-                disconnect();
-            }
+            logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
+            disconnect();
         }
     }
 
@@ -321,14 +319,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
 
             try {
-                if (config.enableBluGateway != null) {
+                if (profile.alwaysOn && config.enableBluGateway != null) {
                     logger.debug("{}: BLU Gateway support is {} for this device", thingName,
                             config.enableBluGateway ? "enabled" : "disabled");
-                    boolean bluetooth = getBool(profile.settings.bluetooth);
-                    if (config.enableBluGateway && !bluetooth) {
-                        logger.info("{}: Bluetooth needs to be enabled to activate BLU Gateway mode", thingName);
+                    if (config.enableBluGateway) {
+                        boolean bluetooth = getBool(profile.settings.bluetooth);
+                        if (config.enableBluGateway && !bluetooth) {
+                            logger.info("{}: Bluetooth needs to be enabled to activate BLU Gateway mode", thingName);
+                        }
+                        installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway && bluetooth);
                     }
-                    installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway && bluetooth);
                 }
             } catch (ShellyApiException e) {
                 logger.debug("{}: Device config failed", thingName, e);
@@ -1025,7 +1025,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         if (prod || beta) {
-            params.stage = prod || beta ? "stable" : "beta";
+            params.stage = prod ? "stable" : "beta";
         } else {
             params.url = fwurl;
         }
@@ -1217,9 +1217,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void disconnect() {
-        if (rpcSocket.isConnected()) {
-            rpcSocket.disconnect();
-        }
+        rpcSocket.disconnect();
     }
 
     public Shelly2RpctInterface getRpcHandler() {

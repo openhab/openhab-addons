@@ -291,7 +291,7 @@ public class ShellyChannelDefinitions {
     /**
      * Auto-create relay channels depending on relay type/mode
      *
-     * @return ArrayList<Channel> of channels to be added to the thing
+     * @return {@code ArrayList<Channel>} of channels to be added to the thing
      */
     public static Map<String, Channel> createDeviceChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsStatus status) {
@@ -337,7 +337,7 @@ public class ShellyChannelDefinitions {
     /**
      * Auto-create relay channels depending on relay type/mode
      *
-     * @return ArrayList<Channel> of channels to be added to the thing
+     * @return {@code ArrayList<Channel>} of channels to be added to the thing
      */
     public static Map<String, Channel> createRelayChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsRelay rstatus, int idx) {
@@ -519,7 +519,7 @@ public class ShellyChannelDefinitions {
                     CHANNEL_SENSOR_VIBRATION);
         }
         // Create tilt for DW/DW2, for BLU DW create channel even tilt is currently not reported
-        if (sdata.accel != null || (profile.isBlu && sdata.lux != null)) {
+        if (sdata.accel != null || (profile.isBlu && profile.isDW && sdata.lux != null)) {
             addChannel(thing, newChannels, sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT);
         }
 
@@ -670,7 +670,7 @@ public class ShellyChannelDefinitions {
             }
             description = getText(PREFIX_CHANNEL + typeId + ".description");
             if (description.contains(PREFIX_CHANNEL)) {
-                description = "";
+                description = ""; // no resource found
             }
         }
 

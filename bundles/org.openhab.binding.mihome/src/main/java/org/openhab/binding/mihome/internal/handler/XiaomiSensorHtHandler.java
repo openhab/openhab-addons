@@ -20,7 +20,7 @@ import org.openhab.core.thing.Thing;
 import com.google.gson.JsonObject;
 
 /**
- * Handles the Xiaomi temperature & humidity sensor
+ * Handles the Xiaomi temperature &amp; humidity sensor
  *
  * @author Patrick Boos - Initial contribution
  * @author Daniel Walters - Add pressure support
