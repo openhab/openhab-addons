@@ -106,7 +106,7 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
                 }
             }
         } catch (BondException ignored) {
-            logger.warn("Error getting devices for discovery: {}", ignored.getMessage());
+            logger.debug("Error getting devices for discovery: {}", ignored.getMessage());
         } finally {
             removeOlderResults(getTimestampOfLastScan());
         }
