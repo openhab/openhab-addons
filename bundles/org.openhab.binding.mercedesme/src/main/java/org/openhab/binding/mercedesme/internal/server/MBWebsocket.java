@@ -96,7 +96,7 @@ public class MBWebsocket {
             client.setStopTimeout(CONNECT_TIMEOUT_MS);
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
             String websocketURL = accountHandler.getWSUri();
-            logger.debug("Websocket start {}", websocketURL);
+            logger.trace("Websocket start {}", websocketURL);
             client.start();
             client.connect(this, new URI(websocketURL), request);
             while (keepAlive || Instant.now().isBefore(runTill)) {
@@ -112,7 +112,7 @@ public class MBWebsocket {
                     runTill = Instant.MIN;
                 }
             }
-            logger.debug("Websocket stop");
+            logger.trace("Websocket stop");
             client.stop();
             client.destroy();
         } catch (Throwable t) {
@@ -167,20 +167,20 @@ public class MBWebsocket {
     public void interrupt() {
         synchronized (this) {
             runTill = Instant.MIN;
+            keepAlive = false;
         }
-        logger.info("Kill Websocket!");
     }
 
     public void keepAlive(boolean b) {
         if (!keepAlive) {
             if (b) {
-                logger.info("WebSocket - keep alive start");
+                logger.trace("WebSocket - keep alive start");
             }
         } else {
             if (!b) {
                 // after keep alive is finished add 5 minutes to cover e.g. door events after trip is finished
                 runTill = Instant.now().plusMillis(KEEP_ALIVE_ADDON);
-                logger.info("Wbesocket - keep alive stop - run till {}", runTill.toString());
+                logger.trace("Wbesocket - keep alive stop - run till {}", runTill.toString());
             }
         }
         keepAlive = b;
@@ -201,7 +201,6 @@ public class MBWebsocket {
                             .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
                     ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
                     sendAchnowledgeMessage(cm);
-                    logger.trace("Vehicle update acknowledged {}", cm.getAllFields());
                 }
             } else if (pm.hasAssignedVehicles()) {
                 for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
@@ -211,9 +210,7 @@ public class MBWebsocket {
                 AcknowledgeAssignedVehicles ack = AcknowledgeAssignedVehicles.newBuilder().build();
                 ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeAssignedVehicles(ack).build();
                 sendAchnowledgeMessage(cm);
-                logger.trace("Vehicle assignments acknowledged {}", cm.getAllFields());
             } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
-                logger.trace("Command Status {}", pm.getApptwinCommandStatusUpdatesByVin().getAllFields());
                 AppTwinCommandStatusUpdatesByVIN csubv = pm.getApptwinCommandStatusUpdatesByVin();
                 accountHandler.commandStatusUpdate(csubv.getUpdatesByVinMap());
                 AcknowledgeAppTwinCommandStatusUpdatesByVIN ack = AcknowledgeAppTwinCommandStatusUpdatesByVIN
@@ -221,13 +218,12 @@ public class MBWebsocket {
                 ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack)
                         .build();
                 sendAchnowledgeMessage(cm);
-                logger.trace("Command Status acknowledged {}", cm.getAllFields());
             } else if (pm.hasApptwinPendingCommandRequest()) {
-                logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
+                // logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
             } else if (pm.hasDebugMessage()) {
-                logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
+                // logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
             } else {
-                logger.trace("MB Message: {} not handeled", pm.getAllFields());
+                // logger.trace("MB Message: {} not handeled", pm.getAllFields());
             }
 
         } catch (IOException e) {
@@ -245,6 +241,8 @@ public class MBWebsocket {
     public void onDisconnect(Session session, int statusCode, String reason) {
         logger.debug("Disonnected from server. Status {} Reason {}", statusCode, reason);
         this.session = null;
+        // ensure execution stop if disconnect was triggered from server side
+        interrupt();
     }
 
     @OnWebSocketConnect

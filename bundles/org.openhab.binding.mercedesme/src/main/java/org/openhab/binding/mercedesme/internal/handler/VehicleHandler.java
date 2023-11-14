@@ -169,7 +169,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("Received command {} {} for {}", command.getClass(), command, channelUID);
+        logger.trace("Received command {} {} for {}", command.getClass(), command, channelUID);
         if (command instanceof RefreshType) {
             if ("feature-capabilities".equals(channelUID.getIdWithoutGroup())
                     || "command-capabilities".equals(channelUID.getIdWithoutGroup())) {
@@ -192,13 +192,13 @@ public class VehicleHandler extends BaseThingHandler {
             if ("ignition".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandEngineStart");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Engine Start/Stop not supported {}", supported);
+                    logger.info("Engine Start/Stop not supported");
                 } else {
                     int commandValue = ((DecimalType) command).intValue();
                     if (commandValue == 4) {
                         String pin = accountHandler.get().config.get().pin;
                         if (Constants.NOT_SET.equals(pin)) {
-                            logger.info("Security PIN missing {}", pin);
+                            logger.info("Security PIN missing in Account bridge");
                         } else {
                             EngineStart eStart = EngineStart.newBuilder().setPin(supported).build();
                             CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -218,14 +218,14 @@ public class VehicleHandler extends BaseThingHandler {
                 String supported = thing.getProperties().get("commandWindowsOpen");
                 String pin = accountHandler.get().config.get().pin;
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Windows control not supported {}", supported);
+                    logger.info("Windows control not supported");
                 } else {
                     CommandRequest cr;
                     ClientMessage cm;
                     switch (((DecimalType) command).intValue()) {
                         case 0:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing {}", pin);
+                                logger.info("Security PIN missing in Account bridge");
                             } else {
                                 WindowsVentilate wv = WindowsVentilate.newBuilder().setPin(pin).build();
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -243,7 +243,7 @@ public class VehicleHandler extends BaseThingHandler {
                             break;
                         case 2:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing {}", pin);
+                                logger.info("Security PIN missing in Account bridge");
                             } else {
                                 WindowsOpen wo = WindowsOpen.newBuilder().setPin(pin).build();
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -261,7 +261,7 @@ public class VehicleHandler extends BaseThingHandler {
                 String pin = accountHandler.get().config.get().pin;
                 String supported = thing.getProperties().get("commandDoorsLock");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Door Lock not supported {}", supported);
+                    logger.info("Door Lock not supported");
                 } else {
                     switch (((DecimalType) command).intValue()) {
                         case 0:
@@ -273,7 +273,7 @@ public class VehicleHandler extends BaseThingHandler {
                             break;
                         case 1:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing! {}", pin);
+                                logger.info("Security PIN missing in Account bridge");
                             } else {
                                 DoorsUnlock du = DoorsUnlock.newBuilder().setPin(pin).build();
                                 CommandRequest unlockCr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -295,10 +295,8 @@ public class VehicleHandler extends BaseThingHandler {
             if (CHANNEL_TEMPERATURE.equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditionConfigure");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Air Conditioning Temperature Setting not supported {}", supported);
+                    logger.info("Air Conditioning Temperature Setting not supported");
                 } else {
-                    logger.info("Received Air Condition Temperature change {}", command.getClass());
-                    logger.info("Received DecimalType {}", ((QuantityType) command).doubleValue());
                     QuantityType<Temperature> tempToSet = ((QuantityType<Temperature>) command);
                     TemperatureConfigure tc = TemperatureConfigure.newBuilder()
                             .addTemperaturePoints(TemperaturePoint.newBuilder().setZoneValue(activeTemperaturePoint)
@@ -313,7 +311,7 @@ public class VehicleHandler extends BaseThingHandler {
             } else if ("active".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditioningStart");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Air Conditioning not supported {}", supported);
+                    logger.info("Air Conditioning not supported");
                 } else {
                     if (OnOffType.ON.equals(command)) {
                         ZEVPreconditioningStart precondStart = ZEVPreconditioningStart.newBuilder()
@@ -344,7 +342,7 @@ public class VehicleHandler extends BaseThingHandler {
             } else if ("aux-heat".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("featureAuxHeat");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Auxiliray Heating not supported {}", supported);
+                    logger.info("Auxiliray Heating not supported");
                 } else {
                     if (OnOffType.ON.equals(command)) {
                         AuxheatStart auxHeatStart = AuxheatStart.newBuilder().build();
@@ -371,7 +369,7 @@ public class VehicleHandler extends BaseThingHandler {
                         updateChannel(tempCSM);
                     }
                 } else {
-                    logger.info("No Temperature Zone found for {}", command);
+                    logger.trace("No Temperature Zone found for {}", command);
                 }
             }
         } else if (Constants.GROUP_POSITION.equals(channelUID.getGroupId())) {
@@ -381,7 +379,7 @@ public class VehicleHandler extends BaseThingHandler {
             if ("signal".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandSigposStart");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Signal Position not supported {}", supported);
+                    logger.info("Signal Position not supported");
                 } else {
                     SigPosStart sps;
                     CommandRequest cr;
@@ -404,7 +402,7 @@ public class VehicleHandler extends BaseThingHandler {
                             accountHandler.get().sendCommand(cm);
                             break;
                         default:
-                            logger.info("No Positioning known for {}", command);
+                            logger.trace("No Positioning known for {}", command);
                     }
                 }
             }
@@ -435,7 +433,7 @@ public class VehicleHandler extends BaseThingHandler {
                                     OnOffType.from(autoUnlockToSelect)));
                             sendCommand = true;
                         } else {
-                            logger.info("No charge program found for {}", selectedChargeProgram);
+                            logger.trace("No charge program found for {}", selectedChargeProgram);
                         }
                     }
                     if ("auto-unlock".equals(channelUID.getIdWithoutGroup())) {
@@ -466,7 +464,7 @@ public class VehicleHandler extends BaseThingHandler {
                 String supported = thing.getProperties().get("commandSunroofOpen");
                 String pin = accountHandler.get().config.get().pin;
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Sunroof control not supported {}", supported);
+                    logger.info("Sunroof control not supported");
                 } else {
                     CommandRequest cr;
                     ClientMessage cm;
@@ -480,7 +478,7 @@ public class VehicleHandler extends BaseThingHandler {
                             break;
                         case 1:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing {}", pin);
+                                logger.info("Security PIN missing in Account bridge");
                             } else {
                                 SunroofOpen so = SunroofOpen.newBuilder().setPin(pin).build();
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -491,7 +489,7 @@ public class VehicleHandler extends BaseThingHandler {
                             break;
                         case 2:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing");
+                                logger.info("Security PIN missing in Account bridge");
                             } else {
                                 SunroofLift sl = SunroofLift.newBuilder().setPin(pin).build();
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -501,7 +499,7 @@ public class VehicleHandler extends BaseThingHandler {
                             }
                             break;
                         default:
-                            logger.info("No Sunroof movement known for {}", command);
+                            logger.trace("No Sunroof movement known for {}", command);
                     }
                 }
             }
@@ -551,7 +549,6 @@ public class VehicleHandler extends BaseThingHandler {
                     break;
             }
             ZEVPreconditioningConfigureSeats seats = buidler.build();
-            logger.info("{Seat config {}", seats.getAllFields());
             CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
                     .setRequestId(UUID.randomUUID().toString()).setZevPreconditionConfigureSeats(seats).build();
             ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
@@ -590,7 +587,6 @@ public class VehicleHandler extends BaseThingHandler {
          * Deliver proto update
          */
         try {
-            // logger.info("Received new proto data vep {}", data);
             String newProto = Utils.proto2Json(data, thing.getThingTypeUID());
             String combinedProto = newProto;
             ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
@@ -618,7 +614,6 @@ public class VehicleHandler extends BaseThingHandler {
          * handle "simple" values
          */
         atts.forEach((key, value) -> {
-            // logger.trace("Distribute {}", key);
             ChannelStateMap csm = Mapper.getChannelStateMap(key, value);
             if (csm.isValid()) {
                 /**
@@ -679,7 +674,6 @@ public class VehicleHandler extends BaseThingHandler {
                                         QuantityType.valueOf(unchargedValue, Units.KILOWATT_HOUR));
                                 updateChannel(uncharged);
                             } else {
-                                logger.trace("No battery capacity given");
                                 ChannelStateMap charged = new ChannelStateMap("charged", GROUP_RANGE,
                                         QuantityType.valueOf(0, Units.KILOWATT_HOUR));
                                 updateChannel(charged);
@@ -707,7 +701,6 @@ public class VehicleHandler extends BaseThingHandler {
                                         QuantityType.valueOf(litersFree, Mapper.defaultVolumeUnit));
                                 updateChannel(tankOpen);
                             } else {
-                                logger.trace("No fuel capacity given");
                                 ChannelStateMap tankFilled = new ChannelStateMap("tank-remain", GROUP_RANGE,
                                         QuantityType.valueOf(0, Mapper.defaultVolumeUnit));
                                 updateChannel(tankFilled);
@@ -759,7 +752,7 @@ public class VehicleHandler extends BaseThingHandler {
 
             } else {
                 if (fullUpdate) {
-                    logger.info("Either Latitude {} or Longitude {} attribute nil", lat, lon);
+                    logger.debug("Either Latitude {} or Longitude {} attribute nil", lat, lon);
                     updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, UnDefType.UNDEF));
                 }
             }
@@ -785,7 +778,7 @@ public class VehicleHandler extends BaseThingHandler {
                         if (hvacTemperaturePointAttribute.hasTemperatureUnit()) {
                             observer = new UOMObserver(hvacTemperaturePointAttribute.getTemperatureUnit().toString());
                             if (observer.getUnit().isEmpty()) {
-                                logger.warn("No Unit found for temperature - take default ");
+                                logger.trace("No Unit found for temperature - take default ");
                             } else {
                                 temperatureUnit = observer.getUnit().get();
                             }
@@ -802,7 +795,7 @@ public class VehicleHandler extends BaseThingHandler {
                                     try {
                                         temperature = Double.valueOf(point.getTemperatureDisplayValue());
                                     } catch (NumberFormatException nfe) {
-                                        logger.info("Cannot transform Temperature Display Value {} into Double",
+                                        logger.trace("Cannot transform Temperature Display Value {} into Double",
                                                 point.getTemperatureDisplayValue());
                                     }
                                 }
@@ -828,14 +821,16 @@ public class VehicleHandler extends BaseThingHandler {
                     mmcop.setCommandOptions(cuid, commandOptions);
                     mmsop.setStateOptions(cuid, stateOptions);
                 } else {
+                    // don't set to undef - maybe partial update
                     logger.trace("No TemperaturePoints found - list empty");
                 }
             } else {
+                // don't set to undef - maybe partial update
                 logger.trace("No TemperaturePointsValue found");
             }
         } else {
+            // full update acknowledged - set to undef
             if (fullUpdate) {
-                logger.trace("No TemperaturePoint Key found");
                 ChannelStateMap zoneMap = new ChannelStateMap("zone", Constants.GROUP_HVAC, UnDefType.UNDEF);
                 updateChannel(zoneMap);
                 QuantityType<Temperature> tempState = QuantityType.valueOf(-1, Mapper.defaultTemperatureUnit);
@@ -1213,7 +1208,6 @@ public class VehicleHandler extends BaseThingHandler {
             String pattern = deliveredObserver.getPattern(csm.getGroup(), csm.getChannel());
             if (pattern != null) {
                 if (pattern.startsWith("%") && change) {
-                    logger.trace("Set Pattern for {}#{} to {}", channel, csm.getGroup(), pattern);
                     mmdsdp.setStatePattern(cuid, pattern);
                 } else {
                     handleComplexTripPattern(channel, pattern);
@@ -1241,7 +1235,6 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void handleComplexTripPattern(String channel, String pattern) {
-        // logger.info("Handle pattern {} for {}", pattern, channel);
         switch (channel) {
             case "cons-ev":
             case "cons-ev-reset":
@@ -1255,8 +1248,6 @@ public class VehicleHandler extends BaseThingHandler {
                 ChannelStateMap csmFuel = new ChannelStateMap("cons-conv-unit", GROUP_TRIP, consumptionUnitFuel);
                 updateChannel(csmFuel);
                 break;
-            default:
-                // logger.info("No handling found: pattern {} for {}", pattern, channel);
         }
     }
 
@@ -1268,7 +1259,6 @@ public class VehicleHandler extends BaseThingHandler {
     @Override
     public void updateStatus(ThingStatus ts) {
         if (ThingStatus.ONLINE.equals(ts) && !ThingStatus.ONLINE.equals(thing.getStatus())) {
-            logger.info("Request capabilities");
             if (accountHandler.isPresent()) {
                 accountHandler.get().getVehicleCapabilities(config.get().vin);
             }
@@ -1277,7 +1267,6 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public void setFeatureCapabilities(@Nullable String capa) {
-        logger.trace("Received Capabilities Features {}", capa);
         if (capa != null) {
             ChannelStateMap csm = new ChannelStateMap("feature-capabilities", GROUP_VEHICLE, StringType.valueOf(capa));
             updateChannel(csm);
@@ -1285,7 +1274,6 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public void setCommandCapabilities(@Nullable String capa) {
-        logger.trace("Received Capabilities Commands{}", capa);
         if (capa != null) {
             ChannelStateMap csm = new ChannelStateMap("command-capabilities", GROUP_VEHICLE, StringType.valueOf(capa));
             updateChannel(csm);

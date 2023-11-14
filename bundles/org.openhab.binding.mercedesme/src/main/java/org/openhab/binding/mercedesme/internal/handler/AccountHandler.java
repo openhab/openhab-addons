@@ -199,7 +199,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
      */
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        logger.info("Token received {}", tokenResponse);
         if (!Constants.NOT_SET.equals(tokenResponse.getAccessToken())) {
             updateStatus(ThingStatus.ONLINE);
             scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
@@ -257,8 +256,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @SuppressWarnings("null")
     public void getVehicleCapabilities(String vin) {
-        logger.info("Register VIN Features? {} Commands? {}", storage.containsKey(vin + FEATURE_APPENDIX),
-                storage.containsKey(vin + COMMAND_APPENDIX));
         if (storage.containsKey(vin + FEATURE_APPENDIX)) {
             logger.info("Register VIN Features? {} Commands? {}", storage.containsKey(vin + FEATURE_APPENDIX),
                     storage.containsKey(vin + COMMAND_APPENDIX));
@@ -287,7 +284,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
         });
         notFoundList.forEach(vin -> {
-            logger.debug("No VehicleHandler available for VIN {}", vin);
+            logger.trace("No VehicleHandler available for VIN {}", vin);
         });
         return notFoundList.isEmpty();
     }
@@ -298,7 +295,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (h != null) {
                 h.distributeCommandStatus(value);
             } else {
-                logger.info("No VehicleHandler available for VIN {}", key);
+                logger.trace("No VehicleHandler available for VIN {}", key);
             }
         });
     }
@@ -407,7 +404,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             capabilitiesMap.put(vin, featureMap);
             return featureMap;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.info("Error retreiving capabilities: {}", e.getMessage());
+            logger.debug("Error retreiving capabilities: {}", e.getMessage());
             featureMap.clear();
         }
         return featureMap;
@@ -443,9 +440,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
         try {
             ContentResponse cr = poiRequest.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
-            logger.debug("Send POI Response {} : {}", cr.getStatus(), cr.getContentAsString());
+            logger.trace("Send POI Response {} : {}", cr.getStatus(), cr.getContentAsString());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error Sending POI {}", e.getMessage());
+            logger.trace("Error Sending POI {}", e.getMessage());
         }
     }
 }
