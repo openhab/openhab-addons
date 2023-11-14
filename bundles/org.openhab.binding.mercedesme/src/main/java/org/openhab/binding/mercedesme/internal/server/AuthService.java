@@ -120,10 +120,10 @@ public class AuthService {
             if (cr.getStatus() == 200) {
                 return pr.nonce;
             } else {
-                logger.info("{} Failed to request pin {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
+                logger.debug("{} Failed to request pin {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.info("{} Failed to request pin {}", prefix(), e.getMessage());
+            logger.debug("{} Failed to request pin {}", prefix(), e.getMessage());
         }
         return Constants.NOT_SET;
     }

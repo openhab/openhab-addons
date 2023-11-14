@@ -487,8 +487,7 @@ public class Utils {
                             ret = Double.valueOf(value.getDisplayValue());
                             return ret;
                         } catch (NumberFormatException nfe) {
-                            LOGGER.info("Cannot transform {} / {} Display Value {} into Double", value.getStringValue(),
-                                    value.toString(), value.getDisplayValue());
+                            LOGGER.trace("Cannot transform Display Value {} into Double", value.getDisplayValue());
                         }
                     }
                 }

@@ -8,7 +8,9 @@
 		<label>Starter Battery</label>
 		<state readOnly="true">
 			<options>
-				<option value="0">Charged</option>
+				<option value="0">Green</option>
+                <option value="1">Yellow</option>
+                <option value="2">Red</option>
 			</options>
 		</state>
 	</channel-type>

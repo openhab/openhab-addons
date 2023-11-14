@@ -104,7 +104,7 @@ public class AuthServlet extends HttpServlet {
             response.getWriter().println("</BODY>");
             response.getWriter().println("</HTML>");
         }
-        logger.debug("Call from {}:{} parameters {}", request.getLocalAddr(), request.getLocalPort(),
+        logger.trace("Call from {}:{} parameters {}", request.getLocalAddr(), request.getLocalPort(),
                 request.getParameterMap());
     }
 }

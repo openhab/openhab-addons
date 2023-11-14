@@ -76,6 +76,7 @@ public class MercedesMeMetadataAdjuster implements RegistryChangeListener<ItemCh
                     }
                     break;
                 case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "soc":
+                case Constants.GROUP_CHARGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "max-soc":
                 case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "fuel-level":
                     if (metadataRegistry.get(key) == null) {
                         metadataRegistry.add(new Metadata(key, Units.PERCENT.getSymbol(), null));

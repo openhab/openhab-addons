@@ -1,5 +1,4 @@
-- Item Unit Metadata adjustment to km / mi, bar / psi and %
-- home-distance channel added 
-- Bugfix: GSON Token transformation
-- Bugfix: Thing Status translation
-- Bugfix: Combustion consumption units
+- Starter Battery mappings added
+- park-brake missing in readme
+- max-soc channel unit %
+- Bugfix: End Websockt if disconnected from server side

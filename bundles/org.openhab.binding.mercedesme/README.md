@@ -151,6 +151,7 @@ Group name: `vehicle`
 | windows               | Number              |  Window Status and Control    | X    | X     |          |
 | door-status           | Number              |  Door Status                  | X    |       |          |
 | ignition              | Number              |  Ignition                     | X    | X     |          |
+| park-brake            | Switch              |  Park Brake Active            | X    |       |          |
 | feature-capabilities  | String              |  Feature Capabilities         | X    |       |    X     |
 | command-capabilities  | String              |  Command Capabilities         | X    |       |    X     |
 | proto-update          | String              |  Last Vehicle Data Update     | X    |       |    X     |
