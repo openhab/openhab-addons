@@ -110,6 +110,7 @@ public class IntrusionDetectionHandler extends BoschSHCHandler {
 
     private void updateChannels(IntrusionDetectionControlState controlState) {
         super.updateState(CHANNEL_ARMING_STATE, new StringType(controlState.value.toString()));
+        super.updateState(CHANNEL_ACTIVE_CONFIGURATION_PROFILE, new StringType(controlState.activeProfile));
     }
 
     private void updateChannels(SurveillanceAlarmState surveillanceAlarmState) {
