@@ -32,6 +32,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.Type;
 import org.openhab.core.types.TypeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,10 +199,10 @@ public class ChannelState implements MqttMessageSubscriber {
             return;
         }
 
-        Command parsedCommand;
+        Type parsedType;
         // Map the string to a command, update the cached value and post the command to the framework
         try {
-            parsedCommand = cachedValue.parseMessage(command);
+            parsedType = cachedValue.parseMessage(command);
         } catch (IllegalArgumentException | IllegalStateException e) {
             logger.warn("Command '{}' from channel '{}' not supported by type '{}': {}", strValue, channelUID,
                     cachedValue.getClass().getSimpleName(), e.getMessage());
@@ -209,18 +210,20 @@ public class ChannelState implements MqttMessageSubscriber {
             return;
         }
 
-        // things that are only Commands _must_ be posted as a command (like STOP)
-        if (!(parsedCommand instanceof State)) {
-            channelStateUpdateListener.postChannelCommand(channelUID, parsedCommand);
+        if (parsedType instanceof State parsedState) {
+            cachedValue.update(parsedState);
+        } else {
+            // things that are only Commands _must_ be posted as a command (like STOP)
+            channelStateUpdateListener.postChannelCommand(channelUID, (Command) parsedType);
             receivedOrTimeout();
             return;
         }
-        cachedValue.update((State) parsedCommand);
 
-        if (config.postCommand) {
-            channelStateUpdateListener.postChannelCommand(channelUID, (Command) cachedValue.getChannelState());
+        State newState = cachedValue.getChannelState();
+        if (config.postCommand && newState instanceof Command newCommand) {
+            channelStateUpdateListener.postChannelCommand(channelUID, newCommand);
         } else {
-            channelStateUpdateListener.updateChannelState(channelUID, cachedValue.getChannelState());
+            channelStateUpdateListener.updateChannelState(channelUID, newState);
         }
         receivedOrTimeout();
     }
