@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -149,16 +149,18 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                                 .call();
                         OTA_ChrgMangDataResp otaChrgMangDataResp = new ChargeStateUpdater(this).call();
 
-                        String execute = ABRP.updateAbrp("8cfc314b-03cd-4efe-ab7d-4431cd8f2e2d", config.abrpUserToken,
-                                otaRvmVehicleStatusResp25857, otaChrgMangDataResp);
+                        if (config.abrpUserToken != null && config.abrpUserToken.length() > 0) {
+                            String execute = ABRP.updateAbrp("8cfc314b-03cd-4efe-ab7d-4431cd8f2e2d",
+                                    config.abrpUserToken, otaRvmVehicleStatusResp25857, otaChrgMangDataResp);
 
-                        logger.debug("ABRP: {}", execute);
+                            logger.debug("ABRP: {}", execute);
+                        }
                     } catch (Exception e) {
                         logger.error("Could not refresh car data for {}", config.vin, e);
                     }
                 }
             }
-        }, 1, 1, TimeUnit.SECONDS);
+        }, 2, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     private void sendACCommand(byte command, byte temperature)

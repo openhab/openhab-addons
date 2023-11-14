@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.concurrent.TimeoutException;
 import org.bn.coders.IASN1PreparedElement;
 import org.openhab.binding.saicismart.internal.asn1.Util;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
@@ -94,9 +95,8 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
                         .decodeResponse(chargingStatusResponse);
 
             }
-
-            saiCiSMARTHandler.updateState(CHANNEL_SOC, new QuantityType<>(
-                    chargingStatusResponseMessage.getApplicationData().getBmsPackSOCDsp() / 10.d, Units.PERCENT));
+            saiCiSMARTHandler.updateState(CHANNEL_SOC,
+                    new DecimalType(chargingStatusResponseMessage.getApplicationData().getBmsPackSOCDsp() / 10.d));
             logger.debug("Got message: {}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(chargingStatusResponseMessage));
 
@@ -112,7 +112,7 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
             return chargingStatusResponseMessage.getApplicationData();
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
-            logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
+            logger.warn("Could not get vehicle charging data for {}. {}", saiCiSMARTHandler.config.vin, e.getMessage());
         }
         return null;
     }

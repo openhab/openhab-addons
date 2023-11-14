@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -167,7 +167,8 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     logger.debug("Got message: {}",
                             new GsonBuilder().setPrettyPrinting().create().toJson(messageListResponseMessage));
 
-                    if (messageListResponseMessage.getApplicationData() != null) {
+                    if (messageListResponseMessage.getApplicationData() != null
+                            && messageListResponseMessage.getApplicationData().getMessages() != null) {
                         for (net.heberling.ismart.asn1.v1_1.entity.Message message : messageListResponseMessage
                                 .getApplicationData().getMessages()) {
                             if (message.isVinPresent()) {
@@ -189,7 +190,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     logger.error("Could not get messages from SAIC iSMART account", e);
                 }
             }
-        }, 1, 1, TimeUnit.SECONDS);
+        }, 1, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     private void registerAlarmMessage(String uid, String token, MP_AlarmSettingType.EnumType type)

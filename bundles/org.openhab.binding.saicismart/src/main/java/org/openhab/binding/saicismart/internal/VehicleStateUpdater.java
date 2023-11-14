@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -242,7 +242,7 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
             return chargingStatusResponseMessage.getApplicationData();
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
-            logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
+            logger.warn("Could not get vehicle status data for {}. {}", saiCiSMARTHandler.config.vin, e.getMessage());
             return null;
         }
     }

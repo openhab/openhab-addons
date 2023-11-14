@@ -17,7 +17,7 @@
 		<channels>
 			<channel id="milage" typeId="mileage-channel"/>
 			<channel id="range-electric" typeId="range-electric-channel"/>
-			<channel id="soc" typeId="soc-channel"/>
+			<channel id="soc" typeId="system.battery-level"/>
 			<channel id="power" typeId="power-channel"/>
 			<channel id="charging" typeId="charging-channel"/>
 			<channel id="engine" typeId="engine-channel"/>
@@ -106,16 +106,6 @@
 	<channel-type id="range-electric-channel">
 		<item-type>Number:Length</item-type>
 		<label>Electric Range</label>
-		<state pattern="%d %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="soc-channel">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Battery Charge Level</label>
-		<category>BatteryLevel</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-channel">
