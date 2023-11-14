@@ -78,6 +78,11 @@
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="undefValue" type="text">
+			<label>UNDEF Value</label>
+			<description>If the received MQTT value matches this, treat it as UNDEF.</description>
+			<advanced>true</advanced>
+		</parameter>
 
 		<parameter name="allowedStates" type="text">
 			<label>Allowed States</label>
