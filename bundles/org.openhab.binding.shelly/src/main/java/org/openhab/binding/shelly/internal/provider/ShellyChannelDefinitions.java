@@ -657,19 +657,19 @@ public class ShellyChannelDefinitions {
             this.typeId = typeId;
 
             groupLabel = getText(PREFIX_GROUP + group + ".label");
-            if (groupLabel.startsWith(PREFIX_GROUP)) {
+            if (groupLabel.contains(PREFIX_GROUP)) {
                 groupLabel = "";
             }
             groupDescription = getText(PREFIX_GROUP + group + ".description");
-            if (groupDescription.startsWith(PREFIX_GROUP)) {
+            if (groupDescription.contains(PREFIX_GROUP)) {
                 groupDescription = "";
             }
             label = getText(PREFIX_CHANNEL + typeId.replace(':', '.') + ".label");
-            if (label.startsWith(PREFIX_CHANNEL)) {
+            if (label.contains(PREFIX_CHANNEL)) {
                 label = "";
             }
             description = getText(PREFIX_CHANNEL + typeId + ".description");
-            if (description.startsWith(PREFIX_CHANNEL)) {
+            if (description.contains(PREFIX_CHANNEL)) {
                 description = ""; // no resource found
             }
         }

@@ -117,11 +117,6 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                         properties.put(ATTRIBUTE_FIRMWARE_SEL, "");
                         properties.put(ATTRIBUTE_ACTION_LIST, "");
                     }
-                    if (profile.isBlu) {
-                        properties.put(ATTRIBUTE_DISPLAY_NAME, profile.thingName);
-                        properties.put(ATTRIBUTE_DEVICEIP, "n/a");
-                        properties.put(PROPERTY_WIFI_NETW, "Bluetooth");
-                    }
                     html += loadHTML(OVERVIEW_DEVICE, properties);
                 }
             } catch (ShellyApiException e) {
@@ -198,13 +193,10 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             logger.debug("{}: Unable to retrieve firmware list: {}", LOG_PREFIX, e.toString());
         }
 
-        html += "\t\t\t\t\t<option class=\"select-hr\" value=\"" + SHELLY_MGR_FWUPDATE_URI + "?uid=" + uid;
-        if (!profile.isBlu) {
-            html += "&connection=custom\">Custom URL";
-        } else {
-            html += "\">Check Device App";
-        }
-        html += "</option>\n\t\t\t\t</select>\n\t\t\t";
+        html += "\t\t\t\t\t<option class=\"select-hr\" value=\"" + SHELLY_MGR_FWUPDATE_URI + "?uid=" + uid
+                + "&connection=custom\">Custom URL</option>\n";
+
+        html += "\t\t\t\t</select>\n\t\t\t";
 
         return html;
     }

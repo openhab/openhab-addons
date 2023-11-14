@@ -220,8 +220,7 @@ public class ShellyDeviceProfile {
         isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR);
         isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR)
                 || thingType.equals(THING_TYPE_SHELLYBLUDW_STR);
-        isMotion = thingType.startsWith(THING_TYPE_SHELLYMOTION_STR)
-                || thingType.equals(THING_TYPE_SHELLYBLUMOTION_STR);
+        isMotion = thingType.startsWith(THING_TYPE_SHELLYMOTION_STR);
         isSense = thingType.equals(THING_TYPE_SHELLYSENSE_STR);
         isIX = thingType.equals(THING_TYPE_SHELLYIX3_STR) || thingType.equals(THING_TYPE_SHELLYPLUSI4_STR)
                 || thingType.equals(THING_TYPE_SHELLYPLUSI4DC_STR);
