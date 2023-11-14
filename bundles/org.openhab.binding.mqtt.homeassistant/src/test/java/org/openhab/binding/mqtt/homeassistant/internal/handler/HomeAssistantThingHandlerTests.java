@@ -106,9 +106,9 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopic)), any(Climate.class));
 
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(6));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), CoreMatchers.is(6));
         verify(stateDescriptionProvider, times(6)).setDescription(any(), any(StateDescription.class));
-        verify(channelTypeProvider, times(1)).setChannelGroupType(any(), any());
+        verify(channelTypeProvider, times(1)).putChannelGroupType(any());
 
         configTopic = "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config";
         thingHandler.discoverComponents.processMessage(configTopic,
@@ -117,9 +117,9 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopic)), any(Switch.class));
 
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(7));
-        verify(stateDescriptionProvider, times(7)).setDescription(any(), any(StateDescription.class));
-        verify(channelTypeProvider, times(2)).setChannelGroupType(any(), any());
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), CoreMatchers.is(7));
+        verify(stateDescriptionProvider, atLeast(7)).setDescription(any(), any(StateDescription.class));
+        verify(channelTypeProvider, times(3)).putChannelGroupType(any());
     }
 
     /**
@@ -171,7 +171,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopicTempCorridor)), any(Sensor.class));
         thingHandler.delayedProcessing.forceProcessNow();
         waitForAssert(() -> {
-            assertThat("1 channel created", thingHandler.getThing().getChannels().size() == 1);
+            assertThat("1 channel created", nonSpyThingHandler.getThing().getChannels().size() == 1);
         });
 
         //
@@ -187,7 +187,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         thingHandler.delayedProcessing.forceProcessNow();
         verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopicTempOutside)), any(Sensor.class));
         waitForAssert(() -> {
-            assertThat("2 channel created", thingHandler.getThing().getChannels().size() == 2);
+            assertThat("2 channel created", nonSpyThingHandler.getThing().getChannels().size() == 2);
         });
 
         //
@@ -202,7 +202,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         thingHandler.delayedProcessing.forceProcessNow();
 
         waitForAssert(() -> {
-            assertThat("2 channel created", thingHandler.getThing().getChannels().size() == 2);
+            assertThat("2 channel created", nonSpyThingHandler.getThing().getChannels().size() == 2);
         });
 
         //
@@ -220,7 +220,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(thingHandler, times(2)).componentDiscovered(eq(new HaID(configTopicTempCorridor)), any(Sensor.class));
 
         waitForAssert(() -> {
-            assertThat("2 channel created", thingHandler.getThing().getChannels().size() == 2);
+            assertThat("2 channel created", nonSpyThingHandler.getThing().getChannels().size() == 2);
         });
     }
 
@@ -240,8 +240,8 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
                 "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config",
                 getResourceAsByteArray("component/configTS0601AutoLock.json"));
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(7));
-        verify(stateDescriptionProvider, times(7)).setDescription(any(), any(StateDescription.class));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), CoreMatchers.is(7));
+        verify(stateDescriptionProvider, atLeast(7)).setDescription(any(), any(StateDescription.class));
 
         // When dispose
         thingHandler.dispose();
@@ -250,6 +250,28 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         MQTT_TOPICS.forEach(t -> {
             verify(bridgeConnection, timeout(SUBSCRIBE_TIMEOUT)).unsubscribe(eq(t), any());
         });
+    }
+
+    @Test
+    public void testRemoveThing() {
+        thingHandler.initialize();
+
+        // Expect subscription on each topic from config
+        CONFIG_TOPICS.forEach(t -> {
+            var fullTopic = HandlerConfiguration.DEFAULT_BASETOPIC + "/" + t + "/config";
+            verify(bridgeConnection, timeout(SUBSCRIBE_TIMEOUT)).subscribe(eq(fullTopic), any());
+        });
+        thingHandler.discoverComponents.processMessage(
+                "homeassistant/climate/0x847127fffe11dd6a_climate_zigbee2mqtt/config",
+                getResourceAsByteArray("component/configTS0601ClimateThermostat.json"));
+        thingHandler.discoverComponents.processMessage(
+                "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config",
+                getResourceAsByteArray("component/configTS0601AutoLock.json"));
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), CoreMatchers.is(7));
+
+        // When dispose
+        nonSpyThingHandler.handleRemoval();
 
         // Expect channel descriptions removed, 6 for climate and 1 for switch
         verify(stateDescriptionProvider, times(7)).remove(any());

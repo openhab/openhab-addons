@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Predicate;
@@ -59,37 +60,24 @@ import org.openhab.core.types.StateDescription;
 public class ComponentChannel {
     private static final String JINJA = "JINJA";
 
-    private final ChannelUID channelUID;
     private final ChannelState channelState;
     private final Channel channel;
-    private final ChannelTypeUID channelTypeUID;
     private final @Nullable StateDescription stateDescription;
     private final @Nullable CommandDescription commandDescription;
     private final ChannelStateUpdateListener channelStateUpdateListener;
 
-    private ComponentChannel(ChannelUID channelUID, ChannelState channelState, Channel channel,
-            ChannelTypeUID channelTypeUID, @Nullable StateDescription stateDescription,
+    private ComponentChannel(ChannelState channelState, Channel channel, @Nullable StateDescription stateDescription,
             @Nullable CommandDescription commandDescription, ChannelStateUpdateListener channelStateUpdateListener) {
         super();
-        this.channelUID = channelUID;
         this.channelState = channelState;
         this.channel = channel;
-        this.channelTypeUID = channelTypeUID;
         this.stateDescription = stateDescription;
         this.commandDescription = commandDescription;
         this.channelStateUpdateListener = channelStateUpdateListener;
     }
 
-    public ChannelUID getChannelUID() {
-        return channelUID;
-    }
-
     public Channel getChannel() {
         return channel;
-    }
-
-    public ChannelTypeUID getChannelTypeUID() {
-        return channelTypeUID;
     }
 
     public ChannelState getState() {
@@ -117,7 +105,8 @@ public class ComponentChannel {
     }
 
     public ChannelDefinition channelDefinition() {
-        return new ChannelDefinitionBuilder(channelUID.getId(), channelTypeUID).build();
+        return new ChannelDefinitionBuilder(channel.getUID().getId(),
+                Objects.requireNonNull(channel.getChannelTypeUID())).withLabel(channel.getLabel()).build();
     }
 
     public void resetState() {
@@ -271,8 +260,8 @@ public class ComponentChannel {
                     .withKind(kind).withLabel(label).withConfiguration(configuration)
                     .withAutoUpdatePolicy(autoUpdatePolicy).build();
 
-            ComponentChannel result = new ComponentChannel(channelUID, channelState, channel, channelTypeUID,
-                    stateDescription, commandDescription, channelStateUpdateListener);
+            ComponentChannel result = new ComponentChannel(channelState, channel, stateDescription, commandDescription,
+                    channelStateUpdateListener);
 
             TransformationServiceProvider transformationProvider = component.getTransformationServiceProvider();
 

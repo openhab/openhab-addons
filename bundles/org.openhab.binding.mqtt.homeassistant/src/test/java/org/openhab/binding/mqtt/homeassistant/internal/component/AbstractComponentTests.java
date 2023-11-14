@@ -195,7 +195,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      */
     protected void assertTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, String trigger) {
-        verify(thingHandler).triggerChannel(eq(component.getChannel(channelId).getChannelUID()), eq(trigger));
+        verify(thingHandler).triggerChannel(eq(component.getChannel(channelId).getChannel().getUID()), eq(trigger));
     }
 
     /**
@@ -279,7 +279,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     protected void sendCommand(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, Command command) {
         var channel = Objects.requireNonNull(component.getChannel(channelId));
-        thingHandler.handleCommand(channel.getChannelUID(), command);
+        thingHandler.handleCommand(channel.getChannel().getUID(), command);
     }
 
     protected static class LatchThingHandler extends HomeAssistantThingHandler {

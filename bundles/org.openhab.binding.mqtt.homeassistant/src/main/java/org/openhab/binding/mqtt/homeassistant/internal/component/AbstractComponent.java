@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
-import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
@@ -39,6 +37,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Availability;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AvailabilityMode;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.type.ChannelDefinition;
@@ -49,6 +48,8 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -63,9 +64,10 @@ import com.google.gson.Gson;
 public abstract class AbstractComponent<C extends AbstractChannelConfiguration> {
     private static final String JINJA_PREFIX = "JINJA:";
 
+    private final Logger logger = LoggerFactory.getLogger(AbstractComponent.class);
+
     // Component location fields
     protected final ComponentConfiguration componentConfiguration;
-    protected final @Nullable ChannelGroupTypeUID channelGroupTypeUID;
     protected final @Nullable ChannelGroupUID channelGroupUID;
     protected final HaID haID;
 
@@ -83,6 +85,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     protected final boolean newStyleChannels;
     protected final boolean singleChannelComponent;
     protected final String groupId;
+    protected final String uniqueId;
 
     public AbstractComponent(ComponentFactory.ComponentConfiguration componentConfiguration, Class<C> clazz,
             boolean newStyleChannels) {
@@ -115,17 +118,20 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             groupId = this.haID.getGroupId(channelConfiguration.getUniqueId(), newStyleChannels);
 
             if (this.singleChannelComponent) {
-                this.channelGroupTypeUID = null;
                 this.channelGroupUID = null;
             } else {
-                this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, groupId);
+
                 this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), groupId);
             }
         } else {
-            groupId = "";
-            this.channelGroupTypeUID = null;
+            if (newStyleChannels && this.singleChannelComponent) {
+                groupId = haID.component;
+            } else {
+                groupId = "";
+            }
             this.channelGroupUID = null;
         }
+        uniqueId = this.haID.getGroupId(channelConfiguration.getUniqueId(), false);
 
         this.configSeen = false;
 
@@ -205,41 +211,21 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     }
 
     /**
-     * Add all channel types to the channel type provider.
+     * Add all state and command descriptions to the state description provider.
      *
-     * @param channelTypeProvider The channel type provider
+     * @param stateDescriptionProvider The state description provider
      */
-    public void addChannelTypes(MqttChannelTypeProvider channelTypeProvider,
-            MqttChannelStateDescriptionProvider stateDescriptionProvider) {
-        ChannelGroupTypeUID groupTypeUID = channelGroupTypeUID;
-        if (groupTypeUID != null) {
-            channelTypeProvider.setChannelGroupType(groupTypeUID, Objects.requireNonNull(getType()));
-        }
+    public void addStateDescriptions(MqttChannelStateDescriptionProvider stateDescriptionProvider) {
         channels.values().forEach(channel -> {
             StateDescription stateDescription = channel.getStateDescription();
             if (stateDescription != null) {
-                stateDescriptionProvider.setDescription(channel.getChannelUID(), stateDescription);
+                stateDescriptionProvider.setDescription(channel.getChannel().getUID(), stateDescription);
             }
             CommandDescription commandDescription = channel.getCommandDescription();
             if (commandDescription != null) {
-                stateDescriptionProvider.setDescription(channel.getChannelUID(), commandDescription);
+                stateDescriptionProvider.setDescription(channel.getChannel().getUID(), commandDescription);
             }
         });
-    }
-
-    /**
-     * Removes all channels from the channel type provider.
-     * Call this if the corresponding Thing handler gets disposed.
-     *
-     * @param channelTypeProvider The channel type provider
-     */
-    public void removeChannelTypes(MqttChannelTypeProvider channelTypeProvider,
-            MqttChannelStateDescriptionProvider stateDescriptionProvider) {
-        ChannelGroupTypeUID groupTypeUID = channelGroupTypeUID;
-        if (groupTypeUID != null) {
-            channelTypeProvider.removeChannelGroupType(groupTypeUID);
-        }
-        channels.values().forEach(v -> stateDescriptionProvider.remove(v.getChannelUID()));
     }
 
     public ChannelUID buildChannelUID(String channelID) {
@@ -250,18 +236,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         return new ChannelUID(componentConfiguration.getThingUID(), channelID);
     }
 
-    /**
-     * Each HomeAssistant component corresponds to a Channel Group Type.
-     */
-    public @Nullable ChannelGroupTypeUID getGroupTypeUID() {
-        return channelGroupTypeUID;
-    }
-
-    /**
-     * The unique id of this component.
-     */
-    public @Nullable ChannelGroupUID getGroupUID() {
-        return channelGroupUID;
+    public String getGroupId() {
+        return groupId;
     }
 
     /**
@@ -309,19 +285,27 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     /**
      * Return the channel group type.
      */
-    public @Nullable ChannelGroupType getType() {
-        ChannelGroupTypeUID groupTypeUID = channelGroupTypeUID;
-        if (groupTypeUID == null) {
+    public @Nullable ChannelGroupType getChannelGroupType(String prefix) {
+        if (channelGroupUID == null) {
             return null;
         }
-        final List<ChannelDefinition> channelDefinitions = channels.values().stream()
-                .map(ComponentChannel::channelDefinition).collect(Collectors.toList());
-        return ChannelGroupTypeBuilder.instance(groupTypeUID, getName()).withChannelDefinitions(channelDefinitions)
-                .build();
+        return ChannelGroupTypeBuilder.instance(getChannelGroupTypeUID(prefix), getName())
+                .withChannelDefinitions(getAllChannelDefinitions()).build();
     }
 
-    public List<ChannelDefinition> getChannels() {
-        return channels.values().stream().map(ComponentChannel::channelDefinition).collect(Collectors.toList());
+    public List<ChannelDefinition> getChannelDefinitions() {
+        if (channelGroupUID != null) {
+            return List.of();
+        }
+        return getAllChannelDefinitions();
+    }
+
+    private List<ChannelDefinition> getAllChannelDefinitions() {
+        return channels.values().stream().map(ComponentChannel::channelDefinition).toList();
+    }
+
+    public List<Channel> getChannels() {
+        return channels.values().stream().map(ComponentChannel::getChannel).toList();
     }
 
     /**
@@ -335,12 +319,15 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     /**
      * Return the channel group definition for this component.
      */
-    public @Nullable ChannelGroupDefinition getGroupDefinition() {
-        ChannelGroupTypeUID groupTypeUID = channelGroupTypeUID;
-        if (groupTypeUID == null) {
+    public @Nullable ChannelGroupDefinition getGroupDefinition(String prefix) {
+        if (channelGroupUID == null) {
             return null;
         }
-        return new ChannelGroupDefinition(channelGroupUID.getId(), groupTypeUID, getName(), null);
+        return new ChannelGroupDefinition(channelGroupUID.getId(), getChannelGroupTypeUID(prefix), getName(), null);
+    }
+
+    public boolean hasGroup() {
+        return channelGroupUID != null;
     }
 
     public HaID getHaID() {
@@ -366,5 +353,9 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     public C getChannelConfiguration() {
         return channelConfiguration;
+    }
+
+    private ChannelGroupTypeUID getChannelGroupTypeUID(String prefix) {
+        return new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, prefix + "_" + uniqueId);
     }
 }

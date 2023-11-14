@@ -161,8 +161,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         ComponentDiscovered cd = (haID, c) -> {
             haComponents.put(c.getGroupUID().getId(), c);
             c.addChannelTypes(channelTypeProvider);
-            channelTypeProvider.setChannelGroupType(Objects.requireNonNull(c.getGroupTypeUID()),
-                    Objects.requireNonNull(c.getType()));
+            channelTypeProvider.putChannelGroupType(Objects.requireNonNull(c.getGroupTypeUID()), Objects.requireNonNull(c.getType()));
             latch.countDown();
         };
 
@@ -182,9 +181,9 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         assertThat(haComponents.size(), is(1));
 
         // For the switch component we should have one channel group type and one channel type
-        // setChannelGroupType is called once above
-        verify(channelTypeProvider, times(2)).setChannelGroupType(any(), any());
-        verify(channelTypeProvider, times(1)).setChannelType(any(), any());
+        // putChannelGroupType is called once above
+        verify(channelTypeProvider, times(2)).putChannelGroupType(any(), any());
+        verify(channelTypeProvider, times(1)).putChannelType(any(), any());
 
         String channelGroupId = UIDUtils
                 .encode("node_" + ThingChannelConstants.TEST_HOME_ASSISTANT_THING.getId() + "_switch");

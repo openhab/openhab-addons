@@ -51,6 +51,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.type.ThingType;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -144,7 +145,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return typeProvider.getThingTypeUIDs();
+        return typeProvider.getThingTypes(null).stream().map(ThingType::getUID).collect(Collectors.toSet());
     }
 
     /**
