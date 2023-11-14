@@ -26,6 +26,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandDescriptionBuilder;
 import org.openhab.core.types.CommandOption;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 
@@ -37,6 +38,32 @@ import org.openhab.core.types.StateOption;
 @NonNullByDefault
 public class TextValue extends Value {
     private final @Nullable Set<String> states;
+    private final @Nullable Set<String> commands;
+
+    /**
+     * Create a string value with a limited number of allowed states and commands.
+     *
+     * @param states Allowed states. Empty states are filtered out. If the resulting set is empty, all string values
+     *            will be allowed.
+     * @param commands Allowed commands. Empty commands are filtered out. If the resulting set is empty, all string
+     *            values
+     *            will be allowed.
+     */
+    public TextValue(String[] states, String[] commands) {
+        super(CoreItemFactory.STRING, List.of(StringType.class));
+        Set<String> s = Stream.of(states).filter(not(String::isBlank)).collect(Collectors.toSet());
+        if (!s.isEmpty()) {
+            this.states = s;
+        } else {
+            this.states = null;
+        }
+        s = Stream.of(commands).filter(not(String::isBlank)).collect(Collectors.toSet());
+        if (!s.isEmpty()) {
+            this.commands = s;
+        } else {
+            this.commands = this.states;
+        }
+    }
 
     /**
      * Create a string value with a limited number of allowed states.
@@ -45,22 +72,27 @@ public class TextValue extends Value {
      *            will be allowed.
      */
     public TextValue(String[] states) {
-        super(CoreItemFactory.STRING, List.of(StringType.class));
-        Set<String> s = Stream.of(states).filter(not(String::isBlank)).collect(Collectors.toSet());
-        if (!s.isEmpty()) {
-            this.states = s;
-        } else {
-            this.states = null;
-        }
+        this(states, states);
     }
 
     public TextValue() {
         super(CoreItemFactory.STRING, List.of(StringType.class));
         this.states = null;
+        this.commands = null;
     }
 
     @Override
     public StringType parseCommand(Command command) throws IllegalArgumentException {
+        final Set<String> commands = this.commands;
+        String valueStr = command.toString();
+        if (commands != null && !commands.contains(valueStr)) {
+            throw new IllegalArgumentException("Value " + valueStr + " not within range");
+        }
+        return new StringType(valueStr);
+    }
+
+    @Override
+    public State parseMessage(Command command) throws IllegalArgumentException {
         final Set<String> states = this.states;
         String valueStr = command.toString();
         if (states != null && !states.contains(valueStr)) {
@@ -91,8 +123,8 @@ public class TextValue extends Value {
     @Override
     public CommandDescriptionBuilder createCommandDescription() {
         CommandDescriptionBuilder builder = super.createCommandDescription();
-        final Set<String> commands = this.states;
-        if (states != null) {
+        final Set<String> commands = this.commands;
+        if (commands != null) {
             for (String command : commands) {
                 builder = builder.withCommandOption(new CommandOption(command, command));
             }
