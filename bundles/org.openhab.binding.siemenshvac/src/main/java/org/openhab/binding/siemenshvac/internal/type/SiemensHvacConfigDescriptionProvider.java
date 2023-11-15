@@ -59,5 +59,5 @@ public interface SiemensHvacConfigDescriptionProvider extends ConfigDescriptionP
      *         before
      */
     @Nullable
-    public ConfigDescription getInternalConfigDescription(URI uri);
+    ConfigDescription getInternalConfigDescription(URI uri);
 }
