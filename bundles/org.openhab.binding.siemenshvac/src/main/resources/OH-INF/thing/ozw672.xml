@@ -18,13 +18,13 @@
 			<parameter name="userName" type="text">
 				<description>User name of the Siemens Hvac gateway</description>
 				<required>false</required>
-				<label>userName</label>
+				<label>User Name</label>
 				<default>Administrator</default>
 			</parameter>
 			<parameter name="userPassword" type="text">
 				<description>User password of the Siemens Hvac gateway</description>
 				<required>false</required>
-				<label>userPassword</label>
+				<label>User Password</label>
 				<default>password</default>
 			</parameter>
 		</config-description>
