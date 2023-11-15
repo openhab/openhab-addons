@@ -62,8 +62,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private final Logger logger = LoggerFactory.getLogger(SiemensHvacConnectorImpl.class);
 
-    private static final Gson gson;
-    private static final Gson gsonWithAdapter;
+    private final Gson gson;
+    private final Gson gsonWithAdapter;
 
     private @Nullable String sessionId = null;
     private @Nullable String sessionIdHttp = null;
@@ -81,7 +81,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private @Nullable SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler;
 
-    static {
+    @Activate
+    public SiemensHvacConnectorImpl(@Reference HttpClientFactory httpClientFactory) {
         GsonBuilder builder = new GsonBuilder();
         gson = builder.setPrettyPrinting().create();
 
@@ -92,10 +93,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
         gsonWithAdapter = new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
 
-    }
-
-    @Activate
-    public SiemensHvacConnectorImpl(@Reference HttpClientFactory httpClientFactory) {
         this.updateCommand = new Hashtable<String, Type>();
         this.httpClientFactory = httpClientFactory;
 
@@ -458,22 +455,22 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         logger.debug("WaitNoNewRequest:end WaitAllStartingRequest");
     }
 
-    public static Gson getGson() {
+    public Gson getGson() {
         return gson;
     }
 
-    public static Gson getGsonWithAdapter() {
+    public Gson getGsonWithAdapter() {
         return gsonWithAdapter;
     }
 
-    public void AddDpUpdate(String itemName, Type dp) {
+    public void addDpUpdate(String itemName, Type dp) {
         synchronized (updateCommand) {
             updateCommand.put(itemName, dp);
         }
     }
 
     @Override
-    public void ResetSessionId(boolean web) {
+    public void resetSessionId(boolean web) {
         if (web) {
             sessionIdHttp = null;
         } else {

@@ -33,7 +33,6 @@ import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingCons
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeConfig;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacCallback;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
-import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnectorImpl;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelGroupTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacConfigDescriptionProvider;
@@ -752,8 +751,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     + "&submit=OK";
             if (lcHvacConnector != null) {
                 lcHvacConnector.doBasicRequest(request);
-                lcHvacConnector.ResetSessionId(false);
-                lcHvacConnector.ResetSessionId(true);
+                lcHvacConnector.resetSessionId(false);
+                lcHvacConnector.resetSessionId(true);
             }
 
         } catch (
@@ -1134,7 +1133,9 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             byte[] bytes = Files.readAllBytes(file.toPath());
             String js = new String(bytes, StandardCharsets.UTF_8);
 
-            root = SiemensHvacConnectorImpl.getGsonWithAdapter().fromJson(js, SiemensHvacMetadataMenu.class);
+            if (hvacConnector != null) {
+                root = hvacConnector.getGsonWithAdapter().fromJson(js, SiemensHvacMetadataMenu.class);
+            }
         } catch (IOException ioe) {
             logger.warn("Couldn't read Siemens MetaData information from file '{}'.", file.getAbsolutePath());
 
@@ -1153,11 +1154,13 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             }
 
             try (FileOutputStream os = new FileOutputStream(file)) {
-                String js = SiemensHvacConnectorImpl.getGsonWithAdapter().toJson(root);
+                if (hvacConnector != null) {
+                    String js = hvacConnector.getGsonWithAdapter().toJson(root);
 
-                byte[] bt = js.getBytes();
-                os.write(bt);
-                os.flush();
+                    byte[] bt = js.getBytes();
+                    os.write(bt);
+                    os.flush();
+                }
             }
 
         } catch (IOException ioe) {
