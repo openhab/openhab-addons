@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.siemenshvac.internal.type;
 
+import java.text.Normalizer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
@@ -39,72 +41,22 @@ public class UidUtils {
      * @return the label without invalid character
      */
     public static String sanetizeId(String label) {
-        StringBuffer buffer = new StringBuffer();
+        String result = label;
 
-        for (int i = 0; i < label.length(); i++) {
-            char c = label.charAt(i);
-            if (c >= 232 && c <= 234) {
-                c = 'e';
-            } else if (c >= 200 && c <= 202) {
-                c = 'E';
-            }
-
-            else if (c >= 236 && c <= 239) {
-                c = 'i';
-            } else if (c >= 204 && c <= 207) {
-                c = 'I';
-            }
-
-            else if (c >= 242 && c <= 246) {
-                c = 'o';
-            } else if (c >= 249 && c <= 252) {
-                c = 'u';
-            } else if (c >= 217 && c <= 220) {
-                c = 'U';
-            }
-
-            else if (c >= 224 && c <= 229) {
-                c = 'a';
-            } else if (c == 192 && c <= 197) {
-                c = 'A';
-            }
-
-            else if (c == 199) {
-                c = 'c';
-            } else if (c == 231) {
-                c = 'C';
-            }
-
-            else if (c == '_') {
-                c = '_';
-            } else if (c == ' ') {
-                c = '_';
-            } else if (c == '&') {
-                c = '_';
-            } else if (c == '/') {
-                c = '_';
-            } else if (c == '.') {
-                c = '_';
-            } else if (c == '(') {
-                c = '_';
-            } else if (c == ')') {
-                c = '_';
-            }
-
-            else if (c == 248) {
-                c = '_';
-            } else if (c == '\'') {
-                c = '_';
-            }
-
-            if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '-')) {
-                c = '_';
-            }
-
-            buffer.append(c);
+        if (!Normalizer.isNormalized(label, Normalizer.Form.NFKD)) {
+            result = Normalizer.normalize(label, Normalizer.Form.NFKD);
+            result = result.replaceAll("\\p{M}", "");
         }
 
-        return buffer.toString();
+        result = result.replace(' ', '_');
+        result = result.replace('.', '_');
+        result = result.replace('\'', '_');
+        result = result.replace('(', '_');
+        result = result.replace(')', '_');
+        result = result.replace('&', '_');
+        result = result.replace('/', '_');
+
+        return result;
     }
 
     /**
