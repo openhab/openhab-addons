@@ -126,3 +126,4 @@ Number             Thermostat_Temperature      "Thermostat tempeature [%.1f °C]
 Number             Thermostat_Setpoint         "Thermostat setpoint [%.1f °C]"         { channel = "siemenshvac:RVS41_813_327:local:local:1724#1726_ConsConfort_TA_CC1"        }
 Number             Heat_Mode                   "Heat mode [%s]"                        { channel = "siemenshvac:RVS41_813_327:local:local:1724#1725_Regime_CC1"                }
 ``` 
+
