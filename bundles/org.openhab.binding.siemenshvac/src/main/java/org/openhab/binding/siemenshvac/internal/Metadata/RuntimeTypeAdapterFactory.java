@@ -33,7 +33,7 @@
  * com.google.gson.internal.{Streams,TypeAdapters,LazilyParsedNumber}
  * to avoid using the internal package.
  */
-package org.openhab.binding.siemenshvac.internal.Metadata;
+package org.openhab.binding.siemenshvac.internal.metadata;
 
 import java.io.EOFException;
 import java.io.IOException;

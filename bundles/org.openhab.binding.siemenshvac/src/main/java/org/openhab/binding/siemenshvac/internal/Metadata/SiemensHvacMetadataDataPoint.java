@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.siemenshvac.internal.Metadata;
+package org.openhab.binding.siemenshvac.internal.metadata;
 
 import java.util.ArrayList;
 import java.util.List;

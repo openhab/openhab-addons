@@ -19,10 +19,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDevice;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThingHandler;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDevice;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.type.UidUtils;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;

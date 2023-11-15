@@ -17,8 +17,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.discovery.SiemensHvacDeviceDiscoveryService;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;

@@ -14,10 +14,10 @@ package org.openhab.binding.siemenshvac.internal.factory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacHandlerImpl;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacOZW672BridgeThingHandler;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
