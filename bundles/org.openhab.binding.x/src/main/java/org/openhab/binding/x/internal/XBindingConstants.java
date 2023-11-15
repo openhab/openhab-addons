@@ -10,25 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.twitter.internal;
+package org.openhab.binding.x.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link TwitterBindingConstants} class defines common constants, which are
+ * The {@link XBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
-public class TwitterBindingConstants {
+public class XBindingConstants {
 
-    private static final String BINDING_ID = "twitter";
+    private static final String BINDING_ID = "x";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
 
     // List of all Channel ids
-    public static final String CHANNEL_LASTTWEET = "lasttweet";
+    public static final String CHANNEL_LASTPOST = "lastpost";
 }

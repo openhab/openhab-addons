@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.twitter.internal.action;
+package org.openhab.binding.x.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.twitter.internal.TwitterHandler;
+import org.openhab.binding.x.internal.XHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -25,53 +25,53 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TwitterActions} class defines rule actions for sending tweet
+ * The {@link XActions} class defines rule actions for sending post
  *
  * @author Scott Hanson - Initial contribution
  */
-@ThingActionsScope(name = "twitter")
+@ThingActionsScope(name = "x")
 @NonNullByDefault
-public class TwitterActions implements ThingActions {
+public class XActions implements ThingActions {
 
-    private final Logger logger = LoggerFactory.getLogger(TwitterActions.class);
+    private final Logger logger = LoggerFactory.getLogger(XActions.class);
 
-    private @Nullable TwitterHandler handler;
+    private @Nullable XHandler handler;
 
-    @RuleAction(label = "@text/sendTweetActionLabel", description = "@text/sendTweetActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendTweet(
+    @RuleAction(label = "@text/sendPostActionLabel", description = "@text/sendPostActionDescription")
+    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPost(
             @ActionInput(name = "text") @Nullable String text) {
         if (text == null) {
-            logger.warn("Cannot send Tweet as text is missing.");
+            logger.warn("Cannot send Post as text is missing.");
             return false;
         }
 
-        final TwitterHandler handler = this.handler;
+        final XHandler handler = this.handler;
         if (handler == null) {
-            logger.debug("Handler is null, cannot tweet.");
+            logger.debug("Handler is null, cannot post.");
             return false;
         } else {
-            return handler.sendTweet(text);
+            return handler.sendPost(text);
         }
     }
 
-    @RuleAction(label = "@text/sendAttachmentTweetActionLabel", description = "@text/sendAttachmentTweetActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendTweetWithAttachment(
+    @RuleAction(label = "@text/sendAttachmentPostActionLabel", description = "@text/sendAttachmentPostActionDescription")
+    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPostWithAttachment(
             @ActionInput(name = "text") @Nullable String text, @ActionInput(name = "url") @Nullable String urlString) {
         if (text == null) {
-            logger.warn("Cannot send Tweet as text is missing.");
+            logger.warn("Cannot send Post as text is missing.");
             return false;
         }
         if (urlString == null) {
-            logger.warn("Cannot send Tweet as urlString is missing.");
+            logger.warn("Cannot send Post as urlString is missing.");
             return false;
         }
 
-        final TwitterHandler handler = this.handler;
+        final XHandler handler = this.handler;
         if (handler == null) {
-            logger.debug("Handler is null, cannot tweet.");
+            logger.debug("Handler is null, cannot post.");
             return false;
         } else {
-            return handler.sendTweet(text, urlString);
+            return handler.sendPost(text, urlString);
         }
     }
 
@@ -88,32 +88,32 @@ public class TwitterActions implements ThingActions {
             return false;
         }
 
-        final TwitterHandler handler = this.handler;
+        final XHandler handler = this.handler;
         if (handler == null) {
-            logger.debug("Handler is null, cannot tweet.");
+            logger.debug("Handler is null, cannot post.");
             return false;
         } else {
             return handler.sendDirectMessage(recipient, text);
         }
     }
 
-    public static boolean sendTweet(ThingActions actions, @Nullable String text) {
-        return ((TwitterActions) actions).sendTweet(text);
+    public static boolean sendPost(ThingActions actions, @Nullable String text) {
+        return ((XActions) actions).sendPost(text);
     }
 
-    public static boolean sendTweetWithAttachment(ThingActions actions, @Nullable String text,
+    public static boolean sendPostWithAttachment(ThingActions actions, @Nullable String text,
             @Nullable String urlString) {
-        return ((TwitterActions) actions).sendTweetWithAttachment(text, urlString);
+        return ((XActions) actions).sendPostWithAttachment(text, urlString);
     }
 
     public static boolean sendDirectMessage(ThingActions actions, @Nullable String recipient, @Nullable String text) {
-        return ((TwitterActions) actions).sendDirectMessage(recipient, text);
+        return ((XActions) actions).sendDirectMessage(recipient, text);
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TwitterHandler twitterHandler) {
-            this.handler = twitterHandler;
+        if (handler instanceof XHandler xHandler) {
+            this.handler = xHandler;
         }
     }
 
