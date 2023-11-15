@@ -426,7 +426,8 @@ class SolcastTest {
     @Test
     void testTimes() {
         String utcTimeString = "2022-07-17T19:30:00.0000000Z";
-        ZonedDateTime zdt = Utils.getZdtFromUTC(utcTimeString, TIMEZONEPROVIDER);
+        SolcastObject so = new SolcastObject(TIMEZONEPROVIDER);
+        ZonedDateTime zdt = so.getZdtFromUTC(utcTimeString);
         assertEquals("2022-07-17T21:30+02:00[Europe/Berlin]", zdt.toString(), "ZonedDateTime");
         LocalDateTime ldt = zdt.toLocalDateTime();
         assertEquals("2022-07-17T21:30", ldt.toString(), "LocalDateTime");

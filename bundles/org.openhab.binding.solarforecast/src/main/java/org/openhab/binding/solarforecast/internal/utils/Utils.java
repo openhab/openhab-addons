@@ -75,9 +75,4 @@ public class Utils {
         }
         return nextTime.toInstant();
     }
-
-    public static ZonedDateTime getZdtFromUTC(String utc, TimeZoneProvider tzp) {
-        Instant timestamp = Instant.parse(utc);
-        return timestamp.atZone(tzp.getTimeZone());
-    }
 }

@@ -121,7 +121,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             logger.debug("No PV plane defined yet");
             return;
         }
-        ZonedDateTime now = ZonedDateTime.now(localTimeZoneProvider.getTimeZone());
+        ZonedDateTime now = ZonedDateTime.now(getTimeZone());
         double actualSum = 0;
         double actualPowerSum = 0;
         double remainSum = 0;
