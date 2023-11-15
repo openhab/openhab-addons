@@ -55,6 +55,7 @@ public class UidUtils {
         result = result.replace(')', '_');
         result = result.replace('&', '_');
         result = result.replace('/', '_');
+        result = result.replace('°', '_');
 
         return result;
     }
