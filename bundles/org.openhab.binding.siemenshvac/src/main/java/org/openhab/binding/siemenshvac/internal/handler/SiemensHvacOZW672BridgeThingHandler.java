@@ -29,7 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link IPBridgeThingHandler} is responsible for handling communication to Siemens Gateway using HTTP API
+ * The {@link SiemensHvacOZW672BridgeThingHandler} is responsible for handling communication to Siemens Gateway using
+ * HTTP API
  * interface.
  *
  * @author Laurent ARNAL - Initial contribution

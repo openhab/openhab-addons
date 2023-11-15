@@ -895,7 +895,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         SiemensHvacConnector lcHvacConnector = hvacConnector;
         if (resultObj.has("MenuItems")) {
             if (parent != null) {
-                logger.debug("Decode menuItem for : {}", parent.getShortDesc());
+                logger.debug("Decode menuItem for: {}", parent.getShortDesc());
             }
             SiemensHvacMetadata childNode;
             JsonArray menuItems = resultObj.getAsJsonArray("MenuItems");
