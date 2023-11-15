@@ -60,10 +60,10 @@ import com.google.gson.JsonObject;
 @Component(immediate = true)
 public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
-    private static final Logger logger = LoggerFactory.getLogger(SiemensHvacConnectorImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(SiemensHvacConnectorImpl.class);
 
-    private final static Gson gson;
-    private final static Gson gsonWithAdpter;
+    private static final Gson gson;
+    private static final Gson gsonWithAdapter;
 
     private @Nullable String sessionId = null;
     private @Nullable String sessionIdHttp = null;
@@ -90,7 +90,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         adapter.registerSubtype(SiemensHvacMetadataMenu.class);
         adapter.registerSubtype(SiemensHvacMetadataDataPoint.class);
 
-        gsonWithAdpter = new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
+        gsonWithAdapter = new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
 
     }
 
@@ -283,14 +283,11 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                                     boolean successVal = resultObj2.get("Success").getAsBoolean();
 
                                     if (successVal) {
-
                                         if (resultObj.has("SessionId")) {
                                             sessionId = resultObj.get("SessionId").getAsString();
                                             logger.debug("Have new SessionId: {} ", sessionId);
                                         }
-
                                     }
-
                                 }
                             }
 
@@ -310,20 +307,19 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
         } catch (Exception ex) {
             logger.debug("siemensHvac:doAuth:error() {}", ex.getLocalizedMessage());
-        } finally {
         }
     }
 
     @Override
-    public @Nullable String DoBasicRequest(String uri) throws Exception {
-        return DoBasicRequest(uri, null);
+    public @Nullable String doBasicRequest(String uri) throws Exception {
+        return doBasicRequest(uri, null);
     }
 
-    public @Nullable String DoBasicRequestAsync(String uri, @Nullable SiemensHvacCallback callback) throws Exception {
-        return DoBasicRequest(uri, callback);
+    public @Nullable String doBasicRequestAsync(String uri, @Nullable SiemensHvacCallback callback) throws Exception {
+        return doBasicRequest(uri, callback);
     }
 
-    public @Nullable String DoBasicRequest(String uri, @Nullable SiemensHvacCallback callback) throws Exception {
+    public @Nullable String doBasicRequest(String uri, @Nullable SiemensHvacCallback callback) throws Exception {
         if (sessionIdHttp == null) {
             doAuth(true);
         }
@@ -383,7 +379,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     @Override
     public @Nullable JsonObject doRequest(String req, @Nullable SiemensHvacCallback callback) {
         try {
-            String response = DoBasicRequest(req, callback);
+            String response = doBasicRequest(req, callback);
 
             if (response != null) {
                 JsonObject resultObj = getGson().fromJson(response, JsonObject.class);
@@ -411,13 +407,13 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     @Override
-    public void DisplayRequestStats() {
+    public void displayRequestStats() {
         logger.info("DisplayRequestStats : {} ({}/{})", (startedRequest - completedRequest), startedRequest,
                 completedRequest);
     }
 
     @Override
-    public void WaitAllPendingRequest() {
+    public void waitAllPendingRequest() {
         logger.debug("WaitAllPendingRequest:start");
         try {
             Thread.sleep(1000);
@@ -445,7 +441,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     @Override
-    public void WaitNoNewRequest() {
+    public void waitNoNewRequest() {
         logger.debug("WaitNoNewRequest:start");
         try {
             int lastRequest = startedRequest;
@@ -467,7 +463,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     public static Gson getGsonWithAdapter() {
-        return gsonWithAdpter;
+        return gsonWithAdapter;
     }
 
     public void AddDpUpdate(String itemName, Type dp) {

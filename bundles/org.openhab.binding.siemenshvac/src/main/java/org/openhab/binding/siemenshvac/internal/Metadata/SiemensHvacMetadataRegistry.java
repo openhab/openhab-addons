@@ -31,7 +31,7 @@ public interface SiemensHvacMetadataRegistry {
      */
     void initialize();
 
-    void ReadMeta();
+    void readMeta();
 
     @Nullable
     SiemensHvacMetadataMenu getRoot();

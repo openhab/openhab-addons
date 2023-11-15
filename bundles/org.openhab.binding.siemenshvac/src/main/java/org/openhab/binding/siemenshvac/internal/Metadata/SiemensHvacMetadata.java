@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SiemensHvacMetadata {
-    private int Id = -1;
+    private int id = -1;
     private int subId = -1;
     private int groupId = -1;
     private int catId = -1;
@@ -36,11 +36,11 @@ public class SiemensHvacMetadata {
     }
 
     public int getId() {
-        return Id;
+        return id;
     }
 
     public void setId(int Id) {
-        this.Id = Id;
+        this.id = Id;
     }
 
     public int getSubId() {

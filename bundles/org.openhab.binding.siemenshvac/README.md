@@ -3,7 +3,7 @@
 This binding is to support Siemens Hvac controller ecosystem, and the Web Gateway interface OZW672.
 A typical system is composed of:
          
-![Diagram](Diagram.png)                 
+![Diagram](Doc/Diagram.png)                 
 
 There's a lot of different HVAC controllers depending on model in lot of different PAC constructors.
 Siemens RVS41.813/327 inside a Atlantic Hybrid Duo was used for the developpement, and is fully supported and tested.

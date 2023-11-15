@@ -77,7 +77,7 @@ import com.google.gson.JsonObject;
 @Component(immediate = true)
 public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegistry {
 
-    private static final Logger logger = LoggerFactory.getLogger(SiemensHvacMetadataRegistryImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(SiemensHvacMetadataRegistryImpl.class);
 
     // A map contains data point config read from Api and/or WebPages
     private Map<String, SiemensHvacMetadata> dptMap = new Hashtable<String, SiemensHvacMetadata>();
@@ -167,8 +167,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     public void initialize() {
     }
 
-    public void InitDptMap(@Nullable SiemensHvacMetadata node) {
-
+    public void initDptMap(@Nullable SiemensHvacMetadata node) {
         if (node == null) {
             return;
         }
@@ -177,7 +176,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             SiemensHvacMetadataMenu mInformation = (SiemensHvacMetadataMenu) node;
 
             for (SiemensHvacMetadata child : mInformation.getChilds().values()) {
-                InitDptMap(child);
+                initDptMap(child);
             }
         }
 
@@ -204,7 +203,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             resolveCount = count;
         }
 
-        public void DecreaseResolveCount() {
+        public void decreaseResolveCount() {
             resolveCount--;
         }
 
@@ -213,7 +212,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    public void ResolveDetails(int unresolveCountP) {
+    public void resolveDetails(int unresolveCountP) {
         ResolveCount rv = new ResolveCount(unresolveCountP);
 
         for (String key : dptMap.keySet()) {
@@ -233,7 +232,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    public int UnresolveCount() {
+    public int unresolveCount() {
         int count = 0;
         for (String key : dptMap.keySet()) {
             if (key.indexOf("byId") < 0) {
@@ -261,7 +260,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     }
 
     @Override
-    public void ReadMeta() {
+    public void readMeta() {
         ArrayList<SiemensHvacMetadataDevice> lcDevices = devices;
         SiemensHvacConnector lcHvacConnector = hvacConnector;
 
@@ -274,7 +273,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             return;
         }
 
-        ReadUserInfo();
+        readUserInfo();
 
         SiemensHvacBridgeConfig config = lcHvacConnector.getBridgeConfiguration();
         if (config == null) {
@@ -297,46 +296,46 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         logger.info("siemensHvac:Initialization():Begin_0001");
 
         logger.info("siemensHvac:Initialization():ReadCache");
-        LoadMetaDataFromCache();
+        loadMetaDataFromCache();
 
         logger.info("siemensHvac:Initialization():ReadDeviceList");
-        ReadDeviceList();
+        readDeviceList();
 
         if (root == null) {
             logger.info("siemensHvac:Initialization():BeginReadMenu");
             root = new SiemensHvacMetadataMenu();
 
-            ChangeLanguage(1);
-            ReadMetaData(root, -1, false);
-            lcHvacConnector.WaitNoNewRequest();
-            lcHvacConnector.WaitAllPendingRequest();
+            changeLanguage(1);
+            readMetaData(root, -1, false);
+            lcHvacConnector.waitNoNewRequest();
+            lcHvacConnector.waitAllPendingRequest();
 
-            ChangeLanguage(user.getLanguageId());
-            ReadMetaData(root, -1, true);
-            lcHvacConnector.WaitNoNewRequest();
-            lcHvacConnector.WaitAllPendingRequest();
+            changeLanguage(user.getLanguageId());
+            readMetaData(root, -1, true);
+            lcHvacConnector.waitNoNewRequest();
+            lcHvacConnector.waitAllPendingRequest();
 
             logger.info("siemensHvac:Initialization():EndReadMenu");
         }
 
         if (root != null) {
             logger.info("siemensHvac:Initialization():BeginInitDptMap");
-            InitDptMap(root);
+            initDptMap(root);
             logger.info("siemensHvac:Initialization():EndInitDptMap");
         }
 
-        int unresolveCount = UnresolveCount();
+        int unresolveCount = unresolveCount();
         // unresolveCount = 0;
 
         while (unresolveCount > 0) {
             logger.info("siemensHvac:Initialization():BeginResolveDtpMap {}", unresolveCount);
-            ResolveDetails(unresolveCount);
-            lcHvacConnector.WaitAllPendingRequest();
-            unresolveCount = UnresolveCount();
+            resolveDetails(unresolveCount);
+            lcHvacConnector.waitAllPendingRequest();
+            unresolveCount = unresolveCount();
         }
 
         logger.info("siemensHvac:Initialization():SaveCache");
-        SaveMetaDataToCache();
+        saveMetaDataToCache();
 
         logger.info("siemensHvac:Initialization():InitThing");
         getRoot();
@@ -495,7 +494,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             description = channelTypeUID.toString();
             label = channelTypeUID.getId();
         } else {
-            stateFragment = stateFragment.withPattern(getStatePattern(dpt)).withReadOnly(dpt.getWriteAccess() == false);
+            stateFragment = stateFragment.withPattern(getStatePattern(dpt)).withReadOnly(!dpt.getWriteAccess());
         }
 
         if (!options.isEmpty()) {
@@ -576,7 +575,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    public static String getItemType(SiemensHvacMetadataDataPoint dpt) {
+    public String getItemType(SiemensHvacMetadataDataPoint dpt) {
         if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_STRING)) {
             return SiemensHvacBindingConstants.ITEM_TYPE_STRING;
         } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
@@ -646,13 +645,13 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         return "";
     }
 
-    public void ReadUserInfo() {
+    public void readUserInfo() {
         try {
             SiemensHvacConnector lcHvacConnector = hvacConnector;
             String request = "main.app?section=settings&subsection=user";
 
             if (lcHvacConnector != null) {
-                String response = lcHvacConnector.DoBasicRequest(request);
+                String response = lcHvacConnector.doBasicRequest(request);
 
                 if (response != null) {
                     String st = response;
@@ -707,7 +706,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                 user.setId(Integer.parseInt(userId));
 
                                 request = "main.app?section=settings&subsection=user&action=modify&userid=" + userId;
-                                response = lcHvacConnector.DoBasicRequest(request);
+                                response = lcHvacConnector.doBasicRequest(request);
 
                                 Pattern pattern5 = Pattern.compile(
                                         "<select name=\\\"language\\\".*>((.*|\\n)*?)</select>", Pattern.MULTILINE);
@@ -747,13 +746,13 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    public void ChangeLanguage(int lang) {
+    public void changeLanguage(int lang) {
         try {
             SiemensHvacConnector lcHvacConnector = hvacConnector;
             String request = "main.app?section=settings&subsection=user&action=modify&userid=1&language=" + lang
                     + "&submit=OK";
             if (lcHvacConnector != null) {
-                lcHvacConnector.DoBasicRequest(request);
+                lcHvacConnector.doBasicRequest(request);
                 lcHvacConnector.ResetSessionId(false);
                 lcHvacConnector.ResetSessionId(true);
             }
@@ -766,7 +765,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    public void ReadDeviceList() {
+    public void readDeviceList() {
         try {
             SiemensHvacConnector lcHvacConnector = hvacConnector;
             ArrayList<SiemensHvacMetadataDevice> lcDevices = devices;
@@ -791,52 +790,52 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             for (JsonElement device : devicesList) {
 
                 JsonObject obj = (JsonObject) device;
-                String Name = "";
-                String Addr = "";
-                String Type = "";
-                String SerialNr = "";
-                String TreeDate = "";
-                String TreeTime = "";
-                boolean TreeGenerated = false;
+                String name = "";
+                String addr = "";
+                String type = "";
+                String serialNr = "";
+                String treeDate = "";
+                String treeTime = "";
+                boolean treeGenerated = false;
 
                 if (obj.has("Name")) {
-                    Name = obj.get("Name").getAsString();
+                    name = obj.get("Name").getAsString();
                 }
 
                 if (obj.has("Addr")) {
-                    Addr = obj.get("Addr").getAsString();
+                    addr = obj.get("Addr").getAsString();
                 }
 
                 if (obj.has("Type")) {
-                    Type = obj.get("Type").getAsString();
+                    type = obj.get("Type").getAsString();
                 }
 
                 if (obj.has("SerialNr")) {
-                    SerialNr = obj.get("SerialNr").getAsString();
+                    serialNr = obj.get("SerialNr").getAsString();
                 }
 
                 if (obj.has("TreeDate")) {
-                    TreeDate = obj.get("TreeDate").getAsString();
+                    treeDate = obj.get("TreeDate").getAsString();
                 }
 
                 if (obj.has("TreeTime")) {
-                    TreeTime = obj.get("TreeTime").getAsString();
+                    treeTime = obj.get("TreeTime").getAsString();
                 }
 
                 if (obj.has("TreeGenerated")) {
-                    TreeGenerated = obj.get("TreeGenerated").getAsBoolean();
+                    treeGenerated = obj.get("TreeGenerated").getAsBoolean();
                 }
 
                 SiemensHvacMetadataDevice deviceObj = new SiemensHvacMetadataDevice();
-                deviceObj.setName(Name);
-                deviceObj.setAddr(Addr);
-                deviceObj.setSerialNr(SerialNr);
-                deviceObj.setType(Type);
-                deviceObj.setTreeDate(TreeDate);
-                deviceObj.setTreeTime(TreeTime);
-                deviceObj.setTreeGenerated(TreeGenerated);
+                deviceObj.setName(name);
+                deviceObj.setAddr(addr);
+                deviceObj.setSerialNr(serialNr);
+                deviceObj.setType(type);
+                deviceObj.setTreeDate(treeDate);
+                deviceObj.setTreeTime(treeTime);
+                deviceObj.setTreeGenerated(treeGenerated);
 
-                String request2 = "api/menutree/device_root.json?TreeName=Web&SerialNumber=" + SerialNr;
+                String request2 = "api/menutree/device_root.json?TreeName=Web&SerialNumber=" + serialNr;
                 if (lcHvacConnector != null) {
                     JsonObject response2 = lcHvacConnector.doRequest(request2);
 
@@ -858,7 +857,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    public void ReadMetaData(@Nullable SiemensHvacMetadata parent, int id, boolean localized) {
+    public void readMetaData(@Nullable SiemensHvacMetadata parent, int id, boolean localized) {
         try {
             SiemensHvacConnector lcHvacConnector = hvacConnector;
             String request = "api/menutree/list.json?";
@@ -873,7 +872,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     public void execute(URI uri, int status, @Nullable Object response) {
                         logger.debug("response for {}, status {}:", uri, status);
                         if (response instanceof JsonObject) {
-                            DecodeMetaDataResult((JsonObject) response, parent, id, localized);
+                            decodeMetaDataResult((JsonObject) response, parent, id, localized);
                         } else {
                             logger.debug("error status {}: {}", uri, status);
                         }
@@ -890,7 +889,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     @SuppressWarnings("unused")
     private static int nbDpt = 0;
 
-    public void DecodeMetaDataResult(JsonObject resultObj, @Nullable SiemensHvacMetadata parent, int id,
+    public void decodeMetaDataResult(JsonObject resultObj, @Nullable SiemensHvacMetadata parent, int id,
             boolean localized) {
         SiemensHvacConnector lcHvacConnector = hvacConnector;
         if (resultObj.has("MenuItems")) {
@@ -918,7 +917,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     childNode.setParent(parent);
 
                     if (parent != null) {
-                        menu.AddChild(childNode);
+                        menu.addChild(childNode);
                     }
                 }
 
@@ -959,7 +958,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                         childNode.setLongDesc(longDesc);
                     }
 
-                    ReadMetaData(childNode, itemId, localized);
+                    readMetaData(childNode, itemId, localized);
                 }
 
             }
@@ -999,7 +998,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     childNode.setId(nodeId);
                     childNode.setParent(parent);
 
-                    menu.AddChild(childNode);
+                    menu.addChild(childNode);
                 }
 
                 if (dptItem.has("Address")) {
@@ -1071,7 +1070,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
                     @Override
                     public void execute(URI uri, int status, @Nullable Object response) {
-
                         if (response != null) {
                             String st = (String) response;
                             st = st.replace("\n", "");
@@ -1085,7 +1083,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                 String dptId = matcher.group(1);
 
                                 if (id != null && dptId != null && !id.isEmpty() && !dptId.isEmpty()) {
-
                                     if (idMap.containsKey(id)) {
                                         SiemensHvacMetadataDataPoint child = idMap.get(id);
                                         if (child != null) {
@@ -1101,14 +1098,10 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             }
 
         }
-        if (resultObj.has("WidgetItems")) {
-            // JSONArray wgItems = (JSONArray) result.get("WidgetItems");
-        }
     }
 
     @Override
     public @Nullable SiemensHvacMetadata getDptMap(@Nullable String key) {
-
         if (key == null) {
             return null;
         }
@@ -1129,7 +1122,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         return null;
     }
 
-    public void LoadMetaDataFromCache() {
+    public void loadMetaDataFromCache() {
         File file = null;
 
         try {
@@ -1149,7 +1142,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    public void SaveMetaDataToCache() {
+    public void saveMetaDataToCache() {
         File file = null;
 
         try {
@@ -1187,7 +1180,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 @Override
                 public void execute(URI uri, int status, @Nullable Object response) {
                     if (response instanceof JsonObject) {
-                        rv.DecreaseResolveCount();
+                        rv.decreaseResolveCount();
                         logger.debug("siemensHvac:Initialization():ToResolve() {}", rv.getResolveCount());
                         dpt.resolveDptDetails((JsonObject) response);
                     } else {

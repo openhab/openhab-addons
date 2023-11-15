@@ -49,7 +49,8 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
     private static int onCompleteCount = 0;
     private static int onFailureCount = 0;
 
-    private static final Logger logger = LoggerFactory.getLogger(SiemensHvacRequestListener.class);
+    private final Logger logger = LoggerFactory.getLogger(SiemensHvacRequestListener.class);
+
     private SiemensHvacConnector hvacConnector;
 
     /**
@@ -137,7 +138,7 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
         }
     }
 
-    public static void DisplayStats() {
+    public void displayStats() {
         logger.info("DisplayStats :");
         logger.info("     requestListenerCount : {}", requestListenerCount);
         logger.info("     onSuccessCount       : {}", onSuccessCount);

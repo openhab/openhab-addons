@@ -193,7 +193,6 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
             this.dptType = desc.get("Type").getAsString();
 
             if (SiemensHvacBindingConstants.DPT_TYPE_ENUM.equals(dptType)) {
-
                 JsonArray enums = desc.getAsJsonArray("Enums");
 
                 for (Object obj : enums) {

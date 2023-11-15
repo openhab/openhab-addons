@@ -27,7 +27,7 @@ import com.google.gson.JsonObject;
 public interface SiemensHvacConnector {
 
     @Nullable
-    String DoBasicRequest(String uri) throws Exception;
+    String doBasicRequest(String uri) throws Exception;
 
     @Nullable
     JsonObject doRequest(String req);
@@ -35,9 +35,9 @@ public interface SiemensHvacConnector {
     @Nullable
     JsonObject doRequest(String req, @Nullable SiemensHvacCallback callback);
 
-    public void WaitAllPendingRequest();
+    public void waitAllPendingRequest();
 
-    public void WaitNoNewRequest();
+    public void waitNoNewRequest();
 
     public void onComplete(Request request);
 
@@ -49,5 +49,5 @@ public interface SiemensHvacConnector {
 
     void ResetSessionId(boolean web);
 
-    public void DisplayRequestStats();
+    public void displayRequestStats();
 }

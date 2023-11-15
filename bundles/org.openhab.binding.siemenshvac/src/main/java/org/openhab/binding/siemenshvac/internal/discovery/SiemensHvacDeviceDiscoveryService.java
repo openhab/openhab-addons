@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SiemensHvacDeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(SiemensHvacDeviceDiscoveryService.class);
 
     private @Nullable SiemensHvacMetadataRegistry metadataRegistry;
     private @Nullable SiemensHvacBridgeBaseThingHandler siemensHvacBridgeHandler;
@@ -91,7 +91,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
         logger.debug("call startScan()");
 
         if (lcMetadataRegistry != null) {
-            lcMetadataRegistry.ReadMeta();
+            lcMetadataRegistry.readMeta();
 
             ArrayList<SiemensHvacMetadataDevice> devices = lcMetadataRegistry.getDevices();
 
