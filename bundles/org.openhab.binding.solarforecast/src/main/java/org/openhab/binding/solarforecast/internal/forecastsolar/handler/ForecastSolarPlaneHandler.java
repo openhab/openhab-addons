@@ -15,7 +15,7 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
@@ -165,7 +165,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     }
 
     private void updateChannels(ForecastSolarObject f) {
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(f.getZone());
         updateState(CHANNEL_ACTUAL, Utils.getEnergyState(f.getActualValue(now)));
         updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(f.getActualPowerValue(now)));
         updateState(CHANNEL_REMAINING, Utils.getEnergyState(f.getRemainingProduction(now)));

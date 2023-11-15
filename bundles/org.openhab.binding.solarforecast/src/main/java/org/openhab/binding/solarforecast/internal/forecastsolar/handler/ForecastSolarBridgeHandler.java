@@ -14,7 +14,7 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -107,10 +107,8 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
      */
     private synchronized void getData() {
         if (parts.isEmpty()) {
-            logger.debug("No PV plane defined yet");
             return;
         }
-        LocalDateTime now = LocalDateTime.now();
         double actualSum = 0;
         double actualPowerSum = 0;
         double remainSum = 0;
@@ -121,6 +119,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         for (Iterator<ForecastSolarPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
             ForecastSolarPlaneHandler sfph = iterator.next();
             ForecastSolarObject fo = sfph.fetchData();
+            ZonedDateTime now = ZonedDateTime.now(fo.getZone());
             actualSum += fo.getActualValue(now);
             actualPowerSum += fo.getActualPowerValue(now);
             remainSum += fo.getRemainingProduction(now);

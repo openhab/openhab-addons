@@ -15,6 +15,8 @@ package org.openhab.binding.solarforecast.internal.forecastsolar;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -42,10 +44,11 @@ public class ForecastSolarObject implements SolarForecast {
     private static final double UNDEF = -1;
 
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarObject.class);
-    private final TreeMap<LocalDateTime, Double> wattHourMap = new TreeMap<LocalDateTime, Double>();
-    private final TreeMap<LocalDateTime, Double> wattMap = new TreeMap<LocalDateTime, Double>();
+    private final TreeMap<ZonedDateTime, Double> wattHourMap = new TreeMap<ZonedDateTime, Double>();
+    private final TreeMap<ZonedDateTime, Double> wattMap = new TreeMap<ZonedDateTime, Double>();
     private final DateTimeFormatter dateInputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    private ZoneId zone = ZoneId.systemDefault();
     private Optional<String> rawData = Optional.empty();
     private boolean valid = false;
     private Instant expirationDateTime;
@@ -68,11 +71,13 @@ public class ForecastSolarObject implements SolarForecast {
                 while (iter.hasNext()) {
                     String dateStr = iter.next();
                     // convert date time into machine readable format
-                    LocalDateTime ldt = LocalDateTime.parse(dateStr, dateInputFormatter);
-                    wattHourMap.put(ldt, wattHourJson.getDouble(dateStr));
-                    wattMap.put(ldt, wattJson.getDouble(dateStr));
+                    ZonedDateTime zdt = LocalDateTime.parse(dateStr, dateInputFormatter).atZone(zone);
+                    wattHourMap.put(zdt, wattHourJson.getDouble(dateStr));
+                    wattMap.put(zdt, wattJson.getDouble(dateStr));
                 }
                 valid = true;
+                String zoneStr = contentJson.getJSONObject("message").getJSONObject("info").getString("timezone");
+                zone = ZoneId.of(zoneStr);
             } catch (JSONException je) {
                 logger.debug("Error parsing JSON response {} - {}", content, je.getMessage());
             }
@@ -90,12 +95,12 @@ public class ForecastSolarObject implements SolarForecast {
         return false;
     }
 
-    public double getActualValue(LocalDateTime queryDateTime) {
+    public double getActualValue(ZonedDateTime queryDateTime) {
         if (wattHourMap.isEmpty()) {
             return UNDEF;
         }
-        Entry<LocalDateTime, Double> f = wattHourMap.floorEntry(queryDateTime);
-        Entry<LocalDateTime, Double> c = wattHourMap.ceilingEntry(queryDateTime);
+        Entry<ZonedDateTime, Double> f = wattHourMap.floorEntry(queryDateTime);
+        Entry<ZonedDateTime, Double> c = wattHourMap.ceilingEntry(queryDateTime);
         if (f != null && c == null) {
             // only floor available
             if (f.getKey().toLocalDate().equals(queryDateTime.toLocalDate())) {
@@ -135,13 +140,13 @@ public class ForecastSolarObject implements SolarForecast {
         return UNDEF;
     }
 
-    public double getActualPowerValue(LocalDateTime queryDateTime) {
+    public double getActualPowerValue(ZonedDateTime queryDateTime) {
         if (wattMap.isEmpty()) {
             return UNDEF;
         }
         double actualPowerValue = 0;
-        Entry<LocalDateTime, Double> f = wattMap.floorEntry(queryDateTime);
-        Entry<LocalDateTime, Double> c = wattMap.ceilingEntry(queryDateTime);
+        Entry<ZonedDateTime, Double> f = wattMap.floorEntry(queryDateTime);
+        Entry<ZonedDateTime, Double> c = wattMap.ceilingEntry(queryDateTime);
         if (f != null && c == null) {
             // only floor available
             if (f.getKey().toLocalDate().equals(queryDateTime.toLocalDate())) {
@@ -186,7 +191,7 @@ public class ForecastSolarObject implements SolarForecast {
         return UNDEF;
     }
 
-    public double getRemainingProduction(LocalDateTime queryDateTime) {
+    public double getRemainingProduction(ZonedDateTime queryDateTime) {
         if (wattHourMap.isEmpty()) {
             return UNDEF;
         }
@@ -226,10 +231,10 @@ public class ForecastSolarObject implements SolarForecast {
         LocalDate endDate = localDateTimeEnd.toLocalDate();
         double measure = UNDEF;
         if (beginDate.equals(endDate)) {
-            measure = getDayTotal(beginDate) - getActualValue(localDateTimeBegin)
-                    - getRemainingProduction(localDateTimeEnd);
+            measure = getDayTotal(beginDate) - getActualValue(localDateTimeBegin.atZone(zone))
+                    - getRemainingProduction(localDateTimeEnd.atZone(zone));
         } else {
-            measure = getRemainingProduction(localDateTimeBegin);
+            measure = getRemainingProduction(localDateTimeBegin.atZone(zone));
             beginDate = beginDate.plusDays(1);
             while (beginDate.isBefore(endDate) && measure >= 0) {
                 double day = getDayTotal(beginDate);
@@ -238,7 +243,7 @@ public class ForecastSolarObject implements SolarForecast {
                 }
                 beginDate = beginDate.plusDays(1);
             }
-            double lastDay = getActualValue(localDateTimeEnd);
+            double lastDay = getActualValue(localDateTimeEnd.atZone(zone));
             if (lastDay >= 0) {
                 measure += lastDay;
             }
@@ -252,14 +257,14 @@ public class ForecastSolarObject implements SolarForecast {
             logger.info("ForecastSolar doesn't accept arguments");
             return UnDefType.UNDEF;
         }
-        double measure = getActualPowerValue(localDateTime);
+        double measure = getActualPowerValue(localDateTime.atZone(zone));
         return Utils.getPowerState(measure);
     }
 
     @Override
     public LocalDateTime getForecastBegin() {
         if (!wattHourMap.isEmpty()) {
-            LocalDateTime ldt = wattHourMap.firstEntry().getKey();
+            LocalDateTime ldt = wattHourMap.firstEntry().getKey().toLocalDateTime();
             return ldt;
         }
         return LocalDateTime.MIN;
@@ -268,9 +273,13 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public LocalDateTime getForecastEnd() {
         if (!wattHourMap.isEmpty()) {
-            LocalDateTime ldt = wattHourMap.lastEntry().getKey();
+            LocalDateTime ldt = wattHourMap.lastEntry().getKey().toLocalDateTime();
             return ldt;
         }
         return LocalDateTime.MIN;
+    }
+
+    public ZoneId getZone() {
+        return zone;
     }
 }

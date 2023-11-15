@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import javax.measure.quantity.Energy;
@@ -42,9 +43,8 @@ class ForecastSolarTest {
     @Test
     void testForecastObject() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 17, 00);
-        ForecastSolarObject fo = new ForecastSolarObject(content,
-                queryDateTime.toInstant(TEST_ZONE.getRules().getOffset(queryDateTime)));
+        ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 17, 00).atZone(TEST_ZONE);
+        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
         // "2022-07-17 21:32:00": 63583,
         assertEquals(63.583, fo.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
         // "2022-07-17 17:00:00": 52896,
@@ -56,7 +56,7 @@ class ForecastSolarTest {
                 fo.getActualValue(queryDateTime) + fo.getRemainingProduction(queryDateTime), TOLERANCE,
                 "actual + remain = total");
 
-        queryDateTime = LocalDateTime.of(2022, 7, 18, 19, 00);
+        queryDateTime = LocalDateTime.of(2022, 7, 18, 19, 00).atZone(TEST_ZONE);
         // "2022-07-18 19:00:00": 63067,
         assertEquals(63.067, fo.getActualValue(queryDateTime), TOLERANCE, "Actual production");
         // "2022-07-18 21:31:00": 65554
@@ -66,13 +66,12 @@ class ForecastSolarTest {
     @Test
     void testActualPower() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 10, 00);
-        ForecastSolarObject fo = new ForecastSolarObject(content,
-                queryDateTime.toInstant(TEST_ZONE.getRules().getOffset(queryDateTime)));
+        ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 10, 00).atZone(TEST_ZONE);
+        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
         // "2022-07-17 10:00:00": 4874,
         assertEquals(4.874, fo.getActualPowerValue(queryDateTime), TOLERANCE, "Actual estimation");
 
-        queryDateTime = LocalDateTime.of(2022, 7, 18, 14, 00);
+        queryDateTime = LocalDateTime.of(2022, 7, 18, 14, 00).atZone(TEST_ZONE);
         // "2022-07-18 14:00:00": 7054,
         assertEquals(7.054, fo.getActualPowerValue(queryDateTime), TOLERANCE, "Actual estimation");
     }
@@ -80,9 +79,8 @@ class ForecastSolarTest {
     @Test
     void testInterpolation() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 0);
-        ForecastSolarObject fo = new ForecastSolarObject(content,
-                queryDateTime.toInstant(TEST_ZONE.getRules().getOffset(queryDateTime)));
+        ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 0).atZone(TEST_ZONE);
+        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
 
         // test steady value increase
         double previousValue = 0;
@@ -92,7 +90,7 @@ class ForecastSolarTest {
             previousValue = fo.getActualValue(queryDateTime);
         }
 
-        queryDateTime = LocalDateTime.of(2022, 7, 18, 6, 23);
+        queryDateTime = LocalDateTime.of(2022, 7, 18, 6, 23).atZone(TEST_ZONE);
         // "2022-07-18 06:00:00": 132,
         // "2022-07-18 07:00:00": 1188,
         // 1188 - 132 = 1056 | 1056 * 23 / 60 = 404 | 404 + 131 = 535
@@ -102,9 +100,8 @@ class ForecastSolarTest {
     @Test
     void testForecastSum() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23);
-        ForecastSolarObject fo = new ForecastSolarObject(content,
-                queryDateTime.toInstant(TEST_ZONE.getRules().getOffset(queryDateTime)));
+        ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
+        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
         QuantityType<Energy> actual = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
         State st = Utils.getEnergyState(fo.getActualValue(queryDateTime));
         assertTrue(st instanceof QuantityType);
@@ -119,7 +116,7 @@ class ForecastSolarTest {
         // invalid object
         ForecastSolarObject fo = new ForecastSolarObject();
         assertFalse(fo.isValid());
-        LocalDateTime query = LocalDateTime.of(2022, 7, 17, 16, 23);
+        ZonedDateTime query = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
         assertEquals(-1.0, fo.getActualValue(query), TOLERANCE, "Actual Production");
         assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Today Production");
         assertEquals(-1.0, fo.getRemainingProduction(query), TOLERANCE, "Remaining Production");
@@ -127,8 +124,8 @@ class ForecastSolarTest {
 
         // valid object - query date one day too early
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        query = LocalDateTime.of(2022, 7, 16, 23, 59);
-        fo = new ForecastSolarObject(content, query.toInstant(TEST_ZONE.getRules().getOffset(query)));
+        query = LocalDateTime.of(2022, 7, 16, 23, 59).atZone(TEST_ZONE);
+        fo = new ForecastSolarObject(content, query.toInstant());
         assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
         assertEquals(-1.0, fo.getActualValue(query), TOLERANCE, "Actual out of scope");
         assertEquals(-1.0, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
@@ -142,7 +139,7 @@ class ForecastSolarTest {
         assertEquals(0.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
 
         // valid object - query date one day too late
-        query = LocalDateTime.of(2022, 7, 19, 0, 0);
+        query = LocalDateTime.of(2022, 7, 19, 0, 0).atZone(TEST_ZONE);
         assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
         assertEquals(-1.0, fo.getActualValue(query), TOLERANCE, "Actual out of scope");
         assertEquals(-1.0, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
@@ -156,7 +153,7 @@ class ForecastSolarTest {
         assertEquals(0.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
 
         // test times between 2 dates
-        query = LocalDateTime.of(2022, 7, 17, 23, 59);
+        query = LocalDateTime.of(2022, 7, 17, 23, 59).atZone(TEST_ZONE);
         assertEquals(63.583, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
         assertEquals(63.583, fo.getActualValue(query), TOLERANCE, "Actual out of scope");
         assertEquals(0.0, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
@@ -172,8 +169,7 @@ class ForecastSolarTest {
     void testActions() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23);
-        ForecastSolarObject fo = new ForecastSolarObject(content,
-                queryDateTime.toInstant(TEST_ZONE.getRules().getOffset(queryDateTime)));
+        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.atZone(TEST_ZONE).toInstant());
         assertEquals("2022-07-17T05:31:00", fo.getForecastBegin().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 "Forecast begin");
         assertEquals("2022-07-18T21:31:00", fo.getForecastEnd().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
@@ -198,7 +194,7 @@ class ForecastSolarTest {
      * public void testHorizon() throws URISyntaxException, IOException, InterruptedException {
      * String url = "https://api.forecast.solar/estimate/50.55598767987004/8.49558522179684/12/-40/5.525";
      * String horizon = "2,2,2,2,1,1,3,3,4,3,3,4,3,3,3,3,4,5,7,5,4,2,2,2,2,1,1,1,1,1,2,2,2,2,1,2";
-     * 
+     *
      * HttpClient client = HttpClient.newHttpClient();
      * HttpRequest request = HttpRequest.newBuilder().uri(new URI(url)).GET().build();
      * HttpResponse<String> response = client.send(request, BodyHandlers.ofString());

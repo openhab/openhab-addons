@@ -433,4 +433,14 @@ class SolcastTest {
         LocalTime lt = zdt.toLocalTime();
         assertEquals("21:30", lt.toString(), "LocalTime");
     }
+
+    @Test
+    void testCST() {
+        LocalDateTime ldt = LocalDateTime.of(2023, 3, 26, 1, 30);
+        System.out.println(ldt);
+        System.out.println(ldt.atZone(TEST_ZONE));
+        ldt = LocalDateTime.of(2023, 3, 26, 2, 30);
+        System.out.println(ldt);
+        System.out.println(ldt.atZone(TEST_ZONE));
+    }
 }
