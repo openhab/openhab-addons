@@ -23,8 +23,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDataPoint;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataRegistry;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacCallback;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
 import org.openhab.core.i18n.TimeZoneProvider;

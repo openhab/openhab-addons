@@ -13,10 +13,10 @@
 package org.openhab.binding.siemenshvac.internal.type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDataPoint;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDevice;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataMenu;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDevice;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataMenu;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
