@@ -30,37 +30,27 @@
 		</config-description>
 	</bridge-type>
 
-
-
-
-
 	<channel-type id="outside-temp">
 		<item-type>Number:Temperature</item-type>
-		<label>Outside temp</label>
-		<description>Outside temp</description>
+		<label>Outside Temperature</label>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.1">
-		</state>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
-
 
 	<channel-type id="setpoint-heat-pump">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint heat pump</label>
-		<description>Setpoint heat pump</description>
+		<description>Setpoint Heat Pump</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.1">
-		</state>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
-
 
 	<channel-type id="room-temp-comfort-setpoint-hc">
 		<item-type>Number:Temperature</item-type>
 		<label>RoomTemp ComfSetp HC</label>
 		<description>Room temperature Comfort setpoint HC</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5">
-		</state>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="room-temp-reduce-setpoint-hc">
@@ -68,8 +58,7 @@
 		<label>RmTmp RedSetp HC</label>
 		<description>Room temp reduced setpoint heat circuit</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5">
-		</state>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="operating-mode-hc">
@@ -94,18 +83,17 @@
 		<state>
 			<options>
 				<option value="0">---</option>
-				<option value="1">STB interrogé</option>
-				<option value="2">Défaut</option>
-				<option value="3">Contrôleur interrogé</option>
-				<option value="4">Régime manuel actif</option>
-				<option value="5">Fonction ramonage, pleine charge</option>
-				<option value="6">Fonction ramonage, charge partielle</option>
-				<option value="7">Fonction ramonage active</option>
-				<option value="8">Bloqué, manuel</option>
-				<option value="9">Bloqué, automatique</option>
+				<option value="1">SLT cut out</option>
+				<option value="2">Fault</option>
+				<option value="3">Switch cut out</option>
+				<option value="4">Manual operation active</option>
+				<option value="5">Chimney sweep function, full load</option>
+				<option value="6">Chimney sweep function, partial load</option>
+				<option value="7">Chimney sweep function active</option>
+				<option value="8">Locked, manually</option>
+				<option value="9">Locked, automatically</option>
 			</options>
 		</state>
 	</channel-type>
-
-
+	
 </thing:thing-descriptions>
