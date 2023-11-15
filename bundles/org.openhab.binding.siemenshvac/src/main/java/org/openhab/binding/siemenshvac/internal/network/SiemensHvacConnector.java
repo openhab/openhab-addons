@@ -18,6 +18,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThingHandler;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeConfig;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
@@ -47,7 +48,11 @@ public interface SiemensHvacConnector {
 
     public @Nullable SiemensHvacBridgeConfig getBridgeConfiguration();
 
-    void ResetSessionId(boolean web);
+    void resetSessionId(boolean web);
 
     public void displayRequestStats();
+
+    Gson getGson();
+
+    Gson getGsonWithAdapter();
 }

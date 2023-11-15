@@ -178,7 +178,7 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                 } else {
                     JsonObject resultObj = null;
                     try {
-                        Gson gson = SiemensHvacConnectorImpl.getGson();
+                        Gson gson = hvacConnector.getGson();
                         resultObj = gson.fromJson(content, JsonObject.class);
                     } catch (JsonSyntaxException ex) {
                         logger.debug("error: {}", ex.toString());
