@@ -93,7 +93,7 @@ public class IntrusionDetectionHandler extends BoschSHCHandler {
                         CHANNEL_ACTIVE_CONFIGURATION_PROFILE),
                 true);
         this.registerService(intrusionDetectionControlStateService, this::updateChannels,
-                List.of(CHANNEL_ARMING_STATE));
+                List.of(CHANNEL_ARMING_STATE, CHANNEL_ACTIVE_CONFIGURATION_PROFILE));
         this.registerService(surveillanceAlarmService, this::updateChannels, List.of(CHANNEL_ALARM_STATE));
         this.registerStatelessService(armActionService);
         this.registerStatelessService(disarmActionService);
