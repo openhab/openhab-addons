@@ -12,15 +12,23 @@
  */
 package org.openhab.binding.siemenshvac.internal.metadata;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 public class SiemensHvacMetadataUser {
     private String name;
     private int id;
     private String language;
     private int languageId;
+
+    public SiemensHvacMetadataUser() {
+        name = "";
+        language = "";
+    }
 
     public String getName() {
         return name;

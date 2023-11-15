@@ -39,14 +39,11 @@ public class UidUtils {
      * @return the label without invalid character
      */
     public static String sanetizeId(String label) {
-
         StringBuffer buffer = new StringBuffer();
 
         for (int i = 0; i < label.length(); i++) {
             char c = label.charAt(i);
-            if (c == 130) {
-
-            } else if (c >= 232 && c <= 234) {
+            if (c >= 232 && c <= 234) {
                 c = 'e';
             } else if (c >= 200 && c <= 202) {
                 c = 'E';
@@ -100,8 +97,7 @@ public class UidUtils {
                 c = '_';
             }
 
-            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '-') {
-            } else {
+            if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '-')) {
                 c = '_';
             }
 
@@ -207,13 +203,13 @@ public class UidUtils {
         String shortDesc = dpt.getShortDescEn();
         String result = normalizeDescriptor(shortDesc);
 
-        if (type.equals("DateTime")) {
+        if ("DateTime".equals(type)) {
             result = "datetime";
-        } else if (type.equals("String")) {
+        } else if ("String".equals(type)) {
             result = "string";
-        } else if (type.equals("TimeOfDay")) {
+        } else if ("TimeOfDay".equals(type)) {
             result = "datetime";
-        } else if (type.equals("Scheduler")) {
+        } else if ("Scheduler".equals(type)) {
             result = "datetime";
         }
 

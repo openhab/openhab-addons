@@ -29,7 +29,7 @@ public class SiemensHvacMetadataMenu extends SiemensHvacMetadata {
         childList = new LinkedHashMap<Integer, SiemensHvacMetadata>();
     }
 
-    public void AddChild(SiemensHvacMetadata information) {
+    public void addChild(SiemensHvacMetadata information) {
         childList.put(information.getId(), information);
     }
 

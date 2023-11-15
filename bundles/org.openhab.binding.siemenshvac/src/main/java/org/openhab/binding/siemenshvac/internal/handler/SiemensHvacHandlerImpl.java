@@ -71,7 +71,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
     private final ChannelTypeRegistry channelTypeRegistry;
     private final TimeZoneProvider timeZoneProvider;
 
-    private long LastWrite = 0;
+    private long lastWrite = 0;
 
     public SiemensHvacHandlerImpl(Thing thing, @Nullable SiemensHvacConnector hvacConnector,
             @Nullable SiemensHvacMetadataRegistry metaDataRegistry, ChannelTypeRegistry channelTypeRegistry,
@@ -86,7 +86,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         updateStatus(ThingStatus.UNKNOWN);
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
     }
@@ -103,20 +102,20 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         long start = System.currentTimeMillis();
         var chList = this.getThing().getChannels();
         for (Channel channel : chList) {
-            ReadChannel(channel);
+            readChannel(channel);
         }
         updateStatus(ThingStatus.ONLINE);
 
         SiemensHvacConnector lcHvacConnector = hvacConnector;
         if (lcHvacConnector != null) {
             logger.debug("WaitAllPendingRequest:Start waiting()");
-            lcHvacConnector.WaitAllPendingRequest();
+            lcHvacConnector.waitAllPendingRequest();
             long end = System.currentTimeMillis();
             logger.debug("WaitAllPendingRequest:All request done(): {}", (end - start) / 1000.00);
         }
     }
 
-    private void ReadChannel(Channel channel) {
+    private void readChannel(Channel channel) {
         logger.debug("{}", channel.getDescription());
 
         ThingHandlerCallback cb = this.getCallback();
@@ -136,15 +135,15 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             return;
         }
 
-        String Id = channel.getProperties().get("id");
+        String id = channel.getProperties().get("id");
         String uid = channel.getUID().getId();
         String type = tp.getItemType();
 
-        if (Id == null) {
-            Id = (String) channel.getConfiguration().getProperties().get("id");
+        if (id == null) {
+            id = (String) channel.getConfiguration().getProperties().get("id");
         }
 
-        if (Id == null) {
+        if (id == null) {
             logger.debug("pollingCode : Id is null {} ", channel);
             return;
         }
@@ -152,11 +151,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             logger.debug("pollingCode : type is null {} ", channel);
             return;
         }
-        ReadDp(Id, uid, type, true);
+        ReadDp(id, uid, type, true);
         logger.debug("{}", isLink);
     }
 
-    public void DecodeReadDp(@Nullable JsonObject response, @Nullable String uid, @Nullable String dp,
+    public void decodeReadDp(@Nullable JsonObject response, @Nullable String uid, @Nullable String dp,
             @Nullable String type) {
         if (response != null && response.has("Data")) {
             JsonObject subResult = (JsonObject) response.get("Data");
@@ -233,14 +232,14 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                         public void execute(java.net.URI uri, int status, @Nullable Object response) {
                             // prevent async read if we just write so we have no overlaps
                             long now = System.currentTimeMillis();
-                            if (now - LastWrite < 5000) {
+                            if (now - lastWrite < 5000) {
                                 return;
                             }
 
                             logger.trace("End read : {}", dp);
 
                             if (response instanceof JsonObject) {
-                                DecodeReadDp((JsonObject) response, uid, dp, type);
+                                decodeReadDp((JsonObject) response, uid, dp, type);
                             }
                         }
                     });
@@ -248,7 +247,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             } else {
                 if (lcHvacConnector != null) {
                     JsonObject js = lcHvacConnector.doRequest(request);
-                    DecodeReadDp(js, uid, dp, type);
+                    decodeReadDp(js, uid, dp, type);
                 }
             }
         } catch (Exception e) {
@@ -264,7 +263,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         SiemensHvacConnector lcHvacConnector = hvacConnector;
 
         if (lcHvacConnector != null) {
-            lcHvacConnector.DisplayRequestStats();
+            lcHvacConnector.displayRequestStats();
         }
 
         if ("-1".equals(dp)) {
@@ -274,7 +273,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         try {
             lockObj.lock();
             logger.trace("Start write: {}", dp);
-            LastWrite = System.currentTimeMillis();
+            lastWrite = System.currentTimeMillis();
 
             String valUpdate = "0";
             String valUpdateEnum = "";
@@ -371,7 +370,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         if (command instanceof RefreshType) {
             var channel = this.getThing().getChannel(channelUID);
             if (channel != null) {
-                ReadChannel(channel);
+                readChannel(channel);
             }
         } else {
             Channel channel = getThing().getChannel(channelUID);
@@ -404,7 +403,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             }
 
             if (command instanceof State) {
-
                 commandVar = applyState(tp, commandVar);
                 State state = (State) commandVar;
 

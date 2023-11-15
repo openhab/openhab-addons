@@ -61,7 +61,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
     public void initialize() {
         config = getConfigAs(SiemensHvacBridgeConfig.class);
 
-        metaDataRegistry.ReadMeta();
+        metaDataRegistry.readMeta();
     }
 
     public @Nullable SiemensHvacBridgeConfig getBridgeConfiguration() {
