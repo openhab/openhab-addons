@@ -10,19 +10,19 @@
     <version>4.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.binding.twitter</artifactId>
+  <artifactId>org.openhab.binding.x</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Twitter Binding</name>
+  <name>openHAB Add-ons :: Bundles :: X Binding</name>
 
   <properties>
-    <bnd.importpackage>!android.*,!com.android.org.*,!dalvik.*,!javax.annotation.meta.*,!org.apache.harmony.*,!org.conscrypt.*,!sun.*,!com.google.appengine.api.*</bnd.importpackage>
+    <bnd.importpackage>!org.slf4j.impl.*,!android.*,!com.android.org.*,!dalvik.*,!javax.annotation.meta.*,!org.apache.harmony.*,!org.conscrypt.*,!sun.*,!com.google.appengine.api.*</bnd.importpackage>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.twitter4j</groupId>
       <artifactId>twitter4j-core</artifactId>
-      <version>4.0.7</version>
+      <version>4.1.2</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
