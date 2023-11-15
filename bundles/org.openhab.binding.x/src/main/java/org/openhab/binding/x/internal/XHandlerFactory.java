@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.twitter.internal;
+package org.openhab.binding.x.internal;
 
-import static org.openhab.binding.twitter.internal.TwitterBindingConstants.THING_TYPE_ACCOUNT;
+import static org.openhab.binding.x.internal.XBindingConstants.THING_TYPE_ACCOUNT;
 
 import java.util.Set;
 
@@ -26,14 +26,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link TwitterHandlerFactory} is responsible for creating things and thing
+ * The {@link XHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.twitter", service = ThingHandlerFactory.class)
-public class TwitterHandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = "binding.x", service = ThingHandlerFactory.class)
+public class XHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT);
 
@@ -47,7 +47,7 @@ public class TwitterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new TwitterHandler(thing);
+            return new XHandler(thing);
         }
 
         return null;
