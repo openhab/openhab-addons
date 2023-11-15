@@ -151,7 +151,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             logger.debug("pollingCode : type is null {} ", channel);
             return;
         }
-        ReadDp(id, uid, type, true);
+        readDp(id, uid, type, true);
         logger.debug("{}", isLink);
     }
 
@@ -209,7 +209,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         }
     }
 
-    private void ReadDp(String dp, String uid, String type, boolean async) {
+    private void readDp(String dp, String uid, String type, boolean async) {
         SiemensHvacConnector lcHvacConnector = hvacConnector;
 
         if ("-1".equals(dp)) {
@@ -259,7 +259,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         }
     }
 
-    private void WriteDp(String dp, Type dpVal, String type) {
+    private void writeDp(String dp, Type dpVal, String type) {
         SiemensHvacConnector lcHvacConnector = hvacConnector;
 
         if (lcHvacConnector != null) {
@@ -410,7 +410,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             }
 
             if (id != null && type != null) {
-                WriteDp(id, commandVar, dptType);
+                writeDp(id, commandVar, dptType);
             }
         }
     }
