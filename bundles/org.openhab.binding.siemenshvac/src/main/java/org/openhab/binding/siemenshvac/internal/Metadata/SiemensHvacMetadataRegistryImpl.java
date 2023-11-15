@@ -53,7 +53,6 @@ import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
-import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.thing.type.ThingType;
@@ -87,8 +86,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
     private static final String JSON_DIR = OpenHAB.getUserDataFolder() + File.separatorChar + "jsondb";
 
-    private @Nullable ChannelTypeRegistry channelTypeRegistry;
-
     private @Nullable SiemensHvacThingTypeProvider thingTypeProvider;
     private @Nullable SiemensHvacChannelTypeProvider channelTypeProvider;
     private @Nullable SiemensHvacChannelGroupTypeProvider channelGroupTypeProvider;
@@ -99,15 +96,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
     public SiemensHvacMetadataRegistryImpl() {
         userList = new HashMap<String, SiemensHvacMetadataUser>();
-    }
-
-    @Reference
-    protected void setChannelTypeRegistry(ChannelTypeRegistry channelTypeRegistry) {
-        this.channelTypeRegistry = channelTypeRegistry;
-    }
-
-    protected void unsetChannelTypeRegistry(ChannelTypeRegistry channelTypeRegistry) {
-        this.channelTypeRegistry = null;
     }
 
     @Reference
@@ -408,9 +396,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                         ChannelType channelType = null;
 
                                         if (channelTypeProvider != null && lcChannelTypeProvider != null) {
-                                            ChannelType channelTypeFromThingDesc = channelTypeProvider
-                                                    .getInternalChannelType(channelTypeUID);
-
                                             channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
                                             if (channelType == null) {
                                                 channelType = createChannelType(dataPoint, channelTypeUID);
