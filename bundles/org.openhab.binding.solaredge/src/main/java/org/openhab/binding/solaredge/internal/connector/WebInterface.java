@@ -244,7 +244,9 @@ public class WebInterface implements AtomicReferenceTrait {
     /**
      * Constructor to set up interface
      *
-     * @param config Bridge configuration
+     * @param scheduler
+     * @param handler
+     * @param httpClient
      */
     public WebInterface(ScheduledExecutorService scheduler, SolarEdgeHandler handler, HttpClient httpClient) {
         this.config = handler.getConfiguration();

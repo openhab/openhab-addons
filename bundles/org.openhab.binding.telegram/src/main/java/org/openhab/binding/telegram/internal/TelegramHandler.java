@@ -22,12 +22,12 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -281,6 +281,9 @@ public class TelegramHandler extends BaseThingHandler {
             String replyId = null;
 
             Message message = update.message();
+            if (message == null) {
+                message = update.channelPost();
+            }
             CallbackQuery callbackQuery = update.callbackQuery();
 
             if (message != null) {
@@ -297,8 +300,10 @@ public class TelegramHandler extends BaseThingHandler {
                 JsonObject messageRaw = JsonParser.parseString(gson.toJson(message)).getAsJsonObject();
                 JsonObject messagePayload = new JsonObject();
                 messagePayload.addProperty("message_id", message.messageId());
-                messagePayload.addProperty("from",
-                        String.join(" ", new String[] { message.from().firstName(), message.from().lastName() }));
+                if (messageRaw.has("from")) {
+                    messagePayload.addProperty("from",
+                            String.join(" ", new String[] { message.from().firstName(), message.from().lastName() }));
+                }
                 messagePayload.addProperty("chat_id", message.chat().id());
                 if (messageRaw.has("text")) {
                     messagePayload.addProperty("text", message.text());
@@ -371,9 +376,11 @@ public class TelegramHandler extends BaseThingHandler {
                 // process metadata
                 if (lastMessageURL != null || lastMessageText != null) {
                     lastMessageDate = message.date();
-                    lastMessageFirstName = message.from().firstName();
-                    lastMessageLastName = message.from().lastName();
-                    lastMessageUsername = message.from().username();
+                    if (message.from() != null) {
+                        lastMessageFirstName = message.from().firstName();
+                        lastMessageLastName = message.from().lastName();
+                        lastMessageUsername = message.from().username();
+                    }
                 }
             } else if (callbackQuery != null && callbackQuery.message() != null
                     && callbackQuery.message().text() != null) {
@@ -466,7 +473,7 @@ public class TelegramHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(TelegramActions.class);
+        return Set.of(TelegramActions.class);
     }
 
     /**

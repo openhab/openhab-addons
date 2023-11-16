@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="asuswrt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Router Thing Type -->
+	<bridge-type id="router">
+		<label>Asuswrt Router</label>
+		<description>Router with Asuswrt or Asuswrt-Merlin OS</description>
+		<channel-groups>
+			<channel-group id="sys-info" typeId="sys-info-group"></channel-group>
+			<channel-group id="client-list" typeId="client-list-group"></channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+				<default>router.asus.com</default>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username to access the device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the device</description>
+			</parameter>
+			<parameter name="useSSL" type="boolean">
+				<label>Use SSL</label>
+				<description>Use SSL to authenticate. If not use HTTP</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="httpPort" type="integer">
+				<label>HTTP Port</label>
+				<description>Port used for HTTP connection</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="httpsPort" type="integer">
+				<label>HTTPS Port</label>
+				<description>Port used for HTTPS connection</description>
+				<default>443</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" unit="s" min="3">
+				<label>Polling Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>20</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- ############################### CHANNEL-GROUPS ############################### -->
+	<!-- System Information -->
+	<channel-group-type id="sys-info-group">
+		<label>System Info</label>
+		<description>System information about the device</description>
+		<channels>
+			<channel id="mem-total" typeId="usage-data-type">
+				<label>Total Memory</label>
+				<description>Total memory in MB</description>
+			</channel>
+			<channel id="mem-used" typeId="usage-data-type">
+				<label>Used Memory</label>
+				<description>Used memory in MB</description>
+			</channel>
+			<channel id="mem-free" typeId="usage-data-type">
+				<label>Free Memory</label>
+				<description>Free memory in MB</description>
+			</channel>
+			<channel id="mem-free-percent" typeId="usage-type-percent">
+				<label>Free Memory</label>
+				<description>Free memory in %</description>
+			</channel>
+			<channel id="mem-used-percent" typeId="usage-type-percent">
+				<label>Used Memory</label>
+				<description>Used memory in %</description>
+			</channel>
+			<channel id="cpu-used-percent" typeId="usage-type-percent">
+				<label>Total CPU Usage</label>
+				<description>Total CPU usage in percent over all cores</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- Clients -->
+	<channel-group-type id="client-list-group">
+		<label>Clients</label>
+		<description>Clients connected to router</description>
+		<channels>
+			<channel id="known-clients" typeId="clients-online-type">
+				<label>Known Clients</label>
+				<description>Known clients with name and MAC addresses</description>
+			</channel>
+			<channel id="online-clients" typeId="clients-online-type">
+				<description>Online clients with name and MAC addresses</description>
+			</channel>
+			<channel id="online-macs" typeId="clients-online-mac-type"></channel>
+			<channel id="online-clients-count" typeId="clients-online-count-type"></channel>
+			<channel id="client-online-event" typeId="client-online-event-type"></channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

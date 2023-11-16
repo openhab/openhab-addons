@@ -15,6 +15,7 @@ package org.openhab.binding.freebox.internal;
 import static org.openhab.core.audio.AudioFormat.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -27,8 +28,9 @@ import org.openhab.binding.freebox.internal.handler.FreeboxThingHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
+import org.openhab.core.audio.AudioSinkAsync;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.FixedLengthAudioStream;
+import org.openhab.core.audio.StreamServed;
 import org.openhab.core.audio.URLAudioStream;
 import org.openhab.core.audio.UnsupportedAudioFormatException;
 import org.openhab.core.audio.UnsupportedAudioStreamException;
@@ -43,9 +45,10 @@ import org.slf4j.LoggerFactory;
  * This makes an AirPlay device to serve as an {@link AudioSink}-
  *
  * @author Laurent Garnier - Initial contribution for AudioSink and notifications
+ * @author Laurent Garnier - Support for more audio streams through the HTTP audio servlet
  */
 @NonNullByDefault
-public class FreeboxAirPlayAudioSink implements AudioSink {
+public class FreeboxAirPlayAudioSink extends AudioSinkAsync {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxAirPlayAudioSink.class);
 
@@ -59,14 +62,10 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
     private static final AudioFormat MP3_320 = new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, null, 320000, null);
 
     private static final Set<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
-    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
     private AudioHTTPServer audioHTTPServer;
     private FreeboxThingHandler handler;
     private @Nullable String callbackUrl;
-
-    static {
-        SUPPORTED_STREAMS.add(AudioStream.class);
-    }
 
     public FreeboxAirPlayAudioSink(FreeboxThingHandler handler, AudioHTTPServer audioHTTPServer,
             @Nullable String callbackUrl) {
@@ -89,7 +88,8 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
             SUPPORTED_FORMATS.add(MP3_256);
             SUPPORTED_FORMATS.add(MP3_320);
         }
-        SUPPORTED_FORMATS.add(OGG);
+        // OGG seems to not be properly supported (tested with a file produced by VoiceRSS)
+        // SUPPORTED_FORMATS.add(OGG);
     }
 
     @Override
@@ -103,13 +103,14 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
     }
 
     @Override
-    public void process(@Nullable AudioStream audioStream)
+    protected void processAsynchronously(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (!ThingHandlerHelper.isHandlerInitialized(handler)
                 || ((handler.getThing().getStatus() == ThingStatus.OFFLINE)
                         && ((handler.getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE)
                                 || (handler.getThing().getStatusInfo()
                                         .getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR)))) {
+            tryClose(audioStream);
             return;
         }
 
@@ -122,35 +123,51 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
             return;
         }
 
-        String url = null;
-        if (audioStream instanceof URLAudioStream) {
+        String url;
+        if (audioStream instanceof URLAudioStream urlAudioStream) {
             // it is an external URL, we can access it directly
-            URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
             url = urlAudioStream.getURL();
-        } else {
-            if (callbackUrl != null) {
-                // we serve it on our own HTTP server
-                String relativeUrl;
-                if (audioStream instanceof FixedLengthAudioStream) {
-                    relativeUrl = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 20);
-                } else {
-                    relativeUrl = audioHTTPServer.serve(audioStream);
-                }
-                url = callbackUrl + relativeUrl;
-            } else {
-                logger.warn("We do not have any callback url, so AirPlay device cannot play the audio stream!");
+            tryClose(audioStream);
+        } else if (callbackUrl != null) {
+            // we serve it on our own HTTP server
+            logger.debug("audioStream {} {}", audioStream.getClass().getSimpleName(), audioStream.getFormat());
+            StreamServed streamServed;
+            try {
+                streamServed = audioHTTPServer.serve(audioStream, 5, true);
+            } catch (IOException e) {
+                tryClose(audioStream);
+                throw new UnsupportedAudioStreamException(
+                        "AirPlay device was not able to handle the audio stream (cache on disk failed).",
+                        audioStream.getClass(), e);
             }
-        }
-        try {
-            audioStream.close();
-        } catch (IOException e) {
-            logger.debug("Exception while closing audioStream", e);
+            url = callbackUrl + streamServed.url();
+            streamServed.playEnd().thenRun(() -> {
+                try {
+                    handler.stopMedia();
+                } catch (FreeboxException e) {
+                    logger.warn("Exception while stopping audio stream playback: {}", e.getMessage());
+                }
+                this.playbackFinished(audioStream);
+            });
+        } else {
+            logger.warn("We do not have any callback url, so AirPlay device cannot play the audio stream!");
+            tryClose(audioStream);
+            return;
         }
         try {
             logger.debug("AirPlay audio sink: process url {}", url);
             handler.playMedia(url);
         } catch (FreeboxException e) {
             logger.warn("Audio stream playback failed: {}", e.getMessage());
+        }
+    }
+
+    private void tryClose(@Nullable InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 

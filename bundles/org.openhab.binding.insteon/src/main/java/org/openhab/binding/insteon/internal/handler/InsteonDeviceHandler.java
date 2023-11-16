@@ -252,7 +252,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                         feature = DATA;
                     }
                 } else if (productKey.equals(PLM_PRODUCT_KEY)) {
-                    String parts[] = feature.split("#");
+                    String[] parts = feature.split("#");
                     if (parts.length == 2 && parts[0].equalsIgnoreCase(InsteonBindingConstants.BROADCAST_ON_OFF)
                             && parts[1].matches("^\\d+$")) {
                         feature = BROADCAST_ON_OFF;
@@ -282,9 +282,9 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                             Object groups = deviceConfigMap.get(BROADCAST_GROUPS);
                             if (groups != null) {
                                 boolean valid = false;
-                                if (groups instanceof List<?>) {
+                                if (groups instanceof List<?> list) {
                                     valid = true;
-                                    for (Object o : (List<?>) groups) {
+                                    for (Object o : list) {
                                         if (o instanceof Double && (Double) o % 1 == 0) {
                                             String id = InsteonBindingConstants.BROADCAST_ON_OFF + "#"
                                                     + ((Double) o).intValue();
@@ -444,10 +444,10 @@ public class InsteonDeviceHandler extends BaseThingHandler {
         Map<String, Object> channelProperties = channel.getConfiguration().getProperties();
         for (String key : channelProperties.keySet()) {
             Object value = channelProperties.get(key);
-            if (value instanceof String) {
-                params.put(key, (String) value);
-            } else if (value instanceof BigDecimal) {
-                String s = ((BigDecimal) value).toPlainString();
+            if (value instanceof String stringValue) {
+                params.put(key, stringValue);
+            } else if (value instanceof BigDecimal decimalValue) {
+                String s = decimalValue.toPlainString();
                 params.put(key, s);
             } else {
                 logger.warn("not a string or big decimal value key '{}' value '{}' {}", key, value,
@@ -493,7 +493,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 feature = DATA;
             }
         } else if (productKey.equals(PLM_PRODUCT_KEY)) {
-            String parts[] = feature.split("#");
+            String[] parts = feature.split("#");
             if (parts.length == 2 && parts[0].equalsIgnoreCase(InsteonBindingConstants.BROADCAST_ON_OFF)
                     && parts[1].matches("^\\d+$")) {
                 params.put(GROUP, parts[1]);

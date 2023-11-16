@@ -64,7 +64,7 @@ public class SVDRPClientImpl implements SVDRPClient {
      *
      * Open VDR Socket Connection
      *
-     * @throws IOException if an IO Error occurs
+     * @throws SVDRPConnectionException if an IO Error occurs
      */
     @Override
     public void openConnection() throws SVDRPConnectionException, SVDRPParseResponseException {
@@ -117,7 +117,7 @@ public class SVDRPClientImpl implements SVDRPClient {
     /**
      * Close VDR Socket Connection
      *
-     * @throws IOException if an IO Error occurs
+     * @throws SVDRPConnectionException if an IO Error occurs
      */
     @Override
     public void closeConnection() throws SVDRPConnectionException, SVDRPParseResponseException {
@@ -219,8 +219,7 @@ public class SVDRPClientImpl implements SVDRPClient {
         res = execute("STAT disk");
 
         if (res.getCode() == 250) {
-            SVDRPDiskStatus status = SVDRPDiskStatus.parse(res.getMessage());
-            return status;
+            return SVDRPDiskStatus.parse(res.getMessage());
         } else {
             throw new SVDRPParseResponseException(res);
         }
@@ -249,8 +248,7 @@ public class SVDRPClientImpl implements SVDRPClient {
         }
 
         if (res != null && res.getCode() == 215) {
-            SVDRPEpgEvent entry = SVDRPEpgEvent.parse(res.getMessage());
-            return entry;
+            return SVDRPEpgEvent.parse(res.getMessage());
         } else if (res != null) {
             throw new SVDRPParseResponseException(res);
         } else {
@@ -272,8 +270,7 @@ public class SVDRPClientImpl implements SVDRPClient {
         res = execute("VOLU");
 
         if (res.getCode() == 250) {
-            SVDRPVolume volume = SVDRPVolume.parse(res.getMessage());
-            return volume;
+            return SVDRPVolume.parse(res.getMessage());
         } else {
             throw new SVDRPParseResponseException(res);
         }
@@ -295,8 +292,7 @@ public class SVDRPClientImpl implements SVDRPClient {
         res = execute(String.format("VOLU %s", String.valueOf(Math.round(newVolumeDouble))));
 
         if (res.getCode() == 250) {
-            SVDRPVolume volume = SVDRPVolume.parse(res.getMessage());
-            return volume;
+            return SVDRPVolume.parse(res.getMessage());
         } else {
             throw new SVDRPParseResponseException(res);
         }
@@ -352,8 +348,7 @@ public class SVDRPClientImpl implements SVDRPClient {
         res = execute("CHAN");
 
         if (res.getCode() == 250) {
-            SVDRPChannel channel = SVDRPChannel.parse(res.getMessage());
-            return channel;
+            return SVDRPChannel.parse(res.getMessage());
         } else {
             throw new SVDRPParseResponseException(res);
         }
@@ -374,8 +369,7 @@ public class SVDRPClientImpl implements SVDRPClient {
         res = execute(String.format("CHAN %s", number));
 
         if (res.getCode() == 250) {
-            SVDRPChannel channel = SVDRPChannel.parse(res.getMessage());
-            return channel;
+            return SVDRPChannel.parse(res.getMessage());
         } else {
             throw new SVDRPParseResponseException(res);
         }
@@ -409,7 +403,6 @@ public class SVDRPClientImpl implements SVDRPClient {
      * Retrieve VDR Version from SVDRP Client
      *
      * @return VDR Version
-     * @throws SVDRPException thrown if something's not OK with SVDRP call
      */
     @Override
     public String getSVDRPVersion() {

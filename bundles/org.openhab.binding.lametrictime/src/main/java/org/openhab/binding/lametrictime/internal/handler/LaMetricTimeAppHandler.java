@@ -29,5 +29,6 @@ public interface LaMetricTimeAppHandler {
      *
      * @return the {@link Widget}
      */
-    public @Nullable Widget getWidget();
+    @Nullable
+    Widget getWidget();
 }

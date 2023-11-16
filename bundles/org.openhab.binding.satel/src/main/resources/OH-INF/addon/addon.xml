@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Satel Binding</name>
 	<description>This is the binding for Satel INTEGRA alarm systems using either ETHM-1 or INT-RS communication module</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -17,6 +17,7 @@ import static org.openhab.binding.satel.internal.config.IntRSConfig.PORT;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class IntRSBridgeHandler extends SatelBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_INTRS);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_INTRS);
 
     private final Logger logger = LoggerFactory.getLogger(IntRSBridgeHandler.class);
 
@@ -76,8 +77,8 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
 
         // Check whether a serial port is provided
         if (port.isBlank()) {
-            configStatusMessages = Collections.singletonList(ConfigStatusMessage.Builder.error(PORT)
-                    .withMessageKeySuffix("portEmpty").withArguments(PORT).build());
+            configStatusMessages = List.of(ConfigStatusMessage.Builder.error(PORT).withMessageKeySuffix("portEmpty")
+                    .withArguments(PORT).build());
         } else {
             configStatusMessages = Collections.emptyList();
         }

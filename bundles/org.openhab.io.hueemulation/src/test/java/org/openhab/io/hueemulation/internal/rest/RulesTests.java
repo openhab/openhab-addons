@@ -22,10 +22,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -158,13 +156,12 @@ public class RulesTests {
 
     @SuppressWarnings("null")
     @Test
-    public void addGetRemoveRuleViaRest() {
+    public void addGetRemoveRuleViaRest() throws Exception {
         // 1. Create
         String body = "{\"name\":\"test name\",\"description\":\"\",\"owner\":\"\",\"conditions\":[{\"address\":\"/lights/switch1/state/on\",\"operator\":\"dx\"}],\"actions\":[{\"address\":\"/lights/switch1/state\",\"method\":\"PUT\",\"body\":\"{\\u0027on\\u0027:true}\"}]}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules").request()
-                .post(Entity.json(body));
+        ContentResponse response = commonSetup.sendPost("/testuser/rules", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
+        assertThat(response.getContentAsString(), containsString("success"));
 
         // 1.1 Check for entry
         Entry<String, HueRuleEntry> idAndEntry = cs.ds.rules.entrySet().stream().findAny().get();
@@ -180,21 +177,19 @@ public class RulesTests {
         assertThat(rule.getActions().get(0).getTypeUID(), is("rules.HttpAction"));
 
         // 2. Get
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules/" + idAndEntry.getKey()).request()
-                .get();
+        response = commonSetup.sendGet("/testuser/rules/" + idAndEntry.getKey());
         assertEquals(200, response.getStatus());
-        HueSceneEntry fromJson = new Gson().fromJson(response.readEntity(String.class), HueSceneEntry.class);
+        HueSceneEntry fromJson = new Gson().fromJson(response.getContentAsString(), HueSceneEntry.class);
         assertThat(fromJson.name, is(idAndEntry.getValue().name));
 
         // 3. Remove
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules/" + idAndEntry.getKey()).request()
-                .delete();
+        response = commonSetup.sendDelete("/testuser/rules/" + idAndEntry.getKey());
         assertEquals(200, response.getStatus());
         assertTrue(cs.ds.rules.isEmpty());
     }
 
     @Test
-    public void updateRuleViaRest() {
+    public void updateRuleViaRest() throws Exception {
         HueCommand command = new HueCommand("/api/testuser/lights/switch1/state", "PUT", "{'on':true}");
         HueRuleEntry.Condition condition = new HueRuleEntry.Condition("/lights/switch1/state/on", Operator.dx, null);
 
@@ -209,10 +204,9 @@ public class RulesTests {
 
         // Modify (just the name)
         String body = "{ 'name':'A new name'}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules/demo1").request()
-                .put(Entity.json(body));
+        ContentResponse response = commonSetup.sendPut("/testuser/rules/demo1", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("name"));
+        assertThat(response.getContentAsString(), containsString("name"));
 
         Entry<String, HueRuleEntry> idAndEntry = cs.ds.rules.entrySet().stream().findAny().get();
         HueRuleEntry entry = idAndEntry.getValue();
@@ -231,10 +225,9 @@ public class RulesTests {
 
         // Modify (Change condition)
         body = "{\"conditions\":[{\"address\":\"/lights/switch1/state/on\",\"operator\":\"ddx\"}]}";
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules/demo1").request()
-                .put(Entity.json(body));
+        response = commonSetup.sendPut("/testuser/rules/demo1", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("conditions"));
+        assertThat(response.getContentAsString(), containsString("conditions"));
 
         idAndEntry = cs.ds.rules.entrySet().stream().findAny().get();
         entry = idAndEntry.getValue();
@@ -243,10 +236,9 @@ public class RulesTests {
 
         // Modify (Change action)
         body = "{\"actions\":[{\"address\":\"/lights/switch2/state\",\"method\":\"PUT\",\"body\":\"{\\u0027on\\u0027:false}\"}]}";
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules/demo1").request()
-                .put(Entity.json(body));
+        response = commonSetup.sendPut("/testuser/rules/demo1", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("actions"));
+        assertThat(response.getContentAsString(), containsString("actions"));
 
         idAndEntry = cs.ds.rules.entrySet().stream().findAny().get();
         entry = idAndEntry.getValue();
@@ -255,7 +247,7 @@ public class RulesTests {
     }
 
     @Test
-    public void getAll() {
+    public void getAll() throws Exception {
         HueCommand command = new HueCommand("/api/testuser/lights/switch1/state", "PUT", "{'on':true}");
         HueRuleEntry.Condition condition = new HueRuleEntry.Condition("/lights/switch1/state/on", Operator.dx, null);
 
@@ -268,10 +260,10 @@ public class RulesTests {
 
         ruleRegistry.add(rule);
 
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules").request().get();
+        ContentResponse response = commonSetup.sendGet("/testuser/rules");
         Type type = new TypeToken<Map<String, HueRuleEntry>>() {
         }.getType();
-        String body = response.readEntity(String.class);
+        String body = response.getContentAsString();
         Map<String, HueRuleEntry> fromJson = new Gson().fromJson(body, type);
         HueRuleEntry entry = fromJson.get("demo1");
         assertThat(entry.name, is("test name"));

@@ -176,7 +176,6 @@ public class HyperionNgHandler extends BaseThingHandler {
             // update Hyperion, older API compatibility
             Hyperion hyperion = info.getHyperion();
             if (hyperion != null) {
-
                 updateHyperion(hyperion);
             }
 
@@ -422,9 +421,8 @@ public class HyperionNgHandler extends BaseThingHandler {
     }
 
     private void handleBrightness(Command command) throws IOException, CommandUnsuccessfulException {
-        if (command instanceof PercentType) {
-            PercentType percent = (PercentType) command;
-            int brightnessValue = percent.intValue();
+        if (command instanceof PercentType percentCommand) {
+            int brightnessValue = percentCommand.intValue();
 
             Adjustment adjustment = new Adjustment();
             adjustment.setBrightness(brightnessValue);
@@ -437,9 +435,8 @@ public class HyperionNgHandler extends BaseThingHandler {
     }
 
     private void handleColor(Command command) throws IOException, CommandUnsuccessfulException {
-        if (command instanceof HSBType) {
-            HSBType color = (HSBType) command;
-            Color c = new Color(color.getRGB());
+        if (command instanceof HSBType hsbCommand) {
+            Color c = new Color(hsbCommand.getRGB());
             int r = c.getRed();
             int g = c.getGreen();
             int b = c.getBlue();

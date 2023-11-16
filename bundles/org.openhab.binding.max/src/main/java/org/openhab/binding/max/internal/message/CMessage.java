@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link CMessage} contains configuration about a MAX! device.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - Detailed parsing, OH2 Update
  */
 @NonNullByDefault

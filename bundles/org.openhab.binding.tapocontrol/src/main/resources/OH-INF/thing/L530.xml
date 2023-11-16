@@ -36,9 +36,9 @@
 		<item-type>String</item-type>
 		<label>Light Effect Theme</label>
 		<description>Name of active lightning effect</description>
-		<state readOnly="true">
+		<state readOnly="false">
 			<options>
-				<option value="">None (No FX)</option>
+				<option value="off">None (No FX)</option>
 				<option value="custom">Custom</option>
 				<option value="L1">Party</option>
 				<option value="L2">Relax</option>

@@ -18,8 +18,12 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * A type enumerator to indicate whether a Command Tag is of type BEGIN or END; as in the following examples:
  *
+ * <pre>
+ * {@code
  * BEGIN:<item_name>:<new_state>
  * END:<item_name>:<new_state>
+ * }
+ * </pre>
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

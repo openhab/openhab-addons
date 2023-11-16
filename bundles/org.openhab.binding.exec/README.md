@@ -47,7 +47,7 @@ For each shell command, a separate Thing has to be defined.
 Thing exec:command:uniquename [command="/command/to/execute here", interval=15, timeout=5, autorun=false]
 ```
 
-The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax).
+The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html#syntax).
 The following parameters are automatically added:
 
 - the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)

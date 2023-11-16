@@ -243,9 +243,8 @@ public class JellyfinClientHandler extends BaseThingHandler {
 
     private UUID parseItemUUID(Command command) throws NumberFormatException {
         var itemId = command.toFullString().replace("-", "");
-        UUID itemUUID = new UUID(new BigInteger(itemId.substring(0, 16), 16).longValue(),
+        return new UUID(new BigInteger(itemId.substring(0, 16), 16).longValue(),
                 new BigInteger(itemId.substring(16), 16).longValue());
-        return itemUUID;
     }
 
     @Override
@@ -385,9 +384,9 @@ public class JellyfinClientHandler extends BaseThingHandler {
         var typeMatcher = typeSearchPattern.matcher(terms);
         boolean searchByTypeEnabled = typeMatcher.matches();
         var type = searchByTypeEnabled ? typeMatcher.group("type") : "";
-        boolean movieSearchEnabled = !searchByTypeEnabled || type.equals("movie");
-        boolean seriesSearchEnabled = !searchByTypeEnabled || type.equals("series");
-        boolean episodeSearchEnabled = !searchByTypeEnabled || type.equals("episode");
+        boolean movieSearchEnabled = !searchByTypeEnabled || "movie".equals(type);
+        boolean seriesSearchEnabled = !searchByTypeEnabled || "series".equals(type);
+        boolean episodeSearchEnabled = !searchByTypeEnabled || "episode".equals(type);
         var searchTerms = searchByTypeEnabled ? typeMatcher.group("terms") : terms;
         runItemSearchByType(searchTerms, playCommand, movieSearchEnabled, seriesSearchEnabled, episodeSearchEnabled);
     }

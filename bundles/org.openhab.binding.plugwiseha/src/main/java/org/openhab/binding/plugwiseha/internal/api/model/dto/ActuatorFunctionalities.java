@@ -19,7 +19,7 @@ import java.util.Optional;
  * The {@link ActuatorFunctionalities} class is an object model class that
  * mirrors the XML structure provided by the Plugwise Home Automation controller
  * for the collection of actuator functionalities. (e.g. 'offset', 'relay', et
- * cetera). It extends the {@link CustomCollection} class.
+ * cetera). It extends the {@link PlugwiseHACollection} class.
  * 
  * @author B. van Wetten - Initial contribution
  */

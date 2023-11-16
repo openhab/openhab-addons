@@ -22,10 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link OpenStreams} Keeps track of all open mjpeg streams so the byte[] can be given to all FIFO buffers to allow
  * 1 to many streams without needing to open more than 1 source stream.
  *
- *
  * @author Matthew Skinner - Initial contribution
  */
-
 @NonNullByDefault
 public class OpenStreams {
     private List<StreamOutput> openStreams = Collections.synchronizedList(new ArrayList<StreamOutput>());

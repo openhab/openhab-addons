@@ -160,8 +160,8 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
     @Override
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
         if (CHANNEL_CHIME_SOUND.equals(channelId)) {
-            if (type instanceof DecimalType) {
-                chimeSound = ((DecimalType) type).intValue();
+            if (type instanceof DecimalType decimalCommand) {
+                chimeSound = decimalCommand.intValue();
             } else {
                 throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
             }

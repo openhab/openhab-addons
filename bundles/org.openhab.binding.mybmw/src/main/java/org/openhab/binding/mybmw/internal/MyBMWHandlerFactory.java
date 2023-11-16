@@ -66,9 +66,7 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(thingTypeUID)) {
             return new MyBMWBridgeHandler((Bridge) thing, httpClientFactory, localeLanguage);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            VehicleHandler vh = new VehicleHandler(thing, commandOptionProvider, locationProvider,
-                    thingTypeUID.getId());
-            return vh;
+            return new VehicleHandler(thing, commandOptionProvider, locationProvider, thingTypeUID.getId());
         }
         return null;
     }

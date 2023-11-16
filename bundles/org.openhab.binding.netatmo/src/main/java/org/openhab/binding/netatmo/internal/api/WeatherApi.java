@@ -58,8 +58,7 @@ public class WeatherApi extends RestManager {
             throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_STATION, PARAM_DEVICE_ID, deviceId, //
                 PARAM_FAVORITES, getFavorites);
-        StationDataResponse response = get(uriBuilder, StationDataResponse.class);
-        return response;
+        return get(uriBuilder, StationDataResponse.class);
     }
 
     /**

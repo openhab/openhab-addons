@@ -16,11 +16,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link MieleBinding} class defines common constants, which are
+ * The {@link MieleBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Karel Goderis - Initial contribution
- * @author Martin Lepsy - added constants for support of WiFi devices & protocol
+ * @author Martin Lepsy - added constants for support of WiFi devices and protocol
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 @NonNullByDefault
@@ -58,7 +58,7 @@ public class MieleBindingConstants {
     public static final String START_CHANNEL_ID = "start";
     public static final String END_CHANNEL_ID = "end";
     public static final String FINISH_CHANNEL_ID = "finish";
-    public static final String POWER_CONSUMPTION_CHANNEL_ID = "powerConsumption";
+    public static final String ENERGY_CONSUMPTION_CHANNEL_ID = "energyConsumption";
     public static final String WATER_CONSUMPTION_CHANNEL_ID = "waterConsumption";
 
     // List of all Thing Type UIDs

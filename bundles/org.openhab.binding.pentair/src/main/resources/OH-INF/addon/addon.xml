@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Pentair Binding</name>
 	<description>This is the binding for Pentair pool systems.</description>
+	<connection>local</connection>
 
 </addon:addon>

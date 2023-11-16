@@ -17,7 +17,7 @@ import static org.openhab.binding.anthem.internal.AnthemBindingConstants.COMMAND
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AnthemCommend} is responsible for creating commands to be sent to the
+ * The {@link AnthemCommand} is responsible for creating commands to be sent to the
  * Anthem processor.
  *
  * @author Mark Hilbush - Initial contribution
@@ -114,6 +114,10 @@ public class AnthemCommand {
 
     public static AnthemCommand queryMacAddress() {
         return new AnthemCommand("IDN?");
+    }
+
+    public static AnthemCommand customCommand(String customCommand) {
+        return new AnthemCommand(customCommand);
     }
 
     public String getCommand() {

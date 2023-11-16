@@ -18,14 +18,14 @@ import org.openhab.binding.lirc.internal.messages.LIRCResponse;
 /**
  * Defines an interface to receive messages from the LIRC server
  *
- * @author Andrew Nagle
+ * @author Andrew Nagle - Initial contribution
  */
 public interface LIRCEventListener {
 
     /**
      * Procedure to receive messages from the LIRC server
      *
-     * @param reponse
+     * @param message
      *            Message received
      */
     void messageReceived(LIRCResponse message);

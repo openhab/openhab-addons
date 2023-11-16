@@ -62,8 +62,8 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof GardenaAccountHandler) {
-            this.accountHandler = (GardenaAccountHandler) handler;
+        if (handler instanceof GardenaAccountHandler gardenaAccountHandler) {
+            this.accountHandler = gardenaAccountHandler;
             this.accountHandler.setDiscoveryService(this);
         }
     }

@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * List of AVR input channel names with <Input ID, Input Name>
+ * List of AVR input channel names with {@code <Input ID, Input Name>}
  *
  * @author David Graeff - Initial contribution
  */

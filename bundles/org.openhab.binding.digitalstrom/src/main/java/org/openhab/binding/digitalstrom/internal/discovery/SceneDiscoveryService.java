@@ -38,7 +38,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link SceneDiscoveryService} discovers all digitalSTROM-scene of one supported scene-type. The scene-type has to
  * be given to the {@link #SceneDiscoveryService(BridgeHandler, ThingTypeUID)} as
- * {@link ThingTypeUID}. The supported {@link ThingTypeUID} can be found at {@link SceneHandler#SUPPORTED_THING_TYPES}
+ * {@link org.openhab.core.thing.ThingTypeUID}. The supported {@link org.openhab.core.thing.ThingTypeUID}
+ * can be found at {@link org.openhab.binding.digitalstrom.internal.handler.SceneHandler#SUPPORTED_THING_TYPES}
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -173,8 +174,7 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
 
         if (getSupportedThingTypes().contains(thingTypeUID)) {
             String thingSceneId = scene.getID();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingSceneId);
-            return thingUID;
+            return new ThingUID(thingTypeUID, bridgeUID, thingSceneId);
         } else {
             return null;
         }

@@ -16,7 +16,7 @@ package org.openhab.binding.max.internal.exceptions;
  * Will be thrown when there is an attempt to pull a message from the message processor,
  * but the processor does not yet have a complete message.
  *
- * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
+ * @author Christian Rockrohr - Initial contribution
  */
 public class NoMessageAvailableException extends Exception {
 

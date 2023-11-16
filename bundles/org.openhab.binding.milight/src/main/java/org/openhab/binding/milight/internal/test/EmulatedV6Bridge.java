@@ -47,29 +47,29 @@ public class EmulatedV6Bridge {
             (byte) 0xD4 };
 
     // Send to the network by clients to find V6 bridges
-    private byte searchBroadcast[] = new byte[] { 0x10, 0, 0, 0, 0x24, 0x02, cls1, cls2, 0x02, 0x39, 0x38, 0x35, 0x62,
+    private byte[] searchBroadcast = new byte[] { 0x10, 0, 0, 0, 0x24, 0x02, cls1, cls2, 0x02, 0x39, 0x38, 0x35, 0x62,
             0x31, 0x35, 0x37, 0x62, 0x66, 0x36, 0x66, 0x63, 0x34, 0x33, 0x33, 0x36, 0x38, 0x61, 0x36, 0x33, 0x34, 0x36,
             0x37, 0x65, 0x61, 0x33, 0x62, 0x31, 0x39, 0x64, 0x30, 0x64 };
 
     // Send to broadcast address by the client usually and used to test if the client with the contained bridge id
     // is present on the network. If the IP of the bridge is known already, then SESSION_REQUEST is used usually.
-    private byte sessionRequestFindBroadcast[] = new byte[] { 0x10, 0, 0, 0, 0x0A, 2, cls1, cls2, 1, FAKE_MAC[0],
+    private byte[] sessionRequestFindBroadcast = new byte[] { 0x10, 0, 0, 0, 0x0A, 2, cls1, cls2, 1, FAKE_MAC[0],
             FAKE_MAC[1], FAKE_MAC[2], FAKE_MAC[3], FAKE_MAC[4], FAKE_MAC[5] };
 
     // Some clients send this as first command to get a session id, especially if the bridge IP is already known.
-    private byte sessionRequest[] = new byte[] { (byte) 0x20, 0, 0, 0, (byte) 0x16, 2, (byte) 0x62, (byte) 0x3A,
+    private byte[] sessionRequest = new byte[] { (byte) 0x20, 0, 0, 0, (byte) 0x16, 2, (byte) 0x62, (byte) 0x3A,
             (byte) 0xD5, (byte) 0xED, (byte) 0xA3, 1, (byte) 0xAE, (byte) 0x08, (byte) 0x2D, (byte) 0x46, (byte) 0x61,
             (byte) 0x41, (byte) 0xA7, (byte) 0xF6, (byte) 0xDC, (byte) 0xAF, cls1, cls2, 0, 0, (byte) 0x1E };
 
-    private byte sessionResponse[] = { (byte) 0x28, 0, 0, 0, (byte) 0x11, 0, 2, (byte) 0xAC, (byte) 0xCF, (byte) 0x23,
+    private byte[] sessionResponse = { (byte) 0x28, 0, 0, 0, (byte) 0x11, 0, 2, (byte) 0xAC, (byte) 0xCF, (byte) 0x23,
             (byte) 0xF5, (byte) 0x7A, (byte) 0xD4, (byte) 0x69, (byte) 0xF0, (byte) 0x3C, (byte) 0x23, 0, 1, SID1, SID2,
             0 };
 
     // Some clients call this as second command to establish a session.
-    private static final byte ESTABLISH_SESSION_REQUEST[] = new byte[] { (byte) 0x30, 0, 0, 0, 3, SID1, SID2, 0 };
+    private static final byte[] ESTABLISH_SESSION_REQUEST = new byte[] { (byte) 0x30, 0, 0, 0, 3, SID1, SID2, 0 };
 
     // In response to SEARCH, ESTABLISH_SESSION_REQUEST but also to SESSION_REQUEST_FIND_BROADCAST
-    private static final byte REESTABLISH_SESSION_RESPONSE[] = new byte[] { (byte) 0x18, 0, 0, 0, (byte) 0x40, 2,
+    private static final byte[] REESTABLISH_SESSION_RESPONSE = new byte[] { (byte) 0x18, 0, 0, 0, (byte) 0x40, 2,
             FAKE_MAC[0], FAKE_MAC[1], FAKE_MAC[2], FAKE_MAC[3], FAKE_MAC[4], FAKE_MAC[5], 0, (byte) 0x20, (byte) 0x39,
             (byte) 0x38, (byte) 0x35, (byte) 0x62, (byte) 0x31, (byte) 0x35, (byte) 0x37, (byte) 0x62, (byte) 0x66,
             (byte) 0x36, (byte) 0x66, (byte) 0x63, (byte) 0x34, (byte) 0x33, (byte) 0x33, (byte) 0x36, (byte) 0x38,
@@ -79,11 +79,11 @@ public class EmulatedV6Bridge {
             (byte) 0x6E, (byte) 0x6B, (byte) 0x5F, (byte) 0x64, (byte) 0x65, (byte) 0x76, (byte) 0x07, (byte) 0x5B,
             (byte) 0xCD, (byte) 0x15 };
 
-    private static final byte REGISTRATION_REQUEST[] = { (byte) 0x80, 0, 0, 0, 0x11, SID1, SID2, SEQ1, SEQ2, 0, 0x33,
+    private static final byte[] REGISTRATION_REQUEST = { (byte) 0x80, 0, 0, 0, 0x11, SID1, SID2, SEQ1, SEQ2, 0, 0x33,
             PW1, PW2, 0, 0, 0, 0, 0, 0, 0, 0, 0x33 };
 
     // 80:00:00:00:15:(f0:fe:6b:16:b0:8a):05:02:00:34:00:00:00:00:00:00:00:00:00:00:34
-    private static final byte REGISTRATION_REQUEST_RESPONSE[] = { (byte) 0x80, 0, 0, 0, 0x15, FAKE_MAC[0], FAKE_MAC[1],
+    private static final byte[] REGISTRATION_REQUEST_RESPONSE = { (byte) 0x80, 0, 0, 0, 0x15, FAKE_MAC[0], FAKE_MAC[1],
             FAKE_MAC[2], FAKE_MAC[3], FAKE_MAC[4], FAKE_MAC[5], 5, 2, 0, 0x34, PW1, PW2, 0, 0, 0, 0, 0, 0, 0, 0, 0x34 };
 
     private static final byte[] KEEP_ALIVE_REQUEST = { (byte) 0xD0, 0, 0, 0, 2, SID1, SID2 };
@@ -96,7 +96,7 @@ public class EmulatedV6Bridge {
         new Thread(this::runBrigde).start();
     }
 
-    private void replaceWithMac(byte data[], int offset) {
+    private void replaceWithMac(byte[] data, int offset) {
         data[offset + 0] = FAKE_MAC[0];
         data[offset + 1] = FAKE_MAC[1];
         data[offset + 2] = FAKE_MAC[2];
@@ -106,7 +106,7 @@ public class EmulatedV6Bridge {
     }
 
     public void runDiscovery() {
-        final byte discover[] = "HF-A11ASSISTHREAD".getBytes();
+        final byte[] discover = "HF-A11ASSISTHREAD".getBytes();
 
         try {
             byte[] a = new byte[0];
@@ -286,7 +286,7 @@ public class EmulatedV6Bridge {
                                 debugStr.append("iBox ");
                             }
 
-                            debugStr.append("Zone " + String.valueOf(buffer[19]) + " ");
+                            debugStr.append("Zone " + buffer[19] + " ");
 
                             for (int i = 13; i < 19; ++i) {
                                 debugStr.append(String.format("%02X ", buffer[i]));
@@ -295,7 +295,7 @@ public class EmulatedV6Bridge {
                         }
                     }
 
-                    byte response[] = { (byte) 0x88, 0, 0, 0, (byte) 0x03, 0, seq, 0 };
+                    byte[] response = { (byte) 0x88, 0, 0, 0, (byte) 0x03, 0, seq, 0 };
                     sendMessage(sPacket, datagramSocket, response);
                     continue;
                 }
@@ -320,7 +320,7 @@ public class EmulatedV6Bridge {
         logger.error("{}: {}", reason, s);
     }
 
-    protected void sendMessage(DatagramPacket packet, DatagramSocket datagramSocket, byte buffer[]) {
+    protected void sendMessage(DatagramPacket packet, DatagramSocket datagramSocket, byte[] buffer) {
         packet.setData(buffer);
         try {
             datagramSocket.send(packet);
@@ -330,7 +330,7 @@ public class EmulatedV6Bridge {
         }
     }
 
-    private void debugSessionSend(byte buffer[], InetAddress address) {
+    private void debugSessionSend(byte[] buffer, InetAddress address) {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < buffer.length; ++i) {
             s.append(String.format("%02X ", buffer[i]));

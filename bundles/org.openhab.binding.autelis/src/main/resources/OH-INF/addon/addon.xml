@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Autelis Pool Control Binding</name>
 	<description>This is the binding for a Autelis pool controller.</description>
+	<connection>local</connection>
 
 </addon:addon>

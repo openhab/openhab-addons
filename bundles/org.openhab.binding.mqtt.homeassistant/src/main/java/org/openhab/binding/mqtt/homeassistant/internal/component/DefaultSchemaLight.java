@@ -224,8 +224,7 @@ public class DefaultSchemaLight extends Light {
     private boolean handleColorCommand(Command command) {
         if (!handleOnOffCommand(command)) {
             return false;
-        } else if (command instanceof HSBType) {
-            HSBType color = (HSBType) command;
+        } else if (command instanceof HSBType color) {
             if (channelConfiguration.hsCommandTopic != null) {
                 // If we don't have a brightness channel, something is probably busted
                 // but don't choke
@@ -250,7 +249,7 @@ public class DefaultSchemaLight extends Light {
                 String xyString = String.format("%f,%f", xy[0].doubleValue(), xy[1].doubleValue());
                 xyChannel.getState().publishValue(new StringType(xyString));
             }
-        } else if (command instanceof PercentType) {
+        } else if (command instanceof PercentType brightness) {
             if (channelConfiguration.brightnessCommandTopic != null) {
                 brightnessChannel.getState().publishValue(command);
             } else {
@@ -261,8 +260,7 @@ public class DefaultSchemaLight extends Light {
                     color = HSBType.WHITE;
                 }
                 HSBType existingColor = (HSBType) color;
-                HSBType newCommand = new HSBType(existingColor.getHue(), existingColor.getSaturation(),
-                        (PercentType) command);
+                HSBType newCommand = new HSBType(existingColor.getHue(), existingColor.getSaturation(), brightness);
                 // re-process
                 handleColorCommand(newCommand);
             }

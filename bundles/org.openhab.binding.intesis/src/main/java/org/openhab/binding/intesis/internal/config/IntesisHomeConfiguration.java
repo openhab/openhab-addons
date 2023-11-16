@@ -23,4 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class IntesisHomeConfiguration {
     public String ipAddress = "";
     public String password = "";
+    public int pollingInterval = 30;
 }

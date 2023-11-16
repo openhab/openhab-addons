@@ -91,8 +91,8 @@ class LxControlUpDownAnalog extends LxControl {
     }
 
     private void handleCommands(Command command) throws IOException {
-        if (command instanceof DecimalType) {
-            Double value = ((DecimalType) command).doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            Double value = decimalCommand.doubleValue();
             if (minValue != null && maxValue != null && value >= minValue && value <= maxValue) {
                 sendAction(value.toString());
             } else {

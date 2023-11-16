@@ -81,9 +81,9 @@ public final class HttpUtil {
     private static String getHttpErrorMessageFromCloudResponse(Response response) {
         String exceptionMessage = "HTTP error " + response.getStatus() + ": " + response.getReason();
 
-        if (response instanceof ContentResponse) {
+        if (response instanceof ContentResponse contentResponse) {
             try {
-                ErrorMessage errorMessage = ErrorMessage.fromJson(((ContentResponse) response).getContentAsString());
+                ErrorMessage errorMessage = ErrorMessage.fromJson(contentResponse.getContentAsString());
                 exceptionMessage += "\nCloud returned message: " + errorMessage.getMessage();
             } catch (MieleSyntaxException e) {
                 exceptionMessage += "\nCloud returned invalid message.";

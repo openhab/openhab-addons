@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.security.SecureRandom;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -132,7 +133,7 @@ public class Ethm1Module extends SatelModule {
             } catch (Exception e) {
                 throw new IOException("General encryption failure", e);
             }
-            this.rand = new Random();
+            this.rand = new SecureRandom();
             this.idS = 0;
             this.idR = 0;
             this.rollingCounter = 0;

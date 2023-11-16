@@ -73,7 +73,9 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
     private final ExecutorService threadPool = ThreadPoolManager.getPool(getClass().getSimpleName());
 
-    /** holds the local instance of the MapDB database */
+    /**
+     * holds the local instance of the MapDB database
+     */
 
     private @NonNullByDefault({}) DB db;
     private @NonNullByDefault({}) Map<String, String> map;
@@ -99,8 +101,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
             map = db.createTreeMap("itemStore").makeOrGet();
         } catch (RuntimeException re) {
             Throwable cause = re.getCause();
-            if (cause instanceof ClassNotFoundException) {
-                ClassNotFoundException cnf = (ClassNotFoundException) cause;
+            if (cause instanceof ClassNotFoundException cnf) {
                 logger.warn(
                         "The MapDB in {} is incompatible with openHAB {}: {}. A new and empty MapDB will be used instead.",
                         dbFile, OpenHAB.getVersion(), cnf.getMessage());
@@ -182,12 +183,12 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         mItem.setName(localAlias);
         mItem.setState(state);
         mItem.setTimestamp(new Date());
-        String json = serialize(mItem);
-        map.put(localAlias, json);
-        commit();
-        if (logger.isDebugEnabled()) {
+        threadPool.submit(() -> {
+            String json = serialize(mItem);
+            map.put(localAlias, json);
+            db.commit();
             logger.debug("Stored '{}' with state '{}' as '{}' in MapDB database", localAlias, state, json);
-        }
+        });
     }
 
     @Override
@@ -215,10 +216,6 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         }
 
         return Optional.of(item);
-    }
-
-    private void commit() {
-        threadPool.submit(() -> db.commit());
     }
 
     private static <T> Stream<T> streamOptional(Optional<T> opt) {

@@ -38,7 +38,7 @@ public class Status extends VocAnswer {
         LOW,
         @SerializedName("VeryLow")
         VERY_LOW,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public double averageFuelConsumption = UNDEFINED;

@@ -102,8 +102,8 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService impleme
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof PlugwiseHABridgeHandler) {
-            bridgeHandler = (PlugwiseHABridgeHandler) handler;
+        if (handler instanceof PlugwiseHABridgeHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
         }
     }
 

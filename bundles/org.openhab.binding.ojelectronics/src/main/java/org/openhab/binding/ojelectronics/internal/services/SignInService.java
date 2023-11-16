@@ -90,7 +90,7 @@ public class SignInService {
                 if (result.getResponse().getStatus() == 200) {
                     PostSignInResponseModel signInModel = Objects
                             .requireNonNull(gson.fromJson(getContentAsString(), PostSignInResponseModel.class));
-                    if (signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
+                    if (signInModel.errorCode != 0 || "".equals(signInModel.sessionId)) {
                         unauthorized.run();
                         return;
                     }

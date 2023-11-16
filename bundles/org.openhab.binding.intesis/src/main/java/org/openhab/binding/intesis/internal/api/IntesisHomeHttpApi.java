@@ -48,7 +48,7 @@ public class IntesisHomeHttpApi {
      * Used to post a request to the device
      *
      * @param ipAddress of the device
-     * @param content string
+     * @param contentString string
      * @return JSON string as response
      */
     @Nullable
@@ -63,7 +63,7 @@ public class IntesisHomeHttpApi {
 
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
 
-            if (response != null && !response.isEmpty()) {
+            if (!response.isEmpty()) {
                 return response;
             } else {
                 return null;

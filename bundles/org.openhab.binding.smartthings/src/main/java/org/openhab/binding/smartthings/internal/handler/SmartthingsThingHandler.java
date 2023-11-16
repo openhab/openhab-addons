@@ -128,8 +128,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
      * @return channel id
      */
     private String getSmartthingsAttributeFromChannel(ChannelUID channelUID) {
-        String id = channelUID.getId();
-        return id;
+        return channelUID.getId();
     }
 
     /**
@@ -211,8 +210,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         try {
             Constructor<?> constr = Class.forName(converterClassName.toString()).getDeclaredConstructor(Thing.class);
             constr.setAccessible(true);
-            SmartthingsConverter cvtr = (SmartthingsConverter) constr.newInstance(thing);
-            return cvtr;
+            return (SmartthingsConverter) constr.newInstance(thing);
         } catch (ClassNotFoundException e) {
             // Most of the time there is no channel specific converter, the default converter is all that is needed.
             logger.trace("No Custom converter exists for {} ({})", converterName, converterClassName);

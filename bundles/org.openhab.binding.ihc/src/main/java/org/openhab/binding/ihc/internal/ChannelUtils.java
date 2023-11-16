@@ -14,10 +14,13 @@ package org.openhab.binding.ihc.internal;
 
 import static org.openhab.binding.ihc.internal.IhcBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.openhab.binding.ihc.internal.config.ChannelParams;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
@@ -212,20 +215,10 @@ public class ChannelUtils {
     }
 
     private static String createDescription(String name1, String name2, String name3, String name4) {
-        String description = "";
-        if (name1 != null && !name1.isEmpty()) {
-            description = name1;
-        }
-        if (name2 != null && !name2.isEmpty()) {
-            description += String.format(" - %s", name2);
-        }
-        if (name3 != null && !name3.isEmpty()) {
-            description += String.format(" - %s", name3);
-        }
-        if (name4 != null && !name4.isEmpty()) {
-            description += String.format(" - %s", name4);
-        }
-        return description;
+        String description = Stream.of(name1, name2, name3, name4).filter(s -> s != null && !s.isEmpty())
+                .collect(Collectors.joining(" - "));
+
+        return new String(description.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
     }
 
     private static void addOrUpdateChannel(Channel newChannel, List<Channel> thingChannels) {

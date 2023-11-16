@@ -14,7 +14,6 @@ package org.openhab.binding.hccrubbishcollection.internal;
 
 import static org.openhab.binding.hccrubbishcollection.internal.HCCRubbishCollectionBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 public class HCCRubbishCollectionHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COLLECTION);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_COLLECTION);
 
     @Activate
     public HCCRubbishCollectionHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {

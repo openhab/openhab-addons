@@ -80,8 +80,7 @@ public class NeeoItemValueConverter {
         final String format = channel.getValue();
 
         // HSBType must be done before the others since it inherits from DecimalType
-        if (state instanceof HSBType) {
-            final HSBType hsb = (HSBType) state;
+        if (state instanceof HSBType hsb) {
             switch (channel.getSubType()) {
                 case HUE:
                     return new NeeoItemValue(hsb.getHue().toBigDecimal());
@@ -106,8 +105,8 @@ public class NeeoItemValueConverter {
                 convertedState = UnDefType.UNDEF;
                 break;
             case SLIDER:
-                if (state instanceof PercentType) {
-                    convertedState = new DecimalType(((PercentType) state).toBigDecimal());
+                if (state instanceof PercentType type) {
+                    convertedState = new DecimalType(type.toBigDecimal());
                 } else {
                     convertedState = state.as(DecimalType.class);
                 }
@@ -136,9 +135,9 @@ public class NeeoItemValueConverter {
         } else if (convertedState instanceof UpDownType) {
             return new NeeoItemValue(convertedState == UpDownType.UP);
 
-        } else if (convertedState instanceof DecimalType) {
+        } else if (convertedState instanceof DecimalType type) {
             if (format == null || format.isEmpty() || channel.getType() == NeeoCapabilityType.SLIDER) {
-                return new NeeoItemValue(((DecimalType) convertedState).toBigDecimal());
+                return new NeeoItemValue(type.toBigDecimal());
             }
         } else if (convertedState instanceof UnDefType) {
             return new NeeoItemValue("-");

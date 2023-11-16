@@ -16,10 +16,10 @@ import java.lang.reflect.Type;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -349,7 +349,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ElroConnectsBridgeDiscoveryService.class);
+        return Set.of(ElroConnectsBridgeDiscoveryService.class);
     }
 
     /**

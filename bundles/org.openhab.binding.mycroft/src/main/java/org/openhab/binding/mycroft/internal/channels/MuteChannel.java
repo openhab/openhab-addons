@@ -72,8 +72,7 @@ public class MuteChannel extends MycroftChannel<OnOffType> {
     }
 
     private boolean sendVolumeSetMessage(float volume) {
-        String messageToSend = VolumeChannel.VOLUME_SETTER_MESSAGE.replaceAll("\\$\\$VOLUME",
-                Float.valueOf(volume).toString());
+        String messageToSend = VolumeChannel.VOLUME_SETTER_MESSAGE.replaceAll("\\$\\$VOLUME", Float.toString(volume));
         return handler.sendMessage(messageToSend);
     }
 

@@ -61,7 +61,6 @@ public class ShellyManagerConstants {
     public static final String ACTION_GETDEB1 = "getdebug1";
     public static final String ACTION_NONE = "-";
 
-    public static final String TEMPLATE_PATH = "sniplets/";
     public static final String HEADER_HTML = "header.html";
     public static final String OVERVIEW_HTML = "overview.html";
     public static final String OVERVIEW_HEADER = "ov_header.html";

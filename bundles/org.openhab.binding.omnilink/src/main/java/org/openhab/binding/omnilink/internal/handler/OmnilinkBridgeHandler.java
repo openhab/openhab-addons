@@ -191,10 +191,10 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
         switch (channelUID.getId()) {
             case CHANNEL_CONSOLE_ENABLE_DISABLE_BEEPER:
-                if (command instanceof StringType) {
+                if (command instanceof StringType stringCommand) {
                     try {
                         sendOmnilinkCommand(CommandMessage.CMD_CONSOLE_ENABLE_DISABLE_BEEPER,
-                                ((StringType) command).equals(StringType.valueOf("OFF")) ? 0 : 1, 0);
+                                stringCommand.equals(StringType.valueOf("OFF")) ? 0 : 1, 0);
                         updateState(CHANNEL_CONSOLE_ENABLE_DISABLE_BEEPER, UnDefType.UNDEF);
                     } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
                             | BridgeOfflineException e) {
@@ -205,9 +205,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 }
                 break;
             case CHANNEL_CONSOLE_BEEP:
-                if (command instanceof DecimalType) {
+                if (command instanceof DecimalType decimalCommand) {
                     try {
-                        sendOmnilinkCommand(CommandMessage.CMD_CONSOLE_BEEP, ((DecimalType) command).intValue(), 0);
+                        sendOmnilinkCommand(CommandMessage.CMD_CONSOLE_BEEP, decimalCommand.intValue(), 0);
                         updateState(CHANNEL_CONSOLE_BEEP, UnDefType.UNDEF);
                     } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
                             | BridgeOfflineException e) {
@@ -287,24 +287,21 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         if (objectStatus != null) {
             Status[] statuses = objectStatus.getStatuses();
             for (Status status : statuses) {
-                if (status instanceof ExtendedUnitStatus) {
-                    ExtendedUnitStatus unitStatus = (ExtendedUnitStatus) status;
+                if (status instanceof ExtendedUnitStatus unitStatus) {
                     int unitNumber = unitStatus.getNumber();
 
                     logger.debug("Received status update for Unit: {}, status: {}", unitNumber, unitStatus);
                     Optional<Thing> theThing = getUnitThing(unitNumber);
                     theThing.map(Thing::getHandler)
                             .ifPresent(theHandler -> ((UnitHandler) theHandler).handleStatus(unitStatus));
-                } else if (status instanceof ExtendedZoneStatus) {
-                    ExtendedZoneStatus zoneStatus = (ExtendedZoneStatus) status;
+                } else if (status instanceof ExtendedZoneStatus zoneStatus) {
                     int zoneNumber = zoneStatus.getNumber();
 
                     logger.debug("Received status update for Zone: {}, status: {}", zoneNumber, zoneStatus);
                     Optional<Thing> theThing = getChildThing(THING_TYPE_ZONE, zoneNumber);
                     theThing.map(Thing::getHandler)
                             .ifPresent(theHandler -> ((ZoneHandler) theHandler).handleStatus(zoneStatus));
-                } else if (status instanceof ExtendedAreaStatus) {
-                    ExtendedAreaStatus areaStatus = (ExtendedAreaStatus) status;
+                } else if (status instanceof ExtendedAreaStatus areaStatus) {
                     int areaNumber = areaStatus.getNumber();
 
                     logger.debug("Received status update for Area: {}, status: {}", areaNumber, areaStatus);
@@ -321,16 +318,14 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         theThing.map(Thing::getHandler)
                                 .ifPresent(theHandler -> ((AbstractAreaHandler) theHandler).handleStatus(areaStatus));
                     });
-                } else if (status instanceof ExtendedAccessControlReaderLockStatus) {
-                    ExtendedAccessControlReaderLockStatus lockStatus = (ExtendedAccessControlReaderLockStatus) status;
+                } else if (status instanceof ExtendedAccessControlReaderLockStatus lockStatus) {
                     int lockNumber = lockStatus.getNumber();
 
                     logger.debug("Received status update for Lock: {}, status: {}", lockNumber, lockStatus);
                     Optional<Thing> theThing = getChildThing(THING_TYPE_LOCK, lockNumber);
                     theThing.map(Thing::getHandler)
                             .ifPresent(theHandler -> ((LockHandler) theHandler).handleStatus(lockStatus));
-                } else if (status instanceof ExtendedThermostatStatus) {
-                    ExtendedThermostatStatus thermostatStatus = (ExtendedThermostatStatus) status;
+                } else if (status instanceof ExtendedThermostatStatus thermostatStatus) {
                     int thermostatNumber = thermostatStatus.getNumber();
 
                     logger.debug("Received status update for Thermostat: {}, status: {}", thermostatNumber,
@@ -338,8 +333,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                     Optional<Thing> theThing = getChildThing(THING_TYPE_THERMOSTAT, thermostatNumber);
                     theThing.map(Thing::getHandler)
                             .ifPresent(theHandler -> ((ThermostatHandler) theHandler).handleStatus(thermostatStatus));
-                } else if (status instanceof ExtendedAudioZoneStatus) {
-                    ExtendedAudioZoneStatus audioZoneStatus = (ExtendedAudioZoneStatus) status;
+                } else if (status instanceof ExtendedAudioZoneStatus audioZoneStatus) {
                     int audioZoneNumber = audioZoneStatus.getNumber();
 
                     logger.debug("Received status update for Audio Zone: {}, status: {}", audioZoneNumber,
@@ -347,8 +341,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                     Optional<Thing> theThing = getChildThing(THING_TYPE_AUDIO_ZONE, audioZoneNumber);
                     theThing.map(Thing::getHandler)
                             .ifPresent(theHandler -> ((AudioZoneHandler) theHandler).handleStatus(audioZoneStatus));
-                } else if (status instanceof ExtendedAuxSensorStatus) {
-                    ExtendedAuxSensorStatus auxSensorStatus = (ExtendedAuxSensorStatus) status;
+                } else if (status instanceof ExtendedAuxSensorStatus auxSensorStatus) {
                     int auxSensorNumber = auxSensorStatus.getNumber();
 
                     // Aux Sensors can be either temperature or humidity, need to check both.

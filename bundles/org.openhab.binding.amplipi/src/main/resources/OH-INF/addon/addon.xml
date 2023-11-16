@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>AmpliPi Binding</name>
 	<description>This is the binding for the AmpliPi Home Audio System from MicroNova.</description>
+	<connection>local</connection>
 
 </addon:addon>

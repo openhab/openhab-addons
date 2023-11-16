@@ -22,7 +22,7 @@ import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link ModbusBinding} class defines common constants, which are
+ * The {@link ModbusBindingConstantsInternal} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Sami Salonen - Initial contribution

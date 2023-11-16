@@ -103,8 +103,8 @@ public class NukiDeviceDiscoveryService extends AbstractDiscoveryService impleme
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof NukiBridgeHandler) {
-            bridge = (NukiBridgeHandler) handler;
+        if (handler instanceof NukiBridgeHandler bridgeHandler) {
+            bridge = bridgeHandler;
         }
     }
 

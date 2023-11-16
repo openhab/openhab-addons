@@ -123,9 +123,9 @@ public class Helper {
                 for (Enumeration<InetAddress> enumIpAddr = networkInterface.getInetAddresses(); enumIpAddr
                         .hasMoreElements();) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && inetAddress.getHostAddress().toString().length() < 18
+                    if (!inetAddress.isLoopbackAddress() && inetAddress.getHostAddress().length() < 18
                             && inetAddress.isSiteLocalAddress()) {
-                        ipAddress = inetAddress.getHostAddress().toString();
+                        ipAddress = inetAddress.getHostAddress();
                     }
                 }
             }

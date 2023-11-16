@@ -179,8 +179,7 @@ class JCgetLANConfig extends GetLANConfig implements BridgeCommunicationProtocol
      */
     @Override
     public VeluxGwLAN getLANConfig() {
-        VeluxGwLAN gwLAN = new VeluxGwLAN(response.data.ipAddress, response.data.subnetMask,
-                response.data.defaultGateway, response.data.dhcp);
-        return gwLAN;
+        return new VeluxGwLAN(response.data.ipAddress, response.data.subnetMask, response.data.defaultGateway,
+                response.data.dhcp);
     }
 }

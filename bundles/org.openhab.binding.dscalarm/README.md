@@ -204,7 +204,7 @@ String PANEL_MESSAGE "Panel Message: [%s]" (DSCAlarmPanel) {channel="dscalarm:pa
 Number PANEL_COMMAND "Panel Commands" (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_command"}
 String PANEL_SYSTEM_ERROR "Panel System Error: [%s]" (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_system_error"}
 
-String PANEL_TROUBLE_MESSAGE "Panel Trouble Message: [%s]" <"shieldGreen"> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_trouble_message"}
+String PANEL_TROUBLE_MESSAGE "Panel Trouble Message: [%s]" <shieldGreen> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_trouble_message"}
 Switch PANEL_TROUBLE_LED "Panel Trouble LED" <warning> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_trouble_led"}
 Switch PANEL_SERVICE_REQUIRED <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_service_required"}
 Switch PANEL_AC_TROUBLE <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_ac_trouble"}

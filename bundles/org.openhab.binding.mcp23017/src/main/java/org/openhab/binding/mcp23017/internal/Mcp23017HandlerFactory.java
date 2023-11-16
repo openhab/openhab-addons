@@ -14,7 +14,6 @@ package org.openhab.binding.mcp23017.internal;
 
 import static org.openhab.binding.mcp23017.internal.Mcp23017BindingConstants.THING_TYPE_MCP23017;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openhab.binding.mcp23017.internal.handler.Mcp23017Handler;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.mcp23017")
 public class Mcp23017HandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MCP23017);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_MCP23017);
     private final Logger logger = LoggerFactory.getLogger(Mcp23017HandlerFactory.class);
 
     @Override

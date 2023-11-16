@@ -234,14 +234,14 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                         }
                         break;
                 }
-            } else if (command instanceof QuantityType) {
+            } else if (command instanceof QuantityType quantityCommand) {
                 switch (channelUID.getId()) {
                     case DEVICE_CHANNEL_FAN_SPEED_ENABLED:
                         // If the fan speed is being set enforce manual mode
                         sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
                                 new VeSyncRequestManagedDeviceBypassV2.SetMode(MODE_MANUAL), false);
 
-                        int requestedLevel = ((QuantityType<?>) command).intValue();
+                        int requestedLevel = quantityCommand.intValue();
                         if (requestedLevel < 1) {
                             logger.warn("Fan speed command less than 1 - adjusting to 1 as the valid API value");
                             requestedLevel = 1;

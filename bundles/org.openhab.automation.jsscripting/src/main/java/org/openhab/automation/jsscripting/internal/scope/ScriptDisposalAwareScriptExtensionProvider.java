@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -57,7 +58,7 @@ public abstract class ScriptDisposalAwareScriptExtensionProvider
 
     @Override
     public Collection<String> getPresets() {
-        return Collections.singleton(getPresetName());
+        return Set.of(getPresetName());
     }
 
     @Override
@@ -67,7 +68,6 @@ public abstract class ScriptDisposalAwareScriptExtensionProvider
 
     @Override
     public @Nullable Object get(String scriptIdentifier, String type) throws IllegalArgumentException {
-
         Map<String, Object> forScript = idToTypes.computeIfAbsent(scriptIdentifier, k -> new HashMap<>());
         return forScript.computeIfAbsent(type,
                 k -> Objects.nonNull(types.get(k)) ? types.get(k).apply(scriptIdentifier) : null);
@@ -92,8 +92,8 @@ public abstract class ScriptDisposalAwareScriptExtensionProvider
 
         if (forScript != null) {
             for (Object o : forScript.values()) {
-                if (o instanceof ScriptDisposalAware) {
-                    ((ScriptDisposalAware) o).unload(scriptIdentifier);
+                if (o instanceof ScriptDisposalAware script) {
+                    script.unload(scriptIdentifier);
                 }
             }
         }

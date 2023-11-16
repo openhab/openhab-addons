@@ -44,7 +44,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest<ClimateControlHandler> {
+class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest<ClimateControlHandler> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<RoomClimateControlServiceState> roomClimateControlServiceStateCaptor;
 
@@ -64,7 +64,7 @@ public class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest
     }
 
     @Test
-    public void testHandleCommandRoomClimateControlService()
+    void testHandleCommandRoomClimateControlService()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         QuantityType<Temperature> temperature = new QuantityType<>(21.5, SIUnits.CELSIUS);
         getFixture().handleCommand(
@@ -77,9 +77,13 @@ public class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest
     }
 
     @Test
-    public void testUpdateChannelsTemperatureLevelService() {
-        JsonElement jsonObject = JsonParser.parseString(
-                "{\n" + "   \"@type\": \"temperatureLevelState\",\n" + "   \"temperature\": 21.5\n" + " }");
+    void testUpdateChannelsTemperatureLevelService() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "temperatureLevelState",
+                   "temperature": 21.5
+                 }\
+                """);
         getFixture().processUpdate("TemperatureLevel", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE),
@@ -87,9 +91,13 @@ public class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest
     }
 
     @Test
-    public void testUpdateChannelsRoomClimateControlService() {
-        JsonElement jsonObject = JsonParser.parseString(
-                "{\n" + "   \"@type\": \"climateControlState\",\n" + "   \"setpointTemperature\": 21.5\n" + " }");
+    void testUpdateChannelsRoomClimateControlService() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "climateControlState",
+                   "setpointTemperature": 21.5
+                 }\
+                """);
         getFixture().processUpdate("RoomClimateControl", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SETPOINT_TEMPERATURE),

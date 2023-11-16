@@ -91,7 +91,7 @@ public class SrsZr5Handler extends SonyAudioHandler {
                 if (result != null) {
                     logger.debug("SrsZr5Handler Updating sound field to {} {}", result.get("clearAudio"),
                             result.get("soundField"));
-                    if (result.get("clearAudio").equalsIgnoreCase("on")) {
+                    if ("on".equalsIgnoreCase(result.get("clearAudio"))) {
                         updateState(channelUID, new StringType("clearAudio"));
                     } else {
                         updateState(channelUID, new StringType(result.get("soundField")));
@@ -101,11 +101,11 @@ public class SrsZr5Handler extends SonyAudioHandler {
                 throw new IOException(ex.getCause());
             }
         }
-        if (command instanceof StringType) {
-            if (((StringType) command).toString().equalsIgnoreCase("clearAudio")) {
+        if (command instanceof StringType stringCommand) {
+            if ("clearAudio".equalsIgnoreCase(stringCommand.toString())) {
                 connection.setSoundSettings("clearAudio", "on");
             } else {
-                connection.setSoundSettings("soundField", ((StringType) command).toString());
+                connection.setSoundSettings("soundField", stringCommand.toString());
             }
         }
     }

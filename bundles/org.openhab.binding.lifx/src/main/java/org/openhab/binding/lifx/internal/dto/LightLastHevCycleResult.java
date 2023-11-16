@@ -41,7 +41,7 @@ public enum LightLastHevCycleResult {
         Optional<LightLastHevCycleResult> result = Arrays.stream(values()).filter((value) -> value.type == type)
                 .findFirst();
 
-        if (!result.isPresent()) {
+        if (result.isEmpty()) {
             throw new IllegalArgumentException("Invalid LightLastHevCycleResult type: " + type);
         }
 

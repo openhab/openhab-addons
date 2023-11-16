@@ -23,10 +23,11 @@ import org.openhab.binding.jeelink.internal.JeeLinkReadingConverter;
  * @author Volker Bier - Initial contribution
  */
 public class Ec3kReadingConverter implements JeeLinkReadingConverter<Ec3kReading> {
-    private static final Pattern LINE_P = Pattern
-            .compile("OK\\s+22\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)"
-                    + "\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)"
-                    + "\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
+    private static final Pattern LINE_P = Pattern.compile("""
+            OK\\s+22\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\
+            \\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\
+            \\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\
+            """);
 
     @Override
     public Ec3kReading createReading(String inputLine) {

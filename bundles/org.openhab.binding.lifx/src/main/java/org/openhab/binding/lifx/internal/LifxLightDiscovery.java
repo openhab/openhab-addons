@@ -269,8 +269,8 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
             MACAddress macAddress = packet.getTarget();
             DiscoveredLight light = discoveredLights.get(macAddress);
 
-            if (packet instanceof StateServiceResponse) {
-                int port = (int) ((StateServiceResponse) packet).getPort();
+            if (packet instanceof StateServiceResponse response) {
+                int port = (int) response.getPort();
                 if (port != 0) {
                     try {
                         InetSocketAddress socketAddress = new InetSocketAddress(address.getAddress(), port);
@@ -294,14 +294,13 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
                     }
                 }
             } else if (light != null) {
-                if (packet instanceof StateLabelResponse) {
-                    light.label = ((StateLabelResponse) packet).getLabel().trim();
-                } else if (packet instanceof StateVersionResponse) {
+                if (packet instanceof StateLabelResponse response) {
+                    light.label = response.getLabel().trim();
+                } else if (packet instanceof StateVersionResponse response) {
                     try {
-                        LifxProduct product = LifxProduct
-                                .getProductFromProductID(((StateVersionResponse) packet).getProduct());
+                        LifxProduct product = LifxProduct.getProductFromProductID(response.getProduct());
                         light.product = product;
-                        light.productVersion = ((StateVersionResponse) packet).getVersion();
+                        light.productVersion = response.getVersion();
                         light.supportedProduct = product.isLight();
                     } catch (IllegalArgumentException e) {
                         logger.debug("Discovered an unsupported light ({}): {}", light.macAddress.getAsLabel(),

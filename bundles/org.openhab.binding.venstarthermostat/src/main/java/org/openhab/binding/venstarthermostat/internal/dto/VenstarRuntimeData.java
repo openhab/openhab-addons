@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link VenstarRunTimeData} represents the list of runtimes returned from the REST API.
+ * The {@link VenstarRuntimeData} represents the list of runtimes returned from the REST API.
  *
  * @author Matthew Davies - Initial contribution
  */

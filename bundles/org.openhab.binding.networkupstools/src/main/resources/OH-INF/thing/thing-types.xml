@@ -13,6 +13,7 @@
 			<channel id="batteryCharge" typeId="battery-charge"/>
 			<channel id="batteryRuntime" typeId="battery-runtime"/>
 			<channel id="batteryVoltage" typeId="battery-voltage"/>
+			<channel id="batteryTemperature" typeId="battery-temperature"/>
 			<channel id="inputRealpower" typeId="input-realpower"/>
 			<channel id="inputVoltageStatus" typeId="input-voltage-status"/>
 			<channel id="inputQuality" typeId="input-quality"/>
@@ -31,6 +32,10 @@
 			<channel id="upsTemperature" typeId="ups-temperature"/>
 			<channel id="upsTestResult" typeId="ups-test-result"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:ups:config"/>
 	</thing-type>

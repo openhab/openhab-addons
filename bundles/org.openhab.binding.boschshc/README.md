@@ -4,6 +4,7 @@ Binding for the Bosch Smart Home.
 
 - [Bosch Smart Home Binding](#bosch-smart-home-binding)
   - [Supported Things](#supported-things)
+    - [Smart Home Controller](#smart-home-controller)
     - [In-Wall Switch](#in-wall-switch)
     - [Compact Smart Plug](#compact-smart-plug)
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
@@ -26,6 +27,16 @@ Binding for the Bosch Smart Home.
   - [Item Configuration](#item-configuration)
 
 ## Supported Things
+
+### Smart Home Controller
+The Smart Home Controller is the central hub that allows you to monitor and control your smart home devices from one place.
+
+**Bridge Type ID**: ``shc``
+
+| Channel Type ID    | Item Type | Writable | Description                                                             |
+|--------------------|-----------|:--------:|-------------------------------------------------------------------------|
+| scenario-triggered | String    | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex)      | 
+| trigger-scenario   | String    | &#9745;  | Name of a scenario to be triggered on the Bosch Smart Home Controller.  |
 
 ### In-Wall Switch
 

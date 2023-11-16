@@ -69,7 +69,7 @@ public class WSRFDevice {
     /**
      * Sets the device type value for this WSRFDevice.
      *
-     * @param device type
+     * @param deviceType device type
      */
     public void setDeviceType(int deviceType) {
         this.deviceType = deviceType;
@@ -87,7 +87,7 @@ public class WSRFDevice {
     /**
      * Sets the serial number value for this WSRFDevice.
      *
-     * @param Serial number
+     * @param serialNumber Serial number
      */
     public void setSerialNumber(long serialNumber) {
         this.serialNumber = serialNumber;

@@ -15,12 +15,12 @@
 			<parameter name="hostname" type="text" required="true">
 				<label>@text/config.hostname.label</label>
 			</parameter>
-			<parameter name="port" type="text" required="false">
+			<parameter name="port" type="text">
 				<label>@text/config.port.label</label>
 				<description>Default values are 25 for plain/STARTTLS and 465 for SSL/TLS</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="security" type="text" required="false">
+			<parameter name="security" type="text">
 				<label>@text/config.security.label</label>
 				<options>
 					<option value="PLAIN">@text/config.security.option.PLAIN</option>
@@ -30,28 +30,28 @@
 				<limitToOptions>true</limitToOptions>
 				<default>PLAIN</default>
 			</parameter>
-			<parameter name="username" type="text" required="false">
+			<parameter name="username" type="text">
 				<label>@text/config.username.label</label>
 			</parameter>
-			<parameter name="password" type="text" required="false">
+			<parameter name="password" type="text">
 				<label>@text/config.password.label</label>
 				<context>password</context>
 			</parameter>
 		</config-description>
 	</thing-type>
-	<thing-type id="imap" extensible="mailcount">
+	<thing-type id="imap" extensible="mailcount,content">
 		<label>IMAP Server</label>
 		<description>Used for receiving emails</description>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>@text/config.hostname.label</label>
 			</parameter>
-			<parameter name="port" type="text" required="false">
+			<parameter name="port" type="text">
 				<label>@text/config.port.label</label>
 				<description>Default values are 143 for plain/STARTTLS and 993 for SSL/TLS</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="security" type="text" required="false">
+			<parameter name="security" type="text">
 				<label>@text/config.security.label</label>
 				<options>
 					<option value="PLAIN">@text/config.security.option.PLAIN</option>
@@ -68,26 +68,26 @@
 				<label>@text/config.password.label</label>
 				<context>password</context>
 			</parameter>
-			<parameter name="refresh" type="integer" required="false">
+			<parameter name="refresh" type="integer">
 				<label>@text/config.refresh.label</label>
 				<description>@text/config.refresh.description</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
 	</thing-type>
-	<thing-type id="pop3" extensible="mailcount">
+	<thing-type id="pop3" extensible="mailcount,content">
 		<label>POP3 Server</label>
 		<description>Used for receiving emails</description>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>@text/config.hostname.label</label>
 			</parameter>
-			<parameter name="port" type="text" required="false">
+			<parameter name="port" type="text">
 				<label>@text/config.port.label</label>
 				<description>Default values are 110 for plain/STARTTLS and 995 for SSL/TLS</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="security" type="text" required="false">
+			<parameter name="security" type="text">
 				<label>@text/config.security.label</label>
 				<options>
 					<option value="PLAIN">@text/config.security.option.PLAIN</option>
@@ -104,7 +104,7 @@
 				<label>@text/config.password.label</label>
 				<context>password</context>
 			</parameter>
-			<parameter name="refresh" type="integer" required="false">
+			<parameter name="refresh" type="integer">
 				<label>@text/config.refresh.label</label>
 				<description>@text/config.refresh.description</description>
 				<default>60</default>
@@ -121,7 +121,7 @@
 			<parameter name="folder" type="text" required="true">
 				<label>Folder Name</label>
 			</parameter>
-			<parameter name="type" type="text" required="false">
+			<parameter name="type" type="text">
 				<label>Counter Type</label>
 				<options>
 					<option value="UNREAD">Unread</option>
@@ -129,6 +129,35 @@
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>TOTAL</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="content">
+		<item-type>String</item-type>
+		<label>Content</label>
+		<description>Mail content as String (with subject filter and content transformation).</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="folder" type="text" required="true">
+				<label>Folder Name</label>
+			</parameter>
+			<parameter name="subject" type="text">
+				<label>Subject Filter</label>
+				<description>A (regular expression) filter for the mail subject.</description>
+			</parameter>
+			<parameter name="sender" type="text">
+				<label>Sender Filter</label>
+				<description>A (regular expression) filter for the mail sender address.</description>
+			</parameter>
+			<parameter name="transformation" type="text">
+				<label>Transformation</label>
+				<description>Transformation pattern used when processing messages. Multiple transformation can be chained using "∩".</description>
+			</parameter>
+			<parameter name="markAsRead" type="boolean">
+				<label>Mark As Read</label>
+				<description>Mark a processed mail as read and prevent further processing.</description>
+				<default>false</default>
 			</parameter>
 		</config-description>
 	</channel-type>

@@ -19,7 +19,7 @@ import org.openhab.core.types.State;
 /**
  * This enumeration represents the different mode types of a MAX! heating thermostat.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  */
 public enum ThermostatModeType implements PrimitiveType, State, Command {

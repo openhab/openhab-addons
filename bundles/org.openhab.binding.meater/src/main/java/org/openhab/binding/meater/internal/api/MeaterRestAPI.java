@@ -15,6 +15,7 @@ package org.openhab.binding.meater.internal.api;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,6 +57,7 @@ public class MeaterRestAPI {
     private static final String LOGIN = "login";
     private static final String DEVICES = "devices";
     private static final int MAX_RETRIES = 3;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Logger logger = LoggerFactory.getLogger(MeaterRestAPI.class);
     private final Gson gson;
@@ -99,7 +101,8 @@ public class MeaterRestAPI {
             // Login
             String json = "{ \"email\": \"" + configuration.email + "\",  \"password\": \"" + configuration.password
                     + "\" }";
-            Request request = httpClient.newRequest(API_ENDPOINT + LOGIN).method(HttpMethod.POST);
+            Request request = httpClient.newRequest(API_ENDPOINT + LOGIN).method(HttpMethod.POST)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
             request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
             request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
@@ -132,7 +135,8 @@ public class MeaterRestAPI {
         try {
             for (int i = 0; i < MAX_RETRIES; i++) {
                 try {
-                    Request request = httpClient.newRequest(API_ENDPOINT + uri).method(HttpMethod.GET);
+                    Request request = httpClient.newRequest(API_ENDPOINT + uri).method(HttpMethod.GET)
+                            .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                     request.header(HttpHeader.AUTHORIZATION, "Bearer " + authToken);
                     request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
                     request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
@@ -159,8 +163,8 @@ public class MeaterRestAPI {
             throw new MeaterException("Failed to fetch from API!");
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException) {
-                Response response = ((HttpResponseException) cause).getResponse();
+            if (cause instanceof HttpResponseException httpResponseException) {
+                Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
                      * When contextId is not valid, the service will respond with HTTP code 401 without

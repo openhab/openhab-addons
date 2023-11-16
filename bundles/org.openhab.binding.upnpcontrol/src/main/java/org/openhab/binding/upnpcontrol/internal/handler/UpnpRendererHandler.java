@@ -19,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -317,7 +316,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                                                            // received
         }
 
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Stop", inputs);
     }
@@ -353,7 +352,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Pause on UPnP AV Transport.
      */
     protected void pause() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Pause", inputs);
     }
@@ -362,7 +361,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Next on UPnP AV Transport.
      */
     protected void next() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Next", inputs);
     }
@@ -371,7 +370,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Previous on UPnP AV Transport.
      */
     protected void previous() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Previous", inputs);
     }
@@ -456,7 +455,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Result is received in {@link #onValueReceived}.
      */
     protected void getTransportState() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "GetTransportInfo", inputs);
     }
@@ -466,7 +465,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Result is received in {@link #onValueReceived}.
      */
     protected void getPositionInfo() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "GetPositionInfo", inputs);
     }
@@ -476,7 +475,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Result is received in {@link #onValueReceived}.
      */
     protected void getMediaInfo() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "smarthome:audio stream http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3", inputs);
     }
@@ -696,24 +695,24 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void handleCommandVolume(Command command, String id) {
         if (command instanceof RefreshType) {
             getVolume("volume".equals(id) ? UPNP_MASTER : id.replace("volume", ""));
-        } else if (command instanceof PercentType) {
-            setVolume("volume".equals(id) ? UPNP_MASTER : id.replace("volume", ""), (PercentType) command);
+        } else if (command instanceof PercentType percentCommand) {
+            setVolume("volume".equals(id) ? UPNP_MASTER : id.replace("volume", ""), percentCommand);
         }
     }
 
     private void handleCommandMute(Command command, String id) {
         if (command instanceof RefreshType) {
             getMute("mute".equals(id) ? UPNP_MASTER : id.replace("mute", ""));
-        } else if (command instanceof OnOffType) {
-            setMute("mute".equals(id) ? UPNP_MASTER : id.replace("mute", ""), (OnOffType) command);
+        } else if (command instanceof OnOffType onOffCommand) {
+            setMute("mute".equals(id) ? UPNP_MASTER : id.replace("mute", ""), onOffCommand);
         }
     }
 
     private void handleCommandLoudness(Command command, String id) {
         if (command instanceof RefreshType) {
             getLoudness("loudness".equals(id) ? UPNP_MASTER : id.replace("loudness", ""));
-        } else if (command instanceof OnOffType) {
-            setLoudness("loudness".equals(id) ? UPNP_MASTER : id.replace("loudness", ""), (OnOffType) command);
+        } else if (command instanceof OnOffType onOffCommand) {
+            setLoudness("loudness".equals(id) ? UPNP_MASTER : id.replace("loudness", ""), onOffCommand);
         }
     }
 
@@ -884,8 +883,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void handleCommandTrackPosition(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateState(channelUID, new QuantityType<>(trackPosition, Units.SECOND));
-        } else if (command instanceof QuantityType<?>) {
-            QuantityType<?> position = ((QuantityType<?>) command).toUnit(Units.SECOND);
+        } else if (command instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> position = quantityCommand.toUnit(Units.SECOND);
             if (position != null) {
                 int pos = Integer.min(trackDuration, position.intValue());
                 seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
@@ -897,8 +896,8 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (command instanceof RefreshType) {
             int relPosition = (trackDuration != 0) ? (trackPosition * 100) / trackDuration : 0;
             updateState(channelUID, new PercentType(relPosition));
-        } else if (command instanceof PercentType) {
-            int pos = ((PercentType) command).intValue() * trackDuration / 100;
+        } else if (command instanceof PercentType percentCommand) {
+            int pos = percentCommand.intValue() * trackDuration / 100;
             seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
         }
     }

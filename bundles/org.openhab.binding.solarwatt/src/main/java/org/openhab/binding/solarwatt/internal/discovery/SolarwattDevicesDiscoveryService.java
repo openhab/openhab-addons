@@ -84,8 +84,8 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(final @Nullable ThingHandler handler) {
-        if (handler instanceof EnergyManagerHandler) {
-            this.energyManagerHandler = (EnergyManagerHandler) handler;
+        if (handler instanceof EnergyManagerHandler energyManagerHandler) {
+            this.energyManagerHandler = energyManagerHandler;
         }
     }
 
@@ -196,7 +196,7 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
      * @return guid for openhab
      */
     private String rewriteGuid(String emGuid) {
-        return emGuid.replaceAll(":", "-");
+        return emGuid.replace(":", "-");
     }
 
     public class EnergymanagerScan implements Runnable {

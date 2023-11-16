@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>TA C.M.I. Binding</name>
 	<description>This is the binding for TA C.M.I.</description>
+	<connection>local</connection>
 
 </addon:addon>

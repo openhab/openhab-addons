@@ -58,9 +58,9 @@ public class NUTChannelTypeProvider implements ChannelTypeProvider, ThingHandler
 
     @Override
     public void setThingHandler(@Nullable final ThingHandler handler) {
-        if (handler instanceof NUTHandler) {
+        if (handler instanceof NUTHandler nutHandler) {
             this.handler = handler;
-            ((NUTHandler) handler).setChannelTypeProvider(this);
+            nutHandler.setChannelTypeProvider(this);
         }
     }
 

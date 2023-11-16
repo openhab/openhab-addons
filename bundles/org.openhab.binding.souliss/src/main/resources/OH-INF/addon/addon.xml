@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Souliss Binding</name>
 	<description>This is the binding for Souliss. The Arduino based SmartHome..</description>
+	<connection>local</connection>
 
 </addon:addon>

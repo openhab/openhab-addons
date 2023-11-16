@@ -61,8 +61,7 @@ public class VizioHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            VizioHandler handler = new VizioHandler(thing, httpClientFactory, stateDescriptionProvider, vizioAppsJson);
-            return handler;
+            return new VizioHandler(thing, httpClientFactory, stateDescriptionProvider, vizioAppsJson);
         }
 
         return null;

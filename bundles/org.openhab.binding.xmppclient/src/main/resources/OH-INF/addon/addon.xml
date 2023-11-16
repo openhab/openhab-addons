@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>XMPPClient Binding</name>
 	<description>This is the binding for XMPP (Jabber) notifications.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:plex:server">
+		<parameter-group name="config-info">
+			<label>PLEX Bridge Configuration</label>
+		</parameter-group>
+		<parameter-group name="auth-info">
+			<label>Authentication Information</label>
+		</parameter-group>
+		<parameter name="host" type="text" required="true" groupName="config-info">
+			<label>Server</label>
+			<description>PLEX host name or IP address</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="portNumber" type="integer" min="1" max="65535" required="false" groupName="config-info">
+			<label>Port Number</label>
+			<description>Port Number (leave blank if PLEX installed on default port)</description>
+			<default>32400</default>
+		</parameter>
+		<parameter name="refreshRate" type="integer" min="2" unit="s" required="true" groupName="config-info">
+			<label>Refresh Interval</label>
+			<description>Interval in seconds at which PLEX server status is polled</description>
+			<default>5</default>
+		</parameter>
+		<parameter name="token" type="text" required="false" groupName="auth-info">
+			<label>X-Token</label>
+			<description>X-Token</description>
+		</parameter>
+		<parameter name="username" type="text" groupName="auth-info">
+			<label>Username</label>
+			<description>If you're using PLEX Home you need to supply the username and password of your PLEX account here. If you
+				don't want to enter your credentials you can also directly set your account token below instead.</description>
+		</parameter>
+		<parameter name="password" type="text" groupName="auth-info">
+			<context>password</context>
+			<label>Password</label>
+			<description>Password</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:plex:player">
+		<parameter name="playerID" type="text" required="true">
+			<label>Player ID</label>
+			<description>The unique identifier of the player</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

@@ -43,12 +43,12 @@ public class MagentaTVNetwork {
     /**
      * Init local network interface, determine local IP and MAC address
      *
-     * @param networkAddressService
-     * @return
+     * @param localIP
+     * @param localPort
      */
     public void initLocalNet(String localIP, String localPort) throws MagentaTVException {
         try {
-            if (localIP.isEmpty() || localIP.equals("0.0.0.0") || localIP.equals("127.0.0.1")) {
+            if (localIP.isEmpty() || "0.0.0.0".equals(localIP) || "127.0.0.1".equals(localIP)) {
                 throw new MagentaTVException("Unable to detect local IP address!");
             }
             this.localPort = localPort;

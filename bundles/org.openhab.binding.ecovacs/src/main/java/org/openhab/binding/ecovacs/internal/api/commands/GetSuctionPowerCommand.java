@@ -41,8 +41,8 @@ public class GetSuctionPowerCommand extends IotDeviceCommand<SuctionPower> {
     @Override
     public SuctionPower convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            SpeedReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson, SpeedReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            SpeedReport resp = jsonResponse.getResponsePayloadAs(gson, SpeedReport.class);
             return SuctionPower.fromJsonValue(resp.speedLevel);
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();

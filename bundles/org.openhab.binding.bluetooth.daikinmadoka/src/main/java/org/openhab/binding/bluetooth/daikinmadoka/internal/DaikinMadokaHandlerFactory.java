@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal;
 
 import static org.openhab.binding.bluetooth.daikinmadoka.DaikinMadokaBindingConstants.THING_TYPE_BRC1H;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.bluetooth.daikinmadoka", service = ThingHandlerFactory.class)
 public class DaikinMadokaHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BRC1H);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRC1H);
 
     private final Logger logger = LoggerFactory.getLogger(DaikinMadokaHandlerFactory.class);
 

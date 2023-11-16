@@ -15,7 +15,7 @@ package org.openhab.binding.neato.internal;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link NeatoBinding} class defines common constants, which are
+ * The {@link NeatoBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Patrik Wimnell - Initial contribution

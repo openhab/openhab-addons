@@ -136,7 +136,7 @@ public class EnvisalinkBridgeDiscovery {
      * @return
      */
     private long convertIPToNumber(String ipAddress) {
-        String octets[] = ipAddress.split("\\.");
+        String[] octets = ipAddress.split("\\.");
 
         if (octets.length != 4) {
             throw new IllegalArgumentException("Invalid IP address: " + ipAddress);

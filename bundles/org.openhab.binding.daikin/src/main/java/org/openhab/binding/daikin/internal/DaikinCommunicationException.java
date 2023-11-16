@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Exception for when an unexpected response is received from the Daikin controller.
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Tim Waterhouse - Initial contribution
  *
  */
 @NonNullByDefault

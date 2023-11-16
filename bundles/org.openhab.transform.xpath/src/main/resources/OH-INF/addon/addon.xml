@@ -6,5 +6,6 @@
 	<type>transformation</type>
 	<name>XPATH transformation</name>
 	<description>Extracts values from an XML string with the XPATH syntax.</description>
+	<connection>none</connection>
 
 </addon:addon>

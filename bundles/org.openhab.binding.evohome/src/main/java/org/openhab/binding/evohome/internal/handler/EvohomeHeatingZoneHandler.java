@@ -86,8 +86,8 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             if (bridge != null) {
                 String channelId = channelUID.getId();
                 if (EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL.equals(channelId)) {
-                    if (command instanceof QuantityType) {
-                        QuantityType<?> state = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+                    if (command instanceof QuantityType quantityCommand) {
+                        QuantityType<?> state = quantityCommand.toUnit(SIUnits.CELSIUS);
                         double newTempInCelsius = state.doubleValue();
 
                         if (newTempInCelsius == CANCEL_SET_POINT_OVERRIDE) {

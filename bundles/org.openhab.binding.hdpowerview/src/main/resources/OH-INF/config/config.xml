@@ -14,7 +14,7 @@
 	<config-description uri="thing-type:hdpowerview:shade">
 		<parameter name="id" type="integer" min="1" required="true">
 			<label>ID</label>
-			<description>The numeric ID of the PowerView Shade in the Hub</description>
+			<description>The numeric ID of the PowerView Shade in the Hub/Gateway</description>
 		</parameter>
 	</config-description>
 

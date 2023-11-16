@@ -35,7 +35,7 @@ be found on "device123/brightness". In openHAB we call that a **state topic**.
 This pattern is very common, that you have a command and a state topic. A sensor would only have a state topic,
 naturally.
 
-Because every manufacturer can device on his own on which topic his devices publish, this
+Because every manufacturer can decide on his own on which topic his devices publish, this
 binding can unfortunately not provide any auto-discovery means.
 
 If you use an open source IoT device, the chances are high,
@@ -303,7 +303,7 @@ Please note that value will be discarded and not sent if one transformation fail
 
 This feature is quite powerful in transforming an item state before it is published to the MQTT broker.
 It has the syntax: `%[flags][width]conversion`.
-Find the full documentation on the [Java](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) web page.
+Find the full documentation on the [Java](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html) web page.
 
 The default is "%s" which means: Output the item state as string.
 

@@ -29,21 +29,23 @@ import static org.junit.jupiter.api.Assertions.fail;
 @NonNullByDefault
 public class VesyncV1AirPurifierDeviceDetailsTest {
 
-    public final static String testAirPurifierResponseBasedOnCore400S = "{\n" +
-            "    \"code\": 0,\n" +
-            "    \"msg\": \"request success\",\n" +
-            "    \"traceId\": \"1634255391\",\n" +
-            "    \"screenStatus\": \"on1\",\n" +
-            "    \"airQuality\": 1,\n" +
-            "    \"level\": 2,\n" +
-            "    \"mode\": \"manual\",\n" +
-            "    \"deviceName\": \"Lounge Air Purifier\",\n" +
-            "    \"currentFirmVersion\": \"1.0.17\",\n" +
-            "    \"childLock\": \"off1\",\n" +
-            "    \"deviceStatus\": \"on2\",\n" +
-            "    \"deviceImg\": \"https://image.vesync.com/defaultImages/Core_400S_Series/icon_core400s_purifier_160.png\",\n" +
-            "    \"connectionStatus\": \"online\"\n" +
-            "}";
+    public static final String testAirPurifierResponseBasedOnCore400S = """
+            {
+                "code": 0,
+                "msg": "request success",
+                "traceId": "1634255391",
+                "screenStatus": "on1",
+                "airQuality": 1,
+                "level": 2,
+                "mode": "manual",
+                "deviceName": "Lounge Air Purifier",
+                "currentFirmVersion": "1.0.17",
+                "childLock": "off1",
+                "deviceStatus": "on2",
+                "deviceImg": "https://image.vesync.com/defaultImages/Core_400S_Series/icon_core400s_purifier_160.png",
+                "connectionStatus": "online"
+            }\
+            """;
 
     @Test
     public void testParseV1AirPurifierDeviceDetailsResponse() {

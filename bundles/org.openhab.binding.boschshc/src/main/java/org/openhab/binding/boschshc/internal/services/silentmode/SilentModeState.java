@@ -26,7 +26,7 @@ public enum SilentModeState {
     MODE_NORMAL,
     MODE_SILENT;
 
-    public static SilentModeState fromOnOffType(OnOffType onOffType) {
-        return onOffType == OnOffType.ON ? SilentModeState.MODE_SILENT : SilentModeState.MODE_NORMAL;
+    public static SilentModeState fromOnOffType(OnOffType onOffCommand) {
+        return onOffCommand == OnOffType.ON ? SilentModeState.MODE_SILENT : SilentModeState.MODE_NORMAL;
     }
 }

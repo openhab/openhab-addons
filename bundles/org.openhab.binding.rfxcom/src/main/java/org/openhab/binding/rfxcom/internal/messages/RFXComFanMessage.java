@@ -442,8 +442,8 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 case "OFF":
                     return Commands.valueOf(stringCommand);
             }
-        } else if (type instanceof DecimalType) {
-            Commands speedCommand = Commands.bySpeed(subType, ((DecimalType) type).intValue());
+        } else if (type instanceof DecimalType decimalCommand) {
+            Commands speedCommand = Commands.bySpeed(subType, decimalCommand.intValue());
             if (speedCommand != null) {
                 return speedCommand;
             }

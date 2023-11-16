@@ -168,8 +168,8 @@ public class PatchedMailcapCommandMap extends CommandMap {
                 if (fieldName.startsWith("x-java-") && fieldName.length() > 7) {
                     String command = fieldName.substring(7);
                     value = value.trim();
-                    if (command.equals("fallback-entry")) {
-                        if (value.equals("true")) {
+                    if ("fallback-entry".equals(command)) {
+                        if ("true".equals(value)) {
                             fallback = true;
                         }
                     }

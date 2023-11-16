@@ -22,7 +22,7 @@ public class Authentication {
     public enum UserPerm {
         wait,
         user,
-        admin;
+        admin
     }
 
     @XStreamAsAttribute

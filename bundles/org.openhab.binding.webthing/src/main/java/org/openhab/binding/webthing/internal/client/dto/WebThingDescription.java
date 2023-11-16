@@ -57,7 +57,7 @@ public class WebThingDescription {
             var href = link.href;
             if ((href != null) && href.startsWith("ws")) {
                 var rel = Optional.ofNullable(link.rel).orElse("<undefined>");
-                if (rel.equals("alternate")) {
+                if ("alternate".equals(rel)) {
                     return Optional.of(URI.create(href));
                 }
             }

@@ -410,7 +410,7 @@ public final class QbusCommunication extends BaseThingHandler {
                                 }
 
                                 if (ctdState != null) {
-                                    if (ctdType.equals("bistabiel")) {
+                                    if ("bistabiel".equals(ctdType)) {
                                         QbusBistabiel output = new QbusBistabiel(ctdId);
                                         if (!bistabiel.containsKey(ctdId)) {
                                             output.setQComm(this);
@@ -419,7 +419,7 @@ public final class QbusCommunication extends BaseThingHandler {
                                         } else {
                                             output.updateState(ctdStateI);
                                         }
-                                    } else if (ctdType.equals("dimmer")) {
+                                    } else if ("dimmer".equals(ctdType)) {
                                         QbusDimmer output = new QbusDimmer(ctdId);
                                         if (!dimmer.containsKey(ctdId)) {
                                             output.setQComm(this);
@@ -428,7 +428,7 @@ public final class QbusCommunication extends BaseThingHandler {
                                         } else {
                                             output.updateState(ctdStateI);
                                         }
-                                    } else if (ctdType.equals("CO2")) {
+                                    } else if ("CO2".equals(ctdType)) {
                                         QbusCO2 output = new QbusCO2();
                                         if (!co2.containsKey(ctdId)) {
                                             output.updateState(ctdStateI);
@@ -436,13 +436,13 @@ public final class QbusCommunication extends BaseThingHandler {
                                         } else {
                                             output.updateState(ctdStateI);
                                         }
-                                    } else if (ctdType.equals("scene")) {
+                                    } else if ("scene".equals(ctdType)) {
                                         QbusScene output = new QbusScene(ctdId);
                                         if (!scene.containsKey(ctdId)) {
                                             output.setQComm(this);
                                             scene.put(ctdId, output);
                                         }
-                                    } else if (ctdType.equals("rol")) {
+                                    } else if ("rol".equals(ctdType)) {
                                         QbusRol output = new QbusRol(ctdId);
                                         if (!rol.containsKey(ctdId)) {
                                             output.setQComm(this);
@@ -459,7 +459,7 @@ public final class QbusCommunication extends BaseThingHandler {
                                         }
                                     }
                                 } else if (ctdMeasuredD != null && ctdSetpointD != null && ctdMmodeI != null) {
-                                    if (ctdType.equals("thermostat")) {
+                                    if ("thermostat".equals(ctdType)) {
                                         QbusThermostat output = new QbusThermostat(ctdId);
                                         if (!thermostat.containsKey(ctdId)) {
                                             output.setQComm(this);

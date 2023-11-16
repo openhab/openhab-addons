@@ -21,5 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface Response<ResponseType> {
-    public ResponseType parse(String response) throws ResponseException;
+    ResponseType parse(String response) throws ResponseException;
 }

@@ -60,12 +60,12 @@ public class DynamoDBConfigTest {
 
     @Test
     public void testInvalidRegion() throws Exception {
-        assertNull(DynamoDBConfig.fromConfig(Collections.singletonMap("region", "foobie")));
+        assertNull(DynamoDBConfig.fromConfig(Map.of("region", "foobie")));
     }
 
     @Test
     public void testRegionOnly() throws Exception {
-        assertNull(DynamoDBConfig.fromConfig(Collections.singletonMap("region", "eu-west-1")));
+        assertNull(DynamoDBConfig.fromConfig(Map.of("region", "eu-west-1")));
     }
 
     @Test
@@ -87,10 +87,12 @@ public class DynamoDBConfigTest {
     @Test
     public void testRegionWithProfilesConfigFile() throws Exception {
         Path credsFile = Files.createFile(Paths.get(folder.getPath(), "creds"));
-        Files.write(
-                credsFile, ("[fooprofile]\n" + "aws_access_key_id=testAccessKey\n"
-                        + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n").getBytes(),
-                StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(credsFile, ("""
+                [fooprofile]
+                aws_access_key_id=testAccessKey
+                aws_secret_access_key=testSecretKey
+                aws_session_token=testSessionToken
+                """).getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 
         DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "profilesConfigFile",
                 credsFile.toAbsolutePath().toString(), "profile", "fooprofile"));
@@ -107,10 +109,13 @@ public class DynamoDBConfigTest {
     @Test
     public void testProfilesConfigFileRetryMode() throws Exception {
         Path credsFile = Files.createFile(Paths.get(folder.getPath(), "creds"));
-        Files.write(credsFile,
-                ("[fooprofile]\n" + "aws_access_key_id=testAccessKey\n" + "aws_secret_access_key=testSecretKey\n"
-                        + "aws_session_token=testSessionToken\n" + "retry_mode=legacy").getBytes(),
-                StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(credsFile, ("""
+                [fooprofile]
+                aws_access_key_id=testAccessKey
+                aws_secret_access_key=testSecretKey
+                aws_session_token=testSessionToken
+                retry_mode=legacy\
+                """).getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 
         DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "profilesConfigFile",
                 credsFile.toAbsolutePath().toString(), "profile", "fooprofile"));
@@ -131,10 +136,12 @@ public class DynamoDBConfigTest {
     @Test
     public void testRegionWithInvalidProfilesConfigFile() throws Exception {
         Path credsFile = Files.createFile(Paths.get(folder.getPath(), "creds"));
-        Files.write(credsFile,
-                ("[fooprofile]\n" + "aws_access_key_idINVALIDKEY=testAccessKey\n"
-                        + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n").getBytes(),
-                StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(credsFile, ("""
+                [fooprofile]
+                aws_access_key_idINVALIDKEY=testAccessKey
+                aws_secret_access_key=testSecretKey
+                aws_session_token=testSessionToken
+                """).getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 
         assertNull(DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "profilesConfigFile",
                 credsFile.toFile().getAbsolutePath(), "profile", "fooprofile")));
@@ -143,10 +150,12 @@ public class DynamoDBConfigTest {
     @Test
     public void testRegionWithProfilesConfigFileMissingProfile() throws Exception {
         Path credsFile = Files.createFile(Paths.get(folder.getPath(), "creds"));
-        Files.write(
-                credsFile, ("[fooprofile]\n" + "aws_access_key_id=testAccessKey\n"
-                        + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n").getBytes(),
-                StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(credsFile, ("""
+                [fooprofile]
+                aws_access_key_id=testAccessKey
+                aws_secret_access_key=testSecretKey
+                aws_session_token=testSessionToken
+                """).getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 
         assertNull(DynamoDBConfig.fromConfig(
                 mapFrom("region", "eu-west-1", "profilesConfigFile", credsFile.toAbsolutePath().toString())));

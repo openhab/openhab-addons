@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>YIOremote Binding</name>
 	<description>This is the binding for YIOremote.</description>
+	<connection>local</connection>
 
 </addon:addon>

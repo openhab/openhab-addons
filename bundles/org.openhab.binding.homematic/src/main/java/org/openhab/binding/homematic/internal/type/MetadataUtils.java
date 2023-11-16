@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class MetadataUtils {
-    private static final Logger logger = LoggerFactory.getLogger(MetadataUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetadataUtils.class);
     private static ResourceBundle descriptionsBundle;
     private static Map<String, String> descriptions = new HashMap<>();
     private static Map<String, Set<String>> standardDatapoints = new HashMap<>();
@@ -98,7 +98,7 @@ public class MetadataUtils {
                 }
             }
         } catch (IllegalStateException | IOException e) {
-            logger.warn("Can't load standard-datapoints.properties file!", e);
+            LOGGER.warn("Can't load standard-datapoints.properties file!", e);
         }
     }
 
@@ -112,7 +112,7 @@ public class MetadataUtils {
     public static <T> List<T> generateOptions(HmDatapoint dp, OptionsBuilder<T> optionsBuilder) {
         List<T> options = null;
         if (dp.getOptions() == null) {
-            logger.warn("No options for ENUM datapoint {}", dp);
+            LOGGER.warn("No options for ENUM datapoint {}", dp);
         } else {
             options = new ArrayList<>();
             for (int i = 0; i < dp.getOptions().length; i++) {
@@ -214,8 +214,8 @@ public class MetadataUtils {
             }
             sb.append(key).append(", ");
         }
-        if (logger.isTraceEnabled()) {
-            logger.trace("Description not found for: {}", sb.toString().substring(0, sb.length() - 2));
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Description not found for: {}", sb.toString().substring(0, sb.length() - 2));
         }
         return null;
     }
@@ -271,7 +271,7 @@ public class MetadataUtils {
         try {
             return new BigDecimal(number.toString());
         } catch (Exception ex) {
-            logger.warn("Can't create BigDecimal for number: {}", number.toString());
+            LOGGER.warn("Can't create BigDecimal for number: {}", number.toString());
             return null;
         }
     }

@@ -63,14 +63,18 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='#searchTable#'";
         sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
         sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
-        sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema "
-                + "FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='#itemsManageTable#') AND NOT table_name='#itemsManageTable#'";
+        sqlGetItemTables = """
+                SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema \
+                FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='#itemsManageTable#') AND NOT table_name='#itemsManageTable#'\
+                """;
         // The PostgreSQL equivalent to MySQL columns.column_type is data_type (e.g. "timestamp with time zone") and
         // udt_name which contains a shorter alias (e.g. "timestamptz"). We alias data_type as "column_type" and
         // udt_name as "column_type_alias" to be compatible with the 'Column' class used in Yank.queryBeanList
-        sqlGetTableColumnTypes = "SELECT column_name, data_type as column_type, udt_name as column_type_alias, is_nullable FROM information_schema.columns "
-                + "WHERE table_name='#tableName#' AND table_catalog='#jdbcUriDatabaseName#' AND table_schema=(SELECT table_schema FROM information_schema.tables WHERE table_type='BASE TABLE' "
-                + "AND table_name='#itemsManageTable#')";
+        sqlGetTableColumnTypes = """
+                SELECT column_name, data_type as column_type, udt_name as column_type_alias, is_nullable FROM information_schema.columns \
+                WHERE table_name='#tableName#' AND table_catalog='#jdbcUriDatabaseName#' AND table_schema=(SELECT table_schema FROM information_schema.tables WHERE table_type='BASE TABLE' \
+                AND table_name='#itemsManageTable#')\
+                """;
         // NOTICE: on PostgreSql >= 9.5, sqlInsertItemValue query template is modified to do an "upsert" (overwrite
         // existing value). The version check and query change is performed at initAfterFirstDbConnection()
         sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
@@ -87,8 +91,10 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         // see: https://www.postgresql.org/docs/9.5/sql-insert.html
         if (dbMeta.isDbVersionGreater(9, 4)) {
             logger.debug("JDBC::initAfterFirstDbConnection: Values with the same time will be upserted (Pg >= 9.5)");
-            sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )"
-                    + " ON CONFLICT (TIME) DO UPDATE SET VALUE=EXCLUDED.VALUE";
+            sqlInsertItemValue = """
+                    INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )\
+                     ON CONFLICT (TIME) DO UPDATE SET VALUE=EXCLUDED.VALUE\
+                    """;
         }
     }
 
@@ -260,15 +266,15 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
                 filter.toString(), numberDecimalcount, table, simpleName);
 
         String filterString = "";
-        if (filter.getBeginDate() != null) {
+        ZonedDateTime beginDate = filter.getBeginDate();
+        if (beginDate != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>='" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
-                    + "'";
+            filterString += " TIME>='" + JDBC_DATE_FORMAT.format(beginDate.withZoneSameInstant(timeZone)) + "'";
         }
-        if (filter.getEndDate() != null) {
+        ZonedDateTime endDate = filter.getEndDate();
+        if (endDate != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<='" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
-                    + "'";
+            filterString += " TIME<='" + JDBC_DATE_FORMAT.format(endDate.withZoneSameInstant(timeZone)) + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";
         if (filter.getPageSize() != 0x7fffffff) {

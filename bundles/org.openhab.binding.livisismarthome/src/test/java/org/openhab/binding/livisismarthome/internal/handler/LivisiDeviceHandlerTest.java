@@ -1754,7 +1754,7 @@ public class LivisiDeviceHandlerTest {
         ThingUID thingUID = new ThingUID(thingTypeUID, device.getId());
 
         Configuration thingConfiguration = new Configuration();
-        thingConfiguration.setProperties(Collections.singletonMap(PROPERTY_ID, device.getId()));
+        thingConfiguration.setProperties(Map.of(PROPERTY_ID, device.getId()));
 
         Thing thingMock = mock(Thing.class);
         when(thingMock.getBridgeUID()).thenReturn(bridgeThingUID);

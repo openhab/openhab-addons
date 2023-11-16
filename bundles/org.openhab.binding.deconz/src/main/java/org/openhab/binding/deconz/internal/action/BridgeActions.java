@@ -75,8 +75,8 @@ public class BridgeActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DeconzBridgeHandler) {
-            this.handler = (DeconzBridgeHandler) handler;
+        if (handler instanceof DeconzBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 

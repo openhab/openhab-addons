@@ -19,7 +19,7 @@ package org.openhab.binding.radiothermostat.internal.dto;
  * @author Michael Lobstein - Initial contribution
  */
 public class RadioThermostatDTO {
-    private RadioThermostatTstatDTO thermostatData;
+    private RadioThermostatTstatDTO thermostatData = new RadioThermostatTstatDTO();
     private Integer humidity;
     private RadioThermostatRuntimeDTO runtime;
 

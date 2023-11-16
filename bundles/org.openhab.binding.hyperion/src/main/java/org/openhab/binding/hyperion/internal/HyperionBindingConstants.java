@@ -18,7 +18,7 @@ import java.util.Set;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link HyperionBinding} class defines common constants, which are
+ * The {@link HyperionBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Daniel Walters - Initial contribution

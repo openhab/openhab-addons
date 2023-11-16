@@ -281,10 +281,10 @@ public class Util {
             // get parameters by reflection from thing config
             Field paramField = thingConfig.getClass().getField(parameter.getThingParameter());
             Object rawFieldValue = paramField.get(thingConfig);
-            if ((rawFieldValue instanceof List<?>)) {
-                ((List<?>) rawFieldValue).forEach(obj -> {
-                    if (obj instanceof String) {
-                        parameters.add((String) obj);
+            if ((rawFieldValue instanceof List<?> list)) {
+                list.forEach(obj -> {
+                    if (obj instanceof String string) {
+                        parameters.add(string);
                     }
                 });
             }

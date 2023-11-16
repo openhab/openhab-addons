@@ -17,8 +17,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,7 +53,7 @@ public final class StringUtil {
      * @return the passed in string, or the empty string if it was {@code null}
      *
      */
-    public static final String defaultString(@Nullable String str) {
+    public static String defaultString(@Nullable String str) {
         return (str == null) ? "" : str;
     }
 
@@ -91,43 +89,6 @@ public final class StringUtil {
     }
 
     /**
-     * Capitalizes a string changing the first letter to title case as per {@link Character#toTitleCase(char)}. No other
-     * letters are changed.
-     *
-     * @param str
-     *            the string to capitalize, may be {@code null}
-     *
-     * @return the capitalized string, {@code null} if {@code null} input string
-     */
-    public static @Nullable String capitalize(@Nullable String str) {
-        if (str == null || str.isEmpty()) {
-            return str;
-        }
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
-
-    /**
-     * Converts all the whitespace separated words in a string into capitalized words, that is each word is made up of a
-     * titlecase character and then a series of lowercase characters.
-     *
-     * @param str
-     *            the string to capitalize, may be {@code null}
-     *
-     * @return the capitalized string, {@code null} if {@code null} input string
-     */
-    public static @Nullable String capitalizeAll(@Nullable String str) {
-        if (str == null || str.isEmpty()) {
-            return str;
-        }
-        // Java 8 version
-        return Arrays.stream(str.split("\\s+")).map(t -> t.substring(0, 1).toUpperCase() + t.substring(1).toLowerCase())
-                .collect(Collectors.joining(" "));
-        // Ready for Java 9+
-        // return Pattern.compile("\\b(.)(.*?)\\b").matcher(str)
-        // .replaceAll(match -> match.group(1).toUpperCase() + match.group(2).toLowerCase());
-    }
-
-    /**
      * Get the contents of an {@link InputStream} stream as a string using the default character encoding of the
      * platform. This method buffers the input internally, so there is no need to use a {@code BufferedInputStream}.
      *
@@ -136,8 +97,7 @@ public final class StringUtil {
      *
      * @return the string read from stream
      *
-     * @throws {@link IOException}
-     *             if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     public static String streamToString(InputStream input) throws IOException {
         InputStreamReader reader = new InputStreamReader(input);
@@ -162,8 +122,7 @@ public final class StringUtil {
      *
      * @return the string read from stream
      *
-     * @throws {@link IOException}
-     *             if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     public static String readerToString(Reader reader) throws IOException {
         final StringWriter writer = new StringWriter();

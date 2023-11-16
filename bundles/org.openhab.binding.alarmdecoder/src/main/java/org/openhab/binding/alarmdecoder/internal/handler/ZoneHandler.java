@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ZoneHandler} is responsible for handling wired zones (i.e. REL & EXP messages).
+ * The {@link ZoneHandler} is responsible for handling wired zones (i.e. REL &amp; EXP messages).
  *
  * @author Bob Adair - Initial contribution
  * @author Bill Forsyth - Initial contribution
@@ -46,7 +46,7 @@ public class ZoneHandler extends ADThingHandler {
     }
 
     /** Construct zone id from address and channel */
-    public static final String zoneID(int address, int channel) {
+    public static String zoneID(int address, int channel) {
         return String.format("%d-%d", address, channel);
     }
 

@@ -38,7 +38,7 @@ public interface ValueTransformation {
      *
      * @param context
      * @param types types to used to parse the transformation result
-     * @param command
+     * @param state
      * @return Transformed command, or null if no transformation was possible
      */
     default @Nullable State transformState(BundleContext context, List<Class<? extends State>> types, State state) {

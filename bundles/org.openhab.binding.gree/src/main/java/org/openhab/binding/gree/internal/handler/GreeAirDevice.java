@@ -21,7 +21,6 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,7 +213,7 @@ public class GreeAirDevice {
 
     /**
      * SwingLfRig: controls the swing mode of the horizontal air blades (available on limited number of devices, e.g.
-     * some Cooper & Hunter units - thanks to mvmn)
+     * some Cooper and Hunter units - thanks to mvmn)
      *
      * 0: default
      * 1: full swing
@@ -271,7 +270,7 @@ public class GreeAirDevice {
     }
 
     /**
-     * @param value set temperature in degrees Celsius or Fahrenheit
+     * @param temp set temperature in degrees Celsius or Fahrenheit
      */
     public void setDeviceTempSet(DatagramSocket clientSocket, QuantityType<?> temp) throws GreeException {
         // If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer
@@ -370,8 +369,7 @@ public class GreeAirDevice {
             int valueArrayposition = colList.indexOf(valueName);
             if (valueArrayposition != -1) {
                 // get the Corresponding value
-                Integer value = valList.get(valueArrayposition);
-                return value;
+                return valList.get(valueArrayposition);
             }
         }
 
@@ -384,7 +382,7 @@ public class GreeAirDevice {
     }
 
     public boolean hasStatusValChanged(String valueName) throws GreeException {
-        if (!prevStatusResponsePackGson.isPresent()) {
+        if (prevStatusResponsePackGson.isEmpty()) {
             return true; // update value if there is no previous one
         }
         // Find the valueName in the Current Status object
@@ -442,7 +440,7 @@ public class GreeAirDevice {
     }
 
     private void setCommandValue(DatagramSocket clientSocket, String command, int value) throws GreeException {
-        executeCommand(clientSocket, Collections.singletonMap(command, value));
+        executeCommand(clientSocket, Map.of(command, value));
     }
 
     private void setCommandValue(DatagramSocket clientSocket, String command, int value, int min, int max)
@@ -450,7 +448,7 @@ public class GreeAirDevice {
         if ((value < min) || (value > max)) {
             throw new GreeException("Command value out of range!");
         }
-        executeCommand(clientSocket, Collections.singletonMap(command, value));
+        executeCommand(clientSocket, Map.of(command, value));
     }
 
     private DatagramPacket createPackRequest(int i, String pack) {
@@ -462,8 +460,7 @@ public class GreeAirDevice {
         request.tcid = getId();
         request.pack = pack;
         byte[] sendData = GSON.toJson(request).getBytes(StandardCharsets.UTF_8);
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
-        return sendPacket;
+        return new DatagramPacket(sendData, sendData.length, ipAddress, port);
     }
 
     private <T> T receiveResponse(DatagramSocket clientSocket, Class<T> classOfT)

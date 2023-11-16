@@ -116,7 +116,6 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
             }
 
             logger.debug("Discovery done");
-
         } catch (IOException e) {
             logger.error("Error occurred during discovery", e);
         } catch (UnsatisfiedLinkError e) {

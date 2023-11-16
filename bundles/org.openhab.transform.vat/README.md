@@ -15,10 +15,27 @@ Number CurrentSpotPrice "Current Spot Price incl. VAT [VAT(12.5):%s]" <price>
 
 Add Danish VAT to price:
 
-```java
+:::: tabs
+
+::: tab DSL
+
+```javascript
 var Number price = 499
 logInfo("Price", "Price incl. VAT: " + transform("VAT", "DK", price.toString))
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var price = 499;
+console.log("Price incl. VAT: " + actions.Transformation.transform("VAT", "DK", price.toString()));
+```
+
+:::
+
+::::
 
 ## Usage as a Profile
 

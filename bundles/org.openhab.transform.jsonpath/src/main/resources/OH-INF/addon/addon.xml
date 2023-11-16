@@ -6,5 +6,6 @@
 	<type>transformation</type>
 	<name>JSONPATH transformation</name>
 	<description>Extracts values from a JSON string using a JSONPATH expression.</description>
+	<connection>none</connection>
 
 </addon:addon>

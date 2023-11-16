@@ -27,7 +27,6 @@ public class IntesisBindingConstants {
     public static final String BINDING_ID = "intesis";
 
     public static final int INTESIS_HTTP_API_TIMEOUT_MS = 5000;
-    public static final int INTESIS_REFRESH_INTERVAL_SEC = 30;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_INTESISHOME = new ThingTypeUID(BINDING_ID, "intesisHome");

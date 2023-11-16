@@ -68,8 +68,7 @@ public class JuiceNetDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof JuiceNetBridgeHandler) {
-            JuiceNetBridgeHandler bridgeHandler = (JuiceNetBridgeHandler) handler;
+        if (handler instanceof JuiceNetBridgeHandler bridgeHandler) {
             bridgeHandler.setDiscoveryService(this);
             this.bridgeHandler = bridgeHandler;
         } else {

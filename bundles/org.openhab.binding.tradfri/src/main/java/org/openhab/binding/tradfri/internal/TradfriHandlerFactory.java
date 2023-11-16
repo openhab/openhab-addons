@@ -16,6 +16,7 @@ import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tradfri.internal.handler.TradfriAirPurifierHandler;
 import org.openhab.binding.tradfri.internal.handler.TradfriBlindHandler;
 import org.openhab.binding.tradfri.internal.handler.TradfriControllerHandler;
 import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
@@ -63,6 +64,8 @@ public class TradfriHandlerFactory extends BaseThingHandlerFactory {
             return new TradfriLightHandler(thing);
         } else if (SUPPORTED_PLUG_TYPES_UIDS.contains(thingTypeUID)) {
             return new TradfriPlugHandler(thing);
+        } else if (THING_TYPE_AIR_PURIFIER.equals(thingTypeUID)) {
+            return new TradfriAirPurifierHandler(thing);
         }
         return null;
     }

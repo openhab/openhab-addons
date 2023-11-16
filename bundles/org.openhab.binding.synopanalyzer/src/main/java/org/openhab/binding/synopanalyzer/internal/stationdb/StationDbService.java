@@ -48,7 +48,7 @@ public class StationDbService {
     @Activate
     public StationDbService() {
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
-                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);) {
+                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
             Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
             stations = Arrays.asList(gson.fromJson(reader, Station[].class));
         } catch (IOException | JsonSyntaxException | JsonIOException e) {

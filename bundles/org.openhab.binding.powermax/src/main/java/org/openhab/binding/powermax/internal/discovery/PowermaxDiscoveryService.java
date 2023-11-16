@@ -63,8 +63,8 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof PowermaxBridgeHandler) {
-            bridgeHandler = (PowermaxBridgeHandler) handler;
+        if (handler instanceof PowermaxBridgeHandler powermaxBridgeHandler) {
+            bridgeHandler = powermaxBridgeHandler;
         }
     }
 
@@ -146,8 +146,8 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService
             for (Thing thing : handler.getThing().getThings()) {
                 ThingHandler thingHandler = thing.getHandler();
                 if (thing.getThingTypeUID().equals(PowermaxBindingConstants.THING_TYPE_ZONE)
-                        && thingHandler instanceof PowermaxThingHandler) {
-                    PowermaxZoneConfiguration config = ((PowermaxThingHandler) thingHandler).getZoneConfiguration();
+                        && thingHandler instanceof PowermaxThingHandler powermaxThingHandler) {
+                    PowermaxZoneConfiguration config = powermaxThingHandler.getZoneConfiguration();
                     if (config.zoneNumber == zoneNumber) {
                         return;
                     }
@@ -182,8 +182,8 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService
             for (Thing thing : handler.getThing().getThings()) {
                 ThingHandler thingHandler = thing.getHandler();
                 if (thing.getThingTypeUID().equals(PowermaxBindingConstants.THING_TYPE_X10)
-                        && thingHandler instanceof PowermaxThingHandler) {
-                    PowermaxX10Configuration config = ((PowermaxThingHandler) thingHandler).getX10Configuration();
+                        && thingHandler instanceof PowermaxThingHandler powermaxThingHandler) {
+                    PowermaxX10Configuration config = powermaxThingHandler.getX10Configuration();
                     if (config.deviceNumber == deviceNumber) {
                         return;
                     }

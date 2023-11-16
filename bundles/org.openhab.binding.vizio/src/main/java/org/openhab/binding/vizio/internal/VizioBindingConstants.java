@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.vizio.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,7 +40,7 @@ public class VizioBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_VIZIO_TV = new ThingTypeUID(BINDING_ID, "vizio_tv");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_VIZIO_TV);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_VIZIO_TV);
 
     // List of all Channel id's
     public static final String POWER = "power";

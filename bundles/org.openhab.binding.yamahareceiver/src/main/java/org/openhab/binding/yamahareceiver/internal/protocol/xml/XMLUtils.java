@@ -42,7 +42,7 @@ public class XMLUtils {
     private static final Logger LOG = LoggerFactory.getLogger(XMLUtils.class);
 
     // We need a lot of xml parsing. Create a document builder beforehand.
-    static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    static final DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
 
     static Node getNode(Node parent, String[] nodePath, int offset) {
         if (parent == null) {
@@ -174,12 +174,12 @@ public class XMLUtils {
 
         try {
             // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
-            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            dbf.setXIncludeAware(false);
-            dbf.setExpandEntityReferences(false);
-            return dbf.newDocumentBuilder().parse(new InputSource(new StringReader(response)));
+            DBF.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            DBF.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            DBF.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            DBF.setXIncludeAware(false);
+            DBF.setExpandEntityReferences(false);
+            return DBF.newDocumentBuilder().parse(new InputSource(new StringReader(response)));
         } catch (SAXException | ParserConfigurationException e) {
             throw new ReceivedMessageParseException(e);
         }
@@ -187,7 +187,9 @@ public class XMLUtils {
 
     /**
      * Wraps the XML message with the zone tags. Example with zone=Main_Zone:
-     * <Main_Zone>message</Main_Zone>.
+     * {@code
+     * <Main_Zone>message</Main_Zone>
+     * }.
      *
      * @param message XML message
      * @return

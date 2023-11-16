@@ -191,8 +191,8 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
 
     @Override
     public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
-        if (handler instanceof TouchWandBridgeHandler) {
-            touchWandBridgeHandler = (TouchWandBridgeHandler) handler;
+        if (handler instanceof TouchWandBridgeHandler touchWandBridgeHandler) {
+            this.touchWandBridgeHandler = touchWandBridgeHandler;
         }
     }
 

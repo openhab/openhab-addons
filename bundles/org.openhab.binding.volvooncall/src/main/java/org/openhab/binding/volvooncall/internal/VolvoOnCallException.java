@@ -31,13 +31,13 @@ public class VolvoOnCallException extends Exception {
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallException.class);
     private static final long serialVersionUID = -6215621577081394328L;
 
-    public static enum ErrorType {
+    public enum ErrorType {
         UNKNOWN,
         SERVICE_UNAVAILABLE,
         SERVICE_UNABLE_TO_START,
         IOEXCEPTION,
         INTERRUPTED,
-        JSON_SYNTAX;
+        JSON_SYNTAX
     }
 
     private final ErrorType cause;

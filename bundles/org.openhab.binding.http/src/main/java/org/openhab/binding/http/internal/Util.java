@@ -45,11 +45,9 @@ public class Util {
         String contentString = contentProvider == null ? "null"
                 : StreamSupport.stream(contentProvider.spliterator(), false)
                         .map(b -> StandardCharsets.UTF_8.decode(b).toString()).collect(Collectors.joining(", "));
-        String logString = "Method = {" + request.getMethod() + "}, Headers = {"
+        return "Method = {" + request.getMethod() + "}, Headers = {"
                 + request.getHeaders().stream().map(HttpField::toString).collect(Collectors.joining(", "))
                 + "}, Content = {" + contentString + "}";
-
-        return logString;
     }
 
     /**

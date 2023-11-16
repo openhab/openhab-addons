@@ -42,10 +42,10 @@ public class LocationChannelHelper extends ChannelHelper {
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
         if (CHANNEL_VALUE.equals(channelId)) {
             State point = UnDefType.UNDEF;
-            if (naThing instanceof Home) {
-                point = ((Home) naThing).getLocation();
-            } else if (naThing instanceof Device) {
-                point = ((Device) naThing).getPlace().map(place -> place.getLocation()).orElse(point);
+            if (naThing instanceof Home home) {
+                point = home.getLocation();
+            } else if (naThing instanceof Device device) {
+                point = device.getPlace().map(place -> place.getLocation()).orElse(point);
             }
             return point;
         }

@@ -44,7 +44,7 @@ public final class ValidationUtils {
     /**
      * Validates if one Mac address is not valid.
      *
-     * @param mac the mac, with or without :
+     * @param macAddress the mac, with or without :
      * @return true if is not valid.
      */
     public static boolean isMacNotValid(final String macAddress) {

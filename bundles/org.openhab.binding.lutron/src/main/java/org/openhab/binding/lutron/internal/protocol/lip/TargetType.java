@@ -33,5 +33,5 @@ public enum TargetType {
     SWITCH,
     SYSVAR,
     TIMECLOCK,
-    VIRTUALKEYPAD;
+    VIRTUALKEYPAD
 }

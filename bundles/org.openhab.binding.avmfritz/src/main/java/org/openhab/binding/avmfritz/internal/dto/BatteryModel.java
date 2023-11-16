@@ -21,8 +21,8 @@ import java.math.BigDecimal;
  */
 public interface BatteryModel {
 
-    public static final BigDecimal BATTERY_OFF = BigDecimal.ZERO;
-    public static final BigDecimal BATTERY_ON = BigDecimal.ONE;
+    static final BigDecimal BATTERY_OFF = BigDecimal.ZERO;
+    static final BigDecimal BATTERY_ON = BigDecimal.ONE;
 
     BigDecimal getBattery();
 

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.revogi.internal;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +42,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.revogi")
 @NonNullByDefault
 public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .singleton(RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set
+            .of(RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE);
 
     private final RevogiDiscoveryService revogiDiscoveryService;
 

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.hue.internal.dto;
 
-import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,8 +41,7 @@ public class ApiVersion {
             String microString = matcher.group(4);
             int micro = Integer.parseInt(microString == null ? "0" : microString);
 
-            ApiVersion apiVersion = new ApiVersion(major, minor, micro);
-            return apiVersion;
+            return new ApiVersion(major, minor, micro);
         }
 
         throw new IllegalArgumentException("Version \"" + version + "\" is not valid");
@@ -77,7 +75,7 @@ public class ApiVersion {
     }
 
     /**
-     * compare API versions according to {@link Comparator#compare(Object, Object)}
+     * compare API versions according to {@link java.util.Comparator#compare(Object, Object)}
      *
      * @param other
      * @return

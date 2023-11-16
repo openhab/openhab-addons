@@ -66,10 +66,11 @@ public class DoorbirdUdpListener extends Thread {
     }
 
     public void shutdown() {
+        DatagramSocket socket = this.socket;
         if (socket != null) {
             socket.close();
             logger.debug("Listener closing listener socket");
-            socket = null;
+            this.socket = null;
         }
     }
 

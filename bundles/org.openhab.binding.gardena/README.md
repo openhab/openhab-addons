@@ -88,10 +88,10 @@ Sensor refresh commands are not yet supported by the Gardena smart system integr
 ```java
 // smart Water Control
 String  WC_Valve_Activity                 "Valve Activity" { channel="gardena:water_control:home:myWateringComputer:valve#activity" }
-Number  WC_Valve_Duration                 "Last Watering Duration [%d min]" { channel="gardena:water_control:home:myWateringComputer:valve#duration" }
+Number:Time WC_Valve_Duration             "Last Watering Duration [%d min]" { channel="gardena:water_control:home:myWateringComputer:valve#duration" }
 
-Number  WC_Valve_cmd_Duration             "Command Duration [%d min]" { channel="gardena:water_control:home:myWateringComputer:valve_commands#commandDuration" }
-Switch  WC_Valve_cmd_OpenWithDuration     "Watering Timer [%d min]" { channel="gardena:water_control:home:myWateringComputer:valve_commands#start_seconds_to_override" }
+Number:Time WC_Valve_cmd_Duration         "Command Duration [%d min]" { channel="gardena:water_control:home:myWateringComputer:valve_commands#commandDuration" }
+Switch  WC_Valve_cmd_OpenWithDuration     "Start Watering Timer" { channel="gardena:water_control:home:myWateringComputer:valve_commands#start_seconds_to_override" }
 Switch  WC_Valve_cmd_CloseValve           "Stop Switch" { channel="gardena:water_control:home:myWateringComputer:valve_commands#stop_until_next_task" }
 
 openhab:status WC_Valve_Duration // returns the duration of the last watering request if still active, or 0
@@ -101,7 +101,7 @@ openhab:status WC_Valve_Activity // returns the current valve activity  (CLOSED|
 All channels are read-only, except the command group and the lastUpdate timestamp
 
 ```shell
-openhab:send WC_Valve_cmd_Duration.sendCommand(10) // set the duration for the command to 10min
+openhab:send WC_Valve_cmd_Duration.sendCommand(600) // set the duration for the command to 10min
 openhab:send WC_Valve_cmd_OpenWithDuration.sendCommand(ON) // start watering
 openhab:send WC_Valve_cmd_CloseValve.sendCommand(ON) // stop any active watering
 ```

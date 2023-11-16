@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link HeosBinding} class defines common constants, which are
+ * The {@link HeosBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Johannes Einig - Initial contribution

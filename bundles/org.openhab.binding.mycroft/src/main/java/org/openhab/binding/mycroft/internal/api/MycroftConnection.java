@@ -190,7 +190,6 @@ public class MycroftConnection {
                     listeners.getOrDefault(mycroftMessage.type, new HashSet<>()).stream()).forEach(listener -> {
                         listener.baseMessageReceived(finalMessage);
                     });
-
         } catch (RuntimeException e) {
             // we need to catch all processing exceptions, otherwise they could affect the connection
             logger.debug("{} encountered an error while processing the message {}: {}", socketName, message,
@@ -200,7 +199,6 @@ public class MycroftConnection {
 
     @OnWebSocketError
     public void onError(@Nullable Session session, Throwable cause) {
-
         if (session == null || !session.equals(this.session)) {
             handleWrongSession(session, "Connection error: " + cause.getMessage());
             return;

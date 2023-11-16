@@ -49,7 +49,7 @@ public class EmergencyBlock implements Data {
             EP_POSSIBLE, EP_SWITCH };
 
     /**
-     * For decoding see Modbus Register Mapping Chapter 3.1.2 page 14 & 15
+     * For decoding see Modbus Register Mapping Chapter 3.1.2 page 14 &amp; 15
      *
      * @param bArray - Modbus Registers as bytes from 40084 to 40085
      */

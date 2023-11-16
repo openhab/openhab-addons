@@ -20,7 +20,6 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -327,11 +326,11 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         if (channel == null || groupId == null) {
             return;
         }
-        if (command instanceof OnOffType && isValidPortId(channelUID)
+        if (command instanceof OnOffType onOffCommand && isValidPortId(channelUID)
                 && PortDefinition.fromGroupId(groupId) == PortDefinition.RELAY) {
             RelayOutputConfiguration config = channel.getConfiguration().as(RelayOutputConfiguration.class);
             String id = channelUID.getIdWithoutGroup();
-            parser.ifPresent(p -> p.setOutput(id, (OnOffType) command == OnOffType.ON ? 1 : 0, config.pulse));
+            parser.ifPresent(p -> p.setOutput(id, onOffCommand == OnOffType.ON ? 1 : 0, config.pulse));
             return;
         }
         logger.debug("Can not handle command '{}' on channel '{}'", command, channelUID);
@@ -351,6 +350,6 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(Ipx800Actions.class);
+        return List.of(Ipx800Actions.class);
     }
 }

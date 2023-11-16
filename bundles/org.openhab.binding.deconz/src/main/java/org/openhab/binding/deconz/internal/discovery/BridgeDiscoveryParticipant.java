@@ -16,7 +16,6 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -48,7 +47,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(BRIDGE_TYPE);
+        return Set.of(BRIDGE_TYPE);
     }
 
     @Override

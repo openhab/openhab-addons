@@ -230,9 +230,7 @@ public class BluetoothCharacteristic {
     }
 
     /**
-     * Get the service to which this characteristic belongs
-     *
-     * @return the {@link BluetoothService}
+     * Set the service to which this characteristic belongs
      */
     public void setService(BluetoothService service) {
         this.service = service;

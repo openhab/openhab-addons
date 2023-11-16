@@ -42,8 +42,8 @@ public class BridgeActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ADBridgeHandler) {
-            this.bridge = (ADBridgeHandler) handler;
+        if (handler instanceof ADBridgeHandler bridgeHandler) {
+            this.bridge = bridgeHandler;
         }
     }
 

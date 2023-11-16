@@ -20,9 +20,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Dictionary;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,27 +92,24 @@ public class UsersAndConfigTests {
     }
 
     @Test
-    public void addUser() {
+    public void addUser() throws Exception {
         // GET should fail
-        assertEquals(405, commonSetup.client.target(commonSetup.basePath).request().get().getStatus());
+        assertEquals(405, commonSetup.sendGet().getStatus());
 
         String body = "{'username':'testuser','devicetype':'app#device'}";
 
-        Response response;
-        HueResponse[] r;
-
         // Post should create a user, except: if linkbutton not enabled
-        response = commonSetup.client.target(commonSetup.basePath).request().post(Entity.json(body));
+        ContentResponse response = commonSetup.sendPost(body);
         assertThat(response.getStatus(), is(200));
-        r = commonSetup.cs.gson.fromJson(response.readEntity(String.class), HueResponse[].class);
+        HueResponse[] r = commonSetup.cs.gson.fromJson(response.getContentAsString(), HueResponse[].class);
         assertNotNull(r[0].error);
 
         // Post should create a user
         commonSetup.cs.ds.config.linkbutton = true;
-        response = commonSetup.client.target(commonSetup.basePath).request().post(Entity.json(body));
+        response = commonSetup.sendPost(body);
         assertThat(response.getStatus(), is(200));
 
-        JsonElement e = JsonParser.parseString(response.readEntity(String.class)).getAsJsonArray().get(0);
+        JsonElement e = JsonParser.parseString(response.getContentAsString()).getAsJsonArray().get(0);
         e = e.getAsJsonObject().get("success");
         HueSuccessResponseCreateUser rc = commonSetup.cs.gson.fromJson(e, HueSuccessResponseCreateUser.class);
         assertNotNull(rc);
@@ -122,19 +117,17 @@ public class UsersAndConfigTests {
     }
 
     @Test
-    public void unauthorizedAccessTest() {
+    public void unauthorizedAccessTest() throws Exception {
         // Unauthorized config
-        Response response;
-        response = commonSetup.client.target(commonSetup.basePath + "/config").request().get();
+        ContentResponse response = commonSetup.sendGet("/config");
         assertThat(response.getStatus(), is(200));
-        HueUnauthorizedConfig config = new Gson().fromJson(response.readEntity(String.class),
-                HueUnauthorizedConfig.class);
+        HueUnauthorizedConfig config = new Gson().fromJson(response.getContentAsString(), HueUnauthorizedConfig.class);
         assertThat(config.bridgeid, is(commonSetup.cs.ds.config.bridgeid));
         assertThat(config.name, is(commonSetup.cs.ds.config.name));
 
         // Invalid user name
-        response = commonSetup.client.target(commonSetup.basePath + "/invalid/config").request().get();
+        response = commonSetup.sendGet("/invalid/config");
         assertThat(response.getStatus(), is(403));
-        assertThat(response.readEntity(String.class), containsString("error"));
+        assertThat(response.getContentAsString(), containsString("error"));
     }
 }

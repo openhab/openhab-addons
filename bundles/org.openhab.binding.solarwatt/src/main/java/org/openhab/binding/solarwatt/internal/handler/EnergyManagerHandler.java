@@ -22,9 +22,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -113,7 +113,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SolarwattDevicesDiscoveryService.class);
+        return Set.of(SolarwattDevicesDiscoveryService.class);
     }
 
     /**
@@ -222,7 +222,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Setup the handler and trigger initial load via {@link EnergyManagerHandler::refreshDevices}.
+     * Setup the handler and trigger initial load via {@link EnergyManagerHandler#refreshDevices}.
      *
      * Web request against energy manager and loading of devices is deferred and will send the ONLINE
      * event after loading all devices.

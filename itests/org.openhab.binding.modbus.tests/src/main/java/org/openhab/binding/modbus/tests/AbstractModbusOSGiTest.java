@@ -21,7 +21,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +44,7 @@ import org.openhab.binding.modbus.internal.ModbusHandlerFactory;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.core.events.EventSubscriber;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.core.io.transport.modbus.ModbusManager;
 import org.openhab.core.items.Item;
@@ -95,7 +95,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
 
         @Override
         public Set<@NonNull String> getSubscribedEventTypes() {
-            return Collections.singleton(ItemStateEvent.TYPE);
+            return Set.of(ItemStateEvent.TYPE);
         }
 
         @Override
@@ -118,6 +118,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusOSGiTest.class);
 
     protected @Mock @NonNullByDefault({}) ModbusManager mockedModbusManager;
+    protected @Mock @NonNullByDefault({}) UnitProvider mockedUnitProvider;
     protected @NonNullByDefault({}) ModbusManager realModbusManager;
     protected @NonNullByDefault({}) ManagedThingProvider thingProvider;
     protected @NonNullByDefault({}) ManagedItemProvider itemProvider;
@@ -156,7 +157,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         itemChannelLinkRegistry = getService(ItemChannelLinkRegistry.class);
         assertThat("Could not get ItemChannelLinkRegistry", itemChannelLinkRegistry, is(notNullValue()));
 
-        coreItemFactory = new CoreItemFactory();
+        coreItemFactory = new CoreItemFactory(mockedUnitProvider);
 
         // Clean slate for all tests
         reset(mockedModbusManager);

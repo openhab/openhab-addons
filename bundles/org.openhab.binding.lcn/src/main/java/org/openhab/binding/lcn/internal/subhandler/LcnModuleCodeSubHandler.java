@@ -33,8 +33,10 @@ import org.openhab.binding.lcn.internal.connection.ModInfo;
 public class LcnModuleCodeSubHandler extends AbstractLcnModuleSubHandler {
     private static final Pattern TRANSPONDER_PATTERN = Pattern
             .compile(LcnBindingConstants.ADDRESS_REGEX + "\\.ZT(?<byte0>\\d{3})(?<byte1>\\d{3})(?<byte2>\\d{3})");
-    private static final Pattern FINGERPRINT_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX
-            + "\\.ZF(?<byte0>[0-9A-Fa-f]{2})(?<byte1>[0-9A-Fa-f]{2})(?<byte2>[0-9A-Fa-f]{2})");
+    private static final Pattern FINGERPRINT_PATTERN_HEX = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX
+            + "\\.ZF(?<byte0>[0-9A-Fa-f]{2})(?<byte1>[0-9A-Fa-f]{2})(?<byte2>[0-9A-Fa-f]{2})$");
+    private static final Pattern FINGERPRINT_PATTERN_DEC = Pattern
+            .compile(LcnBindingConstants.ADDRESS_REGEX + "\\.ZF(?<byte0>\\d{3})(?<byte1>\\d{3})(?<byte2>\\d{3})");
     private static final Pattern REMOTE_CONTROL_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX
             + "\\.ZI(?<byte0>\\d{3})(?<byte1>\\d{3})(?<byte2>\\d{3})(?<key>\\d{3})(?<action>\\d{3})");
 
@@ -51,17 +53,17 @@ public class LcnModuleCodeSubHandler extends AbstractLcnModuleSubHandler {
     public void handleStatusMessage(Matcher matcher) {
         String code;
 
-        if (matcher.pattern() == FINGERPRINT_PATTERN) {
-            code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0"), 16),
-                    Integer.parseInt(matcher.group("byte1"), 16), Integer.parseInt(matcher.group("byte2"), 16));
-        } else {
-            code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0")),
-                    Integer.parseInt(matcher.group("byte1")), Integer.parseInt(matcher.group("byte2")));
+        int base = 10;
+        if (matcher.pattern() == FINGERPRINT_PATTERN_HEX) {
+            base = 16;
         }
+
+        code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0"), base),
+                Integer.parseInt(matcher.group("byte1"), base), Integer.parseInt(matcher.group("byte2"), base));
 
         if (matcher.pattern() == TRANSPONDER_PATTERN) {
             handler.triggerChannel(LcnChannelGroup.CODE, "transponder", code);
-        } else if (matcher.pattern() == FINGERPRINT_PATTERN) {
+        } else if (matcher.pattern() == FINGERPRINT_PATTERN_HEX || matcher.pattern() == FINGERPRINT_PATTERN_DEC) {
             handler.triggerChannel(LcnChannelGroup.CODE, "fingerprint", code);
         } else if (matcher.pattern() == REMOTE_CONTROL_PATTERN) {
             int keyNumber = Integer.parseInt(matcher.group("key"));
@@ -114,6 +116,7 @@ public class LcnModuleCodeSubHandler extends AbstractLcnModuleSubHandler {
 
     @Override
     public Collection<Pattern> getPckStatusMessagePatterns() {
-        return Arrays.asList(TRANSPONDER_PATTERN, FINGERPRINT_PATTERN, REMOTE_CONTROL_PATTERN);
+        return Arrays.asList(TRANSPONDER_PATTERN, FINGERPRINT_PATTERN_HEX, FINGERPRINT_PATTERN_DEC,
+                REMOTE_CONTROL_PATTERN);
     }
 }

@@ -78,8 +78,7 @@ public class WebexTeamsApi {
     public Person getPerson() throws WebexTeamsApiException, WebexAuthenticationException {
         URI url = getUri(WEBEX_API_ENDPOINT + "/people/me");
 
-        Person person = request(url, HttpMethod.GET, Person.class, null);
-        return person;
+        return request(url, HttpMethod.GET, Person.class, null);
     }
 
     private URI getUri(String url) throws WebexTeamsApiException {
@@ -133,8 +132,7 @@ public class WebexTeamsApi {
                 // Obtain the input stream on the response content
                 try (InputStream input = new ByteArrayInputStream(response.getContent())) {
                     Reader reader = new InputStreamReader(input);
-                    O entity = gson.fromJson(reader, clazz);
-                    return entity;
+                    return gson.fromJson(reader, clazz);
                 } catch (IOException | JsonIOException | JsonSyntaxException e) {
                     logger.warn("Exception while processing API response: {}", e.getMessage());
                     throw new WebexTeamsApiException("Exception while processing API response", e);

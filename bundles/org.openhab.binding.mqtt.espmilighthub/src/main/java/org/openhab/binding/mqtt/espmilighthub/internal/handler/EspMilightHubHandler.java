@@ -190,7 +190,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
                         bulbSaturation = "100";
                     }
                     // 360 isn't allowed by OpenHAB
-                    if (bulbHue.equals("360")) {
+                    if ("360".equals(bulbHue)) {
                         bulbHue = "0";
                     }
                     var hsb = new HSBType(new DecimalType(Integer.valueOf(bulbHue)),
@@ -368,8 +368,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             }
             sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel.intValue() + "}");
             return;
-        } else if (command instanceof HSBType) {
-            HSBType hsb = (HSBType) command;
+        } else if (command instanceof HSBType hsb) {
             // This feature allows google home or Echo to trigger white mode when asked to turn color to white.
             if (hsb.getHue().intValue() == config.whiteHue && hsb.getSaturation().intValue() == config.whiteSat) {
                 if (hasCCT()) {
@@ -394,8 +393,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             }
             savedLevel = hsb.getBrightness().toBigDecimal();
             return;
-        } else if (command instanceof PercentType) {
-            PercentType percentType = (PercentType) command;
+        } else if (command instanceof PercentType percentType) {
             if (percentType.intValue() == 0) {
                 turnOff();
                 return;
@@ -487,7 +485,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Milight Hub is not connected to your MQTT broker.");
+                        "Waiting for 'milight/status: connected' MQTT message to be sent from your ESP Milight hub.");
             }
         } else {
             try {
@@ -526,8 +524,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             return;
         }
         ThingHandler handler = localBridge.getHandler();
-        if (handler instanceof AbstractBrokerHandler) {
-            AbstractBrokerHandler abh = (AbstractBrokerHandler) handler;
+        if (handler instanceof AbstractBrokerHandler abh) {
             final MqttBrokerConnection connection;
             try {
                 connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
@@ -537,6 +534,8 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
                 return;
             }
             this.connection = connection;
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Waiting for 'milight/status: connected' MQTT message to be received. Check hub has 'MQTT Client Status Topic' configured.");
             connection.subscribe(fullStatesTopic, this);
             connection.subscribe(STATUS_TOPIC, this);
         }

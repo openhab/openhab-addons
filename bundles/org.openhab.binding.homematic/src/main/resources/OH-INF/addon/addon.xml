@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Homematic Binding</name>
 	<description>This is the binding for Homematic gateways</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -200,8 +200,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof MieleBridgeHandler) {
-            var bridgeHandler = (MieleBridgeHandler) handler;
+        if (handler instanceof MieleBridgeHandler bridgeHandler) {
             bridgeHandler.setDiscoveryService(this);
             this.bridgeHandler = bridgeHandler;
         }

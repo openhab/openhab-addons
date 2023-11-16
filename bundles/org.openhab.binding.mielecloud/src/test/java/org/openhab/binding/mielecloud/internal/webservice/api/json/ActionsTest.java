@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -112,7 +111,7 @@ public class ActionsTest {
         Actions actions = new Gson().fromJson(json, Actions.class);
 
         // then:
-        assertEquals(Collections.singletonList(ProcessAction.START), actions.getProcessAction());
+        assertEquals(List.of(ProcessAction.START), actions.getProcessAction());
     }
 
     @Test

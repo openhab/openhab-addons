@@ -15,7 +15,7 @@ package org.openhab.binding.wifiled.discovery;
 /**
  * Test app for discovering devices.
  *
- * @author Stefan Endrullis &lt;stefan@endrullis.de&gt;
+ * @author Stefan Endrullis - Initial contribution
  */
 public class WiFiLEDDiscoveryServiceTestApp {
 

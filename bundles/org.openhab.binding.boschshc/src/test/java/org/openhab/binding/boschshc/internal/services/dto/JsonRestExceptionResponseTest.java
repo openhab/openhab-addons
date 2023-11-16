@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  *
  */
 @NonNullByDefault
-public class JsonRestExceptionResponseTest {
+class JsonRestExceptionResponseTest {
 
     private @NonNullByDefault({}) JsonRestExceptionResponse fixture;
 
@@ -35,7 +35,7 @@ public class JsonRestExceptionResponseTest {
     }
 
     @Test
-    public void testIsValid() {
+    void testIsValid() {
         assertFalse(JsonRestExceptionResponse.isValid(null));
         assertTrue(JsonRestExceptionResponse.isValid(fixture));
         fixture.errorCode = null;

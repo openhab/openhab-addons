@@ -87,13 +87,12 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
     @Override
     protected int valueFromCommand(String channelId, Command command) {
         Optional<PositionEstimator> positionEstimator = getPositionEstimator(channelId);
-        if (command instanceof DecimalType) {
-            return positionEstimator.map(estimator -> {
-                return estimator.processSetPosition(((DecimalType) command).intValue());
-            }).orElseThrow(() -> {
-                throw new IllegalArgumentException(
-                        "Received position request but no estimation configured for channel " + channelId);
-            });
+        if (command instanceof DecimalType decimalCommand) {
+            return positionEstimator.map(estimator -> estimator.processSetPosition(decimalCommand.intValue()))
+                    .orElseThrow(() -> {
+                        throw new IllegalArgumentException(
+                                "Received position request but no estimation configured for channel " + channelId);
+                    });
         }
         int result = convertCommandToValue(channelId, command);
         positionEstimator.ifPresent(PositionEstimator::cancelStopMovement);

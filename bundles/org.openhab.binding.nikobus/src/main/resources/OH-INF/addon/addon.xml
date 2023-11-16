@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Nikobus Binding</name>
 	<description>This is the binding for Nikobus.</description>
+	<connection>local</connection>
 
 </addon:addon>

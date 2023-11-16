@@ -46,7 +46,7 @@ public class CreateTTSCache {
             usage();
             return RC_USAGE;
         }
-        if (!args[0].equalsIgnoreCase("--api-key")) {
+        if (!"--api-key".equalsIgnoreCase(args[0])) {
             usage();
             return RC_API_KEY_MISSING;
         }

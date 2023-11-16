@@ -14,7 +14,8 @@
 package org.openhab.binding.boschindego.internal.dto.response.runtime;
 
 /**
- * Total/session runtime information for {@link DeviceStateResponse}
+ * Total/session runtime information for
+ * {@link org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse}
  * 
  * @author Jacob Laursen - Initial contribution
  */

@@ -64,10 +64,11 @@ public class EvoParser extends AbstractParser {
 
     @Override
     public ZoneState calculateZoneState(int id, ZoneStateFlags zoneStateFlags) {
-
         int index = (id - 1) / 8;
         int bitNumber = id % 8 - 1;
 
+        // Every zone state is represented by a bit set/unset in the big byte array retrieved from the memory of the
+        // panel
         byte[] zonesOpened = zoneStateFlags.getZonesOpened();
         boolean isOpened = ParadoxUtil.isBitSet(zonesOpened[index], bitNumber);
 
@@ -77,6 +78,38 @@ public class EvoParser extends AbstractParser {
         byte[] zonesLowBattery = zoneStateFlags.getZonesLowBattery();
         boolean hasLowBattery = ParadoxUtil.isBitSet(zonesLowBattery[index], bitNumber);
 
-        return new ZoneState(isOpened, isTampered, hasLowBattery);
+        ZoneState zoneState = new ZoneState(isOpened, isTampered, hasLowBattery);
+
+        calculateSpecialFlags(zoneStateFlags, id, zoneState);
+
+        return zoneState;
+    }
+
+    private void calculateSpecialFlags(ZoneStateFlags zoneStateFlags, int index, ZoneState zoneState) {
+        // Each byte is filled with 8 special zone flags.
+        // Each bit of the byte represents a specific flag.
+        // Zone Flags:
+        // 0 = Zone supervision trouble
+        // 1 = Zone in TX delay
+        // 2 = Zone shutted down
+        // 3 = Zone bypassed
+        // 4 = Zone activated intellizone delay
+        // 5 = Zone activated entry delay
+        // 6 = Zone presently in alarm
+        // 7 = Zone generated an alarm
+
+        // The index of the actual zones and partitions enumerates from 1-N. In the arrays we need to index it from 0.
+        int specialFlagsIndex = index - 1;
+        byte[] zoneSpecialFlags = zoneStateFlags.getZoneSpecialFlags();
+        byte currentZoneFlags = zoneSpecialFlags[specialFlagsIndex];
+
+        zoneState.setSupervisionTrouble(ParadoxUtil.isBitSet(currentZoneFlags, 0));
+        zoneState.setInTxDelay(ParadoxUtil.isBitSet(currentZoneFlags, 1));
+        zoneState.setShuttedDown(ParadoxUtil.isBitSet(currentZoneFlags, 2));
+        zoneState.setBypassed(ParadoxUtil.isBitSet(currentZoneFlags, 3));
+        zoneState.setHasActivatedIntellizoneDelay(ParadoxUtil.isBitSet(currentZoneFlags, 4));
+        zoneState.setHasActivatedEntryDelay(ParadoxUtil.isBitSet(currentZoneFlags, 5));
+        zoneState.setPresentlyInAlarm(ParadoxUtil.isBitSet(currentZoneFlags, 6));
+        zoneState.setGeneratedAlarm(ParadoxUtil.isBitSet(currentZoneFlags, 7));
     }
 }

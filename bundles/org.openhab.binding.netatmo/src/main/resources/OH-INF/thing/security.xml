@@ -225,6 +225,7 @@
 	<channel-group-type id="presence">
 		<label>Presence Camera</label>
 		<channels>
+			<channel id="siren" typeId="siren-status-rw"/>
 			<channel id="floodlight" typeId="floodlight-mode"/>
 		</channels>
 	</channel-group-type>

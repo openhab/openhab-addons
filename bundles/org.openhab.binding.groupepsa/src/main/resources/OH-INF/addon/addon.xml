@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Groupe PSA Binding</name>
 	<description>Provides information and (limited) control of cars from the Groupe PSA (Peugeot, Citroen, Opel, etc.).</description>
+	<connection>cloud</connection>
 
 </addon:addon>

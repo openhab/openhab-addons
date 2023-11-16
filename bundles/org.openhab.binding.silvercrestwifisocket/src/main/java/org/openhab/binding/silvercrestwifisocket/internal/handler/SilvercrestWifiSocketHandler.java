@@ -180,11 +180,11 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
         // if the host of the packet is different from the host address set in handler, update the host
         // address.
         if (!receivedMessage.getHostAddress().equals(this.hostAddress)) {
-            logger.debug(
-                    "The host of the packet is different from the host address set in handler. "
-                            + "Will update the host address. handler of mac: {}. "
-                            + "Old host address: '{}' -> new host address: '{}'",
-                    this.macAddress, this.hostAddress, receivedMessage.getHostAddress());
+            logger.debug("""
+                    The host of the packet is different from the host address set in handler. \
+                    Will update the host address. handler of mac: {}. \
+                    Old host address: '{}' -> new host address: '{}'\
+                    """, this.macAddress, this.hostAddress, receivedMessage.getHostAddress());
 
             this.hostAddress = receivedMessage.getHostAddress();
             this.saveConfigurationsUsingCurrentStates();
@@ -252,7 +252,7 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
             if (ValidationUtils.isMacNotValid(macAddress)) {
                 throw new MacAddressNotValidException("Mac address is not valid", macAddress);
             }
-            this.macAddress = macAddress.replaceAll(":", "").toUpperCase();
+            this.macAddress = macAddress.replace(":", "").toUpperCase();
         }
         if (this.macAddress == null) {
             throw new MacAddressNotValidException("Mac address is not valid", this.macAddress);

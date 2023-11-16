@@ -60,8 +60,9 @@ public class DiscoveryServiceManager
 
     /**
      * Creates a new {@link DiscoveryServiceManager} and generates automatically all {@link SceneDiscoveryService}s and
-     * {@link DeviceDiscoveryService}s for all supported {@link ThingType}s of the {@link DeviceHandler} and
-     * {@link SceneHandler}.
+     * {@link org.openhab.binding.digitalstrom.internal.discovery.DeviceDiscoveryService}s for all supported
+     * {@link org.openhab.core.thing.type.ThingType}s of the
+     * {@link org.openhab.binding.digitalstrom.internal.handler.DeviceHandler} and {@link SceneHandler}.
      *
      * @param bridgeHandler (must not be null)
      */
@@ -96,22 +97,19 @@ public class DiscoveryServiceManager
     public void unregisterDiscoveryServices(BundleContext bundleContext) {
         if (discoveryServices != null) {
             for (AbstractDiscoveryService service : discoveryServices.values()) {
-                if (service instanceof SceneDiscoveryService) {
-                    SceneDiscoveryService sceneDisServ = (SceneDiscoveryService) service;
+                if (service instanceof SceneDiscoveryService sceneDisServ) {
                     ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(bridgeUID + sceneDisServ.getID());
                     sceneDisServ.deactivate();
                     serviceReg.unregister();
                     discoveryServiceRegs.remove(bridgeUID + sceneDisServ.getID());
                 }
-                if (service instanceof DeviceDiscoveryService) {
-                    DeviceDiscoveryService devDisServ = (DeviceDiscoveryService) service;
+                if (service instanceof DeviceDiscoveryService devDisServ) {
                     ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(bridgeUID + devDisServ.getID());
                     devDisServ.deactivate();
                     serviceReg.unregister();
                     discoveryServiceRegs.remove(bridgeUID + devDisServ.getID());
                 }
-                if (service instanceof ZoneTemperatureControlDiscoveryService) {
-                    ZoneTemperatureControlDiscoveryService devDisServ = (ZoneTemperatureControlDiscoveryService) service;
+                if (service instanceof ZoneTemperatureControlDiscoveryService devDisServ) {
                     ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(bridgeUID + devDisServ.getID());
                     devDisServ.deactivate();
                     serviceReg.unregister();
@@ -130,18 +128,17 @@ public class DiscoveryServiceManager
     public void registerDiscoveryServices(BundleContext bundleContext) {
         if (discoveryServices != null) {
             for (AbstractDiscoveryService service : discoveryServices.values()) {
-                if (service instanceof SceneDiscoveryService) {
-                    this.discoveryServiceRegs.put(bridgeUID + ((SceneDiscoveryService) service).getID(), bundleContext
+                if (service instanceof SceneDiscoveryService discoveryService) {
+                    this.discoveryServiceRegs.put(bridgeUID + discoveryService.getID(), bundleContext
                             .registerService(DiscoveryService.class.getName(), service, new Hashtable<>()));
                 }
-                if (service instanceof DeviceDiscoveryService) {
-                    this.discoveryServiceRegs.put(bridgeUID + ((DeviceDiscoveryService) service).getID(), bundleContext
+                if (service instanceof DeviceDiscoveryService discoveryService) {
+                    this.discoveryServiceRegs.put(bridgeUID + discoveryService.getID(), bundleContext
                             .registerService(DiscoveryService.class.getName(), service, new Hashtable<>()));
                 }
-                if (service instanceof ZoneTemperatureControlDiscoveryService) {
-                    this.discoveryServiceRegs
-                            .put(bridgeUID + ((ZoneTemperatureControlDiscoveryService) service).getID(), bundleContext
-                                    .registerService(DiscoveryService.class.getName(), service, new Hashtable<>()));
+                if (service instanceof ZoneTemperatureControlDiscoveryService discoveryService) {
+                    this.discoveryServiceRegs.put(bridgeUID + discoveryService.getID(), bundleContext
+                            .registerService(DiscoveryService.class.getName(), service, new Hashtable<>()));
                 }
             }
         }
@@ -178,10 +175,10 @@ public class DiscoveryServiceManager
 
     @Override
     public void onDeviceRemoved(GeneralDeviceInformation device) {
-        if (device instanceof Device) {
-            String id = ((Device) device).getHWinfo().substring(0, 2);
-            if (((Device) device).isSensorDevice()) {
-                id = ((Device) device).getHWinfo().replace("-", "");
+        if (device instanceof Device dev) {
+            String id = dev.getHWinfo().substring(0, 2);
+            if (dev.isSensorDevice()) {
+                id = dev.getHWinfo().replace("-", "");
             }
             if (discoveryServices.get(id) != null) {
                 ((DeviceDiscoveryService) discoveryServices.get(id)).onDeviceRemoved(device);
@@ -198,10 +195,10 @@ public class DiscoveryServiceManager
     @Override
     public void onDeviceAdded(GeneralDeviceInformation device) {
         try {
-            if (device instanceof Device) {
-                String id = ((Device) device).getHWinfo().substring(0, 2);
-                if (((Device) device).isSensorDevice()) {
-                    id = ((Device) device).getHWinfo();
+            if (device instanceof Device dev) {
+                String id = dev.getHWinfo().substring(0, 2);
+                if (dev.isSensorDevice()) {
+                    id = dev.getHWinfo();
                 }
                 if (discoveryServices.get(id) != null) {
                     ((DeviceDiscoveryService) discoveryServices.get(id)).onDeviceAdded(device);

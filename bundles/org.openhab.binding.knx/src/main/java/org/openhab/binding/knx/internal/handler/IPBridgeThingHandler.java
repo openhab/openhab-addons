@@ -62,7 +62,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void initialize() {
-        // initialisation would take too long and show a warning during binding startup
+        // initialization would take too long and show a warning during binding startup
         // KNX secure is adding serious delay
         updateStatus(ThingStatus.UNKNOWN);
         initJob = scheduler.submit(this::initializeLater);
@@ -185,7 +185,8 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT, autoReconnectPeriod,
                 secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs, secureTunnel.devKey,
                 secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
-                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), this);
+                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), getCommandExtensionData(),
+                this);
 
         IPClient tmpClient = client;
         if (tmpClient != null) {

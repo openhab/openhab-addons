@@ -42,8 +42,7 @@ public final class DateUtil {
      *
      * @return a {@link LocalDate} object containing the parsed date
      *
-     * @throws {@link DateTimeParseException}
-     *             if the string cannot be parsed to a local date
+     * @throws DateTimeParseException if the string cannot be parsed to a local date
      */
     public static LocalDate parseDate(@Nullable String str, String pattern) {
         if (str == null) {
@@ -63,8 +62,7 @@ public final class DateUtil {
      *
      * @return a {@link LocalDateTime} object containing the parsed date and time
      *
-     * @throws {@link DateTimeParseException}
-     *             if the string cannot be parsed to a local date and time
+     * @throws DateTimeParseException if the string cannot be parsed to a local date and time
      */
     public static LocalDateTime parseLocalTime(@Nullable String str, String pattern) {
         if (str == null) {
@@ -84,8 +82,7 @@ public final class DateUtil {
      *
      * @return a {@link ZonedDateTime} object containing the parsed date and time with timezone
      *
-     * @throws {@link DateTimeParseException}
-     *             if the string cannot be parsed to a date and time with timezone
+     * @throws DateTimeParseException if the string cannot be parsed to a date and time with timezone
      */
     public static ZonedDateTime parseZonedTime(@Nullable String str, String pattern) {
         if (str == null) {
@@ -119,8 +116,7 @@ public final class DateUtil {
      *
      * @return a string representing the local date and time object
      *
-     * @throws {@link DateTimeException}
-     *             if an error occurs during printing
+     * @throws DateTimeParseException if an error occurs during printing
      */
     public static String format(LocalDateTime date, String pattern) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
@@ -137,8 +133,7 @@ public final class DateUtil {
      *
      * @return a string representing the date and time with timezone object
      *
-     * @throws {@link DateTimeException}
-     *             if an error occurs during printing
+     * @throws DateTimeParseException if an error occurs during printing
      */
     public static String format(ZonedDateTime date, String pattern) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
@@ -158,8 +153,7 @@ public final class DateUtil {
      *
      * @return a string representing the range between the two local date and time objects
      *
-     * @throws {@link DateTimeException}
-     *             if an error occurs during printing
+     * @throws DateTimeParseException if an error occurs during printing
      */
     public static String formatRange(LocalDateTime date1, LocalDateTime date2, String pattern) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
@@ -180,8 +174,7 @@ public final class DateUtil {
      *
      * @return a string representing the range between the two date and time with timezone objects
      *
-     * @throws {@link DateTimeException}
-     *             if an error occurs during printing
+     * @throws DateTimeParseException if an error occurs during printing
      */
     public static String formatRange(ZonedDateTime date1, ZonedDateTime date2, String pattern) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);

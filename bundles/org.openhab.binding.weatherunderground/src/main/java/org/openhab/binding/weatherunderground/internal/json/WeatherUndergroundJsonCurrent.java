@@ -179,7 +179,7 @@ public class WeatherUndergroundJsonCurrent {
      * @return the current relative humidity or null if not defined
      */
     public Integer getRelativeHumidity() {
-        if (relative_humidity != null && !relative_humidity.isEmpty() && !relative_humidity.equalsIgnoreCase("N/A")) {
+        if (relative_humidity != null && !relative_humidity.isEmpty() && !"N/A".equalsIgnoreCase(relative_humidity)) {
             return WeatherUndergroundJsonUtils.convertToInteger(relative_humidity.replace("%", ""));
         }
         return null;

@@ -181,7 +181,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
     public static ThingUID createServiceUID(String ip, int tcpPort) {
         // uid must not contains dots
-        return new ThingUID(SERVICE_DEVICE, ip.replace('.', '_') + "_" + String.valueOf(tcpPort));
+        return new ThingUID(SERVICE_DEVICE, ip.replace('.', '_') + "_" + tcpPort);
     }
 
     /**

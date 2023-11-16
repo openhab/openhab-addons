@@ -207,7 +207,7 @@ The following channels are holding read only values:
 | highPressure | Number:Pressure | x | High pressure |
 | lowPressure | Number:Pressure | x | Low pressure |
 | outputCompressorHeating | Switch | x | Output compressor heating |
-| controlSignalCirculatingPump | Number:Energy | x | Control signal circulating pump |
+| controlSignalCirculatingPump | Number:Dimensionless | x | Heating circulating pump power in % |
 | fanSpeed | Number | x | Fan speed |
 | temperatureSafetyLimitFloorHeating | Switch | x | Safety temperature limiter floor heating |
 | powerTargetValue | Number:Energy | x | Power target value |

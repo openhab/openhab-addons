@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -88,6 +89,7 @@ public class VerisureSession {
             "https://m-api02.verisure.com");
     private int apiServerInUseIndex = 0;
     private int numberOfEvents = 15;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private static final String USER_NAME = "username";
     private static final String VID = "vid";
     private static final String VS_STEPUP = "vs-stepup";
@@ -333,6 +335,7 @@ public class VerisureSession {
         logger.debug("postVerisureAPI URL: {} Data:{}", url, data);
 
         Request request = httpClient.newRequest(url).method(HttpMethod.POST);
+        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (isJSON) {
             request.header("content-type", "application/json");
         } else {
@@ -761,7 +764,7 @@ public class VerisureSession {
                         if (deviceId != null) {
                             deviceId = VerisureThingConfiguration.normalizeDeviceId(deviceId);
                             VerisureThingDTO mouseThing = verisureThings.get(deviceId);
-                            if (mouseThing != null && mouseThing instanceof VerisureMiceDetectionDTO) {
+                            if (mouseThing instanceof VerisureMiceDetectionDTO) {
                                 VerisureMiceDetectionDTO miceDetectorThing = (VerisureMiceDetectionDTO) mouseThing;
                                 miceDetectorThing.setTemperatureValue(climate.getTemperatureValue());
                                 miceDetectorThing.setTemperatureTime(climate.getTemperatureTimestamp());

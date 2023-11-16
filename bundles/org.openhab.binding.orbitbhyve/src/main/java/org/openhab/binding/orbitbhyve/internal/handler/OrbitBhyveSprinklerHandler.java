@@ -81,8 +81,8 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
                 handler.stopWatering(deviceId);
                 return;
             }
-            if (CHANNEL_WATERING_TIME.equals(channelUID.getId()) && command instanceof QuantityType) {
-                final QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.MINUTE);
+            if (CHANNEL_WATERING_TIME.equals(channelUID.getId()) && command instanceof QuantityType quantityCommand) {
+                final QuantityType<?> value = quantityCommand.toUnit(Units.MINUTE);
                 if (value != null) {
                     wateringTime = value.intValue();
                 }

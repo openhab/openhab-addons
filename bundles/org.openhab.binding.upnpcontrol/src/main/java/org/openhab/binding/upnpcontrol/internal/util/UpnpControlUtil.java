@@ -113,9 +113,8 @@ public final class UpnpControlUtil {
             return Collections.emptyList();
         }
 
-        List<String> result = (Arrays.asList(files)).stream().map(p -> p.getName().replace(extension, ""))
+        return (Arrays.asList(files)).stream().map(p -> p.getName().replace(extension, ""))
                 .collect(Collectors.toList());
-        return result;
     }
 
     private static void delete(String name, @Nullable String path, String extension) {

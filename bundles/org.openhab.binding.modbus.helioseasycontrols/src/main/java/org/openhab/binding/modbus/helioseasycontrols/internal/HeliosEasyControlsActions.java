@@ -54,7 +54,6 @@ public class HeliosEasyControlsActions implements ThingActions {
     private void triggerSwitch(String variableName) {
         try {
             if (handler != null) {
-
                 handler.writeValue(variableName, "1");
             }
         } catch (HeliosException e) {

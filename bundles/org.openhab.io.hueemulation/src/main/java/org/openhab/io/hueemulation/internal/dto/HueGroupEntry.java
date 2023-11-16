@@ -35,7 +35,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class HueGroupEntry {
-    public static enum TypeEnum {
+    public enum TypeEnum {
         LightGroup, // 1.4
         Luminaire, // 1.4
         LightSource, // 1.4
@@ -102,8 +102,7 @@ public class HueGroupEntry {
                         .collect(Collectors.toList());
             }
 
-            JsonElement jsonSubscription = context.serialize(product, HueGroupHelper.class);
-            return jsonSubscription;
+            return context.serialize(product, HueGroupHelper.class);
         }
     }
 }

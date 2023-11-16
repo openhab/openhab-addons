@@ -39,6 +39,6 @@ public interface FreeboxDataListener {
      * @param lanHosts the LAN data received from the Freebox server.
      * @param airPlayDevices the list of AirPlay devices received from the Freebox server.
      */
-    public void onDataFetched(ThingUID bridge, @Nullable List<FreeboxLanHost> lanHosts,
+    void onDataFetched(ThingUID bridge, @Nullable List<FreeboxLanHost> lanHosts,
             @Nullable List<FreeboxAirMediaReceiver> airPlayDevices);
 }

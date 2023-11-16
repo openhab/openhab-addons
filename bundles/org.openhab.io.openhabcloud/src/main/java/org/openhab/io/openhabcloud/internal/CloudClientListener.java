@@ -30,5 +30,5 @@ public interface CloudClientListener {
      * @param item the {@link String} containing item name
      * @param command the {@link String} containing a command
      */
-    public void sendCommand(String item, String command);
+    void sendCommand(String item, String command);
 }

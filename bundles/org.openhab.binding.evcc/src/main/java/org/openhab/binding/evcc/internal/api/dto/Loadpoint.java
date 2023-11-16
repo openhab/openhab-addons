@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents a loadpoint object of the status response (/api/state).
- * This DTO was written for evcc version 0.111.1
+ * This DTO was written for evcc version 0.117.0
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -57,12 +57,6 @@ public class Loadpoint {
     @SerializedName("enabled")
     private boolean enabled;
 
-    @SerializedName("hasVehicle")
-    private boolean hasVehicle;
-
-    @SerializedName("loadpoint")
-    private int loadpoint;
-
     @SerializedName("maxCurrent")
     private float maxCurrent;
 
@@ -75,14 +69,14 @@ public class Loadpoint {
     @SerializedName("mode")
     private String mode;
 
-    @SerializedName("phases")
+    @SerializedName("phasesEnabled")
     private int phases;
 
-    @SerializedName("pvAction")
-    private String pvAction;
+    @SerializedName("planActive")
+    private boolean planActive;
 
-    @SerializedName("pvRemaining")
-    private long pvRemaining;
+    @SerializedName("targetEnergy")
+    private float targetEnergy;
 
     @SerializedName("targetSoc")
     private float targetSoC;
@@ -189,20 +183,6 @@ public class Loadpoint {
     }
 
     /**
-     * @return whether vehicle is configured for loadpoint
-     */
-    public boolean getHasVehicle() {
-        return hasVehicle;
-    }
-
-    /**
-     * @return loadpoint id
-     */
-    public int getLoadpoint() {
-        return loadpoint;
-    }
-
-    /**
      * @return maximum current
      */
     public float getMaxCurrent() {
@@ -238,17 +218,17 @@ public class Loadpoint {
     }
 
     /**
-     * @return the pv action
+     * @return whether charging plan is active
      */
-    public String getPvAction() {
-        return pvAction;
+    public boolean getPlanActive() {
+        return planActive;
     }
 
     /**
-     * @return the pv remaining
+     * @return target energy
      */
-    public long getPvRemaining() {
-        return pvRemaining;
+    public float getTargetEnergy() {
+        return targetEnergy;
     }
 
     /**

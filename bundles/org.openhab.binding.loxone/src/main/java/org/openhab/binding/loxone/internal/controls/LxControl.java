@@ -617,8 +617,8 @@ public class LxControl {
         LxState state = states.get(name);
         if (state != null) {
             Object value = state.getStateValue();
-            if (value instanceof String) {
-                return (String) value;
+            if (value instanceof String str) {
+                return str;
             }
         }
         return null;

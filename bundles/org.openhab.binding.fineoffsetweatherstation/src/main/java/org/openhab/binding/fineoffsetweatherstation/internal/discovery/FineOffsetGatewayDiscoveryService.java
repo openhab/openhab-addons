@@ -24,9 +24,9 @@ import java.net.SocketException;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -83,7 +83,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
     @Activate
     public FineOffsetGatewayDiscoveryService(@Reference TranslationProvider translationProvider,
             @Reference LocaleProvider localeProvider) throws IllegalArgumentException {
-        super(Collections.singleton(THING_TYPE_GATEWAY), DISCOVERY_TIME, true);
+        super(Set.of(THING_TYPE_GATEWAY), DISCOVERY_TIME, true);
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(FineOffsetGatewayDiscoveryService.class);

@@ -14,7 +14,6 @@ package org.openhab.binding.smhi.internal;
 
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.THING_TYPE_FORECAST;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.smhi", service = ThingHandlerFactory.class)
 public class SmhiHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_FORECAST);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_FORECAST);
 
     private final HttpClient httpClient;
 

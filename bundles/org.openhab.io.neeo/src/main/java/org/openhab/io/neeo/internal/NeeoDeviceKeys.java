@@ -22,9 +22,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
@@ -54,18 +53,18 @@ public class NeeoDeviceKeys {
     /** The brain's url */
     private final String brainUrl;
 
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
 
     /**
      * Creates the object from the context and brainUrl
      *
      * @param brainUrl the non-empty brain url
      */
-    NeeoDeviceKeys(String brainUrl, ClientBuilder clientBuilder) {
+    NeeoDeviceKeys(String brainUrl, HttpClient httpClient) {
         NeeoUtil.requireNotEmpty(brainUrl, "brainUrl cannot be empty");
 
         this.brainUrl = brainUrl;
-        this.clientBuilder = clientBuilder;
+        this.httpClient = httpClient;
     }
 
     /**
@@ -74,7 +73,7 @@ public class NeeoDeviceKeys {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     void refresh() throws IOException {
-        try (HttpRequest request = new HttpRequest(clientBuilder)) {
+        try (HttpRequest request = new HttpRequest(httpClient)) {
             logger.debug("Getting existing device mappings from {}{}", brainUrl, NeeoConstants.PROJECTS_HOME);
             final HttpResponse resp = request.sendGetCommand(brainUrl + NeeoConstants.PROJECTS_HOME);
             if (resp.getHttpCode() != HttpStatus.OK_200) {

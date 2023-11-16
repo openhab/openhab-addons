@@ -38,8 +38,8 @@ public class Therm1ChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        return (naThing instanceof HomeStatusModule && CHANNEL_THERM_RELAY.equals(channelId))
-                ? ((HomeStatusModule) naThing).getBoilerStatus()
+        return (naThing instanceof HomeStatusModule homeStatusModule && CHANNEL_THERM_RELAY.equals(channelId))
+                ? homeStatusModule.getBoilerStatus()
                 : null;
     }
 }

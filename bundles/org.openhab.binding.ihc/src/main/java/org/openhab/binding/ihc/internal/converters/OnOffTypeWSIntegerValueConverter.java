@@ -19,7 +19,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
 
 /**
- * OnOffType <-> WSIntegerValue converter.
+ * OnOffType {@literal <->} WSIntegerValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

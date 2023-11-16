@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Container class for enums related to opengarage
  *
- * @author Paul Smedley <paul@smedley.id.au> - Initial contribution
+ * @author Paul Smedley - Initial contribution
  *
  */
 public class Enums {

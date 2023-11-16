@@ -70,7 +70,7 @@ public class AbstractWeatherHandlerTest {
         }
     }
 
-    public static final List<Object[]> parametersForFloorToEvenMinutes() {
+    public static List<Object[]> parametersForFloorToEvenMinutes() {
         return Arrays.asList(new Object[][] { //
                 { 1626605128L /* 2021-07-18 10:45:28 */, 1, 1626605100 /* 10:45 */ }, //
                 { 1626605128L /* 2021-07-18 10:45:28 */, 5, 1626605100 /* 10:45 */ }, //
@@ -101,7 +101,7 @@ public class AbstractWeatherHandlerTest {
         assertEquals(expected, floorToEvenMinutes(epochSeconds, roundMinutes));
     }
 
-    public static final List<Object[]> parametersForCeilToEvenMinutes() {
+    public static List<Object[]> parametersForCeilToEvenMinutes() {
         return Arrays.asList(new Object[][] { //
                 { 1626605128L /* 2021-07-18 10:45:28 */, 1, 1626605160 /* 10:46 */ }, //
                 { 1626605128L /* 2021-07-18 10:45:28 */, 5, 1626605400 /* 10:50 */ }, //
@@ -117,7 +117,7 @@ public class AbstractWeatherHandlerTest {
         assertEquals(expected, ceilToEvenMinutes(epochSeconds, roundMinutes));
     }
 
-    public static final List<Object[]> parametersForLastValidIndex() {
+    public static List<Object[]> parametersForLastValidIndex() {
         return Arrays.asList(new Object[][] { //
                 { "no nulls", 1, new BigDecimal[] { bd(1), bd(2) } }, //
                 { "one null in beginning", 1, new BigDecimal[] { null, bd(2) } }, //

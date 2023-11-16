@@ -170,7 +170,6 @@ public class GatewayPayloadParser {
         if (payloadIntermediate == null) {
             throw new JsonSyntaxException("JSON parsing failed");
         }
-        GatewayPayload payload = new GatewayPayload(payloadIntermediate);
-        return payload;
+        return new GatewayPayload(payloadIntermediate);
     }
 }

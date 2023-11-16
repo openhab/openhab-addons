@@ -71,8 +71,8 @@ public class MyQGarageDoorHandler extends BaseThingHandler implements MyQDeviceH
                 if (command instanceof UpDownType) {
                     cmd = command == UpDownType.UP ? "open" : "close";
                 }
-                if (command instanceof PercentType) {
-                    cmd = ((PercentType) command).as(UpDownType.class) == UpDownType.UP ? "open" : "close";
+                if (command instanceof PercentType percentage) {
+                    cmd = percentage.as(UpDownType.class) == UpDownType.UP ? "open" : "close";
                 }
                 if (command instanceof StringType) {
                     cmd = command.toString();

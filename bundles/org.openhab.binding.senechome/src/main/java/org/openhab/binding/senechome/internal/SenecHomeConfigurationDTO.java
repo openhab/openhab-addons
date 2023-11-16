@@ -16,10 +16,12 @@ package org.openhab.binding.senechome.internal;
  * The {@link SenecHomeConfigurationDTO} class contains fields mapping thing configuration parameters.
  *
  * @author Steven Schwarznau - Initial contribution
+ * @author Robert Delbrück - Add useHttp
  */
 public class SenecHomeConfigurationDTO {
     public String hostname;
     public int refreshInterval = 15;
     public int limitationTresholdValue = 95;
     public int limitationDuration = 120;
+    public boolean useHttp = false;
 }

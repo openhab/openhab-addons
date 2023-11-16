@@ -43,7 +43,7 @@ public final class Zone {
     }
 
     public static Zone fromH01(String h01) throws NoboDataException {
-        String parts[] = h01.split(" ", 8);
+        String[] parts = h01.split(" ", 8);
 
         if (parts.length != 8) {
             throw new NoboDataException(

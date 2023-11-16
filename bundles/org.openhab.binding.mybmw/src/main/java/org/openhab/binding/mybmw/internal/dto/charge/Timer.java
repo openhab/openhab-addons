@@ -20,7 +20,7 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
  * The {@link Timer} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
  */
 public class Timer {
     public int id = -1;// ": 1,

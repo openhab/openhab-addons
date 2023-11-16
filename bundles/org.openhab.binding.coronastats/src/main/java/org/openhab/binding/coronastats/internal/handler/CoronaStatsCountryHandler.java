@@ -87,8 +87,8 @@ public class CoronaStatsCountryHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof CoronaStatsWorldHandler) {
-                return (CoronaStatsWorldHandler) handler;
+            if (handler instanceof CoronaStatsWorldHandler worldHandler) {
+                return worldHandler;
             }
         }
 

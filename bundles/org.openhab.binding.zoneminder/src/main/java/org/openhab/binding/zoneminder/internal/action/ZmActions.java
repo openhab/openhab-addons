@@ -42,8 +42,8 @@ public class ZmActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ZmMonitorHandler) {
-            this.handler = (ZmMonitorHandler) handler;
+        if (handler instanceof ZmMonitorHandler zmMonitorHandler) {
+            this.handler = zmMonitorHandler;
         }
     }
 

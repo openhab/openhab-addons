@@ -31,7 +31,9 @@ import org.slf4j.LoggerFactory;
  * The {@link AbstractDiscoveryService} provides methods which handle the {@link DiscoveryListener}s.
  *
  * Subclasses do not have to care about adding and removing those listeners.
- * They can use the protected methods {@link #thingDiscovered(DiscoveryResult)} and {@link #thingRemoved(String)} in
+ * They can use the protected methods
+ * {@link org.openhab.core.config.discovery.pAbstractDiscoveryService#thingDiscovered(DiscoveryResult)}
+ * and {@link org.openhab.core.config.discovery.AbstractDiscoveryService#thingRemoved(ThingUID)} in
  * order to notify the registered {@link DiscoveryListener}s.
  *
  * @author Pascal Larin - Initial contribution

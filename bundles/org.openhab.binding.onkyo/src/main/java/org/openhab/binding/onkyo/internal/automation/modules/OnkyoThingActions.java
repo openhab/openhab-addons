@@ -54,8 +54,8 @@ public class OnkyoThingActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof OnkyoHandler) {
-            this.handler = (OnkyoHandler) handler;
+        if (handler instanceof OnkyoHandler onkyoHandler) {
+            this.handler = onkyoHandler;
         }
     }
 

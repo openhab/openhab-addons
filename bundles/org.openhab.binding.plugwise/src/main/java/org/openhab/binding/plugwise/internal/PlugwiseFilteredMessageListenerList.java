@@ -61,7 +61,7 @@ public class PlugwiseFilteredMessageListenerList {
         for (PlugwiseFilteredMessageListener filteredListener : filteredListeners) {
             if (filteredListener.matches(message)) {
                 try {
-                    filteredListener.getListener().handleReponseMessage(message);
+                    filteredListener.getListener().handleResponseMessage(message);
                 } catch (Exception e) {
                     logger.warn("Listener failed to handle message: {}", message, e);
                 }

@@ -142,7 +142,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
      * FIFO queue. This method queues a {@link BlueGigaCommand} frame without
      * waiting for a response.
      *
-     * @param transaction
+     * @param request
      *            {@link BlueGigaUniqueCommand}
      */
     public void queueFrame(BlueGigaUniqueCommand request) {
@@ -154,7 +154,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     private void sendNextTransactionIfNoOngoing() {
         synchronized (this) {
             logger.trace("Send next transaction if no ongoing");
-            if (!ongoingTransactionId.isPresent()) {
+            if (ongoingTransactionId.isEmpty()) {
                 sendNextFrame();
             }
         }
@@ -243,10 +243,8 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
 
                 logger.trace("Expected frame: {}, received frame: {}", expected.getSimpleName(), bleResponse);
 
-                if (bleCommand instanceof BlueGigaDeviceCommand && bleResponse instanceof BlueGigaDeviceResponse) {
-                    BlueGigaDeviceCommand devCommand = (BlueGigaDeviceCommand) bleCommand;
-                    BlueGigaDeviceResponse devResponse = (BlueGigaDeviceResponse) bleResponse;
-
+                if (bleCommand instanceof BlueGigaDeviceCommand devCommand
+                        && bleResponse instanceof BlueGigaDeviceResponse devResponse) {
                     logger.trace("Expected connection id: {}, received connection id: {}", devCommand.getConnection(),
                             devResponse.getConnection());
 

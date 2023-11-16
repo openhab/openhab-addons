@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.caddx.internal.discovery;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -85,7 +84,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
                 thingUID = new ThingUID(CaddxBindingConstants.PARTITION_THING_TYPE, bridge.getUID(), thingID);
 
                 if (partition != null) {
-                    properties = Collections.singletonMap(CaddxPartitionConfiguration.PARTITION_NUMBER, partition);
+                    properties = Map.of(CaddxPartitionConfiguration.PARTITION_NUMBER, partition);
                     representationProperty = CaddxPartitionConfiguration.PARTITION_NUMBER;
                 }
 
@@ -96,7 +95,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
                 thingUID = new ThingUID(CaddxBindingConstants.ZONE_THING_TYPE, bridge.getUID(), thingID);
 
                 if (zone != null) {
-                    properties = Collections.singletonMap(CaddxZoneConfiguration.ZONE_NUMBER, zone);
+                    properties = Map.of(CaddxZoneConfiguration.ZONE_NUMBER, zone);
                     representationProperty = CaddxZoneConfiguration.ZONE_NUMBER;
                 }
                 break;
@@ -106,7 +105,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
                 thingUID = new ThingUID(CaddxBindingConstants.KEYPAD_THING_TYPE, bridge.getUID(), thingID);
 
                 if (keypad != null) {
-                    properties = Collections.singletonMap(CaddxKeypadConfiguration.KEYPAD_ADDRESS, keypad);
+                    properties = Map.of(CaddxKeypadConfiguration.KEYPAD_ADDRESS, keypad);
                     representationProperty = CaddxKeypadConfiguration.KEYPAD_ADDRESS;
                 }
                 break;
@@ -154,8 +153,8 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof CaddxBridgeHandler) {
-            caddxBridgeHandler = (CaddxBridgeHandler) handler;
+        if (handler instanceof CaddxBridgeHandler bridgeHandler) {
+            caddxBridgeHandler = bridgeHandler;
         }
     }
 

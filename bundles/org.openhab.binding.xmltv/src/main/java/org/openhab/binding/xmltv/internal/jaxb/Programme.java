@@ -77,8 +77,7 @@ public class Programme {
     }
 
     private long iso860DateToEpoch(String date) {
-        long epoch = ZonedDateTime.parse(date, XMLTV_DATE_FORMAT).toInstant().toEpochMilli();
-        return epoch;
+        return ZonedDateTime.parse(date, XMLTV_DATE_FORMAT).toInstant().toEpochMilli();
     }
 
     public List<Icon> getIcons() {

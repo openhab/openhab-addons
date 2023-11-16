@@ -14,7 +14,6 @@ package org.openhab.binding.networkupstools.internal;
 
 import static org.openhab.binding.networkupstools.internal.NUTBindingConstants.THING_TYPE_UPS;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,7 +34,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.networkupstools", service = ThingHandlerFactory.class)
 public class NUTHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_UPS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UPS);
 
     @Override
     public boolean supportsThingType(final ThingTypeUID thingTypeUID) {

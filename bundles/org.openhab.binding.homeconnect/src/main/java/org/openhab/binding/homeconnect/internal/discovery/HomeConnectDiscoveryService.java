@@ -60,8 +60,8 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof HomeConnectBridgeHandler) {
-            this.bridgeHandler = (HomeConnectBridgeHandler) handler;
+        if (handler instanceof HomeConnectBridgeHandler homeConnectBridgeHandler) {
+            this.bridgeHandler = homeConnectBridgeHandler;
         }
     }
 

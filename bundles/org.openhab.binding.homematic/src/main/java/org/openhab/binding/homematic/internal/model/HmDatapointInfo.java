@@ -96,7 +96,7 @@ public class HmDatapointInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof HmDatapointInfo)) {
+        if (!(obj instanceof HmDatapointInfo)) {
             return false;
         }
         HmDatapointInfo comp = (HmDatapointInfo) obj;

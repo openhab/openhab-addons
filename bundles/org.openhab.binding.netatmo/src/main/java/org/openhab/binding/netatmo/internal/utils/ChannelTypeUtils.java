@@ -25,7 +25,6 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Measure;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -44,8 +43,8 @@ public class ChannelTypeUtils {
 
     public static @Nullable QuantityType<?> commandToQuantity(Command command, MeasureClass measureClass) {
         Measure measureDef = measureClass.measureDefinition;
-        if (command instanceof QuantityType<?>) {
-            return ((QuantityType<?>) command).toUnit(measureDef.unit);
+        if (command instanceof QuantityType<?> quantityCommand) {
+            return quantityCommand.toUnit(measureDef.unit);
         }
         try {
             double value = Double.parseDouble(command.toString());
@@ -75,16 +74,12 @@ public class ChannelTypeUtils {
         return zonedDateTime.map(zdt -> (State) new DateTimeType(zdt)).orElse(UnDefType.NULL);
     }
 
-    public static State toQuantityType(@Nullable Double value, @Nullable MeasureClass measureClass) {
+    public static State toQuantityType(@Nullable Double value, MeasureClass measureClass) {
         if (value != null && !value.isNaN()) {
-            if (measureClass != null) {
-                Measure measureDef = measureClass.measureDefinition;
-                BigDecimal measure = new BigDecimal(Math.min(measureDef.maxValue, Math.max(measureDef.minValue, value)))
-                        .setScale(measureDef.scale, RoundingMode.HALF_UP);
-                return new QuantityType<>(measure, measureDef.unit);
-            } else {
-                return new DecimalType(value);
-            }
+            Measure measureDef = measureClass.measureDefinition;
+            BigDecimal measure = new BigDecimal(Math.min(measureDef.maxValue, Math.max(measureDef.minValue, value)))
+                    .setScale(measureDef.scale, RoundingMode.HALF_UP);
+            return new QuantityType<>(measure, measureDef.unit);
         }
         return UnDefType.NULL;
     }

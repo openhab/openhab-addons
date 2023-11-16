@@ -42,9 +42,8 @@ public class GetNetworkInfoCommand extends IotDeviceCommand<NetworkInfo> {
     @Override
     public NetworkInfo convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            NetworkInfoReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    NetworkInfoReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            NetworkInfoReport resp = jsonResponse.getResponsePayloadAs(gson, NetworkInfoReport.class);
             try {
                 return new NetworkInfo(resp.ip, resp.mac, resp.ssid, Integer.valueOf(resp.rssi));
             } catch (NumberFormatException e) {

@@ -38,11 +38,11 @@
 		<representation-property>ownId</representation-property>
 
 		<config-description>
-			<parameter name="where" type="text" readOnly="true">
+			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>The Central Unit can only assume where=0.</description>
-				<default>0</default>
+				<description>For Thermo Central Unit 99-zones --> where="#0", for 4-zones --> where="#0#1"</description>
 			</parameter>
+
 		</config-description>
 	</thing-type>
 </thing:thing-descriptions>

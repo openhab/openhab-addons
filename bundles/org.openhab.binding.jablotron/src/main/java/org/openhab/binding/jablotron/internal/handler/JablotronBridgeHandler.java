@@ -15,8 +15,8 @@ package org.openhab.binding.jablotron.internal.handler;
 import static org.openhab.binding.jablotron.JablotronBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -85,7 +85,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(JablotronDiscoveryService.class);
+        return Set.of(JablotronDiscoveryService.class);
     }
 
     @Override

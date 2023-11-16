@@ -14,7 +14,6 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +37,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class VerisureGatewayThingHandler extends VerisureThingHandler<VerisureGatewayDTO> {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_GATEWAY);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GATEWAY);
 
     public VerisureGatewayThingHandler(Thing thing) {
         super(thing);

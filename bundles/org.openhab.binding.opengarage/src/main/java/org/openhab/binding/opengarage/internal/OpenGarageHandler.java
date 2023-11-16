@@ -174,6 +174,10 @@ public class OpenGarageHandler extends BaseThingHandler {
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
                             new StringType("Vehicle status unknown"));
                     break;
+                case 3:
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
+                            new StringType("Vehicle status not available"));
+                    break;
                 default:
                     logger.warn("Received unknown vehicle value: {}", controllerVariables.vehicle);
             }

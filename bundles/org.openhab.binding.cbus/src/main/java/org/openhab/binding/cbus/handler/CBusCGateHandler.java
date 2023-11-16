@@ -152,8 +152,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             // now also re-initialize all network handlers
             for (Thing thing : getThing().getThings()) {
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof CBusNetworkHandler) {
-                    ((CBusNetworkHandler) handler).cgateStateChanged(isOnline);
+                if (handler instanceof CBusNetworkHandler networkHandler) {
+                    networkHandler.cgateStateChanged(isOnline);
                 }
             }
         });
@@ -194,8 +194,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                         continue;
                     }
 
-                    if (thingThingHandler instanceof CBusGroupHandler) {
-                        ((CBusGroupHandler) thingThingHandler).updateGroup(application, group, value);
+                    if (thingThingHandler instanceof CBusGroupHandler groupHandler) {
+                        groupHandler.updateGroup(application, group, value);
                     }
                 }
             }

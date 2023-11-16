@@ -209,8 +209,8 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof EnOceanBridgeHandler) {
-                this.gateway = (EnOceanBridgeHandler) handler;
+            if (handler instanceof EnOceanBridgeHandler bridgeHandler) {
+                this.gateway = bridgeHandler;
             } else {
                 return null;
             }

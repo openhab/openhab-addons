@@ -16,8 +16,8 @@ import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.core.library.types.OnOffType;
 
 /**
- * State for {@link ChildLockService} to activate and deactivate the child lock
- * of a device.
+ * State for {@link org.openhab.binding.boschshc.internal.services.childlock.ChildLockService}
+ * to activate and deactivate the child lock of a device.
  * 
  * @author Christian Oeing - Initial contribution
  */

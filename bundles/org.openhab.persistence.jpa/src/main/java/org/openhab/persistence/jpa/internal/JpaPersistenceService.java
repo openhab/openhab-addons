@@ -188,6 +188,10 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         }
 
         String itemName = filter.getItemName();
+        if (itemName == null) {
+            logger.warn("Item name is missing in filter {}", filter);
+            return List.of();
+        }
         Item item = getItemFromRegistry(itemName);
         if (item == null) {
             logger.debug("Item '{}' does not exist in the item registry", itemName);

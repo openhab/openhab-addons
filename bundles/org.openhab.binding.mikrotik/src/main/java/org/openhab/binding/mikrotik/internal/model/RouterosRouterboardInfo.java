@@ -33,7 +33,7 @@ public class RouterosRouterboardInfo extends RouterosBaseData {
     }
 
     public boolean isRouterboard() {
-        return getProp("routerboard", "").equals("true");
+        return "true".equals(getProp("routerboard", ""));
     }
 
     public String getModel() {

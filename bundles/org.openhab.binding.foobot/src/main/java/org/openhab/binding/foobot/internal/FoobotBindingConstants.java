@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link FoobotBinding} class defines common constants, which are
+ * The {@link FoobotBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Divya Chauhan - Initial contribution

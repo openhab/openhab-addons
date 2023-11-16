@@ -20,6 +20,12 @@ package org.openhab.binding.tesla.internal.protocol;
  */
 public class DriveState {
 
+    public String active_route_destination;
+    public double active_route_latitude;
+    public double active_route_longitude;
+    public double active_route_miles_to_arrival;
+    public double active_route_minutes_to_arrival;
+    public double active_route_traffic_minutes_delay;
     public double latitude;
     public double longitude;
     public double native_latitude;

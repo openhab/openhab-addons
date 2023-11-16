@@ -115,7 +115,6 @@ public class EnergeniePWMHandler extends BaseThingHandler {
                             "failed to logout: " + e.getMessage());
                 }
             }
-
         } catch (IOException e) {
             logger.debug("energenie: failed to login to {} with ip {}", thing.getUID(), host, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

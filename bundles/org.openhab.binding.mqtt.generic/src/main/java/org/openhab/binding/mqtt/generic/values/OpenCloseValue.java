@@ -54,8 +54,8 @@ public class OpenCloseValue extends Value {
 
     @Override
     public OpenClosedType parseCommand(Command command) throws IllegalArgumentException {
-        if (command instanceof OpenClosedType) {
-            return (OpenClosedType) command;
+        if (command instanceof OpenClosedType openClosed) {
+            return openClosed;
         } else {
             final String updatedValue = command.toString();
             if (openString.equals(updatedValue)) {

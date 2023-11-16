@@ -58,7 +58,7 @@ public class PLCMemoryConfiguration extends PLCCommonConfiguration {
     /**
      * Set Siemens LOGO! blocks update threshold.
      *
-     * @param force Force update of Siemens LOGO! blocks
+     * @param threshold
      */
     public void setThreshold(final Integer threshold) {
         this.threshold = threshold;

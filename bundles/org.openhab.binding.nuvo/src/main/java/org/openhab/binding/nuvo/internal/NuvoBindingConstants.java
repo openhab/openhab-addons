@@ -105,10 +105,9 @@ public class NuvoBindingConstants {
     public static final String TYPE_RESTART = "RESTART";
     public static final String DISABLE = "disable";
     public static final String ALBUM_ART_ID = "albumartid";
-    public static final String SRC_KEY = "S";
-    public static final String ZONE_KEY = "Z";
     public static final String ALBUM_ART_AVAILABLE = "ALBUMARTAVAILABLE";
     public static final String ALBUM_ART_FRAG = "ALBUMARTFRAG";
     public static final String HTTP = "http://";
     public static final String HTTPS = "https://";
+    public static final String PLAY_MUSIC_PRESET = "PLAY_MUSIC_PRESET:";
 }

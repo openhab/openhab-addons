@@ -90,8 +90,8 @@ public class WeatherUndergroundJsonUtils {
     }
 
     private static boolean isValid(String value) {
-        return (value != null) && !value.isEmpty() && !value.equalsIgnoreCase("N/A") && !value.equalsIgnoreCase("NA")
-                && !value.equals("-") && !value.equals("--");
+        return (value != null) && !value.isEmpty() && !"N/A".equalsIgnoreCase(value) && !"NA".equalsIgnoreCase(value)
+                && !"-".equals(value) && !"--".equals(value);
     }
 
     /**

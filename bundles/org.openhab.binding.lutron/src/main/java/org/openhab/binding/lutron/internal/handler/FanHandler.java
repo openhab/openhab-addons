@@ -97,8 +97,8 @@ public class FanHandler extends LutronHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_FANLEVEL)) {
-            if (command instanceof Number) {
-                int level = ((Number) command).intValue();
+            if (command instanceof Number number) {
+                int level = number.intValue();
                 FanSpeedType speed = FanSpeedType.toFanSpeedType(level);
                 // output(TargetType.FAN, LutronCommand.ACTION_ZONELEVEL, level, null, null);
                 sendCommand(new OutputCommand(TargetType.FAN, LutronOperation.EXECUTE, getIntegrationId(),

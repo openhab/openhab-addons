@@ -30,7 +30,8 @@ import org.slf4j.LoggerFactory;
 public class ParadoxUtil {
 
     private static final String SPACE_DELIMITER = " ";
-    private static final Logger logger = LoggerFactory.getLogger(ParadoxUtil.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ParadoxUtil.class);
 
     public static byte calculateChecksum(byte[] payload) {
         int result = 0;
@@ -50,28 +51,28 @@ public class ParadoxUtil {
     }
 
     public static void printPacket(String description, byte[] array) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("Packet payload size: {}", array[1]);
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Packet payload size: {}", array[1]);
             printByteArray(description, array, array[1] + 16);
         }
     }
 
     public static void printByteArray(String description, byte[] array) {
         if (array == null) {
-            logger.trace("Array is null");
+            LOGGER.trace("Array is null");
             return;
         }
         printByteArray(description, array, array.length);
     }
 
     public static void printByteArray(String description, byte[] array, int length) {
-        if (!logger.isTraceEnabled()) {
+        if (!LOGGER.isTraceEnabled()) {
             return;
         }
 
         String result = byteArrayToString(array, length);
         if (!result.isEmpty()) {
-            logger.trace("{}", description + SPACE_DELIMITER + result);
+            LOGGER.trace("{}", description + SPACE_DELIMITER + result);
         }
     }
 
@@ -128,10 +129,9 @@ public class ParadoxUtil {
             for (byte[] array : arrays) {
                 outputStream.write(array);
             }
-            byte[] byteArray = outputStream.toByteArray();
-            return byteArray;
+            return outputStream.toByteArray();
         } catch (IOException e) {
-            logger.warn("Exception merging arrays:", e);
+            LOGGER.warn("Exception merging arrays:", e);
             return new byte[0];
         }
     }

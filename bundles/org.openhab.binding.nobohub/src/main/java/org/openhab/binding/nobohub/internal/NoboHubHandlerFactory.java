@@ -92,8 +92,8 @@ public class NoboHubHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof NoboHubBridgeHandler) {
-            unregisterDiscoveryService((NoboHubBridgeHandler) thingHandler);
+        if (thingHandler instanceof NoboHubBridgeHandler bridgeHandler) {
+            unregisterDiscoveryService(bridgeHandler);
         }
     }
 

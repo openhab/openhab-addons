@@ -22,7 +22,7 @@ public class AbstractHueState {
     public boolean reachable = true;
     public String mode = "homeautomation";
 
-    public static enum AlertEnum {
+    public enum AlertEnum {
         none,
         /** flashes light once */
         select,

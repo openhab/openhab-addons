@@ -1,0 +1,31 @@
+{
+    "errors": [
+    ],
+    "data": [
+        {
+            "id": "6c2ef541-fe03-4cae-ac60-3edcaa93b33e",
+            "owner": {
+                "rid": "faac7940-a303-4e8e-9f06-075fffb7229c",
+                "rtype": "device"
+            },
+            "tamper_reports": [
+                {
+                    "changed": "1970-01-01T00:00:00.000Z",
+                    "source": "battery_door",
+                    "state": "not_tampered"
+                },
+                {
+                    "changed": "2023-01-01T00:00:00.001Z",
+                    "source": "battery_door",
+                    "state": "not_tampered"
+                },
+                {
+                    "changed": "2023-01-01T00:00:00.000Z",
+                    "source": "battery_door",
+                    "state": "tampered"
+                }
+            ],
+            "type": "tamper"
+        }
+    ]
+}

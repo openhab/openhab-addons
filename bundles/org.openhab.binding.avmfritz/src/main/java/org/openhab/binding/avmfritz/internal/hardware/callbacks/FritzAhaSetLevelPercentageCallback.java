@@ -38,7 +38,7 @@ public class FritzAhaSetLevelPercentageCallback extends FritzAhaReauthCallback {
      *
      * @param webIface Interface to FRITZ!Box
      * @param ain AIN of the device that should be switched
-     * @param level Opening level percentage (0 ... 100)
+     * @param levelPercentage Opening level percentage (0 ... 100)
      */
     public FritzAhaSetLevelPercentageCallback(FritzAhaWebInterface webIface, String ain, BigDecimal levelPercentage) {
         super(WEBSERVICE_PATH, "switchcmd=setlevelpercentage&level=" + levelPercentage + "&ain=" + ain, webIface, GET,

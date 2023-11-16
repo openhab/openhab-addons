@@ -218,7 +218,7 @@ public class WledApiV084 implements WledApi {
             fxOptions.add(new StateOption(Integer.toString(counter++), value));
         }
         if (handler.config.sortEffects) {
-            fxOptions.sort(Comparator.comparing(o -> o.getValue().equals("0") ? "" : o.getLabel()));
+            fxOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
         }
         return fxOptions;
     }
@@ -231,7 +231,7 @@ public class WledApiV084 implements WledApi {
             palleteOptions.add(new StateOption(Integer.toString(counter++), value));
         }
         if (handler.config.sortPalettes) {
-            palleteOptions.sort(Comparator.comparing(o -> o.getValue().equals("0") ? "" : o.getLabel()));
+            palleteOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
         }
         return palleteOptions;
     }
@@ -241,7 +241,7 @@ public class WledApiV084 implements WledApi {
         state.infoResponse = getInfo();
         String temp = state.infoResponse.ver;
         logger.debug("Firmware for WLED is ver:{}", temp);
-        temp = temp.replaceAll("\\.", "");
+        temp = temp.replace(".", "");
         if (temp.length() > 4) {
             temp = temp.substring(0, 4);
         }

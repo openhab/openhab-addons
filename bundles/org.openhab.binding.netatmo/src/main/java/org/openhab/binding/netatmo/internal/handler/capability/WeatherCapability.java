@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,21 +24,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link WeatherCapability} give the ability to read weather station api
+ * {@link WeatherCapability} give the ability to read weather station API
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class WeatherCapability extends RestCapability<WeatherApi> {
+public class WeatherCapability extends CacheWeatherCapability {
     private final Logger logger = LoggerFactory.getLogger(WeatherCapability.class);
 
     public WeatherCapability(CommonInterface handler) {
-        super(handler, WeatherApi.class);
+        super(handler, Duration.ofSeconds(2));
     }
 
     @Override
-    protected List<NAObject> updateReadings(WeatherApi api) {
+    protected List<NAObject> getFreshData(WeatherApi api) {
         try {
             return List.of(owned ? api.getOwnedStationData(handler.getId()) : api.getStationData(handler.getId()));
         } catch (NetatmoException e) {

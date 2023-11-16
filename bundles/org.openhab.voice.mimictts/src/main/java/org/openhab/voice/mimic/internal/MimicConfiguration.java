@@ -25,5 +25,4 @@ public class MimicConfiguration {
     public Double speakingRate = 1.0;
     public Double audioVolatility = 0.667;
     public Double phonemeVolatility = 0.8;
-    public Boolean workaroundServletSink = false;
 }

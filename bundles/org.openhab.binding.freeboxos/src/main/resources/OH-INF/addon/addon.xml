@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="freeboxos" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Freebox OS Binding</name>
+	<description>The Freebox OS binding integrates Free equipments in your home automation.</description>
+	<connection>local</connection>
+	<countries>fr,it</countries>
+
+	<config-description>
+		<parameter name="timeout" type="integer" required="false" min="1" unit="s">
+			<label>Timeout</label>
+			<description>The timeout for reading from the API in seconds.</description>
+			<default>8</default>
+		</parameter>
+		<parameter name="callbackUrl" type="text" required="false">
+			<label>Callback URL</label>
+			<description>URL to use for playing notification sounds hosted by openHAB, e.g. 'http://192.168.0.2:8080'</description>
+		</parameter>
+	</config-description>
+
+</addon:addon>

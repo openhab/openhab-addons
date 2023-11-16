@@ -17,7 +17,6 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,8 +34,10 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 
@@ -53,6 +54,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
 
     protected @Nullable String localUrl;
     protected @Nullable String vpnUrl;
+    private boolean hasSubEventGroup;
+    private boolean hasLastEventGroup;
 
     public CameraCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
@@ -61,6 +64,13 @@ public class CameraCapability extends HomeSecurityThingCapability {
         this.cameraHelper = (CameraChannelHelper) channelHelpers.stream().filter(c -> c instanceof CameraChannelHelper)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(
                         "CameraCapability must find a CameraChannelHelper, please file a bug report."));
+    }
+
+    @Override
+    public void initialize() {
+        Thing thing = handler.getThing();
+        hasSubEventGroup = !thing.getChannelsOfGroup(GROUP_SUB_EVENT).isEmpty();
+        hasLastEventGroup = !thing.getChannelsOfGroup(GROUP_LAST_EVENT).isEmpty();
     }
 
     @Override
@@ -85,23 +95,13 @@ public class CameraCapability extends HomeSecurityThingCapability {
     protected void updateWebhookEvent(WebhookEvent event) {
         super.updateWebhookEvent(event);
 
-        final ThingUID thingUid = handler.getThing().getUID();
-        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_TYPE),
-                toStringType(event.getEventType()));
-        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_TIME),
-                toDateTimeType(event.getTime()));
-        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_SNAPSHOT),
-                toRawType(event.getSnapshotUrl()));
-        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_SNAPSHOT_URL),
-                toStringType(event.getSnapshotUrl()));
-        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_VIGNETTE),
-                toRawType(event.getVignetteUrl()));
-        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_VIGNETTE_URL),
-                toStringType(event.getVignetteUrl()));
+        if (hasSubEventGroup) {
+            updateSubGroup(event, thing.getUID(), GROUP_SUB_EVENT);
+        }
 
-        final String message = event.getName();
-        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_MESSAGE),
-                message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
+        if (hasLastEventGroup) {
+            updateSubGroup(event, thing.getUID(), GROUP_LAST_EVENT);
+        }
 
         // The channel should get triggered at last (after super and sub methods), because this allows rules to access
         // the new updated data from the other channels.
@@ -109,6 +109,25 @@ public class CameraCapability extends HomeSecurityThingCapability {
         handler.recurseUpToHomeHandler(handler)
                 .ifPresent(homeHandler -> homeHandler.triggerChannel(CHANNEL_HOME_EVENT, eventType));
         handler.triggerChannel(CHANNEL_HOME_EVENT, eventType);
+    }
+
+    private void updateSubGroup(WebhookEvent event, ThingUID thingUid, String group) {
+        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_TYPE), toStringType(event.getEventType()));
+        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_TIME), toDateTimeType(event.getTime()));
+        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_SNAPSHOT), toRawType(event.getSnapshotUrl()));
+        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_SNAPSHOT_URL),
+                toStringType(event.getSnapshotUrl()));
+        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_VIGNETTE), toRawType(event.getVignetteUrl()));
+        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_VIGNETTE_URL),
+                toStringType(event.getVignetteUrl()));
+        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_SUBTYPE),
+                event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
+        final String message = event.getName();
+        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_MESSAGE),
+                message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
+        State personId = event.getPersons().isEmpty() ? UnDefType.NULL
+                : toStringType(event.getPersons().values().iterator().next().getId());
+        handler.updateState(personChannelUID, personId);
     }
 
     @Override
@@ -125,8 +144,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
         super.beforeNewData();
         getSecurityCapability().ifPresent(cap -> {
             NAObjectMap<HomeDataPerson> persons = cap.getPersons();
-            descriptionProvider.setStateOptions(personChannelUID, persons.values().stream()
-                    .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
+            descriptionProvider.setStateOptions(personChannelUID,
+                    persons.values().stream().map(p -> new StateOption(p.getId(), p.getName())).toList());
         });
     }
 

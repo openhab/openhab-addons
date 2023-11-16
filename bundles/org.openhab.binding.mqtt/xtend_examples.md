@@ -39,7 +39,7 @@ mqtt:broker:myAuthentificatedBroker [ host="192.168.0.43", secure=false, usernam
 In a fourth connection, the public key pinning is enabled again.
 This time, a public key hash is provided to pin the connection to a specific server.
 It follows the form "hashname:hashvalue". Valid _hashnames_ are SHA-1, SHA-224, SHA-256, SHA-384, SHA-512 and all others listed
-in [Java MessageDigest Algorithms](https://docs.oracle.com/javase/9/docs/specs/security/standard-names.html#messagedigest-algorithms).
+in [Java MessageDigest Algorithms](https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html#messagedigest-algorithms).
 
 `mqttConnections.things`:
 

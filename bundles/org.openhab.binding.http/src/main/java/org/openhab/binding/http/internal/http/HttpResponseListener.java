@@ -83,9 +83,8 @@ public class HttpResponseListener extends BufferingResponseListener {
     }
 
     private String responseToLogString(Response response) {
-        String logString = "Code = {" + response.getStatus() + "}, Headers = {"
+        return "Code = {" + response.getStatus() + "}, Headers = {"
                 + response.getHeaders().stream().map(HttpField::toString).collect(Collectors.joining(", "))
                 + "}, Content = {" + getContentAsString() + "}";
-        return logString;
     }
 }

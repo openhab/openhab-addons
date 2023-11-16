@@ -178,6 +178,12 @@ public class SomfyTahomaBindingConstants {
     // RainSensor
     public static final ThingTypeUID THING_TYPE_RAINSENSOR = new ThingTypeUID(BINDING_ID, "rainsensor");
 
+    // CarbonDioxideSensor
+    public static final ThingTypeUID THING_TYPE_CARBON_DIOXIDE_SENSOR = new ThingTypeUID(BINDING_ID, "co2sensor");
+
+    // NoiseSensor
+    public static final ThingTypeUID THING_TYPE_NOISE_SENSOR = new ThingTypeUID(BINDING_ID, "noisesensor");
+
     // List of all Channel ids
     public static final String RSSI = "rssi";
 
@@ -237,6 +243,12 @@ public class SomfyTahomaBindingConstants {
 
     // Temperature sensor
     public static final String TEMPERATURE = "temperature";
+
+    // Carbon dioxide sensor
+    public static final String CO2_CONCENTRATION = "co2_concentration";
+
+    // Noise sensor
+    public static final String NOISE = "noise";
 
     // Alarm
     public static final String ALARM_COMMAND = "alarm_command";
@@ -390,8 +402,10 @@ public class SomfyTahomaBindingConstants {
     public static final String AUTHENTICATION_OAUTH_GRANT_ERROR = "Provided Authorization Grant is invalid.";
     public static final String AUTHENTICATION_OAUTH_INVALID_GRANT = "error.invalid.grant";
     public static final String OPENHAB_TOKEN = "openHAB token";
-    public static final int SUSPEND_TIME = 120;
+    public static final int SUSPEND_TIME = 300;
     public static final int RECONCILIATION_TIME = 600;
+    public static final int LOGIN_LIMIT_TIME = 60;
+    public static final int MAX_ERRORS = 5;
 
     // Commands
     public static final String COMMAND_MY = "my";
@@ -492,12 +506,15 @@ public class SomfyTahomaBindingConstants {
     public static final String CLASS_WATER_HEATING_SYSTEM = "WaterHeatingSystem";
     public static final String CLASS_HITACHI_HEATING_SYSTEM = "HitachiHeatingSystem";
     public static final String CLASS_RAIN_SENSOR = "RainSensor";
+    public static final String CLASS_CARBON_DIOXIDE_SENSOR = "CarbonDioxideSensor";
+    public static final String CLASS_NOISE_SENSOR = "NoiseSensor";
 
     // unsupported uiClasses
     public static final String THING_PROTOCOL_GATEWAY = "ProtocolGateway";
     public static final String THING_REMOTE_CONTROLLER = "RemoteController";
     public static final String THING_NETWORK_COMPONENT = "NetworkComponent";
     public static final String THING_GENERIC = "Generic";
+    public static final String THING_CONFIGURATION_COMPONENT = "ConfigurationComponent";
 
     // Event states
     public static final String FAILED_EVENT = "FAILED";
@@ -516,7 +533,8 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR, THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT,
             THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM, THING_TYPE_VALVE_HEATING_SYSTEM,
             THING_TYPE_BIOCLIMATIC_PERGOLA, THING_TYPE_WATERHEATINGSYSTEM, THING_TYPE_HITACHI_ATWHZ,
-            THING_TYPE_HITACHI_DHW, THING_TYPE_HITACHI_ATWMC, THING_TYPE_RAINSENSOR, THING_TYPE_SHUTTER));
+            THING_TYPE_HITACHI_DHW, THING_TYPE_HITACHI_ATWMC, THING_TYPE_RAINSENSOR, THING_TYPE_SHUTTER,
+            THING_TYPE_CARBON_DIOXIDE_SENSOR, THING_TYPE_NOISE_SENSOR));
 
     // somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<>() {
@@ -558,6 +576,7 @@ public class SomfyTahomaBindingConstants {
             put(72, "TAHOMA_RAIL_DIN");
             put(77, "ELIOT");
             put(88, "WISER");
+            put(92, "NETATMO");
             put(99, "CONNECTIVITY KIT");
         }
     };

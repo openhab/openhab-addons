@@ -15,7 +15,6 @@ package org.openhab.binding.squeezebox.internal.discovery;
 import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants.SQUEEZEBOXSERVER_THING_TYPE;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -51,7 +50,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(SQUEEZEBOXSERVER_THING_TYPE);
+        return Set.of(SQUEEZEBOXSERVER_THING_TYPE);
     }
 
     @Override

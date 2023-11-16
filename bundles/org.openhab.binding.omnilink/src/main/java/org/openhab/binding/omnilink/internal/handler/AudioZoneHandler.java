@@ -111,26 +111,24 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedAudi
                 }
                 break;
             case CHANNEL_AUDIO_ZONE_VOLUME:
-                if (command instanceof PercentType) {
-                    sendOmnilinkCommand(CommandMessage.CMD_AUDIO_ZONE_SET_VOLUME, ((PercentType) command).intValue(),
-                            thingID);
+                if (command instanceof PercentType percentCommand) {
+                    sendOmnilinkCommand(CommandMessage.CMD_AUDIO_ZONE_SET_VOLUME, percentCommand.intValue(), thingID);
                 } else {
                     logger.debug("Invalid command: {}, must be PercentType", command);
                 }
                 break;
             case CHANNEL_AUDIO_ZONE_SOURCE:
-                if (command instanceof DecimalType) {
-                    sendOmnilinkCommand(CommandMessage.CMD_AUDIO_ZONE_SET_SOURCE, ((DecimalType) command).intValue(),
-                            thingID);
+                if (command instanceof DecimalType decimalCommand) {
+                    sendOmnilinkCommand(CommandMessage.CMD_AUDIO_ZONE_SET_SOURCE, decimalCommand.intValue(), thingID);
                 } else {
                     logger.debug("Invalid command: {}, must be DecimalType", command);
                 }
                 break;
             case CHANNEL_AUDIO_ZONE_CONTROL:
-                if (command instanceof PlayPauseType) {
-                    handlePlayPauseCommand(channelUID, (PlayPauseType) command);
-                } else if (command instanceof NextPreviousType) {
-                    handleNextPreviousCommand(channelUID, (NextPreviousType) command);
+                if (command instanceof PlayPauseType playPauseCommand) {
+                    handlePlayPauseCommand(channelUID, playPauseCommand);
+                } else if (command instanceof NextPreviousType nextPreviousCommand) {
+                    handleNextPreviousCommand(channelUID, nextPreviousCommand);
                 } else {
                     logger.debug("Invalid command: {}, must be PlayPauseType or NextPreviousType", command);
                 }

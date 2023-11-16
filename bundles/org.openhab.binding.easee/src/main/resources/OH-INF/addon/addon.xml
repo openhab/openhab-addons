@@ -5,4 +5,5 @@
 	<type>binding</type>
 	<name>Easee Binding</name>
 	<description>This is the binding for Easee Wallboxes.</description>
+	<connection>cloud</connection>
 </addon:addon>

@@ -16,7 +16,6 @@ import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,7 +45,7 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SysteminfoDiscoveryService.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_COMPUTER);
 
     private static final int DISCOVERY_TIME_SECONDS = 30;
     private static final String THING_UID_VALID_CHARS = "A-Za-z0-9_-";
@@ -82,7 +81,6 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
 
     protected String getHostName() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
-        String hostname = addr.getHostName();
-        return hostname;
+        return addr.getHostName();
     }
 }

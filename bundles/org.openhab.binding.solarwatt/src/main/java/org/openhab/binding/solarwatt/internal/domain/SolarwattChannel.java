@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Aggregation of the interesting parts to write into a channel.
  *
- * From this the {@link ChannelType}s are created.
+ * From this the {@link org.openhab.core.thing.type.ChannelType}s are created.
  *
  * @author Sven Carstens - Initial contribution
  */

@@ -16,7 +16,6 @@ import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.CONFIG_
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -126,12 +125,18 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(EcobeeDiscoveryService.class);
+        return Set.of(EcobeeDiscoveryService.class);
     }
 
     @Override

@@ -14,22 +14,23 @@ package org.openhab.binding.hue.internal.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Q42 - Initial contribution
  * @author Andre Fuechsel - search for lights with given serial number added
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  */
-@SuppressWarnings("unused")
+@NonNullByDefault
 public class SearchForLightsRequest {
+    @SuppressWarnings("unused")
     private List<String> deviceid;
 
     public SearchForLightsRequest(List<String> deviceid) {
-        if (deviceid != null && (deviceid.isEmpty() || deviceid.size() > 16)) {
+        if (deviceid.isEmpty() || deviceid.size() > 16) {
             throw new IllegalArgumentException("Group cannot be empty and cannot have more than 16 lights");
         }
-        if (deviceid != null) {
-            this.deviceid = deviceid;
-        }
+        this.deviceid = deviceid;
     }
 }

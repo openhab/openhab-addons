@@ -16,6 +16,16 @@
 			<channel id="opened" typeId="openedState"/>
 			<channel id="tampered" typeId="tamperedState"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="command" typeId="command"/>
+
+			<channel id="supervisionTrouble" typeId="supervisionTrouble"/>
+			<channel id="inTxDelay" typeId="inTxDelay"/>
+			<channel id="shutdown" typeId="shutdown"/>
+			<channel id="bypassed" typeId="bypassed"/>
+			<channel id="hasActivatedIntellizoneDelay" typeId="hasActivatedIntellizoneDelay"/>
+			<channel id="hasActivatedEntryDelay" typeId="hasActivatedEntryDelay"/>
+			<channel id="presentlyInAlarm" typeId="presentlyInAlarm"/>
+			<channel id="generatedAlarm" typeId="generatedAlarm"/>
 		</channels>
 
 		<config-description>
@@ -42,6 +52,57 @@
 		<item-type>Switch</item-type>
 		<label>Tampered</label>
 		<description>State of zone</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Zone Command</label>
+		<description>Send command for a zone</description>
+		<state>
+			<options>
+				<option value="BYPASS">Bypass</option>
+				<option value="CLEAR_BYPASS">Clear Bypass</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="supervisionTrouble">
+		<item-type>Switch</item-type>
+		<label>Supervision Trouble</label>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="inTxDelay">
+		<item-type>Switch</item-type>
+		<label>In TX Delay</label>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="shutdown">
+		<item-type>Switch</item-type>
+		<label>Shutdown</label>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="bypassed">
+		<item-type>Switch</item-type>
+		<label>Bypassed</label>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="hasActivatedIntellizoneDelay">
+		<item-type>Switch</item-type>
+		<label>Has Activated Intellizone Delay</label>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="hasActivatedEntryDelay">
+		<item-type>Switch</item-type>
+		<label>Has Activated Entry Delay</label>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="presentlyInAlarm">
+		<item-type>Switch</item-type>
+		<label>Currently in Alarm</label>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="generatedAlarm">
+		<item-type>Switch</item-type>
+		<label>Generated an Alarm</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -38,6 +38,7 @@ public enum LightType {
     DIMMABLE_LIGHT("Dimmable light"),
     DIMMABLE_PLUGIN_UNIT("Dimmable plug-in unit"),
     WINDOW_COVERING_DEVICE("Window covering device"),
+    WINDOW_COVERING_CONTROLLER("Window covering controller"),
     CONFIGURATION_TOOL("Configuration tool"),
     WARNING_DEVICE("Warning device"),
     DOORLOCK("Door Lock"),

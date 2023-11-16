@@ -9,5 +9,6 @@
 		These devices
 		are gateways for heating systems and allows to control them. It is possible to receive and send parameters.
 	</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -90,7 +90,7 @@ public class SVDRPChannel {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (number >= 0) {
-            sb.append("Number: " + String.valueOf(number) + System.lineSeparator());
+            sb.append("Number: " + number + System.lineSeparator());
         }
         sb.append("Name: " + name + System.lineSeparator());
         return sb.toString();

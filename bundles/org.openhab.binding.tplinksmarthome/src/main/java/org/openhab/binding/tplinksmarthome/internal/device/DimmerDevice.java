@@ -56,11 +56,9 @@ public class DimmerDevice extends SwitchDevice {
     private boolean handleBrightnessChannel(ChannelUID channelUid, Command command) throws IOException {
         HasErrorResponse response = null;
 
-        if (command instanceof OnOffType) {
-            response = setOnOffState(channelUid, (OnOffType) command);
-        } else if (command instanceof PercentType) {
-            PercentType percentCommand = (PercentType) command;
-
+        if (command instanceof OnOffType onOffCommand) {
+            response = setOnOffState(channelUid, onOffCommand);
+        } else if (command instanceof PercentType percentCommand) {
             // Don't send value 0 as brightness value as it will give an error from the device.
             if (percentCommand.intValue() > 0) {
                 response = commands.setDimmerBrightnessResponse(

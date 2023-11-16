@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -156,7 +157,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(QolsysIQChildDiscoveryService.class);
+        return Set.of(QolsysIQChildDiscoveryService.class);
     }
 
     @Override
@@ -347,9 +348,9 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     private @Nullable QolsysIQZoneHandler zoneHandler(int zoneId) {
         for (Thing thing : getThing().getThings()) {
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof QolsysIQZoneHandler) {
-                if (((QolsysIQZoneHandler) handler).getZoneId() == zoneId) {
-                    return (QolsysIQZoneHandler) handler;
+            if (handler instanceof QolsysIQZoneHandler zoneHandler) {
+                if (zoneHandler.getZoneId() == zoneId) {
+                    return zoneHandler;
                 }
             }
         }
@@ -360,8 +361,8 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof QolsysIQPanelHandler) {
-                return (QolsysIQPanelHandler) handler;
+            if (handler instanceof QolsysIQPanelHandler panelHandler) {
+                return panelHandler;
             }
         }
         return null;

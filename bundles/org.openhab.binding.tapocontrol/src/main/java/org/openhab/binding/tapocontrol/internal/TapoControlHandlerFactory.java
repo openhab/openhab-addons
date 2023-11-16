@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TapoControlHandler} is responsible for handling commands, which are
+ * The {@link ThingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Christian Wild - Initial contribution

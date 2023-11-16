@@ -175,7 +175,6 @@ class JCgetWLANConfig extends GetWLANConfig implements JsonBridgeCommunicationPr
      */
     @Override
     public VeluxGwWLAN getWLANConfig() {
-        VeluxGwWLAN gwWLAN = new VeluxGwWLAN(response.data.name, response.data.password);
-        return gwWLAN;
+        return new VeluxGwWLAN(response.data.name, response.data.password);
     }
 }

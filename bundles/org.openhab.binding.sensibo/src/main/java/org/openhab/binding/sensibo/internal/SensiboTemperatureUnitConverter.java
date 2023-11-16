@@ -21,7 +21,7 @@ import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 
 /**
- * The {@link SensiboTemperatureUnitConverter} converts to/from Sensibo temperature symbols to Unit<Temperature>
+ * The {@link SensiboTemperatureUnitConverter} converts to/from Sensibo temperature symbols to {@code Unit<Temperature>}
  *
  * @author Arne Seime - Initial contribution
  */

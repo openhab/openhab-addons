@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Go-eCharger Binding</name>
 	<description>This is the binding for Go-eCharger.</description>
+	<connection>local</connection>
 
 </addon:addon>

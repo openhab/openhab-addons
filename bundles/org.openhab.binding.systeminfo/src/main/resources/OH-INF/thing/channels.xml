@@ -327,7 +327,7 @@
 	<channel-type id="loadAverage" advanced="true">
 		<item-type>Number</item-type>
 		<label>Load Average</label>
-		<description>Load as a number of processes for the last 1,5 or 15 minutes</description>
+		<description>Load as a number of processes for the last 1, 5 or 15 minutes</description>
 		<state readOnly="true" pattern="%.1f"/>
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>

@@ -136,7 +136,7 @@ public class ElroConnectsBindingConstants {
             .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey));
 
     // ELRO device types
-    public static enum ElroDeviceType {
+    public enum ElroDeviceType {
         ENTRY_SENSOR,
         CO_ALARM,
         CXSM_ALARM,
@@ -197,7 +197,7 @@ public class ElroConnectsBindingConstants {
             .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
     // ELRO device status
-    public static enum ElroDeviceStatus {
+    public enum ElroDeviceStatus {
         NORMAL,
         TRIGGERED,
         TEST,

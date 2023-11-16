@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class HueSceneEntry {
-    public static enum TypeEnum {
+    public enum TypeEnum {
         LightScene, // 1.28
         GroupScene, // 1.28
     }

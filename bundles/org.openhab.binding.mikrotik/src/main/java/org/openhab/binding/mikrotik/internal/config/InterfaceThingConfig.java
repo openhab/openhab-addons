@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class InterfaceThingConfig implements ConfigValidation {
     public String name = "";
 
+    @Override
     public boolean isValid() {
         return !name.isBlank();
     }

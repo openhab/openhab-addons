@@ -67,7 +67,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link $AirqHandler} is responsible for retrieving all information from the air-Q device
+ * The {@link AirqHandler} is responsible for retrieving all information from the air-Q device
  * and change properties and channels accordingly.
  *
  * @author Aurelio Caliaro - Initial contribution

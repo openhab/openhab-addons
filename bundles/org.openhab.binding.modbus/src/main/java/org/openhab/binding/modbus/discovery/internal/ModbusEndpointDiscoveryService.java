@@ -52,8 +52,8 @@ public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscove
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ModbusEndpointThingHandler) {
-            this.handler = (ModbusEndpointThingHandler) handler;
+        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+            this.handler = thingHandler;
         }
     }
 

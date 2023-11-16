@@ -237,8 +237,7 @@ public class CloudClient {
                 })//
                 .on(Manager.EVENT_CONNECT_ERROR, args -> {
                     if (args.length > 0) {
-                        if (args[0] instanceof Exception) {
-                            Exception e = (Exception) args[0];
+                        if (args[0] instanceof Exception e) {
                             logger.debug(
                                     "Error connecting to the openHAB Cloud instance: {} {}. Should reconnect automatically.",
                                     e.getClass().getSimpleName(), e.getMessage());
@@ -256,8 +255,8 @@ public class CloudClient {
                 .on(Manager.EVENT_PACKET, args -> {
                     int packetTypeIndex = -1;
                     String type = "<unexpected packet type>";
-                    if (args.length == 1 && args[0] instanceof Packet<?>) {
-                        packetTypeIndex = ((Packet<?>) args[0]).type;
+                    if (args.length == 1 && args[0] instanceof Packet<?> packet) {
+                        packetTypeIndex = packet.type;
 
                         if (packetTypeIndex < Parser.types.length) {
                             type = Parser.types[packetTypeIndex];
@@ -282,8 +281,7 @@ public class CloudClient {
                 .on(Socket.EVENT_RECONNECT,
                         args -> logger.debug("Socket.IO re-connected successfully (attempt {})", args[0]))//
                 .on(Socket.EVENT_RECONNECT_ERROR, args -> {
-                    if (args[0] instanceof Exception) {
-                        Exception e = (Exception) args[0];
+                    if (args[0] instanceof Exception e) {
                         logger.debug("Socket.IO re-connect attempt error: {} {}", e.getClass().getSimpleName(),
                                 e.getMessage());
                     } else {
@@ -308,8 +306,7 @@ public class CloudClient {
                 .on(Socket.EVENT_ERROR, args -> {
                     if (CloudClient.this.socket.connected()) {
                         if (args.length > 0) {
-                            if (args[0] instanceof Exception) {
-                                Exception e = (Exception) args[0];
+                            if (args[0] instanceof Exception e) {
                                 logger.warn("Error during communication: {} {}", e.getClass().getSimpleName(),
                                         e.getMessage());
                             } else {
@@ -335,8 +332,7 @@ public class CloudClient {
                         long delay = reconnectBackoff.duration();
                         // Try reconnecting on connection errors
                         if (args.length > 0) {
-                            if (args[0] instanceof Exception) {
-                                Exception e = (Exception) args[0];
+                            if (args[0] instanceof Exception e) {
                                 logger.warn(
                                         "Error connecting to the openHAB Cloud instance: {} {}. Reconnecting after {} ms.",
                                         e.getClass().getSimpleName(), e.getMessage(), delay);
@@ -544,7 +540,7 @@ public class CloudClient {
             try {
                 headerValue = requestHeadersJson.getString(headerName);
                 logger.debug("Jetty set header {} = {}", headerName, headerValue);
-                if (!headerName.equalsIgnoreCase("Content-Length")) {
+                if (!"Content-Length".equalsIgnoreCase(headerName)) {
                     request.header(headerName, headerValue);
                 }
             } catch (JSONException e) {

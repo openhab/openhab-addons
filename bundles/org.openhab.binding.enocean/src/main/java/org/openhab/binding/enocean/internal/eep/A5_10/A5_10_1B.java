@@ -20,9 +20,14 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  * @author Daniel Weber - Initial contribution
  */
 @NonNullByDefault
-public class A5_10_1B extends A5_10 {
+public class A5_10_1B extends A5_10_18 {
 
     public A5_10_1B(ERP1Message packet) {
         super(packet);
+    }
+
+    @Override
+    protected int getIlluminationValue() {
+        return getDB2Value();
     }
 }

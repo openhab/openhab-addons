@@ -199,12 +199,12 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     private Object convertValue(State state) {
         Object value;
-        if (state instanceof PercentType) {
-            value = ((PercentType) state).toBigDecimal().doubleValue();
-        } else if (state instanceof DateTimeType) {
-            value = Date.from(((DateTimeType) state).getZonedDateTime().toInstant());
-        } else if (state instanceof DecimalType) {
-            value = ((DecimalType) state).toBigDecimal().doubleValue();
+        if (state instanceof PercentType type) {
+            value = type.toBigDecimal().doubleValue();
+        } else if (state instanceof DateTimeType type) {
+            value = Date.from(type.getZonedDateTime().toInstant());
+        } else if (state instanceof DecimalType type) {
+            value = type.toBigDecimal().doubleValue();
         } else {
             value = state.toString();
         }
@@ -331,6 +331,11 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         String realItemName = filter.getItemName();
+        if (realItemName == null) {
+            logger.warn("Item name is missing in filter {}", filter);
+            return List.of();
+        }
+
         String collectionName = collectionPerItem ? realItemName : this.collection;
         @Nullable
         DBCollection collection = connectToCollection(collectionName);
@@ -354,7 +359,8 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         if (filter.getItemName() != null) {
             query.put(FIELD_ITEM, filter.getItemName());
         }
-        if (filter.getState() != null && filter.getOperator() != null) {
+        State filterState = filter.getState();
+        if (filterState != null && filter.getOperator() != null) {
             @Nullable
             String op = convertOperator(filter.getOperator());
 
@@ -363,7 +369,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
                 return Collections.emptyList();
             }
 
-            Object value = convertValue(filter.getState());
+            Object value = convertValue(filterState);
             query.put(FIELD_VALUE, new BasicDBObject(op, value));
         }
 

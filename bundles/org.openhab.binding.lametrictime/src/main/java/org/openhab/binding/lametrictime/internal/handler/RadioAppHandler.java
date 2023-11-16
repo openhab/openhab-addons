@@ -64,8 +64,8 @@ public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
     }
 
     private void handleControl(final Command command) throws ApplicationActionException {
-        if (command instanceof PlayPauseType) {
-            switch ((PlayPauseType) command) {
+        if (command instanceof PlayPauseType playCommand) {
+            switch (playCommand) {
                 case PLAY:
                     play();
                     return;
@@ -78,8 +78,8 @@ public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
             }
         }
 
-        if (command instanceof NextPreviousType) {
-            switch ((NextPreviousType) command) {
+        if (command instanceof NextPreviousType nextCommand) {
+            switch (nextCommand) {
                 case NEXT:
                     next();
                     return;

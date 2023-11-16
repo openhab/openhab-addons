@@ -160,8 +160,8 @@ public class LifxSelectorUtil {
                 readBuffer.rewind();
 
                 try {
-                    if (channel instanceof DatagramChannel) {
-                        InetSocketAddress address = (InetSocketAddress) ((DatagramChannel) channel).receive(readBuffer);
+                    if (channel instanceof DatagramChannel datagramChannel) {
+                        InetSocketAddress address = (InetSocketAddress) datagramChannel.receive(readBuffer);
                         if (address == null) {
                             if (LOGGER.isTraceEnabled()) {
                                 LOGGER.trace("{} : No datagram is available", logId);
@@ -169,9 +169,9 @@ public class LifxSelectorUtil {
                         } else if (isRemoteAddress(address.getAddress())) {
                             supplyParsedPacketToConsumer(readBuffer, address, packetConsumer, logId);
                         }
-                    } else if (channel instanceof SocketChannel) {
-                        ((SocketChannel) channel).read(readBuffer);
-                        InetSocketAddress address = (InetSocketAddress) ((SocketChannel) channel).getRemoteAddress();
+                    } else if (channel instanceof SocketChannel socketChannel) {
+                        socketChannel.read(readBuffer);
+                        InetSocketAddress address = (InetSocketAddress) socketChannel.getRemoteAddress();
                         if (address == null) {
                             if (LOGGER.isTraceEnabled()) {
                                 LOGGER.trace("{} : Channel socket is not connected", logId);
@@ -292,20 +292,19 @@ public class LifxSelectorUtil {
 
                     if (key.isValid() && key.isWritable() && key.equals(castKey)) {
                         SelectableChannel channel = key.channel();
-                        if (channel instanceof DatagramChannel) {
+                        if (channel instanceof DatagramChannel datagramChannel) {
                             if (LOGGER.isTraceEnabled()) {
                                 LOGGER.trace(
                                         "{} : Sending packet type '{}' from '{}' to '{}' for '{}' with sequence '{}' and source '{}'",
                                         new Object[] { context.getLogId(), packet.getClass().getSimpleName(),
-                                                ((InetSocketAddress) ((DatagramChannel) channel).getLocalAddress())
-                                                        .toString(),
+                                                ((InetSocketAddress) datagramChannel.getLocalAddress()).toString(),
                                                 address.toString(), packet.getTarget().getHex(), packet.getSequence(),
                                                 Long.toString(packet.getSource(), 16) });
                             }
-                            ((DatagramChannel) channel).send(packet.bytes(), address);
+                            datagramChannel.send(packet.bytes(), address);
                             return true;
-                        } else if (channel instanceof SocketChannel) {
-                            ((SocketChannel) channel).write(packet.bytes());
+                        } else if (channel instanceof SocketChannel socketChannel) {
+                            socketChannel.write(packet.bytes());
                             return true;
                         }
                     }

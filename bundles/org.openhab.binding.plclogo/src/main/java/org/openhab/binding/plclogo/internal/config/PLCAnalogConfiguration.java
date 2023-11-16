@@ -39,7 +39,7 @@ public class PLCAnalogConfiguration extends PLCDigitalConfiguration {
     /**
      * Set Siemens LOGO! blocks update threshold.
      *
-     * @param force Force update of Siemens LOGO! blocks
+     * @param threshold
      */
     public void setThreshold(final Integer threshold) {
         this.threshold = threshold;

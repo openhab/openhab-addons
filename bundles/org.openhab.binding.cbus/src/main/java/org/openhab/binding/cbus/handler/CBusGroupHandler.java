@@ -151,8 +151,8 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
             return null;
         }
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof CBusNetworkHandler) {
-            return (CBusNetworkHandler) handler;
+        if (handler instanceof CBusNetworkHandler networkHandler) {
+            return networkHandler;
         }
         logger.debug("No available bridge handler found for bridge: {}", bridge.getUID());
         return null;

@@ -27,7 +27,8 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Wouter Born - Initial contribution
  *
- * @see https://developers.google.com/nest/device-access/api/events
+ * @see <a href="https://developers.google.com/nest/device-access/api/events">
+ *      https://developers.google.com/nest/device-access/api/events</a>
  */
 public class SDMEvent {
 

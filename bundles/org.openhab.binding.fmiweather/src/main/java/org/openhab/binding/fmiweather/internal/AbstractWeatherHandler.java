@@ -191,7 +191,6 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
      *
      * @param channelUID channel UID
      * @param epochSecond value to update
-     * @param unit unit associated with the value
      */
     protected <T extends Quantity<T>> void updateEpochSecondStateIfLinked(ChannelUID channelUID, long epochSecond) {
         if (isLinked(channelUID)) {

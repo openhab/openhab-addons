@@ -39,8 +39,8 @@ public class TouchWandDimmerHandler extends TouchWandBaseUnitHandler {
     void touchWandUnitHandleCommand(Command command) {
         TouchWandBridgeHandler touchWandBridgeHandler = bridgeHandler;
         if (touchWandBridgeHandler != null) {
-            if (command instanceof OnOffType) {
-                touchWandBridgeHandler.touchWandClient.cmdSwitchOnOff(unitId, (OnOffType) command);
+            if (command instanceof OnOffType onOffCommand) {
+                touchWandBridgeHandler.touchWandClient.cmdSwitchOnOff(unitId, onOffCommand);
             } else {
                 touchWandBridgeHandler.touchWandClient.cmdDimmerPosition(unitId, command.toString());
             }
@@ -49,8 +49,8 @@ public class TouchWandDimmerHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandShutterSwitchUnitData) {
-            int status = ((TouchWandShutterSwitchUnitData) unitData).getCurrStatus();
+        if (unitData instanceof TouchWandShutterSwitchUnitData shutterSwitchUnitData) {
+            int status = shutterSwitchUnitData.getCurrStatus();
             PercentType state = PercentType.ZERO;
             int convertStatus = status;
             state = new PercentType(convertStatus);

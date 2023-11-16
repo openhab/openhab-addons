@@ -121,7 +121,7 @@ public class ConsumedThingImpl implements ConsumedThing {
         if (optionalProperty.isPresent()) {
             var propertyDescription = optionalProperty.get();
             for (var link : propertyDescription.links) {
-                if ((link.rel != null) && (link.href != null) && link.rel.equals("property")) {
+                if ((link.rel != null) && (link.href != null) && "property".equals(link.rel)) {
                     return Optional.of(webThingURI.resolve(link.href));
                 }
             }

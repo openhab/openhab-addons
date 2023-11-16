@@ -68,6 +68,13 @@ public class RRMapFileParser {
     public static final int FURNITURES = 25;
     public static final int DOCK_TYPE = 26;
     public static final int ENEMIES = 27;
+    public static final int DOOR_ZONES = 28;
+    public static final int STUCK_POINTS = 29;
+    public static final int CLIFF_ZONES = 30;
+    public static final int SMARTDS = 31;
+    public static final int FLDIREC = 32;
+    public static final int MAP_DATE = 33;
+    public static final int NONCE_DATA = 34;
     public static final int DIGEST = 1024;
     public static final int HEADER = 0x7272;
 
@@ -287,6 +294,13 @@ public class RRMapFileParser {
                 case FURNITURES:
                 case DOCK_TYPE:
                 case ENEMIES:
+                case DOOR_ZONES:
+                case STUCK_POINTS:
+                case CLIFF_ZONES:
+                case SMARTDS:
+                case FLDIREC:
+                case MAP_DATE:
+                case NONCE_DATA:
                     // new blocktypes not yet decoded
                     break;
                 default:

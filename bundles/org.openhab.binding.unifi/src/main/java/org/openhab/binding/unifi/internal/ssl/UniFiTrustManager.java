@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * The {@link UniFiTrustManager} is a "trust all" implementation of {@link X509ExtendedTrustManager}.
  *
- * @see {@link UniFiTrustManagerProvider}
+ * @see UniFiTrustManagerProvider
  *
  * @author Matthew Bowman - Initial contribution
  */

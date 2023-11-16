@@ -23,5 +23,5 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
 @NonNullByDefault
 public interface IWebSocketCommandHandler {
 
-    public void webSocketCommandReceived(JsonPushCommand pushCommand);
+    void webSocketCommandReceived(JsonPushCommand pushCommand);
 }

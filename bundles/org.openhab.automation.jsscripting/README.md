@@ -18,7 +18,7 @@ to common openHAB functionality within rules including items, things, actions, l
   - [Timers](#timers)
   - [Paths](#paths)
   - [Deinitialization Hook](#deinitialization-hook)
-- [`SCRIPT` Transformation](#script-transformation)
+- [`JS` Transformation](#js-transformation)
 - [Standard Library](#standard-library)
   - [Items](#items)
   - [Things](#things)
@@ -39,13 +39,25 @@ to common openHAB functionality within rules including items, things, actions, l
 ## Configuration
 
 This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports its namespaces onto the global namespace.
+
 This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import them using `require()`.
 This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options.
 
-By default, the injection of the included [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached to improve performance and reduce memory usage.
-If you want to use a different version of openhab-js (installed to the `node_modules` folder) than the included one, you need to disable the usage of the included library.
+By default, the injection of the [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached (using a special mechanism instead of `require()`) to improve performance and reduce memory usage.
 
-![openHAB Rule Configuration](doc/settings.png)
+When configuring the add-on, you should ask yourself these questions:
+
+1. Do I want to have the openhab-js namespaces automatically globally available (`injectionEnabled`)?
+   - Yes: "Use Built-In Variables" (default)
+   - No: "Do Not Use Built-In Variables", which will allow you to decide what to import and really speed up script loading, but you need to manually import the library, which actually will slow down script loading again.
+2. Do I want to have a different version injected other than the included one (`injectionCachingEnabled`)?
+   - Yes: "Do Not Cache Library Injection" and install your version to the `$OPENHAB_CONF/automation/js/node_modules` folder, which will slow down script loading, because the injection is not cached.
+   - No: "Cache Library Injection" (default), which will speed up the initial loading of a script because the library's injection is cached.
+
+Note that in case you disable caching or your code uses `require()` to import the library and there is no installation of the library found in the node_modules folder, the add-on will fallback to its included version.
+
+In general, the first run of a script will take longer than the subsequent runs.
+This is because on the first run both the globals (like `console`) and (if enabled) the library are injected into the script's context.
 
 <!-- Paste the copied docs from openhab-js under this comment. Do NOT forget the table of contents. -->
 
@@ -204,7 +216,7 @@ JS Scripting provides access to the global `setTimeout`, `setInterval`, `clearTi
 
 When a script is unloaded, all created timeouts and intervals are automatically cancelled.
 
-#### 'setTimeout'
+#### `setTimeout`
 
 The global [`setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) method sets a timer which executes a function once the timer expires.
 `setTimeout()` returns a `timeoutId` (a positive integer value) which identifies the timer created.
@@ -216,6 +228,8 @@ var timeoutId = setTimeout(callbackFunction, delay);
 `delay` is an integer value that represents the amount of milliseconds to wait before the timer expires.
 
 The global [`clearTimeout(timeoutId)`](https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout) method cancels a timeout previously established by calling `setTimeout()`.
+
+If you need a more verbose way of creating timers, consider to use [`createTimer`](#createtimer) instead.
 
 #### `setInterval`
 
@@ -290,27 +304,30 @@ require('@runtime').lifecycleTracker.addDisposeHook(() => {
 });
 ```
 
-## `SCRIPT` Transformation
+## `JS` Transformation
 
-openHAB provides several [data transformation services](https://www.openhab.org/addons/#transform) as well as the `SCRIPT` transformation, that is available from the framework and needs no additional installation.
+openHAB provides several [data transformation services](https://www.openhab.org/addons/#transform) as well as the script transformations, that are available from the framework and need no additional installation.
 It allows transforming values using any of the available scripting languages, which means JavaScript Scripting is supported as well.
-See the [transformation docs](https://openhab.org/docs/configuration/transformations.html#script-transformation) for more general information on the usage of `SCRIPT` transformation.
+See the [transformation docs](https://openhab.org/docs/configuration/transformations.html#script-transformation) for more general information on the usage of script transformations.
 
-Use the `SCRIPT` transformation with JavaScript Scripting by:
+Use JavaScript Scripting as script transformation by:
 
-1. Creating a script in the `$OPENHAB_CONF/transform` folder with the `.script` extension.
+1. Creating a script in the `$OPENHAB_CONF/transform` folder with the `.js` extension.
    The script should take one argument `input` and return a value that supports `toString()` or `null`:
 
    ```javascript
    (function(data) {
-     // Do some data transformation here
-     return data;
+     // Do some data transformation here, e.g.
+     return "String has" + data.length + "characters";
    })(input);
    ```
 
-2. Using `SCRIPT(js:<scriptname>.script):%s` as the transformation profile, e.g. on an Item.
-3. Passing parameters is also possible by using a URL like syntax: `SCRIPT(js:<scriptname>.script?arg=value):%s`.
+2. Using `JS(<scriptname>.js):%s` as Item state transformation.
+3. Passing parameters is also possible by using a URL like syntax: `JS(<scriptname>.js?arg=value)`.
    Parameters are injected into the script and can be referenced like variables.
+
+Simple transformations can aso be given as an inline script: `JS(|...)`, e.g. `JS(|"String has " + input.length + "characters")`.
+It should start with the `|` character, quotes within the script may need to be escaped with a backslash `\` when used with another quoted string as in text configurations.
 
 ## Standard Library
 
@@ -355,7 +372,7 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .label ⇒ `string`
   - .state ⇒ `string`
   - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
-  - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible
+  - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
   - .rawState ⇒ `HostState`
   - .members ⇒ `Array[Item]`
   - .descendents ⇒ `Array[Item]`
@@ -606,7 +623,7 @@ You can also create timers using the [native JS methods for timer creation](#tim
 Sometimes, using `setTimer` is much faster and easier, but other times, you need the versatility that `createTimer` provides.
 
 Keep in mind that you should somehow manage the timers you create using `createTimer`, otherwise you could end up with unmanageable timers running until you restart openHAB.
-A possible solution is to store all timers in an array and cancel all timers in the [Deinitialization Hook](#deinitialization-hook).
+A possible solution is to store all timers in the [private cache](#cache) and let openHAB automatically cancel them when the script is unloaded and the cache is cleared.
 
 ##### `createTimer`
 
@@ -704,7 +721,7 @@ The cache namespace provides both a private and a shared cache that can be used 
 
 The private cache can only be accessed by the same script and is cleared when the script is unloaded.
 You can use it to e.g. store timers or counters between subsequent runs of that script.
-When a script is unloaded and its cache is cleared, all timers (see [ScriptExecution Actions](#scriptexecution-actions)) stored in its private cache are cancelled.
+When a script is unloaded and its cache is cleared, all timers (see [`createTimer`](#createtimer)) stored in its private cache are automatically cancelled.
 
 The shared cache is shared across all rules and scripts, it can therefore be accessed from any automation language.
 The access to every key is tracked and the key is removed when all scripts that ever accessed that key are unloaded.
@@ -939,6 +956,8 @@ qty = Quantity('1 m^2 / s^2'); // whitespaces are not allowed
 qty = Quantity('1 m^2 s^2'); // / is required
 qty = Quantity('1 m2/s2'); // ^ is required
 ```
+
+Note: It is possible to create a unit-less (without unit) Quantity, however there is no advantage over using a `number` instead.
 
 #### Conversion
 
@@ -1218,21 +1237,22 @@ The `event` object provides some information about that trigger.
 
 This table gives an overview over the `event` object:
 
-| Property Name     | Trigger Types                                        | Description                                                                         | Rules DSL Equivalent   |
-|-------------------|------------------------------------------------------|-------------------------------------------------------------------------------------|------------------------|
-| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | Previous state of Item or Group that triggered event                                | `previousState`        |
-| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | New state of Item or Group that triggered event                                     | N/A                    |
-| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger`  | State of Item that triggered event                                                  | `triggeringItem.state` |
-| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`          | Command that triggered event                                                        | `receivedCommand`      |
-| `itemName`        | `Item****Trigger`, `Group****Trigger`                | Name of Item that triggered event                                                   | `triggeringItem.name`  |
-| `receivedEvent`   | `ChannelEventTrigger`                                | Channel event that triggered event                                                  | N/A                    |
-| `channelUID`      | `ChannelEventTrigger`                                | UID of channel that triggered event                                                 | N/A                    |
-| `oldStatus`       | `ThingStatusChangeTrigger`                           | Previous state of Thing that triggered event                                        | N/A                    |
-| `newStatus`       | `ThingStatusChangeTrigger`                           | New state of Thing that triggered event                                             | N/A                    |
-| `status`          | `ThingStatusUpdateTrigger`                           | State of Thing that triggered event                                                 | N/A                    |
-| `thingUID`        | `Thing****Trigger`                                   | UID of Thing that triggered event                                                   | N/A                    |
-| `eventType`       | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of event that triggered event (change, command, triggered, update)             | N/A                    |
-| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of trigger that triggered event                                                | N/A                    |
+| Property Name     | Trigger Types                                        | Description                                                             | Rules DSL Equivalent   |
+|-------------------|------------------------------------------------------|-------------------------------------------------------------------------|------------------------|
+| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | Previous state of Item or Group that triggered event                    | `previousState`        |
+| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | New state of Item or Group that triggered event                         | N/A                    |
+| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger`  | State of Item that triggered event                                      | `triggeringItem.state` |
+| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`          | Command that triggered event                                            | `receivedCommand`      |
+| `itemName`        | `Item****Trigger`, `Group****Trigger`                | Name of Item that triggered event                                       | `triggeringItem.name`  |
+| `groupName`       | `Group****Trigger`                                   | Name of the group whose member triggered event                          | N/A                    |
+| `receivedEvent`   | `ChannelEventTrigger`                                | Channel event that triggered event                                      | N/A                    |
+| `channelUID`      | `ChannelEventTrigger`                                | UID of channel that triggered event                                     | N/A                    |
+| `oldStatus`       | `ThingStatusChangeTrigger`                           | Previous state of Thing that triggered event                            | N/A                    |
+| `newStatus`       | `ThingStatusChangeTrigger`                           | New state of Thing that triggered event                                 | N/A                    |
+| `status`          | `ThingStatusUpdateTrigger`                           | State of Thing that triggered event                                     | N/A                    |
+| `thingUID`        | `Thing****Trigger`                                   | UID of Thing that triggered event                                       | N/A                    |
+| `eventType`       | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of event that triggered event (change, command, triggered, update) | N/A                    |
+| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of trigger that triggered event                                    | N/A                    |
 
 All properties are typeof `string`.
 
@@ -1311,11 +1331,11 @@ var { ON, OFF, QuantityType } = require("@runtime");
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `State`                 | [`org.openhab.core.types.State`](https://www.openhab.org/javadoc/latest/org/openhab/core/types/state)                                                 |
 | `Command`               | [`org.openhab.core.types.Command`](https://www.openhab.org/javadoc/latest/org/openhab/core/types/command)                                             |
-| `URLEncoder`            | [`java.net.URLEncoder`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URLEncoder.html)                                        |
-| `File`                  | [`java.io.File`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html)                                                      |
-| `Files`                 | [`java.nio.file.Files`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Files.html)                                        |
-| `Path`                  | [`java.nio.file.Path`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Path.html)                                          |
-| `Paths`                 | [`java.nio.file.Paths`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Paths.html)                                        |
+| `URLEncoder`            | [`java.net.URLEncoder`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/URLEncoder.html)                                        |
+| `File`                  | [`java.io.File`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/File.html)                                                      |
+| `Files`                 | [`java.nio.file.Files`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Files.html)                                        |
+| `Path`                  | [`java.nio.file.Path`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html)                                          |
+| `Paths`                 | [`java.nio.file.Paths`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Paths.html)                                        |
 | `IncreaseDecreaseType`  | [`org.openhab.core.library.types.IncreaseDecreaseType`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/types/increasedecreasetype)   |
 | `DECREASE`              | `IncreaseDecreaseType` enum item                                                                                                                      |
 | `INCREASE`              | `IncreaseDecreaseType` enum item                                                                                                                      |
@@ -1359,10 +1379,10 @@ var { ON, OFF, QuantityType } = require("@runtime");
 | `MetricPrefix`          | [`org.openhab.core.library.unit.MetricPrefix`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/metricprefix)                     |
 | `Units`                 | [`org.openhab.core.library.unit.Units`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/units)                                   |
 | `BinaryPrefix`          | [`org.openhab.core.library.unit.BinaryPrefix`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/binaryprefix)                     |
-| `ChronoUnit`            | [`java.time.temporal.ChronoUnit`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/temporal/ChronoUnit.html)                    |
-| `Duration`              | [`java.time.Duration`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html)                                          |
-| `ZoneId`                | [`java.time.ZoneId`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html)                                              |
-| `ZonedDateTime`         | [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZonedDateTime.html)                                |
+| `ChronoUnit`            | [`java.time.temporal.ChronoUnit`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/temporal/ChronoUnit.html)                    |
+| `Duration`              | [`java.time.Duration`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html)                                          |
+| `ZoneId`                | [`java.time.ZoneId`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZoneId.html)                                              |
+| `ZonedDateTime`         | [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZonedDateTime.html)                                |
 
 `require("@runtime")` also defines "services" such as `items`, `things`, `rules`, `events`, `actions`, `ir`, `itemRegistry`.
 You can use these services for backwards compatibility purposes or ease migration from JSR223 scripts.

@@ -28,8 +28,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -66,7 +66,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  * @author Dan Cunningham - Script injections
  * @author Florian Hotze - Create lock object for multi-thread synchronization; Inject the {@link JSRuntimeFeatures}
  *         into the JS context; Fix memory leak caused by HostObject by making HostAccess reference static; Switch to
- *         {@link Lock} for multi-thread synchronization; globals & openhab-js injection code caching
+ *         {@link Lock} for multi-thread synchronization; globals and openhab-js injection code caching
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
@@ -113,6 +113,13 @@ public class OpenhabGraalJSScriptEngine
                     v -> v.hasMember("minusDuration") && v.hasMember("toNanos"),
                     v -> Duration.ofNanos(v.invokeMember("toNanos").asLong()), HostAccess.TargetMappingPrecedence.LOW)
 
+            // Translate JS-Joda Instant to java.time.Instant
+            .targetTypeMapping(Value.class, Instant.class,
+                    // picking two members to check as Instant has many common function names
+                    v -> v.hasMember("toEpochMilli") && v.hasMember("epochSecond"),
+                    v -> Instant.ofEpochMilli(v.invokeMember("toEpochMilli").asLong()),
+                    HostAccess.TargetMappingPrecedence.LOW)
+
             // Translate openhab-js Item to org.openhab.core.items.Item
             .targetTypeMapping(Value.class, Item.class, v -> v.hasMember("rawItem"),
                     v -> v.getMember("rawItem").as(Item.class), HostAccess.TargetMappingPrecedence.LOW)
@@ -132,17 +139,17 @@ public class OpenhabGraalJSScriptEngine
 
     private boolean initialized = false;
     private final boolean injectionEnabled;
-    private final boolean useIncludedLibrary;
+    private final boolean injectionCachingEnabled;
 
     /**
-     * Creates an implementation of ScriptEngine (& Invocable), wrapping the contained engine, that tracks the script
-     * lifecycle and provides hooks for scripts to do so too.
+     * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
+     * that tracks the script lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalJSScriptEngine(boolean injectionEnabled, boolean useIncludedLibrary,
+    public OpenhabGraalJSScriptEngine(boolean injectionEnabled, boolean injectionCachingEnabled,
             JSScriptServiceUtil jsScriptServiceUtil, JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.injectionEnabled = injectionEnabled;
-        this.useIncludedLibrary = useIncludedLibrary;
+        this.injectionCachingEnabled = injectionCachingEnabled;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
         LOGGER.debug("Initializing GraalJS script engine...");
@@ -201,7 +208,7 @@ public class OpenhabGraalJSScriptEngine
                             public Map<String, Object> readAttributes(Path path, String attributes,
                                     LinkOption... options) throws IOException {
                                 if (isRootNodePath(path)) {
-                                    return Collections.singletonMap("isRegularFile", true);
+                                    return Map.of("isRegularFile", true);
                                 }
                                 return super.readAttributes(path, attributes, options);
                             }
@@ -272,7 +279,7 @@ public class OpenhabGraalJSScriptEngine
             LOGGER.debug("Evaluating cached global script...");
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
             if (this.injectionEnabled) {
-                if (this.useIncludedLibrary) {
+                if (this.injectionCachingEnabled) {
                     LOGGER.debug("Evaluating cached openhab-js injection...");
                     delegate.getPolyglotContext().eval(OPENHAB_JS_SOURCE);
                 } else {

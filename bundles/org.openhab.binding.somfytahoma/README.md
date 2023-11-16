@@ -32,6 +32,8 @@ Any home automation system based on the OverKiz API is potentially supported.
 - rain sensors (OPEN/CLOSE contact)
 - temperature sensors (get temperature)
 - electricity sensors (get energy consumption)
+- carbon dioxide sensors (get CO2 concentration)
+- noise sensors (get noise)
 - door locks (LOCK/UNLOCK, OPEN/CLOSE commands)
 - heating systems (control temperature, set heating level)
 - valve heating systems (control temperature, derogation mode and temperature)
@@ -126,6 +128,8 @@ Please see the example below.
 | light sensor                                                                       | luminance                       | light luminance value in luxes                                                                                                                                                                                                    |
 | electricity sensor                                                                 | energy_consumption              | energy consumption value in watts                                                                                                                                                                                                 |
 | humidity sensor                                                                    | humidity                        | current relative humidity                                                                                                                                                                                                         |
+| carbon dioxide sensor                                                              | co2_concentration               | CO2 concentration in ppm                                                                                                                                                                                                          |
+| noise sensor                                                                       | noise                           | noise in decibel                                                                                                                                                                                                                  |
 | dock                                                                               | battery_status                  | indicates running on battery (yes/no)                                                                                                                                                                                             |
 | dock                                                                               | battery_level                   | remaining battery percentage                                                                                                                                                                                                      |
 | dock                                                                               | siren_status                    | used for controlling and getting siren state (on, off, cyclic)                                                                                                                                                                    |

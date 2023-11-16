@@ -40,9 +40,8 @@ public class TestNegateBit {
     public void testNegateHandlingTrue() {
         String negateProperty = "1-0_1-8-0:5:1";
 
-        boolean negateState = NegateHandler.shouldNegateState(negateProperty, obis -> {
-            return new MeterValue<>(obis, "65954", null);
-        });
+        boolean negateState = NegateHandler.shouldNegateState(negateProperty,
+                obis -> new MeterValue<>(obis, "65954", null));
 
         assertTrue(negateState);
     }
@@ -51,9 +50,8 @@ public class TestNegateBit {
     public void testNegateHandlingFalse() {
         String negateProperty = "1-0_1-8-0:5:1";
 
-        boolean negateState = NegateHandler.shouldNegateState(negateProperty, obis -> {
-            return new MeterValue<>(obis, "0", null, "65922");
-        });
+        boolean negateState = NegateHandler.shouldNegateState(negateProperty,
+                obis -> new MeterValue<>(obis, "0", null, "65922"));
 
         assertFalse(negateState);
     }

@@ -88,7 +88,7 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
     private @Nullable LocalDateTime lastConfigurationUpdateSend;
     private int unansweredPings;
 
-    public AbstractPlugwiseThingHandler(Thing thing) {
+    protected AbstractPlugwiseThingHandler(Thing thing) {
         super(thing);
     }
 

@@ -27,5 +27,5 @@ public interface MieleWebserviceFactory {
      * @param configuration The configuration holding all required parameters to construct the instance.
      * @return A new {@link MieleWebservice}.
      */
-    public MieleWebservice create(MieleWebserviceConfiguration configuration);
+    MieleWebservice create(MieleWebserviceConfiguration configuration);
 }

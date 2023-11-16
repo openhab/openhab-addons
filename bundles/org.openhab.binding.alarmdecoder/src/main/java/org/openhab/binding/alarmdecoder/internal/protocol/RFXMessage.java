@@ -43,7 +43,7 @@ public class RFXMessage extends ADMessage {
     public RFXMessage(String message) throws IllegalArgumentException {
         super(message);
 
-        String topLevel[] = message.split(":");
+        String[] topLevel = message.split(":");
         if (topLevel.length != 2) {
             throw new IllegalArgumentException("Multiple colons found in RFX message");
         }

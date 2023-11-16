@@ -13,7 +13,7 @@ Libraries for the following platforms are already included in the binding:
 The Windows libraries have a dependency on the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145).
 If you are using Windows, please make sure to install these components before using the AllPlay binding.
 
-If there is need for another architecture/platform, please open a [ticket on GitHub](https://github.com/openhab/openhab/issues) so the missing native library can be added.
+If there is need for another architecture/platform, please open a [ticket on GitHub](https://github.com/openhab/openhab-addons/issues) so the missing native library can be added.
 
 ## Supported Things
 

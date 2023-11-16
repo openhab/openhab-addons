@@ -58,8 +58,8 @@ public class D2_01_09_Permundo extends D2_01 {
     private void setRepeaterMode(Command command) {
         if (command == RefreshType.REFRESH) {
             senderId = new byte[0]; // make this message invalid as we do not support refresh of repeater status
-        } else if (command instanceof StringType) {
-            switch (((StringType) command).toString()) {
+        } else if (command instanceof StringType stringCommand) {
+            switch (stringCommand.toString()) {
                 case EnOceanBindingConstants.REPEATERMODE_LEVEL_1:
                     setRORG(RORG.MSC).setData((byte) 0x03, (byte) 0x35, (byte) 0x01);
                     break;
@@ -75,8 +75,8 @@ public class D2_01_09_Permundo extends D2_01 {
     private void setEcoMode(Command command) {
         if (command == RefreshType.REFRESH) {
             senderId = new byte[0]; // make this message invalid as we do not support refresh of ecomode status
-        } else if (command instanceof OnOffType) {
-            if (((OnOffType) command) == OnOffType.ON) {
+        } else if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 setRORG(RORG.MSC).setData((byte) 0x03, (byte) 0x36, (byte) 0x01);
             } else {
                 setRORG(RORG.MSC).setData((byte) 0x03, (byte) 0x36, (byte) 0x00);

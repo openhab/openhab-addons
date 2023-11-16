@@ -65,6 +65,7 @@ public class DeviceStatus {
             entry(519,
                     new DeviceStatus("idle-in-lawn", EnumSet.of(DeviceStateAttribute.READY_TO_MOW), DeviceCommand.MOW)),
             entry(523, new DeviceStatus("spotmow", EnumSet.of(DeviceStateAttribute.ACTIVE), DeviceCommand.MOW)),
+            entry(524, new DeviceStatus("mowing-randomly", EnumSet.of(DeviceStateAttribute.ACTIVE), DeviceCommand.MOW)),
             entry(768,
                     new DeviceStatus("returning-to-dock", EnumSet.of(DeviceStateAttribute.ACTIVE),
                             DeviceCommand.RETURN)),

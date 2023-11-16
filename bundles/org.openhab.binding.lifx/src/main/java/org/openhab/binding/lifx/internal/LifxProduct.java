@@ -26,7 +26,8 @@ import org.openhab.core.thing.ThingTypeUID;
 /**
  * Enumerates the LIFX products, their IDs and feature set.
  *
- * @see https://lan.developer.lifx.com/docs/lifx-products
+ * @see <a href="https://lan.developer.lifx.com/docs/lifx-products">
+ *      https://lan.developer.lifx.com/docs/lifx-products</a>
  *
  * @author Wouter Born - Initial contribution
  * @author Wouter Born - Add temperature ranges and simplify feature definitions

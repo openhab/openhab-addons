@@ -83,6 +83,7 @@ public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log
         return measurementDate;
     }
 
+    @Override
     public ZonedDateTime getUpdatedDate() {
         return updatedDate;
     }

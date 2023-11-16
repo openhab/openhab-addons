@@ -14,7 +14,6 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,8 +33,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandler<VerisureBroadbandConnectionsDTO> {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .singleton(THING_TYPE_BROADBAND_CONNECTION);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BROADBAND_CONNECTION);
 
     public VerisureBroadbandConnectionThingHandler(Thing thing) {
         super(thing);

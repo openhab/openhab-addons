@@ -39,7 +39,8 @@ public class HueUserAuth {
     /**
      * Create a new user
      *
-     * @param apikey The hue "username"
+     * @param appName
+     * @param deviceName
      */
     public HueUserAuth(String appName, String deviceName) {
         this.name = appName + "#" + deviceName;

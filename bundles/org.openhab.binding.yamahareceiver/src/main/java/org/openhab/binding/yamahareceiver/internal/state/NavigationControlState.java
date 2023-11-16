@@ -24,7 +24,7 @@ public class NavigationControlState implements Invalidateable {
     public int menuLayer = -1;
     public int currentLine = 0;
     public int maxLine = -1;
-    public String items[] = new String[InputWithNavigationControlXML.MAX_PER_PAGE];
+    public String[] items = new String[InputWithNavigationControlXML.MAX_PER_PAGE];
 
     public String getCurrentItemName() {
         if (currentLine < 1 || currentLine > items.length) {

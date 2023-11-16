@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>NovaFineDust Binding</name>
 	<description>This is the binding for Nova Fitness Fine Dust SDS011 sensor.</description>
+	<connection>local</connection>
 
 </addon:addon>

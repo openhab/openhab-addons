@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Hydrawise Binding</name>
 	<description>This is the binding for Hydrawise irrigation systems.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

@@ -36,8 +36,8 @@ public class FlicButtonBindingConstants {
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "flicd-bridge");
     public static final ThingTypeUID FLICBUTTON_THING_TYPE = new ThingTypeUID(BINDING_ID, "button");
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(FLICBUTTON_THING_TYPE);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(FLICBUTTON_THING_TYPE);
 
     // List of all configuration options
     public static final String CONFIG_HOST_NAME = "hostname";

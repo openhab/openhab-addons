@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Yamaha Musiccast Binding</name>
 	<description>This is the binding for Yamaha Musiccast</description>
+	<connection>local</connection>
 
 </addon:addon>

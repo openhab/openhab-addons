@@ -126,11 +126,11 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
                     "Homie devices require QoS 1 but Qos 0/2 is configured. Using override. Please check the configuration");
             connection.setQos(1);
         }
-        return device.subscribe(connection, scheduler, attributeReceiveTimeout).thenCompose((Void v) -> {
-            return device.startChannels(connection, scheduler, attributeReceiveTimeout, this);
-        }).thenRun(() -> {
-            logger.debug("Homie device {} fully attached (start)", config.deviceid);
-        });
+        return device.subscribe(connection, scheduler, attributeReceiveTimeout)
+                .thenCompose((Void v) -> device.startChannels(connection, scheduler, attributeReceiveTimeout, this))
+                .thenRun(() -> {
+                    logger.debug("Homie device {} fully attached (start)", config.deviceid);
+                });
     }
 
     @Override
@@ -241,9 +241,8 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
             logger.warn("couldn't remove retained topics for {} because connection is null", thing.getUID());
             return;
         }
-        device.getRetainedTopics().stream().map(d -> {
-            return String.format("%s/%s", config.basetopic, d);
-        }).collect(Collectors.toList()).forEach(t -> connection.publish(t, new byte[0], 1, true));
+        device.getRetainedTopics().stream().map(d -> String.format("%s/%s", config.basetopic, d))
+                .collect(Collectors.toList()).forEach(t -> connection.publish(t, new byte[0], 1, true));
     }
 
     @Override

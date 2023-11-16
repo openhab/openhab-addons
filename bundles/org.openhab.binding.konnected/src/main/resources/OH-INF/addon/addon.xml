@@ -5,4 +5,5 @@
 	<type>binding</type>
 	<name>Konnected Binding</name>
 	<description>This is the binding for Konnected.</description>
+	<connection>local</connection>
 </addon:addon>

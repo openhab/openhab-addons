@@ -177,11 +177,11 @@ public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<
     protected abstract EnumSet<AreaAlarm> getAlarms();
 
     private void handleKeypadEmergency(ChannelUID channelUID, Command command) {
-        if (command instanceof DecimalType) {
+        if (command instanceof DecimalType decimalCommand) {
             try {
                 final OmnilinkBridgeHandler bridge = getOmnilinkBridgeHandler();
                 if (bridge != null) {
-                    bridge.activateKeypadEmergency(thingID, ((DecimalType) command).intValue());
+                    bridge.activateKeypadEmergency(thingID, decimalCommand.intValue());
                 } else {
                     logger.debug("Received null bridge while sending Keypad Emergency command!");
                 }

@@ -24,11 +24,11 @@ public interface IDeviceInformationListener {
 
     void setMode(String mode);
 
-    public void setTotalSent(String totalSent);
+    void setTotalSent(String totalSent);
 
-    public void setTotalFailed(String totalFailed);
+    void setTotalFailed(String totalFailed);
 
-    public void setTotalReceived(String totalReceived);
+    void setTotalReceived(String totalReceived);
 
-    public void setTotalFailures(String totalFailure);
+    void setTotalFailures(String totalFailure);
 }

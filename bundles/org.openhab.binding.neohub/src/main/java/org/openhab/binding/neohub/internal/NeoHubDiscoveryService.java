@@ -111,18 +111,18 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
                 for (AbstractRecord deviceRecord : deviceRecords) {
 
                     // the record came from the legacy API (deviceType included)
-                    if (deviceRecord instanceof InfoRecord) {
-                        deviceType = ((InfoRecord) deviceRecord).getDeviceType();
+                    if (deviceRecord instanceof InfoRecord infoRecord) {
+                        deviceType = infoRecord.getDeviceType();
                         publishDevice(deviceRecord, deviceType);
                         continue;
                     }
 
                     // the record came from the new API (deviceType NOT included)
-                    if (deviceRecord instanceof LiveDataRecord) {
+                    if (deviceRecord instanceof LiveDataRecord liveDataRecord) {
                         if (engineerData == null) {
                             break;
                         }
-                        String deviceName = ((LiveDataRecord) deviceRecord).getDeviceName();
+                        String deviceName = liveDataRecord.getDeviceName();
                         // exclude repeater nodes from being discovered
                         if (MATCHER_HEATMISER_REPEATER.matcher(deviceName).matches()) {
                             continue;

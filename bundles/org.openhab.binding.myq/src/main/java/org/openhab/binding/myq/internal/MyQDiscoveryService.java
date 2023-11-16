@@ -81,8 +81,8 @@ public class MyQDiscoveryService extends AbstractDiscoveryService implements Dis
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof MyQAccountHandler) {
-            accountHandler = (MyQAccountHandler) handler;
+        if (handler instanceof MyQAccountHandler myqAccountHandler) {
+            accountHandler = myqAccountHandler;
         }
     }
 

@@ -82,7 +82,7 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
 
     @Override
     public void write(String command) {
-        logger.debug("Writing to serial port: {}", command.toString());
+        logger.debug("Writing to serial port: {}", command);
         SerialPort serialPort = this.serialPort;
 
         try {

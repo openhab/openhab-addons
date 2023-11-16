@@ -236,9 +236,10 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
             if (categoryElement == null || numberElement == null || destinationElement == null
                     || departureTimeElement == null) {
-                logger.warn("Skipping stationboard item."
-                        + "One of the following is null: category: {}, number: {}, destination: {}, departureTime: {}",
-                        categoryElement, numberElement, destinationElement, departureTimeElement);
+                logger.warn("""
+                        Skipping stationboard item.\
+                        One of the following is null: category: {}, number: {}, destination: {}, departureTime: {}\
+                        """, categoryElement, numberElement, destinationElement, departureTimeElement);
                 continue;
             }
 

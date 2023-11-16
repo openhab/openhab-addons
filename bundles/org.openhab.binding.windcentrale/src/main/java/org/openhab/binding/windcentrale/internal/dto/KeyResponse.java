@@ -17,7 +17,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Provides the details required for getting tokens using SRP from the Windcentrale Cognito user pool.
  *
- * @see https://mijn.windcentrale.nl/api/v0/labels/key?domain=mijn.windcentrale.nl
+ * @see <a href="https://mijn.windcentrale.nl/api/v0/labels/key?domain=mijn.windcentrale.nl">
+ *      https://mijn.windcentrale.nl/api/v0/labels/key?domain=mijn.windcentrale.nl</a>
  *
  * @author Wouter Born - Initial contribution
  */

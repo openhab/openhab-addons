@@ -191,12 +191,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
      * Scans all messages that arrive on the socket and scans them for the
      * search keywords. The search is not case sensitive.
      *
-     * @param socket
-     *            The socket where the answers arrive.
-     * @param keywords
-     *            The keywords to be searched for.
-     * @return
-     * @throws IOException
+     * @param response
      */
 
     protected void parseResponse(String response) {

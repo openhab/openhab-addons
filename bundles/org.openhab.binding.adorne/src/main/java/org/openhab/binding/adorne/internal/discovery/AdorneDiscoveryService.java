@@ -14,7 +14,7 @@ package org.openhab.binding.adorne.internal.discovery;
 
 import static org.openhab.binding.adorne.internal.AdorneBindingConstants.*;
 
-import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,7 +52,7 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService implements 
      */
     public AdorneDiscoveryService() {
         // Passing false as last argument to super constructor turns off background discovery
-        super(Collections.singleton(new ThingTypeUID(BINDING_ID, "-")), DISCOVERY_TIMEOUT_SECONDS, false);
+        super(Set.of(new ThingTypeUID(BINDING_ID, "-")), DISCOVERY_TIMEOUT_SECONDS, false);
 
         // We create the hub controller with default host and port. In the future we could let users create hubs
         // manually with custom host and port settings and then perform discovery here for those hubs.
@@ -76,10 +76,9 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService implements 
 
         // Future enhancement: Need a timeout for each future execution to recover from bugs in the hub controller, but
         // Java8 doesn't yet offer that
-        adorneHubController.start().thenCompose(Void -> {
-            // We use the hub's MAC address as its unique identifier
-            return adorneHubController.getMACAddress();
-        }).thenCompose(macAddress -> {
+        adorneHubController.start().thenCompose(Void ->
+        // We use the hub's MAC address as its unique identifier
+        adorneHubController.getMACAddress()).thenCompose(macAddress -> {
             String macAddressNoColon = macAddress.replace(':', '-'); // Colons are not allowed in ThingUIDs
             bridgeUID[0] = new ThingUID(THING_TYPE_HUB, macAddressNoColon);
             // We have fully discovered the hub

@@ -53,8 +53,8 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof RFXComBridgeHandler) {
-            bridgeHandler = (RFXComBridgeHandler) handler;
+        if (handler instanceof RFXComBridgeHandler rfxComBridgeHandler) {
+            bridgeHandler = rfxComBridgeHandler;
         }
     }
 

@@ -14,6 +14,8 @@ package org.openhab.binding.lcn.internal.pchkdiscovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 /**
  * Used for deserializing the XML response of the LCN-PCHK discovery protocol.
  *
@@ -21,27 +23,30 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ServicesResponse {
-    private final Version Version;
-    private final Server Server;
-    private final ExtServices ExtServices;
-    @SuppressWarnings("unused")
-    private final Object Services = new Object();
+    @XStreamAlias("Version")
+    private final Version version;
+    @XStreamAlias("Server")
+    private final Server server;
+    @XStreamAlias("ExtServices")
+    private final ExtServices extServices;
+    @XStreamAlias("Services")
+    private final Object services = new Object();
 
     public ServicesResponse(Version version, Server server, ExtServices extServices) {
-        this.Version = version;
-        this.Server = server;
-        this.ExtServices = extServices;
+        this.version = version;
+        this.server = server;
+        this.extServices = extServices;
     }
 
     public Server getServer() {
-        return Server;
+        return server;
     }
 
     public Version getVersion() {
-        return Version;
+        return version;
     }
 
     public ExtServices getExtServices() {
-        return ExtServices;
+        return extServices;
     }
 }

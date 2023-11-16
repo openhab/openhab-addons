@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.knx.internal;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -106,4 +111,26 @@ public class KNXBindingConstants {
     public static final String STOP_MOVE_GA = "stopMove";
     public static final String SWITCH_GA = "switch";
     public static final String UP_DOWN_GA = "upDown";
+
+    public static final Map<Integer, String> MANUFACTURER_MAP = readManufacturerMap();
+
+    private static Map<Integer, String> readManufacturerMap() {
+        ClassLoader classLoader = KNXBindingConstants.class.getClassLoader();
+        if (classLoader == null) {
+            return Map.of();
+        }
+
+        try (InputStream is = classLoader.getResourceAsStream("manufacturer.properties")) {
+            if (is == null) {
+                return Map.of();
+            }
+
+            Properties properties = new Properties();
+            properties.load(is);
+            return properties.entrySet().stream()
+                    .collect(Collectors.toMap(e -> Integer.parseInt((String) e.getKey()), e -> (String) e.getValue()));
+        } catch (IOException e) {
+            return Map.of();
+        }
+    }
 }

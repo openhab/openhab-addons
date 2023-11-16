@@ -56,7 +56,7 @@ public class RuleUtils {
             throw new IllegalStateException("Time pattern incorrect. Must be 'hh:mm[:ss]'. " + baseTime);
         }
 
-        String randomizedTime[] = baseTime.split(":");
+        String[] randomizedTime = baseTime.split(":");
 
         if (upperTime != null && !upperTime.isEmpty()) {
             String[] upperTimeParts = upperTime.split(":");
@@ -82,14 +82,14 @@ public class RuleUtils {
      * Validates a hue http address used in schedules and hue rules.
      *
      * @param ds A hue datastore to verify that referred lights/groups do exist
-     * @param address Relative hue API address. Example: "/api/<username>/groups/1/action" or
-     *            "/api/<username>/lights/1/state"
+     * @param address Relative hue API address. Example: {@code "/api/<username>/groups/1/action"} or
+     *            {@code "/api/<username>/lights/1/state"}
      * @throws IllegalStateException Thrown if address is invalid
      */
     @SuppressWarnings({ "unused", "null" })
     public static void validateHueHttpAddress(HueDataStore ds, String address) throws IllegalStateException {
         String[] validation = address.split("/");
-        if (validation.length < 6 || !validation[0].isEmpty() || !validation[1].equals("api")) {
+        if (validation.length < 6 || !validation[0].isEmpty() || !"api".equals(validation[1])) {
             throw new IllegalStateException("Given address invalid!");
         }
         if ("groups".equals(validation[3]) && "action".equals(validation[5])) {
@@ -179,7 +179,7 @@ public class RuleUtils {
                 cronWeekdays.add(String.valueOf(c));
             }
         }
-        String hourMinSec[] = RuleUtils.computeRandomizedDayTime(time, randomize);
+        String[] hourMinSec = RuleUtils.computeRandomizedDayTime(time, randomize);
 
         // Cron expression: min hour day month weekdays
         String cronExpression = hourMinSec[1] + " " + hourMinSec[0] + " * * " + String.join(",", cronWeekdays);
@@ -268,8 +268,8 @@ public class RuleUtils {
      * <li>Every weekday given by bbb at given left side time, randomized by right side time. Right side time has to be
      * smaller than 12 hours
      * <li>
-     * <ul>
      * Timers
+     * <ul>
      * <li>PT[hh]:[mm]:[ss] Timer, expiring after given time
      * <li>PT[hh]:[mm]:[ss] Timer, expiring after given time
      * <li>PT[hh]:[mm]:[ss]A[hh]:[mm]:[ss] Timer with random element
@@ -318,9 +318,9 @@ public class RuleUtils {
     public static @Nullable String timeStringFromTrigger(List<Trigger> triggers) {
         Optional<Trigger> trigger;
 
-        trigger = triggers.stream().filter(p -> p.getId().equals("crontrigger")).findFirst();
+        trigger = triggers.stream().filter(p -> "crontrigger".equals(p.getId())).findFirst();
         if (trigger.isPresent()) {
-            String cronParts[] = ((String) trigger.get().getConfiguration().get("cronExpression")).split(" ");
+            String[] cronParts = ((String) trigger.get().getConfiguration().get("cronExpression")).split(" ");
             if (cronParts.length != 5) {
                 LOGGER.warn("Cron trigger has no valid cron expression: {}", String.join(",", cronParts));
                 return null;
@@ -358,7 +358,7 @@ public class RuleUtils {
             return String.format("W%d/T%s:%s:00", weekdays, cronParts[1], cronParts[0]);
         }
 
-        trigger = triggers.stream().filter(p -> p.getId().equals("timertrigger")).findFirst();
+        trigger = triggers.stream().filter(p -> "timertrigger".equals(p.getId())).findFirst();
         if (trigger.isPresent()) {
             TimerConfig c = trigger.get().getConfiguration().as(TimerConfig.class);
             if (c.repeat == null) {
@@ -370,7 +370,7 @@ public class RuleUtils {
                         c.randomizeTime);
             }
         } else {
-            trigger = triggers.stream().filter(p -> p.getId().equals("absolutetrigger")).findFirst();
+            trigger = triggers.stream().filter(p -> "absolutetrigger".equals(p.getId())).findFirst();
             if (trigger.isPresent()) {
                 String date = (String) trigger.get().getConfiguration().get("date");
                 String time = (String) trigger.get().getConfiguration().get("time");

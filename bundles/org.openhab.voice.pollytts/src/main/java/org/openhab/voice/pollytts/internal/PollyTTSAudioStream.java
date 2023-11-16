@@ -12,26 +12,101 @@
  */
 package org.openhab.voice.pollytts.internal;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import org.openhab.core.audio.AudioException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.FileAudioStream;
 
 /**
  * Implementation of the {@link AudioStream} interface for the {@link PollyTTSService}.
- * It simply uses a {@link FileAudioStream} which is doing all the necessary work,
- * e.g. supporting MP3 and WAV files with fixed stream length.
+ * An AudioStream with an {@link InputStream} inside
  *
  * @author Robert Hillman - Initial contribution
+ * @author Gwendal Roulleau - Refactor to simple audiostream
  */
-class PollyTTSAudioStream extends FileAudioStream {
+@NonNullByDefault
+public class PollyTTSAudioStream extends AudioStream {
 
-    /**
-     * main method the passes the audio file to system audio services
-     */
-    public PollyTTSAudioStream(File audioFile, AudioFormat format) throws AudioException {
-        super(audioFile, format);
+    public InputStream innerInputStream;
+    public AudioFormat audioFormat;
+
+    public PollyTTSAudioStream(InputStream innerInputStream, AudioFormat audioFormat) {
+        super();
+        this.innerInputStream = innerInputStream;
+        this.audioFormat = audioFormat;
+    }
+
+    @Override
+    public AudioFormat getFormat() {
+        return audioFormat;
+    }
+
+    @Override
+    public int read() throws IOException {
+        return innerInputStream.read();
+    }
+
+    @Override
+    public int read(byte @Nullable [] b) throws IOException {
+        return innerInputStream.read(b);
+    }
+
+    @Override
+    public int read(byte @Nullable [] b, int off, int len) throws IOException {
+        return innerInputStream.read(b, off, len);
+    }
+
+    @Override
+    public byte[] readAllBytes() throws IOException {
+        return innerInputStream.readAllBytes();
+    }
+
+    @Override
+    public byte[] readNBytes(int len) throws IOException {
+        return innerInputStream.readNBytes(len);
+    }
+
+    @Override
+    public int readNBytes(byte @Nullable [] b, int off, int len) throws IOException {
+        return innerInputStream.readNBytes(b, off, len);
+    }
+
+    @Override
+    public long skip(long n) throws IOException {
+        return innerInputStream.skip(n);
+    }
+
+    @Override
+    public int available() throws IOException {
+        return innerInputStream.available();
+    }
+
+    @Override
+    public void close() throws IOException {
+        innerInputStream.close();
+    }
+
+    @Override
+    public synchronized void mark(int readlimit) {
+        innerInputStream.mark(readlimit);
+    }
+
+    @Override
+    public synchronized void reset() throws IOException {
+        innerInputStream.reset();
+    }
+
+    @Override
+    public boolean markSupported() {
+        return innerInputStream.markSupported();
+    }
+
+    @Override
+    public long transferTo(@Nullable OutputStream out) throws IOException {
+        return innerInputStream.transferTo(out);
     }
 }

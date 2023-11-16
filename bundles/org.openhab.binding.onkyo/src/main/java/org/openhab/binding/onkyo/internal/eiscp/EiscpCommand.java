@@ -162,7 +162,7 @@ public enum EiscpCommand {
     ZONE3_SOURCE_SET("SL3", "%02X"),
     ZONE3_SOURCE("SL3", "");
 
-    public static enum Zone {
+    public enum Zone {
         MAIN,
         ZONE1,
         ZONE2,

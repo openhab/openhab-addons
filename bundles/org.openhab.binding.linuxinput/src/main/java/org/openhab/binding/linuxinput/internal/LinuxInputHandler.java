@@ -166,7 +166,7 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
                 if (selector.selectedKeys().remove(evdevReady)) {
                     while (true) {
                         Optional<EvdevDevice.InputEvent> ev = currentDevice.nextEvent();
-                        if (!ev.isPresent()) {
+                        if (ev.isEmpty()) {
                             break;
                         }
                         handleEvent(ev.get());

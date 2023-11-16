@@ -6,7 +6,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Button scanner class.
  *
- * Inherit this class and override the {@link #onAdvertisementPacket(Bdaddr, String, int, boolean, boolean)} method.
+ * Inherit this class and override the
+ * {@link #onAdvertisementPacket(Bdaddr, String, int, boolean, boolean, boolean, boolean)} method.
  * Then add this button scanner to a {@link FlicClient} using {@link FlicClient#addScanner(ButtonScanner)} to start it.
  */
 public abstract class ButtonScanner {

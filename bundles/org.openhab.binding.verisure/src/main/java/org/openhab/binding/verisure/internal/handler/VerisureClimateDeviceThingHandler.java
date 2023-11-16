@@ -71,7 +71,7 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
 
     private void updateClimateDeviceState(VerisureClimatesDTO climateJSON) {
         getThing().getChannels().stream().map(Channel::getUID)
-                .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                .filter(channelUID -> isLinked(channelUID) && !"timestamp".equals(channelUID.getId()))
                 .forEach(channelUID -> {
                     State state = getValue(channelUID.getId(), climateJSON);
                     updateState(channelUID, state);

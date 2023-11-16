@@ -5,4 +5,5 @@
 	<type>binding</type>
 	<name>EtherRain Binding</name>
 	<description>This is the binding for EtherRain</description>
+	<connection>local</connection>
 </addon:addon>

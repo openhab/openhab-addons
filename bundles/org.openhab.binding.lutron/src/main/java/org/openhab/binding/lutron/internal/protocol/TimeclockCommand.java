@@ -42,7 +42,6 @@ public class TimeclockCommand extends LutronCommandNew {
     /**
      * TimeclockCommand constructor
      *
-     * @param targetType
      * @param operation
      * @param integrationId
      * @param action

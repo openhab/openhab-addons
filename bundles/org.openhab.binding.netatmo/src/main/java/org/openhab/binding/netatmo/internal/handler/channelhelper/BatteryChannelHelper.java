@@ -45,12 +45,12 @@ public class BatteryChannelHelper extends ChannelHelper {
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
         int percent = -1;
         BatteryState batteryState = BatteryState.UNKNOWN;
-        if (naThing instanceof Module) {
-            percent = ((Module) naThing).getBatteryPercent();
-            batteryState = ((Module) naThing).getBatteryState();
-        } else if (naThing instanceof HomeStatusModule) {
-            percent = ((HomeStatusModule) naThing).getBatteryState().level;
-            batteryState = ((HomeStatusModule) naThing).getBatteryState();
+        if (naThing instanceof Module module) {
+            percent = module.getBatteryPercent();
+            batteryState = module.getBatteryState();
+        } else if (naThing instanceof HomeStatusModule homeStatusModule) {
+            percent = homeStatusModule.getBatteryState().level;
+            batteryState = homeStatusModule.getBatteryState();
         } else {
             return null;
         }

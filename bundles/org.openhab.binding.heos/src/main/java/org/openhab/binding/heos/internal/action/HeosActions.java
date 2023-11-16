@@ -43,8 +43,8 @@ public class HeosActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HeosBridgeHandler) {
-            this.handler = (HeosBridgeHandler) handler;
+        if (handler instanceof HeosBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 

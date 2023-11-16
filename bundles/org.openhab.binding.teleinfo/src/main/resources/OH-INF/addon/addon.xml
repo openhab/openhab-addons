@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Teleinfo Binding</name>
 	<description>The Teleinfo binding decodes the electrical statistics from an ENEDIS/ERDF Electricity Meter</description>
+	<connection>local</connection>
 
 </addon:addon>

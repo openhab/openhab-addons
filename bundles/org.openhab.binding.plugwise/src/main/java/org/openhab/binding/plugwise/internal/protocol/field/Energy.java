@@ -92,7 +92,7 @@ public class Energy {
         }
 
         double seconds = localInterval.getSeconds();
-        seconds += localInterval.getNano() / ChronoUnit.SECONDS.getDuration().toNanos();
+        seconds += (double) localInterval.getNano() / ChronoUnit.SECONDS.getDuration().toNanos();
         return seconds;
     }
 

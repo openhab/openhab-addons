@@ -14,7 +14,6 @@ package org.openhab.binding.surepetcare.internal.discovery;
 
 import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -51,7 +50,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcareDiscoveryService.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
     private static final int DISCOVERY_SCAN_DELAY_MINUTES = 1;
@@ -89,8 +88,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SurePetcareBridgeHandler) {
-            bridgeHandler = (SurePetcareBridgeHandler) handler;
+        if (handler instanceof SurePetcareBridgeHandler bridgeHandler) {
             bridgeUID = bridgeHandler.getUID();
         }
     }

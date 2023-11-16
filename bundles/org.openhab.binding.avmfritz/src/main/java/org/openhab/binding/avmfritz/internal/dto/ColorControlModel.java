@@ -47,7 +47,7 @@ public class ColorControlModel {
     /**
      * Converts a FRITZ!Box value to a percent value.
      *
-     * @param fritzValue The FRITZ!Box value to be converted
+     * @param saturation The FRITZ!Box value to be converted
      * @return The percent value
      */
     public static PercentType toPercent(int saturation) {

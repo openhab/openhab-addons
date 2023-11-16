@@ -18,7 +18,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSWeekdayValue;
 import org.openhab.core.library.types.DecimalType;
 
 /**
- * DecimalType <-> WSWeekdayValue converter.
+ * DecimalType {@literal <->} WSWeekdayValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

@@ -114,7 +114,7 @@ The following actions are supported by the `command` channel:
 |--------------|-------------------------------------------|------------------------------------------------------|
 | `clean`      | Start cleaning in automatic mode.         |                                                      |
 | `spotArea`   | Start cleaning specific rooms.            | <ul><li>Only if supported by device, which can be recognized by `spotArea` being present in the list of possible states of the `current-cleaning-mode` channel.</li><li>Format: `spotArea:<room IDs>`, where `room IDs` is a semicolon separated list of room letters as shown in Ecovacs' app, so a valid command could e.g. be `spotArea:A;D;E`.</li><li>If you want to run 2 clean passes, amend `:x2` to the command, e.g. `spotArea:A;C;B:x2`.</li></ul> |
-| `customArea` | Start cleaning specific areas.            | <ul><li>Only if supported by device, which can be recognized by `customArea` being present in the list of possible states of the `current-cleaning-mode` channel.</li><li>Format: `customArea:<x1>;<y1>;<x2>;<y2>, where the parameters are coordinates (in mm) relative to the map.</li><li>The coordinates can be obtained from the `current-cleaning-spot-definition` channel when starting a custom area run from the app.</li><li>If you want to run 2 clean passes, amend `:x2` to the command, e.g. `customArea:100;100;1000;1000:x2`.</li></ul> |
+| `customArea` | Start cleaning specific areas.            | <ul><li>Only if supported by device, which can be recognized by `customArea` being present in the list of possible states of the `current-cleaning-mode` channel.</li><li>Format: `customArea:<x1>;<y1>;<x2>;<y2>`, where the parameters are coordinates (in mm) relative to the map.</li><li>The coordinates can be obtained from the `current-cleaning-spot-definition` channel when starting a custom area run from the app.</li><li>If you want to run 2 clean passes, amend `:x2` to the command, e.g. `customArea:100;100;1000;1000:x2`.</li></ul> |
 | `pause`      | Pause cleaning if it's currently active.  | If the device is idle, the command is ignored.       |
 | `resume`     | Resume cleaning if it's currently paused. | If the device is not paused, the command is ignored. |
 | `stop`       | Stop cleaning immediately.                |                                                      |
@@ -172,4 +172,21 @@ Bridge ecovacs:ecovacsapi:ecovacsapi [ email="your.email@provider.com", password
     Thing vacuum myDeebot "Deebot Vacuum" [ serialNumber="serial as printed on label below dust bin" ]
 }
 ```
+
+## Adding support for unsupported models
+
+When encountering an unsupported model during discovery, the binding creates a log message like this one:
+
+```
+2023-04-21 12:02:39.607 [INFO ] [acs.internal.api.impl.EcovacsApiImpl] - Found unsupported device DEEBOT N8 PRO CARE (class s1f8g7, company eco-ng), ignoring.
+```
+
+In such a case, please [create an issue on GitHub](https://github.com/openhab/openhab-addons/issues), listing the contents of the log line.
+In addition to that, if the model is similar to an already supported one, you can try to add the support yourself (until getting an updated binding).
+For doing so, you can follow the following steps:
+
+- create the folder `<OPENHAB_USERDATA>/evocacs` (if not done previously)
+- create a file named `custom_device_descs.json`, whose format of that file is the same as [the built-in device list](https://raw.githubusercontent.com/openhab/openhab-addons/main/bundles/org.openhab.binding.ecovacs/src/main/resources/devices/supported_device_list.json)
+- for a model that is very similar to an existing one, create an entry with `modelName`, `deviceClass` (from the log line) and `deviceClassLink` (`deviceClass` of the similar model)
+- for other models, you can also try experimenting with creating a full entry, but it's likely that the binding code will need to be updated in that case
 

@@ -17,7 +17,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +46,7 @@ import org.openhab.core.model.script.engine.action.ActionService;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.TypeParser;
+import org.openhab.core.util.StringUtils;
 import org.openhab.io.openhabcloud.NotificationAction;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -80,8 +80,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     private static final int DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS = 200;
     private static final int DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT = 30000;
     private static final String HTTPCLIENT_NAME = "openhabcloud";
-    private static final String CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final SecureRandom SR = new SecureRandom();
 
     private final Logger logger = LoggerFactory.getLogger(CloudService.class);
 
@@ -211,8 +209,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
         exposedItems = new HashSet<>();
         Object expCfg = config.get(CFG_EXPOSE);
-        if (expCfg instanceof String) {
-            String value = (String) expCfg;
+        if (expCfg instanceof String value) {
             while (value.startsWith("[")) {
                 value = value.substring(1);
             }
@@ -222,8 +219,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             for (String itemName : Arrays.asList((value).split(","))) {
                 exposedItems.add(itemName.trim());
             }
-        } else if (expCfg instanceof Iterable) {
-            for (Object entry : ((Iterable<?>) expCfg)) {
+        } else if (expCfg instanceof Iterable iterable) {
+            for (Object entry : iterable) {
                 exposedItems.add(entry.toString());
             }
         }
@@ -293,14 +290,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         }
     }
 
-    private String randomString(int length) {
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            sb.append(CHARS.charAt(SR.nextInt(CHARS.length())));
-        }
-        return sb.toString();
-    }
-
     /**
      * Creates a random secret and writes it to the <code>userdata/openhabcloud</code>
      * directory. An existing <code>secret</code> file won't be overwritten.
@@ -311,7 +300,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         String newSecretString = "";
 
         if (!file.exists()) {
-            newSecretString = randomString(20);
+            newSecretString = StringUtils.getRandomAlphanumeric(20);
             logger.debug("New secret = {}", censored(newSecretString));
             writeFile(file, newSecretString);
         } else {
@@ -381,6 +370,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     private boolean supportsUpdates() {
-        return cloudBaseUrl.indexOf(CFG_BASE_URL) >= 0;
+        return cloudBaseUrl.contains(CFG_BASE_URL);
     }
 }

@@ -52,6 +52,7 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
         return members.stream().anyMatch(x -> x.contains(Instant.now().toEpochMilli()));
     }
 
+    @Override
     public String toString() {
         return String.format("NonConsecutiveBestpriceResult with %s", members.toString());
     }
@@ -67,6 +68,7 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
         }
     }
 
+    @Override
     public String getHours() {
         boolean second = false;
         sort();

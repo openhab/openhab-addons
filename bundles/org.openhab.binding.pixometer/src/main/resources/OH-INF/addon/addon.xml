@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Pixometer Binding</name>
 	<description>This binding integrates meter data through pixometer.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

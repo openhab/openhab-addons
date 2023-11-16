@@ -22,9 +22,12 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +42,12 @@ import org.slf4j.LoggerFactory;
 public class IpCameraDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(IpCameraDiscoveryService.class);
+    private final NetworkAddressService networkAddressService;
 
-    public IpCameraDiscoveryService() {
+    @Activate
+    public IpCameraDiscoveryService(@Reference NetworkAddressService networkAddressService) {
         super(SUPPORTED_THING_TYPES, 0, false);
+        this.networkAddressService = networkAddressService;
     }
 
     @Override
@@ -65,7 +71,7 @@ public class IpCameraDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         removeOlderResults(getTimestampOfLastScan());
-        OnvifDiscovery onvifDiscovery = new OnvifDiscovery(this);
+        OnvifDiscovery onvifDiscovery = new OnvifDiscovery(networkAddressService, this);
         try {
             onvifDiscovery.discoverCameras();
         } catch (UnknownHostException | InterruptedException e) {

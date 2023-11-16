@@ -56,8 +56,8 @@ public class WolfSmartsetAccountDiscoveryService extends AbstractDiscoveryServic
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof WolfSmartsetAccountBridgeHandler) {
-            this.bridgeHandler = (WolfSmartsetAccountBridgeHandler) handler;
+        if (handler instanceof WolfSmartsetAccountBridgeHandler accountBridgeHandler) {
+            this.bridgeHandler = accountBridgeHandler;
         }
     }
 

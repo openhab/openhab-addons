@@ -77,6 +77,7 @@ The following configuration parameters are available on the Monitor thing:
 | imageUrl       | String      | Image URL for monitor id specified by imageMonitorId. Channel is UNDEF if the monitor id is not set, or if an OFF command is sent to the imageMonitorId channel. |
 | videoMonitorId | String      | Monitor ID to use for selecting a video URL. Also, sending an OFF command to this channel will reset the monitor id and url to UNDEF.  |
 | videoUrl       | String      | Video URL for monitor id specified by videoMonitorId. Channel is UNDEF if the monitor id is not set, or if an OFF command is sent to the videoMonitorId channel. |
+| runState       | String      | Set the run state for the ZoneMinder server |
 
 ### Monitor Thing
 
@@ -171,6 +172,7 @@ String ZmServer_ImageMonitorId "Image Monitor Id [%s]" { channel="zoneminder:ser
 String ZmServer_ImageUrl "Image Url [%s]" { channel="zoneminder:server:server:imageUrl" }
 String ZmServer_VideoMonitorId "Video Monitor Id [%s]" { channel="zm:server:server:videoMonitorId" }
 String ZmServer_VideoUrl "Video Url [%s]" { channel="zoneminder:server:server:videoUrl" }
+String ZmServer_RunState "Run State [%s]" { channel="zoneminder:server:server:runState" }
 
 // Monitor
 String      ZM_Monitor1_Id           "Monitor Id [%s]"              { channel="zoneminder:monitor:1:id" }

@@ -51,7 +51,7 @@ public class NhcThermostat1 extends NhcThermostat {
      * Sends thermostat setpoint to Niko Home Control.
      *
      * @param overrule temperature to overrule the setpoint in 0.1°C multiples
-     * @param time time duration in min for overrule
+     * @param overruletime time duration in min for overrule
      */
     @Override
     public void executeOverrule(int overrule, int overruletime) {

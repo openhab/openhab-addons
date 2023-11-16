@@ -74,8 +74,8 @@ public class WebexTeamsHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof WebexTeamsHandler) {
-            authService.removeWebexTeamsHandler((WebexTeamsHandler) thingHandler);
+        if (thingHandler instanceof WebexTeamsHandler webexTeamsHandler) {
+            authService.removeWebexTeamsHandler(webexTeamsHandler);
         }
     }
 }

@@ -25,7 +25,7 @@ public class Device {
         UP_AND_OVER,
         SLIDING,
         BARRIER,
-        SWING;
+        SWING
     }
 
     @XStreamAsAttribute

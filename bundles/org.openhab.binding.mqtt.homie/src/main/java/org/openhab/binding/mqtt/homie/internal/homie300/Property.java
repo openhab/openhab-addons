@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.AttributeChanged;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
@@ -97,7 +96,9 @@ public class Property implements AttributeChanged {
 
     /**
      * Subscribe to property attributes. This will not subscribe
-     * to the property value though. Call {@link Device#startChannels(MqttBrokerConnection)} to do that.
+     * to the property value though. Call
+     * {@link Device#startChannels(MqttBrokerConnection, ScheduledExecutorService, int, HomieThingHandler)}
+     * to do that.
      *
      * @return Returns a future that completes as soon as all attribute values have been received or requests have timed
      *         out.
@@ -188,9 +189,9 @@ public class Property implements AttributeChanged {
                 value = new OnOffValue("true", "false");
                 break;
             case color_:
-                if (attributes.format.equals("hsv")) {
+                if ("hsv".equals(attributes.format)) {
                     value = new ColorValue(ColorMode.HSB, null, null, 100);
-                } else if (attributes.format.equals("rgb")) {
+                } else if ("rgb".equals(attributes.format)) {
                     value = new ColorValue(ColorMode.RGB, null, null, 100);
                 } else {
                     logger.warn("Non supported color format: '{}'. Only 'hsv' and 'rgb' are supported",
@@ -199,13 +200,13 @@ public class Property implements AttributeChanged {
                 }
                 break;
             case enum_:
-                String enumValues[] = attributes.format.split(",");
+                String[] enumValues = attributes.format.split(",");
                 value = new TextValue(enumValues);
                 break;
             case float_:
             case integer_:
                 isDecimal = attributes.datatype == DataTypeEnum.float_;
-                String s[] = attributes.format.split("\\:");
+                String[] s = attributes.format.split("\\:");
                 BigDecimal min = s.length == 2 ? convertFromString(s[0]) : null;
                 BigDecimal max = s.length == 2 ? convertFromString(s[1]) : null;
                 BigDecimal step = (min != null && max != null)
@@ -267,7 +268,7 @@ public class Property implements AttributeChanged {
 
     /**
      * @return Returns the channelState. You should have called
-     *         {@link Property#subscribe(AbstractMqttAttributeClass, int)}
+     *         {@link Property#subscribe(MqttBrokerConnection, ScheduledExecutorService, int)}
      *         and waited for the future to complete before calling this Getter.
      */
     public @Nullable ChannelState getChannelState() {
@@ -280,7 +281,6 @@ public class Property implements AttributeChanged {
      * @param connection A broker connection
      * @param scheduler A scheduler to realize the timeout
      * @param timeout A timeout in milliseconds. Can be 0 to disable the timeout and let the future return earlier.
-     * @param channelStateUpdateListener An update listener
      * @return A future that completes with true if the subscribing worked and false and/or exceptionally otherwise.
      */
     public CompletableFuture<@Nullable Void> startChannel(MqttBrokerConnection connection,
@@ -338,9 +338,8 @@ public class Property implements AttributeChanged {
     public List<String> getRetainedTopics() {
         List<String> topics = new ArrayList<>();
 
-        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
-            return String.format("%s/$%s", this.propertyID, f.getName());
-        }).collect(Collectors.toList()));
+        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields())
+                .map(f -> String.format("%s/$%s", this.propertyID, f.getName())).collect(Collectors.toList()));
 
         // All exceptions can be ignored because the 'retained' attribute of the PropertyAttributes class
         // is public, is a boolean variable and has a default value (true)

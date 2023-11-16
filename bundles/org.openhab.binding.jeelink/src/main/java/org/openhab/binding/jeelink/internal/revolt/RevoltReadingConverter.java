@@ -23,9 +23,10 @@ import org.openhab.binding.jeelink.internal.JeeLinkReadingConverter;
  * @author Volker Bier - Initial contribution
  */
 public class RevoltReadingConverter implements JeeLinkReadingConverter<RevoltReading> {
-    private static final Pattern LINE_P = Pattern
-            .compile("r([0-9A-Za-z]{4})([0-9A-Za-z]{2})([0-9A-Za-z]{4})([0-9A-Za-z]{2})([0-9A-Za-z]{4})"
-                    + "([0-9A-Za-z]{2})([0-9A-Za-z]{4})[0-9A-Za-z][0-9A-Za-z]");
+    private static final Pattern LINE_P = Pattern.compile("""
+            r([0-9A-Za-z]{4})([0-9A-Za-z]{2})([0-9A-Za-z]{4})([0-9A-Za-z]{2})([0-9A-Za-z]{4})\
+            ([0-9A-Za-z]{2})([0-9A-Za-z]{4})[0-9A-Za-z][0-9A-Za-z]\
+            """);
 
     @Override
     public RevoltReading createReading(String inputLine) {

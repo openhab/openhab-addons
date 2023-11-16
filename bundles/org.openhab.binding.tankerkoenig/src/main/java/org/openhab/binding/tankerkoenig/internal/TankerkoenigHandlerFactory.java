@@ -53,8 +53,7 @@ public class TankerkoenigHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
-            WebserviceHandler handler = new WebserviceHandler((Bridge) thing);
-            return handler;
+            return new WebserviceHandler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_TANKSTELLE)) {
             return new StationHandler(thing);
         }

@@ -15,7 +15,7 @@ package org.openhab.binding.fronius.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link OhmpilotRealtimeDetails} is responsible for storing
+ * The {@link OhmpilotRealtimeDetailsDTO} is responsible for storing
  * the "body" node of the JSON response
  *
  * @author Hannes Spenger - Initial contribution

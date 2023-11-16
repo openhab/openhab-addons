@@ -31,7 +31,7 @@ public class HomeStatusPerson extends NAThing {
         return ModuleType.PERSON;
     }
 
-    public boolean isOutOfSight() {
-        return outOfSight;
+    public boolean atHome() {
+        return !outOfSight;
     }
 }

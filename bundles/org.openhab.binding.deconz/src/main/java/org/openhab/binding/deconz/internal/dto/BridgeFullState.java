@@ -22,7 +22,7 @@ import org.openhab.binding.deconz.internal.types.ResourceType;
 /**
  * http://dresden-elektronik.github.io/deconz-rest-doc/configuration/
  * # Get full state
- * GET /api/<apikey>
+ * {@code GET /api/<apikey>}
  *
  * @author David Graeff - Initial contribution
  */

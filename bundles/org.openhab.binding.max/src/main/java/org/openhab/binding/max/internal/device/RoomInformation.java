@@ -15,8 +15,8 @@ package org.openhab.binding.max.internal.device;
 /**
  * Room information provided by the M message meta information.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
- * @author Marcel Verpaalen (marcel@verpaalen.com) - OH2 update
+ * @author Andreas Heil - Initial contribution
+ * @author Marcel Verpaalen - OH2 update
  */
 public class RoomInformation {
     private int position;

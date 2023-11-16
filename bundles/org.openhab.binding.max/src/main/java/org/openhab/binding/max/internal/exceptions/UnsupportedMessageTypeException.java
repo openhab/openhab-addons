@@ -16,7 +16,7 @@ package org.openhab.binding.max.internal.exceptions;
  * Will be thrown when there is an attempt to put a new message line into the message processor,
  * but the line starts with an unknown message indicator.
  *
- * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
+ * @author Christian Rockrohr - Initial contribution
  */
 public class UnsupportedMessageTypeException extends Exception {
 

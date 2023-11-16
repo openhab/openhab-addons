@@ -16,7 +16,7 @@ import org.openhab.binding.digitalstrom.internal.lib.listener.DeviceStatusListen
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSID;
 
 /**
- * The {@link GeneralDeviceInformations} interface contains all informations of digitalSTROM devices, which are
+ * The {@link GeneralDeviceInformation} interface contains all informations of digitalSTROM devices, which are
  * identical for all device types. It also contains the methods to implement the mechanism of the
  * {@link DeviceStatusListener}.
  *

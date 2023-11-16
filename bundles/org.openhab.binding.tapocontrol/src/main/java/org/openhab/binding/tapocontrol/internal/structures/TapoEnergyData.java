@@ -63,7 +63,7 @@ public class TapoEnergyData {
         if (jso.has(JSON_KEY_ENERGY_POWER)) {
             this.jsonObject = jso;
         } else {
-            jsonObject = new JsonObject();
+            this.jsonObject = new JsonObject();
         }
         setData();
         return this;
@@ -88,42 +88,42 @@ public class TapoEnergyData {
      ************************************/
 
     public Number getCurrentPower() {
-        return this.currentPower;
+        return currentPower;
     }
 
     public Number getTodayEnergy() {
-        return this.todayEnergy;
+        return todayEnergy;
     }
 
     public Number getMonthEnergy() {
-        return this.monthEnergy;
+        return monthEnergy;
     }
 
     public Number getYearEnergy() {
         int sum = 0;
-        for (int i = 0; i < this.past1y.length; i++) {
-            sum += this.past1y[i].intValue();
+        for (int i = 0; i < past1y.length; i++) {
+            sum += past1y[i].intValue();
         }
         return sum;
     }
 
     public Number getTodayRuntime() {
-        return this.todayRuntime;
+        return todayRuntime;
     }
 
     public Number getMonthRuntime() {
-        return this.monthRuntime;
+        return monthRuntime;
     }
 
     public Number[] getPast24hUsage() {
-        return this.past24h;
+        return past24h;
     }
 
     public Number[] getPast30dUsage() {
-        return this.past30d;
+        return past30d;
     }
 
     public Number[] getPast1yUsage() {
-        return this.past1y;
+        return past1y;
     }
 }

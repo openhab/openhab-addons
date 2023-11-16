@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link @MPDActions} defines rule actions for the Music Player Daemon binding.
+ * The {@link MPDActions} defines rule actions for the Music Player Daemon binding.
  *
  * @author Stefan Röllin - Initial contribution
  */
@@ -38,8 +38,8 @@ public class MPDActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof MPDHandler) {
-            this.handler = (MPDHandler) handler;
+        if (handler instanceof MPDHandler mpdHandler) {
+            this.handler = mpdHandler;
         }
     }
 

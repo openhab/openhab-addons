@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecobee.internal.config.EcobeeSensorConfiguration;
 import org.openhab.binding.ecobee.internal.dto.thermostat.RemoteSensorCapabilityDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.RemoteSensorDTO;
-import org.openhab.binding.ecobee.internal.util.StringUtils;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -37,6 +36,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,7 +126,7 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
             ThingBuilder thingBuilder;
             thingBuilder = editThing();
             channel = ChannelBuilder.create(uid, getAcceptedItemType(capability.type))
-                    .withLabel("Sensor " + StringUtils.capitalizeWords(capability.type))
+                    .withLabel("Sensor " + StringUtils.capitalizeByWhitespace(capability.type))
                     .withType(getChannelTypeUID(capability.type)).build();
             thingBuilder.withChannel(channel);
             updateThing(thingBuilder.build());

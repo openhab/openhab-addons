@@ -38,7 +38,6 @@ public class CommonModelParser extends AbstractBaseParser implements SunspecPars
 
     @Override
     public CommonModelBlock parse(ModbusRegisterArray raw) {
-
         CommonModelBlock block = new CommonModelBlock();
 
         block.sunSpecDID = extractUInt16(raw, 0, 0);

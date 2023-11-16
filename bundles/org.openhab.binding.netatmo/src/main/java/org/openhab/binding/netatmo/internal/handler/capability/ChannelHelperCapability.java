@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.dto.NAError;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
@@ -25,6 +26,7 @@ import org.openhab.core.types.State;
 
 /**
  * {@link ChannelHelperCapability} give the capability to dispatch incoming data across the channel helpers.
+ * This capability is common to all things
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -55,5 +57,12 @@ public class ChannelHelperCapability extends Capability {
                 }
             }
         });
+    }
+
+    @Override
+    protected void updateErrors(NAError error) {
+        if (error.getId().equals(handler.getId())) {
+            statusReason = "@text/%s".formatted(error.getCode().message);
+        }
     }
 }

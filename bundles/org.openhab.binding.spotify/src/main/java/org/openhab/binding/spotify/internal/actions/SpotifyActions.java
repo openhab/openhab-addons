@@ -37,7 +37,6 @@ public class SpotifyActions implements ThingActions, ThingHandlerService {
      * Play a context uri (track or other) on the current active device (if null is passed for deviceID) or the given
      * device at the given offset and/or position in milliseconds.
      *
-     * @param actions Spotify Actions object.
      * @param contextUri context uri (track or other)
      * @param deviceId Id of the device to play on, or current device if given null
      * @param offset Offset in the list, default 0.

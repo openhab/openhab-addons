@@ -23,35 +23,46 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class RustpotterKSConfiguration {
     /**
-     * Configures the detector threshold, is the min score (in range 0. to 1.) that some wake word template should
-     * obtain to trigger a detection. Defaults to 0.5.
+     * Configures the detector threshold, is the min score (in range 0. to 1.) to trigger the detection.
+     * Defaults to 0.5.
      */
     public float threshold = 0.5f;
     /**
-     * Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the audio should obtain
-     * against a
-     * combination of the wake word templates, the detection will be aborted if this is not the case. This way it can
-     * prevent to
-     * run the comparison of the current frame against each of the wake word templates which saves cpu.
+     * Configures the detector averaged threshold.
      * If set to 0 this functionality is disabled.
      */
-    public float averagedThreshold = 0.2f;
+    public float averagedThreshold = 0f;
     /**
      * Indicates how to calculate the final score.
+     * Only applies to not trained wakewords.
      */
     public String scoreMode = "max";
     /**
-     * Minimum number of positive scores to consider a partial detection as a detection.
+     * Enables a basic vad detector to discard some execution.
+     */
+    public String vadMode = "";
+    /**
+     * Minimum number of positive scores required to not discard the detection.
      */
     public int minScores = 5;
     /**
+     * Emit detection on min partial scores.
+     */
+    public boolean eager = false;
+    /**
      * Configures the reference for the comparator used to match the samples.
      */
-    public float comparatorRef = 0.22f;
+    public float scoreRef = 0.22f;
     /**
      * Configures the band-size for the comparator used to match the samples.
+     * Only applies to wakeword references.
      */
-    public int comparatorBandSize = 5;
+    public int bandSize = 5;
+    /**
+     * Create wav record on the first partial detections and any other one that surpasses its score.
+     *
+     */
+    public boolean record = false;
     /**
      * Enables an audio filter that intent to approximate the volume of the stream to a reference level (RMS of the
      * samples is used as volume measure).

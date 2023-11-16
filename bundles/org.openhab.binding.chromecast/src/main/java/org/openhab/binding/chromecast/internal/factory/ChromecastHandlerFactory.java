@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.chromecast.internal.ChromecastAudioSink;
 import org.openhab.binding.chromecast.internal.handler.ChromecastHandler;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
@@ -77,11 +78,12 @@ public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ChromecastHandler handler = new ChromecastHandler(thing, audioHTTPServer, createCallbackUrl());
+        ChromecastHandler handler = new ChromecastHandler(thing);
+        ChromecastAudioSink audioSink = new ChromecastAudioSink(handler, audioHTTPServer, createCallbackUrl());
 
         @SuppressWarnings("unchecked")
         ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                .registerService(AudioSink.class.getName(), handler, null);
+                .registerService(AudioSink.class.getName(), audioSink, null);
         audioSinkRegistrations.put(thing.getUID().toString(), reg);
 
         return handler;

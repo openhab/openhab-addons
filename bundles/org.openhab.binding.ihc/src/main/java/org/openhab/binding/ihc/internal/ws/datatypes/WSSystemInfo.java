@@ -90,7 +90,7 @@ public class WSSystemInfo {
     /**
      * Sets the RealTimeClock value for this WSSystemInfo.
      *
-     * @param RealTimeClock
+     * @param realtimeclock
      */
     public void setRealTimeClock(ZonedDateTime realtimeclock) {
         this.realtimeclock = realtimeclock;
@@ -108,7 +108,7 @@ public class WSSystemInfo {
     /**
      * Sets the SerialNumber value for this WSSystemInfo.
      *
-     * @param SerialNumber
+     * @param serialNumber
      */
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;

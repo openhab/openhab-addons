@@ -41,7 +41,7 @@ public final class SmlValueExtractor {
     /**
      * Constructor
      *
-     * @param obis
+     * @param listEntry
      */
     public SmlValueExtractor(SmlListEntry listEntry) {
         smlListEntry = listEntry;
@@ -151,10 +151,8 @@ public final class SmlValueExtractor {
      * @return the hex encoded OBIS code as readable string.
      */
     protected static String getObisAsString(byte[] octetBytes) {
-        String formattedObis = String.format(SmartMeterBindingConstants.OBIS_FORMAT_MINIMAL, byteToInt(octetBytes[0]),
+        return String.format(SmartMeterBindingConstants.OBIS_FORMAT_MINIMAL, byteToInt(octetBytes[0]),
                 byteToInt(octetBytes[1]), byteToInt(octetBytes[2]), byteToInt(octetBytes[3]), byteToInt(octetBytes[4]));
-
-        return formattedObis;
     }
 
     public String getObisCode() {

@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -69,11 +68,11 @@ import com.google.gson.Gson;
  * sent to one of the channels.
  *
  * @author Markus Pfleger - Initial contribution
- * @author Marcin Czeczko - Added support for planner & calendar data
+ * @author Marcin Czeczko - Added support for planner and calendar data
  */
 @NonNullByDefault
 public class AutomowerHandler extends BaseThingHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AUTOMOWER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_AUTOMOWER);
     private static final String NO_ID = "NO_ID";
     private static final long DEFAULT_COMMAND_DURATION_MIN = 60;
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.MINUTES.toSeconds(10);
@@ -120,8 +119,8 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private Optional<Integer> getCommandValue(Type type) {
-        if (type instanceof DecimalType) {
-            return Optional.of(((DecimalType) type).intValue());
+        if (type instanceof DecimalType command) {
+            return Optional.of(command.intValue());
         }
         return Optional.empty();
     }
@@ -132,7 +131,7 @@ public class AutomowerHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(AutomowerActions.class);
+        return Set.of(AutomowerActions.class);
     }
 
     @Override
@@ -163,8 +162,7 @@ public class AutomowerHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof AutomowerBridgeHandler) {
-                AutomowerBridgeHandler bridgeHandler = (AutomowerBridgeHandler) handler;
+            if (handler instanceof AutomowerBridgeHandler bridgeHandler) {
                 return bridgeHandler.getAutomowerBridge();
             }
         }

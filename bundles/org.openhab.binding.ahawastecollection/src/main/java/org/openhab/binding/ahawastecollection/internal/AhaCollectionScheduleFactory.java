@@ -25,6 +25,6 @@ public interface AhaCollectionScheduleFactory {
     /**
      * Creates a new {@link AhaCollectionSchedule} for the given location.
      */
-    public AhaCollectionSchedule create(final String commune, final String street, final String houseNumber,
+    AhaCollectionSchedule create(final String commune, final String street, final String houseNumber,
             final String houseNumberAddon, final String collectionPlace);
 }

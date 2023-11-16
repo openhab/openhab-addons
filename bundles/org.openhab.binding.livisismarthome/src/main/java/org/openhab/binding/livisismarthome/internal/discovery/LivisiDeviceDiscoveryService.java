@@ -160,8 +160,8 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof LivisiBridgeHandler) {
-            bridgeHandler = (LivisiBridgeHandler) handler;
+        if (handler instanceof LivisiBridgeHandler livisiBridgeHandler) {
+            bridgeHandler = livisiBridgeHandler;
         }
     }
 

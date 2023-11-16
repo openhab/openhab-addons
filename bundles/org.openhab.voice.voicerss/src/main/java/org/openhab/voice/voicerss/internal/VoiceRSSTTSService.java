@@ -27,6 +27,8 @@ import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.voice.AbstractCachedTTSService;
+import org.openhab.core.voice.TTSCache;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
@@ -35,6 +37,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +48,10 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Garnier - add support for OGG and AAC audio formats
  */
 @NonNullByDefault
-@Component(configurationPid = "org.openhab.voicerss", property = Constants.SERVICE_PID + "=org.openhab.voicerss")
+@Component(service = TTSService.class, configurationPid = "org.openhab.voicerss", property = Constants.SERVICE_PID
+        + "=org.openhab.voicerss")
 @ConfigurableService(category = "voice", label = "VoiceRSS Text-to-Speech", description_uri = "voice:voicerss")
-public class VoiceRSSTTSService implements TTSService {
+public class VoiceRSSTTSService extends AbstractCachedTTSService {
 
     /** Cache folder name is below userdata/voicerss/cache. */
     private static final String CACHE_FOLDER_NAME = "voicerss" + File.separator + "cache";
@@ -86,6 +90,11 @@ public class VoiceRSSTTSService implements TTSService {
      * Set of supported audio formats
      */
     private @Nullable Set<AudioFormat> audioFormats;
+
+    @Activate
+    public VoiceRSSTTSService(final @Reference TTSCache ttsCache) {
+        super(ttsCache);
+    }
 
     /**
      * DS activate, with access to ConfigAdmin
@@ -130,6 +139,43 @@ public class VoiceRSSTTSService implements TTSService {
         if (voiceRssCloud == null) {
             throw new TTSException("The service is not correctly initialized");
         }
+        // trim text
+        String trimmedText = text.trim();
+        if (trimmedText.isEmpty()) {
+            throw new TTSException("The passed text is empty");
+        }
+        Set<Voice> localVoices = voices;
+        if (localVoices == null || !localVoices.contains(voice)) {
+            throw new TTSException("The passed voice is unsupported");
+        }
+
+        // If one predefined cache entry for given text, locale, voice, codec and format exists,
+        // create the input from this file stream and return it.
+        try {
+            File cacheAudioFile = voiceRssCloud.getTextToSpeechInCache(trimmedText, voice.getLocale().toLanguageTag(),
+                    voice.getLabel(), getApiAudioCodec(requestedFormat), getApiAudioFormat(requestedFormat));
+            if (cacheAudioFile != null) {
+                logger.debug("Use cache entry '{}'", cacheAudioFile.getName());
+                return new VoiceRSSAudioStream(cacheAudioFile, requestedFormat);
+            }
+        } catch (AudioException ex) {
+            throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
+        } catch (IOException ex) {
+            throw new TTSException("Could not read from VoiceRSS service: " + ex.getMessage(), ex);
+        }
+
+        // If no predefined cache entry exists, use the common TTS cache mechanism from core framework
+        logger.debug("Use common TTS cache mechanism");
+        return super.synthesize(text, voice, requestedFormat);
+    }
+
+    @Override
+    public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
+        logger.debug("synthesizeForCache '{}' for voice '{}' in format {}", text, voice.getUID(), requestedFormat);
+        CachedVoiceRSSCloudImpl voiceRssCloud = voiceRssImpl;
+        if (voiceRssCloud == null) {
+            throw new TTSException("The service is not correctly initialized");
+        }
         // Validate known api key
         String key = apiKey;
         if (key == null) {
@@ -145,14 +191,11 @@ public class VoiceRSSTTSService implements TTSService {
             throw new TTSException("The passed voice is unsupported");
         }
 
-        // now create the input stream for given text, locale, voice, codec and format.
         try {
-            File cacheAudioFile = voiceRssCloud.getTextToSpeechAsFile(key, trimmedText,
+            VoiceRSSRawAudioStream audioStream = voiceRssCloud.getTextToSpeech(key, trimmedText,
                     voice.getLocale().toLanguageTag(), voice.getLabel(), getApiAudioCodec(requestedFormat),
                     getApiAudioFormat(requestedFormat));
-            return new VoiceRSSAudioStream(cacheAudioFile, requestedFormat);
-        } catch (AudioException ex) {
-            throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
+            return new VoiceRSSRawAudioStream(audioStream.getInputStream(), requestedFormat, audioStream.length());
         } catch (IOException ex) {
             throw new TTSException("Could not read from VoiceRSS service: " + ex.getMessage(), ex);
         }

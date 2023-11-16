@@ -14,7 +14,6 @@ package org.openhab.binding.vesync.internal.discovery;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +45,7 @@ import org.osgi.service.component.annotations.Component;
 public class VeSyncDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService, DeviceMetaDataUpdatedHandler {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
 
@@ -79,8 +78,8 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VeSyncBridgeHandler) {
-            bridgeHandler = (VeSyncBridgeHandler) handler;
+        if (handler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
+            bridgeHandler = veSyncBridgeHandler;
             bridgeUID = bridgeHandler.getUID();
         }
     }

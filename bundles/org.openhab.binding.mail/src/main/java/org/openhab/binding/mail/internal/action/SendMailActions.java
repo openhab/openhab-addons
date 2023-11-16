@@ -230,8 +230,8 @@ public class SendMailActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SMTPHandler) {
-            this.handler = (SMTPHandler) handler;
+        if (handler instanceof SMTPHandler smtpHandler) {
+            this.handler = smtpHandler;
         }
     }
 

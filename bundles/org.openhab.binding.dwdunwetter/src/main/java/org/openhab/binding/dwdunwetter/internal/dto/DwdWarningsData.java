@@ -119,6 +119,8 @@ public class DwdWarningsData {
 
         try {
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
             XMLStreamReader reader = inputFactory.createXMLStreamReader(new StringReader(rawData));
             XMLEventReader eventReader = inputFactory.createXMLEventReader(reader);
             DwdWarningData gemeindeData = new DwdWarningData();
@@ -306,6 +308,6 @@ public class DwdWarningsData {
      */
     protected void setDataAccess(DwdWarningDataAccess dataAccess) {
         dataAccessCached = new ExpiringCache<>(Duration.ofMinutes(MIN_REFRESH_WAIT_MINUTES),
-                () -> dataAccess.getDataFromEndpoint(""));
+                () -> dataAccess.getDataFromEndpoint("TestCity"));
     }
 }

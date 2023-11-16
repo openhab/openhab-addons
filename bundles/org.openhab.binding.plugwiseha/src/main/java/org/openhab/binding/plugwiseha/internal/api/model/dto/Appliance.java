@@ -230,7 +230,7 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
 
     public boolean isBatteryOperated() {
         if (this.zigbeeNode instanceof ZigBeeNode) {
-            return this.zigbeeNode.getPowerSource().equals("battery") && this.getBatteryLevel().isPresent();
+            return "battery".equals(this.zigbeeNode.getPowerSource()) && this.getBatteryLevel().isPresent();
         } else {
             return false;
         }

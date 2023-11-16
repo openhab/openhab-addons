@@ -29,8 +29,8 @@ import org.openhab.core.types.Command;
  * sent to one of the channels.
  *
  * @author Markus Katter - Initial contribution
- * @contributer Christian Hoefler - Door sensor integration
- * @contributer Jan Vybíral - Refactoring, added more channels
+ * @author Christian Hoefler - Door sensor integration
+ * @author Jan Vybíral - Refactoring, added more channels
  */
 @NonNullByDefault
 public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLockConfiguration> {
@@ -82,9 +82,8 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLoc
                 }
                 break;
             case NukiBindingConstants.CHANNEL_SMARTLOCK_STATE:
-                if (command instanceof DecimalType) {
-                    DecimalType cmd = (DecimalType) command;
-                    SmartLockAction action = SmartLockAction.fromAction(cmd.intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    SmartLockAction action = SmartLockAction.fromAction(decimalCommand.intValue());
                     if (action != null) {
                         withHttpClient(client -> {
                             BridgeLockActionResponse bridgeLockActionResponse = client

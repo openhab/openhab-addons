@@ -13,7 +13,7 @@
 package org.openhab.binding.volvooncall.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -97,7 +97,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(VolvoVehicleDiscoveryService.class);
+        return Set.of(VolvoVehicleDiscoveryService.class);
     }
 
     @Override

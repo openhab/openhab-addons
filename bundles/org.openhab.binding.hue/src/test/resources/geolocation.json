@@ -1,0 +1,10 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "fe29550d-92b9-4e36-a832-42d041466300",
+			"is_configured": true,
+			"type": "geolocation"
+		}
+	]
+}

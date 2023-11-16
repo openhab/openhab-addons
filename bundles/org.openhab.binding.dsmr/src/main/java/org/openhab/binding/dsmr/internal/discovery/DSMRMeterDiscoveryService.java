@@ -55,8 +55,6 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
 
     /**
      * Constructs a new {@link DSMRMeterDiscoveryService} attached to the give bridge handler.
-     *
-     * @param dsmrBridgeHandler The bridge handler this discovery service is attached to
      */
     public DSMRMeterDiscoveryService() {
         super();
@@ -76,8 +74,8 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
 
     @Override
     public void setThingHandler(final ThingHandler handler) {
-        if (handler instanceof DSMRBridgeHandler) {
-            dsmrBridgeHandler = (DSMRBridgeHandler) handler;
+        if (handler instanceof DSMRBridgeHandler bridgeHandler) {
+            dsmrBridgeHandler = bridgeHandler;
         }
     }
 
@@ -124,14 +122,18 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
                 reportUnregisteredMeters();
             } else {
                 reportUnrecognizedCosemObjects(list);
-                logger.info("There are unrecognized cosem values in the data received from the meter,"
-                        + " which means some meters might not be detected. Please report your raw data as reference: {}",
-                        telegram.getRawTelegram());
+                logger.info("""
+                        There are unrecognized cosem values in the data received from the meter,\
+                         which means some meters might not be detected. Please report your raw data as reference: {}\
+                        """, telegram.getRawTelegram());
             }
         }
         if (!telegram.getUnknownCosemObjects().isEmpty()) {
-            logger.info("There are unrecognized cosem values in the data received from the meter,"
-                    + " which means you have values that can't be read by a channel: {}. Please report them and your raw data as reference: {}",
+            logger.info(
+                    """
+                            There are unrecognized cosem values in the data received from the meter,\
+                             which means you have values that can't be read by a channel: {}. Please report them and your raw data as reference: {}\
+                            """,
                     telegram.getUnknownCosemObjects().stream()
                             .map(e -> String.format("obis id:%s, value:%s", e.getKey(), e.getValue()))
                             .collect(Collectors.joining(", ")),
@@ -196,10 +198,10 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
      */
     protected void reportConfigurationValidationResults(final List<DSMRMeterType> invalidConfigured,
             final List<DSMRMeterType> unconfiguredMeters) {
-        logger.info(
-                "Possible incorrect meters configured. These are configured: {}."
-                        + "But the following unconfigured meters are found in the data received from the meter: {}",
-                invalidConfigured.stream().map(m -> m.name()).collect(Collectors.joining(", ")),
+        logger.info("""
+                Possible incorrect meters configured. These are configured: {}.\
+                But the following unconfigured meters are found in the data received from the meter: {}\
+                """, invalidConfigured.stream().map(m -> m.name()).collect(Collectors.joining(", ")),
                 unconfiguredMeters.stream().map(m -> m.name()).collect(Collectors.joining(", ")));
     }
 }

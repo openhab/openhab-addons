@@ -62,8 +62,8 @@ public class FreeboxCommandExtension extends AbstractConsoleCommandExtension imp
             FreeboxHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof FreeboxHandler) {
-                    handler = (FreeboxHandler) thingHandler;
+                if (thingHandler instanceof FreeboxHandler freeboxHandler) {
+                    handler = freeboxHandler;
                 }
             }
             if (thing == null) {

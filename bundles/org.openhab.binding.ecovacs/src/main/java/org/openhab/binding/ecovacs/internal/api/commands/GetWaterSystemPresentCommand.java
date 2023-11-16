@@ -40,9 +40,8 @@ public class GetWaterSystemPresentCommand extends IotDeviceCommand<Boolean> {
     @Override
     public Boolean convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            WaterInfoReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    WaterInfoReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            WaterInfoReport resp = jsonResponse.getResponsePayloadAs(gson, WaterInfoReport.class);
             return resp.waterPlatePresent != 0;
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();

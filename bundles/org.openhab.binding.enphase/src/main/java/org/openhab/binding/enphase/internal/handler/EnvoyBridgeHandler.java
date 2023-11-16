@@ -18,12 +18,14 @@ import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATT_HOURS_LIFETIME;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATT_HOURS_SEVEN_DAYS;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATT_HOURS_TODAY;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.PROPERTY_VERSION;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -35,13 +37,16 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.enphase.internal.EnphaseBindingConstants;
 import org.openhab.binding.enphase.internal.EnvoyConfiguration;
-import org.openhab.binding.enphase.internal.EnvoyConnectionException;
 import org.openhab.binding.enphase.internal.EnvoyHostAddressCache;
-import org.openhab.binding.enphase.internal.EnvoyNoHostnameException;
 import org.openhab.binding.enphase.internal.discovery.EnphaseDevicesDiscoveryService;
 import org.openhab.binding.enphase.internal.dto.EnvoyEnergyDTO;
 import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO.DeviceDTO;
 import org.openhab.binding.enphase.internal.dto.InverterDTO;
+import org.openhab.binding.enphase.internal.exception.EnphaseException;
+import org.openhab.binding.enphase.internal.exception.EntrezConnectionException;
+import org.openhab.binding.enphase.internal.exception.EntrezJwtInvalidException;
+import org.openhab.binding.enphase.internal.exception.EnvoyConnectionException;
+import org.openhab.binding.enphase.internal.exception.EnvoyNoHostnameException;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
@@ -55,6 +60,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -79,10 +86,11 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     private static final long RETRY_RECONNECT_SECONDS = 10;
 
     private final Logger logger = LoggerFactory.getLogger(EnvoyBridgeHandler.class);
-    private final EnvoyConnector connector;
     private final EnvoyHostAddressCache envoyHostnameCache;
+    private final EnvoyConnectorWrapper connectorWrapper;
 
     private EnvoyConfiguration configuration = new EnvoyConfiguration();
+
     private @Nullable ScheduledFuture<?> updataDataFuture;
     private @Nullable ScheduledFuture<?> updateHostnameFuture;
     private @Nullable ExpiringCache<Map<String, @Nullable InverterDTO>> invertersCache;
@@ -95,8 +103,8 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     public EnvoyBridgeHandler(final Bridge thing, final HttpClient httpClient,
             final EnvoyHostAddressCache envoyHostAddressCache) {
         super(thing);
-        connector = new EnvoyConnector(httpClient);
         this.envoyHostnameCache = envoyHostAddressCache;
+        connectorWrapper = new EnvoyConnectorWrapper(httpClient);
     }
 
     @Override
@@ -132,7 +140,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(EnphaseDevicesDiscoveryService.class);
+        return Set.of(EnphaseDevicesDiscoveryService.class);
     }
 
     @Override
@@ -143,14 +151,14 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
-        connector.setConfiguration(configuration);
         consumptionSupported = FeatureStatus.UNKNOWN;
         jsonSupported = FeatureStatus.UNKNOWN;
         invertersCache = new ExpiringCache<>(Duration.of(configuration.refresh, ChronoUnit.MINUTES),
                 this::refreshInverters);
         devicesCache = new ExpiringCache<>(Duration.of(configuration.refresh, ChronoUnit.MINUTES),
                 this::refreshDevices);
-        updataDataFuture = scheduler.scheduleWithFixedDelay(this::updateData, 0, configuration.refresh,
+        connectorWrapper.setVersion(getVersion());
+        updataDataFuture = scheduler.scheduleWithFixedDelay(() -> updateData(false), 0, configuration.refresh,
                 TimeUnit.MINUTES);
     }
 
@@ -162,21 +170,23 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
      */
     private @Nullable Map<String, @Nullable InverterDTO> refreshInverters() {
         try {
-            return connector.getInverters().stream()
+            return connectorWrapper.getConnector().getInverters().stream()
                     .collect(Collectors.toMap(InverterDTO::getSerialNumber, Function.identity()));
         } catch (final EnvoyNoHostnameException e) {
             // ignore hostname exception here. It's already handled by others.
         } catch (final EnvoyConnectionException e) {
             logger.trace("refreshInverters connection problem", e);
+        } catch (final EnphaseException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return null;
     }
 
-    private @Nullable Map<String, @Nullable DeviceDTO> refreshDevices() {
+    private @Nullable final Map<String, @Nullable DeviceDTO> refreshDevices() {
         try {
             if (jsonSupported != FeatureStatus.UNSUPPORTED) {
-                final Map<String, @Nullable DeviceDTO> devicesData = connector.getInventoryJson().stream()
-                        .flatMap(inv -> Stream.of(inv.devices).map(d -> {
+                final Map<String, @Nullable DeviceDTO> devicesData = connectorWrapper.getConnector().getInventoryJson()
+                        .stream().flatMap(inv -> Stream.of(inv.devices).map(d -> {
                             d.type = inv.type;
                             return d;
                         })).collect(Collectors.toMap(DeviceDTO::getSerialNumber, Function.identity()));
@@ -195,6 +205,8 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
             } else if (consumptionSupported == FeatureStatus.SUPPORTED) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
+        } catch (final EnphaseException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return null;
     }
@@ -242,24 +254,82 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     /**
      * Method called by the refresh thread.
      */
-    public synchronized void updateData() {
+    public synchronized void updateData(final boolean forceUpdate) {
         try {
-            updateInverters();
-            updateEnvoy();
-            updateDevices();
+            if (!ThingHandlerHelper.isHandlerInitialized(this)) {
+                logger.debug("Not updating anything. Not initialized: {}", getThing().getStatus());
+                return;
+            }
+            if (checkConnection()) {
+                updateEnvoy();
+                updateInverters(forceUpdate);
+                updateDevices(forceUpdate);
+            }
         } catch (final EnvoyNoHostnameException e) {
             scheduleHostnameUpdate(false);
         } catch (final EnvoyConnectionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduleHostnameUpdate(false);
+        } catch (final EntrezConnectionException e) {
+            logger.debug("EntrezConnectionException in Enphase thing {}: ", getThing().getUID(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (final EntrezJwtInvalidException e) {
+            logger.debug("EntrezJwtInvalidException in Enphase thing {}: ", getThing().getUID(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (final EnphaseException e) {
+            logger.debug("EnphaseException in Enphase thing {}: ", getThing().getUID(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (final RuntimeException e) {
-            logger.debug("Unexpected error in Enphase {}: ", getThing().getUID(), e);
+            logger.debug("Unexpected error in Enphase thing {}: ", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void updateEnvoy() throws EnvoyNoHostnameException, EnvoyConnectionException {
-        productionDTO = connector.getProduction();
+    /**
+     * Checks if there is an active connection. If the configuration isn't valid it will set the bridge offline and
+     * return false.
+     *
+     * @return true if an active connection was found, else returns false
+     * @throws EnphaseException
+     */
+    private boolean checkConnection() throws EnphaseException {
+        logger.trace("Check connection");
+        if (connectorWrapper.hasConnection()) {
+            return true;
+        }
+        final String configurationError = connectorWrapper.setConnector(configuration);
+
+        if (configurationError.isBlank()) {
+            updateVersion();
+            logger.trace("No configuration error");
+            return true;
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
+            return false;
+        }
+    }
+
+    private @Nullable String getVersion() {
+        return getThing().getProperties().get(PROPERTY_VERSION);
+    }
+
+    private void updateVersion() {
+        if (getVersion() == null) {
+            final String version = connectorWrapper.getVersion();
+
+            if (version != null) {
+                final BridgeBuilder builder = editThing();
+                final Map<String, String> properties = new HashMap<>(thing.getProperties());
+
+                properties.put(PROPERTY_VERSION, version);
+                builder.withProperties(properties);
+                updateThing(builder.build());
+            }
+        }
+    }
+
+    private void updateEnvoy() throws EnphaseException {
+        productionDTO = connectorWrapper.getConnector().getProduction();
         setConsumptionDTOData();
         getThing().getChannels().stream().map(Channel::getUID).filter(this::isLinked).forEach(this::refresh);
         if (isInitialized() && !isOnline()) {
@@ -269,13 +339,11 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Retrieve consumption data if supported, and keep track if this feature is supported by the device.
-     *
-     * @throws EnvoyConnectionException
      */
-    private void setConsumptionDTOData() throws EnvoyConnectionException {
+    private void setConsumptionDTOData() throws EnphaseException {
         if (consumptionSupported != FeatureStatus.UNSUPPORTED && isOnline()) {
             try {
-                consumptionDTO = connector.getConsumption();
+                consumptionDTO = connectorWrapper.getConnector().getConsumption();
                 consumptionSupported = FeatureStatus.SUPPORTED;
             } catch (final EnvoyNoHostnameException e) {
                 // ignore hostname exception here. It's already handled by others.
@@ -294,9 +362,11 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Updates channels of the inverter things with inverter specific data.
+     *
+     * @param forceUpdate if true forces to update the data, otherwise gets the data from the cache
      */
-    private void updateInverters() {
-        final Map<String, @Nullable InverterDTO> inverters = getInvertersData(false);
+    private void updateInverters(final boolean forceUpdate) {
+        final Map<String, @Nullable InverterDTO> inverters = getInvertersData(forceUpdate);
 
         if (inverters != null) {
             getThing().getThings().stream().map(Thing::getHandler).filter(h -> h instanceof EnphaseInverterHandler)
@@ -322,9 +392,11 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     /**
      * Updates channels of the device things with device specific data.
      * This data is not available on all envoy devices.
+     *
+     * @param forceUpdate if true forces to update the data, otherwise gets the data from the cache
      */
-    private void updateDevices() {
-        final Map<String, @Nullable DeviceDTO> devices = getDevices(false);
+    private void updateDevices(final boolean forceUpdate) {
+        final Map<String, @Nullable DeviceDTO> devices = getDevices(forceUpdate);
 
         getThing().getThings().stream().map(Thing::getHandler).filter(h -> h instanceof EnphaseDeviceHandler)
                 .map(EnphaseDeviceHandler.class::cast).forEach(invHandler -> invHandler
@@ -347,15 +419,14 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(final ThingHandler childHandler, final Thing childThing) {
-        if (childHandler instanceof EnphaseInverterHandler) {
-            updateInverter(getInvertersData(false), (EnphaseInverterHandler) childHandler);
+        if (childHandler instanceof EnphaseInverterHandler handler) {
+            updateInverter(getInvertersData(false), handler);
         }
-        if (childHandler instanceof EnphaseDeviceHandler) {
+        if (childHandler instanceof EnphaseDeviceHandler handler) {
             final Map<String, @Nullable DeviceDTO> devices = getDevices(false);
 
             if (devices != null) {
-                ((EnphaseDeviceHandler) childHandler)
-                        .refreshDeviceState(devices.get(((EnphaseDeviceHandler) childHandler).getSerialNumber()));
+                handler.refreshDeviceState(devices.get(handler.getSerialNumber()));
             }
         }
     }
@@ -368,20 +439,23 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
 
         if (lastKnownHostname.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "No ip address known of the envoy gateway. If this isn't updated in a few minutes check your connection.");
+                    "No ip address known of the Envoy gateway. If this isn't updated in a few minutes run discovery scan or check your connection.");
             scheduleHostnameUpdate(true);
         } else {
-            final Configuration config = editConfiguration();
-
-            config.put(CONFIG_HOSTNAME, lastKnownHostname);
-            logger.info("Enphase Envoy ({}) hostname/ip address set to {}", getThing().getUID(), lastKnownHostname);
-            configuration.hostname = lastKnownHostname;
-            connector.setConfiguration(configuration);
-            updateConfiguration(config);
-            updateData();
-            // The task is done so the future can be released by setting it to null.
-            updateHostnameFuture = null;
+            updateConfigurationOnHostnameUpdate(lastKnownHostname);
+            updateData(true);
         }
+    }
+
+    private void updateConfigurationOnHostnameUpdate(final String lastKnownHostname) {
+        final Configuration config = editConfiguration();
+
+        config.put(CONFIG_HOSTNAME, lastKnownHostname);
+        logger.info("Enphase Envoy ({}) hostname/ip address set to {}", getThing().getUID(), lastKnownHostname);
+        configuration.hostname = lastKnownHostname;
+        updateConfiguration(config);
+        // The task is done so the future can be released by setting it to null.
+        updateHostnameFuture = null;
     }
 
     @Override

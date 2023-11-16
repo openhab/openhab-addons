@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface PulseAudioBindingConfigurationListener {
 
-    public void bindingConfigurationChanged();
+    void bindingConfigurationChanged();
 }

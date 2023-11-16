@@ -56,10 +56,10 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
 
     private String extractValue(Command command) {
         // this is necessary because we must not send the unit to the nibe backend
-        if (command instanceof QuantityType<?>) {
-            return String.valueOf(((QuantityType<?>) command).doubleValue());
-        } else if (command instanceof OnOffType) {
-            return ChannelUtil.mapValue(channel, (OnOffType) command);
+        if (command instanceof QuantityType<?> quantityCommand) {
+            return String.valueOf(quantityCommand.doubleValue());
+        } else if (command instanceof OnOffType onOffCommand) {
+            return ChannelUtil.mapValue(channel, onOffCommand);
         } else {
             return command.toString();
         }

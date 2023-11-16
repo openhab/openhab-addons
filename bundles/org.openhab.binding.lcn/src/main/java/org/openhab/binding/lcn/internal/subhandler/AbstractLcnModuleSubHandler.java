@@ -117,7 +117,6 @@ public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandle
      * message.
      *
      * @param pck the message to process
-     * @return true, if the message could be processed successfully
      */
     public void tryParse(String pck) {
         getPckStatusMessagePatterns().stream() //

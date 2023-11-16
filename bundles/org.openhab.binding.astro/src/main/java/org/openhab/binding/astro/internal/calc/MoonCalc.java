@@ -35,9 +35,9 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Christoph Weitkamp - Introduced UoM
- * @see based on the calculations of
- *      http://www.computus.de/mondphase/mondphase.htm azimuth/elevation and
- *      zodiac based on http://lexikon.astronomie.info/java/sunmoon/
+ * @implNote based on the calculations of
+ *           http://www.computus.de/mondphase/mondphase.htm azimuth/elevation and
+ *           zodiac based on http://lexikon.astronomie.info/java/sunmoon/
  */
 public class MoonCalc {
     private static final double NEW_MOON = 0;
@@ -490,8 +490,7 @@ public class MoonCalc {
         double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t * t + t * t * t / 69699 - t * t * t * t / 14712000;
         double f = 93.27209929999999 + 483202.0175273 * t - .0034029 * t * t - t * t * t / 3526000
                 + t * t * t * t / 863310000;
-        double sr = 385000.56 + getCoefficient(d, m, m1, f) / 1000;
-        return sr;
+        return 385000.56 + getCoefficient(d, m, m1, f) / 1000;
     }
 
     private double[] calcMoon(double t) {
@@ -540,7 +539,7 @@ public class MoonCalc {
     private double SINALT(double moonJd, int hour, double lambda, double cphi, double sphi) {
         double jdo = moonJd + hour / 24.0;
         double t = (jdo - 51544.5) / 36525.0;
-        double decra[] = calcMoon(t);
+        double[] decra = calcMoon(t);
         double tau = 15.0 * (LMST(jdo, lambda) - decra[1]);
         return sphi * SN(decra[0]) + cphi * CS(decra[0]) * CS(tau);
     }
@@ -688,12 +687,12 @@ public class MoonCalc {
         double moonLon = mod2Pi(n2 + Math.atan2(Math.sin(l3 - n2) * Math.cos(i), Math.cos(l3 - n2)));
         double moonLat = Math.asin(Math.sin(l3 - n2) * Math.sin(i));
 
-        double raDec[] = ecl2Equ(moonLat, moonLon, julianDate);
+        double[] raDec = ecl2Equ(moonLat, moonLon, julianDate);
 
         double distance = (1 - 0.00301401) / (1 + 0.054900 * Math.cos(mMoon2 + ec)) * 384401;
 
-        double raDecTopo[] = geoEqu2TopoEqu(raDec, distance, lat, lmst);
-        double azAlt[] = equ2AzAlt(raDecTopo[0], raDecTopo[1], lat, lmst);
+        double[] raDecTopo = geoEqu2TopoEqu(raDec, distance, lat, lmst);
+        double[] azAlt = equ2AzAlt(raDecTopo[0], raDecTopo[1], lat, lmst);
 
         Position position = moon.getPosition();
         position.setAzimuth(azAlt[0] * SunCalc.RAD2DEG);

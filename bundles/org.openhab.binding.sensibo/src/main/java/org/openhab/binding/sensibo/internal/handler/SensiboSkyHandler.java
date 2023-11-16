@@ -16,7 +16,6 @@ import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -40,7 +39,6 @@ import org.openhab.binding.sensibo.internal.config.SensiboSkyConfiguration;
 import org.openhab.binding.sensibo.internal.dto.poddetails.TemperatureDTO;
 import org.openhab.binding.sensibo.internal.model.SensiboModel;
 import org.openhab.binding.sensibo.internal.model.SensiboSky;
-import org.openhab.binding.sensibo.internal.util.StringUtils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -64,6 +62,7 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +105,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             bs.append(t);
         }
 
-        return StringUtils.capitalizeFully(bs.toString()).trim();
+        return StringUtils.capitalizeByUnderscore(bs.toString()).trim();
     }
 
     private String getMacAddress() {
@@ -190,8 +189,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             } else {
                 updateState(channelUID, UnDefType.UNDEF);
             }
-        } else if (command instanceof DecimalType) {
-            final DecimalType newValue = (DecimalType) command;
+        } else if (command instanceof DecimalType newValue) {
             updateTimer(newValue.intValue());
         } else {
             updateTimer(null);
@@ -205,8 +203,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             } else {
                 updateState(channelUID, UnDefType.UNDEF);
             }
-        } else if (command instanceof StringType) {
-            final StringType newValue = (StringType) command;
+        } else if (command instanceof StringType newValue) {
             updateAcState(sensiboSky, FAN_LEVEL_PROPERTY, newValue.toString());
         }
     }
@@ -218,8 +215,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             } else {
                 updateState(channelUID, UnDefType.UNDEF);
             }
-        } else if (command instanceof StringType) {
-            final StringType newValue = (StringType) command;
+        } else if (command instanceof StringType newValue) {
             updateAcState(sensiboSky, SWING_PROPERTY, newValue.toString());
         }
     }
@@ -231,8 +227,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             } else {
                 updateState(channelUID, UnDefType.UNDEF);
             }
-        } else if (command instanceof StringType) {
-            final StringType newValue = (StringType) command;
+        } else if (command instanceof StringType newValue) {
             updateAcState(sensiboSky, MODE_PROPERTY, newValue.toString());
             addDynamicChannelsAndProperties(sensiboSky);
         }
@@ -249,11 +244,10 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                     updateState(channelUID, UnDefType.UNDEF);
                 }
             });
-            if (!sensiboSky.getAcState().isPresent()) {
+            if (sensiboSky.getAcState().isEmpty()) {
                 updateState(channelUID, UnDefType.UNDEF);
             }
-        } else if (command instanceof QuantityType<?>) {
-            QuantityType<?> newValue = (QuantityType<?>) command;
+        } else if (command instanceof QuantityType<?> newValue) {
             if (!Objects.equals(sensiboSky.getTemperatureUnit(), newValue.getUnit())) {
                 // If quantity is given in celsius when fahrenheit is used or opposite
                 try {
@@ -296,7 +290,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(CallbackChannelsTypeProvider.class);
+        return Set.of(CallbackChannelsTypeProvider.class);
     }
 
     @Override
@@ -379,7 +373,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         final ChannelTypeUID channelTypeUID = new ChannelTypeUID(SensiboBindingConstants.BINDING_ID,
                 channelTypePrefix + getThing().getUID().getId());
         final List<StateOption> stateOptions = options.stream()
-                .map(e -> new StateOption(e.toString(), e instanceof String ? beautify((String) e) : e.toString()))
+                .map(e -> new StateOption(e.toString(), e instanceof String s ? beautify(s) : e.toString()))
                 .collect(Collectors.toList());
 
         StateDescriptionFragmentBuilder stateDescription = StateDescriptionFragmentBuilder.create().withReadOnly(false)

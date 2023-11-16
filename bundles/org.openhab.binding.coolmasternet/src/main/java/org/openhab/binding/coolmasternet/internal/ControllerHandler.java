@@ -186,7 +186,7 @@ public final class ControllerHandler extends BaseBridgeHandler {
      * This method automatically acquires a connection.
      *
      * @return the server response to the command (never empty)
-     * @throws {@link IOException} if communications failed with the server
+     * @throws IOException if communications failed with the server
      */
     public String sendCommand(final String command) throws IOException {
         synchronized (socketLock) {

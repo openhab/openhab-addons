@@ -92,7 +92,7 @@ public class EnergyMeter {
             socket.receive(msgPacket);
 
             String sma = new String(Arrays.copyOfRange(bytes, 0x00, 0x03));
-            if (!sma.equals("SMA")) {
+            if (!"SMA".equals(sma)) {
                 throw new IOException("Not a SMA telegram." + sma);
             }
 

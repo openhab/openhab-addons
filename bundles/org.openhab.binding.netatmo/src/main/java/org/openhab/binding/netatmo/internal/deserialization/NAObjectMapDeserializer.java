@@ -38,10 +38,10 @@ class NAObjectMapDeserializer implements JsonDeserializer<NAObjectMap<?>> {
             throws JsonParseException {
         ParameterizedType parameterized = (ParameterizedType) clazz;
         Type[] typeArguments = parameterized.getActualTypeArguments();
-        if (typeArguments.length > 0 && json instanceof JsonArray) {
+        if (typeArguments.length > 0 && json instanceof JsonArray jsonArray) {
             Type objectType = typeArguments[0];
             NAObjectMap<NAObject> result = new NAObjectMap<>();
-            ((JsonArray) json).forEach(item -> {
+            jsonArray.forEach(item -> {
                 result.put(context.deserialize(item, objectType));
             });
             return result;

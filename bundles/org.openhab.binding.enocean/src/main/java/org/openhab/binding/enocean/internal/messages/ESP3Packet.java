@@ -73,7 +73,7 @@ public class ESP3Packet {
         this.basePacket = basePacket;
     }
 
-    private byte calcCRC8(byte data[], int offset, int length) {
+    private byte calcCRC8(byte[] data, int offset, int length) {
         byte output = 0;
         for (int i = offset; i < offset + length; i++) {
             int index = (output ^ data[i]) & 0xff;
@@ -112,7 +112,7 @@ public class ESP3Packet {
         }
     }
 
-    public static boolean checkCRC8(byte data[], int length, byte crc8) {
+    public static boolean checkCRC8(byte[] data, int length, byte crc8) {
         byte output = 0;
         for (int i = 0; i < length; i++) {
             int index = (output ^ data[i]) & 0xff;

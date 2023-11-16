@@ -33,7 +33,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link TellstickBinding} class defines common constants, which are
+ * The {@link TellstickBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author jarlebh - Initial contribution

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeboxos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="player-actions">
+		<label>Player Actions</label>
+		<channels>
+			<channel id="key-code" typeId="key-code"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="player-status">
+		<label>Player Status</label>
+		<channels>
+			<channel id="player-status" typeId="player-status"/>
+			<channel id="package" typeId="package"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="player-sysinfo">
+		<label>System Informations</label>
+		<channels>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="box-event" typeId="box-event"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

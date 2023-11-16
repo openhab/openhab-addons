@@ -226,7 +226,6 @@ public class AmcrestHandler extends ChannelDuplexHandler {
     // If a camera does not need to poll a request as often as snapshots, it can be
     // added here. Binding steps through the list.
     public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<String>(1);
-        return lowPriorityRequests;
+        return new ArrayList<String>(1);
     }
 }

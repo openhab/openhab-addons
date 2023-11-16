@@ -79,7 +79,7 @@ public class ModuleSettings {
      * @param chronothermostat
      *            the chronothermostat dto to get data from
      * 
-     * @throws {@link SmartherIllegalPropertyValueException}
+     * @throws SmartherIllegalPropertyValueException
      *             if at least one of the module properties cannot be mapped to any valid enum value
      */
     public void updateFromChronothermostat(Chronothermostat chronothermostat)

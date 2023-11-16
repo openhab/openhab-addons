@@ -15,8 +15,8 @@ package org.openhab.binding.unifi.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link UniFiPoeThingConfig} encapsulates all the configuration options for an instance of the
- * {@link UniFiPoePortThingHandler}.
+ * The {@link UniFiPoePortThingConfig} encapsulates all the configuration options for an instance of the
+ * {@link org.openhab.binding.unifi.internal.handler.UniFiPoePortThingHandler}.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */

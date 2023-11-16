@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>LCN Binding</name>
 	<description>This is the binding for Local Control Network (LCN)</description>
+	<connection>local</connection>
 
 </addon:addon>

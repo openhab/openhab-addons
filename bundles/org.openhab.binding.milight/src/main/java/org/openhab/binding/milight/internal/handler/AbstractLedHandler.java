@@ -14,7 +14,6 @@ package org.openhab.binding.milight.internal.handler;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,10 +67,9 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
     /**
      * A bulb always belongs to a zone in the milight universe and we need a way to queue commands for being send.
      *
-     * @param typeOffset Each bulb type including its zone has to be unique. To realise this, each type has an offset.
+     * @param thing
      * @param sendQueue The send queue.
-     * @param zone A zone, usually 0 means all bulbs of the same type. [0-4]
-     * @throws SocketException
+     * @param typeOffset Each bulb type including its zone has to be unique. To realise this, each type has an offset.
      */
     public AbstractLedHandler(Thing thing, QueuedSend sendQueue, int typeOffset) {
         super(thing);
@@ -105,20 +103,16 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
 
         switch (channelUID.getId()) {
             case MilightBindingConstants.CHANNEL_COLOR: {
-                if (command instanceof HSBType) {
-                    HSBType hsb = (HSBType) command;
+                if (command instanceof HSBType hsb) {
                     this.setHSB(hsb.getHue().intValue(), hsb.getSaturation().intValue(), hsb.getBrightness().intValue(),
                             state);
                     updateState(MilightBindingConstants.CHANNEL_SATURATION, new PercentType(state.saturation));
-                } else if (command instanceof OnOffType) {
-                    OnOffType hsb = (OnOffType) command;
+                } else if (command instanceof OnOffType hsb) {
                     this.setPower(hsb == OnOffType.ON, state);
-                } else if (command instanceof PercentType) {
-                    PercentType p = (PercentType) command;
+                } else if (command instanceof PercentType p) {
                     this.setBrightness(p.intValue(), state);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    this.changeBrightness((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? 1 : -1,
-                            state);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    this.changeBrightness(increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
                 } else {
                     logger.error(
                             "CHANNEL_COLOR channel only supports OnOffType/IncreaseDecreaseType/HSBType/PercentType");
@@ -137,15 +131,12 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                 break;
             }
             case MilightBindingConstants.CHANNEL_BRIGHTNESS: {
-                if (command instanceof OnOffType) {
-                    OnOffType hsb = (OnOffType) command;
-                    this.setPower(hsb == OnOffType.ON, state);
-                } else if (command instanceof DecimalType) {
-                    DecimalType d = (DecimalType) command;
-                    this.setBrightness(d.intValue(), state);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    this.changeBrightness((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? 1 : -1,
-                            state);
+                if (command instanceof OnOffType onOffCommand) {
+                    this.setPower(onOffCommand == OnOffType.ON, state);
+                } else if (command instanceof DecimalType decimalCommand) {
+                    this.setBrightness(decimalCommand.intValue(), state);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    this.changeBrightness(increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
                 } else {
                     logger.error("CHANNEL_BRIGHTNESS channel only supports OnOffType/IncreaseDecreaseType/DecimalType");
                 }
@@ -155,15 +146,12 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                 break;
             }
             case MilightBindingConstants.CHANNEL_SATURATION: {
-                if (command instanceof OnOffType) {
-                    OnOffType s = (OnOffType) command;
-                    this.setSaturation((s == OnOffType.ON) ? 100 : 0, state);
-                } else if (command instanceof DecimalType) {
-                    DecimalType d = (DecimalType) command;
-                    this.setSaturation(d.intValue(), state);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    this.changeSaturation((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? 1 : -1,
-                            state);
+                if (command instanceof OnOffType onOffCommand) {
+                    this.setSaturation((onOffCommand == OnOffType.ON) ? 100 : 0, state);
+                } else if (command instanceof DecimalType decimalCommand) {
+                    this.setSaturation(decimalCommand.intValue(), state);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    this.changeSaturation(increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
                 } else {
                     logger.error("CHANNEL_SATURATION channel only supports OnOffType/IncreaseDecreaseType/DecimalType");
                 }
@@ -173,14 +161,12 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                 break;
             }
             case MilightBindingConstants.CHANNEL_TEMP: {
-                if (command instanceof OnOffType) {
-                    OnOffType s = (OnOffType) command;
-                    this.setColorTemperature((s == OnOffType.ON) ? 100 : 0, state);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    this.changeColorTemperature(
-                            (IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? 1 : -1, state);
-                } else if (command instanceof DecimalType) {
-                    DecimalType d = (DecimalType) command;
+                if (command instanceof OnOffType onOffCommand) {
+                    this.setColorTemperature((onOffCommand == OnOffType.ON) ? 100 : 0, state);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    this.changeColorTemperature(increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? 1 : -1,
+                            state);
+                } else if (command instanceof DecimalType d) {
                     this.setColorTemperature(d.intValue(), state);
                 } else {
                     logger.error("CHANNEL_TEMP channel only supports OnOffType/IncreaseDecreaseType/DecimalType");
@@ -188,11 +174,10 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                 break;
             }
             case MilightBindingConstants.CHANNEL_SPEED_REL: {
-                if (command instanceof IncreaseDecreaseType) {
-                    IncreaseDecreaseType id = (IncreaseDecreaseType) command;
-                    if (id == IncreaseDecreaseType.INCREASE) {
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                         this.changeSpeed(1, state);
-                    } else if (id == IncreaseDecreaseType.DECREASE) {
+                    } else if (increaseDecreaseCommand == IncreaseDecreaseType.DECREASE) {
                         this.changeSpeed(-1, state);
                     }
                 } else {
@@ -201,20 +186,18 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
                 break;
             }
             case MilightBindingConstants.CHANNEL_ANIMATION_MODE: {
-                if (command instanceof DecimalType) {
-                    DecimalType d = (DecimalType) command;
-                    this.setLedMode(d.intValue(), state);
+                if (command instanceof DecimalType decimalCommand) {
+                    this.setLedMode(decimalCommand.intValue(), state);
                 } else {
                     logger.error("Animation mode channel only supports DecimalType");
                 }
                 break;
             }
             case MilightBindingConstants.CHANNEL_ANIMATION_MODE_REL: {
-                if (command instanceof IncreaseDecreaseType) {
-                    IncreaseDecreaseType id = (IncreaseDecreaseType) command;
-                    if (id == IncreaseDecreaseType.INCREASE) {
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    if (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) {
                         this.nextAnimationMode(state);
-                    } else if (id == IncreaseDecreaseType.DECREASE) {
+                    } else if (increaseDecreaseCommand == IncreaseDecreaseType.DECREASE) {
                         this.previousAnimationMode(state);
                     }
                 } else {

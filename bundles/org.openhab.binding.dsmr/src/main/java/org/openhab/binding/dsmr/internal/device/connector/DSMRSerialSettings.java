@@ -21,10 +21,12 @@ import org.openhab.core.io.transport.serial.SerialPort;
  * This class does store 4 serial parameters (baudrate, databits, parity, stopbits)
  * for use in {@link DSMRSerialConnector}.
  *
- * This class can also convert a string setting (<speed> <databits><parity><stopbits>)
+ * This class can also convert a string setting
+ * ({@code <speed> <databits><parity><stopbits>})
  * to a {@link DSMRSerialSettings} object (e.g. 115200 8N1)
  *
  * @author M. Volaart - Initial contribution
+ * 
  * @author Hilbrand Bouwkamp - Removed auto detecting state checking from this class.
  */
 @NonNullByDefault

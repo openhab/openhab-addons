@@ -21,7 +21,8 @@ import java.util.List;
  *
  * @author Wouter Born - Initial contribution
  *
- * @see https://cloud.google.com/pubsub/docs/reference/rest
+ * @see <a href="https://cloud.google.com/pubsub/docs/reference/rest">
+ *      https://cloud.google.com/pubsub/docs/reference/rest</a>
  */
 public class PubSubRequestsResponses {
 

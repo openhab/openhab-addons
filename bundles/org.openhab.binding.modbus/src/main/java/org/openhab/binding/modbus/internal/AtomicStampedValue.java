@@ -66,7 +66,6 @@ public class AtomicStampedValue<V> implements Cloneable {
      * Copy data atomically and return the new (shallow) copy
      *
      * @return new copy of the data
-     * @throws CloneNotSupportedException
      */
     @SuppressWarnings("unchecked")
     public synchronized AtomicStampedValue<V> copy() {

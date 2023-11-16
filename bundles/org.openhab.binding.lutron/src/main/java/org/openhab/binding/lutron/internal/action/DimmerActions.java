@@ -45,8 +45,8 @@ public class DimmerActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DimmerHandler) {
-            this.handler = (DimmerHandler) handler;
+        if (handler instanceof DimmerHandler dimmerHandler) {
+            this.handler = dimmerHandler;
         }
     }
 

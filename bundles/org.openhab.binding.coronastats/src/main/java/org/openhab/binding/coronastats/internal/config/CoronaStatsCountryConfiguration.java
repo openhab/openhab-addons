@@ -15,7 +15,8 @@ package org.openhab.binding.coronastats.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration for the {@link CoronaStatsCountryHandler}
+ * Configuration for the
+ * {@link org.openhab.binding.coronastats.internal.handler.CoronaStatsCountryHandler}
  *
  * @author Johannes Ott - Initial contribution
  */

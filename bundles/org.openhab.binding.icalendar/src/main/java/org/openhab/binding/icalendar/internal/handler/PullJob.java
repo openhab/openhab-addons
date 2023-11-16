@@ -89,7 +89,8 @@ class PullJob implements Runnable {
 
     @Override
     public void run() {
-        final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET);
+        final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET)
+                .timeout(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
         final Authentication.Result currentAuthentication = authentication;
         if (currentAuthentication != null) {
             currentAuthentication.apply(request);
@@ -143,7 +144,7 @@ class PullJob implements Runnable {
 
         File tmpTargetFile;
         try {
-            tmpTargetFile = File.createTempFile(TMP_FILE_PREFIX, null);
+            tmpTargetFile = Files.createTempFile(TMP_FILE_PREFIX, null).toFile();
         } catch (IOException e) {
             logger.warn("Not able to create temporary file for downloading iCal. Error message is: {}", e.getMessage());
             return;

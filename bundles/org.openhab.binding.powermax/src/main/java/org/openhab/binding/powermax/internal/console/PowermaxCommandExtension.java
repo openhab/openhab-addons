@@ -65,8 +65,8 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension im
             PowermaxBridgeHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof PowermaxBridgeHandler) {
-                    handler = (PowermaxBridgeHandler) thingHandler;
+                if (thingHandler instanceof PowermaxBridgeHandler bridgeHandler) {
+                    handler = bridgeHandler;
                 }
             }
             if (thing == null) {

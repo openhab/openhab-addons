@@ -57,8 +57,7 @@ public class NanoleafCommandExtension extends AbstractConsoleCommandExtension {
                         thingRegistry.getAll().forEach(thing -> {
                             if (thing.getUID().getBindingId().equals(NanoleafBindingConstants.BINDING_ID)) {
                                 ThingHandler handler = thing.getHandler();
-                                if (handler instanceof NanoleafControllerHandler) {
-                                    NanoleafControllerHandler nanoleafControllerHandler = (NanoleafControllerHandler) handler;
+                                if (handler instanceof NanoleafControllerHandler nanoleafControllerHandler) {
                                     if (!handler.getThing().isEnabled()) {
                                         console.println(
                                                 "The following Nanoleaf is NOT enabled as a Thing. Enable it first to view its layout.");
@@ -76,16 +75,15 @@ public class NanoleafCommandExtension extends AbstractConsoleCommandExtension {
                         Thing thing = thingRegistry.get(new ThingUID(uid));
                         if (thing != null) {
                             ThingHandler handler = thing.getHandler();
-                            if (handler instanceof NanoleafControllerHandler) {
-                                NanoleafControllerHandler nanoleafControllerHandler = (NanoleafControllerHandler) handler;
+                            if (handler instanceof NanoleafControllerHandler nanoleafControllerHandler) {
                                 String layout = nanoleafControllerHandler.getLayout();
                                 console.println(layout);
                             } else {
-                                console.println("Thing with UID '" + uid.toString()
-                                        + "' is not an initialized Nanoleaf controller.");
+                                console.println(
+                                        "Thing with UID '" + uid + "' is not an initialized Nanoleaf controller.");
                             }
                         } else {
-                            console.println("Thing with UID '" + uid.toString() + "' does not exist.");
+                            console.println("Thing with UID '" + uid + "' does not exist.");
                         }
                     } else {
                         printUsage(console);

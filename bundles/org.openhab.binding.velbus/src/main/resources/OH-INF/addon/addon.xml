@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Velbus Binding</name>
 	<description>This is the binding for Velbus.</description>
+	<connection>local</connection>
 
 </addon:addon>

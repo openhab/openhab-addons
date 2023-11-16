@@ -47,13 +47,10 @@ public class OpenSprinklerApiFactory {
      * Factory method used to determine what version of the API is in use at the
      * OpenSprinkler API and return the proper class for control of the device.
      *
-     * @param hostname Hostname or IP address as a String of the OpenSprinkler device.
-     * @param port The port number the OpenSprinkler API is listening on.
-     * @param password Admin password for the OpenSprinkler device.
-     * @param basicUsername Used when basic auth is required
-     * @param basicPassword Used when basic auth is required
+     * @param config Interface settings
      * @return OpenSprinkler HTTP API class for control of the device.
-     * @throws Exception
+     * @throws CommunicationApiException
+     * @throws GeneralApiException
      */
     public OpenSprinklerApi getHttpApi(OpenSprinklerHttpInterfaceConfig config)
             throws CommunicationApiException, GeneralApiException {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg enable-background="new 0 0 64 64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <ellipse style="stroke-width: 0px; stroke: rgb(0, 0, 0); fill:#3d3c3c;" cx="32" cy="32" rx="30" ry="30"/>
+  <circle class="cls-1" cx="32.141" cy="31.8" r="17" style="fill: #b3b3b3;"/>
+  <line class="cls-2" x1="32.141" x2="32.141" y1="4.8" y2="10.8" style="fill: none; stroke: #b3b3b3; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 3px;"/>
+  <line class="cls-2" x1="32.141" x2="32.141" y1="52.8" y2="58.8" style="fill: none; stroke: #b3b3b3; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 3px;"/>
+  <line class="cls-2" x1="59.141" x2="53.141" y1="31.8" y2="31.8" style="fill: none; stroke: #b3b3b3; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 3px;"/>
+  <line class="cls-2" x1="11.141" x2="5.141" y1="31.8" y2="31.8" style="fill: none; stroke: #b3b3b3; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 3px;"/>
+  <line class="cls-2" x1="51.231" x2="46.991" y1="12.71" y2="16.95" style="fill: none; stroke: #b3b3b3; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 3px;"/>
+  <line class="cls-2" x1="17.291" x2="13.051" y1="46.65" y2="50.89" style="fill: none; stroke: #b3b3b3; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 3px;"/>
+  <line class="cls-2" x1="51.231" x2="46.991" y1="50.89" y2="46.65" style="fill: none; stroke: #b3b3b3; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 3px;"/>
+  <line class="cls-2" x1="17.291" x2="13.051" y1="16.95" y2="12.71" style="fill: none; stroke: #b3b3b3; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 3px;"/>
+  <path class="cls-3" d="M 24.931 27.55 L 24.931 33.5 C 24.931 35.28 25.601 36.18 26.801 36.18 C 28.001 36.18 28.701 35.32 28.701 33.5 L 28.701 27.55 L 31.031 27.55 L 31.031 33.34 C 31.031 36.53 29.421 38.04 26.731 38.04 C 24.041 38.04 22.591 36.6 22.591 33.31 L 22.591 27.55 L 24.931 27.55 Z" style="fill: rgb(255, 255, 255);"/>
+  <path class="cls-3" d="M 35.491 37.88 L 32.141 27.55 L 34.741 27.55 L 36.001 31.92 C 36.351 33.15 36.671 34.33 36.921 35.61 C 37.181 34.37 37.501 33.14 37.851 31.96 L 39.171 27.55 L 41.651 27.55 L 38.211 37.88 L 35.491 37.88 Z" style="fill: rgb(255, 255, 255);"/>
+</svg>

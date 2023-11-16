@@ -14,10 +14,10 @@ package org.openhab.binding.groupepsa.internal.discovery;
 
 import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.THING_TYPE_VEHICLE;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,13 +50,13 @@ public class GroupePSADiscoveryService extends AbstractDiscoveryService implemen
     private @Nullable GroupePSABridgeHandler bridgeHandler;
 
     public GroupePSADiscoveryService() {
-        super(Collections.singleton(THING_TYPE_VEHICLE), 10, false);
+        super(Set.of(THING_TYPE_VEHICLE), 10, false);
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof GroupePSABridgeHandler) {
-            bridgeHandler = (GroupePSABridgeHandler) handler;
+        if (handler instanceof GroupePSABridgeHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
         }
     }
 

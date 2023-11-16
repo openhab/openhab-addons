@@ -13,7 +13,7 @@
 package org.openhab.binding.souliss.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -94,7 +94,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SoulissGatewayDiscovery.class);
+        return Set.of(SoulissGatewayDiscovery.class);
     }
 
     @Override

@@ -76,7 +76,6 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
      * @return the latest {@link DepartureResult}.
      */
     public synchronized @Nullable DepartureResult queryKVV(final KVVStopConfig stopConfig) {
-
         // is there an up-to-date value in the cache?
         final DepartureResult cr = this.cache.get(stopConfig.stopId);
         if (cr != null) {

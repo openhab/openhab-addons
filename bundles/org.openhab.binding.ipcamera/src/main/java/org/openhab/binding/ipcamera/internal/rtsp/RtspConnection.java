@@ -43,7 +43,6 @@ import io.netty.handler.timeout.IdleStateHandler;
  * The {@link RtspConnection} is a WIP and not currently used, but will talk directly to RTSP and collect information
  * about the camera and streams.
  *
- *
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault

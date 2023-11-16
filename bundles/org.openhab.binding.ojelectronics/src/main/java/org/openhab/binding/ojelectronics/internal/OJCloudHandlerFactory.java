@@ -64,8 +64,7 @@ public class OJCloudHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
-            OJCloudHandler handler = new OJCloudHandler((Bridge) thing, httpClient);
-            return handler;
+            return new OJCloudHandler((Bridge) thing, httpClient);
         }
         return null;
     }

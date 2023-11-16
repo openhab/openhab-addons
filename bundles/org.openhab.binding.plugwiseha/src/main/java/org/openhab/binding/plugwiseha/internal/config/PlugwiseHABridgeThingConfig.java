@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link PlugwiseHABridgeThingConfig} encapsulates all the configuration options for an instance of the
- * {@link PlugwiseHABridgeHandler}.
+ * {@link org.openhab.binding.plugwiseha.internal.handler.PlugwiseHABridgeHandler}.
  *
  * @author Bas van Wetten - Initial contribution
  * @author Leo Siepel - finish initial contribution

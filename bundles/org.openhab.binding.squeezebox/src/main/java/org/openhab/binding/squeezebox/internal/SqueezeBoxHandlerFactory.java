@@ -149,7 +149,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof SqueezeBoxServerHandler) {
+        if (thingHandler instanceof SqueezeBoxServerHandler serverHandler) {
             logger.trace("removing handler for bridge thing {}", thingHandler.getThing());
 
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
@@ -162,7 +162,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
                 discoveryService.cancelRequestPlayerJob();
 
                 // Unregister the PlayerListener from the SqueezeBoxServerHandler
-                ((SqueezeBoxServerHandler) thingHandler).unregisterSqueezeBoxPlayerListener(
+                serverHandler.unregisterSqueezeBoxPlayerListener(
                         (SqueezeBoxPlayerEventListener) bundleContext.getService(serviceReg.getReference()));
 
                 // Unregister the PlayerListener service
@@ -173,8 +173,8 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
             }
         }
 
-        if (thingHandler instanceof SqueezeBoxPlayerHandler) {
-            SqueezeBoxServerHandler bridge = ((SqueezeBoxPlayerHandler) thingHandler).getSqueezeBoxServerHandler();
+        if (thingHandler instanceof SqueezeBoxPlayerHandler playerHandler) {
+            SqueezeBoxServerHandler bridge = playerHandler.getSqueezeBoxServerHandler();
             if (bridge != null) {
                 // Unregister the player's audio sink
                 logger.trace("Unregistering the audio sync service for player thing {}",
@@ -186,7 +186,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
                 }
 
                 logger.trace("removing handler for player thing {}", thingHandler.getThing());
-                bridge.removePlayerCache(((SqueezeBoxPlayerHandler) thingHandler).getMac());
+                bridge.removePlayerCache(playerHandler.getMac());
             }
         }
     }

@@ -80,7 +80,7 @@ public class TemperatureControlValues extends BaseZoneIdentifier {
     }
 
     /**
-     * @see TemperatureControlStatus#getControlDSUID()
+     * @see org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus#getControlDSUID()
      * @return the controlDSUID
      */
     public String getControlDSUID() {
@@ -88,7 +88,7 @@ public class TemperatureControlValues extends BaseZoneIdentifier {
     }
 
     /**
-     * @see TemperatureControlStatus#getIsConfigured()
+     * @see org.openhab.binding.digitalstrom.internal.lib.serverconnection.constants.JSONApiResponseKeysEnum#IS_CONFIGURED
      * @return the isConfigured
      */
     public Boolean getIsConfigured() {

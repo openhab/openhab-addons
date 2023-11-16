@@ -94,8 +94,8 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
 
     private @Nullable JdbcPersistenceService getPersistenceService() {
         for (PersistenceService persistenceService : persistenceServiceRegistry.getAll()) {
-            if (persistenceService instanceof JdbcPersistenceService) {
-                return (JdbcPersistenceService) persistenceService;
+            if (persistenceService instanceof JdbcPersistenceService service) {
+                return service;
             }
         }
         return null;

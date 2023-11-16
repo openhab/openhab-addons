@@ -43,13 +43,5 @@
 			<description>Speaking rate can be 4x faster or slower than the normal rate.</description>
 			<default>1</default>
 		</parameter>
-		<parameter name="purgeCache" type="boolean">
-			<advanced>true</advanced>
-			<label>Purge Cache</label>
-			<description>Purges the cache e.g. after testing different voice configuration parameters. When enabled the cache is
-				purged once. Make sure to disable this setting again so the cache is maintained after restarts.</description>
-			<default>false</default>
-		</parameter>
 	</config-description>
-
 </config-description:config-descriptions>

@@ -47,9 +47,7 @@ public class Hash {
                 sb.append(String.format("%02x", b & 0xff));
             }
 
-            String digest = sb.toString();
-
-            return digest;
+            return sb.toString();
         } catch (Exception exp) {
             // Instead of null we return the unhashed password.
             return unhashed;

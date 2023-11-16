@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -87,7 +87,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(BridgeActions.class);
+        return List.of(BridgeActions.class);
     }
 
     public void setDiscoveryService(AlarmDecoderDiscoveryService discoveryService) {

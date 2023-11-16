@@ -20,6 +20,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler.CommandExtensionData;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.ThingUID;
@@ -52,16 +53,17 @@ public class SerialClient extends AbstractKNXClient {
 
     public SerialClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort, boolean useCemi,
-            SerialPortManager serialPortManager, StatusUpdateCallback statusUpdateCallback) {
+            SerialPortManager serialPortManager, CommandExtensionData commandExtensionData,
+            StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
-                statusUpdateCallback);
+                commandExtensionData, statusUpdateCallback);
         this.serialPortManager = serialPortManager;
         this.serialPort = serialPort;
         this.useCemi = useCemi;
     }
 
     /**
-     * try autodetection of cEMI devices via the PEI identification frame
+     * try automatic detection of cEMI devices via the PEI identification frame
      *
      * @implNote This is based on an vendor specific extension and may not work for other devices.
      */
@@ -90,7 +92,7 @@ public class SerialClient extends AbstractKNXClient {
                 // content[1..2] physical address
                 // content[3..8] serial no
                 //
-                // Weinzierl adds 2 extra bytes, 0x0004 for capablity cEMI,
+                // Weinzierl adds 2 extra bytes, 0x0004 for capability cEMI,
                 // see "Weinzierl KNX BAOS Starter Kit, User Guide"
                 if (0 == content[9] && 4 == content[10]) {
                     logger.debug("Detected device with cEMI support");
@@ -116,7 +118,7 @@ public class SerialClient extends AbstractKNXClient {
             }
             logger.debug("Establishing connection to KNX bus through FT1.2 on serial port {}{}{}", serialPort,
                     (useCemiL ? " using cEMI" : ""), ((useCemiL != useCemi) ? " (autodetected)" : ""));
-            // CEMI support by Calimero library, userful for newer serial devices like KNX RF sticks, kBerry,
+            // CEMI support by Calimero library, useful for newer serial devices like KNX RF sticks, kBerry,
             // etc.; default is still old EMI frame format
             if (useCemiL) {
                 return KNXNetworkLinkFT12.newCemiLink(serialPort, new TPSettings());

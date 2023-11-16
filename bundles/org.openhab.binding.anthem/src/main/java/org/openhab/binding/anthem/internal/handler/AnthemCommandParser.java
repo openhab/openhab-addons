@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AnthemCommandParser {
-    private static final Pattern NUM_AVAILABLE_INPUTS_PATTERN = Pattern.compile("ICN([0-9])");
+    private static final Pattern NUM_AVAILABLE_INPUTS_PATTERN = Pattern.compile("ICN([0-9]{1,2})");
     private static final Pattern INPUT_SHORT_NAME_PATTERN = Pattern.compile("ISN([0-9][0-9])(\\p{ASCII}*)");
     private static final Pattern INPUT_LONG_NAME_PATTERN = Pattern.compile("ILN([0-9][0-9])(\\p{ASCII}*)");
     private static final Pattern POWER_PATTERN = Pattern.compile("Z([0-9])POW([01])");
@@ -45,39 +45,27 @@ public class AnthemCommandParser {
 
     private Logger logger = LoggerFactory.getLogger(AnthemCommandParser.class);
 
-    private AnthemHandler handler;
+    private Map<String, String> inputShortNamesMap = new HashMap<>();
+    private Map<String, String> inputLongNamesMap = new HashMap<>();
 
-    private Map<Integer, String> inputShortNamesMap = new HashMap<>();
-    private Map<Integer, String> inputLongNamesMap = new HashMap<>();
-
-    private int numAvailableInputs;
-
-    public AnthemCommandParser(AnthemHandler anthemHandler) {
-        this.handler = anthemHandler;
-    }
-
-    public int getNumAvailableInputs() {
-        return numAvailableInputs;
-    }
-
-    public void parseMessage(String command) {
+    public @Nullable AnthemUpdate parseCommand(String command) {
         if (!isValidCommand(command)) {
-            return;
+            return null;
         }
         // Strip off the termination char and any whitespace
         String cmd = command.substring(0, command.indexOf(COMMAND_TERMINATION_CHAR)).trim();
 
         // Zone command
         if (cmd.startsWith("Z")) {
-            parseZoneCommand(cmd);
+            return parseZoneCommand(cmd);
         }
         // Information command
         else if (cmd.startsWith("ID")) {
-            parseInformationCommand(cmd);
+            return parseInformationCommand(cmd);
         }
         // Number of inputs
         else if (cmd.startsWith("ICN")) {
-            parseNumberOfAvailableInputsCommand(cmd);
+            return parseNumberOfAvailableInputsCommand(cmd);
         }
         // Input short name
         else if (cmd.startsWith("ISN")) {
@@ -95,6 +83,15 @@ public class AnthemCommandParser {
         else {
             logger.trace("Command parser doesn't know how to handle command: '{}'", cmd);
         }
+        return null;
+    }
+
+    public @Nullable String getInputShortName(String input) {
+        return inputShortNamesMap.get(input);
+    }
+
+    public @Nullable String getInputLongName(String input) {
+        return inputLongNamesMap.get(input);
     }
 
     private boolean isValidCommand(String command) {
@@ -106,45 +103,47 @@ public class AnthemCommandParser {
         return true;
     }
 
-    private void parseZoneCommand(String command) {
+    private @Nullable AnthemUpdate parseZoneCommand(String command) {
         // Power update
         if (command.contains("POW")) {
-            parsePower(command);
+            return parsePower(command);
         }
         // Volume update
         else if (command.contains("VOL")) {
-            parseVolume(command);
+            return parseVolume(command);
         }
         // Mute update
         else if (command.contains("MUT")) {
-            parseMute(command);
+            return parseMute(command);
         }
         // Active input
         else if (command.contains("INP")) {
-            parseActiveInput(command);
+            return parseActiveInput(command);
         }
+        return null;
     }
 
-    private void parseInformationCommand(String command) {
+    private @Nullable AnthemUpdate parseInformationCommand(String command) {
         String value = command.substring(3, command.length());
+        AnthemUpdate update = null;
         switch (command.substring(2, 3)) {
             case "M":
-                handler.setModel(value);
+                update = AnthemUpdate.createPropertyUpdate(Thing.PROPERTY_MODEL_ID, value);
                 break;
             case "R":
-                handler.setRegion(value);
+                update = AnthemUpdate.createPropertyUpdate(PROPERTY_REGION, value);
                 break;
             case "S":
-                handler.setSoftwareVersion(value);
+                update = AnthemUpdate.createPropertyUpdate(Thing.PROPERTY_FIRMWARE_VERSION, value);
                 break;
             case "B":
-                handler.setSoftwareBuildDate(value);
+                update = AnthemUpdate.createPropertyUpdate(PROPERTY_SOFTWARE_BUILD_DATE, value);
                 break;
             case "H":
-                handler.setHardwareVersion(value);
+                update = AnthemUpdate.createPropertyUpdate(Thing.PROPERTY_HARDWARE_VERSION, value);
                 break;
             case "N":
-                handler.setMacAddress(value);
+                update = AnthemUpdate.createPropertyUpdate(Thing.PROPERTY_MAC_ADDRESS, value);
                 break;
             case "Q":
                 // Ignore
@@ -153,21 +152,20 @@ public class AnthemCommandParser {
                 logger.debug("Unknown info type");
                 break;
         }
+        return update;
     }
 
-    private void parseNumberOfAvailableInputsCommand(String command) {
+    private @Nullable AnthemUpdate parseNumberOfAvailableInputsCommand(String command) {
         Matcher matcher = NUM_AVAILABLE_INPUTS_PATTERN.matcher(command);
         if (matcher != null) {
             try {
                 matcher.find();
-                String numAvailableInputsStr = matcher.group(1);
-                DecimalType numAvailableInputs = DecimalType.valueOf(numAvailableInputsStr);
-                handler.setNumAvailableInputs(numAvailableInputs.intValue());
-                this.numAvailableInputs = numAvailableInputs.intValue();
-            } catch (NumberFormatException | IndexOutOfBoundsException | IllegalStateException e) {
+                return AnthemUpdate.createPropertyUpdate(PROPERTY_NUM_AVAILABLE_INPUTS, matcher.group(1));
+            } catch (IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
             }
         }
+        return null;
     }
 
     private void parseInputShortNameCommand(String command) {
@@ -182,11 +180,11 @@ public class AnthemCommandParser {
         logger.info("Command was not processed successfully by the device: '{}'", command);
     }
 
-    private void parseInputName(String command, @Nullable Matcher matcher, Map<Integer, String> map) {
+    private void parseInputName(String command, @Nullable Matcher matcher, Map<String, String> map) {
         if (matcher != null) {
             try {
                 matcher.find();
-                int input = Integer.parseInt(matcher.group(1));
+                String input = matcher.group(1);
                 String inputName = matcher.group(2);
                 map.putIfAbsent(input, inputName);
             } catch (NumberFormatException | IndexOutOfBoundsException | IllegalStateException e) {
@@ -195,69 +193,65 @@ public class AnthemCommandParser {
         }
     }
 
-    private void parsePower(String command) {
+    private @Nullable AnthemUpdate parsePower(String command) {
         Matcher mmatcher = POWER_PATTERN.matcher(command);
         if (mmatcher != null) {
             try {
                 mmatcher.find();
                 String zone = mmatcher.group(1);
                 String power = mmatcher.group(2);
-                handler.updateChannelState(zone, CHANNEL_POWER, "1".equals(power) ? OnOffType.ON : OnOffType.OFF);
-                handler.checkPowerStatusChange(zone, power);
+                return AnthemUpdate.createStateUpdate(zone, CHANNEL_POWER,
+                        "1".equals(power) ? OnOffType.ON : OnOffType.OFF);
             } catch (IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
             }
         }
+        return null;
     }
 
-    private void parseVolume(String command) {
+    private @Nullable AnthemUpdate parseVolume(String command) {
         Matcher matcher = VOLUME_PATTERN.matcher(command);
         if (matcher != null) {
             try {
                 matcher.find();
                 String zone = matcher.group(1);
                 String volume = matcher.group(2);
-                handler.updateChannelState(zone, CHANNEL_VOLUME_DB, DecimalType.valueOf(volume));
+                return AnthemUpdate.createStateUpdate(zone, CHANNEL_VOLUME_DB, DecimalType.valueOf(volume));
             } catch (NumberFormatException | IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
             }
         }
+        return null;
     }
 
-    private void parseMute(String command) {
+    private @Nullable AnthemUpdate parseMute(String command) {
         Matcher matcher = MUTE_PATTERN.matcher(command);
         if (matcher != null) {
             try {
                 matcher.find();
                 String zone = matcher.group(1);
                 String mute = matcher.group(2);
-                handler.updateChannelState(zone, CHANNEL_MUTE, "1".equals(mute) ? OnOffType.ON : OnOffType.OFF);
+                return AnthemUpdate.createStateUpdate(zone, CHANNEL_MUTE,
+                        "1".equals(mute) ? OnOffType.ON : OnOffType.OFF);
             } catch (IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
             }
         }
+        return null;
     }
 
-    private void parseActiveInput(String command) {
+    private @Nullable AnthemUpdate parseActiveInput(String command) {
         Matcher matcher = ACTIVE_INPUT_PATTERN.matcher(command);
         if (matcher != null) {
             try {
                 matcher.find();
                 String zone = matcher.group(1);
                 DecimalType activeInput = DecimalType.valueOf(matcher.group(2));
-                handler.updateChannelState(zone, CHANNEL_ACTIVE_INPUT, activeInput);
-                String name;
-                name = inputShortNamesMap.get(activeInput.intValue());
-                if (name != null) {
-                    handler.updateChannelState(zone, CHANNEL_ACTIVE_INPUT_SHORT_NAME, new StringType(name));
-                }
-                name = inputShortNamesMap.get(activeInput.intValue());
-                if (name != null) {
-                    handler.updateChannelState(zone, CHANNEL_ACTIVE_INPUT_LONG_NAME, new StringType(name));
-                }
+                return AnthemUpdate.createStateUpdate(zone, CHANNEL_ACTIVE_INPUT, activeInput);
             } catch (NumberFormatException | IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
             }
         }
+        return null;
     }
 }

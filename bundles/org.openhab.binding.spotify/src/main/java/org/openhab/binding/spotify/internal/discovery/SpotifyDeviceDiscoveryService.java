@@ -16,7 +16,6 @@ import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.PROPE
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.THING_TYPE_DEVICE;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +51,7 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService
     // id for device is derived by stripping id of device with this length
     private static final int PLAYER_ID_LENGTH = 4;
     // Only devices can be discovered. A bridge must be manually added.
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE);
     // The call to listDevices is fast
     private static final int DISCOVERY_TIME_SECONDS = 10;
     // Check every minute for new devices
@@ -90,8 +89,8 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SpotifyAccountHandler) {
-            bridgeHandler = (SpotifyAccountHandler) handler;
+        if (handler instanceof SpotifyAccountHandler accountHandler) {
+            bridgeHandler = accountHandler;
             bridgeUID = bridgeHandler.getUID();
         }
     }

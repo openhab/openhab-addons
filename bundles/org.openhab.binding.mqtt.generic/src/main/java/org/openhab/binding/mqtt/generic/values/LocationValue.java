@@ -52,8 +52,8 @@ public class LocationValue extends Value {
 
     @Override
     public PointType parseCommand(Command command) throws IllegalArgumentException {
-        if (command instanceof PointType) {
-            return ((PointType) command);
+        if (command instanceof PointType point) {
+            return point;
         } else {
             return PointType.valueOf(command.toString());
         }

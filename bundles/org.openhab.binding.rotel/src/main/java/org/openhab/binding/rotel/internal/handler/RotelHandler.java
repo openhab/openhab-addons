@@ -868,8 +868,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             } else if (radioPreset > 0 && command instanceof IncreaseDecreaseType
                                     && command == IncreaseDecreaseType.DECREASE) {
                                 value = radioPreset - 1;
-                            } else if (command instanceof DecimalType) {
-                                value = ((DecimalType) command).intValue();
+                            } else if (command instanceof DecimalType decimalCommand) {
+                                value = decimalCommand.intValue();
                             }
                             if (value >= 1 && value <= 30) {
                                 RotelSource source = sources[0];
@@ -903,8 +903,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         } else if (!model.hasDimmerControl()) {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        } else if (command instanceof PercentType) {
-                            int dimmer = (int) Math.round(((PercentType) command).doubleValue() / 100.0
+                        } else if (command instanceof PercentType percentCommand) {
+                            int dimmer = (int) Math.round(percentCommand.doubleValue() / 100.0
                                     * (model.getDimmerLevelMax() - model.getDimmerLevelMin()))
                                     + model.getDimmerLevelMin();
                             sendCommand(RotelCommand.DIMMER_LEVEL_SET, dimmer);
@@ -1043,8 +1043,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             sendCommand(upCmd);
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
             sendCommand(downCmd);
-        } else if (command instanceof DecimalType && setCmd == null) {
-            int value = ((DecimalType) command).intValue();
+        } else if (command instanceof DecimalType decimalCommand && setCmd == null) {
+            int value = decimalCommand.intValue();
             if (value >= minVolume && value <= maxVolume) {
                 if (value > current) {
                     sendCommand(upCmd);
@@ -1052,9 +1052,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     sendCommand(downCmd);
                 }
             }
-        } else if (command instanceof PercentType && setCmd != null) {
-            int value = (int) Math.round(((PercentType) command).doubleValue() / 100.0 * (maxVolume - minVolume))
-                    + minVolume;
+        } else if (command instanceof PercentType percentCommand && setCmd != null) {
+            int value = (int) Math.round(percentCommand.doubleValue() / 100.0 * (maxVolume - minVolume)) + minVolume;
             sendCommand(setCmd, value);
         } else {
             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
@@ -1110,8 +1109,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
             selectToneControl(nbSelect);
             sendCommand(downCmd);
-        } else if (command instanceof DecimalType) {
-            int value = ((DecimalType) command).intValue();
+        } else if (command instanceof DecimalType decimalCommand) {
+            int value = decimalCommand.intValue();
             if (value >= minToneLevel && value <= maxToneLevel) {
                 if (protocol != RotelProtocol.HEX) {
                     sendCommand(setCmd, value);
@@ -1204,8 +1203,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             sendCommand(rightCmd);
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
             sendCommand(leftCmd);
-        } else if (command instanceof DecimalType) {
-            int value = ((DecimalType) command).intValue();
+        } else if (command instanceof DecimalType decimalCommand) {
+            int value = decimalCommand.intValue();
             if (value >= minBalanceLevel && value <= maxBalanceLevel) {
                 sendCommand(setCmd, value);
             }
@@ -1618,7 +1617,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     break;
                 case KEY_TRACK:
                     source = sources[0];
-                    if (source != null && source.getName().equals("CD") && !model.hasSourceControl()) {
+                    if (source != null && "CD".equals(source.getName()) && !model.hasSourceControl()) {
                         track = Integer.parseInt(value);
                         updateChannelState(CHANNEL_TRACK);
                     }
@@ -2027,7 +2026,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 RotelSource source = sources[0];
                                 if (model != RotelModel.RCD1570 && model != RotelModel.RCD1572
                                         && (model != RotelModel.RCX1500 || source == null
-                                                || !source.getName().equals("CD"))) {
+                                                || !"CD".equals(source.getName()))) {
                                     sendCommand(RotelCommand.PLAY_STATUS);
                                     Thread.sleep(SLEEP_INTV);
                                 } else {
@@ -2094,7 +2093,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 sendCommand(RotelCommand.PLAY_STATUS);
                                 Thread.sleep(SLEEP_INTV);
                                 RotelSource source = sources[0];
-                                if (source != null && source.getName().equals("CD") && !model.hasSourceControl()) {
+                                if (source != null && "CD".equals(source.getName()) && !model.hasSourceControl()) {
                                     sendCommand(RotelCommand.TRACK);
                                     Thread.sleep(SLEEP_INTV);
                                     sendCommand(RotelCommand.RANDOM_MODE);
@@ -2949,11 +2948,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         }
         connector.writeOutput(cmd, message);
 
-        if (connector instanceof RotelSimuConnector) {
+        if (connector instanceof RotelSimuConnector simuConnector) {
             if ((protocol == RotelProtocol.HEX && cmd.getHexType() != 0)
                     || (protocol == RotelProtocol.ASCII_V1 && cmd.getAsciiCommandV1() != null)
                     || (protocol == RotelProtocol.ASCII_V2 && cmd.getAsciiCommandV2() != null)) {
-                ((RotelSimuConnector) connector).buildFeedbackMessage(cmd, value);
+                simuConnector.buildFeedbackMessage(cmd, value);
             }
         }
     }

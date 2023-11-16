@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link ThermostatHandlerFactory} is responsible for creating {@link OJElectronicsThermostatHandler}.
+ * The {@link ThermostatHandlerFactory} is responsible for creating {@link ThermostatHandler}.
  *
  * @author Christian Kittel - Initial contribution
  */
@@ -43,7 +43,7 @@ public class ThermostatHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Creates a new factory
      *
-     * @param httpClientFactory Factory for HttpClient
+     * @param timeZoneProvider
      */
     @Activate
     public ThermostatHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {

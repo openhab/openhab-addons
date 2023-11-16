@@ -49,7 +49,7 @@ public class A5_20_04 extends A5_20 {
     }
 
     @Override
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         switch (channelId) {
             case CHANNEL_STATUS_REQUEST_EVENT:
@@ -60,7 +60,7 @@ public class A5_20_04 extends A5_20 {
     }
 
     private String getStatusRequestEvent() {
-        return Boolean.valueOf(getBit(getDB0Value(), 6)).toString();
+        return Boolean.toString(getBit(getDB0Value(), 6));
         // return getBit(getDB_0Value(), 6) ? "triggered" : null;
     }
 

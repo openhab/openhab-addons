@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>PHC Binding</name>
 	<description>This is a binding for PHC modules (EM, AM, JRM and DIM). It communicates with the PHC Modulbus (RS485).</description>
+	<connection>local</connection>
 
 </addon:addon>

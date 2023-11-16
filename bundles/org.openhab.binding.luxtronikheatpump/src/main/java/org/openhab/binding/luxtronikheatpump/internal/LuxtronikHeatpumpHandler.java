@@ -112,9 +112,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             return;
         }
 
-        if (command instanceof QuantityType) {
-            QuantityType<?> value = (QuantityType<?>) command;
-
+        if (command instanceof QuantityType value) {
             Unit<?> unit = channel.getUnit();
             if (unit != null) {
                 value = value.toUnit(unit);
@@ -123,8 +121,8 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             command = new DecimalType(value.floatValue());
         }
 
-        if (command instanceof OnOffType) {
-            command = ((OnOffType) command) == OnOffType.ON ? new DecimalType(1) : DecimalType.ZERO;
+        if (command instanceof OnOffType onOffCommand) {
+            command = onOffCommand == OnOffType.ON ? new DecimalType(1) : DecimalType.ZERO;
         }
 
         if (!(command instanceof DecimalType)) {

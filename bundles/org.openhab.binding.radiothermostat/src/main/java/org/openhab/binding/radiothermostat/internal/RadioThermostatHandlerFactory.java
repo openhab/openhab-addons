@@ -14,7 +14,6 @@ package org.openhab.binding.radiothermostat.internal;
 
 import static org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants.THING_TYPE_RTHERM;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.radiothermostat")
 public class RadioThermostatHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_RTHERM);
     private final RadioThermostatStateDescriptionProvider stateDescriptionProvider;
     private final HttpClient httpClient;
 
@@ -62,8 +61,7 @@ public class RadioThermostatHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_RTHERM)) {
-            RadioThermostatHandler handler = new RadioThermostatHandler(thing, stateDescriptionProvider, httpClient);
-            return handler;
+            return new RadioThermostatHandler(thing, stateDescriptionProvider, httpClient);
         }
 
         return null;

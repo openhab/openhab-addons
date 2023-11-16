@@ -17,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -73,7 +73,7 @@ public class ItemUIDtoHueIDMappingTests {
 
         // Pretend there is a metadata entry for the imaginary item "demo1" with hueid 10
         commonSetup.metadataRegistry.add(new Metadata(new MetadataKey(ConfigStore.METAKEY, "demo1"), "10", null));
-        cs.activate(Collections.singletonMap("uuid", "demouuid"));
+        cs.activate(Map.of("uuid", "demouuid"));
 
         assertThat(cs.getHighestAssignedHueID(), CoreMatchers.is(10));
     }

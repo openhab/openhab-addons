@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Exec Binding</name>
 	<description>This is the binding to execute arbitrary shell commands</description>
+	<connection>none</connection>
 
 </addon:addon>

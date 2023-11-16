@@ -128,7 +128,18 @@ public class ChromecastCommander {
 
     public void handleCloseApp(final Command command) {
         if (command == OnOffType.ON) {
-            closeApp(MEDIA_PLAYER);
+            Application app;
+            try {
+                app = chromeCast.getRunningApp();
+            } catch (final IOException e) {
+                logger.info("{} command failed: {}", command, e.getMessage());
+                statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
+                return;
+            }
+
+            if (app != null) {
+                closeApp(app.id);
+            }
         }
     }
 
@@ -147,18 +158,16 @@ public class ChromecastCommander {
                 return;
             }
 
-            if (command instanceof PlayPauseType) {
+            if (command instanceof PlayPauseType playPauseCommand) {
                 MediaStatus mediaStatus = chromeCast.getMediaStatus();
                 logger.debug("mediaStatus {}", mediaStatus);
                 if (mediaStatus == null || mediaStatus.playerState == MediaStatus.PlayerState.IDLE) {
                     logger.debug("{} command ignored because media is not loaded", command);
                     return;
                 }
-
-                final PlayPauseType playPause = (PlayPauseType) command;
-                if (playPause == PlayPauseType.PLAY) {
+                if (playPauseCommand == PlayPauseType.PLAY) {
                     chromeCast.play();
-                } else if (playPause == PlayPauseType.PAUSE
+                } else if (playPauseCommand == PlayPauseType.PAUSE
                         && ((mediaStatus.supportedMediaCommands & 0x00000001) == 0x1)) {
                     chromeCast.pause();
                 } else {
@@ -188,8 +197,8 @@ public class ChromecastCommander {
     }
 
     public void handleVolume(final Command command) {
-        if (command instanceof PercentType) {
-            setVolumeInternal((PercentType) command);
+        if (command instanceof PercentType percentCommand) {
+            setVolumeInternal(percentCommand);
         } else if (command == IncreaseDecreaseType.INCREASE) {
             setVolumeInternal(new PercentType(
                     Math.min(statusUpdater.getVolume().intValue() + VOLUMESTEP, PercentType.HUNDRED.intValue())));
@@ -250,13 +259,13 @@ public class ChromecastCommander {
         try {
             if (chromeCast.isAppRunning(appId)) {
                 Application app = chromeCast.getRunningApp();
-                if (app.id.equals(appId) && app.sessionId.equals(statusUpdater.getAppSessionId())) {
+                if (app.id.equals(appId)) {
                     chromeCast.stopApp();
                     logger.debug("Application closed: {}", appId);
                 }
             }
         } catch (final IOException e) {
-            logger.debug("Failed stopping media player app: {} with message: {}", appId, e.getMessage());
+            logger.debug("Failed stopping app: {} with message: {}", appId, e.getMessage());
         }
     }
 

@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link OneBusAwayBinding} class defines common constants, which are
+ * The {@link OneBusAwayBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Shawn Wilsher - Initial contribution

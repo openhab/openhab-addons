@@ -70,7 +70,7 @@ public class NanoleafLayoutTest {
     }
 
     private class TestPanelState implements PanelState {
-        private final HSBType testColors[] = { HSBType.fromRGB(160, 120, 40), HSBType.fromRGB(80, 60, 20),
+        private final HSBType[] testColors = { HSBType.fromRGB(160, 120, 40), HSBType.fromRGB(80, 60, 20),
                 HSBType.fromRGB(120, 90, 30), HSBType.fromRGB(200, 150, 60) };
 
         @Override

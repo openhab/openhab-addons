@@ -184,7 +184,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
             return;
         }
 
-        if (!(thing.getStatus() == ThingStatus.ONLINE)) {
+        if (thing.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
 

@@ -36,8 +36,8 @@ public class S0Converter extends ValueConverter {
         if (parameter == null) {
             pulsesPerKwh = 1000;
             logger.debug("Pulses per kWh not set. Assuming 1000 imp./kWh.");
-        } else if (parameter instanceof BigDecimal) {
-            pulsesPerKwh = ((BigDecimal) parameter).doubleValue();
+        } else if (parameter instanceof BigDecimal decimalValue) {
+            pulsesPerKwh = decimalValue.doubleValue();
         } else {
             logger.warn("Could not parse 'pulses', unexpected type, should be float or integer: {}", parameter);
         }

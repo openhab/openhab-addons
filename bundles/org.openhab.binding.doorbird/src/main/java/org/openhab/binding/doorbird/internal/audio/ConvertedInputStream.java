@@ -42,7 +42,6 @@ public class ConvertedInputStream extends InputStream {
     private AudioInputStream pcmUlawInputStream;
 
     public ConvertedInputStream(InputStream innerInputStream) throws UnsupportedAudioFileException, IOException {
-
         pcmUlawInputStream = getULAWStream(new BufferedInputStream(innerInputStream));
     }
 
@@ -96,7 +95,6 @@ public class ConvertedInputStream extends InputStream {
      */
     private AudioInputStream getULAWStream(InputStream originalInputStream)
             throws UnsupportedAudioFileException, IOException {
-
         try {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(originalInputStream);
             AudioFormat format = audioInputStream.getFormat();

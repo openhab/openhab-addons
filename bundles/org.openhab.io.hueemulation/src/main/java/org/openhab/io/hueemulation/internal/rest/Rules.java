@@ -121,7 +121,7 @@ public class Rules implements RegistryChangeListener<Rule> {
             entry.description = desc;
         }
 
-        rule.getConditions().stream().filter(c -> c.getTypeUID().equals("hue.ruleCondition")).forEach(c -> {
+        rule.getConditions().stream().filter(c -> "hue.ruleCondition".equals(c.getTypeUID())).forEach(c -> {
             HueRuleEntry.Condition condition = c.getConfiguration().as(HueRuleEntry.Condition.class);
             // address with pattern "/sensors/2/state/buttonevent"
             String[] parts = condition.address.split("/");
@@ -132,7 +132,7 @@ public class Rules implements RegistryChangeListener<Rule> {
             entry.conditions.add(condition);
         });
 
-        rule.getActions().stream().filter(a -> a.getTypeUID().equals("rules.HttpAction")).forEach(a -> {
+        rule.getActions().stream().filter(a -> "rules.HttpAction".equals(a.getTypeUID())).forEach(a -> {
             HueCommand command = RuleUtils.httpActionToHueCommand(cs.ds, a, rule.getName());
             if (command == null) {
                 return;
@@ -205,11 +205,11 @@ public class Rules implements RegistryChangeListener<Rule> {
             RuleBuilder builder, List<Trigger> oldTriggers, List<Condition> oldConditions, ItemRegistry itemRegistry) {
         // Preserve all triggers, conditions that are not part of hue rules
         Map<String, Trigger> triggers = new TreeMap<>();
-        triggers.putAll(oldTriggers.stream().filter(a -> !a.getTypeUID().equals("core.ItemStateChangeTrigger"))
+        triggers.putAll(oldTriggers.stream().filter(a -> !"core.ItemStateChangeTrigger".equals(a.getTypeUID()))
                 .collect(Collectors.toMap(e -> e.getId(), e -> e)));
 
         Map<String, Condition> conditions = new TreeMap<>();
-        conditions.putAll(oldConditions.stream().filter(a -> !a.getTypeUID().equals("hue.ruleCondition"))
+        conditions.putAll(oldConditions.stream().filter(a -> !"hue.ruleCondition".equals(a.getTypeUID()))
                 .collect(Collectors.toMap(e -> e.getId(), e -> e)));
 
         for (HueRuleEntry.Condition condition : hueConditions) {
@@ -227,7 +227,7 @@ public class Rules implements RegistryChangeListener<Rule> {
             String apikey) {
         // Preserve all actions that are not "rules.HttpAction"
         List<Action> actions = new ArrayList<>(oldActions);
-        actions.removeIf(a -> a.getTypeUID().equals("rules.HttpAction"));
+        actions.removeIf(a -> "rules.HttpAction".equals(a.getTypeUID()));
 
         for (HueCommand command : hueActions) {
             command.address = "/api/" + apikey + command.address;

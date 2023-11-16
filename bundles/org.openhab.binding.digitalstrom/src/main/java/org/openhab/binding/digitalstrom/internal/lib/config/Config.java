@@ -27,7 +27,7 @@ public class Config {
      */
     public static final String DEFAULT_APPLICATION_NAME = "openHAB";
     /**
-     * Defines the used tread pool name to get a thread pool from {@link ThreadPoolManager}.
+     * Defines the used tread pool name to get a thread pool from {@link org.openhab.core.common.ThreadPoolManager}.
      */
     public static final String THREADPOOL_NAME = "digitalSTROM";
 
@@ -110,7 +110,9 @@ public class Config {
     private int totalPowerUpdateInterval = DEFAULT_TOTAL_POWER_UPDATE_INTERVAL;
 
     /**
-     * Default time to wait between another {@link SensorJob} can be executed on a circuit.
+     * Default time to wait between another
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}
+     * can be executed on a circuit.
      */
     public static final int DEFAULT_SENSOR_READING_WAIT_TIME = 60000;
     private int sensorReadingWaitTime = DEFAULT_SENSOR_READING_WAIT_TIME;
@@ -135,11 +137,13 @@ public class Config {
 
     // max sensor reading cyclic to wait
     /**
-     * The default factor to prioritize medium {@link SensorJob}s down.
+     * The default factor to prioritize medium
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}s down.
      */
     public static final long DEFAULT_MEDIUM_PRIORITY_FACTOR = 5;
     /**
-     * The default factor to prioritize low {@link SensorJob}s down.
+     * The default factor to prioritize low
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}s down.
      */
     public static final long DEFAULT_LOW_PRIORITY_FACTOR = 10;
 
@@ -147,13 +151,16 @@ public class Config {
     private long lowPriorityFactor = DEFAULT_LOW_PRIORITY_FACTOR;
 
     /**
-     * Defines the event polling interval of the {@link EventListener} in milliseconds.
+     * Defines the event polling interval of the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.EventListener} in milliseconds.
      */
     private int eventListenerRefreshinterval = DEFAULT_POLLING_FREQUENCY;
 
     /**
-     * The default max standby active power for a device. It's needed to set a {@link Device} with output mode
-     * {@link OutputModeEnum#WIPE} on if it isen't any more in standby mode.
+     * The default max standby active power for a device. It's needed to set a
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device} with output mode
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum#WIPE}
+     * on if it isen't any more in standby mode.
      */
     public static final int DEFAULT_STANDBY_ACTIVE_POWER = 2;
 
@@ -350,7 +357,8 @@ public class Config {
     }
 
     /**
-     * Sets the SSL-Certificate of the server, will be set automatically by the {@link HttpTransportImpl} if no
+     * Sets the SSL-Certificate of the server, will be set automatically by the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.impl.HttpTransportImpl} if no
      * SSL-Certification path is set.
      *
      * @param cert of the digitalSTROM-Server to set
@@ -461,7 +469,9 @@ public class Config {
     }
 
     /**
-     * Returns the time in milliseconds to wait between another {@link SensorJob} can be executed on a circuit.
+     * Returns the time in milliseconds to wait between another
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}
+     * can be executed on a circuit.
      *
      * @return the sensor reading wait time in milliseconds
      */
@@ -470,7 +480,9 @@ public class Config {
     }
 
     /**
-     * Sets the time in milliseconds to wait between another {@link SensorJob} can be executed on a circuit.
+     * Sets the time in milliseconds to wait between another
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}
+     * can be executed on a circuit.
      *
      * @param sensorReadingWaitTime in milliseconds
      */
@@ -479,7 +491,9 @@ public class Config {
     }
 
     /**
-     * Returns the factor to prioritize medium {@link SensorJob}s in the {@link SensorJobExecutor} down.
+     * Returns the factor to prioritize medium
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}s
+     * in the {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SensorJobExecutor} down.
      *
      * @return the medium priority factor
      */
@@ -488,7 +502,9 @@ public class Config {
     }
 
     /**
-     * Sets the factor to prioritize medium {@link SensorJob}s in the {@link SensorJobExecutor} down.
+     * Sets the factor to prioritize medium
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}s in the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SensorJobExecutor} down.
      *
      * @param mediumPriorityFactor to set
      */
@@ -497,7 +513,9 @@ public class Config {
     }
 
     /**
-     * Returns the factor to prioritize low {@link SensorJob}s in the {@link SensorJobExecutor} down.
+     * Returns the factor to prioritize low
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}s in the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SensorJobExecutor} down.
      *
      * @return the low priority factor
      */
@@ -506,7 +524,9 @@ public class Config {
     }
 
     /**
-     * Sets the factor to prioritize low {@link SensorJob}s in the {@link SensorJobExecutor}down.
+     * Sets the factor to prioritize low
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}s in the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SensorJobExecutor}down.
      *
      * @param lowPriorityFactor to set
      */
@@ -515,7 +535,9 @@ public class Config {
     }
 
     /**
-     * Returns the polling interval in milliseconds to poll the {@link Event}s in the {@link EventListener}.
+     * Returns the polling interval in milliseconds to poll the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem}s in the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.EventListener}.
      *
      * @return the EventListener refresh interval in milliseconds
      */
@@ -524,7 +546,9 @@ public class Config {
     }
 
     /**
-     * Sets the polling interval in milliseconds to poll the {@link Event}s in the {@link EventListener}.
+     * Sets the polling interval in milliseconds to poll the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem}s in the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.EventListener}.
      *
      * @param eventListenerRefreshinterval to set
      */
@@ -533,8 +557,10 @@ public class Config {
     }
 
     /**
-     * Returns the max standby active power for a device. It's needed to set a {@link Device} with output mode
-     * {@link OutputModeEnum#WIPE} on if it isen't any more in standby mode.
+     * Returns the max standby active power for a device. It's needed to set a
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device} with output mode
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum#WIPE}
+     * on if it isen't any more in standby mode.
      *
      * @return the standby active power
      */
@@ -543,8 +569,10 @@ public class Config {
     }
 
     /**
-     * Sets the max standby active power for a device. It's needed to set a {@link Device} with output mode
-     * {@link OutputModeEnum#WIPE} on if it isen't any more in standby mode.
+     * Sets the max standby active power for a device. It's needed to set a
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device} with output mode
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum#WIPE}
+     * on if it isen't any more in standby mode.
      *
      * @param standbyActivePower to set
      */

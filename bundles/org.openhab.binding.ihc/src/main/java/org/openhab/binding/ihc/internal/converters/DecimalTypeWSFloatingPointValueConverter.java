@@ -21,7 +21,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSFloatingPointValue;
 import org.openhab.core.library.types.DecimalType;
 
 /**
- * DecimalType <-> WSFloatingPointValue converter.
+ * DecimalType {@literal <->} WSFloatingPointValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

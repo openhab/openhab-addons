@@ -55,7 +55,6 @@ public class WlanThermoEsp32CommandHandler {
 
     public static State getState(ChannelUID channelUID, Data data, Settings settings)
             throws WlanThermoUnknownChannelException, WlanThermoInputException {
-
         String groupId = requireNonNull(channelUID.getGroupId());
         System system = data.getSystem();
         Unit<Temperature> unit = "F".equals(system.getUnit()) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
@@ -186,9 +185,9 @@ public class WlanThermoEsp32CommandHandler {
                         }
                         return false;
                     case CHANNEL_MIN:
-                        if (command instanceof QuantityType) {
+                        if (command instanceof QuantityType quantityCommand) {
                             try {
-                                channel.setMin(requireNonNull(((QuantityType<?>) command).toUnit(unit)).doubleValue());
+                                channel.setMin(requireNonNull(quantityCommand.toUnit(unit)).doubleValue());
                                 return true;
                             } catch (WlanThermoInputException ignore) {
                                 return false;
@@ -196,9 +195,9 @@ public class WlanThermoEsp32CommandHandler {
                         }
                         return false;
                     case CHANNEL_MAX:
-                        if (command instanceof QuantityType) {
+                        if (command instanceof QuantityType quantityCommand) {
                             try {
-                                channel.setMax(requireNonNull(((QuantityType<?>) command).toUnit(unit)).doubleValue());
+                                channel.setMax(requireNonNull(quantityCommand.toUnit(unit)).doubleValue());
                                 return true;
                             } catch (WlanThermoInputException ignore) {
                                 return false;
@@ -230,14 +229,14 @@ public class WlanThermoEsp32CommandHandler {
                         }
                         return false;
                     case CHANNEL_COLOR_NAME:
-                        if (command instanceof StringType) {
-                            channel.setColor(WlanThermoEsp32Util.toHex(((StringType) command).toString()));
+                        if (command instanceof StringType stringCommand) {
+                            channel.setColor(WlanThermoEsp32Util.toHex(stringCommand.toString()));
                             return true;
                         }
                         return false;
                     case CHANNEL_COLOR:
-                        if (command instanceof HSBType) {
-                            channel.setColor(WlanThermoUtil.toHex((HSBType) command));
+                        if (command instanceof HSBType hsbCommand) {
+                            channel.setColor(WlanThermoUtil.toHex(hsbCommand));
                             return true;
                         }
                         return false;
@@ -264,8 +263,8 @@ public class WlanThermoEsp32CommandHandler {
                         }
                     case CHANNEL_PITMASTER_STATE:
                         String state = ((StringType) command).toString();
-                        if (state.equalsIgnoreCase("off") || state.equalsIgnoreCase("manual")
-                                || state.equalsIgnoreCase("auto")) {
+                        if ("off".equalsIgnoreCase(state) || "manual".equalsIgnoreCase(state)
+                                || "auto".equalsIgnoreCase(state)) {
                             pm.setTyp(state);
                             return true;
                         }

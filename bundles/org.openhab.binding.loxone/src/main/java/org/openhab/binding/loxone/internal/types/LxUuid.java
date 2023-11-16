@@ -56,7 +56,7 @@ public class LxUuid {
         this.uuid = init(uuid);
     }
 
-    public LxUuid(byte data[], int offset) {
+    public LxUuid(byte[] data, int offset) {
         String id = String.format("%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x",
                 ByteBuffer.wrap(data, offset, 4).order(ByteOrder.LITTLE_ENDIAN).getInt(),
                 ByteBuffer.wrap(data, offset + 4, 2).order(ByteOrder.LITTLE_ENDIAN).getShort(),

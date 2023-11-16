@@ -40,8 +40,7 @@ public class RoomChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetObject(String channelId, NAObject naObject) {
-        if (naObject instanceof Room) {
-            Room room = (Room) naObject;
+        if (naObject instanceof Room room) {
             switch (channelId) {
                 case CHANNEL_ROOM_WINDOW_OPEN:
                     return room.hasOpenedWindows();

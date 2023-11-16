@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>MCP23017 Binding</name>
 	<description>This is the binding for MCP23017 I/O expansion chips.</description>
+	<connection>local</connection>
 
 </addon:addon>

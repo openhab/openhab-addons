@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sonos.internal.util.StringUtils;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -86,8 +86,6 @@ public class SonosXMLParser {
     /**
      * @param xml
      * @return a list of alarms from the given xml string.
-     * @throws IOException
-     * @throws SAXException
      */
     public static List<SonosAlarm> getAlarmsFromStringResult(String xml) {
         AlarmHandler handler = new AlarmHandler();
@@ -106,8 +104,6 @@ public class SonosXMLParser {
     /**
      * @param xml
      * @return a list of Entries from the given xml string.
-     * @throws IOException
-     * @throws SAXException
      */
     public static List<SonosEntry> getEntriesFromString(String xml) {
         EntryHandler handler = new EntryHandler();
@@ -148,11 +144,8 @@ public class SonosXMLParser {
     }
 
     /**
-     * @param controller
      * @param xml
      * @return zone group from the given xml
-     * @throws IOException
-     * @throws SAXException
      */
     public static List<SonosZoneGroup> getZoneGroupFromXML(String xml) {
         ZoneGroupHandler handler = new ZoneGroupHandler();

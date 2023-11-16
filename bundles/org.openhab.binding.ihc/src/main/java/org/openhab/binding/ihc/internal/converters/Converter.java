@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 
 /**
- * IHC / ELKO <-> openHAB data type converter interface.
+ * IHC / ELKO {@literal <->} openHAB data type converter interface.
  *
  * @author Pauli Anttila - Initial contribution
  */

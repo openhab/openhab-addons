@@ -14,7 +14,6 @@ package org.openhab.binding.dwdunwetter.internal.factory;
 
 import static org.openhab.binding.dwdunwetter.internal.DwdUnwetterBindingConstants.THING_TYPE_WARNINGS;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.dwdunwetter", service = ThingHandlerFactory.class)
 public class DwdUnwetterHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WARNINGS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WARNINGS);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

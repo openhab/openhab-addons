@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Millheat Binding</name>
 	<description>This is the binding for Mill Heat Wi-Fi enabled heaters. See https://www.millheat.com/mill-wifi/</description>
+	<connection>cloud</connection>
 
 </addon:addon>

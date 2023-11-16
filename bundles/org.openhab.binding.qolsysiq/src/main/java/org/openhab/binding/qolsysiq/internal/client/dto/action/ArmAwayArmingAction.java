@@ -13,7 +13,7 @@
 package org.openhab.binding.qolsysiq.internal.client.dto.action;
 
 /**
- * An {@link ArmingActionType.ARM_AWAY} type of {@link ArmingAction} message sent to the panel
+ * An {@link ArmingActionType#ARM_AWAY} type of {@link ArmingAction} message sent to the panel
  *
  * @author Dan Cunningham - Initial contribution
  */

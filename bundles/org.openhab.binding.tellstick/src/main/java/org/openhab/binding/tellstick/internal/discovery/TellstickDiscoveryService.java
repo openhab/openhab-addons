@@ -135,16 +135,16 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
                 } else if (device instanceof SwitchableDevice) {
                     thingUID = new ThingUID(TellstickBindingConstants.SWITCH_THING_TYPE, bridge.getUID(),
                             device.getUUId());
-                } else if (device instanceof TellstickNetDevice) {
-                    if ((((TellstickNetDevice) device).getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
+                } else if (device instanceof TellstickNetDevice netDevice) {
+                    if ((netDevice.getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
                         thingUID = new ThingUID(TellstickBindingConstants.DIMMER_THING_TYPE, bridge.getUID(),
                                 device.getUUId());
                     } else {
                         thingUID = new ThingUID(TellstickBindingConstants.SWITCH_THING_TYPE, bridge.getUID(),
                                 device.getUUId());
                     }
-                } else if (device instanceof TellstickLocalDeviceDTO) {
-                    if ((((TellstickLocalDeviceDTO) device).getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
+                } else if (device instanceof TellstickLocalDeviceDTO localDevice) {
+                    if ((localDevice.getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
                         thingUID = new ThingUID(TellstickBindingConstants.DIMMER_THING_TYPE, bridge.getUID(),
                                 device.getUUId());
                     } else {
@@ -162,8 +162,7 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
     private ThingTypeUID findSensorType(Device device) {
         logger.debug("Device: {}", device);
         ThingTypeUID sensorThingId;
-        if (device instanceof TellstickSensor) {
-            TellstickSensor sensor = (TellstickSensor) device;
+        if (device instanceof TellstickSensor sensor) {
             logger.debug("Sensor: {}", device);
             if (sensor.getData(DataType.WINDAVERAGE) != null || sensor.getData(DataType.WINDGUST) != null
                     || sensor.getData(DataType.WINDDIRECTION) != null) {
@@ -173,8 +172,7 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
             } else {
                 sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
             }
-        } else if (device instanceof TellstickNetSensor) {
-            TellstickNetSensor sensor = (TellstickNetSensor) device;
+        } else if (device instanceof TellstickNetSensor sensor) {
             if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE) || sensor.isSensorOfType(LiveDataType.WINDDIRECTION)
                     || sensor.isSensorOfType(LiveDataType.WINDGUST)) {
                 sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;

@@ -13,7 +13,7 @@
 package org.openhab.binding.lirc.internal.config;
 
 /**
- * Configuration class for {@link LIRCRemote} device.
+ * Configuration class for LIRCRemote device.
  *
  * @author Andrew Nagle - Initial contribution
  */

@@ -15,7 +15,6 @@ package org.openhab.binding.meater.internal.handler;
 import static org.openhab.binding.meater.internal.MeaterBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,7 +55,7 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MeaterBridgeHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private final Gson gson;
     private final HttpClient httpClient;
@@ -101,7 +100,7 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MeaterDiscoveryService.class);
+        return Set.of(MeaterDiscoveryService.class);
     }
 
     @Override

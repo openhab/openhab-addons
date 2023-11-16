@@ -29,7 +29,6 @@ public class VenstarFanStateSerializer implements JsonDeserializer<VenstarFanSta
     @Override
     public VenstarFanState deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
-
         int key = element.getAsInt();
         try {
             return VenstarFanState.fromInt(key);

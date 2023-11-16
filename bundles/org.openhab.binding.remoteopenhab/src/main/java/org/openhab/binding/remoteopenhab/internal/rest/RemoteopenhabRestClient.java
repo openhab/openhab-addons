@@ -621,12 +621,10 @@ public class RemoteopenhabRestClient {
                     String statusLine = statusCode + " " + response.getReason();
                     throw new RemoteopenhabException("@text/exception.http-call-failed", statusLine);
                 }
-                String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
+                String encoding = response.getEncoding() != null ? response.getEncoding().replace("\"", "").trim()
                         : StandardCharsets.UTF_8.name();
                 return new String(response.getContent(), encoding);
             }
-        } catch (RemoteopenhabException e) {
-            throw e;
         } catch (ExecutionException e) {
             // After a long network outage, the first HTTP request will fail with an EOFException exception.
             // We retry the request a second time in this case.

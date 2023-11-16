@@ -69,9 +69,8 @@ public class VelbusBlindsHandler extends VelbusThingHandler {
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);
-        } else if (command instanceof UpDownType) {
-            UpDownType s = (UpDownType) command;
-            if (s == UpDownType.UP) {
+        } else if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 byte commandByte = COMMAND_BLIND_UP;
 
                 VelbusBlindUpDownPacket packet = new VelbusBlindUpDownPacket(
@@ -88,18 +87,17 @@ public class VelbusBlindsHandler extends VelbusThingHandler {
                 byte[] packetBytes = packet.getBytes();
                 velbusBridgeHandler.sendPacket(packetBytes);
             }
-        } else if (command instanceof StopMoveType) {
-            StopMoveType s = (StopMoveType) command;
-            if (s == StopMoveType.STOP) {
+        } else if (command instanceof StopMoveType stopMoveCommand) {
+            if (stopMoveCommand == StopMoveType.STOP) {
                 VelbusBlindOffPacket packet = new VelbusBlindOffPacket(
                         getModuleAddress().getChannelIdentifier(channelUID));
 
                 byte[] packetBytes = packet.getBytes();
                 velbusBridgeHandler.sendPacket(packetBytes);
             }
-        } else if (command instanceof PercentType) {
+        } else if (command instanceof PercentType percentCommand) {
             VelbusBlindPositionPacket packet = new VelbusBlindPositionPacket(
-                    getModuleAddress().getChannelIdentifier(channelUID), ((PercentType) command).byteValue());
+                    getModuleAddress().getChannelIdentifier(channelUID), percentCommand.byteValue());
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);

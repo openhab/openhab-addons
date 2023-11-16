@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bticinosmarther.internal.api.dto;
 
-import org.openhab.binding.bticinosmarther.internal.util.StringUtil;
+import org.openhab.core.util.StringUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -34,7 +34,7 @@ public class Module {
      * @return a string containing the module device type
      */
     public String getDeviceType() {
-        return StringUtil.capitalizeAll(deviceType);
+        return StringUtils.capitalizeByWhitespace(deviceType);
     }
 
     /**

@@ -113,8 +113,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     public abstract @Nullable String getBoschID();
 
     /**
-     * Initializes this handler. Use this method to register all services of the device with
-     * {@link #registerService(BoschSHCService)}.
+     * Initializes this handler.
      */
     @Override
     public void initialize() {
@@ -165,7 +164,8 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     /**
-     * Should be used by handlers to create their required services.
+     * Use this method to register all services of the device with
+     * {@link #registerService(BoschSHCService, Consumer, Collection, boolean)}.
      */
     protected void initializeServices() throws BoschSHCException {
     }
@@ -193,7 +193,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     /**
      * Query the Bosch Smart Home Controller for the state of the service with the specified name.
      *
-     * @note Use services instead of directly requesting a state.
+     * @implNote Use services instead of directly requesting a state.
      *
      * @param stateName Name of the service to query
      * @param classOfT Class to convert the resulting JSON to

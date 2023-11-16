@@ -29,15 +29,4 @@ public class ApiHandlerConfiguration {
     public String webHookUrl = "";
     public String webHookPostfix = "";
     public int reconnectInterval = 300;
-
-    public ConfigurationLevel check(String refreshToken) {
-        if (clientId.isBlank()) {
-            return ConfigurationLevel.EMPTY_CLIENT_ID;
-        } else if (clientSecret.isBlank()) {
-            return ConfigurationLevel.EMPTY_CLIENT_SECRET;
-        } else if (refreshToken.isBlank()) {
-            return ConfigurationLevel.REFRESH_TOKEN_NEEDED;
-        }
-        return ConfigurationLevel.COMPLETED;
-    }
 }

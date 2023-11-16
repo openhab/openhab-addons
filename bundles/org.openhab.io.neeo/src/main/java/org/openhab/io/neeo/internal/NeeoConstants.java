@@ -49,6 +49,7 @@ public class NeeoConstants {
 
     /** Constant used to identify thread pool name */
     public static final String THREAD_POOL_NAME = "neeoio";
+    public static final int HTTPCLIENT_POOL_SIZE = 5;
 
     /** Constants used for the Web APP */
     public static final String WEBAPP_PREFIX = "/neeo";

@@ -789,7 +789,6 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     @Test
     public void testRefreshWithOldPreviousData() throws IllegalArgumentException, IllegalAccessException,
             NoSuchFieldException, SecurityException, InterruptedException {
-
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 0L);
         pollerConfig.put("start", 5);

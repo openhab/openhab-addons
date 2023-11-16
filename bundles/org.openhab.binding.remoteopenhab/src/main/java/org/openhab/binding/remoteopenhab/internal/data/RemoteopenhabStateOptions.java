@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Match content of field value from {@link RemoteopenhabChannelDescriptionChangedEvent) event payload when event is for
+ * Match content of field value from {@link RemoteopenhabChannelDescriptionChangedEvent} event payload when event is for
  * STATE_OPTIONS
  *
  * @author Laurent Garnier - Initial contribution

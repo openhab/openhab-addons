@@ -35,7 +35,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
- * The {@link HaywarThingHandler} is a subclass of the BaseThingHandler and a Super
+ * The {@link HaywardThingHandler} is a subclass of the BaseThingHandler and a Super
  * Class to each Hayward Thing Handler
  *
  * @author Matt Myers - Initial contribution
@@ -93,7 +93,7 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
                 if (bridge != null) {
                     HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
                     if (bridgehandler != null) {
-                        if (bridgehandler.account.units.equals("Standard")) {
+                        if ("Standard".equals(bridgehandler.account.units)) {
                             return new QuantityType<>(Integer.parseInt(value), ImperialUnits.FAHRENHEIT);
                         } else {
                             return new QuantityType<>(Integer.parseInt(value), SIUnits.CELSIUS);
@@ -112,10 +112,10 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
             return "0";
         } else if (command == OnOffType.ON) {
             return "1";
-        } else if (command instanceof DecimalType) {
-            return ((DecimalType) command).toString();
-        } else if (command instanceof QuantityType) {
-            return ((QuantityType<?>) command).format("%1.0f");
+        } else if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.toString();
+        } else if (command instanceof QuantityType quantityCommand) {
+            return quantityCommand.format("%1.0f");
         } else {
             return command.toString();
         }

@@ -37,9 +37,8 @@ public class SeneyeStatus {
     }
 
     private String getTickAsDate(String tick) {
-        String date = new java.text.SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_ISO)
+        return new java.text.SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_ISO)
                 .format(new java.util.Date(Long.parseLong(tick) * 1000));
-        return date;
     }
 
     public String getWrong_slideString() {

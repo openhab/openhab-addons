@@ -68,8 +68,7 @@ public final class SendCommand {
      * This is can be used to find duplicated commands in the queue
      */
     private static String getKey(String serialNumber, CubeCommand cubeCommand) {
-        String key = serialNumber + "-" + cubeCommand.getClass().getSimpleName();
-        return key;
+        return serialNumber + "-" + cubeCommand.getClass().getSimpleName();
     }
 
     /**

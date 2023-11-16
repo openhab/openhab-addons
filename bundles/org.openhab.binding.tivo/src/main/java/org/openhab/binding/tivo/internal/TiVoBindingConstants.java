@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link TiVoBinding} class defines common constants that are
+ * The {@link TiVoBindingConstants} class defines common constants that are
  * used across the whole binding.
  *
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution

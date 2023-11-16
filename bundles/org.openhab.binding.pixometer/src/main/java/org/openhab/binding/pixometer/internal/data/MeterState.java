@@ -32,8 +32,7 @@ public class MeterState {
     /**
      * Initialize times from the given timestamps
      *
-     * @param lastReadingDate time of last reading as ZonedDateTime
-     * @param lastRefreshTime time of last refresh as ZonedDateTime
+     * @param reading last reading
      */
     public MeterState(ReadingInstance reading) {
         this.readingValue = reading.getValue();

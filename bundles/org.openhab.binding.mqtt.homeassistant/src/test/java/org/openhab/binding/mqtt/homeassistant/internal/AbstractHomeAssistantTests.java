@@ -99,7 +99,7 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
                 .thenReturn(ThingTypeBuilder.instance(HA_TYPE_UID, HA_TYPE_LABEL).build());
         when(transformationServiceProvider
                 .getTransformationService(JinjaTransformationProfile.PROFILE_TYPE_UID.getId()))
-                        .thenReturn(jinjaTransformationService);
+                .thenReturn(jinjaTransformationService);
 
         channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistry));
 

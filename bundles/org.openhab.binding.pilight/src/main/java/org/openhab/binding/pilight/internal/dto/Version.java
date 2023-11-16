@@ -17,7 +17,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * pilight version information object
  *
- * {@link http://www.pilight.org/development/api/#controller}
+ * @see <a href="https://manual.pilight.org/development/socket/index.html">
+ *      https://manual.pilight.org/development/socket/index.html</a>
  *
  * @author Niklas Dörfler - Initial contribution
  */

@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The configuration for {@link org.openhab.binding.ojelectronics.internal.OJElectronicsCloudHandler}
+ * The configuration for {@link org.openhab.binding.ojelectronics.internal.OJCloudHandler}
  *
  * @author Christian Kittel - Initial contribution
  */

@@ -48,10 +48,10 @@ class TestState2 extends BoschSHCServiceState {
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public class BoschSHCServiceStateTest {
+class BoschSHCServiceStateTest {
 
     @Test
-    public void fromJsonNullStateForDifferentType() {
+    void fromJsonNullStateForDifferentType() {
         var state = BoschSHCServiceState.fromJson(
                 GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"differentState\"}", JsonObject.class),
                 TestState.class);
@@ -59,7 +59,7 @@ public class BoschSHCServiceStateTest {
     }
 
     @Test
-    public void fromJsonStateObjectForValidJson() {
+    void fromJsonStateObjectForValidJson() {
         var state = BoschSHCServiceState.fromJson(
                 GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"testState\"}", JsonObject.class),
                 TestState.class);
@@ -70,7 +70,7 @@ public class BoschSHCServiceStateTest {
      * This checks for a bug we had where the expected type stayed the same for different state classes
      */
     @Test
-    public void fromJsonStateObjectForValidJsonAfterOtherState() {
+    void fromJsonStateObjectForValidJsonAfterOtherState() {
         BoschSHCServiceState.fromJson(
                 GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"testState\"}", JsonObject.class),
                 TestState.class);

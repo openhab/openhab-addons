@@ -85,6 +85,15 @@ public class StatusDTO {
     @SerializedName("mop_forbidden_enable")
     @Expose
     private Integer mopForbiddenEnable;
+    @SerializedName("dry_status")
+    @Expose
+    private Integer isMopDryingActive;
+    @SerializedName("rdt")
+    @Expose
+    private Long mopDryTime;
+    @SerializedName("dock_error_status")
+    @Expose
+    private Integer dockErrorStatus;
 
     public final Integer getMsgVer() {
         return msgVer;
@@ -168,5 +177,21 @@ public class StatusDTO {
 
     public final Integer getMopForbiddenEnable() {
         return mopForbiddenEnable;
+    }
+
+    public Integer getIsMopDryingActive() {
+        return isMopDryingActive;
+    }
+
+    public Long getMopDryTime() {
+        return mopDryTime;
+    }
+
+    public Integer getDockErrorStatus() {
+        return this.dockErrorStatus;
+    }
+
+    public void setDockErrorStatus(Integer dockErrorStatus) {
+        this.dockErrorStatus = dockErrorStatus;
     }
 }

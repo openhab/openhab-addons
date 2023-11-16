@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Collection of all devices known to the energy manager including the energy manager itself.
  *
- * The {@link Device}s are generated from the {@link DeviceDTO}s inside of the {@link EnergyManagerDTO}
+ * The {@link Device}s are generated from the {@link org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO}s
+ * inside of the {@link org.openhab.binding.solarwatt.internal.domain.dto.EnergyManagerDTO}
  * 
  * @author Sven Carstens - Initial contribution
  */

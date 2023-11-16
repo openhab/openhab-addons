@@ -41,7 +41,7 @@ public class PageOfInterestSubscriber<T> implements Subscriber<T> {
     /**
      * Create new PageOfInterestSubscriber
      *
-     * @param subscriber subscriber to get the page of interest
+     * @param future subscriber to get the page of interest
      * @param pageIndex page index that we want subscribe
      * @param pageSize page size
      */

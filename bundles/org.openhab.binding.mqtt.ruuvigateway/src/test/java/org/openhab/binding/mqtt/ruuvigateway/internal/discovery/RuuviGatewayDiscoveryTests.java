@@ -113,18 +113,16 @@ public class RuuviGatewayDiscoveryTests {
         }));
 
         assertTrue(//
-                discoveryResults.stream().anyMatch(result -> {
-                    return "DE:EA:DB:BE:FF:00"
-                            .equals(result.getProperties().get(RuuviGatewayBindingConstants.PROPERTY_TAG_ID))
-                            && "ruuvi/foo/bar/de:ea:DB:be:ff:00".equals(result.getProperties()
-                                    .get(RuuviGatewayBindingConstants.CONFIGURATION_PROPERTY_TOPIC));
-                }) && //
-                        discoveryResults.stream().anyMatch(result -> {
-                            return "DE:EA:DB:BE:FF:01"
-                                    .equals(result.getProperties().get(RuuviGatewayBindingConstants.PROPERTY_TAG_ID))
-                                    && "ruuvi/foo/bar/de:ea:DB:be:ff:01".equals(result.getProperties()
-                                            .get(RuuviGatewayBindingConstants.CONFIGURATION_PROPERTY_TOPIC));
-                        })
+                discoveryResults.stream().anyMatch(result -> "DE:EA:DB:BE:FF:00"
+                        .equals(result.getProperties().get(RuuviGatewayBindingConstants.PROPERTY_TAG_ID))
+                        && "ruuvi/foo/bar/de:ea:DB:be:ff:00".equals(
+                                result.getProperties().get(RuuviGatewayBindingConstants.CONFIGURATION_PROPERTY_TOPIC)))
+                        && //
+                        discoveryResults.stream()
+                                .anyMatch(result -> "DE:EA:DB:BE:FF:01".equals(
+                                        result.getProperties().get(RuuviGatewayBindingConstants.PROPERTY_TAG_ID))
+                                        && "ruuvi/foo/bar/de:ea:DB:be:ff:01".equals(result.getProperties()
+                                                .get(RuuviGatewayBindingConstants.CONFIGURATION_PROPERTY_TOPIC)))
 
                 , "Failed to match: " + discoveryResults.toString());
     }

@@ -224,10 +224,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="powerConsumption">
+	<channel-type id="energy-consumption">
 		<item-type>Number:Energy</item-type>
-		<label>Power Consumption</label>
-		<description>Power consumption by the currently running program on the appliance</description>
+		<label>Energy Consumption</label>
+		<description>Energy consumption by the currently running program on the appliance</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -236,7 +236,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="waterConsumption">
+	<channel-type id="water-consumption">
 		<item-type>Number:Volume</item-type>
 		<label>Water Consumption</label>
 		<description>Water consumption by the currently running program on the appliance</description>
@@ -245,7 +245,7 @@
 			<tag>Measurement</tag>
 			<tag>Water</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f l"/>
 	</channel-type>
 
 </thing:thing-descriptions>

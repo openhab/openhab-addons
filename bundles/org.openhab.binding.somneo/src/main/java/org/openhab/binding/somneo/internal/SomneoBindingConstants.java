@@ -58,6 +58,21 @@ public class SomneoBindingConstants {
     public static final String CHANNEL_SUNSET_REMAINING_TIME = "sunset#remainingTime";
     public static final String CHANNEL_SUNSET_SWITCH = "sunset#switch";
     public static final String CHANNEL_SUNSET_VOLUME = "sunset#volume";
+    public static final String CHANNEL_ALARM_SNOOZE = "alarm#snooze";
+    public static final String CHANNEL_ALARM_CONFIGURED = "alarm%d#configured";
+    public static final String CHANNEL_ALARM_SWITCH = "alarm%d#switch";
+    public static final String CHANNEL_ALARM_TIME = "alarm%d#alarmTime";
+    public static final String CHANNEL_ALARM_REPEAT_DAY = "alarm%d#repeatDay";
+    public static final String CHANNEL_ALARM_POWER_WAKE = "alarm%d#powerWake";
+    public static final String CHANNEL_ALARM_POWER_WAKE_DELAY = "alarm%d#powerWakeDelay";
+    public static final String CHANNEL_ALARM_SUNRISE_DURATION = "alarm%d#sunriseDuration";
+    public static final String CHANNEL_ALARM_SUNRISE_BRIGHTNESS = "alarm%d#sunriseBrightness";
+    public static final String CHANNEL_ALARM_SUNRISE_SCHEMA = "alarm%d#sunriseSchema";
+    public static final String CHANNEL_ALARM_SOUND = "alarm%d#sound";
+    public static final String CHANNEL_ALARM_VOLUME = "alarm%d#volume";
+
+    // Regex for alarm channels
+    public static final String CHANNEL_ALARM_PREFIX_REGEX = "^alarm(\\d{1,2})#\\w+$";
 
     // List of all Web Service Endpoints
     public static final String AUDIO_ENDPOINT = "/1/wuply";
@@ -71,4 +86,8 @@ public class SomneoBindingConstants {
     public static final String SENSORS_ENDPOINT = "/1/wusrd";
     public static final String SUNSET_ENDPOINT = "/1/wudsk";
     public static final String WIFI_ENDPOINT = "/0/wifi";
+    public static final String ALARM_STATES_ENDPOINT = "/1/wualm/aenvs";
+    public static final String ALARM_SCHEDULES_ENDPOINT = "/1/wualm/aalms";
+    public static final String ALARM_SETTINGS_ENDPOINT = "/1/wualm";
+    public static final String ALARM_EDIT_ENDPOINT = "/1/wualm/prfwu";
 }

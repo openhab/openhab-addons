@@ -82,7 +82,7 @@ The InfluxDB exporter service will start as soon as the _influxMetricsEnabled_ c
 
 The Java Management Extensions (JMX) exporter service will start as soon as the _jmxMetricsEnabled_ configuration parameter is set to true.
 
-You can monitor the JMX metrics using a tool like [JConsole](https://docs.oracle.com/en/java/javase/11/management/using-jconsole.html) or [VisualVM](https://visualvm.github.io/) (after installing the VisualVM-MBeans plugin).
+You can monitor the JMX metrics using a tool like [JConsole](https://docs.oracle.com/en/java/javase/17/management/using-jconsole.html) or [VisualVM](https://visualvm.github.io/) (after installing the VisualVM-MBeans plugin).
 When the JMX exporter is enabled, the metrics will be available under the "metrics" MBean.
 JConsole and VisualVM will only be able to connect using JMX when openHAB is started in debug mode (use `start_debug.sh` or `start_debug.bat`).
 

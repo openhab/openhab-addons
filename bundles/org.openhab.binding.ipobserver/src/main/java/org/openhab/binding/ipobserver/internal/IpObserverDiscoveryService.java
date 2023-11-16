@@ -98,7 +98,7 @@ public class IpObserverDiscoveryService extends AbstractDiscoveryService {
                 InetAddress currentIP = InetAddress.getByAddress(ByteBuffer.allocate(4).putInt(i).array());
                 // Try to reach each IP with a timeout of 500ms which is enough for local network
                 if (currentIP.isReachable(500)) {
-                    String host = currentIP.getHostAddress().toString();
+                    String host = currentIP.getHostAddress();
                     logger.debug("Unknown device was found at: {}", host);
                     discoverySearchPool.execute(new IpObserverDiscoveryJob(this, host));
                 }

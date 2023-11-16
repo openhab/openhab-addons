@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ADCCommand} class represents an alarm decoder command, and contains the static methods and definitions
+ * The {@link ADCommand} class represents an alarm decoder command, and contains the static methods and definitions
  * used to construct one. Not all supported AD commands are necessarily used by the current binding.
  *
  * @author Bob Adair - Initial contribution
@@ -66,8 +66,8 @@ public final class ADCommand {
 
     /**
      * Construct an AD configuration command. If configParam is null, a query configuration command will be created.
-     * If configParam consists of one or more NAME=value pairs (separated by '&' characters), a set configuration
-     * command will be created. The validity of configParam is not checked.
+     * If configParam consists of one or more NAME=value pairs (separated by {@code '&'} characters), a set
+     * configuration command will be created. The validity of configParam is not checked.
      *
      * @param configParam String containing parameters to set or null
      * @return ADCommand object containing the constructed command

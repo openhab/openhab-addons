@@ -100,7 +100,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by the HwDiscoveryService
     public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
-            .unmodifiableSet(Collections.singleton(HwConstants.THING_TYPE_HWDIMMER));
+            .unmodifiableSet(Set.of(HwConstants.THING_TYPE_HWDIMMER));
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
@@ -143,8 +143,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             registerDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_LEAPBRIDGE)) {
-            LeapBridgeHandler bridgeHandler = new LeapBridgeHandler((Bridge) thing);
-            return bridgeHandler;
+            return new LeapBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
             return new DimmerHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SHADE)) {

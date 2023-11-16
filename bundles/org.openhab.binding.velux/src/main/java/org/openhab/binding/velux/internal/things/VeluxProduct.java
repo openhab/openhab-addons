@@ -68,7 +68,7 @@ public class VeluxProduct {
      *
      * @author AndrewFG - Initial contribution.
      */
-    public static enum ProductState {
+    public enum ProductState {
         NON_EXECUTING(0),
         ERROR(1),
         NOT_USED(2),
@@ -137,9 +137,9 @@ public class VeluxProduct {
      *
      * @author AndrewFG - Initial contribution.
      */
-    public static enum DataSource {
+    public enum DataSource {
         GATEWAY,
-        BINDING;
+        BINDING
     }
 
     // Class internal
@@ -495,11 +495,13 @@ public class VeluxProduct {
 
     /**
      * Returns the display position of the actuator.
+     * <ul>
      * <li>As a general rule it returns <b>currentPosition</b>, except as follows..
      * <li>If the actuator is in a motion state it returns <b>targetPosition</b>
      * <li>If the motion state is 'done' but the currentPosition is invalid it returns <b>targetPosition</b>
      * <li>If the manual override flag is set it returns the <b>unknown</b> position value
-     *
+     * </ul>
+     * 
      * @return The display position of the actuator
      */
     public int getDisplayPosition() {

@@ -33,7 +33,7 @@ public interface DeviceStateListener {
     /**
      * Invoked when a new process action is available for a device.
      *
-     * @param ActionsState The action state information.
+     * @param actionState The action state information.
      */
     void onProcessActionUpdated(ActionsState actionState);
 

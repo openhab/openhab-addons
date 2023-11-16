@@ -125,14 +125,14 @@ class LxControlLightControllerV2 extends LxControl {
     }
 
     private void handleCommands(Command command) throws IOException {
-        if (command instanceof UpDownType) {
-            if ((UpDownType) command == UpDownType.UP) {
+        if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 sendAction(CMD_NEXT_MOOD);
             } else {
                 sendAction(CMD_PREVIOUS_MOOD);
             }
-        } else if (command instanceof DecimalType) {
-            int moodId = ((DecimalType) command).intValue();
+        } else if (command instanceof DecimalType decimalCommand) {
+            int moodId = decimalCommand.intValue();
             if (isMoodOk(moodId)) {
                 sendAction(CMD_CHANGE_TO_MOOD + "/" + moodId);
             }
@@ -160,11 +160,11 @@ class LxControlLightControllerV2 extends LxControl {
         String stateName = state.getName();
         Object value = state.getStateValue();
         try {
-            if (STATE_MOODS_LIST.equals(stateName) && value instanceof String) {
-                onMoodsListChange((String) value);
-            } else if (STATE_ACTIVE_MOODS_LIST.equals(stateName) && value instanceof String) {
+            if (STATE_MOODS_LIST.equals(stateName) && value instanceof String string) {
+                onMoodsListChange(string);
+            } else if (STATE_ACTIVE_MOODS_LIST.equals(stateName) && value instanceof String string) {
                 // this state can be received before list of moods, but it contains a valid list of IDs
-                Integer[] array = getGson().fromJson((String) value, Integer[].class);
+                Integer[] array = getGson().fromJson(string, Integer[].class);
                 activeMoods = Arrays.asList(array).stream().filter(id -> isMoodOk(id)).collect(Collectors.toList());
                 // update all moods states - this will force update of channels too
                 moodList.values().forEach(mood -> mood.onStateChange(null));

@@ -52,8 +52,7 @@ public class UpnpDynamicCommandDescriptionProvider implements DynamicCommandDesc
     @Override
     public @Nullable CommandDescription getCommandDescription(Channel channel,
             @Nullable CommandDescription originalCommandDescription, @Nullable Locale locale) {
-        CommandDescription description = descriptions.get(channel.getUID());
-        return description;
+        return descriptions.get(channel.getUID());
     }
 
     @Deactivate

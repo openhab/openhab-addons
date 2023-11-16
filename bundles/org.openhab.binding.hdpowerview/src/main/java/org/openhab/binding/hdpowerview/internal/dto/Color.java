@@ -13,7 +13,6 @@
 package org.openhab.binding.hdpowerview.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.HSBType;
 
 /**
  * Color and brightness information for HD PowerView repeater
@@ -27,20 +26,12 @@ public class Color {
     public int green;
     public int blue;
 
-    public Color(int brightness, HSBType hsbType) {
-        this.brightness = brightness;
-        int rgb = hsbType.getRGB();
-        java.awt.Color color = new java.awt.Color(rgb);
-        red = color.getRed();
-        green = color.getGreen();
-        blue = color.getBlue();
+    public Color(int brightness, int srgb) {
+        this(brightness, new java.awt.Color(srgb));
     }
 
     public Color(int brightness, java.awt.Color color) {
-        this.brightness = brightness;
-        red = color.getRed();
-        green = color.getGreen();
-        blue = color.getBlue();
+        this(brightness, color.getRed(), color.getGreen(), color.getBlue());
     }
 
     public Color(int brightness, int red, int green, int blue) {

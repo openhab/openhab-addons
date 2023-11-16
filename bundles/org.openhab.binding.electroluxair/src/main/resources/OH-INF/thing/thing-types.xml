@@ -51,11 +51,14 @@
 			<channel id="fanSpeed" typeId="fanSpeed"/>
 			<channel id="workMode" typeId="workMode"/>
 			<channel id="ionizer" typeId="ionizer"/>
+			<channel id="uiLight" typeId="uiLight"/>
+			<channel id="safetyLock" typeId="safetyLock"/>
 			<channel id="status" typeId="status"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">Electrolux</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>deviceId</representation-property>
@@ -179,6 +182,18 @@
 		<item-type>Switch</item-type>
 		<label>Ionizer Status</label>
 		<description>Ionizer Status</description>
+	</channel-type>
+
+	<channel-type id="uiLight">
+		<item-type>Switch</item-type>
+		<label>UI Light</label>
+		<description>Air Quality Light Status</description>
+	</channel-type>
+
+	<channel-type id="safetyLock">
+		<item-type>Switch</item-type>
+		<label>Safety Lock</label>
+		<description>Safety Lock Status</description>
 	</channel-type>
 
 

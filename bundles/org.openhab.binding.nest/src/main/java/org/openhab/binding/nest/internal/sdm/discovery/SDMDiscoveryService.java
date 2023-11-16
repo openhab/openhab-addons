@@ -44,7 +44,8 @@ import org.slf4j.LoggerFactory;
  * @author Brian Higginbotham - Initial contribution
  * @author Wouter Born - Initial contribution
  *
- * @see https://developers.google.com/nest/device-access/reference/rest/v1/enterprises.devices/list
+ * @see <a href="https://developers.google.com/nest/device-access/reference/rest/v1/enterprises.devices/list">
+ *      https://developers.google.com/nest/device-access/reference/rest/v1/enterprises.devices/list</a>
  */
 @NonNullByDefault
 public class SDMDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
@@ -73,8 +74,8 @@ public class SDMDiscoveryService extends AbstractDiscoveryService implements Thi
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof SDMAccountHandler) {
-            accountHandler = (SDMAccountHandler) handler;
+        if (handler instanceof SDMAccountHandler sdmAccountHandler) {
+            accountHandler = sdmAccountHandler;
         }
     }
 

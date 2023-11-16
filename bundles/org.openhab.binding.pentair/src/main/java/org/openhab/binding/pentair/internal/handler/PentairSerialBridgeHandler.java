@@ -57,8 +57,8 @@ public class PentairSerialBridgeHandler extends PentairBaseBridgeHandler {
                 throw new IllegalStateException("cannot open serial port!");
             }
 
-            if (cp instanceof SerialPort) {
-                port = (SerialPort) cp;
+            if (cp instanceof SerialPort serialPort) {
+                port = serialPort;
             } else {
                 throw new IllegalStateException("unknown port type");
             }

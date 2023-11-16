@@ -53,10 +53,10 @@ abstract class AbstractRawSchemaLight extends Light {
             if (newState.getBrightness().equals(PercentType.ZERO)) {
                 newState = new HSBType(newState.getHue(), newState.getSaturation(), PercentType.HUNDRED);
             }
-        } else if (command instanceof HSBType) {
-            newState = (HSBType) command;
-        } else if (command instanceof PercentType) {
-            newState = new HSBType(newState.getHue(), newState.getSaturation(), (PercentType) command);
+        } else if (command instanceof HSBType hsb) {
+            newState = hsb;
+        } else if (command instanceof PercentType brightness) {
+            newState = new HSBType(newState.getHue(), newState.getSaturation(), brightness);
         } else {
             return false;
         }

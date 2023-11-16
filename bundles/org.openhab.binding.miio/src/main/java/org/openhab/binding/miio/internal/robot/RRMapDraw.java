@@ -281,7 +281,6 @@ public class RRMapDraw {
                 g2d.draw(noGo);
             }
         }
-        ;
     }
 
     private void drawWalls(Graphics2D g2d, float scale) {
@@ -369,8 +368,8 @@ public class RRMapDraw {
         if (!(x == 0 && y == 0)) {
             g2d.setStroke(new BasicStroke());
             g2d.setColor(Color.YELLOW);
-            int x3[] = { (int) x, (int) (x - 2 * scale), (int) (x + 2 * scale) };
-            int y3[] = { (int) y, (int) (y - 5 * scale), (int) (y - 5 * scale) };
+            int[] x3 = { (int) x, (int) (x - 2 * scale), (int) (x + 2 * scale) };
+            int[] y3 = { (int) y, (int) (y - 5 * scale), (int) (y - 5 * scale) };
             g2d.fill(new Polygon(x3, y3, 3));
         }
     }

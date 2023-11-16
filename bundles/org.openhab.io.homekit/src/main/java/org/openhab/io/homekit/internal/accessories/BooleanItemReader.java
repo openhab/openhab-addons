@@ -98,13 +98,13 @@ public class BooleanItemReader {
         } else if (state instanceof OpenClosedType) {
             return state.equals(trueOpenClosedValue);
         } else if (state instanceof StringType) {
-            return state.toString().equalsIgnoreCase("Open") || state.toString().equalsIgnoreCase("Opened");
+            return "Open".equalsIgnoreCase(state.toString()) || "Opened".equalsIgnoreCase(state.toString());
         } else if (localTrueThresheold != null) {
-            if (state instanceof DecimalType) {
-                final boolean result = ((DecimalType) state).toBigDecimal().compareTo(localTrueThresheold) > 0;
+            if (state instanceof DecimalType stateAsDecimalType) {
+                final boolean result = stateAsDecimalType.toBigDecimal().compareTo(localTrueThresheold) > 0;
                 return result ^ invertThreshold;
-            } else if (state instanceof QuantityType) {
-                final boolean result = ((QuantityType<?>) state).toBigDecimal().compareTo(localTrueThresheold) > 0;
+            } else if (state instanceof QuantityType stateAsQuantityType) {
+                final boolean result = stateAsQuantityType.toBigDecimal().compareTo(localTrueThresheold) > 0;
                 return result ^ invertThreshold;
             }
         }
@@ -118,10 +118,10 @@ public class BooleanItemReader {
     }
 
     void setValue(Boolean value) {
-        if (item instanceof SwitchItem) {
-            ((SwitchItem) item).send(value ? trueOnOffValue : getOffValue(trueOnOffValue));
-        } else if (item instanceof GroupItem) {
-            ((GroupItem) item).send(value ? trueOnOffValue : getOffValue(trueOnOffValue));
+        if (item instanceof SwitchItem switchItem) {
+            switchItem.send(value ? trueOnOffValue : getOffValue(trueOnOffValue));
+        } else if (item instanceof GroupItem groupItem) {
+            groupItem.send(value ? trueOnOffValue : getOffValue(trueOnOffValue));
         } else {
             logger.debug("Cannot set value {} for item {}. Only Switch and Group items are supported.", value, item);
         }

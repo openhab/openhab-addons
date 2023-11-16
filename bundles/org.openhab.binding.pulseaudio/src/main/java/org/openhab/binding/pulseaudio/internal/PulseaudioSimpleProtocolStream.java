@@ -101,8 +101,13 @@ public abstract class PulseaudioSimpleProtocolStream {
                 }
                 int idleTimeout = pulseaudioHandler.getIdleTimeout();
                 if (idleTimeout > -1) {
-                    logger.debug("Scheduling next disconnect");
-                    scheduledDisconnection = scheduler.schedule(this::disconnect, idleTimeout, TimeUnit.MILLISECONDS);
+                    if (idleTimeout == 0) {
+                        this.disconnect();
+                    } else {
+                        logger.debug("Scheduling next disconnect");
+                        scheduledDisconnection = scheduler.schedule(this::disconnect, idleTimeout,
+                                TimeUnit.MILLISECONDS);
+                    }
                 }
             }
         } finally {

@@ -39,7 +39,6 @@ public class GroupCommand extends LutronCommandNew {
     /**
      * GroupCommand constructor
      *
-     * @param targetType
      * @param operation
      * @param integrationId
      * @param action

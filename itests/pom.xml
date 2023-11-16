@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.itests</groupId>
@@ -29,7 +29,6 @@
     <module>org.openhab.binding.mqtt.homeassistant.tests</module>
     <module>org.openhab.binding.mqtt.homie.tests</module>
     <module>org.openhab.binding.mqtt.ruuvigateway.tests</module>
-    <module>org.openhab.binding.nest.tests</module>
     <module>org.openhab.binding.ntp.tests</module>
     <module>org.openhab.binding.systeminfo.tests</module>
     <module>org.openhab.binding.tradfri.tests</module>
@@ -82,7 +81,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.6.0</version>
         <executions>
           <execution>
             <id>unpack-eea</id>

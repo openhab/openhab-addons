@@ -15,7 +15,6 @@ package org.openhab.binding.lutron.internal.discovery;
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -72,7 +71,7 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_IPBRIDGE);
+        return Set.of(THING_TYPE_IPBRIDGE);
     }
 
     @Override

@@ -251,7 +251,7 @@ public class Connection {
 
                                     writeInProgress = false;
 
-                                    if (sendQueue.size() > 0) {
+                                    if (!sendQueue.isEmpty()) {
                                         /**
                                          * This could lead to stack overflows, since the CompletionHandler may run in
                                          * the same Thread as triggerWriteToSocket() is invoked (see
@@ -407,7 +407,7 @@ public class Connection {
     /**
      * Gets the SocketChannel of the Connection.
      *
-     * @returnthe socket channel
+     * @return the socket channel
      */
     @Nullable
     public Channel getSocketChannel() {

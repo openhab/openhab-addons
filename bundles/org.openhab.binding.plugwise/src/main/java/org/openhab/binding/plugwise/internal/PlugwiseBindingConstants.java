@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link PlugwiseBinding} class defines common constants, which are used across the whole binding.
+ * The {@link PlugwiseBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Wouter Born - Initial contribution
  */
@@ -44,7 +44,6 @@ public class PlugwiseBindingConstants {
     // List of all configuration properties
     public static final String CONFIG_PROPERTY_MAC_ADDRESS = "macAddress";
     public static final String CONFIG_PROPERTY_RECALIBRATE = "recalibrate";
-    public static final String CONFIG_PROPERTY_SERIAL_PORT = "serialPort";
     public static final String CONFIG_PROPERTY_UPDATE_CONFIGURATION = "updateConfiguration";
     public static final String CONFIG_PROPERTY_UPDATE_INTERVAL = "updateInterval";
 

@@ -14,7 +14,6 @@ package org.openhab.binding.vektiva.internal;
 
 import static org.openhab.binding.vektiva.internal.VektivaBindingConstants.THING_TYPE_SMARWI;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.vektiva", service = ThingHandlerFactory.class)
 public class VektivaHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SMARWI);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SMARWI);
 
     /**
      * the shared http client

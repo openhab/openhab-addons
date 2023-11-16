@@ -97,6 +97,7 @@ public class AwattarPriceHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
     }
 
+    @Override
     public void dispose() {
         ScheduledFuture<?> localRefresher = thingRefresher;
         if (localRefresher != null) {

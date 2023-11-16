@@ -54,8 +54,8 @@ public class DSID {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DSID) {
-            return ((DSID) obj).getValue().equals(this.getValue());
+        if (obj instanceof DSID id) {
+            return id.getValue().equals(this.getValue());
         }
         return false;
     }

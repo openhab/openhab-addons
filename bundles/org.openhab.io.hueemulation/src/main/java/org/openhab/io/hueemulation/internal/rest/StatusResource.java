@@ -154,7 +154,7 @@ public class StatusResource implements RegistryListener {
                 + user.getValue().name + "</b> <small>" + user.getValue().lastUseDate + "</small>")
                 .collect(Collectors.joining("\n"));
 
-        String url = "http://" + cs.ds.config.ipaddress + ":" + String.valueOf(localDiscovery.getDefaultport());
+        String url = "http://" + cs.ds.config.ipaddress + ":" + localDiscovery.getDefaultport();
 
         String reachable = localDiscovery.selfTests().stream()
                 .map(entry -> TR(TD(entry.address) + TD(toYesNo(entry.reachable)) + TD(toYesNo(entry.isOurs))))

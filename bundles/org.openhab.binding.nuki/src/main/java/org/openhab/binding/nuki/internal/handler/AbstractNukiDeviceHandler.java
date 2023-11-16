@@ -149,8 +149,7 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
     }
 
     private void initializeHandler(@Nullable ThingHandler handler, @Nullable ThingStatus bridgeStatus) {
-        if (handler instanceof NukiBridgeHandler && bridgeStatus != null) {
-            NukiBridgeHandler bridgeHandler = (NukiBridgeHandler) handler;
+        if (handler instanceof NukiBridgeHandler bridgeHandler && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 this.nukiHttpClient = bridgeHandler.getNukiHttpClient();
                 withHttpClient(client -> {
@@ -203,6 +202,7 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
         }
     }
 
+    @Override
     protected void triggerChannel(String channelId, String event) {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
@@ -335,8 +335,8 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof NukiBridgeHandler) {
-                scheduler.execute(() -> handler.accept((NukiBridgeHandler) bridgeHandler));
+            if (bridgeHandler instanceof NukiBridgeHandler nukiBridgeHandler) {
+                scheduler.execute(() -> handler.accept(nukiBridgeHandler));
             }
         }
     }

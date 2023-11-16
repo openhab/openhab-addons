@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.boschshc.internal.discovery;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import javax.jmdns.ServiceInfo;
@@ -45,7 +46,7 @@ import org.openhab.core.thing.ThingUID;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
-public class BridgeDiscoveryParticipantTest {
+class BridgeDiscoveryParticipantTest {
 
     @Nullable
     private BridgeDiscoveryParticipant fixture;
@@ -76,30 +77,30 @@ public class BridgeDiscoveryParticipantTest {
     }
 
     /**
-     * 
+     *
      * Method: getSupportedThingTypeUIDs()
-     * 
+     *
      */
 
     @Test
-    public void testGetSupportedThingTypeUIDs() {
+    void testGetSupportedThingTypeUIDs() {
         assert fixture != null;
         assertTrue(fixture.getSupportedThingTypeUIDs().contains(BoschSHCBindingConstants.THING_TYPE_SHC));
     }
 
     /**
-     * 
+     *
      * Method: getServiceType()
-     * 
+     *
      */
     @Test
-    public void testGetServiceType() throws Exception {
+    void testGetServiceType() throws Exception {
         assert fixture != null;
         assertThat(fixture.getServiceType(), is("_http._tcp.local."));
     }
 
     @Test
-    public void testCreateResult() throws Exception {
+    void testCreateResult() throws Exception {
         assert fixture != null;
         DiscoveryResult result = fixture.createResult(shcBridge);
         assertNotNull(result);
@@ -110,14 +111,14 @@ public class BridgeDiscoveryParticipantTest {
     }
 
     @Test
-    public void testCreateResultOtherDevice() throws Exception {
+    void testCreateResultOtherDevice() throws Exception {
         assert fixture != null;
         DiscoveryResult result = fixture.createResult(otherDevice);
         assertNull(result);
     }
 
     @Test
-    public void testGetThingUID() throws Exception {
+    void testGetThingUID() throws Exception {
         assert fixture != null;
         ThingUID thingUID = fixture.getThingUID(shcBridge);
         assertNotNull(thingUID);
@@ -126,32 +127,32 @@ public class BridgeDiscoveryParticipantTest {
     }
 
     @Test
-    public void testGetThingUIDOtherDevice() throws Exception {
+    void testGetThingUIDOtherDevice() throws Exception {
         assert fixture != null;
         assertNull(fixture.getThingUID(otherDevice));
     }
 
     @Test
-    public void testGetBridgeAddress() throws Exception {
+    void testGetBridgeAddress() throws Exception {
         assert fixture != null;
         assertThat(fixture.discoverBridge(shcBridge).shcIpAddress, is("192.168.0.123"));
     }
 
     @Test
-    public void testGetBridgeAddressOtherDevice() throws Exception {
+    void testGetBridgeAddressOtherDevice() throws Exception {
         assert fixture != null;
         assertThat(fixture.discoverBridge(otherDevice).shcIpAddress, is(""));
     }
 
     @Test
-    public void testGetPublicInformationFromPossibleBridgeAddress() throws Exception {
+    void testGetPublicInformationFromPossibleBridgeAddress() throws Exception {
         assert fixture != null;
         assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("192.168.0.123").shcIpAddress,
                 is("192.168.0.123"));
     }
 
     @Test
-    public void testGetPublicInformationFromPossibleBridgeAddressInvalidContent() throws Exception {
+    void testGetPublicInformationFromPossibleBridgeAddressInvalidContent() throws Exception {
         assert fixture != null;
 
         ContentResponse contentResponse = mock(ContentResponse.class);
@@ -170,7 +171,7 @@ public class BridgeDiscoveryParticipantTest {
     }
 
     @Test
-    public void testGetPublicInformationFromPossibleBridgeAddressInvalidStatus() throws Exception {
+    void testGetPublicInformationFromPossibleBridgeAddressInvalidStatus() throws Exception {
         assert fixture != null;
 
         ContentResponse contentResponse = mock(ContentResponse.class);

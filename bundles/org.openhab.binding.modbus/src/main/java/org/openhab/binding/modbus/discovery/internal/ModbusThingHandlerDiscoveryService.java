@@ -32,12 +32,12 @@ public interface ModbusThingHandlerDiscoveryService extends ThingHandlerService 
      * @param service the discovery service that should be called when the discovery is finished
      * @return returns true if discovery is enabled, false otherwise
      */
-    public boolean startScan(ModbusDiscoveryService service);
+    boolean startScan(ModbusDiscoveryService service);
 
     /**
      * This method should return true, if an async scan is in progress
      *
      * @return true if a scan is in progress false otherwise
      */
-    public boolean scanInProgress();
+    boolean scanInProgress();
 }

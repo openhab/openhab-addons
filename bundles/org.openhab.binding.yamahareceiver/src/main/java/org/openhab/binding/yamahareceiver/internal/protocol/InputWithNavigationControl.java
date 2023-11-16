@@ -37,49 +37,56 @@ public interface InputWithNavigationControl extends IStateUpdatable {
     /**
      * Navigate back
      *
-     * @throws ReceivedMessageParseException, IOException
+     * @throws ReceivedMessageParseException
+     * @throws IOException
      */
     void goBack() throws ReceivedMessageParseException, IOException;
 
     /**
      * Navigate up
      *
-     * @throws ReceivedMessageParseException, IOException
+     * @throws ReceivedMessageParseException
+     * @throws IOException
      */
     void goUp() throws IOException, ReceivedMessageParseException;
 
     /**
      * Navigate down
      *
-     * @throws ReceivedMessageParseException, IOException
+     * @throws ReceivedMessageParseException
+     * @throws IOException
      */
     void goDown() throws IOException, ReceivedMessageParseException;
 
     /**
      * Navigate left. Not for all zones or functions available.
      *
-     * @throws ReceivedMessageParseException, IOException
+     * @throws ReceivedMessageParseException
+     * @throws IOException
      */
     void goLeft() throws IOException, ReceivedMessageParseException;
 
     /**
      * Navigate right. Not for all zones or functions available.
      *
-     * @throws ReceivedMessageParseException, IOException
+     * @throws ReceivedMessageParseException
+     * @throws IOException
      */
     void goRight() throws IOException, ReceivedMessageParseException;
 
     /**
      * Select current item. Not for all zones or functions available.
      *
-     * @throws ReceivedMessageParseException, IOException
+     * @throws ReceivedMessageParseException
+     * @throws IOException
      */
     void selectCurrentItem() throws IOException, ReceivedMessageParseException;
 
     /**
      * Navigate to root menu
      *
-     * @throws ReceivedMessageParseException, IOException
+     * @throws ReceivedMessageParseException
+     * @throws IOException
      */
     boolean goToRoot() throws IOException, ReceivedMessageParseException;
 

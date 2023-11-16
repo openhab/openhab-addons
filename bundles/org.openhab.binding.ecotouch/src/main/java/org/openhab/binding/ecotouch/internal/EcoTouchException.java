@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * Used to solve compiler warning: "Avoid throwing raw exception types".
  *
- * @author Sebastian Held <sebastian.held@gmx.de> - Initial contribution
+ * @author Sebastian Held - Initial contribution
  * @since 3.1.0
  */
 @NonNullByDefault

@@ -47,7 +47,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link RobonectClient} class is responsible to communicate with the robonect module via it's HTTP interface.
  *
- * The API of the module is documented here: http://robonect.de/viewtopic.php?f=10&t=37
+ * @see <a href="http://robonect.de/viewtopic.php?f=10&t=37">
+ *      http://robonect.de/viewtopic.php?f=10&amp;t=37</a>. The API of the module is documented here.
  *
  * @author Marco Meyer - Initial contribution
  */
@@ -183,7 +184,7 @@ public class RobonectClient {
     }
 
     /**
-     * returns general mower information. See {@MowerInfo} for the detailed information.
+     * returns general mower information. See {@link MowerInfo} for the detailed information.
      *
      * @return - the general mower information including a general success status.
      */

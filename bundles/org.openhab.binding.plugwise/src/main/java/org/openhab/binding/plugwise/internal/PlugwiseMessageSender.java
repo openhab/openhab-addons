@@ -39,7 +39,7 @@ public class PlugwiseMessageSender {
 
     private class MessageSenderThread extends Thread {
 
-        private int messageWaitTime;
+        private final int messageWaitTime;
 
         public MessageSenderThread(int messageWaitTime) {
             super("OH-binding-" + context.getBridgeUID() + "-message-sender");

@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface Command<ResponseType extends Response<?>> {
-    public ResponseType execute() throws ResponseException, IOException, AuthenticationException;
+    ResponseType execute() throws ResponseException, IOException, AuthenticationException;
 }

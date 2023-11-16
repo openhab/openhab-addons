@@ -41,8 +41,8 @@ public class VeluxActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VeluxBridgeHandler) {
-            this.bridgeHandler = (VeluxBridgeHandler) handler;
+        if (handler instanceof VeluxBridgeHandler veluxBridgeHandler) {
+            this.bridgeHandler = veluxBridgeHandler;
         }
     }
 
@@ -110,7 +110,8 @@ public class VeluxActions implements ThingActions {
      *
      * @param actions ThingActions from the caller
      * @param nodeId the node Id in the bridge
-     * @param relativePercent the target position relative to its current position (-100% <= relativePercent <= +100%)
+     * @param relativePercent the target position relative to its current position
+     *            ({@code -100% <= relativePercent <= +100%})
      * @return true if the command was sent
      * @throws IllegalArgumentException if actions is invalid
      * @throws IllegalStateException if anything else is wrong

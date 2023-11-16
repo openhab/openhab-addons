@@ -82,10 +82,8 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(HOST_PARAMETER, device.getIdentity().getDescriptorURL().getHost());
 
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUid).withLabel(label)
-                        .withProperties(properties).withRepresentationProperty(HOST_PARAMETER).build();
-
-                return result;
+                return DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties)
+                        .withRepresentationProperty(HOST_PARAMETER).build();
             }
         }
         return null;

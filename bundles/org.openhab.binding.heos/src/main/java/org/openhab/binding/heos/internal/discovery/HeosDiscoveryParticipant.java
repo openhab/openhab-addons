@@ -14,7 +14,6 @@ package org.openhab.binding.heos.internal.discovery;
 
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +47,7 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_BRIDGE);
+        return Set.of(THING_TYPE_BRIDGE);
     }
 
     @Override

@@ -88,8 +88,8 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void removeHandler(final ThingHandler thingHandler) {
         logger.debug("Removing SleepIQ thing handler");
-        if (thingHandler instanceof SleepIQCloudHandler) {
-            unregisterBedDiscoveryService((SleepIQCloudHandler) thingHandler);
+        if (thingHandler instanceof SleepIQCloudHandler sleepIQCloudHandler) {
+            unregisterBedDiscoveryService(sleepIQCloudHandler);
         }
     }
 

@@ -73,12 +73,12 @@ public class CapabilitiesSupport {
         // iterate over all mode capability elements and build the superset of their inner capabilities
         allCapabilities.forEach(e -> {
             if (e != null) {
-                light |= e.getLight() != null ? e.getLight().size() > 0 : false;
-                swing |= e.getSwings() != null ? e.getSwings().size() > 0 : false;
-                fanLevel |= e.getFanLevel() != null ? e.getFanLevel().size() > 0 : false;
-                fanSpeed |= e.getFanSpeeds() != null ? e.getFanSpeeds().size() > 0 : false;
-                verticalSwing |= e.getVerticalSwing() != null ? e.getVerticalSwing().size() > 0 : false;
-                horizontalSwing |= e.getHorizontalSwing() != null ? e.getHorizontalSwing().size() > 0 : false;
+                light |= e.getLight() != null ? !e.getLight().isEmpty() : false;
+                swing |= e.getSwings() != null ? !e.getSwings().isEmpty() : false;
+                fanLevel |= e.getFanLevel() != null ? !e.getFanLevel().isEmpty() : false;
+                fanSpeed |= e.getFanSpeeds() != null ? !e.getFanSpeeds().isEmpty() : false;
+                verticalSwing |= e.getVerticalSwing() != null ? !e.getVerticalSwing().isEmpty() : false;
+                horizontalSwing |= e.getHorizontalSwing() != null ? !e.getHorizontalSwing().isEmpty() : false;
             }
         });
     }

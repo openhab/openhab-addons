@@ -17,7 +17,6 @@ It supports a subset of SSML, and if you want to use it, be sure to start your t
 Using your favorite configuration UI to edit **Settings / Other Services - Mimic Text-to-Speech** and set:
 
 * **url** - Mimic URL. Default to `http://localhost:59125`
-* **workaroundServletSink** - A boolean activating a workaround for audiosink using the openHAB servlet. It stores audio file temporarily on disk, allowing the servlet to get a cloned stream as needed. Default false.
 * **speakingRate** - Controls how fast the voice speaks the text. A value of 1 is the speed of the training dataset. Less than 1 is faster, and more than 1 is slower.
 * **audioVolatility** - The amount of noise added to the generated audio (0-1). Can help mask audio artifacts from the voice model. Multi-speaker models tend to sound better with a lower amount of noise than single speaker models.
 * **phonemeVolatility** - The amount of noise used to generate phoneme durations (0-1). Allows for variable speaking cadance, with a value closer to 1 being more variable. Multi-speaker models tend to sound better with a lower amount of phoneme variability than single speaker models.
@@ -48,3 +47,7 @@ In case you would like to setup these settings via a text file, you can edit the
 org.openhab.voice:defaultTTS=mimictts
 org.openhab.voice:defaultVoice=mimictts:fr_FR_siwis_low
 ```
+
+## Caching
+
+The mimic TTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.

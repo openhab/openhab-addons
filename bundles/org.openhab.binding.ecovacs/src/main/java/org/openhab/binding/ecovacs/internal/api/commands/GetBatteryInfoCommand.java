@@ -40,9 +40,8 @@ public class GetBatteryInfoCommand extends IotDeviceCommand<Integer> {
     @Override
     public Integer convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            BatteryReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    BatteryReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            BatteryReport resp = jsonResponse.getResponsePayloadAs(gson, BatteryReport.class);
             return resp.percent;
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();

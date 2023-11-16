@@ -31,7 +31,7 @@ import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 public class P1TelegramParserTest {
 
     // @formatter:off
-    public static final List<Object[]> data() {
+    public static List<Object[]> data() {
         return Arrays.asList(new Object[][] {
             { "ace4000", 59, 0},
             { "dsmr_40", 39, 0},

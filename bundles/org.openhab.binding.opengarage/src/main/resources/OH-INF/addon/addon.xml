@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>OpenGarage Binding</name>
 	<description>This is the binding for OpenGarage.</description>
+	<connection>local</connection>
 
 </addon:addon>

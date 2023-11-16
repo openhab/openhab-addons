@@ -14,8 +14,8 @@ package org.openhab.binding.plclogo.internal.handler;
 
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -55,7 +55,7 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCPulseHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PULSE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PULSE);
 
     private final Logger logger = LoggerFactory.getLogger(PLCPulseHandler.class);
     private AtomicReference<PLCPulseConfiguration> config = new AtomicReference<>();
@@ -191,9 +191,8 @@ public class PLCPulseHandler extends PLCCommonHandler {
     protected void updateState(ChannelUID channelUID, State state) {
         super.updateState(channelUID, state);
         DecimalType value = state.as(DecimalType.class);
-        if (state instanceof OpenClosedType) {
-            OpenClosedType type = (OpenClosedType) state;
-            value = new DecimalType(type == OpenClosedType.CLOSED ? 1 : 0);
+        if (state instanceof OpenClosedType openClosedState) {
+            value = new DecimalType(openClosedState == OpenClosedType.CLOSED ? 1 : 0);
         }
 
         setOldValue(channelUID.getId(), value);
@@ -272,7 +271,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, bType.toLowerCase()));
             cBuilder.withLabel(bName);
             cBuilder.withDescription("Control block " + bName);
-            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, bName));
+            cBuilder.withProperties(Map.of(BLOCK_PROPERTY, bName));
             tBuilder.withChannel(cBuilder.build());
             setOldValue(STATE_CHANNEL, null);
 
@@ -282,7 +281,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, oType.toLowerCase()));
             cBuilder.withLabel(oName);
             cBuilder.withDescription("Observed block " + oName);
-            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, oName));
+            cBuilder.withProperties(Map.of(BLOCK_PROPERTY, oName));
             tBuilder.withChannel(cBuilder.build());
             setOldValue(OBSERVE_CHANNEL, null);
 

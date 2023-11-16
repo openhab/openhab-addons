@@ -37,7 +37,7 @@ public interface SatelCommand {
      * @author Krzysztof Goworek - Initial contribution
      *
      */
-    public enum State {
+    enum State {
         NEW,
         ENQUEUED,
         SENT,

@@ -35,11 +35,11 @@ public class BlueGigaConfiguration extends BaseBluetoothBridgeHandlerConfigurati
 
     @Override
     public String toString() {
-        return String.format(
-                "[discovery=%b, port=%s, passiveScanIdleTime=%d, passiveScanInterval=%d, passiveScanWindow=%d"
-                        + ", activeScanInterval=%d, activeScanWindow=%d, connIntervalMin=%d, connIntervalMax=%d"
-                        + ", connLatency=%d, connTimeout=%d]",
-                backgroundDiscovery, port, passiveScanIdleTime, passiveScanInterval, passiveScanWindow,
+        return String.format("""
+                [discovery=%b, port=%s, passiveScanIdleTime=%d, passiveScanInterval=%d, passiveScanWindow=%d\
+                , activeScanInterval=%d, activeScanWindow=%d, connIntervalMin=%d, connIntervalMax=%d\
+                , connLatency=%d, connTimeout=%d]\
+                """, backgroundDiscovery, port, passiveScanIdleTime, passiveScanInterval, passiveScanWindow,
                 activeScanInterval, activeScanWindow, connIntervalMin, connIntervalMax, connLatency, connTimeout);
     }
 }

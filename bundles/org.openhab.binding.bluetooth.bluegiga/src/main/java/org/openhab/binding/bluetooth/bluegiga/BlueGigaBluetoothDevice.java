@@ -58,7 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An extended {@link BluetoothDevice} class to handle BlueGiga specific information
+ * An extended {@link BaseBluetoothDevice} class to handle BlueGiga specific information
  *
  * @author Chris Jackson - Initial contribution
  */
@@ -130,7 +130,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     };
 
     /**
-     * Creates a new {@link BlueGigaBluetoothDevice} which extends {@link BluetoothDevice} for the BlueGiga
+     * Creates a new {@link BlueGigaBluetoothDevice} which extends {@link BaseBluetoothDevice} for the BlueGiga
      * implementation
      *
      * @param bgHandler the {@link BlueGigaBridgeHandler} that provides the link to the dongle
@@ -356,33 +356,33 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
 
     @Override
     public void bluegigaEventReceived(BlueGigaResponse event) {
-        if (event instanceof BlueGigaScanResponseEvent) {
-            handleScanEvent((BlueGigaScanResponseEvent) event);
+        if (event instanceof BlueGigaScanResponseEvent responseEvent) {
+            handleScanEvent(responseEvent);
         }
 
-        else if (event instanceof BlueGigaGroupFoundEvent) {
-            handleGroupFoundEvent((BlueGigaGroupFoundEvent) event);
+        else if (event instanceof BlueGigaGroupFoundEvent foundEvent) {
+            handleGroupFoundEvent(foundEvent);
         }
 
-        else if (event instanceof BlueGigaFindInformationFoundEvent) {
+        else if (event instanceof BlueGigaFindInformationFoundEvent foundEvent) {
             // A Characteristic has been discovered
-            handleFindInformationFoundEvent((BlueGigaFindInformationFoundEvent) event);
+            handleFindInformationFoundEvent(foundEvent);
         }
 
-        else if (event instanceof BlueGigaProcedureCompletedEvent) {
-            handleProcedureCompletedEvent((BlueGigaProcedureCompletedEvent) event);
+        else if (event instanceof BlueGigaProcedureCompletedEvent completedEvent) {
+            handleProcedureCompletedEvent(completedEvent);
         }
 
-        else if (event instanceof BlueGigaConnectionStatusEvent) {
-            handleConnectionStatusEvent((BlueGigaConnectionStatusEvent) event);
+        else if (event instanceof BlueGigaConnectionStatusEvent statusEvent) {
+            handleConnectionStatusEvent(statusEvent);
         }
 
-        else if (event instanceof BlueGigaDisconnectedEvent) {
-            handleDisconnectedEvent((BlueGigaDisconnectedEvent) event);
+        else if (event instanceof BlueGigaDisconnectedEvent disconnectedEvent) {
+            handleDisconnectedEvent(disconnectedEvent);
         }
 
-        else if (event instanceof BlueGigaAttributeValueEvent) {
-            handleAttributeValueEvent((BlueGigaAttributeValueEvent) event);
+        else if (event instanceof BlueGigaAttributeValueEvent valueEvent) {
+            handleAttributeValueEvent(valueEvent);
         }
     }
 

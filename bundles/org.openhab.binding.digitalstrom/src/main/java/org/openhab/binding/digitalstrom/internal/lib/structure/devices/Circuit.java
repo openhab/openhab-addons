@@ -21,8 +21,9 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 /**
  * The {@link Circuit} represents a circuit of the digitalStrom system. For that all information will be able to get and
  * set through the same named getter- and setter-methods. To get informed about status and configuration changes a
- * {@link DeviceStatusListener} can be registered. For that and to get the general device informations like the dSID the
- * {@link Circuit} implements the {@link GeneralDeviceInformations} interface.
+ * {@link org.openhab.binding.digitalstrom.internal.lib.listener.DeviceStatusListener} can be registered. For that and
+ * to get the general device informations like the dSID the {@link Circuit} implements the
+ * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.GeneralDeviceInformation}s interface.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution

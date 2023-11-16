@@ -98,8 +98,8 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      * @param request request to send
      * @param pollPeriodMillis poll interval, in milliseconds
      * @param initialDelayMillis initial delay before starting polling, in milliseconds
-     * @param callback callback to call with data
-     * @param callback callback to call in case of failure
+     * @param resultCallback callback to call with data
+     * @param failureCallback callback to call in case of failure
      * @return poll task representing the regular poll
      * @throws IllegalStateException when this communication has been closed already
      */
@@ -133,8 +133,8 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      * background.
      *
      * @param request request to send
-     * @param callback callback to call with data
-     * @param callback callback to call in case of failure
+     * @param resultCallback callback to call with data
+     * @param failureCallback callback to call in case of failure
      * @return future representing the polled task
      * @throws IllegalStateException when this communication has been closed already
      */
@@ -152,8 +152,8 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      * background.
      *
      * @param request request to send
-     * @param callback callback to call with response
-     * @param callback callback to call in case of failure
+     * @param resultCallback callback to call with response
+     * @param failureCallback callback to call in case of failure
      * @return future representing the task
      * @throws IllegalStateException when this communication has been closed already
      */
@@ -185,8 +185,8 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
 
             BridgeHandler handler = bridge.getHandler();
 
-            if (handler instanceof ModbusEndpointThingHandler) {
-                return (ModbusEndpointThingHandler) handler;
+            if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+                return thingHandler;
             } else {
                 throw new IllegalStateException("Not a Modbus Bridge: " + handler);
             }

@@ -24,5 +24,5 @@ import org.openhab.binding.hydrawise.internal.api.graphql.dto.Controller;
  */
 @NonNullByDefault
 public interface HydrawiseControllerListener {
-    public void onData(List<Controller> controllers);
+    void onData(List<Controller> controllers);
 }

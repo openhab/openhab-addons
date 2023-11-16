@@ -44,7 +44,7 @@ public class SimpleCommand implements AvrCommand {
         MCACC_MEMORY_CHANGE_CYCLIC("0MC"),
         MCACC_MEMORY_QUERY("?MC");
 
-        private String zoneCommands[];
+        private String[] zoneCommands;
 
         private SimpleCommandType(String... command) {
             this.zoneCommands = command;

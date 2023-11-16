@@ -143,7 +143,7 @@ public class Mhub4K431Handler extends BaseThingHandler {
 
                 String content = "{CMD=";
                 content = content + command.toString() + "B";
-                content = content + String.valueOf(outputPort) + ".";
+                content = content + outputPort + ".";
 
                 InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 

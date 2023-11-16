@@ -73,7 +73,7 @@ public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
     /**
      * Calculate the area filter the a supplied area
      *
-     * @param area Area to calculate filter for.
+     * @param areaProperties Area to calculate filter for.
      * @return Calculated Bit Filter for the supplied area. Bit 0 is area 1, bit 2 is area 2 and so on.
      */
     protected static int bitFilterForArea(AreaProperties areaProperties) {

@@ -415,9 +415,8 @@ public class MiIoAsyncCommunication {
                 sendPacket.setData(new byte[MSG_BUFFER_SIZE]);
             }
             clientSocket.receive(receivePacket);
-            byte[] response = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
+            return Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
                     receivePacket.getOffset() + receivePacket.getLength());
-            return response;
         } catch (SocketTimeoutException e) {
             logger.debug("Communication error for Mi device at {}: {}", ip, e.getMessage());
             needPing = true;

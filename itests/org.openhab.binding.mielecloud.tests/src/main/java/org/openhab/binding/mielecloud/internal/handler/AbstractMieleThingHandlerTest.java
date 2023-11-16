@@ -20,8 +20,8 @@ import static org.openhab.binding.mielecloud.internal.util.MieleCloudBindingInte
 import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.setPrivate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -181,9 +181,8 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
                 .withLabel("Miele@home Account")
-                .withConfiguration(
-                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
-                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
+                .withConfiguration(new Configuration(Map.of(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                        MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .build();
         assertNotNull(bridge);
 
@@ -216,8 +215,8 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         List<Channel> channels = createChannelsForThingHandler(thingTypeUid, thingUid);
 
         Thing thing = ThingBuilder.create(thingTypeUid, thingUid)
-                .withConfiguration(new Configuration(Collections
-                        .singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, deviceIdentifier)))
+                .withConfiguration(new Configuration(
+                        Map.of(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, deviceIdentifier)))
                 .withBridge(getBridge().getUID()).withChannels(channels).withLabel("DA-6996")
                 .withProperty("thingTypeVersion", thingTypeVersion).build();
         assertNotNull(thing);

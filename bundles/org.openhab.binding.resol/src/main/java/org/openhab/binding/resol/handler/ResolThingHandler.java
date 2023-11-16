@@ -113,8 +113,8 @@ public class ResolThingHandler extends ResolBaseThingHandler {
         ResolBridgeHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof ResolBridgeHandler) {
-            bridgeHandler = (ResolBridgeHandler) handler;
+        if (handler instanceof ResolBridgeHandler resolBridgeHandler) {
+            bridgeHandler = resolBridgeHandler;
         } else {
             logger.debug("No available bridge handler found yet. Bridge: {} .", bridge.getUID());
         }

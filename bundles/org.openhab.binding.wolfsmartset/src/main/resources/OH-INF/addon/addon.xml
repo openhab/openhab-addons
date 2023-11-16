@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>WolfSmartset Binding</name>
 	<description>This is the binding for WolfSmartset smart systems.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

@@ -130,7 +130,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
         Optional<ApplianceStatus> applianceStatusOptional;
         try {
             applianceStatusOptional = ondusService.applianceStatus(appliance);
-            if (!applianceStatusOptional.isPresent()) {
+            if (applianceStatusOptional.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
                 return null;
             }

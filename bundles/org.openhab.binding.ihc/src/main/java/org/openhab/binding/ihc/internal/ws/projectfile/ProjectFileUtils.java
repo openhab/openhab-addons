@@ -60,8 +60,7 @@ public class ProjectFileUtils {
             dbFactory.setXIncludeAware(false);
             dbFactory.setExpandEntityReferences(false);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
-            return doc;
+            return dBuilder.parse(fXmlFile);
         } catch (IOException | ParserConfigurationException | SAXException e) {
             throw new IhcExecption(e);
         }

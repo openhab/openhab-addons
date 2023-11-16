@@ -14,7 +14,6 @@ package org.openhab.binding.tivo.internal;
 
 import static org.openhab.binding.tivo.internal.TiVoBindingConstants.THING_TYPE_TIVO;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +38,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(configurationPid = "binding.tivo", service = ThingHandlerFactory.class)
 public class TiVoHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TIVO);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_TIVO);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

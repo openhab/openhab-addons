@@ -208,7 +208,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
                 case "CurrentMute":
                     State newState = UnDefType.UNDEF;
                     if (value != null) {
-                        newState = value.equals("true") ? OnOffType.ON : OnOffType.OFF;
+                        newState = "true".equals(value) ? OnOffType.ON : OnOffType.OFF;
                     }
                     listener.valueReceived(MUTE, newState);
                     break;

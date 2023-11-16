@@ -18,7 +18,7 @@ import org.openhab.binding.nuki.internal.dto.BridgeApiLockStateDto;
  * The {@link BridgeLockStateResponse} class wraps {@link BridgeApiLockStateDto} class.
  *
  * @author Markus Katter - Initial contribution
- * @contributer Christian Hoefler - Door sensor integration
+ * @author Christian Hoefler - Door sensor integration
  */
 public class BridgeLockStateResponse extends NukiBaseResponse {
 

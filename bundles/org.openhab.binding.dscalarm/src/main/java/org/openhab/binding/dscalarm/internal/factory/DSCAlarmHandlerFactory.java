@@ -306,7 +306,9 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
         if (discoveryServiceRegistration != null) {
             DSCAlarmDiscoveryService discoveryService = (DSCAlarmDiscoveryService) bundleContext
                     .getService(discoveryServiceRegistration.getReference());
-            discoveryService.deactivate();
+            if (discoveryService != null) {
+                discoveryService.deactivate();
+            }
             discoveryServiceRegistration.unregister();
             discoveryServiceRegistration = null;
             discoveryServiceRegistrations.remove(thingHandler.getThing().getUID());

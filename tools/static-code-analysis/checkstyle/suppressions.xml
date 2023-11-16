@@ -22,4 +22,9 @@
     <suppress files=".+org.openhab.binding.yeelight.+" checks="OutsideOfLibExternalLibrariesCheck" />
     <!-- suppress header checks for imported and patched apache commons-io files in logreader binding -->
     <suppress files=".+org.openhab.binding.logreader.internal.thirdparty.commonsio.+" checks="ParameterizedRegexpHeaderCheck|AuthorTagCheck" />
+    <!-- Mail: Do not check org.apache.commons.mail usage -->
+    <suppress files=".+[\\/]mail[\\/].+[\\/]MailBuilder\.java" checks="ForbiddenPackageUsageCheck"/>
+    <suppress files=".+[\\/]mail[\\/].+[\\/]MailBuilderTest\.java" checks="ForbiddenPackageUsageCheck"/>
+    <suppress files=".+[\\/]mail[\\/].+[\\/]SMTPHandler\.java" checks="ForbiddenPackageUsageCheck"/>
+    <suppress files=".+[\\/]mail[\\/].+[\\/]SendMailActions\.java" checks="ForbiddenPackageUsageCheck"/>
 </suppressions>

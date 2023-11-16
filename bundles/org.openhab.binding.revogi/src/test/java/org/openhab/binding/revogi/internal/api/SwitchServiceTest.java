@@ -17,7 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -39,8 +38,7 @@ public class SwitchServiceTest {
     @Test
     public void getStatusSuccesfully() {
         // given
-        List<UdpResponseDTO> response = Collections
-                .singletonList(new UdpResponseDTO("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
+        List<UdpResponseDTO> response = List.of(new UdpResponseDTO("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
         when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}", "127.0.0.1"))
                 .thenReturn(CompletableFuture.completedFuture(response));
 
@@ -54,8 +52,7 @@ public class SwitchServiceTest {
     @Test
     public void getStatusSuccesfullyWithBroadcast() {
         // given
-        List<UdpResponseDTO> response = Collections
-                .singletonList(new UdpResponseDTO("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
+        List<UdpResponseDTO> response = List.of(new UdpResponseDTO("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
         when(udpSenderService.broadcastUdpDatagram("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}"))
                 .thenReturn(CompletableFuture.completedFuture(response));
 
@@ -69,7 +66,7 @@ public class SwitchServiceTest {
     @Test
     public void invalidUdpResponse() {
         // given
-        List<UdpResponseDTO> response = Collections.singletonList(new UdpResponseDTO("something invalid", "12345"));
+        List<UdpResponseDTO> response = List.of(new UdpResponseDTO("something invalid", "12345"));
         when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}", "127.0.0.1"))
                 .thenReturn(CompletableFuture.completedFuture(response));
 

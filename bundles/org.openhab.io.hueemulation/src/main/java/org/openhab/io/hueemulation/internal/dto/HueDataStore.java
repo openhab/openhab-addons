@@ -69,7 +69,7 @@ public class HueDataStore {
     public String nextGroupID() {
         int nextId = groups.size();
         while (true) {
-            String id = "hueemulation" + String.valueOf(nextId);
+            String id = "hueemulation" + nextId;
             if (!groups.containsKey(id)) {
                 return id;
             }

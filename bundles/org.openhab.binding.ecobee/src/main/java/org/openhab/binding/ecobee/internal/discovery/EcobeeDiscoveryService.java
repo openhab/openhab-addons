@@ -61,8 +61,8 @@ public class EcobeeDiscoveryService extends AbstractDiscoveryService implements 
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof EcobeeAccountBridgeHandler) {
-            this.bridgeHandler = (EcobeeAccountBridgeHandler) handler;
+        if (handler instanceof EcobeeAccountBridgeHandler accountBridgeHandler) {
+            this.bridgeHandler = accountBridgeHandler;
         }
     }
 

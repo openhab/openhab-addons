@@ -24,5 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface MessageServicer<T extends GattMessage, R extends GattMessage>
         extends MessageHandler<T, R>, MessageSupplier<T> {
 
-    public long getTimeout(TimeUnit unit);
+    long getTimeout(TimeUnit unit);
 }

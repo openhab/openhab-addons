@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>ComfoAir Binding</name>
 	<description>This is the binding for ComfoAir.</description>
+	<connection>local</connection>
 
 </addon:addon>

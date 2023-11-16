@@ -455,11 +455,11 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
             FullGroup group = handler.getGroupById(groupId);
             if (group != null) {
                 stateOptions = updatedScenes.stream().filter(scene -> scene.isApplicableTo(group))
-                        .map(Scene::toStateOption).collect(Collectors.toList());
-                consoleScenesList = updatedScenes
-                        .stream().filter(scene -> scene.isApplicableTo(group)).map(scene -> "Id is \"" + scene.getId()
-                                + "\" for scene \"" + scene.toStateOption().getLabel() + "\"")
-                        .collect(Collectors.toList());
+                        .map(Scene::toStateOption).toList();
+                consoleScenesList = updatedScenes.stream().filter(scene -> scene.isApplicableTo(group))
+                        .map(scene -> "Id is \"" + scene.getId() + "\" for scene \"" + scene.toStateOption().getLabel()
+                                + "\"")
+                        .toList();
             }
         }
         stateDescriptionOptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SCENE),

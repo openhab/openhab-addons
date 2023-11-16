@@ -48,11 +48,13 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
      * @param address the IP address of the serial over IP device
      * @param port the TCP port to be used
      * @param uid the thing uid string
+     * @param amp the AmplifierModel being used
      */
-    public MonopriceAudioIpConnector(@Nullable String address, int port, String uid) {
+    public MonopriceAudioIpConnector(@Nullable String address, int port, String uid, AmplifierModel amp) {
         this.address = address;
         this.port = port;
         this.uid = uid;
+        setAmplifierModel(amp);
     }
 
     @Override

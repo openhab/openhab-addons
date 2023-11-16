@@ -78,8 +78,8 @@ public class ThingsTemplateGenerator {
 
     private String getLocale(Bridge bridge) {
         var locale = bridge.getConfiguration().get(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE);
-        if (locale instanceof String) {
-            return (String) locale;
+        if (locale instanceof String str) {
+            return str;
         } else {
             return "en";
         }

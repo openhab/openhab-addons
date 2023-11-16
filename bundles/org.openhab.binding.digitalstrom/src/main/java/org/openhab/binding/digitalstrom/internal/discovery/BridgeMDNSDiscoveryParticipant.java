@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.digitalstrom.internal.discovery;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BridgeMDNSDiscoveryParticipant} is responsible for discovering digitalSTROM-Server. It uses the central
- * {@link MDNSDiscoveryService}.
+ * {@link org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService}.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -48,7 +47,7 @@ public class BridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(DigitalSTROMBindingConstants.THING_TYPE_DSS_BRIDGE);
+        return Set.of(DigitalSTROMBindingConstants.THING_TYPE_DSS_BRIDGE);
     }
 
     @Override

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>DraytonWiser Binding</name>
 	<description>This is the binding for Drayton Wiser smart heating system.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Entur Binding</name>
 	<description>Real-time timetable binding for Norwegian public transport operators.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

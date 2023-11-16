@@ -68,28 +68,38 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     /**
      * Notify servlet handler (will be called by jetty
      *
+     * <p>
      * Format of SOAP message:
+     *
+     * <p>
+     * {@code
      * <e:propertyset xmlns:e="urn:schemas-upnp-org:event-1-0"> <e:property>
      * <uniqueDeviceID>1C18548DAF7DE9BC231249DB28D2A650</uniqueDeviceID>
      * </e:property> <e:property> <messageBody>X-pairingCheck:5218C0AA</messageBody>
      * </e:property> </e:propertyset>
+     * }
      *
-     * Format of event message: <?xml version="1.0"?>
+     * <p>
+     * Format of event message: {@code <?xml version="1.0"?>}
+     *
+     * <p>
+     * {@code
      * <e:propertyset xmlns:e="urn:schemas-upnp-org:event-1-0"> <e:property>
      * <STB_Mac>AC6FBB61B1E5</STB_Mac> </e:property> <e:property>
      * <STB_playContent>{&quot;new_play_mode&quot;:0,&quot;playBackState&quot;:1,&
      * quot;mediaType&quot;:1,&quot;mediaCode&quot;:&quot;3682&quot;}</
      * STB_playContent> </e:property> </e:propertyset>
+     * }
      *
      * @param request
-     * @param resp
+     * @param response
      *
-     * @throws ServletException, IOException
+     * @throws ServletException
+     * @throws IOException
      */
     @Override
     protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
             throws ServletException, IOException {
-
         String data = inputStreamToString(request);
         try {
             if ((request == null) || (response == null)) {
@@ -118,7 +128,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
                 }
             } else {
                 if (data.contains("STB_")) {
-                    data = data.replaceAll("&quot;", "\"");
+                    data = data.replace("&quot;", "\"");
                     String stbMac = substringBetween(data, "<STB_Mac>", "</STB_Mac>");
                     String stbEvent = "";
                     if (data.contains("<STB_playContent>")) {

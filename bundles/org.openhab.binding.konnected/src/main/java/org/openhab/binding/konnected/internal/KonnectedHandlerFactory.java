@@ -82,7 +82,6 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-
         KonnectedHandler thingHandler = new KonnectedHandler(thing, getCallbackUrl());
         if (servlet != null) {
             logger.debug("Adding thinghandler for thing {} to webhook.", thing.getUID().getId());

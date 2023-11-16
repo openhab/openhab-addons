@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum EclipseKind {
     PARTIAL,
     TOTAL,
-    RING;
+    RING
 }

@@ -28,6 +28,8 @@ public interface AhaCollectionSchedule {
 
     /**
      * Returns the next collection dates per {@link WasteType}.
+     *
+     * @throws IOException
      */
-    public Map<WasteType, CollectionDate> getCollectionDates() throws IOException;
+    Map<WasteType, CollectionDate> getCollectionDates() throws IOException;
 }

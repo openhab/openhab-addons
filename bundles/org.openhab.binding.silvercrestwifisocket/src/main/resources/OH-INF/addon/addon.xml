@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Silvercrest Wifi Socket Binding</name>
 	<description>This is the binding for Silvercrest Wifi Socket sold by Lidl.</description>
+	<connection>local</connection>
 
 </addon:addon>

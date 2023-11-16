@@ -12,19 +12,18 @@
  */
 package org.openhab.binding.kodi.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link KodiBinding} class defines common constants, which are used across
+ * The {@link KodiBindingConstants} class defines common constants, which are used across
  * the whole binding.
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
- * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
+ * @author Andreas Reinhardt and Christoph Weitkamp - Added channels for thumbnail and fanart
  * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
 @NonNullByDefault
@@ -34,7 +33,7 @@ public class KodiBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_KODI = new ThingTypeUID(BINDING_ID, "kodi");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KODI);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_KODI);
 
     // List of thing parameters names
     public static final String HOST_PARAMETER = "ipAddress";

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Digiplex/EVO Binding</name>
 	<description>Binding for Digiplex/EVO alarm systems (utilizing PRT3 module)</description>
+	<connection>local</connection>
 
 </addon:addon>

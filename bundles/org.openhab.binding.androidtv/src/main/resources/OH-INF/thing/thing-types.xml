@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="androidtv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="shieldtv">
+
+		<label>ShieldTV</label>
+		<description>Nvidia ShieldTV</description>
+
+		<channels>
+			<channel id="debug" typeId="debug"/>
+			<channel id="keypress" typeId="keypress"/>
+			<channel id="keyboard" typeId="keyboard"/>
+			<channel id="keycode" typeId="keycode"/>
+			<channel id="pincode" typeId="pincode"/>
+			<channel id="app" typeId="app"/>
+			<channel id="appname" typeId="appname"/>
+			<channel id="appurl" typeId="appurl"/>
+			<channel id="player" typeId="player"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+		</channels>
+
+		<properties>
+			<property name="deviceName">unknown</property>
+			<property name="deviceID">unknown</property>
+			<property name="architectures">unknown</property>
+			<property name="manufacturer">unknown</property>
+			<property name="model">unknown</property>
+			<property name="androidVersion">unknown</property>
+			<property name="remoteServer">unknown</property>
+			<property name="remoteServerVersion">unknown</property>
+		</properties>
+
+		<representation-property>ipAddress</representation-property>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>Port to connect to</description>
+			</parameter>
+			<parameter name="keystoreFileName" type="text">
+				<label>Keystore File Name</label>
+				<description>Java keystore containing key and certs</description>
+			</parameter>
+			<parameter name="keystorePassword" type="text">
+				<context>password</context>
+				<label>Keystore Password</label>
+				<description>Password for the keystore file</description>
+			</parameter>
+			<parameter name="reconnect" type="integer" min="0">
+				<label>Reconnect Delay</label>
+				<description>Delay between reconnection attempts</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="heartbeat" type="integer" min="0">
+				<label>Heartbeat Frequency</label>
+				<description>Frequency of heartbeats</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="delay" type="integer" min="0">
+				<label>Delay</label>
+				<description>Delay between messages</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="gtvEnabled" type="boolean">
+				<label>Enable GoogleTV</label>
+				<description>Enable the GoogleTV Protocol</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="googletv">
+
+		<label>GoogleTV</label>
+		<description>GoogleTV</description>
+
+		<channels>
+			<channel id="debug" typeId="debug"/>
+			<channel id="keypress" typeId="keypress"/>
+			<channel id="keyboard" typeId="keyboard"/>
+			<channel id="keycode" typeId="keycode"/>
+			<channel id="pincode" typeId="pincode"/>
+			<channel id="app" typeId="app"/>
+			<channel id="player" typeId="player"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+		</channels>
+
+		<properties>
+			<property name="manufacturer">unknown</property>
+			<property name="model">unknown</property>
+			<property name="androidVersion">unknown</property>
+			<property name="remoteServer">unknown</property>
+			<property name="remoteServerVersion">unknown</property>
+		</properties>
+
+		<representation-property>ipAddress</representation-property>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>Port to connect to</description>
+			</parameter>
+			<parameter name="keystoreFileName" type="text">
+				<label>Keystore File Name</label>
+				<description>Java keystore containing key and certs</description>
+			</parameter>
+			<parameter name="keystorePassword" type="text">
+				<context>password</context>
+				<label>Keystore Password</label>
+				<description>Password for the keystore file</description>
+			</parameter>
+			<parameter name="reconnect" type="integer" min="0">
+				<label>Reconnect Delay</label>
+				<description>Delay between reconnection attempts</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="heartbeat" type="integer" min="0">
+				<label>Heartbeat Frequency</label>
+				<description>Frequency of heartbeats</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="delay" type="integer" min="0">
+				<label>Delay</label>
+				<description>Delay between messages</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="gtvEnabled" type="boolean">
+				<label>Enable GoogleTV</label>
+				<description>Enable the GoogleTV Protocol</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="debug" advanced="true">
+		<item-type>String</item-type>
+		<label>DEBUG Command</label>
+		<description>Binding control (for debugging)</description>
+	</channel-type>
+
+	<channel-type id="app">
+		<item-type>String</item-type>
+		<label>App</label>
+		<description>App Control</description>
+	</channel-type>
+
+	<channel-type id="appname">
+		<item-type>String</item-type>
+		<label>App Name</label>
+		<description>App Name</description>
+	</channel-type>
+
+	<channel-type id="appurl">
+		<item-type>String</item-type>
+		<label>App URL</label>
+		<description>App URL</description>
+	</channel-type>
+
+	<channel-type id="keypress">
+		<item-type>String</item-type>
+		<label>Key Press</label>
+		<description>Send key press</description>
+	</channel-type>
+
+	<channel-type id="keycode">
+		<item-type>String</item-type>
+		<label>Keycode</label>
+		<description>Send keycode</description>
+	</channel-type>
+
+	<channel-type id="keyboard">
+		<item-type>String</item-type>
+		<label>Keyboard</label>
+		<description>Keyboard Entry</description>
+	</channel-type>
+
+	<channel-type id="pincode">
+		<item-type>String</item-type>
+		<label>Pin Code</label>
+		<description>Send Pin Code</description>
+	</channel-type>
+
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Player</label>
+		<description>Player Control</description>
+	</channel-type>
+
+</thing:thing-descriptions>

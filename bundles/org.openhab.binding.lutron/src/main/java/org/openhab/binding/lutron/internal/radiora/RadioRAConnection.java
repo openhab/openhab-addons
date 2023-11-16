@@ -23,11 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface RadioRAConnection {
 
-    public void open(String portName, int baud) throws RadioRAConnectionException;
+    void open(String portName, int baud) throws RadioRAConnectionException;
 
-    public void disconnect();
+    void disconnect();
 
-    public void write(String command);
+    void write(String command);
 
-    public void setListener(RadioRAFeedbackListener listener);
+    void setListener(RadioRAFeedbackListener listener);
 }

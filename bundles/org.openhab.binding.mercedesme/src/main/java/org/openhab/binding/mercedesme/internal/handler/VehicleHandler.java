@@ -83,6 +83,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private static final String EXT_IMG_RES = "ExtImageResources_";
     private static final String INITIALIZE_COMMAND = "Initialze";
 
@@ -155,7 +156,7 @@ public class VehicleHandler extends BaseThingHandler {
                     logger.debug("Image {} is empty", key);
                 }
             }
-        } else if (channelUID.getIdWithoutGroup().equals("clear-cache") && command.equals(OnOffType.ON)) {
+        } else if ("clear-cache".equals(channelUID.getIdWithoutGroup()) && command.equals(OnOffType.ON)) {
             List<String> removals = new ArrayList<String>();
             imageStorage.get().getKeys().forEach(entry -> {
                 if (entry.contains("_" + config.get().vin)) {
@@ -317,7 +318,7 @@ public class VehicleHandler extends BaseThingHandler {
         String params = UrlEncoded.encode(parameterMap, StandardCharsets.UTF_8, false);
         String url = String.format(IMAGE_EXTERIOR_RESOURCE_URL, config.get().vin) + "?" + params;
         logger.debug("Get Image resources {} {} ", accountHandler.get().getImageApiKey(), url);
-        Request req = httpClient.newRequest(url);
+        Request req = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "application/json");
         try {
@@ -378,7 +379,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
 
         String url = IMAGE_BASE_URL + "/images/" + imageId;
-        Request req = httpClient.newRequest(url);
+        Request req = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "*/*");
         ContentResponse cr;
@@ -400,7 +401,7 @@ public class VehicleHandler extends BaseThingHandler {
         // debug prefix contains Thing label and call endpoint for propper debugging
         String debugPrefix = this.getThing().getLabel() + Constants.COLON + finalEndpoint;
 
-        Request req = httpClient.newRequest(requestUrl);
+        Request req = httpClient.newRequest(requestUrl).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         req.header(HttpHeader.AUTHORIZATION, "Bearer " + accountHandler.get().getToken());
         try {
             ContentResponse cr = req.send();
@@ -541,7 +542,7 @@ public class VehicleHandler extends BaseThingHandler {
      *
      * This depends also on the roads of a concrete route but this is only a guess without any Route Navigation behind
      *
-     * @param range
+     * @param s
      * @return mapping from air-line distance to "real road" distance
      */
     public static State guessRangeRadius(QuantityType<?> s) {

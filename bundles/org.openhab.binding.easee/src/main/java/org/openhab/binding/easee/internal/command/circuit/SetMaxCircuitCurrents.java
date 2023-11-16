@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.binding.easee.internal.model.ValidationException;
 import org.openhab.core.thing.Channel;
@@ -32,8 +33,9 @@ public class SetMaxCircuitCurrents extends SetCircuitSettings {
     private static final String PHASE2 = "maxCircuitCurrentP2";
     private static final String PHASE3 = "maxCircuitCurrentP3";
 
-    public SetMaxCircuitCurrents(EaseeThingHandler handler, Channel channel, Command command, String circuitId) {
-        super(handler, channel, command, circuitId);
+    public SetMaxCircuitCurrents(EaseeThingHandler handler, Channel channel, Command command, String circuitId,
+            JsonResultProcessor resultProcessor) {
+        super(handler, channel, command, circuitId, resultProcessor);
     }
 
     /**

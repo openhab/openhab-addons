@@ -14,7 +14,6 @@ package org.openhab.binding.satel.internal.handler;
 
 import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -46,7 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Atd100Handler extends WirelessChannelsHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ATD100);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ATD100);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

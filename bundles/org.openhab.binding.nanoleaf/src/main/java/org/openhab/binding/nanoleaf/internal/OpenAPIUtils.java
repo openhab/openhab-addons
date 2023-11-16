@@ -79,9 +79,7 @@ public class OpenAPIUtils {
         }
 
         try {
-            URI requestURI = new URI(HttpScheme.HTTP.asString(), (String) null, address, port, path, query,
-                    (String) null);
-            return requestURI;
+            return new URI(HttpScheme.HTTP.asString(), (String) null, address, port, path, query, (String) null);
         } catch (URISyntaxException var8) {
             LOGGER.warn("URI could not be parsed with path {}", path);
             throw new NanoleafException("Wrong URI format for API request");
@@ -115,8 +113,8 @@ public class OpenAPIUtils {
             }
         } catch (ExecutionException ee) {
             Throwable cause = ee.getCause();
-            if (cause != null && cause instanceof HttpResponseException
-                    && ((HttpResponseException) cause).getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
+            if (cause instanceof HttpResponseException httpResponseException
+                    && httpResponseException.getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 LOGGER.debug("OpenAPI request unauthorized. Invalid authorization token.");
                 throw new NanoleafUnauthorizedException("Invalid authorization token");
             } else {

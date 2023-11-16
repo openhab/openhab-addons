@@ -14,10 +14,9 @@ package org.openhab.binding.hue.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 
 /**
- * Configuration for the {@link HueBridgeHandler}.
+ * Configuration for the {@link org.openhab.binding.hue.internal.handler.HueBridgeHandler}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

@@ -194,8 +194,8 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
             throws InterruptedException, IOException {
         String snr = getSN();
         if (snr != null) {
-            if (command instanceof DecimalType) {
-                int mode = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType decimalCommand) {
+                int mode = decimalCommand.intValue();
                 qThermostat.executeMode(mode, snr);
             }
         }
@@ -214,10 +214,9 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
             throws InterruptedException, IOException {
         String snr = getSN();
         if (snr != null) {
-            if (command instanceof QuantityType<?>) {
-                QuantityType<?> s = (QuantityType<?>) command;
-                double sp = s.doubleValue();
-                QuantityType<?> spCelcius = s.toUnit(CELSIUS);
+            if (command instanceof QuantityType<?> quantityCommand) {
+                double sp = quantityCommand.doubleValue();
+                QuantityType<?> spCelcius = quantityCommand.toUnit(CELSIUS);
 
                 if (spCelcius != null) {
                     qThermostat.executeSetpoint(sp, snr);

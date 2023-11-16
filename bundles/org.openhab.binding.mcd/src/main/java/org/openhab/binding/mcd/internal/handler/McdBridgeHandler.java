@@ -47,6 +47,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class McdBridgeHandler extends BaseBridgeHandler {
 
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private final Logger logger = LoggerFactory.getLogger(McdBridgeHandler.class);
 
     private @Nullable McdBridgeConfiguration config;
@@ -107,7 +108,9 @@ public class McdBridgeHandler extends BaseBridgeHandler {
                 Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/token")
                         .method(HttpMethod.POST).header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
                         .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
-                        .header(HttpHeader.ACCEPT, "application/json");
+                        .header(HttpHeader.ACCEPT, "application/json")
+                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
                 String content = "grant_type=password&username=" + localConfig.getUserEmail() + "&password="
                         + localConfig.getUserPassword();
                 request.content(new StringContentProvider(content), "application/x-www-form-urlencoded");
@@ -154,7 +157,7 @@ public class McdBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Should be used by C&S binding's things to obtain the bridge's access token
+     * Should be used by C&amp;S binding's things to obtain the bridge's access token
      * 
      * @return returns the access token as String
      */

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>CoronaStats Binding</name>
 	<description>This is a binding for accessing data from https://corona-stats.online/ website.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

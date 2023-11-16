@@ -65,8 +65,8 @@ public class ThreadsafeWrappingScriptedAutomationManagerDelegate {
 
     public Rule addRule(Rule element) {
         // wrap in a threadsafe version, safe per context
-        if (element instanceof SimpleRule) {
-            element = new ThreadsafeSimpleRuleDelegate(lock, (SimpleRule) element);
+        if (element instanceof SimpleRule rule) {
+            element = new ThreadsafeSimpleRuleDelegate(lock, rule);
         }
 
         return delegate.addRule(element);

@@ -13,7 +13,7 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -305,8 +305,6 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
 
     @Test
     public void testGroupDummyItem() {
-        // Do not want to slow down CI runs
-        assumeFalse(isRunningInCI());
         // only with the fast local server
         assumeTrue(hasFakeServer());
         try {
@@ -337,8 +335,12 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
         FilterCriteria criteria = new FilterCriteria();
         criteria.setOrdering(Ordering.ASCENDING);
         criteria.setItemName(item);
-        criteria.setOperator(operator);
-        criteria.setState(state);
+        if (operator != null) {
+            criteria.setOperator(operator);
+        }
+        if (state != null) {
+            criteria.setState(state);
+        }
         @SuppressWarnings("null")
         Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
         List<State> actualStatesList = new ArrayList<>();

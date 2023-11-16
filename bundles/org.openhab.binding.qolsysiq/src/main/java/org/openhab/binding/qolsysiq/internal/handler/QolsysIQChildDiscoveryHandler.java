@@ -28,10 +28,10 @@ public interface QolsysIQChildDiscoveryHandler {
      *
      * @param service
      */
-    public void setDiscoveryService(QolsysIQChildDiscoveryService service);
+    void setDiscoveryService(QolsysIQChildDiscoveryService service);
 
     /**
      * Initiates the discovery process
      */
-    public void startDiscovery();
+    void startDiscovery();
 }

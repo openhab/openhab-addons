@@ -64,7 +64,7 @@ public abstract class RestManager {
             @Nullable String payload, @Nullable String contentType) throws NetatmoException {
         URI uri = uriBuilder.build();
         T response = apiBridge.executeUri(uri, method, clazz, payload, contentType, 3);
-        if (response instanceof ApiResponse.Ok && ((ApiResponse.Ok) response).failed()) {
+        if (response instanceof ApiResponse.Ok apiResponseOk && apiResponseOk.failed()) {
             throw new NetatmoException("Command failed : %s for uri : %s", response.getStatus(), uri.toString());
         }
         return response;

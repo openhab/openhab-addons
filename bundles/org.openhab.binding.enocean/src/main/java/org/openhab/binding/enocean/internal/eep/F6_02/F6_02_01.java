@@ -45,7 +45,7 @@ public class F6_02_01 extends F6_02 {
     }
 
     @Override
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         if (t21 && nu) {
             if (CHANNEL_ROCKERSWITCH_ACTION.equals(channelTypeId)) {
@@ -59,7 +59,7 @@ public class F6_02_01 extends F6_02 {
         } else if (t21 && !nu) {
             if (CHANNEL_ROCKERSWITCH_ACTION.equals(channelTypeId)) {
                 return CommonTriggerEvents.RELEASED;
-            } else {
+            } else if (lastEvent != null) {
                 if (lastEvent.equals(CommonTriggerEvents.DIR1_PRESSED)) {
                     return CommonTriggerEvents.DIR1_RELEASED;
                 } else if (lastEvent.equals(CommonTriggerEvents.DIR2_PRESSED)) {
@@ -74,8 +74,8 @@ public class F6_02_01 extends F6_02 {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
-        if (command instanceof StringType) {
-            String s = ((StringType) command).toString();
+        if (command instanceof StringType stringCommand) {
+            String s = stringCommand.toString();
 
             if (s.equals(CommonTriggerEvents.DIR1_RELEASED) || s.equals(CommonTriggerEvents.DIR2_RELEASED)) {
                 setStatus(_RPSMessage.T21_FLAG);

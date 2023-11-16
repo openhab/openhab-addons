@@ -13,7 +13,7 @@
 package org.openhab.binding.loxone.internal.controls;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ public class LxControlTimedSwitchTest extends LxControlTest {
 
     @Test
     public void testChannels() {
-        testChannel("Switch", Collections.singleton("Switchable"));
+        testChannel("Switch", Set.of("Switchable"));
         testChannel("Number", DELAY_CHANNEL, new BigDecimal(-1), null, null, null, true, null);
     }
 

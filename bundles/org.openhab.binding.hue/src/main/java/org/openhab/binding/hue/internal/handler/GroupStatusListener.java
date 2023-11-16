@@ -62,7 +62,7 @@ public interface GroupStatusListener {
     /**
      * This method is called whenever the list of available scenes is updated.
      *
-     * @param updatedScenes available scenes
+     * @param scenes available scenes
      */
     void onScenesUpdated(List<Scene> scenes);
 }

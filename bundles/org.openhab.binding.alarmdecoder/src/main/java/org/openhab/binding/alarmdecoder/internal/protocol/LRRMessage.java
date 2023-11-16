@@ -43,7 +43,7 @@ public class LRRMessage extends ADMessage {
     public LRRMessage(String message) throws IllegalArgumentException {
         super(message);
 
-        String topLevel[] = message.split(":");
+        String[] topLevel = message.split(":");
         if (topLevel.length != 2) {
             throw new IllegalArgumentException("multiple colons in LRR message");
         }

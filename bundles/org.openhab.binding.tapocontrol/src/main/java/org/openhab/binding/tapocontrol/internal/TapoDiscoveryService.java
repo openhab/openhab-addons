@@ -56,8 +56,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     /**
      * INIT CLASS
-     * 
-     * @param bridgeHandler
      */
     public TapoDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_S, false);
@@ -84,8 +82,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TapoBridgeHandler) {
-            TapoBridgeHandler tapoBridge = (TapoBridgeHandler) handler;
+        if (handler instanceof TapoBridgeHandler tapoBridge) {
             tapoBridge.setDiscoveryService(this);
             this.bridge = tapoBridge;
         }

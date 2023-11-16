@@ -34,7 +34,8 @@ public interface InputWithTunerBandControl extends IStateUpdatable {
      * Select a DAB band by name.
      *
      * @param band The band name (e.g. FM or DAB)
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     void selectBandByName(String band) throws IOException, ReceivedMessageParseException;
 }

@@ -26,7 +26,7 @@ public class Eq3UdpRequest {
     private static final byte UDP_IDENTIFY = 73;
     private static final byte UDP_SEPARATOR = 0;
 
-    private static final int senderId = new Random().nextInt() & 0xFFFFFF;
+    private static final int SENDER_ID = new Random().nextInt() & 0xFFFFFF;
     private static final String EQ3_DEVICE_TYPE = "eQ3-*";
     private static final String EQ3_SERIAL_NUMBER = "*";
 
@@ -41,7 +41,7 @@ public class Eq3UdpRequest {
      * Returns the sender id.
      */
     public static int getSenderId() {
-        return senderId;
+        return SENDER_ID;
     }
 
     /**
@@ -51,7 +51,7 @@ public class Eq3UdpRequest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write(2);
         for (int i = 2; i >= 0; i--) {
-            byte temp = (byte) (senderId >> i * 8 & 0xFF);
+            byte temp = (byte) (SENDER_ID >> i * 8 & 0xFF);
             baos.write(temp);
         }
         baos.write(UDP_SEPARATOR);

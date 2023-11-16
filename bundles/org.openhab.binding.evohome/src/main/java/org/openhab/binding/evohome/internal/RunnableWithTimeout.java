@@ -25,5 +25,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface RunnableWithTimeout {
 
-    public abstract void run() throws TimeoutException;
+    void run() throws TimeoutException;
 }

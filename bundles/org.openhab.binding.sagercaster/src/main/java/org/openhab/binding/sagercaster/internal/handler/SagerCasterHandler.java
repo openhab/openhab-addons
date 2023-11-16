@@ -114,8 +114,7 @@ public class SagerCasterHandler extends BaseThingHandler {
             switch (id) {
                 case CHANNEL_CLOUDINESS:
                     logger.debug("Cloud level changed, updating forecast");
-                    if (command instanceof QuantityType) {
-                        QuantityType<?> cloudiness = (QuantityType<?>) command;
+                    if (command instanceof QuantityType cloudiness) {
                         scheduler.submit(() -> {
                             sagerWeatherCaster.setCloudLevel(cloudiness.intValue());
                             postNewForecast();
@@ -124,8 +123,7 @@ public class SagerCasterHandler extends BaseThingHandler {
                     }
                 case CHANNEL_IS_RAINING:
                     logger.debug("Rain status updated, updating forecast");
-                    if (command instanceof OnOffType) {
-                        OnOffType isRaining = (OnOffType) command;
+                    if (command instanceof OnOffType isRaining) {
                         scheduler.submit(() -> {
                             sagerWeatherCaster.setRaining(isRaining == OnOffType.ON);
                             postNewForecast();
@@ -136,18 +134,17 @@ public class SagerCasterHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_RAIN_QTTY:
                     logger.debug("Rain status updated, updating forecast");
-                    if (command instanceof QuantityType) {
-                        updateRain((QuantityType<?>) command);
-                    } else if (command instanceof DecimalType) {
-                        updateRain((DecimalType) command);
+                    if (command instanceof QuantityType quantityCommand) {
+                        updateRain(quantityCommand);
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        updateRain(decimalCommand);
                     } else {
                         logger.debug("Channel '{}' accepts Number, Number:(Speed|Length) commands.", channelUID);
                     }
                     break;
                 case CHANNEL_WIND_SPEED:
                     logger.debug("Updated wind speed, updating forecast");
-                    if (command instanceof DecimalType) {
-                        DecimalType newValue = (DecimalType) command;
+                    if (command instanceof DecimalType newValue) {
                         scheduler.submit(() -> {
                             sagerWeatherCaster.setBeaufort(newValue.intValue());
                             postNewForecast();

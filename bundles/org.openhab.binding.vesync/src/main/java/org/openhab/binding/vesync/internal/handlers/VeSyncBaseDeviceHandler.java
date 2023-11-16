@@ -148,10 +148,9 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
     protected boolean isDeviceOnline() {
         BridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null && bridgeHandler instanceof VeSyncBridgeHandler) {
-            VeSyncBridgeHandler vesyncBridgeHandler = (VeSyncBridgeHandler) bridgeHandler;
+        if (bridgeHandler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
             @Nullable
-            VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
+            VeSyncManagedDeviceBase metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
 
             if (metadata == null) {
                 return false;
@@ -166,10 +165,9 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         Map<String, String> newProps = null;
 
         BridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null && bridgeHandler instanceof VeSyncBridgeHandler) {
-            VeSyncBridgeHandler vesyncBridgeHandler = (VeSyncBridgeHandler) bridgeHandler;
+        if (bridgeHandler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
             @Nullable
-            VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
+            VeSyncManagedDeviceBase metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
 
             if (metadata == null) {
                 return;
@@ -248,8 +246,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof VeSyncClient) {
-                veSyncClient = (VeSyncClient) handler;
+            if (handler instanceof VeSyncClient client) {
+                veSyncClient = client;
             } else {
                 return null;
             }
@@ -260,8 +258,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     protected void requestBridgeFreqScanMetadataIfReq() {
         if (requiresMetaDataFrequentUpdates()) {
             BridgeHandler bridgeHandler = getBridgeHandler();
-            if (bridgeHandler != null && bridgeHandler instanceof VeSyncBridgeHandler) {
-                VeSyncBridgeHandler vesyncBridgeHandler = (VeSyncBridgeHandler) bridgeHandler;
+            if (bridgeHandler instanceof VeSyncBridgeHandler vesyncBridgeHandler) {
                 vesyncBridgeHandler.checkIfIncreaseScanRateRequired();
             }
         }
@@ -272,9 +269,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         final VeSyncDeviceConfiguration config = getConfigAs(VeSyncDeviceConfiguration.class);
 
         BridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null && bridgeHandler instanceof VeSyncBridgeHandler) {
-            VeSyncBridgeHandler vesyncBridgeHandler = (VeSyncBridgeHandler) bridgeHandler;
-
+        if (bridgeHandler instanceof VeSyncBridgeHandler vesyncBridgeHandler) {
             final String configMac = config.macId;
 
             // Try to use the mac directly

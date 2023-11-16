@@ -47,9 +47,8 @@ public class GetContinuousCleaningCommand extends IotDeviceCommand<Boolean> {
     @Override
     public Boolean convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            EnabledStateReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    EnabledStateReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            EnabledStateReport resp = jsonResponse.getResponsePayloadAs(gson, EnabledStateReport.class);
             return resp.enabled != 0;
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();

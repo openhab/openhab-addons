@@ -36,10 +36,14 @@ import org.slf4j.LoggerFactory;
  * This is a class that implements a Command Tag that may be embedded in an
  * Event Description. Valid Tags must follow one of the following forms..
  *
+ * <pre>
+ * {@code
  * BEGIN:<itemName>:<targetState>
  * BEGIN:<itemName>:<targetState>:<authorizationCode>
  * END:<itemName>:<targetState>
  * END:<itemName>:<targetState>:<authorizationCode>
+ * }
+ * </pre>
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

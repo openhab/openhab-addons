@@ -128,7 +128,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
         }
     },
     SWITCH("", "switch", OnOffType.class, false, false),
-    POWER_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, POWER_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
+    ENERGY_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, ENERGY_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
             true),
     WATER_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, WATER_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
             true);
@@ -210,6 +210,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
         }
     }
 
+    @Override
     public State getState(String s) {
         try {
             Method valueOf = typeClass.getMethod("valueOf", String.class);

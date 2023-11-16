@@ -90,7 +90,6 @@ public final class ReflectionUtil {
      * @throws SecurityException if the operation is not allowed.
      * @throws IllegalAccessException if the method is enforcing Java language access control and is inaccessible.
      * @throws IllegalArgumentException if one of the passed parameters is invalid.
-     * @throws InvocationTargetException if the invoked method throws an exception.
      */
     public static <T> T invokePrivate(Object object, String methodName, Object... parameters)
             throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException {
@@ -114,7 +113,6 @@ public final class ReflectionUtil {
      * @throws SecurityException if the operation is not allowed.
      * @throws IllegalAccessException if the method is enforcing Java language access control and is inaccessible.
      * @throws IllegalArgumentException if one of the passed parameters is invalid.
-     * @throws InvocationTargetException if the invoked method throws an exception.
      */
     @SuppressWarnings("unchecked")
     public static <T> T invokePrivate(Object object, String methodName, Class<?>[] parameterTypes, Object... parameters)

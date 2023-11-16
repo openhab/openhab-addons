@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
 
 /**
- * The {@link ApiError} models an errored response from API
+ * The {@link ApiError} models an error response from API
  *
  * @author Gaël L'hopital - Initial contribution
  */

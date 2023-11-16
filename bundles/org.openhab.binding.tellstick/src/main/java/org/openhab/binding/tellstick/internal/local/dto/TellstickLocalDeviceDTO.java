@@ -112,4 +112,21 @@ public class TellstickLocalDeviceDTO implements Device {
     public void setType(String type) {
         this.type = type;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        // used to test if device exist
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof TellstickLocalDeviceDTO other)) {
+            return false;
+        }
+        return deviceId == other.deviceId;
+    }
+
+    @Override
+    public int hashCode() {
+        return deviceId;
+    }
 }

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>@text/binding_name</name>
 	<description>@text/binding_desc</description>
+	<connection>local</connection>
 
 </addon:addon>

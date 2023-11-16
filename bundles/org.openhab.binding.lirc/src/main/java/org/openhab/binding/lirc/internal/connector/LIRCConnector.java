@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Connector for communication with the LIRC server
  *
- * @author Andrew Nagle - Initial contributor
+ * @author Andrew Nagle - Initial contribution
  */
 public class LIRCConnector {
 

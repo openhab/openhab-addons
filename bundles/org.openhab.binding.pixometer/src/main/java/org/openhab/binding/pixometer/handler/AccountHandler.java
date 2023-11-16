@@ -120,7 +120,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 int expiresIn = Integer.parseInt(responseJson.get("expires_in").toString());
                 setTokenExpiryDate(TimeUnit.SECONDS.toNanos(expiresIn));
 
-                setAuthToken(responseJson.get(AUTH_TOKEN).toString().replaceAll("\"", ""));
+                setAuthToken(responseJson.get(AUTH_TOKEN).toString().replace("\"", ""));
 
                 updateStatus(ThingStatus.ONLINE);
                 return;

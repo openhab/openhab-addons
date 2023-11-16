@@ -384,8 +384,7 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VelbusBridgeHandler) {
-            final VelbusBridgeHandler velbusBridgeHandler = (VelbusBridgeHandler) handler;
+        if (handler instanceof VelbusBridgeHandler velbusBridgeHandler) {
             this.velbusBridgeHandler = velbusBridgeHandler;
             velbusBridgeHandler.setDefaultPacketListener(this);
         }

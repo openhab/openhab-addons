@@ -86,15 +86,15 @@ public class D2_50 extends _VLDMessage {
         } else {
             switch (channelId) {
                 case CHANNEL_VENTILATIONOPERATIONMODE:
-                    if (command instanceof StringType) {
-                        byte value = (byte) (Helper.tryParseInt(((StringType) command).toString(), 15) & 0x0f);
+                    if (command instanceof StringType stringCommand) {
+                        byte value = (byte) (Helper.tryParseInt(stringCommand.toString(), 15) & 0x0f);
                         setData((byte) (MT_CONTROL + value), CONTROL_NOACTION, TMOC_NOACTION, THRESHOLD_NOACTION,
                                 THRESHOLD_NOACTION, CONTROL_NOACTION);
                     }
                     break;
                 case CHANNEL_TIMEROPERATIONMODE:
-                    if (command instanceof OnOffType) {
-                        byte value = (OnOffType) command == OnOffType.ON ? TMOC_ACTIVATE : TMOC_NOACTION;
+                    if (command instanceof OnOffType onOffCommand) {
+                        byte value = onOffCommand == OnOffType.ON ? TMOC_ACTIVATE : TMOC_NOACTION;
                         setData((byte) (MT_CONTROL + DOMC_NOACTION), CONTROL_NOACTION, value, THRESHOLD_NOACTION,
                                 THRESHOLD_NOACTION, CONTROL_NOACTION);
                     }

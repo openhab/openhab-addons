@@ -34,7 +34,7 @@ public class TapoLightEffect {
     private Integer custom = 0;
     private Integer brightness = 0;
     private Integer[] colorTempRange = { 9000, 9000 }; // :[9000,9000]
-    private Color displayColors[] = { Color.WHITE };
+    private Color[] displayColors = { Color.WHITE };
 
     private JsonObject jsonObject = new JsonObject();
 

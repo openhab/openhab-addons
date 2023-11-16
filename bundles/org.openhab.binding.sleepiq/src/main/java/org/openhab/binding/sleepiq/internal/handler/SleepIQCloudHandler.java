@@ -17,7 +17,6 @@ import static org.openhab.binding.sleepiq.internal.config.SleepIQCloudConfigurat
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +70,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections.singleton(THING_TYPE_CLOUD);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_CLOUD);
 
     private static final int SLEEPER_POLLING_INTERVAL_HOURS = 12;
 
@@ -385,8 +384,9 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     /**
      * Update the given foundation properties with features of the given bed foundation.
      *
-     * @param bed the source of data
+     * @param bedId the source of data
      * @param features the foundation features to update (this may be <code>null</code>)
+     * @param properties
      * @return the given map (or a new map if no map was given) with updated/set properties from the supplied bed
      */
     public Map<String, String> updateFeatures(final String bedId, final @Nullable FoundationFeaturesResponse features,

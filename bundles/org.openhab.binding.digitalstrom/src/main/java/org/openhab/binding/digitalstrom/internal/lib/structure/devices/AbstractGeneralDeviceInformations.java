@@ -20,7 +20,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 import com.google.gson.JsonObject;
 
 /**
- * The {@link AbstractGeneralDeviceInformations} is an abstract implementation of {@link GeneralDeviceInformations} and
+ * The {@link AbstractGeneralDeviceInformations} is an abstract implementation of {@link GeneralDeviceInformation}s and
  * can be implement by subclasses which contains the same device informations like dSID and/or mechanismen like the
  * {@link DeviceStatusListener}.
  *

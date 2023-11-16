@@ -44,7 +44,7 @@ public class RioPreset {
      * "Preset " + id
      *
      * @param id a preset ID between 1 and 36
-     * @throws IllegalArgumentException if id < 1 or > 36
+     * @throws IllegalArgumentException if id {@literal < 1} or > 36
      */
     public RioPreset(int id) {
         this(id, false, "Preset " + id);
@@ -55,9 +55,9 @@ public class RioPreset {
      * "Preset " + id
      *
      * @param id a preset ID between 1 and 36
-     * @param isValid true if the preset is valid, false otherwise
+     * @param valid true if the preset is valid, false otherwise
      * @param name a possibly null, possibly empty preset name
-     * @throws IllegalArgumentException if id < 1 or > 32
+     * @throws IllegalArgumentException if id {@literal < 1} or > 32
      */
     public RioPreset(int id, boolean valid, @Nullable String name) {
         if (id < 1 || id > 36) {

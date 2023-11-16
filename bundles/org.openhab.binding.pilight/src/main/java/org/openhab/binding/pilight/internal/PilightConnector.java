@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -111,11 +111,11 @@ public class PilightConnector implements Runnable, Closeable {
                                         callback.versionReceived(version);
                                     } else if (line.startsWith("{\"status\":")) {
                                         // currently unused
-                                    } else if (line.equals("1")) {
+                                    } else if ("1".equals(line)) {
                                         throw new IOException("Connection to pilight lost");
                                     } else {
                                         final @Nullable Status status = inputMapper.readValue(line, Status.class);
-                                        callback.statusReceived(Collections.singletonList(status));
+                                        callback.statusReceived(List.of(status));
                                     }
                                 }
 

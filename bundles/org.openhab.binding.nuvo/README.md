@@ -91,7 +91,7 @@ The following channels are available:
 | zoneN#source (where N= 1-20)         | Number      | Select the source input for a zone (1-6)                                                                                       |
 | zoneN#volume (where N= 1-20)         | Dimmer      | Control the volume for a zone (0-100%) [translates to 0-79]                                                                    |
 | zoneN#mute (where N= 1-20)           | Switch      | Mute or unmute a zone                                                                                                          |
-| zoneN#favorite (where N= 1-20)       | Number      | Select a preset Favorite for a zone (1-12)                                                                                     |
+| zoneN#favorite (where N= 1-20)       | Number      | Select a preset Favorite for a zone (1-12). Also will display and can select any favorite specified in openHAB NuvoNet sources |
 | zoneN#control (where N= 1-20)        | Player      | Simulate pressing the transport control buttons on the keypad e.g. play/pause/next/previous                                    |
 | zoneN#treble (where N= 1-20)         | Number      | Adjust the treble control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                                |
 | zoneN#bass (where N= 1-20)           | Number      | Adjust the bass control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                                  |

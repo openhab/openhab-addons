@@ -69,8 +69,8 @@ public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (THING_TYPE_DEVICE.equals(thing.getThingTypeUID()) && (thing instanceof Bridge)) {
-            return new PLCBridgeHandler((Bridge) thing);
+        if (THING_TYPE_DEVICE.equals(thing.getThingTypeUID()) && (thing instanceof Bridge bridge)) {
+            return new PLCBridgeHandler(bridge);
         } else if (THING_TYPE_ANALOG.equals(thing.getThingTypeUID())) {
             return new PLCAnalogHandler(thing);
         } else if (THING_TYPE_DIGITAL.equals(thing.getThingTypeUID())) {

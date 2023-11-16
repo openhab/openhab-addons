@@ -14,7 +14,6 @@ package org.openhab.binding.vdr.internal;
 
 import static org.openhab.binding.vdr.internal.VDRBindingConstants.THING_TYPE_VDR;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.vdr", service = ThingHandlerFactory.class)
 public class VDRHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_VDR);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_VDR);
 
     private final TimeZoneProvider timeZoneProvider;
 

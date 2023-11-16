@@ -15,7 +15,6 @@ package org.openhab.binding.airquality.internal.discovery;
 import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
 import static org.openhab.binding.airquality.internal.config.AirQualityConfiguration.LOCATION;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AirQualityDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_STATION);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_STATION);
 
     private final Logger logger = LoggerFactory.getLogger(AirQualityDiscoveryService.class);
 
@@ -59,9 +58,8 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService impleme
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof AirQualityBridgeHandler) {
-            final AirQualityBridgeHandler bridgeHandler = (AirQualityBridgeHandler) handler;
-            this.bridgeHandler = bridgeHandler;
+        if (handler instanceof AirQualityBridgeHandler bridgeHandlerInstance) {
+            this.bridgeHandler = bridgeHandlerInstance;
             this.locationProvider = bridgeHandler.getLocationProvider();
         }
     }
@@ -84,14 +82,14 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService impleme
             PointType location = provider.getLocation();
             AirQualityBridgeHandler bridge = this.bridgeHandler;
             if (location == null || bridge == null) {
-                logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
+                logger.info("openHAB server location is not defined, will not provide any discovery results");
                 return;
             }
             createResults(location, bridge.getThing().getUID());
         }
     }
 
-    public void createResults(PointType location, ThingUID bridgeUID) {
+    private void createResults(PointType location, ThingUID bridgeUID) {
         ThingUID localAirQualityThing = new ThingUID(THING_TYPE_STATION, bridgeUID, LOCAL);
         thingDiscovered(DiscoveryResultBuilder.create(localAirQualityThing).withLabel("Local Air Quality")
                 .withProperty(LOCATION, String.format("%s,%s", location.getLatitude(), location.getLongitude()))

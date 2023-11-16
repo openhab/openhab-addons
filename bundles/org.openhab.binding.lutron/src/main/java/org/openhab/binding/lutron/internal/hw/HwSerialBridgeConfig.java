@@ -13,7 +13,7 @@
 package org.openhab.binding.lutron.internal.hw;
 
 /**
- * Configuration settings for an {@link org.openhab.binding.lutron.handler.HWSerialBridgeHandler}.
+ * Configuration settings for an {@link org.openhab.binding.lutron.internal.hw.HwSerialBridgeHandler}.
  *
  * @author Andrew Shilliday - Initial contribution
  */

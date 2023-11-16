@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface GardenaSmartWebSocketListener {
     /**
-     * This method is called, when the evenRunner stops abnormally (statuscode <> 1000).
+     * This method is called, when the evenRunner stops abnormally ({@code statuscode <> 1000}).
      */
     void onWebSocketClose(String id);
 

@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A transformation for a value used in {@HttpChannel}.
+ * A transformation for a value used in {@link HttpChannel}.
  *
  * @author David Graeff - Initial contribution
  * @author Jan N. Klug - adapted from MQTT binding to HTTP binding

@@ -29,7 +29,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
-public class BoschSHCHandlerFactoryTest {
+class BoschSHCHandlerFactoryTest {
 
     private @NonNullByDefault({}) BoschSHCHandlerFactory fixture;
 
@@ -39,7 +39,7 @@ public class BoschSHCHandlerFactoryTest {
     }
 
     @Test
-    public void testSupportsThingType() {
+    void testSupportsThingType() {
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_SHC));
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH));
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_TWINGUARD));
@@ -60,7 +60,7 @@ public class BoschSHCHandlerFactoryTest {
     }
 
     @Test
-    public void testCreateHandler() {
+    void testCreateHandler() {
         Thing thing = mock(Thing.class);
         when(thing.getThingTypeUID()).thenReturn(BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT);
         assertTrue(fixture.createHandler(thing) instanceof PlugHandler);

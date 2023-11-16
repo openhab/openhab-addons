@@ -70,7 +70,7 @@ public abstract class SoulissGenericActionMessage extends BaseThingHandler {
     }
 
     /**
-     * @param the Topic Variant
+     * @return the Topic Variant
      */
     public String getTopicVariant() {
         return sTopicVariant;

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>DALI Binding</name>
 	<description>This is the binding for controlling lights using the Digital Addressable Lighting Interface (DALI).</description>
+	<connection>local</connection>
 
 </addon:addon>

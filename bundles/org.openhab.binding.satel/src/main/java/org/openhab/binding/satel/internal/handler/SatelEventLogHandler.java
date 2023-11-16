@@ -17,7 +17,6 @@ import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 import java.nio.charset.Charset;
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -55,7 +54,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SatelEventLogHandler extends SatelThingHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_EVENTLOG);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_EVENTLOG);
 
     private static final String NOT_AVAILABLE_TEXT = "N/A";
     private static final String DETAILS_SEPARATOR = ", ";
@@ -166,8 +165,8 @@ public class SatelEventLogHandler extends SatelThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("New command for {}: {}", channelUID, command);
 
-        if (CHANNEL_INDEX.equals(channelUID.getId()) && command instanceof DecimalType) {
-            int eventIndex = ((DecimalType) command).intValue();
+        if (CHANNEL_INDEX.equals(channelUID.getId()) && command instanceof DecimalType decimalCommand) {
+            int eventIndex = decimalCommand.intValue();
             withBridgeHandlerPresent(bridgeHandler -> readEvent(eventIndex).ifPresent(entry -> {
                 // update items
                 updateState(CHANNEL_INDEX, new DecimalType(entry.getIndex()));
@@ -190,7 +189,7 @@ public class SatelEventLogHandler extends SatelThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SatelEventLogActions.class);
+        return Set.of(SatelEventLogActions.class);
     }
 
     /**
@@ -276,7 +275,7 @@ public class SatelEventLogHandler extends SatelThingHandler {
                     eventDetails = "." + readEventCmd.getSource() + "."
                             + (readEventCmd.getObject() * 32 + readEventCmd.getUserControlNumber());
                     Optional<EventDescription> eventDescNext = getEventDescription(readEventCmd.getNextIndex());
-                    if (!eventDescNext.isPresent()) {
+                    if (eventDescNext.isEmpty()) {
                         return Optional.empty();
                     }
                     final EventDescription eventDescNextItem = eventDescNext.get();

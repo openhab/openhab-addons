@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
  * Handler responsible for communicating with Lutron contact closure outputs (CCOs).
  * e.g. VCRX CCOs and CCO RF module
  *
- * Note: For a RA2 Pulsed CCO, querying the output state with ?OUTPUT,<id>,1 is meaningless and will always
- * return 100 (on). Also, the main repeater will not report ~OUTPUT commands for a pulsed CCO regardless of
- * the #MONITORING setting. So this binding supports sending pulses ONLY.
+ * Note: For a RA2 Pulsed CCO, querying the output state with {@code ?OUTPUT,<id>,1} is meaningless and will
+ * always return 100 (on). Also, the main repeater will not report ~OUTPUT commands for a pulsed CCO regardless
+ * of the #MONITORING setting. So this binding supports sending pulses ONLY.
  *
  * @author Bob Adair - Initial contribution
  *

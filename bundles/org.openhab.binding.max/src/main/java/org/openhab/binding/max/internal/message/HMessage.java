@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 /**
  * The H message contains information about the MAX! Cube.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - Details parsing, OH2 version
  */
 @NonNullByDefault

@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @author Markus Pfleger - Initial contribution
- * @author Marcin Czeczko - Added support for planner & calendar data
+ * @author Marcin Czeczko - Added support for planner and calendar data
  */
 public class Calendar {
     private List<CalendarTask> tasks = new ArrayList<>();

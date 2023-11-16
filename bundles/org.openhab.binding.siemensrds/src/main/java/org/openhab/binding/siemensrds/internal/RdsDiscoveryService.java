@@ -201,7 +201,6 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
                     bridgeUID, label, plantId);
 
             thingDiscovered(disco);
-            ;
         } catch (RdsCloudException e) {
             logger.warn(LOG_SYSTEM_EXCEPTION, "publishPlant()", e.getClass().getName(), e.getMessage());
         } catch (JsonParseException | IOException e) {

@@ -53,6 +53,8 @@ public class E3DCBindingConstants {
     public static final String AUTARKY_CHANNEL = "autarky";
     public static final String SELF_CONSUMPTION_CHANNEL = "self-consumption";
     public static final String BATTERY_STATE_OF_CHARGE_CHANNEL = "battery-soc";
+    public static final String BATTERY_CHARGED_CHANNEL = "battery-charged";
+    public static final String BATTERY_UNCHARGED_CHANNEL = "battery-uncharged";
 
     // Channels for Wallbox Block
     public static final String WB_AVAILABLE_CHANNEL = "wb-available";

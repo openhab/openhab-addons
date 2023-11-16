@@ -23,11 +23,11 @@ import org.openhab.binding.ecovacs.internal.api.impl.EcovacsApiImpl;
  */
 @NonNullByDefault
 public interface EcovacsApi {
-    public static EcovacsApi create(HttpClient httpClient, EcovacsApiConfiguration configuration) {
+    static EcovacsApi create(HttpClient httpClient, EcovacsApiConfiguration configuration) {
         return new EcovacsApiImpl(httpClient, configuration);
     }
 
-    public void loginAndGetAccessToken() throws EcovacsApiException, InterruptedException;
+    void loginAndGetAccessToken() throws EcovacsApiException, InterruptedException;
 
-    public List<EcovacsDevice> getDevices() throws EcovacsApiException, InterruptedException;
+    List<EcovacsDevice> getDevices() throws EcovacsApiException, InterruptedException;
 }

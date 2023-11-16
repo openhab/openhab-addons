@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link DoorbirdConfig} class contains fields mapping thing configuration parameters
+ * The {@link ControllerConfiguration} class contains fields mapping thing configuration parameters
  * for the Doorbird A1081 Controller..
  *
  * @author Mark Hilbush - Initial contribution

@@ -24,6 +24,7 @@ import org.openhab.core.i18n.LocaleProvider;
  */
 @NonNullByDefault
 public class MockedLocaleProvider implements LocaleProvider {
+    @Override
     public Locale getLocale() {
         return Locale.ENGLISH;
     }

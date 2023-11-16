@@ -16,7 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
 
 /**
- * The {@link FrameUtil} class defines a utility class for {@link FrameCbetmLong}.
+ * The {@link FrameUtil} class defines a utility class for
+ * {@link org.openhab.binding.teleinfo.internal.data.FrameType#CBETM_LONG_BASE}.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
@@ -30,7 +31,8 @@ public class FrameUtil {
     /**
      * Compute the checksum of the given group line.
      *
-     * @param groupLine group line ("etiquette" <SPACE> "valeur"). Note: the SPACE before the checksum of the group line
+     * @param groupLine group line {@literal ("etiquette" <SPACE> "valeur")}.
+     *            Note: the SPACE before the checksum of the group line
      *            must not include in checksum computation.
      * @return the checksum of the given group line.
      */

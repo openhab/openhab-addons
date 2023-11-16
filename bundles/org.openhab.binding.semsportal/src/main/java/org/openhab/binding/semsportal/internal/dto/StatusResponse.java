@@ -15,7 +15,7 @@ package org.openhab.binding.semsportal.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO containing (a small subset of) the data received from the portal when issuing a {@link StationRequest)
+ * POJO containing (a small subset of) the data received from the portal when issuing a {@link StatusRequest}
  *
  * @author Iwan Bron - Initial contribution
  */

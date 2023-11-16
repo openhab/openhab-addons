@@ -13,8 +13,8 @@
 package org.openhab.binding.draytonwiser.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -71,7 +71,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(DraytonWiserDiscoveryService.class);
+        return Set.of(DraytonWiserDiscoveryService.class);
     }
 
     public void setDiscoveryService(final DraytonWiserRefreshListener discoveryService) {

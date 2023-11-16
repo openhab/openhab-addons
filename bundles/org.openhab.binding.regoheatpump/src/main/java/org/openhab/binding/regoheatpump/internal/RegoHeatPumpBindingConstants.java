@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link RegoHeatPumpBinding} class defines common constants, which are
+ * The {@link RegoHeatPumpBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Boris Krivonog - Initial contribution

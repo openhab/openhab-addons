@@ -32,12 +32,12 @@ public class BatteryStatus {
         LOW_HIGH,
 
         /**
-         * level0~5，<=1 for BATT low
+         * level0~5，{@literal <=1} for BATT low
          */
         LEVEL,
 
         /**
-         * level0~6，<=1 for BATT low, 6 = dc power supply
+         * level0~6，{@literal <=1} for BATT low, 6 = dc power supply
          */
         LEVEL_OR_DC,
 
@@ -47,7 +47,7 @@ public class BatteryStatus {
         VOLTAGE_BROAD_STEPS,
 
         /**
-         * val*0.02V if v<=1.2V BATT low
+         * val*0.02V if {@literal v<=1.2V} BATT low
          */
         VOLTAGE_FINE_STEPS
     }

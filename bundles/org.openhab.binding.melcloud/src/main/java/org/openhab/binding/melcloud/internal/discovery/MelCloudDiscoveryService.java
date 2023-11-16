@@ -130,9 +130,9 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
 
                         Map<String, Object> deviceProperties = new HashMap<>();
                         deviceProperties.put(PROPERTY_DEVICE_ID, device.getDeviceID().toString());
-                        deviceProperties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber().toString());
-                        deviceProperties.put(Thing.PROPERTY_MAC_ADDRESS, device.getMacAddress().toString());
-                        deviceProperties.put("deviceName", device.getDeviceName().toString());
+                        deviceProperties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
+                        deviceProperties.put(Thing.PROPERTY_MAC_ADDRESS, device.getMacAddress());
+                        deviceProperties.put("deviceName", device.getDeviceName());
                         deviceProperties.put("buildingID", device.getBuildingID().toString());
 
                         String label = createLabel(device);
@@ -158,7 +158,7 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
         } else if (device.getType() == 1) {
             sb.append("Heatpump Device - ");
         }
-        if (device.getBuildingName() != null && device.getBuildingName() instanceof String) {
+        if (device.getBuildingName() instanceof String) {
             sb.append(device.getBuildingName()).append(" - ");
         }
         sb.append(device.getDeviceName());
@@ -167,8 +167,8 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof MelCloudAccountHandler) {
-            melCloudHandler = (MelCloudAccountHandler) handler;
+        if (handler instanceof MelCloudAccountHandler accountHandler) {
+            melCloudHandler = accountHandler;
         }
     }
 

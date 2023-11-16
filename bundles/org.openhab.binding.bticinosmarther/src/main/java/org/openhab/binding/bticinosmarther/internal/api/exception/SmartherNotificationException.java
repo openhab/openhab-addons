@@ -39,7 +39,7 @@ public class SmartherNotificationException extends RuntimeException {
      *
      * @param message
      *            the error message returned from the API gateway
-     * @param cause
+     * @param exception
      *            the cause (a null value is permitted, and indicates that the cause is nonexistent or unknown)
      */
     public SmartherNotificationException(String message, Throwable exception) {

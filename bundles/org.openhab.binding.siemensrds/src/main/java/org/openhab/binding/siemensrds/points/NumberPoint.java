@@ -46,8 +46,8 @@ public class NumberPoint extends BasePoint {
     @Override
     public void refreshValueFrom(BasePoint from) {
         super.refreshValueFrom(from);
-        if (from instanceof NumberPoint) {
-            this.value = ((NumberPoint) from).value;
+        if (from instanceof NumberPoint point) {
+            this.value = point.value;
         }
     }
 }

@@ -51,7 +51,7 @@ public enum KNXTranslationProvider {
      *
      * @param text text to be translated, may contain placeholders \{n\} for the n-th optional argument of this function
      * @param arguments any optional arguments, will be inserted
-     * @return translated text with subsitutions if translationprovide is set and provides a translation, otherwise
+     * @return translated text with substitutions if translationProvider is set and provides a translation, otherwise
      *         returns original text with substitutions
      */
     public String get(final String text, @Nullable Object @Nullable... arguments) {
@@ -83,7 +83,7 @@ public enum KNXTranslationProvider {
      *         translated)]), empty string for null. May possibly change in further releases.
      */
     public String getLocalizedException(final Throwable e) {
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
         final String exName = e.getClass().getSimpleName();
         final String key = "exception." + exName;
         final String translatedDescription = KNXTranslationProvider.I18N.get(key);

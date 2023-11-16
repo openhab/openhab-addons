@@ -17,7 +17,7 @@ package org.openhab.binding.nuki.internal.dto;
  * endpoint.
  *
  * @author Markus Katter - Initial contribution
- * @contributer Christian Hoefler - Door sensor integration
+ * @author Christian Hoefler - Door sensor integration
  */
 public class BridgeApiLockStateDto extends BridgeApiDeviceStateDto {
     private boolean success;

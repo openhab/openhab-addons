@@ -95,7 +95,7 @@ public class EEPFactory {
     }
 
     public static @Nullable EEP buildEEPFromTeachInERP1(ERP1Message msg) {
-        if (!msg.getIsTeachIn() && !(msg.getRORG() == RORG.RPS)) {
+        if (!msg.getIsTeachIn() && msg.getRORG() != RORG.RPS) {
             return null;
         }
 

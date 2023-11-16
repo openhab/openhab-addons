@@ -27,7 +27,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link ism8HandlerFactory} is responsible for creating things and thing
+ * The {@link Ism8HandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Hans-Reiner Hoffmann - Initial contribution

@@ -126,7 +126,7 @@ public class PorcupineKSService implements KSService {
         File localFile = new File(EXTRACTION_FOLDER,
                 relativePath.substring(relativePath.lastIndexOf(File.separator) + 1));
         if (!localFile.exists()) {
-            if (File.separator.equals("\\")) {
+            if ("\\".equals(File.separator)) {
                 // bundle requires unix path separator
                 logger.debug("use unix path separator");
                 relativePath = relativePath.replace("\\", "/");
@@ -267,7 +267,7 @@ public class PorcupineKSService implements KSService {
                         "You can provide a specific model for fr language in {}, english language model will be used",
                         PORCUPINE_FOLDER);
             }
-        } else if (locale.getLanguage().equals("es")) {
+        } else if ("es".equals(locale.getLanguage())) {
             Path esPath = Path.of(PORCUPINE_FOLDER, "porcupine_params_es.pv");
             if (Files.exists(esPath)) {
                 modelPath = esPath.toString();

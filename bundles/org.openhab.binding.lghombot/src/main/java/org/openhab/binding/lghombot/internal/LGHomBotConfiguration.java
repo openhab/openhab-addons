@@ -13,7 +13,6 @@
 package org.openhab.binding.lghombot.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lghombot.internal.discovery.LGHomBotDiscovery;
 
 /**
  * The {@link LGHomBotConfiguration} class contains fields mapping thing configuration parameters.
@@ -24,7 +23,8 @@ import org.openhab.binding.lghombot.internal.discovery.LGHomBotDiscovery;
 public class LGHomBotConfiguration {
 
     /**
-     * Constant field used in {@link LGHomBotDiscovery} to set the configuration property during discovery. Value of
+     * Constant field used in {@link org.openhab.binding.lghombot.internal.discovery.LGHomBotDiscovery} to set the
+     * configuration property during discovery. Value of
      * this field needs to match {@link #ipAddress}
      */
     public static final String IP_ADDRESS = "ipAddress";

@@ -211,8 +211,8 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
             // refresh all the client things below
             getThing().getThings().forEach(thing -> {
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof MikrotikBaseThingHandler<?>) {
-                    ((MikrotikBaseThingHandler<?>) handler).refresh();
+                if (handler instanceof MikrotikBaseThingHandler<?> thingHandler) {
+                    thingHandler.refresh();
                 }
             });
         } catch (ChannelUpdateException e) {

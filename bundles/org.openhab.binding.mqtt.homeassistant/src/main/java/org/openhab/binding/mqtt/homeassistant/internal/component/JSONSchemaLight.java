@@ -137,6 +137,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         rawChannel.getState().publishValue(new StringType(command));
     }
 
+    @Override
     protected boolean handleCommand(Command command) {
         JSONState json = new JSONState();
         if (command.getClass().equals(OnOffType.class)) {

@@ -16,7 +16,6 @@ import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*
 import static org.openhab.binding.magentatv.internal.MagentaTVUtil.*;
 import static org.openhab.core.thing.Thing.*;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -46,7 +45,7 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_RECEIVER);
+        return Set.of(THING_TYPE_RECEIVER);
     }
 
     /**
@@ -74,7 +73,7 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                         .substring(device.getIdentity().getUdn().getIdentifierString().length() - 12);
                 String mac = hex.substring(0, 2) + ":" + hex.substring(2, 4) + ":" + hex.substring(4, 6) + ":"
                         + hex.substring(6, 8) + ":" + hex.substring(8, 10) + ":" + hex.substring(10, 12);
-                if (port.equals("49153")) { // MR400 reports the rong
+                if ("49153".equals(port)) { // MR400 reports the rong
                     port = MR400_DEF_REMOTE_PORT;
                 }
                 properties.put(PROPERTY_VENDOR, VENDOR + "(" + manufacturer + ")");

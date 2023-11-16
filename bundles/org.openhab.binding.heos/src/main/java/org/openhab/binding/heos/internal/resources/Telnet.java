@@ -132,7 +132,7 @@ public class Telnet {
      * @return A list with all read commands
      * @throws ReadException
      * @throws IOException
-     * @see Telnet.readLine(int timeOut).
+     * @see #readLine(int timeOut)
      */
     public String readLine() throws ReadException, IOException {
         return readLine(READ_TIMEOUT);
@@ -166,8 +166,8 @@ public class Telnet {
                 throw new ReadException(e);
             } catch (ExecutionException e) {
                 Throwable cause = e.getCause();
-                if (cause instanceof IOException) {
-                    throw (IOException) cause;
+                if (cause instanceof IOException exception) {
+                    throw exception;
                 } else {
                     throw new ReadException(cause);
                 }

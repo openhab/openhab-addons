@@ -86,8 +86,8 @@ public class NumberValue extends Value {
     @Override
     public Command parseCommand(Command command) throws IllegalArgumentException {
         BigDecimal newValue = null;
-        if (command instanceof DecimalType) {
-            newValue = ((DecimalType) command).toBigDecimal();
+        if (command instanceof DecimalType decimalCommand) {
+            newValue = decimalCommand.toBigDecimal();
         } else if (command instanceof IncreaseDecreaseType || command instanceof UpDownType) {
             BigDecimal oldValue = getOldValue();
             if (command == IncreaseDecreaseType.INCREASE || command == UpDownType.UP) {
@@ -95,8 +95,8 @@ public class NumberValue extends Value {
             } else {
                 newValue = oldValue.subtract(step);
             }
-        } else if (command instanceof QuantityType<?>) {
-            newValue = getQuantityTypeAsDecimal((QuantityType<?>) command);
+        } else if (command instanceof QuantityType<?> quantityCommand) {
+            newValue = getQuantityTypeAsDecimal(quantityCommand);
         } else {
             newValue = new BigDecimal(command.toString());
         }
@@ -114,10 +114,10 @@ public class NumberValue extends Value {
 
     private BigDecimal getOldValue() {
         BigDecimal val = BigDecimal.ZERO;
-        if (state instanceof DecimalType) {
-            val = ((DecimalType) state).toBigDecimal();
-        } else if (state instanceof QuantityType<?>) {
-            val = ((QuantityType<?>) state).toBigDecimal();
+        if (state instanceof DecimalType decimalCommand) {
+            val = decimalCommand.toBigDecimal();
+        } else if (state instanceof QuantityType<?> quantityCommand) {
+            val = quantityCommand.toBigDecimal();
         }
         return val;
     }

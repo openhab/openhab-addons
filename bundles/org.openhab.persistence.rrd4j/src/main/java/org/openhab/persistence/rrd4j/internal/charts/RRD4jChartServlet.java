@@ -267,8 +267,7 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
             String[] groupNames = groups.split(",");
             for (String groupName : groupNames) {
                 Item item = itemUIRegistry.getItem(groupName);
-                if (item instanceof GroupItem) {
-                    GroupItem groupItem = (GroupItem) item;
+                if (item instanceof GroupItem groupItem) {
                     for (Item member : groupItem.getMembers()) {
                         addLine(graphDef, member, seriesCounter++);
                     }

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>TRÅDFRI Binding</name>
 	<description>This binding supports IKEA TRÅDFRI lighting devices through the IKEA gateway.</description>
+	<connection>local</connection>
 
 </addon:addon>

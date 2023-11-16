@@ -90,7 +90,7 @@ public class DeviceTypeLoader {
         NodeList nodes = root.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("device")) {
+            if (node.getNodeType() == Node.ELEMENT_NODE && "device".equals(node.getNodeName())) {
                 processDevice((Element) node);
             }
         }

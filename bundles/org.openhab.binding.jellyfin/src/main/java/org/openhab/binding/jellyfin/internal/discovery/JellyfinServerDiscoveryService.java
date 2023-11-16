@@ -107,7 +107,7 @@ public class JellyfinServerDiscoveryService extends AbstractDiscoveryService {
         new SystemApi(jellyClient).getPublicSystemInfo(asyncResponse);
         try {
             var publicSystemInfo = asyncResponse.awaitContent();
-            discoverServer(uri.getHost(), uri.getPort(), uri.getScheme().equalsIgnoreCase("https"), uri.getPath(),
+            discoverServer(uri.getHost(), uri.getPort(), "https".equalsIgnoreCase(uri.getScheme()), uri.getPath(),
                     publicSystemInfo);
         } catch (SyncCallback.SyncCallbackError | ApiClientException e) {
             logger.warn("Discovery error: {}", e.getMessage());

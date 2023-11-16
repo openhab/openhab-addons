@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.sensibo.internal.discovery;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,8 +38,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SensiboDiscoveryService extends AbstractDiscoveryService {
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
-            .singleton(SensiboBindingConstants.THING_TYPE_SENSIBOSKY);
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set
+            .of(SensiboBindingConstants.THING_TYPE_SENSIBOSKY);
     private static final long REFRESH_INTERVAL_MINUTES = 60;
     private final Logger logger = LoggerFactory.getLogger(SensiboDiscoveryService.class);
     private final SensiboAccountHandler accountHandler;
@@ -67,7 +66,7 @@ public class SensiboDiscoveryService extends AbstractDiscoveryService {
             final SensiboModel model = accountHandler.getModel();
             for (final SensiboSky pod : model.getPods()) {
                 final ThingUID podUID = new ThingUID(SensiboBindingConstants.THING_TYPE_SENSIBOSKY, accountUID,
-                        String.valueOf(pod.getMacAddress()));
+                        pod.getMacAddress());
                 Map<String, String> properties = pod.getThingProperties();
 
                 // DiscoveryResult result uses Map<String,Object> as properties while ThingBuilder uses

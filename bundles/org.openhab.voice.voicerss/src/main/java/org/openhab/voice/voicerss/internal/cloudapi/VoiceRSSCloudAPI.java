@@ -13,11 +13,11 @@
 package org.openhab.voice.voicerss.internal.cloudapi;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.voice.voicerss.internal.VoiceRSSRawAudioStream;
 
 /**
  * Interface which represents the functionality needed from the VoiceRSS TTS
@@ -31,7 +31,7 @@ public interface VoiceRSSCloudAPI {
     /**
      * Get all supported locales by the TTS service.
      *
-     * @return A set of @{link {@link Locale} supported
+     * @return A set of {@link Locale} supported
      */
     Set<Locale> getAvailableLocales();
 
@@ -74,11 +74,11 @@ public interface VoiceRSSCloudAPI {
      *            the audio codec to use
      * @param audioFormat
      *            the audio format to use
-     * @return an InputStream to the audio data in specified format
+     * @return a {@link VoiceRSSRawAudioStream} to the audio data in specified format
      * @throws IOException
      *             will be raised if the audio data can not be retrieved from
      *             cloud service
      */
-    InputStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioCodec,
+    VoiceRSSRawAudioStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioCodec,
             String audioFormat) throws IOException;
 }

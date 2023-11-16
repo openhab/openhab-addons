@@ -137,7 +137,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     @Override
     public void onItemStatusUpdate(TouchWandUnitData unitData) {
-        if (unitData.getStatus().equals("ALIVE")) {
+        if ("ALIVE".equals(unitData.getStatus())) {
             updateStatus(ThingStatus.ONLINE);
         } else {
             // updateStatus(ThingStatus.OFFLINE); // comment - OFFLINE status is not accurate at the moment

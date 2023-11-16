@@ -62,9 +62,11 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
         // Prevent error against duplicate time value
         // http://hsqldb.org/doc/guide/dataaccess-chapt.html#dac_merge_statement
         // SQL_INSERT_ITEM_VALUE = "INSERT INTO #tableName# (TIME, VALUE) VALUES( NOW(), CAST( ? as #dbType#) )";
-        sqlInsertItemValue = "MERGE INTO #tableName# "
-                + "USING (VALUES #tablePrimaryValue#, CAST( ? as #dbType#)) temp (TIME, VALUE) ON (#tableName#.TIME=temp.TIME) "
-                + "WHEN NOT MATCHED THEN INSERT (TIME, VALUE) VALUES (temp.TIME, temp.VALUE)";
+        sqlInsertItemValue = """
+                MERGE INTO #tableName# \
+                USING (VALUES #tablePrimaryValue#, CAST( ? as #dbType#)) temp (TIME, VALUE) ON (#tableName#.TIME=temp.TIME) \
+                WHEN NOT MATCHED THEN INSERT (TIME, VALUE) VALUES (temp.TIME, temp.VALUE)\
+                """;
     }
 
     /**

@@ -14,7 +14,6 @@ package org.openhab.binding.onewiregpio.internal;
 
 import static org.openhab.binding.onewiregpio.internal.OneWireGPIOBindingConstants.THING_TYPE;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openhab.binding.onewiregpio.internal.handler.OneWireGPIOHandler;
@@ -34,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewiregpio")
 public class OneWireGPIOHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -9,6 +9,7 @@
 		<description>Thing for Anthem AV processor</description>
 
 		<channel-groups>
+			<channel-group id="general" typeId="general"/>
 			<channel-group id="1" typeId="zone">
 				<label>Main Zone</label>
 				<description>Controls zone 1 (the main zone) of the processor</description>
@@ -49,6 +50,14 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<channel-group-type id="general">
+		<label>General Control</label>
+		<description>General channels for this AVR</description>
+		<channels>
+			<channel id="command" typeId="command"/>
+		</channels>
+	</channel-group-type>
 
 	<channel-group-type id="zone">
 		<label>Zone Control</label>
@@ -91,6 +100,13 @@
 		<label>Active Input Long Name</label>
 		<description>Long friendly name of the active input source</description>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send a custom command to the processor</description>
+		<state readOnly="false"></state>
 	</channel-type>
 
 </thing:thing-descriptions>
