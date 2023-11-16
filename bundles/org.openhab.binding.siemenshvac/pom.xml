@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.siemenshvac</artifactId>
 
-  <name>openHAB Add-ons::Bundles::SiemensHvac Binding</name>
+  <name>openHAB Add-ons :: Bundles :: SiemensHvac Binding</name>
 
 </project>
