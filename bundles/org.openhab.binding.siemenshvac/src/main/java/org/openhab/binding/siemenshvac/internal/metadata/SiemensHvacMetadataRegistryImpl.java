@@ -1121,6 +1121,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     }
 
     public void loadMetaDataFromCache() {
+        SiemensHvacConnector lcHvacConnector = hvacConnector;
         File file = null;
 
         try {
@@ -1133,8 +1134,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             byte[] bytes = Files.readAllBytes(file.toPath());
             String js = new String(bytes, StandardCharsets.UTF_8);
 
-            if (hvacConnector != null) {
-                root = hvacConnector.getGsonWithAdapter().fromJson(js, SiemensHvacMetadataMenu.class);
+            if (lcHvacConnector != null) {
+                root = lcHvacConnector.getGsonWithAdapter().fromJson(js, SiemensHvacMetadataMenu.class);
             }
         } catch (IOException ioe) {
             logger.warn("Couldn't read Siemens MetaData information from file '{}'.", file.getAbsolutePath());
@@ -1143,6 +1144,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     }
 
     public void saveMetaDataToCache() {
+        SiemensHvacConnector lcHvacConnector = hvacConnector;
         File file = null;
 
         try {
@@ -1154,8 +1156,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             }
 
             try (FileOutputStream os = new FileOutputStream(file)) {
-                if (hvacConnector != null) {
-                    String js = hvacConnector.getGsonWithAdapter().toJson(root);
+                if (lcHvacConnector != null) {
+                    String js = lcHvacConnector.getGsonWithAdapter().toJson(root);
 
                     byte[] bt = js.getBytes();
                     os.write(bt);
