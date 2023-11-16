@@ -442,10 +442,10 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     {
           Default item=iCENTRAL_Ta      label="General"                        icon="energy" valuecolor=[>3000="red"]
           Default item=iCENTRAL_Tb      label="Ground Floor"                   icon="energy" valuecolor=[>3000="red"]
-          Default item=CENTRAL_Ta_day   label="General Energy Today"           icon="energy" valuecolor=[>3000="red"]
-          Default item=CENTRAL_Tb_day   label="Ground Floor Energy Today"      icon="energy" valuecolor=[>3000="red"]
-          Default item=CENTRAL_Ta_month label="General Energy This Month"      icon="energy" valuecolor=[>3000="red"]
-          Default item=CENTRAL_Tb_month label="Ground Floor Energy This Month" icon="energy" valuecolor=[>3000="red"]
+          Default item=CENTRAL_Ta_day   label="General Energy Today"           icon="energy" valuecolor=[>3000="blue"]
+          Default item=CENTRAL_Tb_day   label="Ground Floor Energy Today"      icon="energy" valuecolor=[>3000="blue"]
+          Default item=CENTRAL_Ta_month label="General Energy This Month"      icon="energy" valuecolor=[>3000="yellow"]
+          Default item=CENTRAL_Tb_month label="Ground Floor Energy This Month" icon="energy" valuecolor=[>3000="yellow"]
     }
 
     Frame label="Living Room Thermo"

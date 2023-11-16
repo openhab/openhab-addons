@@ -23,6 +23,7 @@
 			<property name="vendor">BTicino/Legrand</property>
 			<property name="model">BTI-F52x</property>
 			<property name="ownDeviceType">1830</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>ownId</representation-property>

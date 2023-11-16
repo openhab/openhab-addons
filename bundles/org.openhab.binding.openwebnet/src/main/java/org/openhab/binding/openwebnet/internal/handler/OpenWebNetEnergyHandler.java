@@ -61,7 +61,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES;
     private static final int POWER_SUBSCRIPTION_PERIOD = 10; // MINUTES
-    private static int ENERGY_REFRESH_PERIOD = 30; // MINUTES
+    private int energyRefreshPeriod; // MINUTES
 
     private @Nullable ScheduledFuture<?> powerSchedule;
     private @Nullable ScheduledFuture<?> energySchedule;
@@ -77,7 +77,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         super.initialize();
 
         Object refreshPeriodConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_REFRESH_PERIOD);
-        ENERGY_REFRESH_PERIOD = Integer.parseInt(refreshPeriodConfig.toString());
+        energyRefreshPeriod = Integer.parseInt(refreshPeriodConfig.toString());
 
         // In order to get data from the probe we must send a command over the bus, this could be done only when the
         // bridge is online.
@@ -152,25 +152,26 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             try {
                 send(EnergyManagement.requestCurrentDayTotalizer(w.value()));
                 send(EnergyManagement.requestCurrentMonthTotalizer(w.value()));
-
             } catch (Exception e) {
                 logger.warn(
                         "subscribeToEnergyTotalizer() Could not subscribe to totalizers scheduler for WHERE={}. Exception={}",
                         w, e.getMessage());
             }
-        }, 0, ENERGY_REFRESH_PERIOD, TimeUnit.MINUTES);
+        }, 0, energyRefreshPeriod, TimeUnit.MINUTES);
     }
 
     @Override
     public void dispose() {
-        if (powerSchedule != null) {
-            ScheduledFuture<?> ns = powerSchedule;
-            ns.cancel(false);
+        ScheduledFuture<?> sfp = powerSchedule;
+        if (sfp != null) {
+            sfp.cancel(false);
+            powerSchedule = null;
             logger.debug("dispose() power scheduler stopped.");
         }
-        if (energySchedule != null) {
-            ScheduledFuture<?> ns = energySchedule;
-            ns.cancel(false);
+        ScheduledFuture<?> sfe = energySchedule;
+        if (sfe != null) {
+            sfe.cancel(false);
+            energySchedule = null;
             logger.debug("dispose() energy scheduler stopped.");
         }
         super.dispose();
