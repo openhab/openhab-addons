@@ -288,7 +288,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 StringType bdc = (StringType) dpVal;
                 valUpdate = bdc.toString();
 
-                if (("Enumeration").equals(type)) {
+                if ("Enumeration".equals(type)) {
                     String[] valuesUpdateDp = valUpdate.split(":");
                     valUpdateEnum = valuesUpdateDp[0];
 
