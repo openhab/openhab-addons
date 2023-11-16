@@ -23,7 +23,7 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 @NonNullByDefault
 public class ForecastSolarBridgeConfiguration {
     public String location = "0.0,0.0";
-    public int channelRefreshInterval = -1;
+    public int channelRefreshInterval = 1;
     public String apiKey = SolarForecastBindingConstants.EMPTY;
     public double inverterKwp = Double.MAX_VALUE;
 

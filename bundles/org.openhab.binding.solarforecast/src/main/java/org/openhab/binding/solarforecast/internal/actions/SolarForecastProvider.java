@@ -29,5 +29,5 @@ public interface SolarForecastProvider {
      *
      * @return list of SolarForecast objects
      */
-    public List<SolarForecast> getSolarForecasts();
+    List<SolarForecast> getSolarForecasts();
 }

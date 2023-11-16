@@ -8,7 +8,7 @@
 		<parameter name="location" type="text">
 			<context>location</context>
 			<label>PV Location</label>
-			<description>Location of Photovoltaic system</description>
+			<description>Location of photovoltaic system</description>
 			<default>auto-detect</default>
 		</parameter>
 		<parameter name="apiKey" type="text">
@@ -22,7 +22,7 @@
 		</parameter>
 		<parameter name="inverterKwp" type="decimal" step="0.1">
 			<label>Inverter Kilowatt Peak</label>
-			<description>Inverter maximum Kilowatt Peak capability</description>
+			<description>Inverter maximum kilowatt peak capability</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

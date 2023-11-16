@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -74,7 +73,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SolarForecastActions.class);
+        return List.of(SolarForecastActions.class);
     }
 
     @Override
@@ -85,20 +84,20 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
-                if (handler instanceof ForecastSolarBridgeHandler) {
-                    bridgeHandler = Optional.of((ForecastSolarBridgeHandler) handler);
+                if (handler instanceof ForecastSolarBridgeHandler fsbh) {
+                    bridgeHandler = Optional.of(fsbh);
                     bridgeHandler.get().addPlane(this);
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.site.status.wrong-handler" + " [\"" + handler + "\"]");
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/solarforecast.site.status.bridge-handler-not-found");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/solarforecast.site.status.bridge-missing");
         }
     }
@@ -184,11 +183,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         location = Optional.of(loc);
     }
 
-    /**
-     * Used by Bridge to set location directly
-     *
-     * @param loc
-     */
     void setApiKey(String key) {
         apiKey = Optional.of(key);
     }

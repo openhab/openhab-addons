@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ActionsS to query forecast objects
+ * Actions to query forecast objects
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -58,8 +58,8 @@ public class SolarForecastActions implements ThingActions {
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     State s = solarForecast.getDay(localDate, args);
-                    if (s instanceof QuantityType<?>) {
-                        measure = measure.add((QuantityType<Energy>) s);
+                    if (s instanceof QuantityType<?> quantityState) {
+                        measure = measure.add((QuantityType<Energy>) quantityState);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
                         logger.trace("Ambiguous measure {} found for {} - return UNDEF", s, localDate);
@@ -88,8 +88,8 @@ public class SolarForecastActions implements ThingActions {
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     State s = solarForecast.getPower(localDateTime, args);
-                    if (s instanceof QuantityType<?>) {
-                        measure = measure.add((QuantityType<Power>) s);
+                    if (s instanceof QuantityType<?> quantityState) {
+                        measure = measure.add((QuantityType<Power>) quantityState);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
                         logger.trace("Ambiguous measure {} found for {} - return UNDEF", s, localDateTime);
@@ -119,8 +119,8 @@ public class SolarForecastActions implements ThingActions {
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     State s = solarForecast.getEnergy(localDateTimeBegin, localDateTimeEnd, args);
-                    if (s instanceof QuantityType<?>) {
-                        measure = measure.add((QuantityType<Energy>) s);
+                    if (s instanceof QuantityType<?> quantityState) {
+                        measure = measure.add((QuantityType<Energy>) quantityState);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
                         logger.trace("Ambiguous measure {} found between {} and {} - return UNDEF", s,

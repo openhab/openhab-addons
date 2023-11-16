@@ -11,7 +11,7 @@ Supported Services
 - [Forecast.Solar](https://forecast.solar/)
     - Public, Personal and Professional [plans](https://forecast.solar/#accounts) available 
 
-Display Forecast *Power values* and measures of *PV innverter* item
+Display Forecast *Power values* and measures of *PV inverter* item
 
 <img src="./doc/SolcastPower.png" width="640" height="400"/>
 
@@ -33,7 +33,7 @@ Each service needs one `xx-site` for your location and at least one photovoltaic
 
 ## Solcast Configuration
 
-[Solcast service](https://solcast.com/) requires a personal registration with an email address.
+[Solcast service](https://solcast.com/) requires a personal registration with an e-mail address.
 A free version for your personal home PV system is available in [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist)
 You need to configure your home photovoltaic system within the web interface.
 The `resourceId` for each PV plane is provided afterwards.
@@ -43,15 +43,15 @@ Correct time zone is necessary to show correct forecast times in UI.
 
 ### Solcast Tuning
 
-You've the opportunity to [send your own measurements back to Solcast API](https://legacy-docs.solcast.com.au/#measurements-rooftop-site).
+You have the opportunity to [send your own measurements back to Solcast API](https://legacy-docs.solcast.com.au/#measurements-rooftop-site).
 This data is used internally to improve the forecast for your specific site.
 Configuration and channels can be set after checking the *Show advanced* checkbox.
 You need an item which reports the electric power for the specific rooftop. 
-If item isn't set no measures will be sent.
+If item isn't set, no measures will be sent.
 As described in [Solcast Rooftop Measurement](https://legacy-docs.solcast.com.au/#measurements-rooftop-site) check in beforehand if your measures are *sane*.
 
 - item is delivering correct values and they are stored in persistence
-- time settings in openHAB are correct in order to so measurements are matching to the measure time frame
+- time zone setting in openHAB is correct to deliver correct timestamp
 
 After measurement is sent the `raw-tuning` channel is reporting the result.
 
@@ -80,21 +80,21 @@ See [DateTime](#date-time) section for more information.
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
-If you've 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 calls per day.
+If you have 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 calls per day.
 
 Note: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-configuration) will calculate intermediate values without requesting new forecast data.
 
 `powerItem` shall reflect the power for this specific rooftop. 
 It's an optional setting and the [measure is sent to Solcast API in order to tune the forecast](https://legacy-docs.solcast.com.au/#measurements-rooftop-site) in the future.
-If you don't want to send measures to Solcast leave this configuration item empty.
+If you don't want to send measures to Solcast, leave this configuration item empty.
 
 `powerUnit` is set to `auto-detect`. 
-In case the `powerItem` is delivering a valid `QuantityType<Power>` state this setting is fine.
-If the item delivers a raw number without unit please select `powerUnit` accordingly if item state is Watt or Kilowatt unit. 
+In case the `powerItem` is delivering a valid `QuantityType<Power>` state, this setting is fine.
+If the item delivers a raw number without unit please select `powerUnit` accordingly if item state, is Watt or Kilowatt unit. 
 
 ## Solcast Channels
 
-Each `sc-plane` reports its own values including a `raw` channel holding json content.
+Each `sc-plane` reports its own values including a `raw` channel holding JSON content.
 The `sc-site` bridge sums up all attached `sc-plane` values and provides the total forecast for your home location.  
 
 Channels are covering today's actual data with current, remaining and today's total prediction.
@@ -170,10 +170,10 @@ So you need to know what you're doing.
 
 ## ForecastSolar Channels
 
-Each `fs-plane` reports it's own values including a `raw` channel holding json content.
+Each `fs-plane` reports it's own values including a `raw` channel holding JSON content.
 The `fs-site` bridge sums up all attached `fs-plane` values and provides the total forecast for your home location.  
 
-Channels are covering todays actual data with current, remaining and today's total prediction.
+Channels are covering today's actual data with current, remaining and total prediction.
 Forecasts are delivered up to 3 days for paid personal plans.
 
 Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day after tomorrow, ...
@@ -186,7 +186,6 @@ Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day 
 | today                   | Number:Energy | Today's forecast in total                | no       |
 | day*X*                  | Number:Energy | Day *X* forecast in total                | no       |
 | raw                     | String        | Plain JSON response without conversions  | yes      |
-
 
 ## Thing Actions
 
@@ -298,7 +297,7 @@ Exchange the configuration data in [thing file](#thing-file) and you're ready to
 
 ### Thing file
 
-````
+````java
 Bridge solarforecast:fs-site:homeSite   "ForecastSolar Home" [ location="54.321,8.976", channelRefreshInterval=1] {
          Thing fs-plane homeSouthWest   "ForecastSolar Home South-West" [ refreshInterval=10, azimuth=45, declination=35, kwp=5.5]
          Thing fs-plane homeNorthEast   "ForecastSolar Home North-East" [ refreshInterval=10, azimuth=-145, declination=35, kwp=4.425]
@@ -409,7 +408,7 @@ So you can query forecast data based on `LocalDate` and `LocalDateTime`.
 This shall cover the majority of use cases.
 
 There might be rare use cases querying foreign locations, e.g. `Aisa/Tokyo`.
-For this
+For this:
 
 - Forecast.Solar is every time delivering the local asia date time measures
 - Solcast needs to be configured with parameter `timeZone` in the advanced settings

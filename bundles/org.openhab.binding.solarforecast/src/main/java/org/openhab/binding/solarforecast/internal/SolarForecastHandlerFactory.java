@@ -78,7 +78,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         if (s instanceof QueryablePersistenceService) {
             qps = Optional.of((QueryablePersistenceService) s);
         } else {
-            logger.info("Persistence {} cannot be queried. Feature Solcast Tuninng will not work", s);
+            logger.info("Persistence {} cannot be queried. Feature Solcast Tuning will not work", s);
         }
     }
 

@@ -26,7 +26,6 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.types.State;
@@ -59,7 +58,7 @@ public class ForecastSolarObject implements SolarForecast {
 
     public ForecastSolarObject(String content, Instant expirationDate) {
         expirationDateTime = expirationDate;
-        if (!content.equals(SolarForecastBindingConstants.EMPTY)) {
+        if (!content.isEmpty()) {
             rawData = Optional.of(content);
             try {
                 JSONObject contentJson = new JSONObject(content);

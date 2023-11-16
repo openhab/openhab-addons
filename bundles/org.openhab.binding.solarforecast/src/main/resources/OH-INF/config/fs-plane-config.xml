@@ -20,7 +20,7 @@
 		</parameter>
 		<parameter name="kwp" type="decimal" step="0.001" required="true">
 			<label>Installed Kilowatt Peak</label>
-			<description>Installed Module power of this plane</description>
+			<description>Installed module power of this plane</description>
 		</parameter>
 		<parameter name="dampAM" type="decimal" step="0.01" min="0" max="1">
 			<label>Morning Damping Factor</label>
@@ -35,8 +35,8 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="horizon" type="text">
-			<label>Horizon </label>
-			<description>Horizon definition as comma separated integer values</description>
+			<label>Horizon</label>
+			<description>Horizon definition as comma-separated integer values</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

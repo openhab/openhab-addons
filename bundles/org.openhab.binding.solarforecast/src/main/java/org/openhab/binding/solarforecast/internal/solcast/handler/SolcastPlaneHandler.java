@@ -21,7 +21,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -94,7 +93,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SolarForecastActions.class);
+        return List.of(SolarForecastActions.class);
     }
 
     @Override
@@ -102,41 +101,40 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         SolcastPlaneConfiguration c = getConfigAs(SolcastPlaneConfiguration.class);
         configuration = Optional.of(c);
 
-        // initialize Power Item
-        if (!EMPTY.equals(c.powerItem)) {
-            // power item configured
-            Item item = itemRegistry.get(c.powerItem);
-            if (item != null) {
-                powerItem = Optional.of(item);
-            } else {
-                logger.debug("Item {} not found", c.powerItem);
-            }
-        } else {
-            logger.trace("No Power item configured");
-        }
-
         // connect Bridge & Status
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
-                if (handler instanceof SolcastBridgeHandler) {
-                    bridgeHandler = Optional.of((SolcastBridgeHandler) handler);
+                if (handler instanceof SolcastBridgeHandler sbh) {
+                    bridgeHandler = Optional.of(sbh);
                     bridgeHandler.get().addPlane(this);
                     forecast = Optional.of(new SolcastObject(bridgeHandler.get()));
                     nextMeasurement = Optional.of(Utils.getNextTimeframe(Instant.now(), bridgeHandler.get()));
-
-                    updateStatus(ThingStatus.ONLINE);
+                    // initialize Power Item
+                    if (!EMPTY.equals(c.powerItem)) {
+                        // power item configured
+                        Item item = itemRegistry.get(c.powerItem);
+                        if (item != null) {
+                            powerItem = Optional.of(item);
+                            updateStatus(ThingStatus.ONLINE);
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "@text/solarforecast.site.status.power-item [\"" + c.powerItem + "\"]");
+                        }
+                    } else {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                            "@text/solarforecast.site.status.wrong-handler" + " [\"" + handler + "\"]");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/solarforecast.site.status.wrong-handler [\"" + handler + "\"]");
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/solarforecast.site.status.bridge-handler-not-found");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/solarforecast.site.status.bridge-missing");
         }
     }
