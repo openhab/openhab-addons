@@ -15,14 +15,12 @@ package org.openhab.binding.siemenshvac.internal.type;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author Sönke Küper - Initial contribution
  */
 @NonNullByDefault
-@Disabled("These tests use the real website which may not always be available")
 public class UidUtilsTest {
 
     @Test
