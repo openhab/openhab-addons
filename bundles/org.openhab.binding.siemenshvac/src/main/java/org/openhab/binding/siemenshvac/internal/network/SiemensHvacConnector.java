@@ -36,21 +36,22 @@ public interface SiemensHvacConnector {
     @Nullable
     JsonObject doRequest(String req, @Nullable SiemensHvacCallback callback);
 
-    public void waitAllPendingRequest();
+    void waitAllPendingRequest();
 
-    public void waitNoNewRequest();
+    void waitNoNewRequest();
 
-    public void onComplete(Request request);
+    void onComplete(Request request);
 
-    public void onError(Request request, SiemensHvacCallback cb) throws Exception;
+    void onError(Request request, SiemensHvacCallback cb) throws Exception;
 
-    public void setSiemensHvacBridgeBaseThingHandler(SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler);
+    void setSiemensHvacBridgeBaseThingHandler(SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler);
 
-    public @Nullable SiemensHvacBridgeConfig getBridgeConfiguration();
+    @Nullable
+    SiemensHvacBridgeConfig getBridgeConfiguration();
 
     void resetSessionId(boolean web);
 
-    public void displayRequestStats();
+    void displayRequestStats();
 
     Gson getGson();
 
