@@ -232,18 +232,6 @@ Check for `UndefType.UNDEF` in case of errors.
 
 ### `getEnergy`
 
-```java
-    /**
-     * Returns electric energy between two timestamps
-     *
-     * @param localDateTimeBegin
-     * @param localDateTimeEnd
-     * @param args possible arguments from this interface
-     * @return QuantityType<Energy> in kW/h
-     */
-    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd, String... args);
-```
-
 | Parameter       | Type          | Description                                                                                                  |
 |-----------------|---------------|--------------------------------------------------------------------------------------------------------------|
 | startTimestamp  | LocalDateTime | Date of the day                                                                                              |
