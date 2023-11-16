@@ -205,7 +205,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             } else {
                 updateState(updateKey, new StringType(value.getAsString()));
             }
-
         }
     }
 
@@ -306,7 +305,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
                 logger.trace("Write request response: {} ", response);
             }
-
         } catch (Exception e) {
             logger.debug("siemensHvac:ReadDp:Error during dp reading: {}: {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
@@ -357,7 +355,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 if (doMods) {
                     result = new DecimalType("" + v1);
                 }
-
             }
         }
         return result;
