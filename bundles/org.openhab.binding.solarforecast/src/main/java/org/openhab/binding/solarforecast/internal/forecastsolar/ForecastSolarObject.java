@@ -66,6 +66,8 @@ public class ForecastSolarObject implements SolarForecast {
                 JSONObject resultJson = contentJson.getJSONObject("result");
                 JSONObject wattHourJson = resultJson.getJSONObject("watt_hours");
                 JSONObject wattJson = resultJson.getJSONObject("watts");
+                String zoneStr = contentJson.getJSONObject("message").getJSONObject("info").getString("timezone");
+                zone = ZoneId.of(zoneStr);
                 Iterator<String> iter = wattHourJson.keys();
                 // put all values of the current day into sorted tree map
                 while (iter.hasNext()) {
@@ -81,8 +83,6 @@ public class ForecastSolarObject implements SolarForecast {
                     }
                 }
                 valid = true;
-                String zoneStr = contentJson.getJSONObject("message").getJSONObject("info").getString("timezone");
-                zone = ZoneId.of(zoneStr);
             } catch (JSONException je) {
                 logger.debug("Error parsing JSON response {} - {}", content, je.getMessage());
             }
