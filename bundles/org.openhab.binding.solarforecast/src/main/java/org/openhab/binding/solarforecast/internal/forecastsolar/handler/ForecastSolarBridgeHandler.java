@@ -40,8 +40,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ForecastSolarBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
@@ -50,7 +48,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
-    private final Logger logger = LoggerFactory.getLogger(ForecastSolarBridgeHandler.class);
     private final PointType homeLocation;
 
     private List<ForecastSolarPlaneHandler> parts = new ArrayList<ForecastSolarPlaneHandler>();
@@ -78,28 +75,12 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         }
         configuration = Optional.of(config);
         updateStatus(ThingStatus.ONLINE);
-        startSchedule(configuration.get().channelRefreshInterval);
+        refreshJob = Optional.of(
+                scheduler.scheduleWithFixedDelay(this::getData, 10, config.channelRefreshInterval, TimeUnit.MINUTES));
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    private void startSchedule(int interval) {
-        /**
-         * Interval given in minutes so seconds needs multiplier. Wait for 10 seconds until attached planes are created
-         * and registered. If now waiting time is defined user will see some glitches e.g. after restart if no or not
-         * all planes are initialized
-         */
-        refreshJob.ifPresentOrElse(job -> {
-            if (job.isCancelled()) {
-                refreshJob = Optional
-                        .of(scheduler.scheduleWithFixedDelay(this::getData, 10, interval * 60, TimeUnit.SECONDS));
-            } // else - scheduler is already running!
-        }, () -> {
-            refreshJob = Optional
-                    .of(scheduler.scheduleWithFixedDelay(this::getData, 10, interval * 60, TimeUnit.SECONDS));
-        });
     }
 
     /**

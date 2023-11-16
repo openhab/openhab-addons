@@ -117,13 +117,13 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         Item item = itemRegistry.get(c.powerItem);
                         if (item != null) {
                             powerItem = Optional.of(item);
-                            updateStatus(ThingStatus.ONLINE);
+                            updateStatus(ThingStatus.UNKNOWN);
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                     "@text/solarforecast.site.status.power-item [\"" + c.powerItem + "\"]");
                         }
                     } else {
-                        updateStatus(ThingStatus.ONLINE);
+                        updateStatus(ThingStatus.UNKNOWN);
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -177,14 +177,18 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         localForecast.join(crForecast.getContentAsString());
                         setForecast(localForecast);
                         updateState(CHANNEL_RAW, StringType.valueOf(forecast.get().getRaw()));
+                        updateStatus(ThingStatus.ONLINE);
                     } else {
                         logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl, crForecast.getStatus());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     }
                 } else {
                     logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, crEstimate.getStatus());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } // else use available forecast
         updateChannels(forecast.get());
@@ -269,12 +273,15 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     ContentResponse crMeasure = request.send();
                     if (crMeasure.getStatus() == 200) {
                         updateState = StringType.valueOf(crMeasure.getContentAsString());
+                        updateStatus(ThingStatus.ONLINE);
                     } else {
                         logger.debug("{} Call {} failed {} - {}", thing.getLabel(), measureUrl, crMeasure.getStatus(),
                                 crMeasure.getContentAsString());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                     logger.debug("{} Call {} failed {}", thing.getLabel(), measureUrl, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             } else {
                 logger.debug("Persistence for {} empty", powerItem);

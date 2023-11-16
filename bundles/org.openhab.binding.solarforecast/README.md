@@ -11,11 +11,11 @@ Supported Services
 - [Forecast.Solar](https://forecast.solar/)
     - Public, Personal and Professional [plans](https://forecast.solar/#accounts) available 
 
-Display Forecast *Power values* and measures of *PV inverter* item
+Display Power values of Forecast and PV Inverter items
 
 <img src="./doc/SolcastPower.png" width="640" height="400"/>
 
-Display added up values during the day of *Forecast* and *PV inverter* item.
+Display Energy values of Forecast and PV inverter items
 Yellow line shows *Daily Total Forecast*.
 
 <img src="./doc/SolcastCumulated.png" width="640" height="400"/>
@@ -105,17 +105,17 @@ Forecasts are delivered up to 6 days in advance including
 
 Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day after tomorrow, ...
 
-| Channel                 | Type          | Description                              | Advanced |
-|-------------------------|---------------|------------------------------------------|----------|
-| actual                  | Number:Energy | Today's forecast till now                | no       |
-| actual-power            | Number:Power  | Predicted power in this moment           | no       |
-| remaining               | Number:Energy | Forecast of today's remaining production | no       |
-| today                   | Number:Energy | Today's forecast in total                | no       |
-| day*X*                  | Number:Energy | Day *X* forecast in total                | no       |
-| day*X*-low              | Number:Energy | Day *X* pessimistic forecast             | no       |
-| day*X*-high             | Number:Energy | Day *X* optimistic forecast              | no       |
-| raw                     | String        | Plain JSON response without conversions  | yes      |
-| raw-tuning              | String        | JSON response from tuning call           | yes      |
+| Channel                 | Type          | Unit | Description                              | Advanced |
+|-------------------------|---------------|------|------------------------------------------|----------|
+| actual                  | Number:Energy | kWh  | Today's forecast till now                | no       |
+| actual-power            | Number:Power  | W    | Predicted power in this moment           | no       |
+| remaining               | Number:Energy | kWh  | Forecast of today's remaining production | no       |
+| today                   | Number:Energy | kWh  | Today's forecast in total                | no       |
+| day*X*                  | Number:Energy | kWh  | Day *X* forecast in total                | no       |
+| day*X*-low              | Number:Energy | kWh  | Day *X* pessimistic forecast             | no       |
+| day*X*-high             | Number:Energy | kWh  | Day *X* optimistic forecast              | no       |
+| raw                     | String        | -    | Plain JSON response without conversions  | yes      |
+| raw-tuning              | String        | -    | JSON response from tuning call           | yes      |
 
 ## ForecastSolar Configuration
 
@@ -178,14 +178,14 @@ Forecasts are delivered up to 3 days for paid personal plans.
 
 Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day after tomorrow, ...
 
-| Channel                 | Type          | Description                              | Advanced |
-|-------------------------|---------------|------------------------------------------|----------|
-| actual                  | Number:Energy | Today's forecast till now                | no       |
-| actual-power            | Number:Power  | Predicted power in this moment           | no       |
-| remaining               | Number:Energy | Forecast of today's remaining production | no       |
-| today                   | Number:Energy | Today's forecast in total                | no       |
-| day*X*                  | Number:Energy | Day *X* forecast in total                | no       |
-| raw                     | String        | Plain JSON response without conversions  | yes      |
+| Channel                 | Type          | Unit | Description                              | Advanced |
+|-------------------------|---------------|------|------------------------------------------|----------|
+| actual                  | Number:Energy | kWh  | Today's forecast till now                | no       |
+| actual-power            | Number:Power  | W    | Predicted power in this moment           | no       |
+| remaining               | Number:Energy | kWh  | Forecast of today's remaining production | no       |
+| today                   | Number:Energy | kWh  | Today's forecast in total                | no       |
+| day*X*                  | Number:Energy | kWh  | Day *X* forecast in total                | no       |
+| raw                     | String        | -    | Plain JSON response without conversions  | yes      |
 
 ## Thing Actions
 
@@ -197,80 +197,42 @@ Input for queries are `LocalDateTime` and `LocalDate` objects.
 See [Date Time](#date-time) section for more information.
 Double check your time zone in *openHAB - Settings - Regional Settings* which is crucial for calculation.
 
-### Get Forecast Begin
-
-````java
-    /**
-     * Get the first date and time of forecast data
-     *
-     * @return your localized date time
-     */
-    public LocalDateTime getForecastBegin();
-````
+### `getForecastBegin`
 
 Returns `LocalDateTime` of the earliest possible forecast data available.
 It's located in the past, e.g. Solcast provides data from the last 7 days.
 `LocalDateTime.MAX` is returned in case of no forecast data is available.
 
-### Get Forecast End
-
-````java
-    /**
-     * Get the last date and time of forecast data
-     *
-     * @return your localized date time
-     */
-    public LocalDateTime getForecastEnd();
-````
+### `getForecastEnd`
 
 Returns `LocalDateTime` of the latest possible forecast data available.
 `LocalDateTime.MIN` is returned in case of no forecast data is available.
 
-### Get Power
+### `getPower`
 
-````java
-    /**
-     * Returns electric power at one specific point of time
-     *
-     * @param localDateTime
-     * @param args possible arguments from this interface
-     * @return QuantityType<Power> in kW
-     */
-    public State getPower(LocalDateTime localDateTime, String... args);
-````
+| Parameter | Type          | Description                                                                                                  |
+|-----------|---------------|--------------------------------------------------------------------------------------------------------------|
+| timestamp | LocalDateTime | Time stamp                                                                                                   |
+| mode      | String        | Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario. Only Solcast. |
 
 Returns `QuantityType<Power>` at the given `localDateTime`.
 Respect `getForecastBegin` and `getForecastEnd` to get a valid value.
 Check for `UndefType.UNDEF` in case of errors.
 
-Solcast things are supporting arguments.
-Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario.
-For these scenarios `localDateTime` needs to be located between `now` and `getForecastEnd`.
+### `getDay`
 
-### Get Day
-
-````java
-    /**
-     * Returns electric energy production for one day
-     *
-     * @param localDate
-     * @param args possible arguments from this interface
-     * @return QuantityType<Energy> in kW/h
-     */
-    public State getDay(LocalDate localDate, String... args);
-````
+| Parameter | Type          | Description                                                                                                  |
+|-----------|---------------|--------------------------------------------------------------------------------------------------------------|
+| date      | LocalDate     | Date of the day                                                                                              |
+| mode      | String        | Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario. Only Solcast. |
 
 Returns `QuantityType<Energy>` at the given `localDate`.
-Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
+Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
 Check for `UndefType.UNDEF` in case of errors.
 
-Solcast things are supporting arguments.
-Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario.
-For these scenarios `localDate` needs to be between *today* and `getForecastEnd`.
+### `getEnergy`
 
-### Get Energy
-
-````java
+```java
     /**
      * Returns electric energy between two timestamps
      *
@@ -280,15 +242,17 @@ For these scenarios `localDate` needs to be between *today* and `getForecastEnd`
      * @return QuantityType<Energy> in kW/h
      */
     public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd, String... args);
-````
+```
 
-Returns `QuantityType<Energy>` between the timestamps `localDateTimeBegin` and `localDateTimeEnd`.
-Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
+| Parameter       | Type          | Description                                                                                                  |
+|-----------------|---------------|--------------------------------------------------------------------------------------------------------------|
+| startTimestamp  | LocalDateTime | Date of the day                                                                                              |
+| endTimestamp    | LocalDateTime | Date of the day                                                                                              |
+| mode            | String        | Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario. Only Solcast. |
+
+Returns `QuantityType<Energy>` between the timestamps `startTimestamp` and `endTimestamp`.
+Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
 Check for `UndefType.UNDEF` in case of errors.
-
-Solcast things are supporting arguments.
-Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario.
-For these scenarios `localDateTimeEnd` needs to be located between `now` and `getForecastEnd`.
 
 ## Example
 
@@ -297,16 +261,16 @@ Exchange the configuration data in [thing file](#thing-file) and you're ready to
 
 ### Thing file
 
-````java
+```java
 Bridge solarforecast:fs-site:homeSite   "ForecastSolar Home" [ location="54.321,8.976", channelRefreshInterval=1] {
          Thing fs-plane homeSouthWest   "ForecastSolar Home South-West" [ refreshInterval=10, azimuth=45, declination=35, kwp=5.5]
          Thing fs-plane homeNorthEast   "ForecastSolar Home North-East" [ refreshInterval=10, azimuth=-145, declination=35, kwp=4.425]
 }
-````
+```
 
 ### Items file
 
-````
+```java
 Number:Energy           ForecastSolarHome_Actual           "Actual Forecast Today [%.3f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual" }                                                                           
 Number:Power            ForecastSolarHome_Actual_Power     "Actual Power Forecast [%.3f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual-power" }                                                                           
 Number:Energy           ForecastSolarHome_Remaining        "Remaining Forecast Today [%.3f %unit%]"          {channel="solarforecast:fs-site:homeSite:remaining" }                                                                           
@@ -324,11 +288,11 @@ Number:Power            ForecastSolarHome_Actual_Power_SW  "Actual SW Power Fore
 Number:Energy           ForecastSolarHome_Remaining_SW     "Remaining SW Forecast Today [%.3f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeSouthWest:remaining" }                                                                           
 Number:Energy           ForecastSolarHome_Today_SW         "Total SW Forecast Today [%.3f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeSouthWest:today" }                                                                           
 Number:Energy           ForecastSolarHome_Day_SW           "Tomorrow SW Forecast [%.3f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeSouthWest:day1" }                                                                           
-````
+```
 
 ### Actions rule
 
-````
+```java
 rule "Forecast Solar Actions"
     when
         Time cron "0 0 23 * * ?" // trigger whatever you like
@@ -359,11 +323,11 @@ rule "Forecast Solar Actions"
         val twoDaysForecastFromNowValue = (twoDaysForecastFromNowState as Number).doubleValue
         logInfo("SF Tests","Forecast 2 days value: "+ twoDaysForecastFromNowValue)
 end
-````
+```
 
 shall produce following output
 
-````
+```
 2022-08-07 18:02:19.874 [INFO ] [g.openhab.core.model.script.SF Tests] - Begin: 2022-07-31T18:30 End: 2022-08-14T18:00
 2022-08-07 18:02:19.878 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast tomorrow state: 55.999 kWh
 2022-08-07 18:02:19.880 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast tomorrow value: 55.999
@@ -371,14 +335,14 @@ shall produce following output
 2022-08-07 18:02:19.886 [INFO ] [g.openhab.core.model.script.SF Tests] - Hour+1 power value: 2.497
 2022-08-07 18:02:19.891 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days state: 112.483 kWh
 2022-08-07 18:02:19.892 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days value: 112.483
-````
+```
 
 ### Actions rule with Arguments
 
-Only Solcast is deliering `optimistic` and `pessimistic` scenario data.
+Only Solcast is delivering `optimistic` and `pessimistic` scenario data.
 If arguments are used on ForecastSolar `UNDEF` state is returned
 
-````
+```java
 rule "Solcast Actions"
     when
         Time cron "0 0 23 * * ?" // trigger whatever you like
@@ -390,15 +354,15 @@ rule "Solcast Actions"
         val sixDayPessimistic = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(6),"pessimistic")
         logInfo("SF Tests","Forecast Pessimist 6 days "+ sixDayPessimistic)
 end
-````
+```
 
 shall produce following output
 
-````
+```
 2022-08-10 00:02:16.569 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast Estimate  6 days 309.424 kWh
 2022-08-10 00:02:16.574 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast Optimist  6 days 319.827 kWh
 2022-08-10 00:02:16.578 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast Pessimist 6 days 208.235 kWh
-````
+```
 
 ## Date Time
 

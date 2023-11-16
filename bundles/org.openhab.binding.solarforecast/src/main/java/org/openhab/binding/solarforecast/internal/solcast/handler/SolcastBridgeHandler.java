@@ -59,10 +59,12 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     private List<SolcastPlaneHandler> parts = new ArrayList<SolcastPlaneHandler>();
     private Optional<SolcastBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private ZoneId timeZone;
 
     public SolcastBridgeHandler(Bridge bridge, TimeZoneProvider tzp) {
         super(bridge);
         localTimeZoneProvider = tzp;
+        timeZone = tzp.getTimeZone();
     }
 
     @Override
@@ -75,8 +77,22 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         SolcastBridgeConfiguration config = getConfigAs(SolcastBridgeConfiguration.class);
         configuration = Optional.of(config);
         if (!EMPTY.equals(config.apiKey)) {
-            updateStatus(ThingStatus.ONLINE);
-            startSchedule(configuration.get().channelRefreshInterval);
+            if (!AUTODETECT.equals(configuration.get().timeZone)) {
+                try {
+                    timeZone = ZoneId.of(configuration.get().timeZone);
+                    updateStatus(ThingStatus.ONLINE);
+                    refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 10,
+                            configuration.get().channelRefreshInterval, TimeUnit.MINUTES));
+                } catch (DateTimeException e) {
+                    logger.warn("ConfiguredTimezone {} not found {}", configuration.get().timeZone, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/solarforecast.site.status.timezone" + " [\"" + configuration.get().timeZone + "\"]");
+                }
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+                refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 10,
+                        configuration.get().channelRefreshInterval, TimeUnit.MINUTES));
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/solarforecast.site.status.api-key-missing");
@@ -88,23 +104,6 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         if (command instanceof RefreshType) {
             getData();
         }
-    }
-
-    private void startSchedule(int interval) {
-        /**
-         * Interval given in minutes so seconds needs multiplier. Wait for 10 seconds until attached planes are created
-         * and registered. If now waiting time is defined user will see some glitches e.g. after restart if no or not
-         * all planes are initialized
-         */
-        refreshJob.ifPresentOrElse(job -> {
-            if (job.isCancelled()) {
-                refreshJob = Optional
-                        .of(scheduler.scheduleWithFixedDelay(this::getData, 10, interval * 60, TimeUnit.SECONDS));
-            } // else - scheduler is already running!
-        }, () -> {
-            refreshJob = Optional
-                    .of(scheduler.scheduleWithFixedDelay(this::getData, 10, interval * 60, TimeUnit.SECONDS));
-        });
     }
 
     @Override
@@ -221,15 +220,6 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     @Override
     public ZoneId getTimeZone() {
-        if (AUTODETECT.equals(configuration.get().timeZone)) {
-            return localTimeZoneProvider.getTimeZone();
-        } else {
-            try {
-                return ZoneId.of(configuration.get().timeZone);
-            } catch (DateTimeException e) {
-                logger.info("Timezone {} not found {}", configuration.get().timeZone, e.getMessage());
-                return localTimeZoneProvider.getTimeZone();
-            }
-        }
+        return timeZone;
     }
 }

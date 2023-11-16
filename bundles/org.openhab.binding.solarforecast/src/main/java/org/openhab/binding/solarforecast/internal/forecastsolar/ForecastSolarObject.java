@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -70,9 +71,14 @@ public class ForecastSolarObject implements SolarForecast {
                 while (iter.hasNext()) {
                     String dateStr = iter.next();
                     // convert date time into machine readable format
-                    ZonedDateTime zdt = LocalDateTime.parse(dateStr, dateInputFormatter).atZone(zone);
-                    wattHourMap.put(zdt, wattHourJson.getDouble(dateStr));
-                    wattMap.put(zdt, wattJson.getDouble(dateStr));
+                    try {
+                        ZonedDateTime zdt = LocalDateTime.parse(dateStr, dateInputFormatter).atZone(zone);
+                        wattHourMap.put(zdt, wattHourJson.getDouble(dateStr));
+                        wattMap.put(zdt, wattJson.getDouble(dateStr));
+                    } catch (DateTimeParseException dtpe) {
+                        logger.warn("Exception parsing time {} Reason: {}", dateStr, dtpe.getMessage());
+                        return;
+                    }
                 }
                 valid = true;
                 String zoneStr = contentJson.getJSONObject("message").getJSONObject("info").getString("timezone");

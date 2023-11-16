@@ -87,7 +87,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                 if (handler instanceof ForecastSolarBridgeHandler fsbh) {
                     bridgeHandler = Optional.of(fsbh);
                     bridgeHandler.get().addPlane(this);
-                    updateStatus(ThingStatus.ONLINE);
+                    updateStatus(ThingStatus.UNKNOWN);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.site.status.wrong-handler" + " [\"" + handler + "\"]");
@@ -149,11 +149,14 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                                 Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
                         setForecast(localForecast);
                         updateState(CHANNEL_RAW, StringType.valueOf(cr.getContentAsString()));
+                        updateStatus(ThingStatus.ONLINE);
                     } else {
                         logger.info("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     }
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
                     logger.info("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             } // else use available forecast
             updateChannels(forecast);
