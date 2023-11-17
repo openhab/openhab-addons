@@ -91,11 +91,19 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
             NAObjectMap<HomeStatusModule> modules = energyStatus.getModules();
             handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
                 String childId = childHandler.getId();
-                rooms.getOpt(childId).ifPresentOrElse(roomData -> childHandler.setNewData(roomData), () -> {
+                logger.trace("childId: {}", childId);
+                rooms.getOpt(childId).ifPresentOrElse(roomData -> {
+                    logger.trace("roomData: {}", roomData);
+                    childHandler.setNewData(roomData);
+                }, () -> {
                     modules.getOpt(childId).ifPresent(moduleData -> {
+                        logger.trace("moduleData: {}", moduleData);
                         childHandler.setNewData(moduleData);
                         modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                                .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
+                                .forEach(bridgedModule -> {
+                                    logger.trace("bridgedModule: {}", bridgedModule);
+                                    childHandler.setNewData(bridgedModule);
+                                });
                     });
                 });
             });
