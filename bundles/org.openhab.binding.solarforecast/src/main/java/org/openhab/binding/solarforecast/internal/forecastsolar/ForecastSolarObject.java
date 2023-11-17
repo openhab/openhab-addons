@@ -227,19 +227,18 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     @Override
-    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd, String... args) {
+    public State getEnergy(ZonedDateTime start, ZonedDateTime end, String... args) {
         if (args.length > 0) {
             logger.info("ForecastSolar doesn't accept arguments");
             return UnDefType.UNDEF;
         }
-        LocalDate beginDate = localDateTimeBegin.toLocalDate();
-        LocalDate endDate = localDateTimeEnd.toLocalDate();
+        LocalDate beginDate = start.toLocalDate();
+        LocalDate endDate = end.toLocalDate();
         double measure = UNDEF;
         if (beginDate.equals(endDate)) {
-            measure = getDayTotal(beginDate) - getActualValue(localDateTimeBegin.atZone(zone))
-                    - getRemainingProduction(localDateTimeEnd.atZone(zone));
+            measure = getDayTotal(beginDate) - getActualValue(start) - getRemainingProduction(end);
         } else {
-            measure = getRemainingProduction(localDateTimeBegin.atZone(zone));
+            measure = getRemainingProduction(start);
             beginDate = beginDate.plusDays(1);
             while (beginDate.isBefore(endDate) && measure >= 0) {
                 double day = getDayTotal(beginDate);
@@ -248,7 +247,7 @@ public class ForecastSolarObject implements SolarForecast {
                 }
                 beginDate = beginDate.plusDays(1);
             }
-            double lastDay = getActualValue(localDateTimeEnd.atZone(zone));
+            double lastDay = getActualValue(end);
             if (lastDay >= 0) {
                 measure += lastDay;
             }
@@ -257,31 +256,31 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     @Override
-    public State getPower(LocalDateTime localDateTime, String... args) {
+    public State getPower(ZonedDateTime timestamp, String... args) {
         if (args.length > 0) {
             logger.info("ForecastSolar doesn't accept arguments");
             return UnDefType.UNDEF;
         }
-        double measure = getActualPowerValue(localDateTime.atZone(zone));
+        double measure = getActualPowerValue(timestamp);
         return Utils.getPowerState(measure);
     }
 
     @Override
-    public LocalDateTime getForecastBegin() {
+    public ZonedDateTime getForecastBegin() {
         if (!wattHourMap.isEmpty()) {
-            LocalDateTime ldt = wattHourMap.firstEntry().getKey().toLocalDateTime();
-            return ldt;
+            ZonedDateTime zdt = wattHourMap.firstEntry().getKey();
+            return zdt;
         }
-        return LocalDateTime.MIN;
+        return LocalDateTime.MAX.atZone(zone);
     }
 
     @Override
-    public LocalDateTime getForecastEnd() {
+    public ZonedDateTime getForecastEnd() {
         if (!wattHourMap.isEmpty()) {
-            LocalDateTime ldt = wattHourMap.lastEntry().getKey().toLocalDateTime();
-            return ldt;
+            ZonedDateTime zdt = wattHourMap.lastEntry().getKey();
+            return zdt;
         }
-        return LocalDateTime.MIN;
+        return LocalDateTime.MIN.atZone(zone);
     }
 
     public ZoneId getZone() {

@@ -13,7 +13,7 @@
 package org.openhab.binding.solarforecast.internal.actions;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.types.State;
@@ -37,42 +37,42 @@ public interface SolarForecast {
     /**
      * Returns electric energy production for one day
      *
-     * @param localDate
+     * @param date
      * @param args possible arguments from this interface
      * @return QuantityType<Energy> in kW/h
      */
-    public State getDay(LocalDate localDate, String... args);
+    public State getDay(LocalDate date, String... args);
 
     /**
      * Returns electric energy between two timestamps
      *
-     * @param localDateTimeBegin
-     * @param localDateTimeEnd
+     * @param start
+     * @param end
      * @param args possible arguments from this interface
      * @return QuantityType<Energy> in kW/h
      */
-    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd, String... args);
+    public State getEnergy(ZonedDateTime start, ZonedDateTime end, String... args);
 
     /**
      * Returns electric power at one specific point of time
      *
-     * @param localDateTime
+     * @param timestamp
      * @param args possible arguments from this interface
      * @return QuantityType<Power> in kW
      */
-    public State getPower(LocalDateTime localDateTime, String... args);
+    public State getPower(ZonedDateTime timestamp, String... args);
 
     /**
      * Get the first date and time of forecast data
      *
      * @return your localized date time
      */
-    public LocalDateTime getForecastBegin();
+    public ZonedDateTime getForecastBegin();
 
     /**
      * Get the last date and time of forecast data
      *
      * @return your localized date time
      */
-    public LocalDateTime getForecastEnd();
+    public ZonedDateTime getForecastEnd();
 }

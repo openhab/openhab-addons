@@ -328,45 +328,43 @@ public class SolcastObject implements SolarForecast {
      * SolarForecast Interface
      */
     @Override
-    public State getDay(LocalDate localDate, String... args) {
+    public State getDay(LocalDate date, String... args) {
         QueryMode mode = evalArguments(args);
         if (mode.equals(QueryMode.Error)) {
             return UnDefType.UNDEF;
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
-            if (localDate.isBefore(LocalDate.now())) {
+            if (date.isBefore(LocalDate.now())) {
                 logger.info("{} forecasts only available for future", mode);
                 return UnDefType.UNDEF;
             }
         }
-        double measure = getDayTotal(localDate, mode);
+        double measure = getDayTotal(date, mode);
         return Utils.getEnergyState(measure);
     }
 
     @Override
-    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd, String... args) {
-        if (localDateTimeEnd.isBefore(localDateTimeBegin)) {
-            logger.info("End {} defined before Start {}", localDateTimeEnd, localDateTimeBegin);
+    public State getEnergy(ZonedDateTime start, ZonedDateTime end, String... args) {
+        if (end.isBefore(start)) {
+            logger.info("End {} defined before Start {}", end, start);
             return UnDefType.UNDEF;
         }
         QueryMode mode = evalArguments(args);
         if (mode.equals(QueryMode.Error)) {
             return UnDefType.UNDEF;
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
-            if (localDateTimeEnd.isBefore(LocalDateTime.now())) {
+            if (end.isBefore(ZonedDateTime.now())) {
                 logger.info("{} forecasts only available for future", mode);
                 return UnDefType.UNDEF;
             }
         }
-        ZonedDateTime zdtBegin = localDateTimeBegin.atZone(timeZoneProvider.getTimeZone());
-        ZonedDateTime zdtEnd = localDateTimeEnd.atZone(timeZoneProvider.getTimeZone());
-        LocalDate beginDate = zdtBegin.toLocalDate();
-        LocalDate endDate = zdtEnd.toLocalDate();
+        LocalDate beginDate = start.toLocalDate();
+        LocalDate endDate = end.toLocalDate();
         double measure = UNDEF;
         if (beginDate.isEqual(endDate)) {
-            measure = getDayTotal(zdtEnd.toLocalDate(), mode) - getActualValue(zdtBegin, mode)
-                    - getRemainingProduction(zdtEnd, mode);
+            measure = getDayTotal(end.toLocalDate(), mode) - getActualValue(start, mode)
+                    - getRemainingProduction(end, mode);
         } else {
-            measure = getRemainingProduction(zdtBegin, mode);
+            measure = getRemainingProduction(start, mode);
             beginDate = beginDate.plusDays(1);
             while (beginDate.isBefore(endDate) && measure >= 0) {
                 double day = getDayTotal(beginDate, mode);
@@ -375,7 +373,7 @@ public class SolcastObject implements SolarForecast {
                 }
                 beginDate = beginDate.plusDays(1);
             }
-            double lastDay = getActualValue(zdtEnd, mode);
+            double lastDay = getActualValue(end, mode);
             if (lastDay >= 0) {
                 measure += lastDay;
             }
@@ -384,39 +382,35 @@ public class SolcastObject implements SolarForecast {
     }
 
     @Override
-    public State getPower(LocalDateTime queryDateTime, String... args) {
+    public State getPower(ZonedDateTime timestamp, String... args) {
         // eliminate error cases and return immediately
         QueryMode mode = evalArguments(args);
         if (mode.equals(QueryMode.Error)) {
             return UnDefType.UNDEF;
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
-            if (queryDateTime.isBefore(LocalDateTime.now().minusMinutes(1))) {
+            if (timestamp.isBefore(ZonedDateTime.now().minusMinutes(1))) {
                 logger.info("{} forecasts only available for future", mode);
                 return UnDefType.UNDEF;
             }
         }
-
-        ZonedDateTime zdt = queryDateTime.atZone(timeZoneProvider.getTimeZone());
-        double measure = getActualPowerValue(zdt, mode);
+        double measure = getActualPowerValue(timestamp, mode);
         return Utils.getPowerState(measure);
     }
 
     @Override
-    public LocalDateTime getForecastBegin() {
+    public ZonedDateTime getForecastBegin() {
         if (!estimationDataMap.isEmpty()) {
-            ZonedDateTime zdt = estimationDataMap.firstEntry().getValue().firstEntry().getKey();
-            return zdt.toLocalDateTime();
+            return estimationDataMap.firstEntry().getValue().firstEntry().getKey();
         }
-        return LocalDateTime.MIN;
+        return LocalDateTime.MAX.atZone(timeZoneProvider.getTimeZone());
     }
 
     @Override
-    public LocalDateTime getForecastEnd() {
+    public ZonedDateTime getForecastEnd() {
         if (!estimationDataMap.isEmpty()) {
-            ZonedDateTime zdt = estimationDataMap.lastEntry().getValue().lastEntry().getKey();
-            return zdt.toLocalDateTime();
+            return estimationDataMap.lastEntry().getValue().lastEntry().getKey();
         }
-        return LocalDateTime.MIN;
+        return LocalDateTime.MIN.atZone(timeZoneProvider.getTimeZone());
     }
 
     private QueryMode evalArguments(String[] args) {

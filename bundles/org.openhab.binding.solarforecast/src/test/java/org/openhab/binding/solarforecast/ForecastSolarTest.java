@@ -168,8 +168,8 @@ class ForecastSolarTest {
     @Test
     void testActions() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.atZone(TEST_ZONE).toInstant());
+        ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
+        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
         assertEquals("2022-07-17T05:31:00", fo.getForecastBegin().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 "Forecast begin");
         assertEquals("2022-07-18T21:31:00", fo.getForecastEnd().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
@@ -177,7 +177,7 @@ class ForecastSolarTest {
         assertEquals(QuantityType.valueOf(63.583, Units.KILOWATT_HOUR).toString(),
                 fo.getDay(queryDateTime.toLocalDate()).toFullString(), "Actual out of scope");
 
-        queryDateTime = LocalDateTime.of(2022, 7, 17, 0, 0);
+        queryDateTime = LocalDateTime.of(2022, 7, 17, 0, 0).atZone(TEST_ZONE);
         // "watt_hours_day": {
         // "2022-07-17": 63583,
         // "2022-07-18": 65554
