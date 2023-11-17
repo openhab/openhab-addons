@@ -15,6 +15,8 @@ package org.openhab.binding.siemenshvac.internal.metadata;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import javax.validation.constraints.NotNull;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -41,7 +43,7 @@ public class SiemensHvacMetadataMenu extends SiemensHvacMetadata {
         return this.childList.containsKey(Id);
     }
 
-    public SiemensHvacMetadata getChild(int Id) {
+    public @NotNull SiemensHvacMetadata getChild(int Id) {
         return this.childList.get(Id);
     }
 }
