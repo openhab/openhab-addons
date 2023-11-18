@@ -254,7 +254,8 @@ public class ShellyManagerPage {
         properties.put(ATTRIBUTE_APR_TRESHOLD,
                 profile.settings.apRoaming != null ? getOption(profile.settings.apRoaming.threshold) : "n/a");
         properties.put(ATTRIBUTE_PWD_PROTECT,
-                profile.auth ? "enabled, user=" + getString(profile.settings.login.username) : "disabled");
+                getBool(profile.device.auth) ? "enabled, user=" + getString(profile.settings.login.username)
+                        : "disabled");
         String tz = getString(profile.settings.timezone);
         properties.put(ATTRIBUTE_TIMEZONE,
                 (tz.isEmpty() ? "n/a" : tz) + ", auto-detect: " + getBool(profile.settings.tzautodetect));

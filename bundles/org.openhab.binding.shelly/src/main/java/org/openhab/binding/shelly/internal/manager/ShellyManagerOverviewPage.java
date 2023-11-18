@@ -143,7 +143,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         try {
             if (!profile.isGen2) { // currently there is no public firmware repo for Gen2
                 logger.debug("{}: Load firmware version list for device type {}", LOG_PREFIX, deviceType);
-                FwRepoEntry fw = getFirmwareRepoEntry(deviceType, profile.mode);
+                FwRepoEntry fw = getFirmwareRepoEntry(deviceType, profile.device.mode);
 
                 pVersion = extractFwVersion(fw.version);
                 bVersion = extractFwVersion(fw.betaVer);
@@ -238,7 +238,9 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                 // return handler.getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE) == OnOffType.ON;
                 return getBool(profile.status.hasUpdate);
             case FILTER_UNPROTECTED:
-                return !profile.auth;
+                if (profile.device.auth != null) {
+                    return !profile.device.auth;
+                }
             case "*":
             default:
                 return true;
