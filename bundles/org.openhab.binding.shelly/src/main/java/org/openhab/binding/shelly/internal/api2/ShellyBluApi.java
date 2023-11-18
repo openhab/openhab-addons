@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
@@ -119,9 +120,13 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
+    public ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice devInfo)
+            throws ShellyApiException {
         ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
 
+        if (devInfo != null) {
+            profile.device = devInfo;
+        }
         profile.isBlu = true;
         profile.settingsJson = "{}";
         profile.thingName = thingName;
@@ -131,13 +136,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         }
 
         ShellySettingsDevice device = getDeviceInfo();
-        profile.settings.device = device;
-        profile.hostname = device.hostname;
-        profile.deviceType = device.type;
-        profile.mac = device.mac;
-        profile.auth = device.auth;
         if (config.serviceName.isEmpty()) {
-            config.serviceName = getString(profile.hostname);
+            config.serviceName = getString(profile.device.hostname);
         }
         profile.fwDate = substringBefore(device.fw, "/");
         profile.fwVersion = substringBefore(ShellyDeviceProfile.extractFwVersion(device.fw.replace("/", "/v")), "-");

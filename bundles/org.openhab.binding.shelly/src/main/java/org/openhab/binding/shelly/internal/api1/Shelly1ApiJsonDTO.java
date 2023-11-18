@@ -261,6 +261,10 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellySettingsDevice {
         public String type;
+        public String mode; // Gen 1
+        public String id; // Gen2: service name
+        public String name; // Gen2: configured device name
+        public String profile; // Gen 2
         public String mac;
         public String hostname;
         public String fw;
@@ -563,7 +567,6 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellySettingsGlobal {
         // https://shelly-api-docs.shelly.cloud/#shelly1pm-settings
-        public ShellySettingsDevice device = new ShellySettingsDevice();
         @SerializedName("wifi_ap")
         public ShellySettingsWiFiAp wifiAp = new ShellySettingsWiFiAp();
         @SerializedName("wifi_sta")

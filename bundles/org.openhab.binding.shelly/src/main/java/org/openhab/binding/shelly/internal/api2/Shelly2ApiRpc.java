@@ -113,11 +113,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         this.thingName = thingName;
         this.thing = thing;
         this.thingTable = thingTable;
-        try {
-            getProfile().initFromThingType(thing.getThingType());
-        } catch (ShellyApiException e) {
-            logger.info("{}: Shelly2 API initialization failed!", thingName, e);
-        }
     }
 
     /**
@@ -161,8 +156,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @SuppressWarnings("null")
     @Override
-    public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
+    public ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice devInfo)
+            throws ShellyApiException {
         ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
+
+        if (devInfo != null) {
+            profile.device = devInfo;
+        }
+        if (profile.device.type == null) {
+            profile.device = getDeviceInfo();
+        }
 
         Shelly2GetConfigResult dc = apiRequest(SHELLYRPC_METHOD_GETCONFIG, null, Shelly2GetConfigResult.class);
         profile.isGen2 = true;
@@ -195,29 +198,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.numRelays = profile.settings.relays != null ? profile.settings.relays.size() : 0;
         profile.numRollers = profile.settings.rollers != null ? profile.settings.rollers.size() : 0;
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
-        profile.mode = "";
-        if (profile.hasRelays) {
-            profile.mode = profile.isRoller ? SHELLY_CLASS_ROLLER : SHELLY_CLASS_RELAY;
+        if (getString(profile.device.mode).isEmpty() && profile.hasRelays) {
+            profile.device.mode = profile.isRoller ? SHELLY_CLASS_ROLLER : SHELLY_CLASS_RELAY;
         }
 
-        ShellySettingsDevice device = getDeviceInfo();
-        profile.settings.device = device;
-        if (!getString(device.fw).isEmpty()) {
-            profile.fwDate = substringBefore(device.fw, "/");
-            profile.fwVersion = profile.status.update.oldVersion = "v" + substringAfter(device.fw, "/");
-        }
-
-        profile.hostname = device.hostname;
-        profile.deviceType = device.type;
-        profile.mac = device.mac;
-        profile.auth = device.auth;
+        ShellySettingsDevice device = profile.device;
         profile.isGen2 = device.gen == 2;
         if (config.serviceName.isEmpty()) {
-            config.serviceName = getString(profile.hostname);
+            config.serviceName = getString(profile.device.hostname);
         }
-        profile.fwDate = substringBefore(device.fw, "/");
-        profile.fwVersion = substringBefore(ShellyDeviceProfile.extractFwVersion(device.fw.replace("/", "/v")), "-");
-        profile.status.update.oldVersion = profile.fwVersion;
+        profile.settings.fw = device.fw;
+        profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
+        profile.fwVersion = profile.status.update.oldVersion = ShellyDeviceProfile.extractFwVersion(device.fw);
         profile.status.hasUpdate = profile.status.update.hasUpdate = false;
 
         if (dc.eth != null) {
@@ -741,11 +733,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         Shelly2DeviceSettings device = callApi("/shelly", Shelly2DeviceSettings.class);
         ShellySettingsDevice info = new ShellySettingsDevice();
         info.hostname = getString(device.id);
-        info.fw = getString(device.firmware);
+        info.name = getString(device.name);
+        info.fw = getString(device.fw);
         info.type = getString(device.model);
         info.mac = getString(device.mac);
-        info.auth = getBool(device.authEnable);
+        info.auth = getBool(device.auth);
         info.gen = getInteger(device.gen);
+        info.mode = mapValue(MAP_PROFILE, device.profile);
         return info;
     }
 
@@ -770,16 +764,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.sleepMode.period = ds.sys.wakeupPeriod / 60;
         }
 
-        status.hasUpdate = status.update.hasUpdate = false;
-        status.update.oldVersion = getProfile().fwVersion;
         if (ds.sys.availableUpdates != null) {
             status.update.hasUpdate = ds.sys.availableUpdates.stable != null;
             if (ds.sys.availableUpdates.stable != null) {
-                status.update.newVersion = "v" + getString(ds.sys.availableUpdates.stable.version);
+                status.update.newVersion = ShellyDeviceProfile
+                        .extractFwVersion(getString(ds.sys.availableUpdates.stable.version));
                 status.hasUpdate = new ShellyVersionDTO().compare(profile.fwVersion, status.update.newVersion) < 0;
             }
             if (ds.sys.availableUpdates.beta != null) {
-                status.update.betaVersion = "v" + getString(ds.sys.availableUpdates.beta.version);
+                status.update.betaVersion = ShellyDeviceProfile
+                        .extractFwVersion(getString(ds.sys.availableUpdates.beta.version));
                 status.hasUpdate = new ShellyVersionDTO().compare(profile.fwVersion, status.update.betaVersion) < 0;
             }
         }

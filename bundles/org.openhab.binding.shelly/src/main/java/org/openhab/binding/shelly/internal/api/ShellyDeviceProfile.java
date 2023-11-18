@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
@@ -47,24 +48,21 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ShellyDeviceProfile {
     private final Logger logger = LoggerFactory.getLogger(ShellyDeviceProfile.class);
-    private static final Pattern VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
+    private static final Pattern GEN1_VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
+    private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]*)?");
 
     public boolean initialized = false; // true when initialized
 
     public String thingName = "";
-    public String deviceType = "";
     public boolean extFeatures = false;
 
     public String settingsJson = "";
+    public ShellySettingsDevice device = new ShellySettingsDevice();
     public ShellySettingsGlobal settings = new ShellySettingsGlobal();
     public ShellySettingsStatus status = new ShellySettingsStatus();
 
-    public String hostname = "";
     public String name = "";
-    public String model = "";
-    public String mode = "";
     public boolean discoverable = true;
-    public boolean auth = false;
     public boolean alwaysOn = true;
     public boolean isGen2 = false;
     public boolean isBlu = false;
@@ -72,7 +70,6 @@ public class ShellyDeviceProfile {
 
     public String hwRev = "";
     public String hwBatchId = "";
-    public String mac = "";
     public String fwVersion = "";
     public String fwDate = "";
 
@@ -118,10 +115,13 @@ public class ShellyDeviceProfile {
     public ShellyDeviceProfile() {
     }
 
-    public ShellyDeviceProfile initialize(String thingType, String jsonIn) throws ShellyApiException {
+    public ShellyDeviceProfile initialize(String thingType, String jsonIn, @Nullable ShellySettingsDevice device)
+            throws ShellyApiException {
         Gson gson = new Gson();
-
         initialized = false;
+        if (device != null) {
+            this.device = device;
+        }
 
         initFromThingType(thingType);
 
@@ -141,36 +141,36 @@ public class ShellyDeviceProfile {
         settings = fromJson(gson, json, ShellySettingsGlobal.class);
 
         // General settings
+        if (getString(device.hostname).isEmpty() && !getString(device.mac).isEmpty()) {
+            device.hostname = device.mac.length() >= 12 ? "shelly-" + device.mac.toUpperCase().substring(6, 11)
+                    : "unknown";
+        }
         name = getString(settings.name);
-        deviceType = getString(settings.device.type);
-        mac = getString(settings.device.mac);
-        hostname = !getString(settings.device.hostname).isEmpty() ? settings.device.hostname.toLowerCase()
-                : mac.length() >= 12 ? "shelly-" + mac.toUpperCase().substring(6, 11) : "unknown";
-        mode = getString(settings.mode).toLowerCase();
         hwRev = settings.hwinfo != null ? getString(settings.hwinfo.hwRevision) : "";
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
-        fwDate = substringBefore(settings.fw, "/");
-        fwVersion = extractFwVersion(settings.fw);
+        fwDate = substringBefore(device.fw, "-");
+        fwVersion = extractFwVersion(device.fw);
         ShellyVersionDTO version = new ShellyVersionDTO();
         extFeatures = version.compare(fwVersion, SHELLY_API_FW_110) >= 0;
         discoverable = (settings.discoverable == null) || settings.discoverable;
 
+        String mode = getString(device.mode);
         isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
         inColor = isLight && mode.equalsIgnoreCase(SHELLY_MODE_COLOR);
 
-        numRelays = !isLight ? getInteger(settings.device.numOutputs) : 0;
+        numRelays = !isLight ? getInteger(device.numOutputs) : 0;
         if ((numRelays > 0) && (settings.relays == null)) {
             numRelays = 0;
         }
         hasRelays = (numRelays > 0) || isDimmer;
-        numRollers = getInteger(settings.device.numRollers);
+        numRollers = getInteger(device.numRollers);
         numInputs = settings.inputs != null ? settings.inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;
-        numMeters = !isEMeter ? getInteger(settings.device.numMeters) : getInteger(settings.device.numEMeters);
+        numMeters = !isEMeter ? getInteger(device.numMeters) : getInteger(device.numEMeters);
         if ((numMeters == 0) && isLight) {
             // RGBW2 doesn't report, but has one
-            numMeters = inColor ? 1 : getInteger(settings.device.numOutputs);
+            numMeters = inColor ? 1 : getInteger(device.numOutputs);
         }
 
         initialized = true;
@@ -199,8 +199,9 @@ public class ShellyDeviceProfile {
         isGen2 = isGeneration2(thingType);
         isBlu = isBluSeries(thingType); // e.g. SBBT for BLU Button
 
-        isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2)
-                || deviceType.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS)
+        String type = getString(device.type);
+        isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
+                || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS)
                 || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMERUS_STR);
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
         isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
@@ -390,7 +391,8 @@ public class ShellyDeviceProfile {
                     .replace("/v1.12-", "/v1.12.0");
 
             // Extract version from string, e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
-            Matcher matcher = VERSION_PATTERN.matcher(vers);
+            Matcher matcher = version.startsWith("v") ? GEN1_VERSION_PATTERN.matcher(vers)
+                    : GEN2_VERSION_PATTERN.matcher(vers);
             if (matcher.find()) {
                 return matcher.group(0);
             }
