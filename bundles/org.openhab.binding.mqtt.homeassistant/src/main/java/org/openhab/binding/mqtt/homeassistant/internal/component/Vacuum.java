@@ -294,7 +294,7 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             ChannelStateUpdateListener channelStateUpdateListener, @Nullable String commandTemplate,
             @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic) {
         if ((commandTopic != null && !commandTopic.isBlank()) || (stateTopic != null && !stateTopic.isBlank())) {
-            return buildChannel(channelId, valueState, channelConfiguration.getName(), channelStateUpdateListener)
+            return buildChannel(channelId, valueState, getName(), channelStateUpdateListener)
                     .stateTopic(stateTopic, stateTemplate, channelConfiguration.getValueTemplate())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos(),
                             commandTemplate)

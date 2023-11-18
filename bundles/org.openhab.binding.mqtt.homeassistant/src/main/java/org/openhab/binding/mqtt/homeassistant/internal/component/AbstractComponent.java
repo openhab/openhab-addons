@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,8 +32,10 @@ import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -54,8 +57,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     // Component location fields
     private final ComponentConfiguration componentConfiguration;
-    protected final ChannelGroupTypeUID channelGroupTypeUID;
-    protected final ChannelGroupUID channelGroupUID;
+    protected final @Nullable ChannelGroupTypeUID channelGroupTypeUID;
+    protected final @Nullable ChannelGroupUID channelGroupUID;
     protected final HaID haID;
 
     // Channels and configuration
@@ -83,10 +86,15 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         this.haID = componentConfiguration.getHaID();
 
-        String groupId = this.haID.getGroupId(channelConfiguration.getUniqueId());
+        if (channelConfiguration.getName() != null) {
+            String groupId = this.haID.getGroupId(channelConfiguration.getUniqueId());
 
-        this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, groupId);
-        this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), groupId);
+            this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, groupId);
+            this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), groupId);
+        } else {
+            this.channelGroupTypeUID = null;
+            this.channelGroupUID = null;
+        }
 
         this.configSeen = false;
 
@@ -142,7 +150,10 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      * @param channelTypeProvider The channel type provider
      */
     public void addChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
-        channelTypeProvider.setChannelGroupType(getGroupTypeUID(), getType());
+        ChannelGroupTypeUID groupTypeUID = channelGroupTypeUID;
+        if (groupTypeUID != null) {
+            channelTypeProvider.setChannelGroupType(groupTypeUID, Objects.requireNonNull(getType()));
+        }
         channels.values().forEach(v -> v.addChannelTypes(channelTypeProvider));
     }
 
@@ -154,20 +165,31 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public void removeChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
         channels.values().forEach(v -> v.removeChannelTypes(channelTypeProvider));
-        channelTypeProvider.removeChannelGroupType(getGroupTypeUID());
+        ChannelGroupTypeUID groupTypeUID = channelGroupTypeUID;
+        if (groupTypeUID != null) {
+            channelTypeProvider.removeChannelGroupType(groupTypeUID);
+        }
+    }
+
+    public ChannelUID buildChannelUID(String channelID) {
+        final ChannelGroupUID groupUID = channelGroupUID;
+        if (groupUID != null) {
+            return new ChannelUID(groupUID, channelID);
+        }
+        return new ChannelUID(componentConfiguration.getThingUID(), channelID);
     }
 
     /**
      * Each HomeAssistant component corresponds to a Channel Group Type.
      */
-    public ChannelGroupTypeUID getGroupTypeUID() {
+    public @Nullable ChannelGroupTypeUID getGroupTypeUID() {
         return channelGroupTypeUID;
     }
 
     /**
      * The unique id of this component.
      */
-    public ChannelGroupUID getGroupUID() {
+    public @Nullable ChannelGroupUID getGroupUID() {
         return channelGroupUID;
     }
 
@@ -175,7 +197,16 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      * Component (Channel Group) name.
      */
     public String getName() {
-        return channelConfiguration.getName();
+        String result = channelConfiguration.getName();
+
+        Device device = channelConfiguration.getDevice();
+        if (result == null && device != null) {
+            result = device.getName();
+        }
+        if (result == null) {
+            result = haID.objectID;
+        }
+        return result;
     }
 
     /**
@@ -207,11 +238,19 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     /**
      * Return the channel group type.
      */
-    public ChannelGroupType getType() {
+    public @Nullable ChannelGroupType getType() {
+        ChannelGroupTypeUID groupTypeUID = channelGroupTypeUID;
+        if (groupTypeUID == null) {
+            return null;
+        }
         final List<ChannelDefinition> channelDefinitions = channels.values().stream().map(ComponentChannel::type)
                 .collect(Collectors.toList());
-        return ChannelGroupTypeBuilder.instance(channelGroupTypeUID, getName())
-                .withChannelDefinitions(channelDefinitions).build();
+        return ChannelGroupTypeBuilder.instance(groupTypeUID, getName()).withChannelDefinitions(channelDefinitions)
+                .build();
+    }
+
+    public List<ChannelDefinition> getChannels() {
+        return channels.values().stream().map(ComponentChannel::type).collect(Collectors.toList());
     }
 
     /**
@@ -225,8 +264,12 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     /**
      * Return the channel group definition for this component.
      */
-    public ChannelGroupDefinition getGroupDefinition() {
-        return new ChannelGroupDefinition(channelGroupUID.getId(), getGroupTypeUID(), getName(), null);
+    public @Nullable ChannelGroupDefinition getGroupDefinition() {
+        ChannelGroupTypeUID groupTypeUID = channelGroupTypeUID;
+        if (groupTypeUID == null) {
+            return null;
+        }
+        return new ChannelGroupDefinition(channelGroupUID.getId(), groupTypeUID, getName(), null);
     }
 
     public HaID getHaID() {

@@ -224,7 +224,7 @@ public class ComponentChannel {
             ChannelType type;
             ChannelTypeUID channelTypeUID;
 
-            channelUID = new ChannelUID(component.getGroupUID(), channelID);
+            channelUID = component.buildChannelUID(channelID);
             channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
                     channelUID.getGroupId() + "_" + channelID);
             channelState = new HomeAssistantChannelState(
