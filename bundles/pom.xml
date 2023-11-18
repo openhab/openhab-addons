@@ -259,7 +259,6 @@
     <module>org.openhab.binding.mybmw</module>
     <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.mynice</module>
-    <module>org.openhab.binding.myq</module>
     <module>org.openhab.binding.mystrom</module>
     <module>org.openhab.binding.nanoleaf</module>
     <module>org.openhab.binding.neato</module>
