@@ -124,7 +124,9 @@ public class ShellyDeviceProfile {
         }
 
         initFromThingType(thingType);
-
+        if (device != null) {
+            this.device = device;
+        }
         String json = jsonIn;
         // It is not guaranteed, that the array entries are in order. Check all
         // possible variants. See openhab#15514.
@@ -147,6 +149,11 @@ public class ShellyDeviceProfile {
         }
         device.mode = getString(settings.mode).toLowerCase();
         name = getString(settings.name);
+        if (getString(device.hostname).isEmpty() && !getString(device.mac).isEmpty()) {
+            device.hostname = device.mac.length() >= 12 ? "shelly-" + device.mac.toUpperCase().substring(6, 11)
+                    : "unknown";
+        }
+        device.mode = getString(settings.mode).toLowerCase();
         hwRev = settings.hwinfo != null ? getString(settings.hwinfo.hwRevision) : "";
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
         fwDate = substringBefore(device.fw, "-");
