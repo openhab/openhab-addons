@@ -14,13 +14,14 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.mqtt.generic.values.OnOffValue;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.core.library.types.StringType;
 
 /**
  * Tests for {@link Button}
@@ -55,11 +56,12 @@ public class ButtonTests extends AbstractComponentTests {
         assertThat(component.getName(), is("Restart"));
 
         assertChannel(component, Button.BUTTON_CHANNEL_ID, "", "esphome/single-car-gdo/button/restart/command",
-                "Restart", OnOffValue.class);
+                "Restart", TextValue.class);
 
-        component.getChannel(Button.BUTTON_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
-        assertPublished("esphome/single-car-gdo/button/restart/command", "");
-        component.getChannel(Button.BUTTON_CHANNEL_ID).getState().publishValue(OnOffType.ON);
+        assertThrows(IllegalArgumentException.class,
+                () -> component.getChannel(Button.BUTTON_CHANNEL_ID).getState().publishValue(new StringType("ON")));
+        assertNothingPublished("esphome/single-car-gdo/button/restart/command");
+        component.getChannel(Button.BUTTON_CHANNEL_ID).getState().publishValue(new StringType("PRESS"));
         assertPublished("esphome/single-car-gdo/button/restart/command", "PRESS");
     }
 

@@ -14,7 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
 import com.google.gson.annotations.SerializedName;
@@ -48,7 +48,7 @@ public class Button extends AbstractComponent<Button.ChannelConfiguration> {
     public Button(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        OnOffValue value = new OnOffValue(channelConfiguration.payloadPress);
+        TextValue value = new TextValue(new String[] { channelConfiguration.payloadPress });
 
         buildChannel(BUTTON_CHANNEL_ID, value, getName(), componentConfiguration.getUpdateListener())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),

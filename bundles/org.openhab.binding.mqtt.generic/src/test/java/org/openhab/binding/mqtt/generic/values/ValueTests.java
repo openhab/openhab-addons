@@ -139,14 +139,6 @@ public class ValueTests {
     }
 
     @Test
-    public void onoffPress() {
-        OnOffValue v = new OnOffValue("PRESS");
-
-        assertThat(v.getMQTTpublishValue(OnOffType.ON, null), is("PRESS"));
-        assertThat(v.getMQTTpublishValue(OnOffType.OFF, null), is(""));
-    }
-
-    @Test
     public void openCloseUpdate() {
         OpenCloseValue v = new OpenCloseValue("fancyON", "fancyOff");
 
