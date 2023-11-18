@@ -14,10 +14,12 @@ package org.openhab.binding.solarforecast;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
@@ -262,14 +264,17 @@ class SolcastTest {
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
 
-        assertEquals("2022-07-10T23:30+02:00[Europe/Berlin]", scfo.getForecastBegin().toString(), "Forecast begin");
-        assertEquals("2022-07-24T23:00+02:00[Europe/Berlin]", scfo.getForecastEnd().toString(), "Forecast end");
+        assertEquals("2022-07-10T23:30+02:00[Europe/Berlin]", scfo.getForecastBegin().atZone(TEST_ZONE).toString(),
+                "Forecast begin");
+        assertEquals("2022-07-24T23:00+02:00[Europe/Berlin]", scfo.getForecastEnd().atZone(TEST_ZONE).toString(),
+                "Forecast end");
         // test daily forecasts + cumulated getEnergy
         double totalEnergy = 0;
         ZonedDateTime start = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
         for (int i = 0; i < 7; i++) {
             QuantityType qt = (QuantityType<?>) scfo.getDay(start.toLocalDate().plusDays(i));
-            QuantityType eqt = (QuantityType<?>) scfo.getEnergy(start.plusDays(i), start.plusDays(i + 1));
+            QuantityType eqt = (QuantityType<?>) scfo.getEnergy(start.plusDays(i).toInstant(),
+                    start.plusDays(i + 1).toInstant());
 
             // check if energy calculation fits to daily query
             assertEquals(qt.doubleValue(), eqt.doubleValue(), TOLERANCE, "Total " + i + " days forecast");
@@ -277,7 +282,7 @@ class SolcastTest {
             totalEnergy += qt.doubleValue();
 
             // check if sum is fitting to total energy query
-            qt = (QuantityType<?>) scfo.getEnergy(start, start.plusDays(i + 1));
+            qt = (QuantityType<?>) scfo.getEnergy(start.toInstant(), start.plusDays(i + 1).toInstant());
             // System.out.println("Total: " + qt.doubleValue());
             assertEquals(totalEnergy, qt.doubleValue(), TOLERANCE * 2, "Total " + i + " days forecast");
         }
@@ -304,11 +309,12 @@ class SolcastTest {
                 "Estimation");
 
         // access in past shall be rejected
-        ZonedDateTime past = ZonedDateTime.now().minusMinutes(5);
+        Instant past = Instant.now().minus(5, ChronoUnit.MINUTES);
         assertEquals(UnDefType.UNDEF, scfo.getPower(past, SolarForecast.OPTIMISTIC), "Optimistic Power");
         assertEquals(UnDefType.UNDEF, scfo.getPower(past, SolarForecast.PESSIMISTIC), "Pessimistic Power");
         assertEquals(UnDefType.UNDEF, scfo.getPower(past, "total", "rubbish"), "Rubbish arguments");
-        assertEquals(UnDefType.UNDEF, scfo.getPower(past.plusHours(2), "total", "rubbish"), "Rubbish arguments");
+        assertEquals(UnDefType.UNDEF, scfo.getPower(past.plus(2, ChronoUnit.HOURS), "total", "rubbish"),
+                "Rubbish arguments");
         assertEquals(UnDefType.UNDEF, scfo.getPower(past), "Normal Power");
     }
 

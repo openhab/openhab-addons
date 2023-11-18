@@ -170,10 +170,11 @@ class ForecastSolarTest {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
         ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
-        assertEquals("2022-07-17T05:31:00", fo.getForecastBegin().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+        assertEquals("2022-07-17T05:31:00",
+                fo.getForecastBegin().atZone(TEST_ZONE).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 "Forecast begin");
-        assertEquals("2022-07-18T21:31:00", fo.getForecastEnd().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                "Forecast end");
+        assertEquals("2022-07-18T21:31:00",
+                fo.getForecastEnd().atZone(TEST_ZONE).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), "Forecast end");
         assertEquals(QuantityType.valueOf(63.583, Units.KILOWATT_HOUR).toString(),
                 fo.getDay(queryDateTime.toLocalDate()).toFullString(), "Actual out of scope");
 
@@ -183,7 +184,8 @@ class ForecastSolarTest {
         // "2022-07-18": 65554
         // }
         assertEquals(QuantityType.valueOf(129.137, Units.KILOWATT_HOUR).toString(),
-                fo.getEnergy(queryDateTime, queryDateTime.plusDays(2)).toFullString(), "Actual out of scope");
+                fo.getEnergy(queryDateTime.toInstant(), queryDateTime.plusDays(2).toInstant()).toFullString(),
+                "Actual out of scope");
 
         assertEquals(UnDefType.UNDEF, fo.getDay(queryDateTime.toLocalDate(), "optimistic"));
         assertEquals(UnDefType.UNDEF, fo.getDay(queryDateTime.toLocalDate(), "pessimistic"));

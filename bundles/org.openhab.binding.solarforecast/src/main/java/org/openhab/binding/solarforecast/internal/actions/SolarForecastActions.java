@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.solarforecast.internal.actions;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -81,7 +79,7 @@ public class SolarForecastActions implements ThingActions {
 
     @RuleAction(label = "@text/actionPowerLabel", description = "@text/actionPowerDesc")
     public State getPower(
-            @ActionInput(name = "timestamp", label = "@text/actionInputDateTimeLabel", description = "@text/actionInputDateTimeDesc") ZonedDateTime timestamp,
+            @ActionInput(name = "timestamp", label = "@text/actionInputDateTimeLabel", description = "@text/actionInputDateTimeDesc") Instant timestamp,
             String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
@@ -111,8 +109,8 @@ public class SolarForecastActions implements ThingActions {
 
     @RuleAction(label = "@text/actionEnergyLabel", description = "@text/actionEnergyDesc")
     public State getEnergy(
-            @ActionInput(name = "start", label = "@text/actionInputDateTimeBeginLabel", description = "@text/actionInputDateTimeBeginDesc") ZonedDateTime start,
-            @ActionInput(name = "end", label = "@text/actionInputDateTimeEndLabel", description = "@text/actionInputDateTimeEndDesc") ZonedDateTime end,
+            @ActionInput(name = "start", label = "@text/actionInputDateTimeBeginLabel", description = "@text/actionInputDateTimeBeginDesc") Instant start,
+            @ActionInput(name = "end", label = "@text/actionInputDateTimeEndLabel", description = "@text/actionInputDateTimeEndDesc") Instant end,
             String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
@@ -141,60 +139,60 @@ public class SolarForecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionForecastBeginLabel", description = "@text/actionForecastBeginDesc")
-    public ZonedDateTime getForecastBegin() {
-        ZonedDateTime returnZdt = LocalDateTime.MAX.atZone(ZoneId.systemDefault());
+    public Instant getForecastBegin() {
+        Instant returnBeginTime = Instant.MAX;
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             if (!l.isEmpty()) {
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
-                    ZonedDateTime begin = solarForecast.getForecastBegin();
+                    Instant begin = solarForecast.getForecastBegin();
                     // break in case of failure getting values to avoid ambiguous values
-                    if (begin.toLocalDateTime().equals(LocalDateTime.MAX)) {
-                        return LocalDateTime.MAX.atZone(ZoneId.systemDefault());
+                    if (begin.equals(Instant.MAX)) {
+                        return Instant.MAX;
                     }
                     // take latest possible timestamp to avoid ambiguous values
-                    if (begin.isBefore(returnZdt)) {
-                        returnZdt = begin;
+                    if (begin.isBefore(returnBeginTime)) {
+                        returnBeginTime = begin;
                     }
                 }
-                return returnZdt;
+                return returnBeginTime;
             } else {
                 logger.trace("No forecasts found - return invalid date MAX");
-                return LocalDateTime.MAX.atZone(ZoneId.systemDefault());
+                return returnBeginTime;
             }
         } else {
             logger.trace("Handler missing - return invalid date MAX");
-            return LocalDateTime.MAX.atZone(ZoneId.systemDefault());
+            return returnBeginTime;
         }
     }
 
     @RuleAction(label = "@text/actionForecastEndLabel", description = "@text/actionForecastEndDesc")
-    public ZonedDateTime getForecastEnd() {
-        ZonedDateTime returnZdt = LocalDateTime.MIN.atZone(ZoneId.systemDefault());
+    public Instant getForecastEnd() {
+        Instant returnEndTime = Instant.MIN;
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             if (!l.isEmpty()) {
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
-                    ZonedDateTime forecastLdt = solarForecast.getForecastEnd();
+                    Instant forecastEndTime = solarForecast.getForecastEnd();
                     // break in case of failure getting values to avoid ambiguous values
-                    if (forecastLdt.equals(LocalDateTime.MIN)) {
-                        return LocalDateTime.MIN.atZone(ZoneId.systemDefault());
+                    if (forecastEndTime.equals(Instant.MIN)) {
+                        return Instant.MIN;
                     }
                     // take earliest possible timestamp to avoid ambiguous values
-                    if (forecastLdt.isAfter(returnZdt)) {
-                        returnZdt = forecastLdt;
+                    if (forecastEndTime.isAfter(returnEndTime)) {
+                        returnEndTime = forecastEndTime;
                     }
                 }
-                return returnZdt;
+                return returnEndTime;
             } else {
                 logger.trace("No forecasts found - return invalid date MIN");
-                return LocalDateTime.MIN.atZone(ZoneId.systemDefault());
+                return returnEndTime;
             }
         } else {
             logger.trace("Handler missing - return invalid date MIN");
-            return LocalDateTime.MIN.atZone(ZoneId.systemDefault());
+            return returnEndTime;
         }
     }
 
@@ -202,19 +200,19 @@ public class SolarForecastActions implements ThingActions {
         return ((SolarForecastActions) actions).getDay(ld, args);
     }
 
-    public static State getPower(ThingActions actions, ZonedDateTime dateTime, String... args) {
+    public static State getPower(ThingActions actions, Instant dateTime, String... args) {
         return ((SolarForecastActions) actions).getPower(dateTime, args);
     }
 
-    public static State getEnergy(ThingActions actions, ZonedDateTime begin, ZonedDateTime end, String... args) {
+    public static State getEnergy(ThingActions actions, Instant begin, Instant end, String... args) {
         return ((SolarForecastActions) actions).getEnergy(begin, end, args);
     }
 
-    public static ZonedDateTime getForecastBegin(ThingActions actions) {
+    public static Instant getForecastBegin(ThingActions actions) {
         return ((SolarForecastActions) actions).getForecastBegin();
     }
 
-    public static ZonedDateTime getForecastEnd(ThingActions actions) {
+    public static Instant getForecastEnd(ThingActions actions) {
         return ((SolarForecastActions) actions).getForecastEnd();
     }
 

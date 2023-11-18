@@ -208,6 +208,10 @@ public class ForecastSolarObject implements SolarForecast {
         return daily - actual;
     }
 
+    public ZoneId getZone() {
+        return zone;
+    }
+
     @Override
     public String toString() {
         return "Expiration: " + expirationDateTime + ", Valid: " + valid + ", Data:" + wattHourMap;
@@ -227,18 +231,19 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     @Override
-    public State getEnergy(ZonedDateTime start, ZonedDateTime end, String... args) {
+    public State getEnergy(Instant start, Instant end, String... args) {
         if (args.length > 0) {
             logger.info("ForecastSolar doesn't accept arguments");
             return UnDefType.UNDEF;
         }
-        LocalDate beginDate = start.toLocalDate();
-        LocalDate endDate = end.toLocalDate();
+        LocalDate beginDate = start.atZone(zone).toLocalDate();
+        LocalDate endDate = end.atZone(zone).toLocalDate();
         double measure = UNDEF;
         if (beginDate.equals(endDate)) {
-            measure = getDayTotal(beginDate) - getActualValue(start) - getRemainingProduction(end);
+            measure = getDayTotal(beginDate) - getActualValue(start.atZone(zone))
+                    - getRemainingProduction(end.atZone(zone));
         } else {
-            measure = getRemainingProduction(start);
+            measure = getRemainingProduction(start.atZone(zone));
             beginDate = beginDate.plusDays(1);
             while (beginDate.isBefore(endDate) && measure >= 0) {
                 double day = getDayTotal(beginDate);
@@ -247,7 +252,7 @@ public class ForecastSolarObject implements SolarForecast {
                 }
                 beginDate = beginDate.plusDays(1);
             }
-            double lastDay = getActualValue(end);
+            double lastDay = getActualValue(end.atZone(zone));
             if (lastDay >= 0) {
                 measure += lastDay;
             }
@@ -256,34 +261,30 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     @Override
-    public State getPower(ZonedDateTime timestamp, String... args) {
+    public State getPower(Instant timestamp, String... args) {
         if (args.length > 0) {
             logger.info("ForecastSolar doesn't accept arguments");
             return UnDefType.UNDEF;
         }
-        double measure = getActualPowerValue(timestamp);
+        double measure = getActualPowerValue(timestamp.atZone(zone));
         return Utils.getPowerState(measure);
     }
 
     @Override
-    public ZonedDateTime getForecastBegin() {
+    public Instant getForecastBegin() {
         if (!wattHourMap.isEmpty()) {
             ZonedDateTime zdt = wattHourMap.firstEntry().getKey();
-            return zdt;
+            return zdt.toInstant();
         }
-        return LocalDateTime.MAX.atZone(zone);
+        return Instant.MAX;
     }
 
     @Override
-    public ZonedDateTime getForecastEnd() {
+    public Instant getForecastEnd() {
         if (!wattHourMap.isEmpty()) {
             ZonedDateTime zdt = wattHourMap.lastEntry().getKey();
-            return zdt;
+            return zdt.toInstant();
         }
-        return LocalDateTime.MIN.atZone(zone);
-    }
-
-    public ZoneId getZone() {
-        return zone;
+        return Instant.MIN;
     }
 }
