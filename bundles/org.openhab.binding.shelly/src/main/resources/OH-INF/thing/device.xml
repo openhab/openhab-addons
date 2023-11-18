@@ -116,29 +116,6 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="deviceTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.shelly.deviceTemp.label</label>
-		<description>@text/channel-type.shelly.deviceTemp.description</description>
-		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state readOnly="true" pattern="%.0f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="supplyVoltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>@text/channel-type.shelly.supplyVoltage.label</label>
-		<description>@text/channel-type.shelly.supplyVoltage.description</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"></state>
-	</channel-type>
 	<channel-type id="selfTest">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.selfTest.label</label>
