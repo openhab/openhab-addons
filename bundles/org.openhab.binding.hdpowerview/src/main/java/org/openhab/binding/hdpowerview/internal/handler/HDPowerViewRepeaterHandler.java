@@ -154,23 +154,17 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
         if (currentColor == null) {
             return;
         }
+        Color newColor;
         if (command instanceof PercentType brightnessCommand) {
-            Color color = applyBrightnessToColor(currentColor, brightnessCommand.intValue());
-            RepeaterData repeaterData = webTargets.setRepeaterColor(repeaterId, color);
-            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
-            return;
-        }
-        if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+            newColor = applyBrightnessToColor(currentColor, brightnessCommand.intValue());
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
             int brightness = switch (increaseDecreaseCommand) {
                 case INCREASE -> currentColor.brightness + BRIGHTNESS_STEP_PERCENT;
                 case DECREASE -> currentColor.brightness - BRIGHTNESS_STEP_PERCENT;
             };
             brightness = brightness < 0 ? 0 : brightness > 100 ? 100 : brightness;
-            Color color = applyBrightnessToColor(currentColor, brightness);
-            RepeaterData repeaterData = webTargets.setRepeaterColor(repeaterId, color);
-            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
-        }
-        if (command instanceof OnOffType) {
+            newColor = applyBrightnessToColor(currentColor, brightness);
+        } else if (command instanceof OnOffType) {
             // Light is turned off either by RGB black or zero brightness.
             int brightness;
             if (command == OnOffType.ON) {
@@ -181,10 +175,13 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
                 // Turn off by zero brightness to preserve color.
                 brightness = 0;
             }
-            Color color = applyBrightnessToColor(currentColor, brightness);
-            RepeaterData repeaterData = webTargets.setRepeaterColor(repeaterId, color);
-            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
+            newColor = applyBrightnessToColor(currentColor, brightness);
+        } else {
+            logger.warn("Unsupported command: {}", command);
+            return;
         }
+        RepeaterData repeaterData = webTargets.setRepeaterColor(repeaterId, newColor);
+        scheduler.submit(() -> updatePropertyAndStates(repeaterData));
     }
 
     private Color applyBrightnessToColor(Color currentColor, int brightness) {
