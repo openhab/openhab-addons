@@ -84,8 +84,8 @@ public class ShellyManagerConstants {
     public static final String ATTRIBUTE_MESSAGE = "message";
     public static final String ATTRIBUTE_TOTAL_DEV = "totalDevices";
     public static final String ATTRIBUTE_STATUS_ICON = "iconStatus";
-    public static final String ATTRIBUTE_DEVICEIP = CONFIG_DEVICEIP;
     public static final String ATTRIBUTE_DISPLAY_NAME = "displayName";
+    public static final String ATTRIBUTE_DEVICEIP = CONFIG_DEVICEIP;
     public static final String ATTRIBUTE_DEV_STATUS = "deviceStatus";
     public static final String ATTRIBUTE_DEBUG_MODE = "debugMode";
     public static final String ATTRIBUTE_FIRMWARE_SEL = "firmwareSelection";

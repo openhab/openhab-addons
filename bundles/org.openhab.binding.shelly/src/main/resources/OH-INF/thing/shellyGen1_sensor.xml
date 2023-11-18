@@ -177,6 +177,18 @@
 		<state readOnly="false"></state>
 	</channel-type>
 
+	<channel-type id="targetTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.shelly.targetTemp.label</label>
+		<description>@text/channel-type.shelly.targetTemp.description</description>
+		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="4" max="31" step="0.5" pattern="%.1f %unit%" readOnly="false"></state>
+	</channel-type>
+
 	<channel-type id="boostControl">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.boostControl.label</label>

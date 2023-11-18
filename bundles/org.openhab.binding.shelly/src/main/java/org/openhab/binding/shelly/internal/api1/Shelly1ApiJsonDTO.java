@@ -261,10 +261,7 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellySettingsDevice {
         public String type;
-        public String mode; // Gen 1
-        public String id; // Gen2: service name
-        public String name; // Gen2: configured device name
-        public String profile; // Gen 2
+        public String mode;
         public String mac;
         public String hostname;
         public String fw;
@@ -281,6 +278,21 @@ public class Shelly1ApiJsonDTO {
         public Integer numEMeters;
         @SerializedName("num_rollers")
         public Integer numRollers;
+
+        // Gen2
+        public String id;
+        public String model;
+        public String name;
+        public String app;
+        public Integer slot;
+        @SerializedName("fw_id")
+        public Integer fwId;
+        public String ver;
+        @SerializedName("auth_en")
+        public Integer authEnabled;
+        @SerializedName("auth_domain")
+        public Integer authDomain;
+        public String profile;
     }
 
     public static class ShellySettingsWiFiAp {

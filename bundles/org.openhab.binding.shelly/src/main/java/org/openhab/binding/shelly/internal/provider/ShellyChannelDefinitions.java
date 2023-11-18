@@ -257,16 +257,28 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_POSITION, "sensorPosition", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_MODE, "controlMode", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_PROFILE, "controlProfile", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP, "system:indoor-temperature",
-                        ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP, "targetTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BCONTROL, "boostControl", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BTIMER, "boostTimer", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH));
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
+        return CHANNEL_DEFINITIONS.get(getDefinitionKey(channelName));
+    }
+
+    public static boolean hasDefinition(String channelName) {
+        try {
+            CHANNEL_DEFINITIONS.get(getDefinitionKey(channelName)); // may throws exception
+            return true;
+        } catch (IllegalArgumentException e) {
+        }
+        return false;
+    }
+
+    private static String getDefinitionKey(String channelName) {
         String group = substringBefore(channelName, "#");
-        String channel = substringAfter(channelName, "#");
+        String channel = channelName.contains("#") ? substringAfter(channelName, "#") : channelName;
 
         if (group.contains(CHANNEL_GROUP_METER)) {
             group = CHANNEL_GROUP_METER; // map meter1..n to meter
@@ -288,8 +300,7 @@ public class ShellyChannelDefinitions {
             channel = CHANNEL_STATUS_EVENTCOUNT;
         }
 
-        String channelId = group + "#" + channel;
-        return CHANNEL_DEFINITIONS.get(channelId);
+        return group.isEmpty() ? channel : group + "#" + channel;
     }
 
     /**
@@ -753,6 +764,10 @@ public class ShellyChannelDefinitions {
         private String getText(String key) {
             return messages.get(key);
         }
+
+        public ChannelTypeUID getChannelTypeUID() {
+            return new ChannelTypeUID(BINDING_ID, typeId);
+        }
     }
 
     public static class ChannelMap {
@@ -772,6 +787,10 @@ public class ShellyChannelDefinitions {
                 }
             }
             for (HashMap.Entry<String, ShellyChannel> entry : map.entrySet()) {
+                String key = entry.getKey();
+                if (entry.getKey().contains("alarmTrigger")) {
+                    int i = 1;
+                }
                 if (entry.getValue().channel.contains("#" + channelName)) {
                     def = entry.getValue();
                     break;
