@@ -124,6 +124,9 @@ public class ShellyDeviceProfile {
         }
 
         initFromThingType(thingType);
+        if (device != null) {
+            this.device = device;
+        }
 
         String json = jsonIn;
         // It is not guaranteed, that the array entries are in order. Check all
@@ -220,7 +223,8 @@ public class ShellyDeviceProfile {
         isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR);
         isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR)
                 || thingType.equals(THING_TYPE_SHELLYBLUDW_STR);
-        isMotion = thingType.startsWith(THING_TYPE_SHELLYMOTION_STR);
+        isMotion = thingType.startsWith(THING_TYPE_SHELLYMOTION_STR)
+                || thingType.equals(THING_TYPE_SHELLYBLUMOTION_STR);
         isSense = thingType.equals(THING_TYPE_SHELLYSENSE_STR);
         isIX = thingType.equals(THING_TYPE_SHELLYIX3_STR) || thingType.equals(THING_TYPE_SHELLYPLUSI4_STR)
                 || thingType.equals(THING_TYPE_SHELLYPLUSI4DC_STR);
@@ -401,7 +405,8 @@ public class ShellyDeviceProfile {
     }
 
     public static boolean isGeneration2(String thingType) {
-        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || isBluSeries(thingType);
+        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro")
+                || thingType.startsWith("shellymini") || isBluSeries(thingType);
     }
 
     public static boolean isBluSeries(String thingType) {

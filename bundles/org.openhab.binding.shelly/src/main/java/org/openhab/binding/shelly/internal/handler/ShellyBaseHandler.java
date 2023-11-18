@@ -1019,7 +1019,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             config.password = bindingConfig.defaultPassword;
             logger.debug("{}: Using default password from bindingConfig (userId={})", thingName, config.userId);
         }
-        if (config.updateInterval == 0) {
+
+        if (config.updateInterval == 0)
+
+        {
             config.updateInterval = UPDATE_STATUS_INTERVAL_SECONDS * UPDATE_SKIP_COUNT;
         }
         if (config.updateInterval < UPDATE_MIN_DELAY) {
