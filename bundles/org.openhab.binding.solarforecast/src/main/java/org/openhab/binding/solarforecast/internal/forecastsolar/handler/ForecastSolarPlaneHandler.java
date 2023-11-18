@@ -86,19 +86,20 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             if (handler != null) {
                 if (handler instanceof ForecastSolarBridgeHandler fsbh) {
                     bridgeHandler = Optional.of(fsbh);
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                            "@text/solarforecast.plane.status.await-feedback");
                     bridgeHandler.get().addPlane(this);
-                    updateStatus(ThingStatus.UNKNOWN);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/solarforecast.site.status.wrong-handler" + " [\"" + handler + "\"]");
+                            "@text/solarforecast.plane.status.wrong-handler" + " [\"" + handler + "\"]");
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/solarforecast.site.status.bridge-handler-not-found");
+                        "@text/solarforecast.plane.status.bridge-handler-not-found");
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/solarforecast.site.status.bridge-missing");
+                    "@text/solarforecast.plane.status.bridge-missing");
         }
     }
 
@@ -152,16 +153,17 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                         updateStatus(ThingStatus.ONLINE);
                     } else {
                         logger.info("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/solarforecast.plane.status.http-status [\"" + cr.getStatus() + "\"]");
                     }
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
                     logger.info("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             } // else use available forecast
             updateChannels(forecast);
         } else {
-            logger.info("{} Location not present", thing.getLabel());
+            logger.warn("{} Location not present", thing.getLabel());
         }
         return forecast;
     }

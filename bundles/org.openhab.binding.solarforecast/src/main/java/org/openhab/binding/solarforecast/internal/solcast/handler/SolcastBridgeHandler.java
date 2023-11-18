@@ -47,14 +47,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SolcastBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
+ * The {@link SolcastBridgeHandler} is a non active handler instance. It will be triggered by the bridge.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider, TimeZoneProvider {
     private final Logger logger = LoggerFactory.getLogger(SolcastBridgeHandler.class);
-    private final TimeZoneProvider localTimeZoneProvider;
 
     private List<SolcastPlaneHandler> parts = new ArrayList<SolcastPlaneHandler>();
     private Optional<SolcastBridgeConfiguration> configuration = Optional.empty();
@@ -63,7 +62,6 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     public SolcastBridgeHandler(Bridge bridge, TimeZoneProvider tzp) {
         super(bridge);
-        localTimeZoneProvider = tzp;
         timeZone = tzp.getTimeZone();
     }
 
@@ -84,7 +82,6 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                     refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 10,
                             configuration.get().channelRefreshInterval, TimeUnit.MINUTES));
                 } catch (DateTimeException e) {
-                    logger.warn("ConfiguredTimezone {} not found {}", configuration.get().timeZone, e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.site.status.timezone" + " [\"" + configuration.get().timeZone + "\"]");
                 }

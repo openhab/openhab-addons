@@ -117,25 +117,27 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         Item item = itemRegistry.get(c.powerItem);
                         if (item != null) {
                             powerItem = Optional.of(item);
-                            updateStatus(ThingStatus.UNKNOWN);
+                            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                                    "@text/solarforecast.plane.status.await-feedback");
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "@text/solarforecast.site.status.power-item [\"" + c.powerItem + "\"]");
+                                    "@text/solarforecast.plane.status.power-item [\"" + c.powerItem + "\"]");
                         }
                     } else {
-                        updateStatus(ThingStatus.UNKNOWN);
+                        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                                "@text/solarforecast.plane.status.await-feedback");
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/solarforecast.site.status.wrong-handler [\"" + handler + "\"]");
+                            "@text/solarforecast.plane.status.wrong-handler [\"" + handler + "\"]");
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/solarforecast.site.status.bridge-handler-not-found");
+                        "@text/solarforecast.plane.status.bridge-handler-not-found");
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/solarforecast.site.status.bridge-missing");
+                    "@text/solarforecast.plane.status.bridge-missing");
         }
     }
 
@@ -180,15 +182,17 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         updateStatus(ThingStatus.ONLINE);
                     } else {
                         logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl, crForecast.getStatus());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/solarforecast.plane.status.http-status [\"" + crForecast.getStatus() + "\"]");
                     }
                 } else {
                     logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, crEstimate.getStatus());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/solarforecast.plane.status.http-status [\"" + crEstimate.getStatus() + "\"]");
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } // else use available forecast
         updateChannels(forecast.get());
