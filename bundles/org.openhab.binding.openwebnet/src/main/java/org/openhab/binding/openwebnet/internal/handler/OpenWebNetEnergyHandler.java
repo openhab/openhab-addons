@@ -75,9 +75,13 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-
-        Object refreshPeriodConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_REFRESH_PERIOD);
-        energyRefreshPeriod = Integer.parseInt(refreshPeriodConfig.toString());
+        try {
+            Object refreshPeriodConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_REFRESH_PERIOD);
+            energyRefreshPeriod = Integer.parseInt(refreshPeriodConfig.toString());
+        } catch (NumberFormatException e) {
+            logger.debug("NumberFormatException caught while parsing OpenWebNetEnergyHandler configuration: {}", e.getMessage());
+            energyRefreshPeriod = 30;
+        }
 
         // In order to get data from the probe we must send a command over the bus, this could be done only when the
         // bridge is online.
@@ -147,7 +151,6 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             logger.warn("subscribeToEnergyTotalizer() WHERE=null. Skipping");
             return;
         }
-
         energySchedule = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 send(EnergyManagement.requestCurrentDayTotalizer(w.value()));

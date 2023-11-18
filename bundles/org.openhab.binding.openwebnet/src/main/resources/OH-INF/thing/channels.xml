@@ -345,7 +345,7 @@
 
 	<channel-type id="energyThisMonth">
 		<item-type>Number:Energy</item-type>
-		<label>Energy this month</label>
+		<label>Energy This Month</label>
 		<description>Total energy measured for this month</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
