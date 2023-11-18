@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
@@ -95,14 +92,9 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
         // State can indicate additional information than just
         // the current position, so expose it as a separate channel
         if (stateTopic != null) {
-            Set<String> states = new HashSet<>();
-            states.add(channelConfiguration.stateClosed);
-            states.add(channelConfiguration.stateClosing);
-            states.add(channelConfiguration.stateOpen);
-            states.add(channelConfiguration.stateOpening);
-            states.add(channelConfiguration.stateStopped);
-
-            TextValue value = new TextValue(states);
+            TextValue value = new TextValue(new String[] { channelConfiguration.stateClosed,
+                    channelConfiguration.stateClosing, channelConfiguration.stateOpen,
+                    channelConfiguration.stateOpening, channelConfiguration.stateStopped });
             buildChannel(STATE_CHANNEL_ID, value, "State", componentConfiguration.getUpdateListener())
                     .stateTopic(stateTopic).isAdvanced(true).build();
         }
