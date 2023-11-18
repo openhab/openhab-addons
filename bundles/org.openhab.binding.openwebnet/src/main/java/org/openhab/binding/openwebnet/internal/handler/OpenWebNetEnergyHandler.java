@@ -79,7 +79,8 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             Object refreshPeriodConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_REFRESH_PERIOD);
             energyRefreshPeriod = Integer.parseInt(refreshPeriodConfig.toString());
         } catch (NumberFormatException e) {
-            logger.debug("NumberFormatException caught while parsing OpenWebNetEnergyHandler configuration: {}", e.getMessage());
+            logger.debug("NumberFormatException caught while parsing OpenWebNetEnergyHandler configuration: {}",
+                    e.getMessage());
             energyRefreshPeriod = 30;
         }
 
