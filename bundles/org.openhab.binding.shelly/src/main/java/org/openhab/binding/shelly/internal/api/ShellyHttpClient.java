@@ -137,7 +137,7 @@ public class ShellyHttpClient {
                 timeoutErrors++; // count the retries
                 retries--;
                 if (profile.alwaysOn) {
-                    logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
+                    logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
                 }
             }
         }
