@@ -249,8 +249,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
         if (jsonState.colorTemp != null) {
             colorTempValue.update(new QuantityType(Objects.requireNonNull(jsonState.colorTemp), Units.MIRED));
-            listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_TEMP_CHANNEL_ID),
-                    colorTempValue.getChannelState());
+            listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID), colorTempValue.getChannelState());
 
             colorModeValue.update(new StringType(LightColorMode.COLOR_MODE_COLOR_TEMP.serializedName()));
         }
@@ -282,8 +281,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             colorModeValue.update(new StringType(jsonState.colorMode.serializedName()));
         }
 
-        listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_MODE_CHANNEL_ID),
-                colorModeValue.getChannelState());
+        listener.updateChannelState(buildChannelUID(COLOR_MODE_CHANNEL_ID), colorModeValue.getChannelState());
 
         if (hasColorChannel) {
             listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
