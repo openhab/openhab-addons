@@ -113,6 +113,7 @@ public class ShellyThingCreator {
     // Shelly BLU Series
     public static final String SHELLYDT_BLUBUTTON = "SBBT";
     public static final String SHELLYDT_BLUDW = "SBDW";
+    public static final String SHELLYDT_BLUMOTION = "SBMO";
 
     // Thing names
     public static final String THING_TYPE_SHELLY1_STR = "shelly1";
@@ -191,6 +192,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYBLU_PREFIX = "shellyblu";
     public static final String THING_TYPE_SHELLYBLUBUTTON_STR = THING_TYPE_SHELLYBLU_PREFIX + "button";
     public static final String THING_TYPE_SHELLYBLUDW_STR = THING_TYPE_SHELLYBLU_PREFIX + "dw";
+    public static final String THING_TYPE_SHELLYBLUMOTION_STR = THING_TYPE_SHELLYBLU_PREFIX + "motion";
 
     // Password protected or unknown device
     public static final String THING_TYPE_SHELLYPROTECTED_STR = "shellydevice";
@@ -306,6 +308,8 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYBLUBUTTON_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYBLUDW = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUDW_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUMOTION = new ThingTypeUID(BINDING_ID,
+            THING_TYPE_SHELLYBLUMOTION_STR);
 
     private static final Map<String, String> THING_TYPE_MAPPING = new LinkedHashMap<>();
     static {
@@ -383,6 +387,7 @@ public class ShellyThingCreator {
         // BLU Series
         THING_TYPE_MAPPING.put(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_BLUMOTION, THING_TYPE_SHELLYBLUMOTION_STR);
 
         // Wall displays
         THING_TYPE_MAPPING.put(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY_STR);

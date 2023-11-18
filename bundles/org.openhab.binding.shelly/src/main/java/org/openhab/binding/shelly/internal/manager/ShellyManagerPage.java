@@ -538,7 +538,7 @@ public class ShellyManagerPage {
     }
 
     protected static String getDeviceIp(Map<String, String> properties) {
-        return getString(properties.get("deviceIp"));
+        return getString(properties.get(ATTRIBUTE_DEVICEIP));
     }
 
     protected static String getDeviceName(Map<String, String> properties) {
