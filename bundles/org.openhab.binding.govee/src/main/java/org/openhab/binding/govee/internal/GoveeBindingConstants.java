@@ -41,5 +41,4 @@ public class GoveeBindingConstants {
     public static final int COLOR_TEMPERATURE_MIN_VALUE = 2000;
     public static final int COLOR_TEMPERATURE_MAX_VALUE = 9000;
     public static final String COLOR_TEMPERATURE_ABS = "color-temperature-abs";
-    public static final String BRIGHTNESS = "brightness";
 }

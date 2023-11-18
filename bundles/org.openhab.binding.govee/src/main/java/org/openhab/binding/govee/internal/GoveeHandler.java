@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.govee.internal;
 
-import static org.openhab.binding.govee.internal.GoveeBindingConstants.BRIGHTNESS;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE_ABS;
@@ -103,6 +102,7 @@ public class GoveeHandler extends BaseThingHandler {
     private ScheduledFuture<?> triggerStatusJob; // send device status update job
     private GoveeConfiguration goveeConfiguration = new GoveeConfiguration();
     private int lastBrightness;
+    private Color lastColor = new Color(0, 0, 0);
 
     /*
      * Common Receiver job for the status answers of the devices
@@ -211,6 +211,21 @@ public class GoveeHandler extends BaseThingHandler {
                                     new ColorData(new Color(rgb[0], rgb[1], rgb[2]), 0)));
                             send(GSON.toJson(lightColor));
                         }
+                        if (command instanceof PercentType percent) {
+                            GenericGoveeRequest lightBrightness = new GenericGoveeRequest(
+                                    new GenericGoveeMsg("brightness", new ValueIntData(percent.intValue())));
+                            send(GSON.toJson(lightBrightness));
+                        } else if (command instanceof OnOffType) {
+                            if (command.equals(OnOffType.ON)) {
+                                GenericGoveeRequest lightOn = new GenericGoveeRequest(
+                                        new GenericGoveeMsg("turn", new ValueIntData(1)));
+                                send(GSON.toJson(lightOn));
+                            } else {
+                                GenericGoveeRequest lightOff = new GenericGoveeRequest(
+                                        new GenericGoveeMsg("turn", new ValueIntData(0)));
+                                send(GSON.toJson(lightOff));
+                            }
+                        }
                         break;
                     case COLOR_TEMPERATURE:
                         if (command instanceof PercentType percent) {
@@ -226,23 +241,6 @@ public class GoveeHandler extends BaseThingHandler {
                             GenericGoveeRequest lightColor = new GenericGoveeRequest(new GenericGoveeMsg("colorwc",
                                     new ColorData(new Color(0, 0, 0), quantity.intValue())));
                             send(GSON.toJson(lightColor));
-                        }
-                        break;
-                    case BRIGHTNESS:
-                        if (command instanceof PercentType percent) {
-                            GenericGoveeRequest lightBrightness = new GenericGoveeRequest(
-                                    new GenericGoveeMsg("brightness", new ValueIntData(percent.intValue())));
-                            send(GSON.toJson(lightBrightness));
-                        } else if (command instanceof OnOffType) {
-                            if (command.equals(OnOffType.ON)) {
-                                GenericGoveeRequest lightOn = new GenericGoveeRequest(
-                                        new GenericGoveeMsg("turn", new ValueIntData(1)));
-                                send(GSON.toJson(lightOn));
-                            } else {
-                                GenericGoveeRequest lightOff = new GenericGoveeRequest(
-                                        new GenericGoveeMsg("turn", new ValueIntData(0)));
-                                send(GSON.toJson(lightOff));
-                            }
                         }
                         break;
                 }
@@ -300,21 +298,32 @@ public class GoveeHandler extends BaseThingHandler {
             return;
         }
 
+        logger.info("Update Device State ----------------------------------------------");
         int lastOnOff = message.msg().data().onOff();
+        logger.info("lastOnOff = {}", lastOnOff);
         lastBrightness = message.msg().data().brightness();
-        Color lastColor = message.msg().data().color();
+        logger.info("lastbrigthess = {}", lastBrightness);
+        lastColor = message.msg().data().color();
+        logger.info("lastColor = {}", lastColor);
+
         int lastColorTemperature = message.msg().data().colorTemInKelvin();
 
-        updateState(COLOR, ColorUtil.rgbToHsb(new int[] { lastColor.r(), lastColor.g(), lastColor.b() }));
-        updateState(COLOR_TEMPERATURE_ABS, new QuantityType(lastColorTemperature, Units.KELVIN));
-        logger.debug("setting BRIGHTNESS to ONOFF {}", OnOffType.from(lastOnOff == 1));
-        updateState(BRIGHTNESS, OnOffType.from(lastOnOff == 1));
+        logger.info("Last RGB = {} {} {}", lastColor.r(), lastColor.g(), lastColor.b());
+        HSBType hsbColor = ColorUtil.rgbToHsb(new int[] { lastColor.r(), lastColor.g(), lastColor.b() });
+        logger.info("Last HSB = {} {} {}", hsbColor.getHue(), hsbColor.getSaturation(), hsbColor.getBrightness());
+
         if (lastOnOff == 1) {
-            logger.debug("setting BRIGHTNESS to PercentType {}", new PercentType(lastBrightness));
-            updateState(BRIGHTNESS, new PercentType(lastBrightness));
+            logger.info("setting BRIGHTNESS on Color to be consistent by using lastBrightness = {}", lastBrightness);
+            hsbColor = ColorUtil.rgbToHsb(new int[] { lastColor.r(), lastColor.g(), lastBrightness });
         } else {
-            logger.debug("not updating BRIGHTNESS percentage as device is OFF (would turn channel switch on)");
+            logger.info("not updating BRIGHTNESS percentage as device is OFF (would turn channel switch on)");
         }
+
+        updateState(COLOR, hsbColor);
+        updateState(COLOR_TEMPERATURE_ABS, new QuantityType(lastColorTemperature, Units.KELVIN));
+        // FIXME : handle state
+        // updateState(COLOR_TEMPERATURE, new QuantityType(lastColorTemperature, Units.KELVIN));
+        logger.debug("setting BRIGHTNESS to ONOFF {}", OnOffType.from(lastOnOff == 1));
     }
 
     public void statusUpdate(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {

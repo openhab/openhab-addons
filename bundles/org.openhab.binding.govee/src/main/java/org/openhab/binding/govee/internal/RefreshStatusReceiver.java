@@ -76,7 +76,7 @@ public class RefreshStatusReceiver implements Runnable {
             }
 
             logger.debug("updating status for thing {} ", thingHandler.getThing().getLabel());
-            logger.trace("Response from {} = {}", deviceIPAddress, response);
+            logger.info("Response from {} = {}", deviceIPAddress, response);
 
             if (!response.isEmpty()) {
                 try {

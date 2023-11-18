@@ -9,7 +9,6 @@
 		<description>Govee light controllable via LAN API</description>
 
 		<channels>
-			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color-temperature" typeId="system.color-temperature"/>
 			<channel id="color-temperature-abs" typeId="color-temperature-abs"/>
