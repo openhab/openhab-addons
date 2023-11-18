@@ -86,7 +86,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         this.haID = componentConfiguration.getHaID();
 
-        if (channelConfiguration.getName() != null) {
+        String name = channelConfiguration.getName();
+        if (name != null && !name.isEmpty()) {
             String groupId = this.haID.getGroupId(channelConfiguration.getUniqueId());
 
             this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, groupId);
