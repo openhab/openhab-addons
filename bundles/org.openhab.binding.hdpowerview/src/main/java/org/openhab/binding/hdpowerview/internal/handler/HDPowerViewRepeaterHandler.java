@@ -261,7 +261,7 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
                 // Light is off when RGB black, so discard brightness as otherwise it would appear on.
                 hsb = HSBType.BLACK;
             } else {
-                hsb = HSBType.fromRGB(color.red, color.green, color.red);
+                hsb = HSBType.fromRGB(color.red, color.green, color.blue);
                 hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(color.brightness));
             }
             updateState(CHANNEL_REPEATER_COLOR, hsb);
