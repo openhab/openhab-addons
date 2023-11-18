@@ -376,7 +376,6 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
         boolean gen2 = profile.isGen2;
 
         list.put(ACTION_RES_STATS, "Reset Statistics");
-        list.put(ACTION_RESTART, "Reboot Device");
         if (!profile.isBlu) {
             list.put(ACTION_RESTART, "Reboot Device");
         }
