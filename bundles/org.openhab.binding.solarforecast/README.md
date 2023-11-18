@@ -190,32 +190,32 @@ Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day 
 ## Thing Actions
 
 All things `sc-site`, `sc-plane`, `fs-site` and `fs-plane` are providing the same Actions.
-While channels are providing actual forecast data and daily forecasts in future Actions provides an interface to execute more sophisticated handling in rules.
+Channels are providing actual forecast data and daily forecasts in future.
+Actions provides an interface to execute more sophisticated handling in rules.
 You can execute this for each `xx-plane` for specific plane values or `xx-site` to sum up all attached planes.
 
-Input for queries are `LocalDateTime` and `LocalDate` objects. 
 See [Date Time](#date-time) section for more information.
 Double check your time zone in *openHAB - Settings - Regional Settings* which is crucial for calculation.
 
 ### `getForecastBegin`
 
-Returns `LocalDateTime` of the earliest possible forecast data available.
+Returns `Instant` of the earliest possible forecast data available.
 It's located in the past, e.g. Solcast provides data from the last 7 days.
-`LocalDateTime.MAX` is returned in case of no forecast data is available.
+`Instant.MAX` is returned in case of no forecast data is available.
 
 ### `getForecastEnd`
 
-Returns `LocalDateTime` of the latest possible forecast data available.
-`LocalDateTime.MIN` is returned in case of no forecast data is available.
+Returns `Instant` of the latest possible forecast data available.
+`Instant.MIN` is returned in case of no forecast data is available.
 
 ### `getPower`
 
 | Parameter | Type          | Description                                                                                                  |
 |-----------|---------------|--------------------------------------------------------------------------------------------------------------|
-| timestamp | LocalDateTime | Time stamp                                                                                                   |
+| timestamp | Instant       | Timestamp of power query                                                                                     |
 | mode      | String        | Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario. Only Solcast. |
 
-Returns `QuantityType<Power>` at the given `localDateTime`.
+Returns `QuantityType<Power>` at the given `Instant` timestamp.
 Respect `getForecastBegin` and `getForecastEnd` to get a valid value.
 Check for `UndefType.UNDEF` in case of errors.
 
@@ -234,13 +234,25 @@ Check for `UndefType.UNDEF` in case of errors.
 
 | Parameter       | Type          | Description                                                                                                  |
 |-----------------|---------------|--------------------------------------------------------------------------------------------------------------|
-| startTimestamp  | LocalDateTime | Date of the day                                                                                              |
-| endTimestamp    | LocalDateTime | Date of the day                                                                                              |
+| startTimestamp  | Instant       | Start timestamp of energy query                                                                              |
+| endTimestamp    | Instant       | End timestamp of energy query                                                                                |
 | mode            | String        | Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario. Only Solcast. |
 
 Returns `QuantityType<Energy>` between the timestamps `startTimestamp` and `endTimestamp`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
 Check for `UndefType.UNDEF` in case of errors.
+
+## Date Time
+
+Each forecast is bound to a certain location which automatically defines the time zone.
+Most common use case is forecast and your locarion are matching the same time zone.
+Action interface is using `Instant` as timestamps which enables you translating to any time zone.
+This allows you with an easy conversion to query also foreign forecast locations.  
+
+Examples are showing
+
+- how to translate `Instant` to `ZonedDateTime` objects and
+- how to translate `ZonedDateTime` to `Instant` objects
 
 ## Example
 
@@ -281,17 +293,20 @@ Number:Energy           ForecastSolarHome_Day_SW           "Tomorrow SW Forecast
 ### Actions rule
 
 ```java
+import java.time.temporal.ChronoUnit
+
 rule "Forecast Solar Actions"
     when
         Time cron "0 0 23 * * ?" // trigger whatever you like
     then 
         // get Actions for specific fs-site
         val solarforecastActions = getActions("solarforecast","solarforecast:fs-site:homeSite")
- 
+        val timeZone = "Europe/Berlin"
+
         // get earliest and latest forecast dates
         val beginDT = solarforecastActions.getForecastBegin
         val endDT = solarforecastActions.getForecastEnd
-        logInfo("SF Tests","Begin: "+ beginDT+" End: "+endDT)
+        logInfo("SF Tests","Begin: "+ beginDT.atZone(ZoneId.of(timeZone))+" End: "+endDT.atZone(ZoneId.of(timeZone)))
  
         // get forecast for tomorrow    
         val fcTomorrowState = solarforecastActions.getDay(LocalDate.now.plusDays(1))
@@ -300,13 +315,15 @@ rule "Forecast Solar Actions"
         logInfo("SF Tests","Forecast tomorrow value: "+ fcToTomorrowDouble)
         
         // get power forecast in one hour
-        val hourPlusOnePowerState = solarforecastActions.getPower(LocalDateTime.now.plusHours(1))
+        val hourPlusOnePowerState = solarforecastActions.getPower(Instant.now.plus(1,ChronoUnit.HOURS))
         logInfo("SF Tests","Hour+1 power state: "+ hourPlusOnePowerState.toString)
         val hourPlusOnePowerValue = (hourPlusOnePowerState as Number).doubleValue
         logInfo("SF Tests","Hour+1 power value: "+ hourPlusOnePowerValue)
         
-        // get total energy forecast from now till 2 days ahead
-        val twoDaysForecastFromNowState = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(2))
+        // get energy forecast at specific time: Nov 18th 2023, 16:00 
+        val startDT = LocalDateTime.of(2023,11,18,16,00).atZone(ZoneId.of(timeZone))
+        val stopDT = startDT.plusDays(2)
+        val twoDaysForecastFromNowState = solarforecastActions.getEnergy(startDT.toInstant, stopDT.toInstant)
         logInfo("SF Tests","Forecast 2 days state: "+ twoDaysForecastFromNowState.toString)
         val twoDaysForecastFromNowValue = (twoDaysForecastFromNowState as Number).doubleValue
         logInfo("SF Tests","Forecast 2 days value: "+ twoDaysForecastFromNowValue)
@@ -316,13 +333,13 @@ end
 shall produce following output
 
 ```
-2022-08-07 18:02:19.874 [INFO ] [g.openhab.core.model.script.SF Tests] - Begin: 2022-07-31T18:30 End: 2022-08-14T18:00
-2022-08-07 18:02:19.878 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast tomorrow state: 55.999 kWh
-2022-08-07 18:02:19.880 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast tomorrow value: 55.999
-2022-08-07 18:02:19.884 [INFO ] [g.openhab.core.model.script.SF Tests] - Hour+1 power state: 2.497 kW
-2022-08-07 18:02:19.886 [INFO ] [g.openhab.core.model.script.SF Tests] - Hour+1 power value: 2.497
-2022-08-07 18:02:19.891 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days state: 112.483 kWh
-2022-08-07 18:02:19.892 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days value: 112.483
+2023-11-18 22:00:59.250 [INFO ] [g.openhab.core.model.script.SF Tests] - Begin: 2023-11-18T07:34:23+01:00[Europe/Berlin] End: 2023-11-19T16:26:50+01:00[Europe/Berlin]
+2023-11-18 22:00:59.262 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast tomorrow state: 3.861 kWh
+2023-11-18 22:00:59.267 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast tomorrow value: 3.861
+2023-11-18 22:00:59.275 [INFO ] [g.openhab.core.model.script.SF Tests] - Hour+1 power state: 0 kW
+2023-11-18 22:00:59.280 [INFO ] [g.openhab.core.model.script.SF Tests] - Hour+1 power value: 0.0
+2023-11-18 22:00:59.296 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days state: 3.865 kWh
+2023-11-18 22:00:59.300 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days value: 3.865
 ```
 
 ### Actions rule with Arguments
@@ -331,15 +348,20 @@ Only Solcast is delivering `optimistic` and `pessimistic` scenario data.
 If arguments are used on ForecastSolar `UNDEF` state is returned
 
 ```java
-rule "Solcast Actions"
+import java.time.temporal.ChronoUnit
+
+rrule "Solcast Actions"
     when
         Time cron "0 0 23 * * ?" // trigger whatever you like
     then 
-        val sixDayForecast = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(6))
+        val solarforecastActions = getActions("solarforecast","solarforecast:sc-site:homeSite")
+        val startTimestamp = Instant.now
+        val endTimestamp = Instant.now.plus(6, ChronoUnit.DAYS)
+        val sixDayForecast = solarforecastActions.getEnergy(startTimestamp,endTimestamp)
         logInfo("SF Tests","Forecast Estimate  6 days "+ sixDayForecast)
-        val sixDayOptimistic = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(6),"optimistic")
+        val sixDayOptimistic = solarforecastActions.getEnergy(startTimestamp,endTimestamp, "optimistic")
         logInfo("SF Tests","Forecast Optimist  6 days "+ sixDayOptimistic)
-        val sixDayPessimistic = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(6),"pessimistic")
+        val sixDayPessimistic = solarforecastActions.getEnergy(startTimestamp,endTimestamp, "pessimistic")
         logInfo("SF Tests","Forecast Pessimist 6 days "+ sixDayPessimistic)
 end
 ```
@@ -351,19 +373,3 @@ shall produce following output
 2022-08-10 00:02:16.574 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast Optimist  6 days 319.827 kWh
 2022-08-10 00:02:16.578 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast Pessimist 6 days 208.235 kWh
 ```
-
-## Date Time
-
-Each forecast is bound to a certain location and this location is automatically bound to the TimeZone.
-This binding is translating the forecast timestamps according to your Regional Settings in openHAB.
-So you can query forecast data based on `LocalDate` and `LocalDateTime`.
-This shall cover the majority of use cases.
-
-There might be rare use cases querying foreign locations, e.g. `Aisa/Tokyo`.
-For this:
-
-- Forecast.Solar is every time delivering the local asia date time measures
-- Solcast needs to be configured with parameter `timeZone` in the advanced settings
-
-Taking this into account every time you query forecast data e.g. at 12 PM it will deliver the data at _high noon_ time of this location.
-
