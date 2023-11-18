@@ -149,19 +149,20 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
         String commandTopic = channelConfiguration.commandTopic;
         String payloadInstall = channelConfiguration.payloadInstall;
 
-        var builder = buildChannel(UPDATE_CHANNEL_ID, value, channelConfiguration.getName(), this);
+        var builder = buildChannel(UPDATE_CHANNEL_ID, value, getName(), this);
         if (channelConfiguration.stateTopic != null) {
             builder.stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate());
         }
         if (commandTopic != null && payloadInstall != null) {
             updatable = true;
-            builder.commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain());
+            builder.commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                    channelConfiguration.getQos());
         }
         updateChannel = builder.build(false);
 
         if (channelConfiguration.latestVersionTopic != null) {
             value = new TextValue();
-            latestVersionChannel = buildChannel(LATEST_VERSION_CHANNEL_ID, value, channelConfiguration.getName(), this)
+            latestVersionChannel = buildChannel(LATEST_VERSION_CHANNEL_ID, value, getName(), this)
                     .stateTopic(channelConfiguration.latestVersionTopic, channelConfiguration.latestVersionTemplate)
                     .build(false);
         }
