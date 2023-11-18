@@ -1473,7 +1473,7 @@ See notes on discovery of Shelly BLU devices above.
 
 | Group   | Channel       | Type     | read-only | Description                                                                         |
 | ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
-| sensors | motion        | Switch   | yes       | ON: Motion detected                            d                                    |
+| sensors | motion        | Switch   | yes       | ON: Motion detected                                                                 |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
