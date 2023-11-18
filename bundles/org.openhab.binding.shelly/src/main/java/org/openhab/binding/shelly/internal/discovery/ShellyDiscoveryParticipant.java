@@ -31,6 +31,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
@@ -144,17 +145,23 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
             boolean gen2 = "2".equals(service.getPropertyString("gen"));
             ShellyApiInterface api = null;
+            ShellySettingsDevice devInfo;
             try {
                 api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
                 api.initialize();
-                profile = api.getDeviceProfile(thingType);
+                devInfo = api.getDeviceInfo();
+                model = devInfo.type;
+                if (devInfo.name != null) {
+                    deviceName = devInfo.name;
+                }
+                profile = api.getDeviceProfile(thingType, devInfo);
+                api.close();
                 logger.debug("{}: Shelly settings : {}", name, profile.settingsJson);
                 deviceName = profile.name;
-                model = profile.deviceType;
-                mode = profile.mode;
+                mode = devInfo.mode;
                 properties = ShellyBaseHandler.fillDeviceProperties(profile);
                 logger.trace("{}: thingType={}, deviceType={}, mode={}, symbolic name={}", name, thingType,
-                        profile.deviceType, mode.isEmpty() ? "<standard>" : mode, deviceName);
+                        devInfo.type, mode.isEmpty() ? "<standard>" : mode, deviceName);
 
                 // get thing type from device name
                 thingUID = ShellyThingCreator.getThingUID(name, model, mode, false);
