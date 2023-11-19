@@ -57,6 +57,7 @@ xidel -e \
 | vmb8ir      | Infrared remote control receiver module                                                    |
 | vmb8pb      | 8-Channel Push Button module                                                               |
 | vmb8pbu     | Push-button interface with 8 channels for universal mounting                               |
+| vmbdali     | DALI gateway module                                                                        |
 | vmbdme      | Dimmer for electronic/resistive load                                                       |
 | vmbdmir     | Single channel triac dimmer for resistive and inductive loads                              |
 | vmbdmi      | Single channel triac dimmer for resistive and inductive loads                              |
