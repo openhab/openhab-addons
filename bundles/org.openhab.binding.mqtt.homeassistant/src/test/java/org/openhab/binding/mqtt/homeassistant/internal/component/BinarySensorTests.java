@@ -20,7 +20,9 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.OpenCloseValue;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -154,6 +156,54 @@ public class BinarySensorTests extends AbstractComponentTests {
         assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.OFF);
 
         waitForAssert(() -> assertState(component, BinarySensor.SENSOR_CHANNEL_ID, UnDefType.UNDEF), 10000, 200);
+    }
+
+    @Test
+    public void contactTest() throws InterruptedException {
+        // @formatter:off
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+                """
+                {
+                  "availability": [
+                    {
+                      "topic": "zigbee2mqtt/bridge/state"
+                    }
+                  ],
+                  "device": {
+                    "identifiers": [
+                      "zigbee2mqtt_0x0000000000000000"
+                    ],
+                    "manufacturer": "Sensors inc",
+                    "model": "On Off Sensor",
+                    "name": "OnOffSensor",
+                    "sw_version": "Zigbee2MQTT 1.18.2"
+                  },
+                  "name": "doorcontact",
+                  "force_update": "true",
+                  "payload_off": "CLOSED",
+                  "payload_on": "OPEN",
+                  "device_class": "door",
+                  "state_topic": "zigbee2mqtt/sensor/state",
+                  "unique_id": "sn1",
+                  "value_template": "{{ value_json.state }}"
+                }
+                """);
+        // @formatter:on
+
+        assertThat(component.channels.size(), is(1));
+        assertThat(component.getName(), is("doorcontact"));
+
+        assertChannel(component, BinarySensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "value",
+                OpenCloseValue.class);
+
+        publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"OPEN\" }");
+        assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OpenClosedType.OPEN);
+        publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"OPEN\" }");
+        assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OpenClosedType.OPEN);
+        publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"CLOSED\" }");
+        assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OpenClosedType.CLOSED);
+        publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"OPEN\" }");
+        assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OpenClosedType.OPEN);
     }
 
     @Override
