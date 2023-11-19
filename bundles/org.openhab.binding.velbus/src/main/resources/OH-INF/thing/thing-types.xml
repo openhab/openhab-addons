@@ -476,6 +476,9 @@
 			<channel-group id="output" typeId="1outputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
 	</thing-type>
@@ -496,6 +499,9 @@
 			<channel-group id="output" typeId="1outputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
 	</thing-type>
@@ -516,6 +522,9 @@
 			<channel-group id="output" typeId="1outputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
 	</thing-type>
@@ -537,6 +546,9 @@
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 			<channel-group id="oledDisplay" typeId="oledDisplay"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
 	</thing-type>
@@ -557,6 +569,9 @@
 			<channel-group id="output" typeId="1outputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
 	</thing-type>
