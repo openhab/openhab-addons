@@ -88,8 +88,7 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
 
         boolean trigger = TRIGGER_ICONS.matcher(icon).matches();
 
-        buildChannel(SENSOR_CHANNEL_ID, value, channelConfiguration.getName(),
-                getListener(componentConfiguration, value))
+        buildChannel(SENSOR_CHANNEL_ID, value, getName(), getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
                 .trigger(trigger).build();
     }
