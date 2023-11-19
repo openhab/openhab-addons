@@ -254,6 +254,7 @@
 /bundles/org.openhab.binding.onewiregpio/ @aogorek
 /bundles/org.openhab.binding.onkyo/ @pail23 @paulianttila
 /bundles/org.openhab.binding.opengarage/ @psmedley
+/bundles/org.openhab.binding.opensmartcity/ @kaikreuzer
 /bundles/org.openhab.binding.opensprinkler/ @CrackerStealth @FlorianSW
 /bundles/org.openhab.binding.openthermgateway/ @ArjenKorevaar @andrewfg
 /bundles/org.openhab.binding.openuv/ @clinique
