@@ -76,7 +76,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         configuration = Optional.of(config);
         updateStatus(ThingStatus.ONLINE);
         refreshJob = Optional.of(
-                scheduler.scheduleWithFixedDelay(this::getData, 10, config.channelRefreshInterval, TimeUnit.MINUTES));
+                scheduler.scheduleWithFixedDelay(this::getData, 1, config.channelRefreshInterval, TimeUnit.MINUTES));
     }
 
     @Override
