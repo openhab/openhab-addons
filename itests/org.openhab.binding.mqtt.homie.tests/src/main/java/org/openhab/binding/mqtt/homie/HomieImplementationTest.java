@@ -281,8 +281,8 @@ public class HomieImplementationTest extends MqttOSGiTest {
         assertThat(property.attributes.format, is("-100:100"));
         verify(property).attributesReceived();
         assertNotNull(property.getChannelState());
-        assertThat(property.getType().getState().getMinimum().intValue(), is(-100));
-        assertThat(property.getType().getState().getMaximum().intValue(), is(100));
+        assertThat(property.getStateDescription().getMinimum().intValue(), is(-100));
+        assertThat(property.getStateDescription().getMaximum().intValue(), is(100));
 
         // Check property and property attributes
         Property propertyBell = node.properties.get("doorbell");
