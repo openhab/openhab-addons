@@ -15,7 +15,6 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -112,11 +111,11 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         ShellySettingsDevice info = new ShellySettingsDevice();
         info.hostname = !config.serviceName.isEmpty() ? config.serviceName : "";
-        info.fw = "1234";
-        info.type = "SBBT";
+        info.fw = "";
+        info.type = "BLU";
         info.mac = config.deviceAddress;
         info.auth = false;
-        info.gen = 99;
+        info.gen = 2;
         return info;
     }
 
@@ -136,13 +135,13 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.gateway = getThing().getProperty(PROPERTY_GW_DEVICE);
         }
 
-        ShellySettingsDevice device = getDeviceInfo();
+        profile.device = getDeviceInfo();
         if (config.serviceName.isEmpty()) {
             config.serviceName = getString(profile.device.hostname);
         }
-        profile.fwDate = substringBefore(device.fw, "/");
-        profile.fwVersion = substringBefore(ShellyDeviceProfile.extractFwVersion(device.fw.replace("/", "/v")), "-");
-        profile.status.update.oldVersion = profile.fwVersion;
+
+        // for now we have to API to get this information
+        profile.fwDate = profile.fwVersion = profile.status.update.oldVersion = "";
         profile.status.hasUpdate = profile.status.update.hasUpdate = false;
 
         if (profile.hasBattery) {
@@ -239,7 +238,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         }
                         logger.debug("{}: BLU Device discovered", thingName);
                         if (e.data.name != null) {
-                            profile.settings.name = buildBluServiceName(e.data.name, e.data.addr);
+                            profile.settings.name = ShellyDeviceProfile.buildBluServiceName(e.data.name, e.data.addr);
                         }
                         break;
                     case SHELLY2_EVENT_BLUDATA:
@@ -315,20 +314,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             t.incProtErrors();
         }
         if (updated) {
-        }
-    }
-
-    public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
-        String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
-        switch (model) {
-            case SHELLYDT_BLUBUTTON:
-                return (THING_TYPE_SHELLYBLUBUTTON_STR + "-" + mac).toLowerCase();
-            case SHELLYDT_BLUDW:
-                return (THING_TYPE_SHELLYBLUDW_STR + "-" + mac).toLowerCase();
-            case SHELLYDT_BLUMOTION:
-                return (THING_TYPE_SHELLYBLUMOTION_STR + "-" + mac).toLowerCase();
-            default:
-                throw new IllegalArgumentException("Unsupported BLU device model " + model);
         }
     }
 }

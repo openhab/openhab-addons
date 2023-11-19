@@ -1211,6 +1211,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void disconnect() {
+        if (rpcSocket.isConnected()) {
+            logger.debug("{}: Disconnect Rpc Socket", thingName);
+        }
         rpcSocket.disconnect();
     }
 
@@ -1220,8 +1223,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void close() {
-        logger.debug("{}: Closing Rpc API (socket is {}, discovery={})", thingName,
-                rpcSocket.isConnected() ? "connected" : "disconnected", discovery);
+        if (initialized || rpcSocket.isConnected()) {
+            logger.debug("{}: Closing Rpc API (socket is {}, discovery={})", thingName,
+                    rpcSocket.isConnected() ? "connected" : "disconnected", discovery);
+        }
         disconnect();
         initialized = false;
     }

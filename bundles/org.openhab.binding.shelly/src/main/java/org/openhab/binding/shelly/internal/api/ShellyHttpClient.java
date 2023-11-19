@@ -120,6 +120,12 @@ public class ShellyHttpClient {
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
+                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth && !config.password.isEmpty()) {
+                    logger.debug("{}: Access is unauthorized, auto-activate basic auth", thingName);
+                    basicAuth = true;
+                    apiResult = innerRequest(HttpMethod.GET, uri, null, "");
+                }
+
                 if (e.isConnectionError()
                         || (!e.isTimeout() && !apiResult.isHttpServerError()) && !apiResult.isNotFound()
                         || profile.hasBattery || (retries == 0)) {
@@ -129,9 +135,10 @@ public class ShellyHttpClient {
 
                 timeout = true;
                 timeoutErrors++; // count the retries
-                logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
-
                 retries--;
+                if (profile.alwaysOn) {
+                    logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
+                }
             }
         }
         throw new ShellyApiException("API Timeout or inconsistent result"); // successful

@@ -49,6 +49,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,7 +242,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                         }
                         if (!coiotBound) {
                             thingHandler.updateProperties(PROPERTY_COAP_VERSION, sVersion);
-                            logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
+                            logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
                             if (iVersion == COIOT_VERSION_1) {
                                 coiot = new Shelly1CoIoTVersion1(thingName, thingHandler, blkMap, sensorMap);
                             } else if (iVersion == COIOT_VERSION_2) {
@@ -265,7 +266,16 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 }
             }
 
+            // Don't change state to online when thing is in status config error
+            // (e.g. auth failed, but device sends COAP packets via multicast)
+            if (thingHandler.getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
+                logger.debug("{}: The device is not configuired correctly, skip Coap packet", thingName);
+                return;
+            }
+
             // If we received a CoAP message successful the thing must be online
+            thingHandler.setThingOnline();
+
             thingHandler.setThingOnline();
 
             // The device changes the serial on every update, receiving a message with the same serial is a
@@ -441,7 +451,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
         List<CoIotSensor> sensorUpdates = list.generic;
         Map<String, State> updates = new TreeMap<String, State>();
-        logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
+        logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
         ShellyColorUtils col = new ShellyColorUtils();
         for (int i = 0; i < sensorUpdates.size(); i++) {

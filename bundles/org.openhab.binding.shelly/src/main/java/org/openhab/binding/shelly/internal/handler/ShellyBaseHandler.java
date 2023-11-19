@@ -188,9 +188,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 start = initializeThing();
             } catch (ShellyApiException e) {
                 ShellyApiResult res = e.getApiResult();
+                ThingStatusDetail errorCode = ThingStatusDetail.COMMUNICATION_ERROR;
                 String mid = "";
                 if (e.isJsonError()) { // invalid JSON format
                     mid = "offline.status-error-unexpected-error";
+                    errorCode = ThingStatusDetail.CONFIGURATION_ERROR;
                     start = false;
                 } else if (isAuthorizationFailed(res)) {
                     mid = "offline.conf-error-access-denied";
@@ -199,9 +201,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     mid = "offline.status-error-connect";
                 }
                 if (!mid.isEmpty()) {
-                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, mid, e.toString());
+                    setThingOffline(errorCode, mid, e.toString());
+                } else {
+                    logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
                 }
-                logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
             } catch (IllegalArgumentException e) {
                 logger.debug("{}: Unable to initialize, retrying later", thingName, e);
             } finally {
@@ -562,9 +565,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 status = "offline.conf-error-access-denied";
             } else if (isWatchdogStarted()) {
                 if (!isWatchdogExpired()) {
-                    logger.debug("{}: Ignore API Timeout on {} {}, retry later", thingName, res.method, res.url);
                     if (profile.alwaysOn) { // suppress for battery powered sensors
                         logger.debug("{}: Ignore API Timeout on {} {}, retry later", thingName, res.method, res.url);
+                    } else {
+                        if (isThingOnline()) {
+                            status = "offline.status-error-watchdog";
+                        }
                     }
                 }
             } else if (e.isJSONException()) {
@@ -631,7 +637,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (prf.isRoller && prf.settings.favorites != null) {
             String channelId = mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_FAV);
-            logger.debug("{}: Adding {} roler favorite(s) to channel description", thingName,
+            logger.debug("{}: Adding {} roler favorite(s) to channel description", thingName,
                     prf.settings.favorites.size());
             channelDefinitions.clearStateOptions(channelId);
             int fid = 1;
@@ -1057,7 +1063,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 String minVersion = !gen2 ? SHELLY_API_MIN_FWVERSION : SHELLY2_API_MIN_FWVERSION;
                 if (version.compare(prf.fwVersion, minVersion) < 0) {
                     logger.warn("{}: {}", prf.device.hostname,
-                            messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
+                            messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, minVersion));
                 }
             }
             if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
@@ -1363,11 +1369,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         properties.put(PROPERTY_SERVICE_NAME, config.serviceName);
         String deviceName = getString(profile.settings.name);
         properties.put(PROPERTY_SERVICE_NAME, config.serviceName);
-        properties.put(PROPERTY_DEV_GEN, "1");
+        properties.put(PROPERTY_DEV_GEN, !profile.isGen2 ? "1" : "2");
+        properties.put(PROPERTY_DEV_AUTH, getBool(profile.device.auth) ? "yes" : "no");
         if (!deviceName.isEmpty()) {
             properties.put(PROPERTY_DEV_NAME, deviceName);
         }
-        properties.put(PROPERTY_DEV_GEN, !profile.isGen2 ? "1" : "2");
 
         // add status properties
         if (status.wifiSta != null) {
