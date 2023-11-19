@@ -11,7 +11,8 @@ Doing so allows concurrent access to your Velbus system by both openHAB and the 
 
 The binding exposes basic actions from the Velbus System that can be triggered from the smartphone/tablet interface, as defined by the [Velbus Protocol info sheets](https://github.com/velbus).
 
-Supported item types are switches, dimmers and rollershutters. Pushbutton, temperature sensors and input module states are retrieved and made available in the binding.
+Supported item types are switches, dimmers and rollershutters.
+Pushbutton, temperature sensors and input module states are retrieved and made available in the binding.
 
 ## Supported Things
 
