@@ -52,8 +52,6 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
 
     protected Set<String> listOn = new HashSet<String>();
 
-    // TODO private boolean isGeneral = false;
-
     public OpenWebNetLightingGroupHandler(Thing thing) {
         super(thing);
     }
@@ -62,7 +60,6 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
     public void initialize() {
         super.initialize();
         WhereLightAutom w = (WhereLightAutom) deviceWhere;
-        // isGeneral = w.isGeneral();
 
         OpenWebNetBridgeHandler bridge = bridgeHandler;
         if (w != null && bridge != null) {
@@ -201,22 +198,6 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
         }
     }
 
-    /*
-     * private String getAPLorAreaFromMessage(Lighting lmsg) {
-     * String oId = null;
-     * if (!isGeneral) {
-     * oId = bridgeHandler.ownIdFromMessage(lmsg);
-     * } else { // add A to GEN
-     * WhereLightAutom wl = (WhereLightAutom) lmsg.getWhere();
-     * int area = wl.getArea();
-     * if (area > 0) {
-     * oId = this.getManagedWho().value() + "." + area;
-     * }
-     * }
-     * return oId;
-     * }
-     */
-
     @Override
     protected Where buildBusWhere(String wStr) throws IllegalArgumentException {
         return new WhereLightAutom(wStr);
@@ -224,14 +205,13 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
 
     @Override
     public void dispose() {
-        // TODO
         Where w = deviceWhere;
         if (w != null) {
             int area = ((WhereLightAutom) w).getArea();
             OpenWebNetBridgeHandler brH = this.bridgeHandler;
-
-            // remove light from lightsMap
-            brH.removeLight(area, this);
+            if (brH != null) {
+                brH.removeLight(area, this);
+            }
         }
         super.dispose();
     }
