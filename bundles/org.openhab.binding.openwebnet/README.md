@@ -137,7 +137,7 @@ For any manually added device, you must configure:
     - dry Contact or IR Interface `99`: add `3` before --> `where="399"`
     - energy meter F520/F521 numbered `1`: add `5` before  --> `where="51"`
     - energy meter F522/F523 numbered `4`: add `7` before and `#0` after --> `where="74#0"`
-    - energy meter F522/F523 the `energyRefreshPeriod` configuration parameter sets the number of minutes between refreshes for energy totalizers (default: 30 minutes)
+    - energy meter F520/F521 the `energyRefreshPeriod` configuration parameter sets the number of minutes (the minimum value is 30, the maximum value is 1440) between refreshes for energy totalizers (default: 30 minutes) --> `energyRefreshPeriod` = 35  
     - alarm zone `2` --> `where="2"`
   - example for Zigbee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
 
