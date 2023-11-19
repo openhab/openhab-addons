@@ -2,7 +2,8 @@
 
 The Velbus binding integrates with a [Velbus](https://www.velbus.eu/) system through a Velbus configuration module (VMBRSUSB, VMB1USB or VMB1RS) or a network connection (TCP/IP).
 
-For optimal stability, the preferred configuration module is the VMBRSUSB module. Consider deploying a TCP bridge – the officially developed [python-velbustcp] or one of the [third party projects][3rd-party-servers] – in between the configuration module and openHAB.
+For optimal stability, the preferred configuration module is the VMBRSUSB module.
+Consider deploying a TCP bridge – the officially developed [python-velbustcp] or one of the [third party projects][3rd-party-servers] – in between the configuration module and openHAB.
 Doing so allows concurrent access to your Velbus system by both openHAB and the official configuration software.
 
 [python-velbustcp]: https://github.com/velbus/python-velbustcp
