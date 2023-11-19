@@ -71,7 +71,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     private int brightness = UNKNOWN_STATE; // current brightness percent value for this device
     private int brightnessBeforeOff = UNKNOWN_STATE; // latest brightness before device was set to off
 
-    // Set<String> listOn = new HashSet<String>();
     @Nullable
     String areaOwnId = null;
     int area = -1;
@@ -270,15 +269,13 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             updateOnOffState((Lighting) msg);
         }
 
-        // TODO WhereLightAutom msgWhere = (WhereLightAutom) msg.getWhere();
-
         OpenWebNetBridgeHandler brH = this.bridgeHandler;
         if (brH != null && dw != null && ownId != null && dw.isAPL()) {
             // Propagate APL msg to AREA handler, if exists
             OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
                     .getRegisteredDevice(areaOwnId);
             if (areaHandler != null) {
-                logger.debug("//////////////////// Device {} is Propagating msg {} to AREA handler {}", dw, msg,
+                logger.debug("//////////////////// Light {} is propagating msg {} to AREA handler {}", dw, msg,
                         areaOwnId);
                 areaHandler.handlePropagatedMessage((Lighting) msg, this.ownId);
             } else {
@@ -287,7 +284,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 OpenWebNetLightingGroupHandler genHandler = (OpenWebNetLightingGroupHandler) brH
                         .getRegisteredDevice(genOwnId);
                 if (genHandler != null) {
-                    logger.debug("////////////////////  Device {} is Propagating msg {} to GEN handler", dw, msg);
+                    logger.debug("////////////////////  Light {} is propagating msg {} to GEN handler", dw, msg);
                     genHandler.handlePropagatedMessage((Lighting) msg, this.ownId);
                 }
             }
@@ -300,21 +297,16 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         List<OpenWebNetThingHandler> l = null;
         if (w.isGeneral()) {
             l = this.bridgeHandler.getAllLights();
+            if (l != null) {
+                for (OpenWebNetThingHandler hndlr : l) {
+                    hndlr.handleMessage(msg);
+                }
+            }
         } else if (w.getArea() > 0) {
-            // l = map.getAreaHandlers(w.getArea());
-
             try {
                 send(Lighting.requestStatus(w.getArea() + ""));
             } catch (OWNException e) {
-                // TODO Auto-generated catch block
-                // e.printStackTrace();
-            }
-        }
-        if (l != null) {
-            for (OpenWebNetThingHandler hndlr : l) {
-                // TODO if (hndlr instanceof OpenWebNetLightingHandler) {
-                hndlr.handleMessage(msg);
-                // }
+                logger.warn("Excpetion while requesting refresh for light area: {}", e.getMessage());
             }
         }
     }
@@ -474,9 +466,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         Where w = deviceWhere;
         if (w != null) {
             int area = ((WhereLightAutom) w).getArea();
-
             OpenWebNetBridgeHandler brH = this.bridgeHandler;
-
             if (areaOwnId != null) {
                 // remove light from listOn for Area
                 OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
@@ -487,7 +477,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     }
                 }
             }
-
             // remove light from lightsMap
             brH.removeLight(area, this);
         }

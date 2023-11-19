@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Switch Group</label>
-		<description>An OpenWebNet BUS/SCS group of lights/loads (General, Area or Group addressing).</description>
+		<description>An OpenWebNet BUS/SCS group of lights/loads (General, Area or Group BUS addressing).</description>
 
 		<channels>
 			<channel id="switch" typeId="switch"/>
