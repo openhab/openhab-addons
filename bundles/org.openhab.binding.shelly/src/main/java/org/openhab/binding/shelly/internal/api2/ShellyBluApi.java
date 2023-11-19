@@ -140,7 +140,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             config.serviceName = getString(profile.device.hostname);
         }
 
-        // for now we have to API to get this information
+        // for now we have no API to get this information
         profile.fwDate = profile.fwVersion = profile.status.update.oldVersion = "";
         profile.status.hasUpdate = profile.status.update.hasUpdate = false;
 

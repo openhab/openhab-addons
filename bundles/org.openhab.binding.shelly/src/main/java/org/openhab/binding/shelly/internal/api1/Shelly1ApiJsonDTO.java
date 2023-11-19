@@ -281,18 +281,6 @@ public class Shelly1ApiJsonDTO {
         public Integer numEMeters;
         @SerializedName("num_rollers")
         public Integer numRollers;
-
-        // Gen2
-        public String model;
-        public String app;
-        public Integer slot;
-        @SerializedName("fw_id")
-        public Integer fwId;
-        public String ver;
-        @SerializedName("auth_en")
-        public Integer authEnabled;
-        @SerializedName("auth_domain")
-        public Integer authDomain;
     }
 
     public static class ShellySettingsWiFiAp {
