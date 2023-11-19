@@ -333,7 +333,7 @@
 		</parameter>
 		<parameter name="counter1PulseMultiplier" type="decimal">
 			<label>Counter 1 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 1</description>
+			<description>The pulse multiplier for counter 1.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -356,7 +356,7 @@
 		</parameter>
 		<parameter name="counter2PulseMultiplier" type="decimal">
 			<label>Counter 2 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 2</description>
+			<description>The pulse multiplier for counter 2.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -379,7 +379,7 @@
 		</parameter>
 		<parameter name="counter3PulseMultiplier" type="decimal">
 			<label>Counter 3 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 3</description>
+			<description>The pulse multiplier for counter 3.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -402,7 +402,7 @@
 		</parameter>
 		<parameter name="counter4PulseMultiplier" type="decimal">
 			<label>Counter 4 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 4</description>
+			<description>The pulse multiplier for counter 4.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
