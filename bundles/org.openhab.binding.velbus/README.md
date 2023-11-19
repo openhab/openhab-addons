@@ -2,7 +2,8 @@
 
 The Velbus binding integrates with a [Velbus](https://www.velbus.eu/) system through a Velbus configuration module (VMBRSUSB, VMB1USB or VMB1RS) or a network connection (TCP/IP).
 
-For optimal stability, the preferred configuration module is the VMBRSUSB module. Consider deploying a TCP bridge – the officially developed [python-velbustcp] or one of the [third party projects][3rd-party-servers] – in between the configuration module and openHAB. Doing so allows concurrent access to your Velbus system by both openHAB and the official configuration software.
+For optimal stability, the preferred configuration module is the VMBRSUSB module. Consider deploying a TCP bridge – the officially developed [python-velbustcp] or one of the [third party projects][3rd-party-servers] – in between the configuration module and openHAB.
+Doing so allows concurrent access to your Velbus system by both openHAB and the official configuration software.
 
 [python-velbustcp]: https://github.com/velbus/python-velbustcp
 [3rd-party-servers]: https://github.com/StefCoene/velserver/wiki/TCP-server-for-Velbus
@@ -84,11 +85,14 @@ xidel -e \
 
 ## Discovery
 
-The Velbus bridge cannot be discovered automatically. Configure it manually by defining the serial port of the Velbus Configuration module for the Velbus Serial Bridge or by defining the IP address and port for the Velbus Network Bridge, as described in the [`Thing Configuration`](#thing-configuration) section.
+The Velbus bridge cannot be discovered automatically.
+Configure it manually by defining the serial port of the Velbus Configuration module for the Velbus Serial Bridge or by defining the IP address and port for the Velbus Network Bridge, as described in the [`Thing Configuration`](#thing-configuration) section.
 
-Once the bridge has been configured with openHAB, a manual scan can be initiated to discover Velbus modules with an assigned address. Addresses can be assigned via the official configuration software, and is a required step before a Velbus installation can work correctly.
+Once the bridge has been configured with openHAB, a manual scan can be initiated to discover Velbus modules with an assigned address.
+Addresses can be assigned via the official configuration software, and is a required step before a Velbus installation can work correctly.
 
-The discovery scan can take a few minutes to complete. Modules discovered during this scan will appear in the inbox. This procedure will also retrieve the channel names of the Velbus devices.
+The discovery scan can take a few minutes to complete.
+Modules discovered during this scan will appear in the inbox. This procedure will also retrieve the channel names of the Velbus devices.
 
 ## Thing Configuration
 
@@ -98,9 +102,11 @@ The Velbus bridge needs to be added first.
 
 For the Velbus Serial Bridge it is necessary to specify the serial port device used for communication.
 
-On Linux and other UNIX systems, it is recommended to use a more stable symbolic device path such as `/dev/serial/by-id/usb-Velleman_Projects_VMB1USB_Velbus_USB_interface-if00`, as it will always refer at to a Velbus configuration module, and not an arbitrary serial device. If this is not a concern or an option, it is valid to refer to the serial device directly with a path such as `/dev/ttyS0`, `/dev/ttyUSB0` or `/dev/ttyACM0` (or a number other than `0` if multiple serial devices are connected.)
+On Linux and other UNIX systems, it is recommended to use a more stable symbolic device path such as `/dev/serial/by-id/usb-Velleman_Projects_VMB1USB_Velbus_USB_interface-if00`, as it will always refer at to a Velbus configuration module, and not an arbitrary serial device.
+If this is not a concern or an option, it is valid to refer to the serial device directly with a path such as `/dev/ttyS0`, `/dev/ttyUSB0` or `/dev/ttyACM0` (or a number other than `0` if multiple serial devices are connected.)
 
-On Windows `port` will refer to one of the COM devices such as `COM1`, `COM2`, etc. The Device Manager system utility can be used to determine the exact COM port number to use.
+On Windows `port` will refer to one of the COM devices such as `COM1`, `COM2`, etc.
+The Device Manager system utility can be used to determine the exact COM port number to use.
 
 In a `.things` file, a USB connection to a Velbus configuration module might be configured like so:
 
@@ -122,17 +128,20 @@ Bridge velbus:networkbridge:1 "Velbus Network Bridge - Loopback" @ "Control" [ a
 
 ### Realtime Clock Synchronization
 
-Optionally, the openHAB Velbus binding can synchronize the realtime clock, date and daylight savings status of the Velbus modules. This is achieved by setting the Time Update Interval (in minutes) on the bridge thing. For example:
+Optionally, the openHAB Velbus binding can synchronize the realtime clock, date and daylight savings status of the Velbus modules.
+This is achieved by setting the Time Update Interval (in minutes) on the bridge thing. For example:
 
 ```java
 Bridge velbus:bridge:1 [ port="COM1", timeUpdateInterval="360" ]
 ```
 
-If `timeUpdateInterval` is not specified, the time will be updated every 360 minutes by default. In order to disable this behaviour, set the interval to 0 or an empty string.
+If `timeUpdateInterval` is not specified, the time will be updated every 360 minutes by default.
+In order to disable this behaviour, set the interval to 0 or an empty string.
 
 ### Reconnection
 
-In case of a connection error, a Velbus bridge will attempt to reconnect every 15 seconds by default. You can modify the bridge reconnection interval by specifying the `reconnectionInterval` parameter (in seconds):
+In case of a connection error, a Velbus bridge will attempt to reconnect every 15 seconds by default.
+You can modify the bridge reconnection interval by specifying the `reconnectionInterval` parameter (in seconds):
 
 ```java
 Bridge velbus:bridge:1 [ port="COM1", reconnectionInterval="15" ]
@@ -142,7 +151,8 @@ Bridge velbus:bridge:1 [ port="COM1", reconnectionInterval="15" ]
 
 Adding Velbus modules to your openHAB configuration follows the conventions of your preferred configuration method.
 
-* **UI-based configuration:** Invoke a manual scan from the Things menu in order to start the [discovery process](#discovery). Discovered modules can be found in the inbox.
+* **UI-based configuration:** Invoke a manual scan from the Things menu in order to start the [discovery process](#discovery).
+Discovered modules can be found in the inbox.
 * **Textual `.thing` configuration** can declare Velbus modules either in a standalone fashion (a bridge is still required):
 
   ```java
@@ -169,7 +179,8 @@ Individual module `Thing`’s channels can be linked to openHAB items via channe
 
 #### Additional properties
 
-Some module types have additional functionality not represented well by the trigger channels. A prime example of this is a temperature sensor, measurements of which must be polled.
+Some module types have additional functionality not represented well by the trigger channels.
+A prime example of this is a temperature sensor, measurements of which must be polled.
 
 The following table lists these additional properties and the modules that support the corresponding property:
 
@@ -348,9 +359,9 @@ Switch KitchenButton        { channel="velbus:vmb2pbn:1:05:button#CH1" }        
 Dimmer TVRoom               { channel="velbus:vmb4dc:1:07:CH2" }                  # Changing brightness dimmer type action
 Rollershutter Kitchen       { channel="velbus:vmb2ble:1:01" }                     # Controlling rollershutter or blind type action
 
-Number Temperature_LivingRoom   "Temperature [%.1f °C]"     <temperature> { channel="velbus:vmbgp1:1:08:CH09" }
+Number Temperature_LivingRoom "Temperature [%.1f °C]"     <temperature> { channel="velbus:vmbgp1:1:08:CH09" }
 Number Temperature_Corridor   "Temperature [%.1f °C]"     <temperature> { channel="velbus:vmbgpo:1:0C:CH33" }
-Number Temperature_Outside   "Temperature [%.1f °C]"     <temperature> { channel="velbus:vmbpiro:1:0E:CH09" }
+Number Temperature_Outside    "Temperature [%.1f °C]"     <temperature> { channel="velbus:vmbpiro:1:0E:CH09" }
 ```
 
 .sitemap:
