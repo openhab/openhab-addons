@@ -114,6 +114,22 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, onOffValue, "On/Off State", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
         }
+
+        if (effectValue != null) {
+            buildChannel(EFFECT_CHANNEL_ID, Objects.requireNonNull(effectValue), "Lighting Effect", this)
+                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleEffectCommand(command)).build();
+
+        }
+    }
+
+    private boolean handleEffectCommand(Command command) {
+        if (command instanceof StringType) {
+            JSONState json = new JSONState();
+            json.state = "ON";
+            json.effect = command.toString();
+            publishState(json);
+        }
+        return false;
     }
 
     @Override
@@ -151,6 +167,10 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             }
         }
 
+        publishState(json);
+    }
+
+    private void publishState(JSONState json) {
         String command = getGson().toJson(json);
         logger.debug("Publishing new state '{}' of light {} to MQTT.", command, getName());
         rawChannel.getState().publishValue(new StringType(command));
@@ -222,6 +242,15 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         } catch (JsonSyntaxException e) {
             logger.warn("Cannot parse JSON light state '{}' for '{}'.", state, getHaID());
             return;
+        }
+
+        if (effectValue != null) {
+            if (jsonState.effect != null) {
+                effectValue.update(new StringType(jsonState.effect));
+                listener.updateChannelState(buildChannelUID(EFFECT_CHANNEL_ID), effectValue.getChannelState());
+            } else {
+                listener.updateChannelState(buildChannelUID(EFFECT_CHANNEL_ID), UnDefType.NULL);
+            }
         }
 
         if (jsonState.state != null) {
