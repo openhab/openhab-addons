@@ -76,10 +76,10 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
      */
     public static class ReleaseState {
         // these are designed to fit in with the default property of firmwareVersion
-        public static String PROPERTY_LATEST_VERSION = "latestFirmwareVersion";
-        public static String PROPERTY_TITLE = "firmwareTitle";
-        public static String PROPERTY_RELEASE_SUMMARY = "firmwareSummary";
-        public static String PROPERTY_RELEASE_URL = "firmwareURL";
+        public static final String PROPERTY_LATEST_VERSION = "latestFirmwareVersion";
+        public static final String PROPERTY_TITLE = "firmwareTitle";
+        public static final String PROPERTY_RELEASE_SUMMARY = "firmwareSummary";
+        public static final String PROPERTY_RELEASE_URL = "firmwareURL";
 
         @Nullable
         String installedVersion;
