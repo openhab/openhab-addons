@@ -75,6 +75,8 @@ public class ComponentFactory {
                 return new Lock(componentConfiguration);
             case "number":
                 return new Number(componentConfiguration);
+            case "scene":
+                return new Scene(componentConfiguration);
             case "select":
                 return new Select(componentConfiguration);
             case "sensor":
