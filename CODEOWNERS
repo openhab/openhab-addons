@@ -219,9 +219,9 @@
 /bundles/org.openhab.binding.mpd/ @stefanroellin
 /bundles/org.openhab.binding.mqtt/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.mqtt.espmilighthub/ @Skinah
-/bundles/org.openhab.binding.mqtt.generic/ @openhab/add-ons-maintainers
-/bundles/org.openhab.binding.mqtt.homeassistant/ @antroids
-/bundles/org.openhab.binding.mqtt.homie/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.mqtt.generic/ @openhab/add-ons-maintainers @ccutrer
+/bundles/org.openhab.binding.mqtt.homeassistant/ @antroids @ccutrer
+/bundles/org.openhab.binding.mqtt.homie/ @openhab/add-ons-maintainers @ccutrer
 /bundles/org.openhab.binding.mqtt.ruuvigateway/ @ssalonen
 /bundles/org.openhab.binding.mycroft/ @dalgwen
 /bundles/org.openhab.binding.mybmw/ @weymann @ntruchsess
