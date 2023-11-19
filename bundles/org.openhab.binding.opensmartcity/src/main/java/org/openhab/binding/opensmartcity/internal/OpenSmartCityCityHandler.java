@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.opensmartcity.internal;
 
+import java.util.Base64;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -28,7 +29,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,24 +41,24 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-public class OpenSmartCityCityHandler extends BaseThingHandler {
+public class OpenSmartCityCityHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set
             .of(org.openhab.binding.opensmartcity.internal.OpenSmartCityBindingConstants.THING_TYPE_WEATHER);
+
+    // TODO: Hardcoded for PoC
+    public String basePath = "https://frost.solingen.de:8443/FROST-Server";
 
     private static final String PATH_AVAILABILITY = "/v1.1/Locations";
 
     private final Logger logger = LoggerFactory.getLogger(OpenSmartCityCityHandler.class);
 
-    private final HttpClient httpClient;
+    public final HttpClient httpClient;
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
     // keeps track of the parsed config
-    private @Nullable OpenSmartCityConfiguration config;
-
-    // TODO: Hardcoded for PoC
-    private String basePath = "https://frost.solingen.de:8443/FROST-Server";
+    public @NonNullByDefault({}) OpenSmartCityCityConfiguration config;
 
     public OpenSmartCityCityHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
@@ -66,8 +67,8 @@ public class OpenSmartCityCityHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initialize OpenWeatherMap API handler '{}'.", getThing().getUID());
-        config = getConfigAs(org.openhab.binding.opensmartcity.internal.OpenSmartCityConfiguration.class);
+        logger.debug("Initialize handler '{}'.", getThing().getUID());
+        config = getConfigAs(org.openhab.binding.opensmartcity.internal.OpenSmartCityCityConfiguration.class);
 
         boolean configValid = true;
         if (config.city.isBlank()) {
@@ -97,20 +98,26 @@ public class OpenSmartCityCityHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // no channels to deal with
-
     }
 
     private void checkAvailability() {
         try {
             String url = basePath + PATH_AVAILABILITY;
             logger.debug("Requesting {}", url);
-            Request request = httpClient.newRequest(basePath + PATH_AVAILABILITY);
+
+            Request request = httpClient.newRequest(url);
+
+            // TODO: remove hard coded credentials
+            request.getHeaders().add("Authorization",
+                    "Basic " + Base64.getEncoder().encodeToString(("smarthomeuser:Solingen2030!").getBytes()));
             ContentResponse response = request.send();
             if (response.getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 // TODO: check exact problem
                 updateStatus(ThingStatus.OFFLINE);
+                logger.debug("HTTP request failed with response code {}: {}", response.getStatus(),
+                        response.getReason());
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -128,5 +135,4 @@ public class OpenSmartCityCityHandler extends BaseThingHandler {
             }
         }
     }
-
 }

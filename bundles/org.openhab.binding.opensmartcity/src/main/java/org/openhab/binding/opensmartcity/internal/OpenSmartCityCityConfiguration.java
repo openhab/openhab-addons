@@ -15,12 +15,12 @@ package org.openhab.binding.opensmartcity.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link OpenSmartCityConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link OpenSmartCityCityConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-public class OpenSmartCityConfiguration {
+public class OpenSmartCityCityConfiguration {
 
     public String city = "";
     public int refreshInterval = 600;

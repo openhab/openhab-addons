@@ -13,7 +13,7 @@
 				<label>City</label>
 				<description>The city for which to retrieve the data from</description>
 				<options>
-				    <option value="Solingen">Solingen</option>
+					<option value="Solingen">Solingen</option>
 				</options>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="60">
@@ -25,26 +25,26 @@
 		</config-description>
 	</bridge-type>
 
-    <thing-type id="weather">
-        <supported-bridge-type-refs>
-        <bridge-type-ref id="city" />
-        </supported-bridge-type-refs>
+	<thing-type id="weather">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="city"/>
+		</supported-bridge-type-refs>
 
-        <label>Local Weather</label>
-        <description>Local weather information</description>
+		<label>Local Weather</label>
+		<description>Local weather information</description>
 
-        <channels>
-            <channel typeId="system.outdoor-temperature" id="temperature"></channel>
-            <channel id="humidity" typeId="system.atmospheric-humidity"/>
-        </channels>
-        
-        <config-description>
-        <parameter name="location" type="text" required="true">
-            <context>location</context>
-            <label>Location of Weather</label>
-            <description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
-        </parameter>
-        </config-description>        
-    </thing-type>
+		<channels>
+			<channel typeId="system.outdoor-temperature" id="temperature"></channel>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+		</channels>
+
+		<config-description>
+			<parameter name="location" type="text" required="true">
+				<context>location</context>
+				<label>Location of Weather</label>
+				<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 </thing:thing-descriptions>
