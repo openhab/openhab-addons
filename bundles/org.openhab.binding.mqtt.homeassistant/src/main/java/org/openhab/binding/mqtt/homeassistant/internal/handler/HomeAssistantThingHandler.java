@@ -358,7 +358,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         if (configurationParameters.containsKey("doUpdate")) {
             configurationParameters = new HashMap<>(configurationParameters);
             Object value = configurationParameters.remove("doUpdate");
-            if (value instanceof Boolean && ((Boolean) value) == true) {
+            if (value instanceof Boolean doUpdate && doUpdate) {
                 Update updateComponent = this.updateComponent;
                 if (updateComponent == null) {
                     logger.warn(
