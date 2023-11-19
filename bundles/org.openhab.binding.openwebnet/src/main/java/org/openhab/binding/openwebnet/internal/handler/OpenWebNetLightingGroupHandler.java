@@ -190,6 +190,15 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         super.handleMessage(msg);
+
+        WhereLightAutom w = (WhereLightAutom) deviceWhere;
+        if (w != null && w.isGroup()) {
+            if (((Lighting) msg).isOff()) {
+                updateState(CHANNEL_SWITCH, OnOffType.OFF);
+            } else {
+                updateState(CHANNEL_SWITCH, OnOffType.ON);
+            }
+        }
     }
 
     /*
