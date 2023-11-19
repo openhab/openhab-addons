@@ -35,7 +35,7 @@
 			</parameter>
 			<parameter name="energyRefreshPeriod" type="integer" unit="min" min="30" max="1440">
 				<label>Energy Totalizers Refresh Period</label>
-				<description> Sets the number of minutes between refreshes for energy totalizers (default: 30 minutes)</description>
+				<description>Sets the number of minutes between refreshes for energy totalizers (default: 30 minutes)</description>
 				<default>30</default>
 			</parameter>
 		</config-description>
