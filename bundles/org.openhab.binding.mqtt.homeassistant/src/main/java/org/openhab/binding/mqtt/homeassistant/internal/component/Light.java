@@ -47,7 +47,7 @@ import com.google.gson.annotations.SerializedName;
  * three different schemas.
  *
  * As of now, only on/off, brightness, and RGB are fully implemented and tested.
- * HS and XY are implemented, but not tested. Color temp and effect are only
+ * HS and XY are implemented, but not tested. Color temp is only
  * implemented (but not tested) for the default schema.
  *
  * @author David Graeff - Initial contribution
@@ -246,7 +246,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     protected OnOffValue onOffValue;
     protected PercentageValue brightnessValue;
     protected final NumberValue colorTempValue;
-    protected final TextValue effectValue = new TextValue();
+    protected final @Nullable TextValue effectValue;
     protected final ColorValue colorValue = new ColorValue(ColorMode.HSB, null, null, 100);
 
     protected final List<ComponentChannel> hiddenChannels = new ArrayList<>();
@@ -280,6 +280,13 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         onOffValue = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
         brightnessValue = new PercentageValue(null, new BigDecimal(channelConfiguration.brightnessScale), null, null,
                 null);
+        @Nullable
+        List<String> effectList = channelConfiguration.effectList;
+        if (effectList != null) {
+            effectValue = new TextValue(effectList.toArray(new String[0]));
+        } else {
+            effectValue = null;
+        }
         @Nullable
         BigDecimal min = null, max = null;
         if (channelConfiguration.minMireds != null) {
