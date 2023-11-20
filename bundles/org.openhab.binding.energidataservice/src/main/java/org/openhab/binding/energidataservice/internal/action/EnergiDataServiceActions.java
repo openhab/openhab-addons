@@ -63,11 +63,11 @@ public class EnergiDataServiceActions implements ThingActions {
 
     private enum PriceComponent {
         SPOT_PRICE("spotprice", null),
-        NET_TARIFF("nettariff", DatahubTariff.NET_TARIFF),
+        GRID_TARIFF("gridtariff", DatahubTariff.GRID_TARIFF),
         SYSTEM_TARIFF("systemtariff", DatahubTariff.SYSTEM_TARIFF),
+        TRANSMISSION_GRID_TARIFF("transmissiongridtariff", DatahubTariff.TRANSMISSION_GRID_TARIFF),
         ELECTRICITY_TAX("electricitytax", DatahubTariff.ELECTRICITY_TAX),
-        REDUCED_ELECTRICITY_TAX("reducedelectricitytax", DatahubTariff.REDUCED_ELECTRICITY_TAX),
-        TRANSMISSION_NET_TARIFF("transmissionnettariff", DatahubTariff.TRANSMISSION_NET_TARIFF);
+        REDUCED_ELECTRICITY_TAX("reducedelectricitytax", DatahubTariff.REDUCED_ELECTRICITY_TAX);
 
         private static final Map<String, PriceComponent> NAME_MAP = Stream.of(values())
                 .collect(Collectors.toMap(PriceComponent::toString, Function.identity()));

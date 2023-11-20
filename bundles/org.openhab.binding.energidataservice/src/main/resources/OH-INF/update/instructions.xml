@@ -13,6 +13,21 @@
 			</add-channel>
 		</instruction-set>
 
+		<instruction-set targetVersion="2">
+			<add-channel id="grid-tariff" groupIds="electricity">
+				<type>energidataservice:datahub-price</type>
+				<label>Grid Tariff</label>
+				<description>Current grid tariff in DKK per kWh.</description>
+			</add-channel>
+			<add-channel id="transmission-grid-tariff" groupIds="electricity">
+				<type>energidataservice:datahub-price</type>
+				<label>Transmission Grid Tariff</label>
+				<description>Current transmission grid tariff in DKK per kWh.</description>
+			</add-channel>
+			<remove-channel id="net-tariff" groupIds="electricity"/>
+			<remove-channel id="transmission-net-tariff" groupIds="electricity"/>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>
