@@ -198,7 +198,7 @@ public class EnergiDataServiceActionsTest {
     }
 
     @Test
-    void getPricesTotalAllElements() throws IOException {
+    void getPricesTotalAllComponents() throws IOException {
         mockCommonDatasets(actions);
 
         Map<Instant, BigDecimal> actual = actions
@@ -210,7 +210,7 @@ public class EnergiDataServiceActionsTest {
     }
 
     @Test
-    void getPricesInvalidPriceElement() throws IOException {
+    void getPricesInvalidPriceComponent() throws IOException {
         mockCommonDatasets(actions);
 
         Map<Instant, BigDecimal> actual = actions.getPrices("spotprice,nettarif");
