@@ -13,6 +13,7 @@
 package org.openhab.binding.sensorpush.internal.protocol;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Base64.Decoder;
@@ -41,7 +42,7 @@ public class JwtInfo {
     public JwtInfo(@Nullable String jwtString) {
         Gson gson = new Gson();
         Decoder decoder = Base64.getDecoder();
-        Charset charset = Charset.forName("UTF-8");
+        Charset charset = StandardCharsets.UTF_8;
 
         JwtToken token;
 
