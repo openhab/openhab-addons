@@ -40,7 +40,7 @@ To obtain the Global Location Number of your grid company:
 
 For customers using electricity for heating, a reduced electricity tax rate may apply after consuming the first 4000 kWh within a year.
 When you are entitled to reduced electricity tax, this option should be set.
-This will ensure that thing action calculations use the reduced electricity tax rate when price elements are not explicitly provided.
+This will ensure that thing action calculations use the reduced electricity tax rate when price components are not explicitly provided.
 It will not impact channels, see [Electricity Tax](#electricity-tax) for further information.
 
 ## Channels
@@ -170,7 +170,7 @@ Historic prices older than 24 hours are removed from the JSON array each hour.
 ## Thing Actions
 
 Thing actions can be used to perform calculations as well as import prices directly into rules without deserializing JSON from the [hourly-prices](#hourly-prices) channel.
-This is more convenient, much faster, and provides automatic summation of the price elements of interest.
+This is more convenient, much faster, and provides automatic summation of the price components of interest.
 
 Actions use cached data for performing operations.
 Since data is only fetched when an item is linked to a channel, there might not be any cached data available.
@@ -327,14 +327,14 @@ var price = actions.calculatePrice(now.toInstant(), now.plusHours(4).toInstant, 
 
 | Parameter          | Type                        | Description                                            |
 |--------------------|-----------------------------|--------------------------------------------------------|
-| priceElements      | `String`                    | Comma-separated list of price elements to include      |
+| priceComponents    | `String`                    | Comma-separated list of price components to include    |
 
 **Result:** `Map<Instant, BigDecimal>`
 
-The parameter `priceElements` is a case-insensitive comma-separated list of price elements to include in the returned hourly prices.
-These elements can be requested:
+The parameter `priceComponents` is a case-insensitive comma-separated list of price components to include in the returned hourly prices.
+These components can be requested:
 
-| Price element         | Description             |
+| Price component       | Description             |
 |-----------------------|-------------------------|
 | SpotPrice             | Spot price              |
 | NetTariff             | Net tariff              |
@@ -343,7 +343,7 @@ These elements can be requested:
 | ReducedElectricityTax | Reduced electricity tax |
 | TransmissionNetTariff | Transmission net tariff |
 
-Using `null` as parameter returns the total prices including all price elements.
+Using `null` as parameter returns the total prices including all price components.
 If **Reduced Electricity Tax** is set in Thing configuration, `ElectricityTax` will be excluded, otherwise `ReducedElectricityTax`.
 This logic ensures consistent and comparable results not affected by artifical changes in the rate for electricity tax two times per year.
 
