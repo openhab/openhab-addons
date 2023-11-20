@@ -113,10 +113,10 @@ public class RokuCommunicator {
         try {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_DEVICE_INFO;
             if (ctx != null) {
+                final String response = getCommand(urlQryDevice);
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
-                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
-                            .createXMLStreamReader(new StringReader(getCommand(urlQryDevice)));
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                     DeviceInfo device = (DeviceInfo) unmarshaller.unmarshal(xsr);
                     if (device != null) {
                         return device;
@@ -139,10 +139,10 @@ public class RokuCommunicator {
         try {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_ACTIVE_APP;
             if (ctx != null) {
+                final String response = getCommand(urlQryActiveApp);
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
-                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
-                            .createXMLStreamReader(new StringReader(getCommand(urlQryActiveApp)));
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                     ActiveApp activeApp = (ActiveApp) unmarshaller.unmarshal(xsr);
                     if (activeApp != null) {
                         return activeApp;
@@ -165,10 +165,10 @@ public class RokuCommunicator {
         try {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_APPS;
             if (ctx != null) {
+                final String response = getCommand(urlQryApps);
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
-                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
-                            .createXMLStreamReader(new StringReader(getCommand(urlQryApps)));
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                     Apps appList = (Apps) unmarshaller.unmarshal(xsr);
                     if (appList != null) {
                         return appList.getApp();
@@ -191,10 +191,10 @@ public class RokuCommunicator {
         try {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_PLAYER;
             if (ctx != null) {
+                final String response = getCommand(urlQryPlayer);
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
-                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
-                            .createXMLStreamReader(new StringReader(getCommand(urlQryPlayer)));
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                     Player playerInfo = (Player) unmarshaller.unmarshal(xsr);
                     if (playerInfo != null) {
                         return playerInfo;
@@ -217,10 +217,10 @@ public class RokuCommunicator {
         try {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_TVCHANNEL;
             if (ctx != null) {
+                final String response = getCommand(urlQryActiveTvChannel);
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
-                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
-                            .createXMLStreamReader(new StringReader(getCommand(urlQryActiveTvChannel)));
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                     TvChannel tvChannelInfo = (TvChannel) unmarshaller.unmarshal(xsr);
                     if (tvChannelInfo != null) {
                         return tvChannelInfo;
@@ -243,10 +243,10 @@ public class RokuCommunicator {
         try {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_TVCHANNELS;
             if (ctx != null) {
+                final String response = getCommand(urlQryTvChannels);
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
-                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
-                            .createXMLStreamReader(new StringReader(getCommand(urlQryTvChannels)));
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                     TvChannels tvChannels = (TvChannels) unmarshaller.unmarshal(xsr);
                     if (tvChannels != null) {
                         return tvChannels.getChannel();
@@ -264,13 +264,14 @@ public class RokuCommunicator {
      *
      * @param url The url to send with the command embedded in the URI
      * @return The response content of the http request
+     * @throws RokuHttpException
      */
-    private String getCommand(String url) {
+    private String getCommand(String url) throws RokuHttpException {
         try {
             return httpClient.GET(url).getContentAsString();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error executing player GET command, URL: {}, {} ", url, e.getMessage());
-            return "";
+            logger.debug("Error executing GET command, URL: {}, {} ", url, e.getMessage());
+            throw new RokuHttpException("Error executing GET command for URL: " + url);
         }
     }
 
@@ -284,7 +285,7 @@ public class RokuCommunicator {
         try {
             httpClient.POST(url).method(HttpMethod.POST).send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new RokuHttpException("Error executing player POST command, URL: " + url + e.getMessage());
+            throw new RokuHttpException("Error executing POST command, URL: " + url + e.getMessage());
         }
     }
 }
