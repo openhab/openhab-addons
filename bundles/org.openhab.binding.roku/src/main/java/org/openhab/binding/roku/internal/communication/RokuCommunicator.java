@@ -35,8 +35,6 @@ import org.openhab.binding.roku.internal.dto.Player;
 import org.openhab.binding.roku.internal.dto.TvChannel;
 import org.openhab.binding.roku.internal.dto.TvChannels;
 import org.openhab.binding.roku.internal.dto.TvChannels.Channel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Methods for accessing the HTTP interface of the Roku
@@ -45,7 +43,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RokuCommunicator {
-    private final Logger logger = LoggerFactory.getLogger(RokuCommunicator.class);
     private final HttpClient httpClient;
 
     private final String urlKeyPress;
@@ -269,9 +266,11 @@ public class RokuCommunicator {
     private String getCommand(String url) throws RokuHttpException {
         try {
             return httpClient.GET(url).getContentAsString();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error executing GET command, URL: {}, {} ", url, e.getMessage());
-            throw new RokuHttpException("Error executing GET command for URL: " + url);
+        } catch (TimeoutException | ExecutionException e) {
+            throw new RokuHttpException("Error executing GET command for URL: " + url, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RokuHttpException("InterruptedException executing GET command for URL: " + url, e);
         }
     }
 
@@ -284,8 +283,11 @@ public class RokuCommunicator {
     private void postCommand(String url) throws RokuHttpException {
         try {
             httpClient.POST(url).method(HttpMethod.POST).send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new RokuHttpException("Error executing POST command, URL: " + url + e.getMessage());
+        } catch (TimeoutException | ExecutionException e) {
+            throw new RokuHttpException("Error executing POST command, URL: " + url, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RokuHttpException("InterruptedException executing POST command for URL: " + url, e);
         }
     }
 }
