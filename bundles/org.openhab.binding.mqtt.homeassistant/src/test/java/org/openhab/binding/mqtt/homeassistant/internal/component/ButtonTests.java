@@ -16,12 +16,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 
 /**
  * Tests for {@link Button}
@@ -57,6 +59,8 @@ public class ButtonTests extends AbstractComponentTests {
 
         assertChannel(component, Button.BUTTON_CHANNEL_ID, "", "esphome/single-car-gdo/button/restart/command",
                 "Restart", TextValue.class);
+        assertThat(Objects.requireNonNull(component.getChannel(Button.BUTTON_CHANNEL_ID)).getChannel()
+                .getAutoUpdatePolicy(), is(AutoUpdatePolicy.VETO));
 
         assertThrows(IllegalArgumentException.class,
                 () -> component.getChannel(Button.BUTTON_CHANNEL_ID).getState().publishValue(new StringType("ON")));
