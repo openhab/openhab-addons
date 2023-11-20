@@ -56,7 +56,7 @@ On `Linux/macOs` you need to place the `libwhisper.so/libwhisper.dydib` at `/usr
 
 On `Windows` the `whisper.dll` file can be placed at in any directory listed at the variable `$env:PATH`, for example `X:\\Windows\System32\`.
 
-These is sample script for building a device specific whisper.cpp shared library using cmake in debian:
+Here is a sample script for building a device specific whisper.cpp shared library using cmake in debian:
 
 ```bash
 #!/bin/bash
@@ -79,7 +79,6 @@ sudo mv build/libwhisper.so /usr/local/lib/
 In the [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) README you can find information about the required flags to enable different acceleration methods on the cmake build and other relevant information.
 
 Note: You need to restart OpenHAB to reload the library.
-
 
 ## Configuration
 
@@ -109,6 +108,43 @@ Use your favorite configuration UI to edit the Whisper settings:
 * **Audio Context** - Overwrite the audio context size. (0 for default)
 * **Temperature** - Temperature threshold.
 * **Initial Prompt** - Initial prompt for whisper.
+* **Grammar** - Enable the use '$OPENHAB_USERDATA/whisper/grammar.gbnf' file to limit grammar.
+* **Grammar penalty** - Penalty for non grammar tokens.
+
+### Grammar
+
+You can use the file '$OPENHAB_USERDATA/whisper/grammar.gbnf' to define a grammar for whisper, this is specially useful to get usable result for the smallest models (tiny/base).
+
+This is an example:
+
+```ebdf
+# Grammar should define the root expression.
+# It should end with a dot, and its prefixed with a space like default whisper transcriptions.
+root     ::= " " command "."
+# Alternative command expression to expand into the root.
+command  ::= "Turn " onoff " " (connector)? thing |
+             put " " thing " to " state |
+             watch " " show " at bedroom"
+
+# You can use as many expressions as you need.
+thing   ::= "light" | "bedroom light" | "living room light" | "tv" |
+          "computer" | "bedroom tv"
+
+put     ::= "set" | "put"
+
+onoff  ::= "on" | "off"
+
+watch   ::= "watch" | "play"
+
+connector ::= "the"
+
+state   ::= "low" | "high" | "normal"
+
+show  ::= "title one" | "title two"
+
+```
+
+The addon uses the [grammar parser implementation available at whisper.cpp examples](https://github.com/ggerganov/whisper.cpp/blob/master/examples/grammar-parser.cpp).
 
 ### Messages Configuration
 

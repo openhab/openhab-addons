@@ -168,11 +168,18 @@
 			<label>Use GPU</label>
 			<description>Enables GPU usage. (built-in binaries do not support GPU usage, this has no effect)</description>
 			<default>true</default>
+			<advanced>true</advanced>
 		</parameter>
-		<parameter name="initialPrompt" type="text" groupName="whisper">
-			<label>Initial Prompt</label>
-			<description>Initial prompt to feed whisper with.</description>
-			<default>CPU</default>
+		<parameter name="useGrammar" type="boolean" groupName="whisper">
+			<label>Use Grammar</label>
+			<description>Use 'grammar.gbnf' file from whisper userdata dir.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="grammarPenalty" type="decimal" groupName="whisper" min="0" max="100" step="0.01">
+			<label>grammarPenalty</label>
+			<description>Penalty for non grammar tokens when using grammar.</description>
+			<default>100</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="errorMessage" type="text" groupName="messages">

@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -71,6 +70,7 @@ import io.github.givimad.libfvadjni.VoiceActivityDetector;
 import io.github.givimad.whisperjni.WhisperContext;
 import io.github.givimad.whisperjni.WhisperContextParams;
 import io.github.givimad.whisperjni.WhisperFullParams;
+import io.github.givimad.whisperjni.WhisperGrammar;
 import io.github.givimad.whisperjni.WhisperJNI;
 import io.github.givimad.whisperjni.WhisperSamplingStrategy;
 import io.github.givimad.whisperjni.WhisperState;
@@ -87,6 +87,7 @@ import io.github.givimad.whisperjni.WhisperState;
 public class WhisperSTTService implements STTService {
     protected static final Path WHISPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "whisper");
     private static final Path SAMPLES_FOLDER = Path.of(WHISPER_FOLDER.toString(), "samples");
+    private static final Path GRAMMAR_FILE = Path.of(WHISPER_FOLDER.toString(), "grammar.gbnf");
     private static final int WHISPER_SAMPLE_RATE = 16000;
 
     private final Logger logger = LoggerFactory.getLogger(WhisperSTTService.class);
@@ -94,6 +95,7 @@ public class WhisperSTTService implements STTService {
     private final LocaleService localeService;
     private WhisperSTTConfiguration config = new WhisperSTTConfiguration();
     private @Nullable WhisperContext context;
+    private @Nullable WhisperGrammar grammar;
     private @Nullable WhisperJNI whisper;
 
     @Activate
@@ -152,6 +154,11 @@ public class WhisperSTTService implements STTService {
     @Deactivate
     protected void deactivate(Map<String, Object> config) {
         try {
+            WhisperGrammar grammar = this.grammar;
+            if (grammar != null) {
+                grammar.close();
+                this.grammar = null;
+            }
             unloadContext();
         } catch (IOException e) {
             logger.warn("IOException unloading model: {}", e.getMessage());
@@ -162,9 +169,29 @@ public class WhisperSTTService implements STTService {
     private void configChange(Map<String, Object> config) {
         this.config = new Configuration(config).as(WhisperSTTConfiguration.class);
         WhisperJNI.setLibraryLogger(this.config.enableWhisperLog ? this::onWhisperLog : null);
+        WhisperGrammar grammar = this.grammar;
+        if (grammar != null) {
+            grammar.close();
+            this.grammar = null;
+        }
+        WhisperJNI whisper;
+        try {
+            whisper = getWhisper();
+        } catch (IOException ignored) {
+            logger.warn("library not loaded, the add-on will not work");
+            return;
+        }
+        if (this.config.useGrammar && Files.exists(GRAMMAR_FILE) && !Files.isDirectory(GRAMMAR_FILE)) {
+            try {
+                logger.debug("Parsing GBNF grammar file");
+                this.grammar = whisper.parseGrammar(GRAMMAR_FILE);
+            } catch (IOException e) {
+                logger.warn("Error parsing grammar: {}", e.getMessage());
+            }
+        }
         if (this.config.preloadModel) {
             try {
-                loadContext();
+                var ignored = loadContext();
             } catch (IOException e) {
                 logger.warn("IOException loading model: {}", e.getMessage());
             } catch (UnsatisfiedLinkError e) {
@@ -299,9 +326,8 @@ public class WhisperSTTService implements STTService {
         }
     }
 
-    private Future<?> backgroundRecognize(WhisperJNI whisper, WhisperContext ctx, WhisperState state,
-            final int nSamplesStep, Locale locale, STTListener sttListener, InputStream audioStream, VAD vad,
-            AtomicBoolean aborted) {
+    private void backgroundRecognize(WhisperJNI whisper, WhisperContext ctx, WhisperState state, final int nSamplesStep,
+            Locale locale, STTListener sttListener, InputStream audioStream, VAD vad, AtomicBoolean aborted) {
         var releaseContext = !config.preloadModel;
         final int nSamplesMax = config.maxSeconds * WHISPER_SAMPLE_RATE;
         final int nSamplesMin = (int) (config.minSeconds * (float) WHISPER_SAMPLE_RATE);
@@ -316,7 +342,7 @@ public class WhisperSTTService implements STTService {
         final short[] stepAudioSamples = new short[nSamplesStep];
         // used to store the full samples in whisper wanted format 32-bit float
         final float[] audioSamples = new float[nSamplesMax];
-        return executor.submit(() -> {
+        executor.submit(() -> {
             int audioSamplesOffset = 0;
             int silenceSamplesCounter = 0;
             int nProcessedSamples = 0;
@@ -494,10 +520,9 @@ public class WhisperSTTService implements STTService {
                 // emit result
                 if (!aborted.get()) {
                     sttListener.sttEventReceived(new RecognitionStopEvent());
-                    String transcript = transcription.trim();
-                    logger.debug("Final text: {}", transcript);
-                    if (!transcript.isBlank()) {
-                        sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, 1));
+                    logger.debug("Final transcription: '{}'", transcription);
+                    if (!transcription.isBlank()) {
+                        sttListener.sttEventReceived(new SpeechRecognitionEvent(transcription.trim(), 1));
                     } else {
                         sttListener.sttEventReceived(new SpeechRecognitionEvent(" ", 1));
                     }
@@ -532,12 +557,17 @@ public class WhisperSTTService implements STTService {
         if (!config.initialPrompt.isBlank()) {
             params.initialPrompt = config.initialPrompt;
         }
+        if (grammar != null) {
+            params.grammar = grammar;
+            params.grammarPenalty = config.grammarPenalty;
+        }
         // there is no single language models other than the english ones
         params.language = getWhisper().isMultilingual(context) ? locale.getLanguage() : "en";
+        // implementation assumes this options
         params.translate = false;
         params.detectLanguage = false;
-        // implementation assume this options
         params.printProgress = false;
+        params.noTimestamps = true;
         params.printRealtime = false;
         params.printSpecial = false;
         params.printTimestamps = false;

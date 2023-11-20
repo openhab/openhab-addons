@@ -101,6 +101,14 @@ public class WhisperSTTConfiguration {
      */
     public String initialPrompt = "";
     /**
+     * Loads 'grammar.gbnf' file from whisper userdata dir.
+     */
+    public boolean useGrammar = false;
+    /**
+     * Grammar penalty.
+     */
+    public float grammarPenalty = 100f;
+    /**
      * Enables GPU usage. (built-in binaries do not support GPU usage)
      */
     public boolean useGPU = true;
