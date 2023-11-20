@@ -337,6 +337,7 @@
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.sensibo</module>
     <module>org.openhab.binding.sensorcommunity</module>
+    <module>org.openhab.binding.sensorpush</module>
     <module>org.openhab.binding.serial</module>
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.shelly</module>
