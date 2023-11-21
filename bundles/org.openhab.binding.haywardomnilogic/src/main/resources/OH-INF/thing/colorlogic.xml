@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 
 		<label>Color Logic Light</label>
-		<description>Color Logic Light</description>
 		<channels>
 			<channel id="colorLogicLightEnable" typeId="system.power"/>
 			<channel id="colorLogicLightState" typeId="lightState"/>
@@ -28,7 +27,6 @@
 	<channel-type id="lightState">
 		<item-type>String</item-type>
 		<label>Light State</label>
-		<description>Light State</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -42,7 +40,6 @@
 	<channel-type id="lightBrightness">
 		<item-type>String</item-type>
 		<label>Light Brightness</label>
-		<description>Light Brightness</description>
 		<state readOnly="false">
 			<options>
 				<option value="0">20%</option>
@@ -57,7 +54,6 @@
 	<channel-type id="lightSpeed">
 		<item-type>String</item-type>
 		<label>Light Speed</label>
-		<description>Light Speed</description>
 		<state readOnly="false">
 			<options>
 				<option value="0">1/16x</option>
@@ -76,8 +72,7 @@
 	<channel-type id="currentShow">
 		<item-type>String</item-type>
 		<label>Current Show</label>
-		<description>Current Show</description>
-		<state readOnly="false">
+		<state pattern="%s" readOnly="false">
 		</state>
 	</channel-type>
 </thing:thing-descriptions>
