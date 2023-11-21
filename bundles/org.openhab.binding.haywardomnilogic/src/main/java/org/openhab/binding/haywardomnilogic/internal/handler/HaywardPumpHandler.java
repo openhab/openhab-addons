@@ -76,12 +76,11 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                 Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT);
                 if (ch != null) {
                     StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-
                             .withMinimum(new BigDecimal(
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MINSPEED)))
                             .withMaximum(new BigDecimal(
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXSPEED)))
-                            .withPattern("%1.0f %").withStep(new BigDecimal(5)).withReadOnly(false).build();
+                            .withPattern("%d %%").withStep(new BigDecimal(5)).withReadOnly(false).build();
                     bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
                 }
 
@@ -93,7 +92,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MINRPM)))
                             .withMaximum(new BigDecimal(
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXRPM)))
-                            .withPattern("%1.0f rpm").withStep(new BigDecimal(200)).withReadOnly(false).build();
+                            .withPattern("%d rpm").withStep(new BigDecimal(200)).withReadOnly(false).build();
                     bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
                 }
 

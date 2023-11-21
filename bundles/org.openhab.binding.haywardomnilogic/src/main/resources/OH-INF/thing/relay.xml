@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 
 		<label>Relay</label>
-		<description>Relay</description>
 		<channels>
 			<channel id="relayState" typeId="system.power"/>
 		</channels>

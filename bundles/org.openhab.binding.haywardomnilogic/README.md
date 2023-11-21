@@ -34,8 +34,8 @@ Hayward OmniLogic Connection Parameters:
 | Host Name            | <https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ash> | Yes      | Host name of the Hayward API server          |
 | User Name            | None                                                             | Yes      | Your Hayward User Name (not email address)   |
 | Password             | None                                                             | Yes      | Your Hayward User Password                   |
-| Telemetry Poll Delay | 3                                                                | Yes      | Telemetry Poll Delay (2-60 seconds)         |
-| Alarm Poll Delay     | 60                                                               | Yes      | Alarm Poll Delay (0-120 seconds, 0 disabled) |
+| Telemetry Poll Delay | 3                                                                | Yes      | Telemetry Poll Delay (2-60 seconds)          |
+| Alarm Poll Delay     | 10                                                               | Yes      | Alarm Poll Delay (0-120 seconds, 0 disabled) |
 
 ## Channels
 
@@ -74,12 +74,10 @@ Hayward OmniLogic Connection Parameters:
 | chlorInstantSaltLevel | Number:Dimensionless | Chlorinator instant salt level in Part per Million (ppm) |      R     |
 | chlorStatus           | String               | Chlorinator status bit array                             |      R     |
 
-**Item Types Number:Dimensionless should have the units (i.e. %, ppm) defined in the Unit metadata 
-
 ### Chlorinator Error Bit Array
 
-|Bits  |Value        				 		    |Description                     
-|------|---------------------------------------|--------------------------------|
+|Bits  |Value        				 		                                |Description                    |              
+|------|--------------------------------------------------------------------|-------------------------------|
 |1:0   |00 = OK<br>  01 = Short<br> 10 = Open  								|Current Sensor			  		| 
 |3:2   |00 = OK<br>  01 = Short<br> 10 = Open  								|Voltage Sensor             	| 
 |5:4   |00 = OK<br>  01 = Short<br> 10 = Open  								|Cell Temp Sensor               | 
@@ -91,7 +89,7 @@ Hayward OmniLogic Connection Parameters:
 
 ### Chlorinator Alert Bit Array
 
-|Bits  |Value        				 		    |Description                     
+|Bits  |Value        				 		                                |Description                    |               
 |------|--------------------------------------------------------------------|-------------------------------|
 |1:0   |00 = OK<br>  01 = Salt Low<br> 10 = Salt too Low					|Low salt				  		| 
 |2     |0 = OK<br>  1 = High  												|High Current            		| 
@@ -104,7 +102,7 @@ Hayward OmniLogic Connection Parameters:
 
 ### Chlorinator Status Bit Array
 
-|Bits  |Value        				 		    |Description                     
+|Bits  |Value        				 		                            |Description                    |                  
 |------|----------------------------------------------------------------|-------------------------------|
 |0     |0 = OK<br>1 = Error Present										|Error Present			  		| 
 |1     |0 = OK<br>1 = Alert Present										|Alert Present            		| 
@@ -135,8 +133,6 @@ Hayward OmniLogic Connection Parameters:
 | filterState         | String               | Filter state           |      R     |
 | filterLastSpeed     | Number:Dimensionless | Filter last speed (%)  |      R     |
 
-**Item Types Number:Dimensionless should have the units (i.e. %) defined in the Unit metadata 
-
 ### Heater Channels
 
 | Channel Type ID | Item Type | Description   | Read Write |
@@ -155,8 +151,6 @@ Hayward OmniLogic Connection Parameters:
 | pumpState        | String               | Pump state           |      R     |
 | pumpLastSpeed    | Number:Dimensionless | Pump last speed (%)  |      R     |
 
-**Item Types Number:Dimensionless should have the units (i.e. %) defined in the Unit metadata 
-
 ### Relay Channels
 
 | Channel Type ID | Item Type | Description | Read Write |
@@ -169,6 +163,8 @@ Hayward OmniLogic Connection Parameters:
 |-----------------------|--------------------|-------------------------|:----------:|
 | heaterEnable          | Switch             | Heater enable           |      R     |
 | heaterCurrentSetpoint | Number:Temperature | Heater Current Setpoint |     R/W    |
+
+**Item Types Number:Dimensionless should have the units (i.e. %, ppm) defined in the Unit metadata 
 
 ## Full Example
 
