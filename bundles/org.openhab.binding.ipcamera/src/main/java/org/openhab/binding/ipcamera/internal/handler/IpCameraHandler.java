@@ -1424,7 +1424,7 @@ public class IpCameraHandler extends BaseThingHandler {
             }
             logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP: {}:{}", cameraConfig.getIp(),
                     cameraConfig.getOnvifPort());
-            onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
+            onvifCamera.connect(supportsOnvifEvents());
             return;
         }
         if ("ffmpeg".equals(snapshotUri)) {
