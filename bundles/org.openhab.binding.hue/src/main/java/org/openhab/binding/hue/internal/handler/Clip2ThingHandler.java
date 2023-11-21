@@ -19,12 +19,14 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
@@ -1193,8 +1195,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             sceneResourceEntries.clear();
 
             ResourceReference thisReference = getResourceReference();
-            List<Resource> scenes = allScenes.stream().filter(s -> thisReference.equals(s.getGroup()))
-                    .collect(Collectors.toList());
+            Set<Resource> scenes = allScenes.stream().filter(s -> thisReference.equals(s.getGroup()))
+                    .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Resource::getName))));
 
             if (!scenes.isEmpty()) {
                 sceneContributorsCache.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getId(), s -> s)));
