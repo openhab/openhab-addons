@@ -108,7 +108,7 @@ public class OpenGarageHandler extends BaseThingHandler {
     public void initialize() {
         this.config = getConfigAs(OpenGarageConfiguration.class);
         logger.debug("config.hostname = {}, refresh = {}, port = {}", config.hostname, config.refresh, config.port);
-        if (config.hostname == "") {
+        if (config.hostname.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
