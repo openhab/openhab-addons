@@ -84,6 +84,6 @@ The following channels are provided by the `sensor` thing:
 | rssidbm     | Number:Power             | Received signal strength in dBm                    |
 | voltage     | Number:ElectricPotential | Battery voltage                                    |
 
-Note that all channels except `time` use QuantityType values.
+Note that all channels except `time` and `rssi` use QuantityType values.
 
 No channels are provided by the `cloudbridge` thing.
