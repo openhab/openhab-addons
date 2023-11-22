@@ -101,8 +101,12 @@ public class GoveeHandler extends BaseThingHandler {
     @Nullable
     private ScheduledFuture<?> triggerStatusJob; // send device status update job
     private GoveeConfiguration goveeConfiguration = new GoveeConfiguration();
+
+    private int lastOnOff;
     private int lastBrightness;
     private Color lastColor = new Color(0, 0, 0);
+    private int lastColorTempInPercent = 0;
+    private int lastColorTempInKelvin = 0;
 
     /*
      * Common Receiver job for the status answers of the devices
@@ -207,40 +211,31 @@ public class GoveeHandler extends BaseThingHandler {
                     case COLOR:
                         if (command instanceof HSBType hsbCommand) {
                             int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
-                            GenericGoveeRequest lightColor = new GenericGoveeRequest(new GenericGoveeMsg("colorwc",
-                                    new ColorData(new Color(rgb[0], rgb[1], rgb[2]), 0)));
-                            send(GSON.toJson(lightColor));
+                            sendColor(new Color(rgb[0], rgb[1], rgb[2]));
                         }
                         if (command instanceof PercentType percent) {
-                            GenericGoveeRequest lightBrightness = new GenericGoveeRequest(
-                                    new GenericGoveeMsg("brightness", new ValueIntData(percent.intValue())));
-                            send(GSON.toJson(lightBrightness));
+                            sendBrightness(percent.intValue());
                         } else if (command instanceof OnOffType) {
                             if (command.equals(OnOffType.ON)) {
-                                GenericGoveeRequest lightOn = new GenericGoveeRequest(
-                                        new GenericGoveeMsg("turn", new ValueIntData(1)));
-                                send(GSON.toJson(lightOn));
+                                sendOnOff(OnOffType.ON);
+
                             } else {
-                                GenericGoveeRequest lightOff = new GenericGoveeRequest(
-                                        new GenericGoveeMsg("turn", new ValueIntData(0)));
-                                send(GSON.toJson(lightOff));
+                                sendOnOff(OnOffType.OFF);
                             }
                         }
                         break;
                     case COLOR_TEMPERATURE:
                         if (command instanceof PercentType percent) {
-                            Double brightness = COLOR_TEMPERATURE_MIN_VALUE + percent.floatValue()
-                                    * (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) / 100.0;
-                            GenericGoveeRequest lightColor = new GenericGoveeRequest(new GenericGoveeMsg("colorwc",
-                                    new ColorData(new Color(0, 0, 0), brightness.intValue())));
-                            send(GSON.toJson(lightColor));
+                            Double colorTemp = (COLOR_TEMPERATURE_MIN_VALUE + percent.floatValue()
+                                    * (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) / 100.0);
+                            lastColorTempInKelvin = colorTemp.intValue();
+                            sendColorTemp(lastColorTempInKelvin);
                         }
                         break;
                     case COLOR_TEMPERATURE_ABS:
                         if (command instanceof QuantityType quantity) {
-                            GenericGoveeRequest lightColor = new GenericGoveeRequest(new GenericGoveeMsg("colorwc",
-                                    new ColorData(new Color(0, 0, 0), quantity.intValue())));
-                            send(GSON.toJson(lightColor));
+                            lastColorTempInPercent = quantity.intValue();
+                            sendColorTemp(lastColorTempInPercent);
                         }
                         break;
                 }
@@ -280,6 +275,34 @@ public class GoveeHandler extends BaseThingHandler {
         }
     }
 
+    public void sendColor(Color color) throws IOException {
+        lastColor = color;
+        GenericGoveeRequest lightColor = new GenericGoveeRequest(
+                new GenericGoveeMsg("colorwc", new ColorData(color, lastColorTempInKelvin)));
+        send(GSON.toJson(lightColor));
+    }
+
+    public void sendBrightness(int brightness) throws IOException {
+        lastBrightness = brightness;
+        GenericGoveeRequest lightBrightness = new GenericGoveeRequest(
+                new GenericGoveeMsg("brightness", new ValueIntData(brightness)));
+        send(GSON.toJson(lightBrightness));
+    }
+
+    private void sendOnOff(OnOffType switchValue) throws IOException {
+        lastOnOff = (switchValue == OnOffType.ON) ? 1 : 0;
+        GenericGoveeRequest switchLight = new GenericGoveeRequest(
+                new GenericGoveeMsg("turn", new ValueIntData(lastOnOff)));
+        send(GSON.toJson(switchLight));
+    }
+
+    private void sendColorTemp(int colorTemp) throws IOException {
+        lastColorTempInKelvin = colorTemp;
+        GenericGoveeRequest lightColor = new GenericGoveeRequest(
+                new GenericGoveeMsg("colorwc", new ColorData(lastColor, colorTemp)));
+        send(GSON.toJson(lightColor));
+    }
+
     public void send(String message) throws IOException {
         DatagramSocket socket;
         socket = new DatagramSocket();
@@ -299,31 +322,30 @@ public class GoveeHandler extends BaseThingHandler {
         }
 
         logger.info("Update Device State ----------------------------------------------");
-        int lastOnOff = message.msg().data().onOff();
+        lastOnOff = message.msg().data().onOff();
         logger.info("lastOnOff = {}", lastOnOff);
         lastBrightness = message.msg().data().brightness();
         logger.info("lastbrigthess = {}", lastBrightness);
         lastColor = message.msg().data().color();
         logger.info("lastColor = {}", lastColor);
+        lastColorTempInKelvin = message.msg().data().colorTemInKelvin();
+        logger.info("lastColorTempInKelvin = {}", lastColorTempInKelvin);
 
         int lastColorTemperature = message.msg().data().colorTemInKelvin();
 
-        logger.info("Last RGB = {} {} {}", lastColor.r(), lastColor.g(), lastColor.b());
-        HSBType hsbColor = ColorUtil.rgbToHsb(new int[] { lastColor.r(), lastColor.g(), lastColor.b() });
+        logger.info("Last RGB = {} {} {}, brightnes {}", lastColor.r(), lastColor.g(), lastColor.b(), lastBrightness);
+        HSBType hsbColor = HSBType.fromRGB(lastColor.r(), lastColor.g(), lastColor.b());
         logger.info("Last HSB = {} {} {}", hsbColor.getHue(), hsbColor.getSaturation(), hsbColor.getBrightness());
 
         if (lastOnOff == 1) {
             logger.info("setting BRIGHTNESS on Color to be consistent by using lastBrightness = {}", lastBrightness);
-            hsbColor = ColorUtil.rgbToHsb(new int[] { lastColor.r(), lastColor.g(), lastBrightness });
         } else {
             logger.info("not updating BRIGHTNESS percentage as device is OFF (would turn channel switch on)");
         }
 
         updateState(COLOR, hsbColor);
-        updateState(COLOR_TEMPERATURE_ABS, new QuantityType(lastColorTemperature, Units.KELVIN));
-        // FIXME : handle state
-        // updateState(COLOR_TEMPERATURE, new QuantityType(lastColorTemperature, Units.KELVIN));
-        logger.debug("setting BRIGHTNESS to ONOFF {}", OnOffType.from(lastOnOff == 1));
+        updateState(COLOR_TEMPERATURE_ABS, new QuantityType(lastColorTempInKelvin, Units.KELVIN));
+        updateState(COLOR_TEMPERATURE, new PercentType(lastColorTempInPercent));
     }
 
     public void statusUpdate(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
