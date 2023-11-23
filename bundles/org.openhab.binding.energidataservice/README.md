@@ -47,15 +47,15 @@ It will not impact channels, see [Electricity Tax](#electricity-tax) for further
 
 ### Channel Group `electricity`
 
-| Channel                 | Type   | Description                                                                           | Advanced |
-|-------------------------|--------|---------------------------------------------------------------------------------------|----------|
-| spot-price              | Number | Current spot price in DKK or EUR per kWh                                              | no       |
-| net-tariff              | Number | Current net tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured | no       |
-| system-tariff           | Number | Current system tariff in DKK per kWh                                                  | no       |
-| electricity-tax         | Number | Current electricity tax in DKK per kWh                                                | no       |
-| reduced-electricity-tax | Number | Current reduced electricity tax in DKK per kWh. For electric heating customers only   | no       |
-| transmission-net-tariff | Number | Current transmission net tariff in DKK per kWh                                        | no       |
-| hourly-prices           | String | JSON array with hourly prices from 24 hours ago and onward                            | yes      |
+| Channel                  | Type   | Description                                                                            | Advanced |
+|--------------------------|--------|----------------------------------------------------------------------------------------|----------|
+| spot-price               | Number | Current spot price in DKK or EUR per kWh                                               | no       |
+| grid-tariff              | Number | Current grid tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured | no       |
+| system-tariff            | Number | Current system tariff in DKK per kWh                                                   | no       |
+| transmission-grid-tariff | Number | Current transmission grid tariff in DKK per kWh                                        | no       |
+| electricity-tax          | Number | Current electricity tax in DKK per kWh                                                 | no       |
+| reduced-electricity-tax  | Number | Current reduced electricity tax in DKK per kWh. For electric heating customers only    | no       |
+| hourly-prices            | String | JSON array with hourly prices from 24 hours ago and onward                             | yes      |
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
@@ -82,13 +82,13 @@ The recommended persistence strategy is `forecast`, as it ensures a clean histor
 Prices from the past 24 hours and all forthcoming prices will be stored.
 Any changes that impact published prices (e.g. selecting or deselecting VAT Profile) will result in the replacement of persisted prices within this period.
 
-#### Net Tariff
+#### Grid Tariff
 
-Discounts are automatically taken into account for channel `net-tariff` so that it represents the actual price.
+Discounts are automatically taken into account for channel `grid-tariff` so that it represents the actual price.
 
 The tariffs are downloaded using pre-configured filters for the different [Grid Company GLN's](#global-location-number-of-the-grid-company).
 If your company is not in the list, or the filters are not working, they can be manually overridden.
-To override filters, the channel `net-tariff` has the following configuration parameters:
+To override filters, the channel `grid-tariff` has the following configuration parameters:
 
 | Name            | Type    | Description                                                                                                                      | Default | Required | Advanced |
 |-----------------|---------|----------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
@@ -145,21 +145,21 @@ The format of the `hourly-prices` JSON array is as follows:
 		"hourStart": "2023-09-19T18:00:00Z",
 		"spotPrice": 0.0,
 		"spotPriceCurrency": "DKK",
-		"netTariff": 0.0,
+		"gridTariff": 0.0,
 		"systemTariff": 0.054,
+		"transmissionGridTariff": 0.058,
 		"electricityTax": 0.697,
-		"reducedElectricityTax": 0.008,
-		"transmissionNetTariff": 0.058
+		"reducedElectricityTax": 0.008
 	},
 	{
 		"hourStart": "2023-09-19T19:00:00Z",
 		"spotPrice": -0.00052,
 		"spotPriceCurrency": "DKK",
-		"netTariff": 0.0,
+		"gridTariff": 0.0,
 		"systemTariff": 0.054,
+		"transmissionGridTariff": 0.058,
 		"electricityTax": 0.697,
-		"reducedElectricityTax": 0.008,
-		"transmissionNetTariff": 0.058
+		"reducedElectricityTax": 0.008
 	}
 ]
 ```
@@ -334,14 +334,14 @@ var price = actions.calculatePrice(now.toInstant(), now.plusHours(4).toInstant, 
 The parameter `priceComponents` is a case-insensitive comma-separated list of price components to include in the returned hourly prices.
 These components can be requested:
 
-| Price component       | Description             |
-|-----------------------|-------------------------|
-| SpotPrice             | Spot price              |
-| NetTariff             | Net tariff              |
-| SystemTariff          | System tariff           |
-| ElectricityTax        | Electricity tax         |
-| ReducedElectricityTax | Reduced electricity tax |
-| TransmissionNetTariff | Transmission net tariff |
+| Price component        | Description             |
+|------------------------|-------------------------|
+| SpotPrice              | Spot price               |
+| GridTariff             | Grid tariff              |
+| SystemTariff           | System tariff            |
+| TransmissionGridTariff | Transmission grid tariff |
+| ElectricityTax         | Electricity tax          |
+| ReducedElectricityTax  | Reduced electricity tax  |
 
 Using `null` as parameter returns the total prices including all price components.
 If **Reduced Electricity Tax** is set in Thing configuration, `ElectricityTax` will be excluded, otherwise `ReducedElectricityTax`.
@@ -350,7 +350,7 @@ This logic ensures consistent and comparable results not affected by artifical c
 Example:
 
 ```javascript
-var priceMap = actions.getPrices("SpotPrice,NetTariff")
+var priceMap = actions.getPrices("SpotPrice,GridTariff")
 ```
 
 ## Full Example
@@ -360,7 +360,7 @@ var priceMap = actions.getPrices("SpotPrice,NetTariff")
 ```java
 Thing energidataservice:service:energidataservice "Energi Data Service" [ priceArea="DK1", currencyCode="DKK", gridCompanyGLN="5790001089030" ] {
     Channels:
-        Number : electricity#net-tariff [ chargeTypeCodes="CD,CD R", start="StartOfYear" ]
+        Number : electricity#grid-tariff [ chargeTypeCodes="CD,CD R", start="StartOfYear" ]
 }
 ```
 
@@ -369,10 +369,10 @@ Thing energidataservice:service:energidataservice "Energi Data Service" [ priceA
 ```java
 Group:Number:SUM TotalPrice "Current Total Price" <price>
 Number SpotPrice "Current Spot Price" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#spot-price" [profile="transform:VAT"] }
-Number NetTariff "Current Net Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#net-tariff" [profile="transform:VAT"] }
+Number GridTariff "Current Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#grid-tariff" [profile="transform:VAT"] }
 Number SystemTariff "Current System Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#system-tariff" [profile="transform:VAT"] }
+Number TransmissionGridTariff "Current Transmission Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#transmission-grid-tariff" [profile="transform:VAT"] }
 Number ElectricityTax "Current Electricity Tax" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#electricity-tax" [profile="transform:VAT"] }
-Number TransmissionNetTariff "Current Transmission Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#transmission-net-tariff" [profile="transform:VAT"] }
 String HourlyPrices "Hourly Prices" <price> { channel="energidataservice:service:energidataservice:electricity#hourly-prices" }
 ```
 
@@ -394,8 +394,8 @@ var priceMap = actions.getPrices(null)
 var hourStart = now.toInstant().truncatedTo(ChronoUnit.HOURS)
 logInfo("Current total price excl. VAT", priceMap.get(hourStart).toString)
 
-var priceMap = actions.getPrices("SpotPrice,NetTariff");
-logInfo("Current spot price + net tariff excl. VAT", priceMap.get(hourStart).toString)
+var priceMap = actions.getPrices("SpotPrice,GridTariff");
+logInfo("Current spot price + grid tariff excl. VAT", priceMap.get(hourStart).toString)
 
 var price = actions.calculatePrice(Instant.now, now.plusHours(1).toInstant, 150 | W)
 logInfo("Total price for using 150 W for the next hour", price.toString)
@@ -457,10 +457,10 @@ utils.javaMapToJsMap(edsActions.getPrices()).forEach((value, key) => {
 var hourStart = time.Instant.now().truncatedTo(time.ChronoUnit.HOURS);
 console.log("Current total price excl. VAT: " + priceMap.get(hourStart.toString()));
 
-utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,NetTariff")).forEach((value, key) => {
+utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff")).forEach((value, key) => {
     priceMap.set(key.toString(), value);
 });
-console.log("Current spot price + net tariff excl. VAT: " + priceMap.get(hourStart.toString()));
+console.log("Current spot price + grid tariff excl. VAT: " + priceMap.get(hourStart.toString()));
 
 var price = edsActions.calculatePrice(time.Instant.now(), time.Instant.now().plusSeconds(3600), Quantity("150 W"));
 console.log("Total price for using 150 W for the next hour: " + price.toString());

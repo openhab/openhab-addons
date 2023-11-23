@@ -95,8 +95,9 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> priceUpdateFuture;
 
     private record Price(String hourStart, BigDecimal spotPrice, String spotPriceCurrency,
-            @Nullable BigDecimal netTariff, @Nullable BigDecimal systemTariff, @Nullable BigDecimal electricityTax,
-            @Nullable BigDecimal reducedElectricityTax, @Nullable BigDecimal transmissionNetTariff) {
+            @Nullable BigDecimal gridTariff, @Nullable BigDecimal systemTariff,
+            @Nullable BigDecimal transmissionGridTariff, @Nullable BigDecimal electricityTax,
+            @Nullable BigDecimal reducedElectricityTax) {
     }
 
     public EnergiDataServiceHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
@@ -236,7 +237,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
 
     private void downloadTariffs(DatahubTariff datahubTariff) throws InterruptedException, DataServiceException {
         GlobalLocationNumber globalLocationNumber = switch (datahubTariff) {
-            case NET_TARIFF -> config.getGridCompanyGLN();
+            case GRID_TARIFF -> config.getGridCompanyGLN();
             default -> config.getEnerginetGLN();
         };
         if (globalLocationNumber.isEmpty()) {
@@ -247,11 +248,11 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             cacheManager.updateTariffs(datahubTariff);
         } else {
             DatahubTariffFilter filter = switch (datahubTariff) {
-                case NET_TARIFF -> getNetTariffFilter();
+                case GRID_TARIFF -> getGridTariffFilter();
                 case SYSTEM_TARIFF -> DatahubTariffFilterFactory.getSystemTariff();
+                case TRANSMISSION_GRID_TARIFF -> DatahubTariffFilterFactory.getTransmissionGridTariff();
                 case ELECTRICITY_TAX -> DatahubTariffFilterFactory.getElectricityTax();
                 case REDUCED_ELECTRICITY_TAX -> DatahubTariffFilterFactory.getReducedElectricityTax();
-                case TRANSMISSION_NET_TARIFF -> DatahubTariffFilterFactory.getTransmissionNetTariff();
             };
             cacheManager.putTariffs(datahubTariff, downloadPriceLists(globalLocationNumber, filter));
         }
@@ -267,24 +268,24 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         return records;
     }
 
-    private DatahubTariffFilter getNetTariffFilter() {
-        Channel channel = getThing().getChannel(CHANNEL_NET_TARIFF);
+    private DatahubTariffFilter getGridTariffFilter() {
+        Channel channel = getThing().getChannel(CHANNEL_GRID_TARIFF);
         if (channel == null) {
-            return DatahubTariffFilterFactory.getNetTariffByGLN(config.gridCompanyGLN);
+            return DatahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
         }
 
         DatahubPriceConfiguration datahubPriceConfiguration = channel.getConfiguration()
                 .as(DatahubPriceConfiguration.class);
 
         if (!datahubPriceConfiguration.hasAnyFilterOverrides()) {
-            return DatahubTariffFilterFactory.getNetTariffByGLN(config.gridCompanyGLN);
+            return DatahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
         }
 
         DateQueryParameter start = datahubPriceConfiguration.getStart();
         if (start == null) {
             logger.warn("Invalid channel configuration parameter 'start' or 'offset': {} (offset: {})",
                     datahubPriceConfiguration.start, datahubPriceConfiguration.offset);
-            return DatahubTariffFilterFactory.getNetTariffByGLN(config.gridCompanyGLN);
+            return DatahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
         }
 
         Set<ChargeTypeCode> chargeTypeCodes = datahubPriceConfiguration.getChargeTypeCodes();
@@ -295,7 +296,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             filter = new DatahubTariffFilter(chargeTypeCodes, notes, start);
         } else {
             // Only override start date in pre-configured filter.
-            filter = new DatahubTariffFilter(DatahubTariffFilterFactory.getNetTariffByGLN(config.gridCompanyGLN),
+            filter = new DatahubTariffFilter(DatahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN),
                     start);
         }
 
@@ -341,13 +342,14 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         int i = 0;
         for (Entry<Instant, BigDecimal> sourcePrice : sourcePrices) {
             Instant hourStart = sourcePrice.getKey();
-            BigDecimal netTariff = cacheManager.getTariff(DatahubTariff.NET_TARIFF, hourStart);
+            BigDecimal gridTariff = cacheManager.getTariff(DatahubTariff.GRID_TARIFF, hourStart);
             BigDecimal systemTariff = cacheManager.getTariff(DatahubTariff.SYSTEM_TARIFF, hourStart);
+            BigDecimal transmissionGridTariff = cacheManager.getTariff(DatahubTariff.TRANSMISSION_GRID_TARIFF,
+                    hourStart);
             BigDecimal electricityTax = cacheManager.getTariff(DatahubTariff.ELECTRICITY_TAX, hourStart);
             BigDecimal reducedElectricityTax = cacheManager.getTariff(DatahubTariff.REDUCED_ELECTRICITY_TAX, hourStart);
-            BigDecimal transmissionNetTariff = cacheManager.getTariff(DatahubTariff.TRANSMISSION_NET_TARIFF, hourStart);
-            targetPrices[i++] = new Price(hourStart.toString(), sourcePrice.getValue(), config.currencyCode, netTariff,
-                    systemTariff, electricityTax, reducedElectricityTax, transmissionNetTariff);
+            targetPrices[i++] = new Price(hourStart.toString(), sourcePrice.getValue(), config.currencyCode, gridTariff,
+                    systemTariff, electricityTax, reducedElectricityTax, transmissionGridTariff);
         }
         updateState(CHANNEL_HOURLY_PRICES, new StringType(gson.toJson(targetPrices)));
     }
