@@ -81,7 +81,7 @@ public class AuthService {
         } else {
             token = (AccessTokenResponse) Utils.fromString(storedObject);
             if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-                if (!token.getRefreshToken().equals(Constants.NOT_SET)) {
+                if (!Constants.NOT_SET.equals(token.getRefreshToken())) {
                     refreshToken();
                     listener.onAccessTokenResponse(token);
                 } else {
@@ -120,10 +120,10 @@ public class AuthService {
             if (cr.getStatus() == 200) {
                 return pr.nonce;
             } else {
-                logger.debug("{} Failed to request pin {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
+                logger.trace("{} Failed to request pin {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("{} Failed to request pin {}", prefix(), e.getMessage());
+            logger.trace("{} Failed to request pin {}", prefix(), e.getMessage());
         }
         return Constants.NOT_SET;
     }
@@ -158,10 +158,10 @@ public class AuthService {
                 listener.onAccessTokenResponse(token);
                 return true;
             } else {
-                logger.debug("{} Failed to get token {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
+                logger.trace("{} Failed to get token {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
-            logger.debug("{} Failed to get token {}", prefix(), e.getMessage());
+            logger.trace("{} Failed to get token {}", prefix(), e.getMessage());
         }
         return false;
     }
@@ -187,28 +187,26 @@ public class AuthService {
                 saveTokenResponse(cr.getContentAsString());
                 listener.onAccessTokenResponse(token);
             } else {
-                logger.debug("{} Failed to refresh token {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
+                logger.trace("{} Failed to refresh token {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
-            logger.debug("{} Failed to refresh token {}", prefix(), e.getMessage());
+            logger.trace("{} Failed to refresh token {}", prefix(), e.getMessage());
         }
     }
 
     public String getToken() {
-        // logger.info(prefix() + "Investigate token {}", token);
         if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
             if (!token.getRefreshToken().equals(Constants.NOT_SET)) {
                 refreshToken();
                 // token shall be updated now - retry expired check
                 if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
                     token = INVALID_TOKEN;
-                    logger.warn("{} Not able to return fresh token", prefix());
                     listener.onAccessTokenResponse(token);
                     return Constants.NOT_SET;
                 }
             } else {
                 token = INVALID_TOKEN;
-                logger.debug("{} Refresh token empty", prefix());
+                logger.trace("{} Refresh token empty", prefix());
             }
         }
         return token.getAccessToken();
@@ -237,14 +235,14 @@ public class AuthService {
             } else if (!Constants.NOT_SET.equals(tr.refreshToken)) {
                 atr.setRefreshToken(tr.refreshToken);
             } else {
-                logger.debug("{} Neither new nor old refresh token available", prefix());
+                logger.trace("{} Neither new nor old refresh token available", prefix());
             }
             atr.setTokenType("Bearer");
             atr.setScope(Constants.SCOPE);
             storage.put(identifier, Utils.toString(atr));
             token = atr;
         } else {
-            logger.debug("{} Token Response is null", prefix());
+            logger.trace("{} Token Response is null", prefix());
         }
     }
 

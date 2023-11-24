@@ -69,7 +69,6 @@ public class Mapper {
         Unit<Length> lengthUnit = up.getUnit(Length.class);
         if (lengthUnit != null) {
             if (lengthUnit.equals(ImperialUnits.FOOT)) {
-                LOGGER.debug("Switch to ImperialUnits as default");
                 defaultLengthUnit = ImperialUnits.MILE;
                 defaultSpeedUnit = ImperialUnits.MILES_PER_HOUR;
                 defaultPressureUnit = ImperialUnits.POUND_FORCE_SQUARE_INCH;
@@ -102,7 +101,7 @@ public class Mapper {
                     if (value.hasDistanceUnit()) {
                         observer = new UOMObserver(value.getDistanceUnit().toString());
                         if (observer.getUnit().isEmpty()) {
-                            LOGGER.warn("No Unit found for {} - take default ", key);
+                            LOGGER.trace("No Unit found for {} - take default ", key);
                         } else {
                             lengthUnit = observer.getUnit().get();
                         }
@@ -133,7 +132,7 @@ public class Mapper {
                     if (value.hasSpeedUnit()) {
                         observer = new UOMObserver(value.getSpeedUnit().toString());
                         if (observer.getUnit().isEmpty()) {
-                            LOGGER.warn("No Unit found for {} - take default ", key);
+                            LOGGER.trace("No Unit found for {} - take default ", key);
                         } else {
                             lengthUnit = observer.getUnit().get();
                         }
@@ -150,7 +149,7 @@ public class Mapper {
                     if (value.hasElectricityConsumptionUnit()) {
                         observer = new UOMObserver(value.getElectricityConsumptionUnit().toString());
                     } else {
-                        LOGGER.info("Don't have electric consumption unit for {}", key);
+                        LOGGER.debug("Don't have electric consumption unit for {}", key);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
@@ -320,7 +319,7 @@ public class Mapper {
                     if (value.hasPressureUnit()) {
                         observer = new UOMObserver(value.getPressureUnit().toString());
                         if (observer.getUnit().isEmpty()) {
-                            LOGGER.warn("No Unit found for {} - take default ", key);
+                            LOGGER.debug("No Unit found for {} - take default ", key);
                         } else {
                             pressureUnit = observer.getUnit().get();
                         }
@@ -329,10 +328,9 @@ public class Mapper {
                     state = QuantityType.valueOf(pressure, pressureUnit);
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
                 default:
-                    // LOGGER.trace("No mapping available for {}", key);
                     break;
             }
-        } // LOGGER.trace("No mapping available for {}", key);
+        }
         return INVALID_MAP;
     }
 

@@ -38,6 +38,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
 
 /**
  * {@link ThingCallbackListener} Listener mock to store vehicle state updates
@@ -50,6 +51,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
     public Map<String, State> updatesReceived = new HashMap<String, State>();
     public Map<String, Map<String, State>> updatesPerGroupMap = new HashMap<String, Map<String, State>>();
     public boolean linked = false;
+    public @Nullable ThingStatusInfo status = null;
 
     public int getUpdatesForGroup(String group) {
         Map<String, State> groupMap = updatesPerGroupMap.get(group);
@@ -80,6 +82,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
+        status = thingStatus;
     }
 
     @Override
@@ -142,5 +145,10 @@ public class ThingCallbackListener implements ThingHandlerCallback {
     @Override
     public @Nullable Bridge getBridge(ThingUID bridgeUID) {
         return null;
+    }
+
+    @Override
+    public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
+        // TODO Auto-generated method stub
     }
 }

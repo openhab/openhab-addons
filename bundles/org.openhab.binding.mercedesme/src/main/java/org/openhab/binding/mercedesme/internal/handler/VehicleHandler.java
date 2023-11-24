@@ -169,6 +169,9 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        /**
+         * Commands shall be not that frequent so trace level for identifying problems should be feasible
+         */
         logger.trace("Received command {} {} for {}", command.getClass(), command, channelUID);
         if (command instanceof RefreshType) {
             if ("feature-capabilities".equals(channelUID.getIdWithoutGroup())
@@ -192,13 +195,13 @@ public class VehicleHandler extends BaseThingHandler {
             if ("ignition".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandEngineStart");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Engine Start/Stop not supported");
+                    logger.trace("Engine Start/Stop not supported");
                 } else {
                     int commandValue = ((DecimalType) command).intValue();
                     if (commandValue == 4) {
                         String pin = accountHandler.get().config.get().pin;
                         if (Constants.NOT_SET.equals(pin)) {
-                            logger.info("Security PIN missing in Account bridge");
+                            logger.trace("Security PIN missing in Account bridge");
                         } else {
                             EngineStart eStart = EngineStart.newBuilder().setPin(supported).build();
                             CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -218,14 +221,14 @@ public class VehicleHandler extends BaseThingHandler {
                 String supported = thing.getProperties().get("commandWindowsOpen");
                 String pin = accountHandler.get().config.get().pin;
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Windows control not supported");
+                    logger.trace("Windows control not supported");
                 } else {
                     CommandRequest cr;
                     ClientMessage cm;
                     switch (((DecimalType) command).intValue()) {
                         case 0:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing in Account bridge");
+                                logger.trace("Security PIN missing in Account bridge");
                             } else {
                                 WindowsVentilate wv = WindowsVentilate.newBuilder().setPin(pin).build();
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -243,7 +246,7 @@ public class VehicleHandler extends BaseThingHandler {
                             break;
                         case 2:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing in Account bridge");
+                                logger.trace("Security PIN missing in Account bridge");
                             } else {
                                 WindowsOpen wo = WindowsOpen.newBuilder().setPin(pin).build();
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -253,7 +256,7 @@ public class VehicleHandler extends BaseThingHandler {
                             }
                             break;
                         default:
-                            logger.info("No Windows movement known for {}", command);
+                            logger.trace("No Windows movement known for {}", command);
                             break;
                     }
                 }
@@ -261,7 +264,7 @@ public class VehicleHandler extends BaseThingHandler {
                 String pin = accountHandler.get().config.get().pin;
                 String supported = thing.getProperties().get("commandDoorsLock");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Door Lock not supported");
+                    logger.trace("Door Lock not supported");
                 } else {
                     switch (((DecimalType) command).intValue()) {
                         case 0:
@@ -273,7 +276,7 @@ public class VehicleHandler extends BaseThingHandler {
                             break;
                         case 1:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing in Account bridge");
+                                logger.trace("Security PIN missing in Account bridge");
                             } else {
                                 DoorsUnlock du = DoorsUnlock.newBuilder().setPin(pin).build();
                                 CommandRequest unlockCr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -283,7 +286,7 @@ public class VehicleHandler extends BaseThingHandler {
                             }
                             break;
                         default:
-                            logger.info("No lock command mapped to {}", command);
+                            logger.trace("No lock command mapped to {}", command);
                             break;
                     }
                 }
@@ -295,7 +298,7 @@ public class VehicleHandler extends BaseThingHandler {
             if (CHANNEL_TEMPERATURE.equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditionConfigure");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Air Conditioning Temperature Setting not supported");
+                    logger.trace("Air Conditioning Temperature Setting not supported");
                 } else {
                     QuantityType<Temperature> tempToSet = ((QuantityType<Temperature>) command);
                     TemperatureConfigure tc = TemperatureConfigure.newBuilder()
@@ -311,7 +314,7 @@ public class VehicleHandler extends BaseThingHandler {
             } else if ("active".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditioningStart");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Air Conditioning not supported");
+                    logger.trace("Air Conditioning not supported");
                 } else {
                     if (OnOffType.ON.equals(command)) {
                         ZEVPreconditioningStart precondStart = ZEVPreconditioningStart.newBuilder()
@@ -342,7 +345,7 @@ public class VehicleHandler extends BaseThingHandler {
             } else if ("aux-heat".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("featureAuxHeat");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Auxiliray Heating not supported");
+                    logger.trace("Auxiliray Heating not supported");
                 } else {
                     if (OnOffType.ON.equals(command)) {
                         AuxheatStart auxHeatStart = AuxheatStart.newBuilder().build();
@@ -379,7 +382,7 @@ public class VehicleHandler extends BaseThingHandler {
             if ("signal".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandSigposStart");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Signal Position not supported");
+                    logger.trace("Signal Position not supported");
                 } else {
                     SigPosStart sps;
                     CommandRequest cr;
@@ -415,7 +418,7 @@ public class VehicleHandler extends BaseThingHandler {
                 boolean autoUnlockToSelect = false;
                 String supported = thing.getProperties().get("commandChargeProgramConfigure");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Charge Program Cosnfigure not supported");
+                    logger.trace("Charge Program Cosnfigure not supported");
                 } else {
                     boolean sendCommand = false;
                     if ("program".equals(channelUID.getIdWithoutGroup())) {
@@ -464,7 +467,7 @@ public class VehicleHandler extends BaseThingHandler {
                 String supported = thing.getProperties().get("commandSunroofOpen");
                 String pin = accountHandler.get().config.get().pin;
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.info("Sunroof control not supported");
+                    logger.trace("Sunroof control not supported");
                 } else {
                     CommandRequest cr;
                     ClientMessage cm;
@@ -478,7 +481,7 @@ public class VehicleHandler extends BaseThingHandler {
                             break;
                         case 1:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing in Account bridge");
+                                logger.trace("Security PIN missing in Account bridge");
                             } else {
                                 SunroofOpen so = SunroofOpen.newBuilder().setPin(pin).build();
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -489,7 +492,7 @@ public class VehicleHandler extends BaseThingHandler {
                             break;
                         case 2:
                             if (Constants.NOT_SET.equals(pin)) {
-                                logger.info("Security PIN missing in Account bridge");
+                                logger.trace("Security PIN missing in Account bridge");
                             } else {
                                 SunroofLift sl = SunroofLift.newBuilder().setPin(pin).build();
                                 cr = CommandRequest.newBuilder().setVin(config.get().vin)
@@ -509,7 +512,7 @@ public class VehicleHandler extends BaseThingHandler {
     private void configureSeats(ChannelUID channelUID, State command) {
         String supported = thing.getProperties().get("commandZevPreconditionConfigureSeats");
         if (Boolean.FALSE.toString().equals(supported)) {
-            logger.info("Seat Conditioning not supported");
+            logger.trace("Seat Conditioning not supported");
         } else {
             com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningConfigureSeats.Builder buidler = ZEVPreconditioningConfigureSeats
                     .newBuilder();
@@ -581,7 +584,6 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public void distributeContent(VEPUpdate data) {
-        updateStatus(ThingStatus.ONLINE);
         boolean fullUpdate = data.getFullUpdate();
         /**
          * Deliver proto update
@@ -747,12 +749,12 @@ public class VehicleHandler extends BaseThingHandler {
                     updateChannel(new ChannelStateMap("home-distance", Constants.GROUP_RANGE,
                             QuantityType.valueOf(distance / 1000, observer.getUnit().get()), observer));
                 } else {
-                    logger.debug("No kome location found");
+                    logger.trace("No kome location found");
                 }
 
             } else {
                 if (fullUpdate) {
-                    logger.debug("Either Latitude {} or Longitude {} attribute nil", lat, lon);
+                    logger.trace("Either Latitude {} or Longitude {} attribute nil", lat, lon);
                     updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, UnDefType.UNDEF));
                 }
             }
@@ -812,7 +814,7 @@ public class VehicleHandler extends BaseThingHandler {
                                 updateChannel(tempCSM);
                             }
                         } else {
-                            logger.info("No Integer mapping found for Temperature Zone {}", zoneName);
+                            logger.trace("No Integer mapping found for Temperature Zone {}", zoneName);
                         }
                         commandOptions.add(new CommandOption(Integer.toString(zoneNumber), zoneName));
                         stateOptions.add(new StateOption(Integer.toString(zoneNumber), zoneName));

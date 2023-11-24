@@ -75,7 +75,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
     private final Storage<String> storage;
-    private final MBWebsocket ws;
     private final Map<String, VehicleHandler> activeVehicleHandlerMap = new HashMap<String, VehicleHandler>();
     private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<String, VEPUpdate>();
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<String, Map<String, Object>>();
@@ -88,6 +87,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private String commandCapabilitiesEndpoint = "/v1/vehicle/%s/capabilities/commands";
     private String poiEndpoint = "/v1/vehicle/%s/route";
 
+    final MBWebsocket ws;
     Optional<AccountConfiguration> config = Optional.empty();
     @Nullable
     ClientMessage message;
@@ -108,6 +108,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         config = Optional.of(getConfigAs(AccountConfiguration.class));
         autodetectCallback();
         String configValidReason = configValid();
@@ -124,10 +125,11 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                         + Constants.STATUS_SERVER_RESTART;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
+            } else {
+                scheduledFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 0,
+                        config.get().refreshInterval, TimeUnit.MINUTES));
             }
         }
-        scheduledFuture = Optional
-                .of(scheduler.scheduleWithFixedDelay(this::update, 0, config.get().refreshInterval, TimeUnit.MINUTES));
     }
 
     public void update() {
@@ -135,10 +137,17 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (!authService.get().getToken().equals(Constants.NOT_SET)) {
                 ws.run();
             } else {
-                logger.info("No Token available");
+                // all failed - start manual authorization
+                String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
+                        + Constants.STATUS_AUTH_NEEDED;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
             }
         } else {
-            logger.info("No AuthService available");
+            // server not running - fix first
+            String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
+                    + Constants.STATUS_SERVER_RESTART;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
         }
     }
 
@@ -157,7 +166,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 ip = Utils.getCallbackIP();
                 updateConfig.put("callbackIP", ip);
             } catch (SocketException e) {
-                logger.info("Cannot detect IP address {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/mercedesme.account.status.ip-autodetect-failure [\"" + e.getMessage() + "\"]");
             }
         }
         super.updateConfiguration(updateConfig);
@@ -172,6 +182,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             return textKey + Constants.STATUS_IP_MISSING;
         } else if (config.get().callbackPort == -1) {
             return textKey + Constants.STATUS_PORT_MISSING;
+        } else if (Constants.NOT_SET.equals(config.get().email)) {
+            return textKey + Constants.STATUS_EMAIL_MISSING;
+        } else if (Constants.NOT_SET.equals(config.get().region)) {
+            return textKey + Constants.STATUS_REGION_MISSING;
+        } else if (config.get().refreshInterval <= 01) {
+            return textKey + Constants.STATUS_REFRESH_INVALID;
         } else {
             return Constants.EMPTY;
         }
@@ -200,7 +216,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
         if (!Constants.NOT_SET.equals(tokenResponse.getAccessToken())) {
-            updateStatus(ThingStatus.ONLINE);
             scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
         } else if (server.isEmpty()) {
             // server not running - fix first
@@ -257,8 +272,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @SuppressWarnings("null")
     public void getVehicleCapabilities(String vin) {
         if (storage.containsKey(vin + FEATURE_APPENDIX)) {
-            logger.info("Register VIN Features? {} Commands? {}", storage.containsKey(vin + FEATURE_APPENDIX),
-                    storage.containsKey(vin + COMMAND_APPENDIX));
             if (activeVehicleHandlerMap.containsKey(vin)) {
                 activeVehicleHandlerMap.get(vin).setFeatureCapabilities(storage.get(vin + FEATURE_APPENDIX));
             }
@@ -404,7 +417,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             capabilitiesMap.put(vin, featureMap);
             return featureMap;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error retreiving capabilities: {}", e.getMessage());
+            logger.trace("Error retreiving capabilities: {}", e.getMessage());
             featureMap.clear();
         }
         return featureMap;
@@ -421,6 +434,16 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         ws.keepAlive(b);
     }
 
+    @Override
+    public void updateStatus(ThingStatus ts) {
+        super.updateStatus(ts);
+    }
+
+    @Override
+    public void updateStatus(ThingStatus ts, ThingStatusDetail tsd, @Nullable String tsdt) {
+        super.updateStatus(ts, tsd, tsdt);
+    }
+
     /**
      * Vehicle Actions
      *
@@ -435,7 +458,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         poiRequest.header("X-TrackingId", UUID.randomUUID().toString());
         poiRequest.header("Authorization", authService.get().getToken());
         poiRequest.header(HttpHeader.CONTENT_TYPE, "application/json");
-        logger.info("Send POI {}", poi);
         poiRequest.content(new StringContentProvider(poi.toString(), "utf-8"));
 
         try {

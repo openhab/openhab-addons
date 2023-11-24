@@ -17,7 +17,9 @@ import static org.mockito.Mockito.mock;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
+import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.storage.StorageService;
@@ -40,6 +42,11 @@ public class AccountHandlerMock extends AccountHandler {
                 mock(LocaleProvider.class), mock(StorageService.class));
     }
 
+    public AccountHandlerMock(Bridge b, @Nullable String storedObject) {
+        super(b, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class), mock(LocaleProvider.class),
+                new StorageServiceMock<String>(storedObject));
+    }
+
     @Override
     public void registerVin(String vin, VehicleHandler handler) {
     }
@@ -56,7 +63,15 @@ public class AccountHandlerMock extends AccountHandler {
         }
     }
 
+    public AccountConfiguration getConfigT() {
+        return new AccountConfiguration();
+    }
+
     public JSONObject getCommand() {
         return command;
+    }
+
+    public void connect() {
+        super.ws.onConnect(mock(Session.class));
     }
 }

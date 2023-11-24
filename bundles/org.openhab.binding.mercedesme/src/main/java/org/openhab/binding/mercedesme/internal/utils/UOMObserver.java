@@ -104,7 +104,7 @@ public class UOMObserver {
             UNIT_MAP.put(CONSUMPTION_LIQUID_MI, ImperialUnits.GALLON_LIQUID_US);
         }
         if (!PATTERN_MAP.containsKey(l)) {
-            logger.info("No mapping found for {}", l);
+            logger.trace("No mapping found for {}", l);
         }
         label = l;
     }
