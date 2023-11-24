@@ -357,7 +357,6 @@
 	<thing-type id="shellypluswdus">
 		<label>Shelly Plus Dimmer US</label>
 		<description>@text/thing-type.shelly.shellypluswdus.description</description>
-		<category>DimmableLight</category>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -371,7 +370,6 @@
 	<thing-type id="shellyplus10v">
 		<label>Shelly Plus Dimmer 10V</label>
 		<description>@text/thing-type.shelly.shellyplus10v.description</description>
-		<category>DimmableLight</category>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
