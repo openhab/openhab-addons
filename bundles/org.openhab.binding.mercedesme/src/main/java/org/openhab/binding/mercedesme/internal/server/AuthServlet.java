@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link AuthServlet} provides simple HTML pages for authorization workflow
@@ -32,8 +30,6 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("serial")
 @NonNullByDefault
 public class AuthServlet extends HttpServlet {
-    private final Logger logger = LoggerFactory.getLogger(AuthServlet.class);
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -104,7 +100,5 @@ public class AuthServlet extends HttpServlet {
             response.getWriter().println("</BODY>");
             response.getWriter().println("</HTML>");
         }
-        logger.trace("Call from {}:{} parameters {}", request.getLocalAddr(), request.getLocalPort(),
-                request.getParameterMap());
     }
 }

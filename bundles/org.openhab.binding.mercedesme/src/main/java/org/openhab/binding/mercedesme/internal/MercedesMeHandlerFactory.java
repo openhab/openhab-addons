@@ -108,7 +108,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         Bundle[] bundleList = this.getBundleContext().getBundles();
         for (int i = 0; i < bundleList.length; i++) {
-            // logger.info("Bundle {} Name {}", i, bundleList[i].getSymbolicName(), bundleList[i].getVersion());
             if ("org.openhab.binding.mercedesme".equals(bundleList[i].getSymbolicName())) {
                 ohVersion = bundleList[i].getVersion().toString();
             }

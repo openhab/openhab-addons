@@ -59,9 +59,7 @@ public class AuthServer {
     }
 
     public boolean start() {
-        LOGGER.debug("Start Callback Server for port {}", config.callbackPort);
         if (server.isPresent()) {
-            LOGGER.debug("Callback server for port {} already started", config.callbackPort);
             return true;
         }
         server = Optional.of(new Server());
@@ -74,21 +72,20 @@ public class AuthServer {
         try {
             server.get().start();
         } catch (Exception e) {
-            LOGGER.warn("Cannot start Callback Server for port {}, Error {}", config.callbackPort, e.getMessage());
+            LOGGER.trace("Cannot start Callback Server for port {}, Error {}", config.callbackPort, e.getMessage());
             return false;
         }
         return true;
     }
 
     public void stop() {
-        LOGGER.debug("Stop Callback Server");
         try {
             if (server.isPresent()) {
                 server.get().stop();
                 server = Optional.empty();
             }
         } catch (Exception e) {
-            LOGGER.warn("Cannot start Callback Server for port {}, Error {}", config.callbackPort, e.getMessage());
+            LOGGER.trace("Cannot start Callback Server for port {}, Error {}", config.callbackPort, e.getMessage());
         }
     }
 

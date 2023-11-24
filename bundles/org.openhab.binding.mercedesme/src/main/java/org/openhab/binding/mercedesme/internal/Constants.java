@@ -78,6 +78,9 @@ public class Constants {
 
     public static final String STATUS_TEXT_PREFIX = "@text/mercedesme.";
     public static final String STATUS_AUTH_NEEDED = ".status.authorization-needed";
+    public static final String STATUS_EMAIL_MISSING = ".status.email-missing";
+    public static final String STATUS_REGION_MISSING = ".status.region-missing";
+    public static final String STATUS_REFRESH_INVALID = ".status.refresh-invalid";
     public static final String STATUS_IP_MISSING = ".status.ip-missing";
     public static final String STATUS_PORT_MISSING = ".status.port-missing";
     public static final String STATUS_SERVER_RESTART = ".status.server-restart";

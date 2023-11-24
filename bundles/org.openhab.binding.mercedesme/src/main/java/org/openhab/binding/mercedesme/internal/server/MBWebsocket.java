@@ -32,6 +32,8 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,6 +123,8 @@ public class MBWebsocket {
             for (int i = 0; i < ste.length; i++) {
                 logger.warn("{}", ste[i].toString());
             }
+            accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/mercedesme.account.status.websocket-failure");
         }
         synchronized (this) {
             running = false;
@@ -219,11 +223,11 @@ public class MBWebsocket {
                         .build();
                 sendAchnowledgeMessage(cm);
             } else if (pm.hasApptwinPendingCommandRequest()) {
-                // logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
+                logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
             } else if (pm.hasDebugMessage()) {
-                // logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
+                logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
             } else {
-                // logger.trace("MB Message: {} not handeled", pm.getAllFields());
+                logger.trace("MB Message: {} not handeled", pm.getAllFields());
             }
 
         } catch (IOException e) {
@@ -247,7 +251,7 @@ public class MBWebsocket {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        logger.debug("Connected to server");
+        accountHandler.updateStatus(ThingStatus.ONLINE);
         this.session = session;
         sendMessage();
     }

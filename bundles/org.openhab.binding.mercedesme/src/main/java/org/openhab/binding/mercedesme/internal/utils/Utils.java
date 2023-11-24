@@ -162,7 +162,7 @@ public class Utils {
                 }
             } catch (SocketException se) {
                 // Calling one network interface failed - continue searching
-                LOGGER.trace("Network {} failed {}", iface.getName(), se.getMessage());
+                LOGGER.warn("Network {} failed {}", iface.getName(), se.getMessage());
             }
         }
         throw new SocketException("IP address not detected");
