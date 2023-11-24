@@ -39,7 +39,7 @@ public class AuthServlet extends HttpServlet {
         if (guid == null && pin == null) {
             // request PIN
             String requestVal = myAuthService.requestPin();
-            if (!requestVal.equals(Constants.NOT_SET)) {
+            if (!Constants.NOT_SET.equals(requestVal)) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().println("<HTML>");
                 response.getWriter().println("<BODY>");

@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  * {@link MercedesMeDiscoveryService} will be notified from Bridge {@link AccountHandler} regarding
  * associated vehicles and provides DiscoveryResults
  *
- * @author Mark Theiding - Initial Contribution
+ * @author Bernd Weymann - Initial Contribution
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.mercedesme")

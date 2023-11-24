@@ -68,7 +68,7 @@ public class Mapper {
         // Configure Mapper default values
         Unit<Length> lengthUnit = up.getUnit(Length.class);
         if (lengthUnit != null) {
-            if (lengthUnit.equals(ImperialUnits.FOOT)) {
+            if (ImperialUnits.FOOT.equals(lengthUnit)) {
                 defaultLengthUnit = ImperialUnits.MILE;
                 defaultSpeedUnit = ImperialUnits.MILES_PER_HOUR;
                 defaultPressureUnit = ImperialUnits.POUND_FORCE_SQUARE_INCH;

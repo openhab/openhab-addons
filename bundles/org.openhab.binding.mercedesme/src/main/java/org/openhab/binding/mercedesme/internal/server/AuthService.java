@@ -196,7 +196,7 @@ public class AuthService {
 
     public String getToken() {
         if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-            if (!token.getRefreshToken().equals(Constants.NOT_SET)) {
+            if (!Constants.NOT_SET.equals(token.getRefreshToken())) {
                 refreshToken();
                 // token shall be updated now - retry expired check
                 if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {

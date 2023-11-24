@@ -68,10 +68,10 @@ public class MercedesMeMetadataAdjuster implements RegistryChangeListener<ItemCh
                 case Constants.GROUP_TRIP + ChannelUID.CHANNEL_GROUP_SEPARATOR + "distance-reset":
                     if (metadataRegistry.get(key) == null) {
                         Unit<Length> lengthUnit = unitProvider.getUnit(Length.class);
-                        if (lengthUnit.equals(ImperialUnits.FOOT)) {
+                        if (ImperialUnits.FOOT.equals(lengthUnit)) {
                             metadataRegistry.add(new Metadata(key, ImperialUnits.MILE.getSymbol(), null));
-                        } else if (lengthUnit.equals(SIUnits.METRE)) {
-                            metadataRegistry.add(new Metadata(key, Constants.KILOMETRE_UNIT.getSymbol(), null));
+                        } else if (SIUnits.METRE.equals(lengthUnit)) {
+                            metadataRegistry.add(new Metadata(key, Constants.KILOMETRE_UNIT.toString(), null));
                         }
                     }
                     break;
@@ -88,10 +88,10 @@ public class MercedesMeMetadataAdjuster implements RegistryChangeListener<ItemCh
                 case Constants.GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + "pressure-rear-right":
                     if (metadataRegistry.get(key) == null) {
                         Unit<Length> lengthUnit = unitProvider.getUnit(Length.class);
-                        if (lengthUnit.equals(ImperialUnits.FOOT)) {
+                        if (ImperialUnits.FOOT.equals(lengthUnit)) {
                             metadataRegistry
                                     .add(new Metadata(key, ImperialUnits.POUND_FORCE_SQUARE_INCH.getSymbol(), null));
-                        } else if (lengthUnit.equals(SIUnits.METRE)) {
+                        } else if (SIUnits.METRE.equals(lengthUnit)) {
                             metadataRegistry.add(new Metadata(key, Units.BAR.getSymbol(), null));
                         }
                     }
