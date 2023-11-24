@@ -519,36 +519,36 @@ public class VehicleHandler extends BaseThingHandler {
             if (eventStorage.get("hvac#front-left").getState() != UnDefType.UNDEF
                     && !"hvac#front-left".equals(channelUID.getId())) {
                 OnOffType oot = (OnOffType) eventStorage.get("hvac#front-left").getState();
-                buidler.setFrontLeft(oot.equals(OnOffType.ON));
+                buidler.setFrontLeft(OnOffType.ON.equals(oot));
             }
             if (eventStorage.get("hvac#front-right").getState() != UnDefType.UNDEF
                     && !"hvac#front-right".equals(channelUID.getId())) {
                 OnOffType oot = (OnOffType) eventStorage.get("hvac#front-right").getState();
-                buidler.setFrontRight(oot.equals(OnOffType.ON));
+                buidler.setFrontRight(OnOffType.ON.equals(oot));
             }
             if (eventStorage.get("hvac#rear-left").getState() != UnDefType.UNDEF
                     && !"hvac#rear-left".equals(channelUID.getId())) {
                 OnOffType oot = (OnOffType) eventStorage.get("hvac#rear-left").getState();
-                buidler.setRearLeft(oot.equals(OnOffType.ON));
+                buidler.setRearLeft(OnOffType.ON.equals(oot));
             }
             if (eventStorage.get("hvac#rear-right").getState() != UnDefType.UNDEF
                     && !"hvac#rear-right".equals(channelUID.getId())) {
                 OnOffType oot = (OnOffType) eventStorage.get("hvac#rear-right").getState();
-                buidler.setRearRight(oot.equals(OnOffType.ON));
+                buidler.setRearRight(OnOffType.ON.equals(oot));
             }
             // now overwrite command
             switch (channelUID.getId()) {
                 case "hvac#front-left":
-                    buidler.setFrontLeft(command.equals(OnOffType.ON));
+                    buidler.setFrontLeft(OnOffType.ON.equals(command));
                     break;
                 case "hvac#front-right":
-                    buidler.setFrontRight(command.equals(OnOffType.ON));
+                    buidler.setFrontRight(OnOffType.ON.equals(command));
                     break;
                 case "hvac#rear-left":
-                    buidler.setRearLeft(command.equals(OnOffType.ON));
+                    buidler.setRearLeft(OnOffType.ON.equals(command));
                     break;
                 case "hvac#rear-right":
-                    buidler.setRearRight(command.equals(OnOffType.ON));
+                    buidler.setRearRight(OnOffType.ON.equals(command));
                     break;
             }
             ZEVPreconditioningConfigureSeats seats = buidler.build();
@@ -584,6 +584,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public void distributeContent(VEPUpdate data) {
+        updateStatus(ThingStatus.ONLINE);
         boolean fullUpdate = data.getFullUpdate();
         /**
          * Deliver proto update
@@ -1225,7 +1226,7 @@ public class VehicleHandler extends BaseThingHandler {
             if (GROUP_VEHICLE.equals(csm.getGroup()) && "ignition".equals(csm.getChannel())) {
                 ignitionState = ((DecimalType) csm.getState()).intValue();
             } else if (GROUP_CHARGE.equals(csm.getGroup()) && "active".equals(csm.getChannel())) {
-                chargingState = ((OnOffType) csm.getState()).equals(OnOffType.ON);
+                chargingState = OnOffType.ON.equals((csm.getState()));
             }
         }
 

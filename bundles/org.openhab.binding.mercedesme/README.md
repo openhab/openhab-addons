@@ -1,6 +1,6 @@
 # MercedesMe Binding
 
-This binding provides access to your Mercedes Benz vehicle like _Mercedes Me_ Smartphone App .
+This binding provides access to your Mercedes Benz vehicle like _Mercedes me_ Smartphone App .
 
 ## Table of Content
 
@@ -18,27 +18,27 @@ First time users shall follow the following sequence
 
 | Type            | ID            | Description                                     |
 |-----------------|---------------|-------------------------------------------------|
-| Bridge          | `account`     | Connect your Mercedes Me account                |
+| Bridge          | `account`     | Connect your Mercedes me account                |
 | Thing           | `combustion`  | Conventional fuel vehicle                       |
 | Thing           | `hybrid`      | Fuel vehicle with supporting electric engine    |
 | Thing           | `bev`         | Battery electric vehicle                        |
 
 ## Discovery
 
-The MercedesMe binding is based on the API of the Smartphone App.
+The Mercedes me binding is based on the API of the Smartphone App.
 You have an account which is associated to one or more vehicles.
-Setup the MercedesMe Account Bridge with your EMail address.
+Setup the Mercedes me Account Bridge with your email address.
 After successful authorization your associated vehicles are found automatically.
 There's no manual discovery!
 
 ## Bridge Configuration
 
-Bridge needs configuration in order to connect properly to your Mercedes Me account.
+Bridge needs configuration in order to connect properly to your Mercedes me account.
 
 | Name            | Type    | Description                             | Default     | Required | Advanced |
 |-----------------|---------|-----------------------------------------|-------------|----------|----------|
-| email           | text    | Mercedes Me registered EMail Address    | N/A         | yes      | no       |
-| pin             | text    | Mercedes Me Smartphone App PIN          | N/A         | no       | no       |
+| email           | text    | Mercedes me registered email Address    | N/A         | yes      | no       |
+| pin             | text    | Mercedes me Smartphone App PIN          | N/A         | no       | no       |
 | region          | text    | Your region                             | EU          | yes      | no       |
 | refreshInterval | integer | API refresh interval                    | 15          | yes      | no       |
 | callbackIP      | text    | Your region                             | N/A         | yes      | yes      |
@@ -51,7 +51,7 @@ Set `region` to your location
 - `AP` : Asia Pacific
 - `CN` : China 
 
-Set `pin` to your MercedesMe App PIN.
+Set `pin` to your Mercedes me App PIN.
 Parameter is *not required*.
 Note `pin` is needed for some commands which are affecting **vehicle safety**.
 Commands like _unlock doors_ will result into an _unsafe state_: your vehicle is unlocked and is accessible to everybody. 
@@ -63,30 +63,29 @@ Commands protected by PIN
 - Open / Ventilate Windows
 - Open / Lift Sunroof
 
-IP `callbackIP` and port `callbackPort` will be auutodetected. 
+IP `callbackIP` and port `callbackPort` will be auto-detected. 
 If you're running on server with more than one network interface please select manually.
 
 ### Bridge Authorization
 
-Authorization is needed to activate the Bridge which is connected to your MercedesMe Account.
+Authorization is needed to activate the Bridge which is connected to your Mercedes me Account.
 The Bridge will indicate in the status headline if authorization is needed including the URL which needs to be opened in your browser.
 
 Three steps are needed
 
 1. Open the mentioned URL like 192.168.x.x:8090/mb-auth 
-Opening this URL will request a PIN  which will be send to your configured EMail
+Opening this URL will request a PIN  which will be send to your configured email.
 Check your Mail Account if you received the PIN.
-Click on _Continue_ to proceed with Step 2 
+Click on _Continue_ to proceed with Step 2.
 
-2. Enter your PIN in the shown field
-Leave GUID as identifier as it is
-Click on _Submit_ button
+2. Enter your PIN in the shown field.
+Leave GUID as identifier as it is.
+Click on _Submit_ button.
 
 3. Confirmation shall be shown that authorization was successful.
 
 In case of non successful authorization check your log for errors. 
-
-Some screenshots to follow authorization steps:
+Below screenshots are illustrating the authorization flow.
 
 ### After Bridge Setup
 
@@ -110,7 +109,7 @@ Some screenshots to follow authorization steps:
 |-----------------|---------|-----------------------------------------------------|---------|----------|----------|
 | vin             | text    | Vehicle Identification Number                       | N/A     | yes      | no       |
 
-For all vehicles you're free to give the tank / battery capacity.
+For all vehicles you're free to give the fuel / battery capacity.
 Giving these values in configuration open fuel / charge capacities are reported in the [range](#range) channels.
 
 | Name            | Type    | Description                                         | Default | Required | Advanced | combustion | bev | hybrid |
@@ -156,7 +155,7 @@ Group name: `vehicle`
 | command-capabilities  | String              |  Command Capabilities         | X    |       |    X     |
 | proto-update          | String              |  Last Vehicle Data Update     | X    |       |    X     |
 
-Advanced channels are only for debugging. 
+Advanced channels are used to identify problems. 
 If you encounter problems with this binding follow the instructions from [Troubleshooting](#troubleshooting) section.
 
 #### Lock Status Mapping
@@ -362,7 +361,7 @@ Triggers `- PRECONDCONFIGURESEATS` from [Command Name Mapping](#command-name-map
 
 #### Temperature Setting
 
-Preconfigure selected zone with desired temperature
+Preconfigure selected zone with desired temperature.
 Minimum and maximum temperature depends on your local settings either Degree Celsius or Fahrenheit.
 
 Celsius 
@@ -409,7 +408,11 @@ States and controls are depending on your vehicle capabilities.
 
 #### Starter Battery Mapping
 
--0 : Charged
+Traffic light status of the starter battery
+
+- 0 : Green
+- 1 : Yellow
+- 2 : Red
 
 ### Range
 
@@ -419,20 +422,20 @@ All channels read-only.
 
 | Channel          | Type                 |  Description                 | bev | hybrid | combustion |
 |------------------|----------------------|------------------------------|-----|--------|------------|
-| mileage          | Number:Length        |  Total mileage               | X   | X      | X          |
+| mileage          | Number:Length        |  Total Mileage               | X   | X      | X          |
 | home-distance    | Number:Length        |  Distance to Home            | X   | X      | X          |
-| soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
+| soc              | Number:Dimensionless |  Battery State of Charge     | X   | X      |            |
 | charged          | Number:Energy        |  Charged Battery Energy      | X   | X      |            |
 | uncharged        | Number:Energy        |  Uncharged Battery Energy    | X   | X      |            |
-| range-electric   | Number:Length        |  Electric range              | X   | X      |            |
-| radius-electric  | Number:Length        |  Electric radius for map     | X   | X      |            |
-| fuel-level       | Number:Dimensionless |  Fuel level in percent       |     | X      | X          |
+| range-electric   | Number:Length        |  Electric Range              | X   | X      |            |
+| radius-electric  | Number:Length        |  Electric Radius for Map     | X   | X      |            |
+| fuel-level       | Number:Dimensionless |  Fuel Level in Percent       |     | X      | X          |
 | fuel-remain      | Number:Volume        |  Remaining Fuel              |     | X      | X          |
 | fuel-open        | Number:Volume        |  Open Fuel Capacity          |     | X      | X          |
-| range-fuel       | Number:Length        |  Fuel range                  |     | X      | X          |
-| radius-fuel      | Number:Length        |  Fuel radius for map         |     | X      | X          |
-| range-hybrid     | Number:Length        |  Hybrid range                |     | X      |            |
-| radius-hybrid    | Number:Length        |  Hybrid radius for map       |     | X      |            |
+| range-fuel       | Number:Length        |  Fuel Range                  |     | X      | X          |
+| radius-fuel      | Number:Length        |  Fuel Radius for Map         |     | X      | X          |
+| range-hybrid     | Number:Length        |  Hybrid Range                |     | X      |            |
+| radius-hybrid    | Number:Length        |  Hybrid Radius for Map       |     | X      |            |
 
 Channels with `radius` are just giving a _guess_ which radius can be reached in a map display.
 
@@ -508,7 +511,7 @@ Triggers `CHARGEPROGRAMCONFIGURE` from [Command Name Mapping](#command-name-mapp
 
 #### Auto Unlock Setting
 
-Charge Program can be configured to release Coupler Lock after target SoC is reached
+Charge Program can be configured to release coupler lock after target SoC is reached
 
 Triggers `CHARGEPROGRAMCONFIGURE` from [Command Name Mapping](#command-name-mapping)
 
@@ -536,7 +539,7 @@ All channels `read-only`
 #### Average Consumption
 
 You can configure different average consumption units like kWh per 100 kilometer or km per kWh.
-In your MercedesMe App front page 
+In your Mercedes me App front page 
 
 - Burger Menu top left 
 - Last Entry `Settings`
@@ -547,7 +550,7 @@ In your MercedesMe App front page
 ### Trip Duration
 
 Shown as String in format `d days, HH:mm`.
-If duration is below 24 hors format is `HH:mm`. 
+If duration is below 24 hours format is `HH:mm`. 
 
 ### Position
 
@@ -739,12 +742,10 @@ Keep these 3 channels disconnected during normal operation.
 ### Things file
 
 ```java
-Bridge mercedesme:account:4711   "MercedesMe John Doe" [ email="YOUR_MAIL_ADDRESS", region="EU", pin=9876, refreshInterval=15] {
+Bridge mercedesme:account:4711   "Mercedes me John Doe" [ email="YOUR_MAIL_ADDRESS", region="EU", pin=9876, refreshInterval=15] {
          Thing bev eqa           "Mercedes EQA"        [ vin="VEHICLE_VIN", batteryCapacity=66.5]
 }
 ```
-
-mercedesme:bev:bfabd6f15a:W1N2437011J016433
 
 ### Items file
 

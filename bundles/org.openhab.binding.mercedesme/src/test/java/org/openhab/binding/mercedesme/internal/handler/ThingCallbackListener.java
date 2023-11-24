@@ -149,6 +149,5 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     @Override
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
-        // TODO Auto-generated method stub
     }
 }

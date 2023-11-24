@@ -134,7 +134,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     public void update() {
         if (authService.isPresent()) {
-            if (!authService.get().getToken().equals(Constants.NOT_SET)) {
+            if (!Constants.NOT_SET.equals(authService.get().getToken())) {
                 ws.run();
             } else {
                 // all failed - start manual authorization
@@ -178,7 +178,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private String configValid() {
         config = Optional.of(getConfigAs(AccountConfiguration.class));
         String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId();
-        if (config.get().callbackIP.equals(Constants.NOT_SET)) {
+        if (Constants.NOT_SET.equals(config.get().callbackIP)) {
             return textKey + Constants.STATUS_IP_MISSING;
         } else if (config.get().callbackPort == -1) {
             return textKey + Constants.STATUS_PORT_MISSING;

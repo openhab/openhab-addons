@@ -29,9 +29,6 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
-import tech.units.indriya.function.MultiplyConverter;
-import tech.units.indriya.unit.TransformedUnit;
-
 /**
  * {@link Constants} defines common constants, which are
  * used across the whole binding.
@@ -40,7 +37,7 @@ import tech.units.indriya.unit.TransformedUnit;
  */
 @NonNullByDefault
 public class Constants {
-    public static final String BINDING_VERSION = "2.4-beta";
+    public static final String BINDING_VERSION = "oh-release";
     public static final String BINDING_ID = "mercedesme";
 
     public static final String COMBUSTION = "combustion";
@@ -96,8 +93,7 @@ public class Constants {
     public static final String PIN = "pin";
     public static final String MIME_PREFIX = "image/";
 
-    public static final Unit<Length> KILOMETRE_UNIT = new TransformedUnit<Length>("km", "km", SIUnits.METRE,
-            MultiplyConverter.of(1000));
+    public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
     public static final Unit<Power> KILOWATT_UNIT = MetricPrefix.KILO(Units.WATT);
     public static final Unit<Energy> KILOWATT_HOUR_UNIT = MetricPrefix.KILO(Units.WATT_HOUR);
     public static final Unit<Pressure> KPA_UNIT = MetricPrefix.KILO(SIUnits.PASCAL);

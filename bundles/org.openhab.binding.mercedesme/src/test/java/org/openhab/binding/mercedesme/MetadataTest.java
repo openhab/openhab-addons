@@ -43,7 +43,7 @@ class MetadataTest {
         UnitProvider unitProviderMock = mock(UnitProvider.class);
         when(unitProviderMock.getUnit(Length.class)).thenReturn(SIUnits.METRE);
 
-        ThingUID tuid = new ThingUID(Constants.BINDING_ID, Constants.BEV);
+        ThingUID tuid = new ThingUID(Constants.BINDING_ID, Constants.BEV, "test");
         MercedesMeMetadataAdjuster mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class),
                 unitProviderMock);
         mmma.added(new ItemChannelLink("Soc_Test_Item", new ChannelUID(tuid, Constants.GROUP_RANGE, "soc")));
@@ -51,14 +51,14 @@ class MetadataTest {
 
         mdrm = new MetadataRegistryMock();
         mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class), unitProviderMock);
-        mmma.added(new ItemChannelLink("Mileage_Test_Item", new ChannelUID(tuid, Constants.GROUP_RANGE, "mileage")));
-        assertEquals("km", mdrm.getAll().iterator().next().getValue(), "Kilometer Unit");
+        mmma.added(new ItemChannelLink("Pressure_Test_Item",
+                new ChannelUID(tuid, Constants.GROUP_TIRES, "pressure-front-right")));
+        assertEquals("bar", mdrm.getAll().iterator().next().getValue(), "Prressure Unit");
 
         mdrm = new MetadataRegistryMock();
         mmma = new MercedesMeMetadataAdjuster(mdrm, mock(ItemChannelLinkRegistry.class), unitProviderMock);
-        mmma.added(new ItemChannelLink("Mileage_Test_Item",
-                new ChannelUID(tuid, Constants.GROUP_TIRES, "pressure-front-right")));
-        assertEquals("bar", mdrm.getAll().iterator().next().getValue(), "Prressure Unit");
+        mmma.added(new ItemChannelLink("Mileage_Test_Item", new ChannelUID(tuid, Constants.GROUP_RANGE, "mileage")));
+        assertEquals("km", mdrm.getAll().iterator().next().getValue(), "Kilometer Unit");
     }
 
     @Test
