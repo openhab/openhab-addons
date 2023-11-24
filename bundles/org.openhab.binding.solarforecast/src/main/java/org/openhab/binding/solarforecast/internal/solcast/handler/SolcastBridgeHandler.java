@@ -79,7 +79,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                 try {
                     timeZone = ZoneId.of(configuration.get().timeZone);
                     updateStatus(ThingStatus.ONLINE);
-                    refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 1,
+                    refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0,
                             configuration.get().channelRefreshInterval, TimeUnit.MINUTES));
                 } catch (DateTimeException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -87,7 +87,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);
-                refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 1,
+                refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0,
                         configuration.get().channelRefreshInterval, TimeUnit.MINUTES));
             }
         } else {
