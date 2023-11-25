@@ -129,9 +129,8 @@ public class ShellyHttpClient {
 
                 timeout = true;
                 timeoutErrors++; // count the retries
-                logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
-
                 retries--;
+                logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
             }
         }
         throw new ShellyApiException("API Timeout or inconsistent result"); // successful
