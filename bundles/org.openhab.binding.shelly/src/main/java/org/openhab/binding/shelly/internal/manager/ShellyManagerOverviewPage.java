@@ -64,7 +64,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         String action = getUrlParm(parameters, URLPARM_ACTION).toLowerCase();
         String uidParm = getUrlParm(parameters, URLPARM_UID).toLowerCase();
 
-        logger.debug("Generating overview for {} devices", getThingHandlers().size());
+        logger.debug("Generating overview for {} devices", getThingHandlers().size());
 
         String html = "";
         Map<String, String> properties = new HashMap<>();

@@ -145,6 +145,7 @@ public class ShellyDeviceProfile {
             device.hostname = device.mac.length() >= 12 ? "shelly-" + device.mac.toUpperCase().substring(6, 11)
                     : "unknown";
         }
+        device.mode = getString(settings.mode).toLowerCase();
         name = getString(settings.name);
         hwRev = settings.hwinfo != null ? getString(settings.hwinfo.hwRevision) : "";
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
@@ -417,5 +418,19 @@ public class ShellyDeviceProfile {
 
         // If device is not yet intialized or the enabled property is missing we assume that CoIoT is enabled
         return true;
+    }
+
+    public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
+        String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
+        switch (model) {
+            case SHELLYDT_BLUBUTTON:
+                return (THING_TYPE_SHELLYBLUBUTTON_STR + "-" + mac).toLowerCase();
+            case SHELLYDT_BLUDW:
+                return (THING_TYPE_SHELLYBLUDW_STR + "-" + mac).toLowerCase();
+            case SHELLYDT_BLUMOTION:
+                return (THING_TYPE_SHELLYBLUMOTION_STR + "-" + mac).toLowerCase();
+            default:
+                throw new IllegalArgumentException("Unsupported BLU device model " + model);
+        }
     }
 }
