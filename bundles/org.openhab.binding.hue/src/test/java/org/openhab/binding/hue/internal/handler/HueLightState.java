@@ -13,7 +13,7 @@
 package org.openhab.binding.hue.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.dto.State.ColorMode;
+import org.openhab.binding.hue.internal.api.dto.clip1.State.ColorMode;
 
 /**
  * Builder for the current state of a hue light.

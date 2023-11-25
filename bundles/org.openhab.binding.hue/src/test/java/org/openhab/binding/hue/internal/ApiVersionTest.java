@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hue.internal.dto.ApiVersion;
+import org.openhab.binding.hue.internal.api.dto.clip1.ApiVersion;
 
 /**
  * @author Samuel Leisering - Initial contribution

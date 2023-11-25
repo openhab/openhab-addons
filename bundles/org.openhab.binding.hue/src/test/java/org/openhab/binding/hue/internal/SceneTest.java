@@ -19,9 +19,9 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hue.internal.dto.FullGroup;
-import org.openhab.binding.hue.internal.dto.Scene;
-import org.openhab.binding.hue.internal.dto.State;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullGroup;
+import org.openhab.binding.hue.internal.api.dto.clip1.Scene;
+import org.openhab.binding.hue.internal.api.dto.clip1.State;
 
 /**
  * @author HJiang - initial contribution

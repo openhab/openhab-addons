@@ -13,7 +13,7 @@
 package org.openhab.binding.hue.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.dto.FullSensor;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullSensor;
 
 /**
  * The {@link SensorStatusListener} is notified when a sensor status has changed or a sensor has been removed or added.
