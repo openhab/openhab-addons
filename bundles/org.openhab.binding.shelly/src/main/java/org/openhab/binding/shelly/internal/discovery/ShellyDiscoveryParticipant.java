@@ -142,10 +142,11 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             config.deviceIp = address;
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
+
             boolean gen2 = "2".equals(service.getPropertyString("gen"));
+            ShellyApiInterface api = null;
             boolean auth = false;
             ShellySettingsDevice devInfo;
-            ShellyApiInterface api = null;
             try {
                 api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
                 api.initialize();

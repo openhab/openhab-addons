@@ -104,6 +104,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                     properties.clear();
                     fillProperties(properties, uid, handler.getValue());
                     String deviceType = getDeviceType(properties);
+
                     properties.put(ATTRIBUTE_DISPLAY_NAME, getDisplayName(properties));
                     properties.put(ATTRIBUTE_DEV_STATUS, fillDeviceStatus(warnings));
                     if (!warnings.isEmpty() && (status != ThingStatus.UNKNOWN)) {

@@ -388,6 +388,19 @@
 		</state>
 	</channel-type>
 
+    <channel-type id="sensorMotion">
+        <item-type>Switch</item-type>
+        <label>@text/channel-type.shelly.sensorMotion.label</label>
+        <description>@text/channel-type.shelly.sensorMotion.description</description>
+        <category>Motion</category>
+        <tags>
+            <tag>Status</tag>
+            <tag>Presence</tag>
+        </tags>
+        <state readOnly="true">
+        </state>
+    </channel-type>
+
 	<channel-type id="sensorVibration">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.sensorVibration.label</label>
