@@ -262,10 +262,13 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellySettingsDevice {
         public String type;
-        public String mode;
+        public String mode; // Gen 1
+        public String id; // Gen2: service name
+        public String name; // Gen2: configured device name
+        public String profile; // Gen 2
         public String mac;
         public String hostname;
-        public String fw; // firmware id
+        public String fw;
         public Boolean auth;
         public Integer gen;
         public String coiot;
@@ -281,9 +284,6 @@ public class Shelly1ApiJsonDTO {
         public Integer numRollers;
 
         // Gen2
-        public String id;
-        public String model;
-        public String name;
         public String app;
         public Integer slot;
         @SerializedName("fw_id")
@@ -293,7 +293,6 @@ public class Shelly1ApiJsonDTO {
         public Integer authEnabled;
         @SerializedName("auth_domain")
         public Integer authDomain;
-        public String profile;
     }
 
     public static class ShellySettingsWiFiAp {
@@ -583,7 +582,8 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("wifi_ap")
         public ShellySettingsWiFiAp wifiAp = new ShellySettingsWiFiAp();
         @SerializedName("wifi_sta")
-        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork();
+        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork(); // WiFi client configuration. See
+                                                                                    // /settings/sta for details
         @SerializedName("wifi_sta1")
         public ShellySettingsWiFiNetwork wifiSta1 = new ShellySettingsWiFiNetwork();
         @SerializedName("wifirecovery_reboot_enabled")

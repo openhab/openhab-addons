@@ -318,6 +318,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (config.serviceName.isEmpty()) {
             config.serviceName = getString(device.hostname).toLowerCase();
         }
+
         api.setConfig(thingName, config);
 
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType, profile.device);
@@ -1258,7 +1259,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void publishState(String channelId, State value) {
         String id = channelId.contains("$") ? substringBefore(channelId, "$") : channelId;
-
         if (!stopping && isLinked(id)) {
             updateState(id, value);
             logger.debug("{}: Channel {} updated with {} (type {}).", thingName, channelId, value, value.getClass());

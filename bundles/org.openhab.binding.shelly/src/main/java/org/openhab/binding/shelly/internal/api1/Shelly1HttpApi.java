@@ -81,6 +81,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
+    public void initialize() throws ShellyApiException {
+        profile.device = getDeviceInfo();
+    }
+
+    @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         ShellySettingsDevice info = callApi(SHELLY_URL_DEVINFO, ShellySettingsDevice.class);
         info.gen = 1;
@@ -108,11 +113,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         return callApi("/debug/" + id, String.class);
     }
 
-    @Override
-    public void initialize() throws ShellyApiException {
-        profile.device = getDeviceInfo();
-    }
-
     /**
      * Initialize the device profile
      *
@@ -129,7 +129,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         if (profile.device.type == null) {
             profile.device = getDeviceInfo();
         }
-
         String json = httpRequest(SHELLY_URL_SETTINGS);
         if (json.contains("\"type\":\"SHDM-")) {
             logger.trace("{}: Detected a Shelly Dimmer: fix Json (replace lights[] tag with dimmers[]", thingName);

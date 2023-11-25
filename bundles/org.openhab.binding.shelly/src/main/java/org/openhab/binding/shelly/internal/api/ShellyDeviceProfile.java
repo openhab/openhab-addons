@@ -147,7 +147,6 @@ public class ShellyDeviceProfile {
         }
         device.mode = getString(settings.mode).toLowerCase();
         name = getString(settings.name);
-        device.mode = getString(settings.mode).toLowerCase();
         hwRev = settings.hwinfo != null ? getString(settings.hwinfo.hwRevision) : "";
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
         fwDate = substringBefore(device.fw, "-");
