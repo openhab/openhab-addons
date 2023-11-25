@@ -114,6 +114,22 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, onOffValue, "On/Off State", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
         }
+
+        if (effectValue != null) {
+            buildChannel(EFFECT_CHANNEL_ID, Objects.requireNonNull(effectValue), "Lighting Effect", this)
+                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleEffectCommand(command)).build();
+
+        }
+    }
+
+    private boolean handleEffectCommand(Command command) {
+        if (command instanceof StringType) {
+            JSONState json = new JSONState();
+            json.state = "ON";
+            json.effect = command.toString();
+            publishState(json);
+        }
+        return false;
     }
 
     @Override
@@ -151,6 +167,10 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             }
         }
 
+        publishState(json);
+    }
+
+    private void publishState(JSONState json) {
         String command = getGson().toJson(json);
         logger.debug("Publishing new state '{}' of light {} to MQTT.", command, getName());
         rawChannel.getState().publishValue(new StringType(command));
@@ -224,26 +244,47 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             return;
         }
 
-        if (jsonState.state != null) {
-            onOffValue.update(onOffValue.parseCommand(new StringType(jsonState.state)));
-            if (brightnessValue.getChannelState() instanceof UnDefType) {
-                brightnessValue.update(brightnessValue.parseCommand((OnOffType) onOffValue.getChannelState()));
-            }
-            if (colorValue.getChannelState() instanceof UnDefType) {
-                colorValue.update(colorValue.parseCommand((OnOffType) onOffValue.getChannelState()));
+        if (effectValue != null) {
+            if (jsonState.effect != null) {
+                effectValue.update(new StringType(jsonState.effect));
+                listener.updateChannelState(buildChannelUID(EFFECT_CHANNEL_ID), effectValue.getChannelState());
+            } else {
+                listener.updateChannelState(buildChannelUID(EFFECT_CHANNEL_ID), UnDefType.NULL);
             }
         }
 
+        boolean off = false;
+        if (jsonState.state != null) {
+            onOffValue.update(onOffValue.parseCommand(new StringType(jsonState.state)));
+            off = onOffValue.getChannelState().equals(OnOffType.OFF);
+            if (brightnessValue.getChannelState() instanceof UnDefType) {
+                brightnessValue.update(off ? PercentType.ZERO : PercentType.HUNDRED);
+            }
+            if (colorValue.getChannelState() instanceof UnDefType) {
+                colorValue.update(off ? HSBType.BLACK : HSBType.WHITE);
+            }
+        }
+
+        PercentType brightness;
+        if (off) {
+            brightness = PercentType.ZERO;
+        } else if (brightnessValue.getChannelState() instanceof PercentType percentValue) {
+            brightness = percentValue;
+        } else {
+            brightness = PercentType.HUNDRED;
+        }
+
         if (jsonState.brightness != null) {
-            brightnessValue.update(
-                    brightnessValue.parseCommand(new DecimalType(Objects.requireNonNull(jsonState.brightness))));
+            if (!off) {
+                brightness = (PercentType) brightnessValue
+                        .parseMessage(new DecimalType(Objects.requireNonNull(jsonState.brightness)));
+            }
+            brightnessValue.update(brightness);
             if (colorValue.getChannelState() instanceof HSBType) {
                 HSBType color = (HSBType) colorValue.getChannelState();
-                colorValue.update(new HSBType(color.getHue(), color.getSaturation(),
-                        (PercentType) brightnessValue.getChannelState()));
+                colorValue.update(new HSBType(color.getHue(), color.getSaturation(), brightness));
             } else {
-                colorValue.update(new HSBType(DecimalType.ZERO, PercentType.ZERO,
-                        (PercentType) brightnessValue.getChannelState()));
+                colorValue.update(new HSBType(DecimalType.ZERO, PercentType.ZERO, brightness));
             }
         }
 
@@ -255,9 +296,6 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         }
 
         if (jsonState.color != null) {
-            PercentType brightness = brightnessValue.getChannelState() instanceof PercentType
-                    ? (PercentType) brightnessValue.getChannelState()
-                    : PercentType.HUNDRED;
             // This corresponds to "deprecated" color mode handling, since we're not checking which color
             // mode is currently active.
             // HS is highest priority, then XY, then RGB

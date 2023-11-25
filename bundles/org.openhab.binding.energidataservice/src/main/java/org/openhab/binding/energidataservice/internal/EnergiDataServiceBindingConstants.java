@@ -42,22 +42,22 @@ public class EnergiDataServiceBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_SPOT_PRICE = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR
             + "spot-price";
-    public static final String CHANNEL_NET_TARIFF = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR
-            + "net-tariff";
+    public static final String CHANNEL_GRID_TARIFF = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR
+            + "grid-tariff";
     public static final String CHANNEL_SYSTEM_TARIFF = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR
             + "system-tariff";
     public static final String CHANNEL_ELECTRICITY_TAX = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR
             + "electricity-tax";
     public static final String CHANNEL_REDUCED_ELECTRICITY_TAX = CHANNEL_GROUP_ELECTRICITY
             + ChannelUID.CHANNEL_GROUP_SEPARATOR + "reduced-electricity-tax";
-    public static final String CHANNEL_TRANSMISSION_NET_TARIFF = CHANNEL_GROUP_ELECTRICITY
-            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "transmission-net-tariff";
+    public static final String CHANNEL_TRANSMISSION_GRID_TARIFF = CHANNEL_GROUP_ELECTRICITY
+            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "transmission-grid-tariff";
     public static final String CHANNEL_HOURLY_PRICES = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR
             + "hourly-prices";
 
-    public static final Set<String> ELECTRICITY_CHANNELS = Set.of(CHANNEL_SPOT_PRICE, CHANNEL_NET_TARIFF,
-            CHANNEL_SYSTEM_TARIFF, CHANNEL_ELECTRICITY_TAX, CHANNEL_REDUCED_ELECTRICITY_TAX,
-            CHANNEL_TRANSMISSION_NET_TARIFF, CHANNEL_HOURLY_PRICES);
+    public static final Set<String> ELECTRICITY_CHANNELS = Set.of(CHANNEL_SPOT_PRICE, CHANNEL_GRID_TARIFF,
+            CHANNEL_SYSTEM_TARIFF, CHANNEL_TRANSMISSION_GRID_TARIFF, CHANNEL_ELECTRICITY_TAX,
+            CHANNEL_REDUCED_ELECTRICITY_TAX, CHANNEL_HOURLY_PRICES);
 
     // List of all properties
     public static final String PROPERTY_REMAINING_CALLS = "remainingCalls";
