@@ -55,7 +55,6 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
-    public static final String SHELLYRPC_METHOD_WIFILISTAPCLIENTS = "WiFi.ListAPClients";
     public static final String SHELLYRPC_METHOD_ETHGETCONG = "Eth.GetConfig";
     public static final String SHELLYRPC_METHOD_ETHSETCONG = "Eth.SetConfig";
     public static final String SHELLYRPC_METHOD_BLEGETCONG = "BLE.GetConfig";
@@ -519,21 +518,6 @@ public class Shelly2ApiJsonDTO {
         public String id;
         public String src;
         public Shelly2GetConfigResult result;
-    }
-
-    public static class Shelly2APClientList {
-        public static class Shelly2APClient {
-            public String mac;
-            public String ip;
-            @SerializedName("ip_static")
-            public Boolean staticIP;
-            public Integer mport;
-            public Long since;
-        }
-
-        public Long ts;
-        @SerializedName("ap_clients")
-        public ArrayList<Shelly2APClient> apClients;
     }
 
     public static class Shelly2DeviceStatus {
