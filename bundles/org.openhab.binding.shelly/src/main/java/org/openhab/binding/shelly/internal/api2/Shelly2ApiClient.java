@@ -507,7 +507,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         rs.isValid = sm.isValid = emeter.isValid = true;
         if (cs.state != null) {
             if (!getString(rs.state).equals(cs.state)) {
-                logger.debug("{}: Roller status changed from {} to {}, updateChannels={}", thingName, rs.state,
+                logger.debug("{}: Roller status changed from {} to {}, updateChannels={}", thingName, rs.state,
                         mapValue(MAP_ROLLER_STATE, cs.state), updateChannels);
             }
             rs.state = mapValue(MAP_ROLLER_STATE, cs.state);
