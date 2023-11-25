@@ -201,7 +201,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
         AlarmSwitchReq alarmSwitchReq = new AlarmSwitchReq();
         alarmSwitchReq
                 .setAlarmSwitchList(Stream.of(type).map(v -> createAlarmSwitch(v, true)).collect(Collectors.toList()));
-        alarmSwitchReq.setPin(hashMD5("123456"));
+        alarmSwitchReq.setPin(hashMD5(config.pin));
 
         Message<AlarmSwitchReq> alarmSwitchMessage = alarmSwitchReqMessageCoder.initializeMessage(uid, token, null,
                 "521", 513, 1, alarmSwitchReq);

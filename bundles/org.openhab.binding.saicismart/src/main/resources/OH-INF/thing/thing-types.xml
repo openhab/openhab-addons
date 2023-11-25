@@ -15,7 +15,7 @@
 		<category>Car</category>
 
 		<channels>
-			<channel id="milage" typeId="mileage-channel"/>
+			<channel id="odometer" typeId="odometer-channel"/>
 			<channel id="range-electric" typeId="range-electric-channel"/>
 			<channel id="soc" typeId="system.battery-level"/>
 			<channel id="power" typeId="power-channel"/>
@@ -83,12 +83,11 @@
 				<description>Last time the Charge State data was updated</description>
 			</channel>
 			<channel id="remote-ac-status" typeId="remote-ac-status-channel"/>
-			<channel id="enable-ac" typeId="enable-ac-channel"/>
-			<channel id="disable-ac" typeId="disable-ac-channel"/>
+			<channel id="switch-ac" typeId="switch-ac-channel"/>
 			<channel id="force-refresh" typeId="force-refresh-channel"/>
 			<channel id="last-alarm-message-date" typeId="timestamp-channel">
 				<label>Last Alarm Message Timestamp</label>
-				<description>Last time an alarm message was send</description>
+				<description>Last time an alarm message was sent</description>
 			</channel>
 			<channel id="last-alarm-message-content" typeId="alarm-message-channel"/>
 		</channels>
@@ -98,7 +97,7 @@
 		<config-description-ref uri="thing-type:saicismart:vehicle"/>
 	</thing-type>
 
-	<channel-type id="mileage-channel">
+	<channel-type id="odometer-channel">
 		<item-type>Number:Length</item-type>
 		<label>Total Distance Driven</label>
 		<state pattern="%d %unit%" readOnly="true"/>
@@ -205,16 +204,17 @@
 		<item-type>Number</item-type>
 		<label>Remote A/C</label>
 		<description>Status of remote A/C</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="5">On</option>
+			</options>
+		</state>
 	</channel-type>
-	<channel-type id="enable-ac-channel">
+	<channel-type id="switch-ac-channel">
 		<item-type>Switch</item-type>
-		<label>Start Remote A/C</label>
-		<description>Start the remote A/C</description>
-	</channel-type>
-	<channel-type id="disable-ac-channel">
-		<item-type>Switch</item-type>
-		<label>Stop Remote A/C</label>
-		<description>Stop the remote A/C</description>
+		<label>Switch A/C</label>
+		<description>Control the A/C remotely</description>
 	</channel-type>
 	<channel-type id="force-refresh-channel" advanced="true">
 		<item-type>Switch</item-type>

@@ -31,7 +31,7 @@ public class SAICiSMARTBindingConstants {
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
 
     // List of all Channel ids
-    public static final String CHANNEL_MILAGE = "milage";
+    public static final String CHANNEL_ODOMETER = "odometer";
     public static final String CHANNEL_RANGE_ELECTRIC = "range-electric";
     public static final String CHANNEL_SOC = "soc";
     public static final String CHANNEL_POWER = "power";
@@ -59,8 +59,7 @@ public class SAICiSMARTBindingConstants {
     public static final String CHANNEL_LAST_ACTIVITY = "last-activity";
     public static final String CHANNEL_FORCE_REFRESH = "force-refresh";
     public static final String CHANNEL_REMOTE_AC_STATUS = "remote-ac-status";
-    public static final String CHANNEL_ENABLE_AC = "enable-ac";
-    public static final String CHANNEL_DISABLE_AC = "disable-ac";
+    public static final String CHANNEL_SWITCH_AC = "switch-ac";
     public static final String CHANNEL_LAST_POSITION_UPDATE = "last-position-update";
     public static final String CHANNEL_LAST_CHARGE_STATE_UPDATE = "last-charge-state-update";
     public static final String CHANNEL_ALARM_MESSAGE_DATE = "last-alarm-message-date";

@@ -1,76 +1,83 @@
 # SAICiSMART Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+OpenHAB binding to the SAIC-API used by MG cars (MG4, MG5 EV, MG ZSV...)
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+It enables iSMART users to get battery status and other data from their cars. 
+They can also pre-heat their cars by turning ON the AC.
 
-_Put each sentence in a separate line to improve readability of diffs._
+Based on the work done here: https://github.com/SAIC-iSmart-API
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+European iSMART accounts and vehicles.
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+- `account`: An iSMART Account
+- `vehicle`: An iSMART MG Car
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the SAICiSMART Binding
-#
-# Default secret key for the pairing of the SAICiSMART Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Vehicle discovery is implemented. 
+Once an account has been configured it can be scanned for vehicles.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+### `account` iSMART Account Configuration
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Name     | Type    | Description                 | Default | Required | Advanced |
+|----------|---------|-----------------------------|---------|----------|----------|
+| username | text    | iSMART username             | N/A     | yes      | no       |
+| password | text    | iSMART password             | N/A     | yes      | no       |
+| pin      | text    | Security code setting (PIN) | 123456  | yes      | no       |
 
-### `sample` Thing Configuration
+### `vehicle` An iSMART MG Car
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name          | Type | Description                          | Default | Required | Advanced |
+|---------------|------|--------------------------------------|---------|----------|----------|
+| vin           | text | Vehicle identification number (VIN)  | N/A     | yes      | no       |
+| abrpUserToken | text | User token for A Better Routeplanner | N/A     | no       | no       |
+
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+| Channel                    | Type                     | Read/Write | Description                                         | Advanced |
+|----------------------------|--------------------------|------------|-----------------------------------------------------|----------|
+| odometer                   | Number:Length            | R          | Total distance driven                               | no       |
+| range-electric             | Number:Length            | R          | Electric range                                      | no       |
+| soc                        | Number                   | R          | State of the battery in %                           | no       |
+| power                      | Number:Power             | R          | Power usage                                         | no       |
+| charging                   | Switch                   | R          | Charging                                            | no       |
+| engine                     | Switch                   | R          | Engine state                                        | no       |
+| speed                      | Number:Speed             | R          | Vehicle speed                                       | no       |
+| location                   | Location                 | R          | The actual position of the vehicle                  | no       |
+| heading                    | Number:Angle             | R          | The compass heading of the car, (0-360 degrees)     | no       |
+| auxiliary-battery-voltage  | Number:ElectricPotential | R          | Auxiliary battery voltage                           | no       |
+| tyre-pressure-front-left   | Number:Pressure          | R          | Pressure front left                                 | no       |
+| tyre-pressure-front-right  | Number:Pressure          | R          | Pressure front right                                | no       |
+| tyre-pressure-rear-left    | Number:Pressure          | R          | Pressure rear left                                  | no       |
+| tyre-pressure-rear-right   | Number:Pressure          | R          | Pressure rear right                                 | no       |
+| interior-temperature       | Number:Temperature       | R          | Interior temperature                                | no       |
+| exterior-temperature       | Number:Temperature       | R          | Exterior temperature                                | no       |
+| door-driver                | Contact                  | R          | Driver door open state                              | no       |
+| door-passenger             | Contact                  | R          | Passenger door open state                           | no       |
+| door-rear-left             | Contact                  | R          | Rear left door open state                           | no       |
+| door-rear-right            | Contact                  | R          | Rear right door open state                          | no       |
+| window-driver              | Contact                  | R          | Driver window open state                            | no       |
+| window-passenger           | Contact                  | R          | Passenger window open state                         | no       |
+| window-rear-left           | Contact                  | R          | Rear left window open state                         | no       |
+| window-rear-right          | Contact                  | R          | Rear right window open state                        | no       |
+| window-sun-roof            | Contact                  | R          | Sun roof open state                                 | no       |
+| last-activity              | DateTime                 | R          | Last time the engine was on or the car was charging | no       |
+| last-position-update       | DateTime                 | R          | Last time the Position data was updated             | no       |
+| last-charge-state-update   | DateTime                 | R          | Last time the Charge State data was updated         | no       |
+| remote-ac-status           | Number                   | R          | Status of the A/C                                   | no       |
+| switch-ac                  | Switch                   | R/W        | Control the A/C remotely                            | no       |
+| force-refresh              | Switch                   | R/W        | Force an immediate refresh of the car data          | yes      |
+| last-alarm-message-date    | DateTime                 | R          | Last time an alarm message was sent                 | no       |
+| last-alarm-message-content | String                   | R          | Vehicle message                                     | no       |
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+## Limitations
 
-## Full Example
+The advanced channel "force refresh" if used regularly will drain the 12v car battery and you will be unable to start it!
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+Only European iSMART accounts and vehicles are supported. API host configuration and testing for other markets is required.

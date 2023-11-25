@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.saicismart.internal;
 
-import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_DISABLE_AC;
-import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_ENABLE_AC;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_FORCE_REFRESH;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_LAST_ACTIVITY;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SWITCH_AC;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_WINDOW_SUN_ROOF;
 
 import java.net.URISyntaxException;
@@ -74,7 +73,6 @@ public class SAICiSMARTHandler extends BaseThingHandler {
     @Nullable
     SAICiSMARTVehicleConfiguration config;
     private @Nullable Future<?> pollingJob;
-    private HttpClientFactory httpClientFactory;
     private ZonedDateTime lastAlarmMessage = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.systemDefault());
 
     // if the binding is initialized, treat the car as active to get some first data
@@ -82,7 +80,6 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
     public SAICiSMARTHandler(HttpClientFactory httpClientFactory, Thing thing) {
         super(thing);
-        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -92,9 +89,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
             updateState(CHANNEL_FORCE_REFRESH, OnOffType.from(false));
             // update internal activity date, to query the car for about a minute
             notifyCarActivity(ZonedDateTime.now().minus(9, ChronoUnit.MINUTES), true);
-        } else if (channelUID.getId().equals(CHANNEL_ENABLE_AC) && command == OnOffType.ON) {
+        } else if (channelUID.getId().equals(CHANNEL_SWITCH_AC) && command == OnOffType.ON) {
             // reset channel to off
-            updateState(CHANNEL_ENABLE_AC, OnOffType.from(false));
+            updateState(CHANNEL_SWITCH_AC, OnOffType.ON);
             new Thread(() -> {
                 // enable air conditioning
                 try {
@@ -103,9 +100,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                     logger.error("A/C On Command failed", e);
                 }
             }).start();
-        } else if (channelUID.getId().equals(CHANNEL_DISABLE_AC) && command == OnOffType.ON) {
+        } else if (channelUID.getId().equals(CHANNEL_SWITCH_AC) && command == OnOffType.OFF) {
             // reset channel to off
-            updateState(CHANNEL_DISABLE_AC, OnOffType.from(false));
+            updateState(CHANNEL_SWITCH_AC, OnOffType.OFF);
             new Thread(() -> {
                 // disable air conditioning
                 try {

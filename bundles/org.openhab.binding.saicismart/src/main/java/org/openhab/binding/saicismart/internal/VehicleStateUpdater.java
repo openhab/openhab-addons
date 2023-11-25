@@ -17,7 +17,7 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_ENGINE;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_HEADING;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_LOCATION;
-import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_MILAGE;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_ODOMETER;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_RANGE_ELECTRIC;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SPEED;
 
@@ -147,7 +147,7 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
                             new DecimalType(chargingStatusResponseMessage.getApplicationData().getGpsPosition()
                                     .getWayPoint().getPosition().getAltitude())));
 
-            saiCiSMARTHandler.updateState(CHANNEL_MILAGE, new QuantityType<>(
+            saiCiSMARTHandler.updateState(CHANNEL_ODOMETER, new QuantityType<>(
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getMileage() / 10.d,
                     MetricPrefix.KILO(SIUnits.METRE)));
             saiCiSMARTHandler

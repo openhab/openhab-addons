@@ -24,6 +24,7 @@ public class SAICiSMARTBridgeConfiguration {
 
     public String username = "";
     public String password = "";
+    public String pin = "";
 
     // Refresh interval in seconds.
     public int refreshInterval = 10;
