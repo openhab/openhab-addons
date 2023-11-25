@@ -42,7 +42,7 @@
 
 		<config-description>
 			<parameter name="apiVersion" type="integer" required="false">
-				<label>API version</label>
+				<label>API Version</label>
 				<description>The version of the Ecowatt tile to which you subscribed in the RTE portal.</description>
 				<options>
 					<option value="4">V4.0 (deprecated)</option>
