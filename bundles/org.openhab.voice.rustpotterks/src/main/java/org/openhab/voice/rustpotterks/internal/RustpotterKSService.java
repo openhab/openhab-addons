@@ -61,7 +61,7 @@ import io.github.givimad.rustpotter_java.ScoreMode;
 @ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
         + " Keyword Spotter", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class RustpotterKSService implements KSService {
-    private static boolean libraryLoaded;
+    private boolean libraryLoaded;
     private static final String RUSTPOTTER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "rustpotter").toString();
     private final Logger logger = LoggerFactory.getLogger(RustpotterKSService.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-rustpotterks");
@@ -110,8 +110,8 @@ public class RustpotterKSService implements KSService {
     @Override
     public KSServiceHandle spot(KSListener ksListener, AudioStream audioStream, Locale locale, String keyword)
             throws KSException {
-        logger.debug("Loading library");
         if (!libraryLoaded) {
+            logger.debug("Loading library");
             try {
                 Rustpotter.loadLibrary();
                 libraryLoaded = true;
