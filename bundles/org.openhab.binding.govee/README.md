@@ -125,13 +125,13 @@ Note: you may have to add "%.0f K" as the state description when creating a colo
 
 ## UI Example for one device
 
-![ui-example.png](doc%2Fui-example.png)
+![ui-example.png](doc/ui-example.png)
 
 Thing channel setup:
 
-![channel-setup1.png](doc%2Fchannel-setup1.png)
-![channel-setup2.png](doc%2Fchannel-setup2.png)
-![channel-setup3.png](doc%2Fchannel-setup3.png)
+![channel-setup1.png](doc/channel-setup1.png)
+![channel-setup2.png](doc/channel-setup2.png)
+![channel-setup3.png](doc/channel-setup3.png)
 
 ```java
 UID: govee:govee-light:33_5F_60_74_F4_08_77_21
