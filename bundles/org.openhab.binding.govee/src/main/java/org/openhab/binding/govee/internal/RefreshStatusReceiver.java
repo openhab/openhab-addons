@@ -67,6 +67,7 @@ public class RefreshStatusReceiver implements Runnable {
 
             String response = new String(packet.getData()).trim();
             String deviceIPAddress = packet.getAddress().toString().replace("/", "");
+            logger.trace("Response from {} = {}", deviceIPAddress, response);
             logger.trace("received = {} from {}", response, deviceIPAddress);
 
             thingHandler = GoveeHandler.THING_HANDLERS.get(deviceIPAddress);
@@ -76,7 +77,6 @@ public class RefreshStatusReceiver implements Runnable {
             }
 
             logger.debug("updating status for thing {} ", thingHandler.getThing().getLabel());
-            logger.info("Response from {} = {}", deviceIPAddress, response);
 
             if (!response.isEmpty()) {
                 try {

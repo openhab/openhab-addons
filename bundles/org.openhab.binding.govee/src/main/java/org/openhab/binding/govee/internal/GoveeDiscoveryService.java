@@ -205,11 +205,15 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
         String sku = "";
         String macAddress = "";
         String productName = "";
+        String hwVersion = "unknown";
+        String swVersion = "unknown";
 
         if (message != null) {
             ipAddress = message.msg().data().ip();
             sku = message.msg().data().sku();
             macAddress = message.msg().data().device();
+            hwVersion = message.msg().data().wifiVersionHard();
+            swVersion = message.msg().data().wifiVersionSoft();
 
             if (ipAddress.isEmpty()) {
                 ipAddress = "unknown";
@@ -238,6 +242,8 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
         properties.put(GoveeBindingConstants.IP_ADDRESS, ipAddress);
         properties.put(GoveeBindingConstants.DEVICE_TYPE, sku);
         properties.put(GoveeBindingConstants.MAC_ADDRESS, macAddress);
+        properties.put(GoveeBindingConstants.HW_VERSION, hwVersion);
+        properties.put(GoveeBindingConstants.SW_VERSION, swVersion);
         properties.put(GoveeBindingConstants.PRODUCT_NAME, (productName != null) ? productName : sku);
 
         return properties;

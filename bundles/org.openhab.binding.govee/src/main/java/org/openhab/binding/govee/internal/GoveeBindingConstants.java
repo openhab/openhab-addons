@@ -29,6 +29,8 @@ public class GoveeBindingConstants {
     public static final String IP_ADDRESS = "hostname";
     public static final String DEVICE_TYPE = "deviceType";
     public static final String PRODUCT_NAME = "productName";
+    public static final String HW_VERSION = "wifiHardwareVersion";
+    public static final String SW_VERSION = "wifiSoftwareVersion";
     private static final String BINDING_ID = "govee";
 
     // List of all Thing Type UIDs
@@ -38,7 +40,7 @@ public class GoveeBindingConstants {
     public static final String SWITCH = "switch";
     public static final String COLOR = "color";
     public static final String COLOR_TEMPERATURE = "color-temperature";
-    public static final int COLOR_TEMPERATURE_MIN_VALUE = 2000;
-    public static final int COLOR_TEMPERATURE_MAX_VALUE = 9000;
+    public static final Double COLOR_TEMPERATURE_MIN_VALUE = 2000.0;
+    public static final Double COLOR_TEMPERATURE_MAX_VALUE = 9000.0;
     public static final String COLOR_TEMPERATURE_ABS = "color-temperature-abs";
 }

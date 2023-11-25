@@ -80,23 +80,23 @@ Here is a list of the supported devices (the ones marked with * have been tested
 
 ## Discovery
 
-Discovery is done by scanning the devices in the Thing section. 
+Discovery is done by scanning the devices in the Thing section.
 
 The devices _do not_ support the LAN API support out-of-the-box.
 To be able to use the device with the LAN API, the following needs to be done (also see the "Preparations for LAN API Control" section in the [Goveee LAN API Manual](https://app-h5.govee.com/user-manual/wlan-guide)):
 
-+ Start the Govee APP and add / discover the device (via Bluetooth) as described by the vendor manual
-Go to the settings page of the device 
-![govee device settings](doc/device-settings.png)
-+ Note that it may take several(!) minutes until this setting comes up.
-+ Switch on the LAN Control setting.
-+ Now the device can be used with openHAB.
-+ The easiest way is then to scan the devices via the SCAN button in the thing section of that binding
+- Start the Govee APP and add / discover the device (via Bluetooth) as described by the vendor manual
+  Go to the settings page of the device
+  ![govee device settings](doc/device-settings.png)
+- Note that it may take several(!) minutes until this setting comes up.
+- Switch on the LAN Control setting.
+- Now the device can be used with openHAB.
+- The easiest way is then to scan the devices via the SCAN button in the thing section of that binding
 
 ## Thing Configuration
 
 Even though binding configuration is supported via a thing file it should be noted that the IP address is required and there is no easy way to find out the IP address of the device.
-One possibility is to look for the MAC address in the Govee app and then looking the IP address up via: 
+One possibility is to look for the MAC address in the Govee app and then looking the IP address up via:
 
 ```shell
 arp -a | grep "MAC_ADDRESS"
@@ -119,9 +119,49 @@ arp -a | grep "MAC_ADDRESS"
 |                       | Color  | HSB (Hue Saturation Brightness) | RW         |                      |
 |                       | Dimmer | Brightness Percentage           | RW         |                      |
 | color-temperature     | Dimmer | Color Temperature Percentage    | RW         |                      |
-| color-temperature-abs | Dimmer | Color Temperature Absolute      | RW         | in 2000-9000 Kelvin  | 
+| color-temperature-abs | Dimmer | Color Temperature Absolute      | RW         | in 2000-9000 Kelvin  |
 
 Note: you may have to add "%.0f K" as the state description when creating a color-temperature-abs item.
+
+## UI Example for one device
+
+![ui-example.png](doc%2Fui-example.png)
+
+Thing channel setup:
+
+![channel-setup1.png](doc%2Fchannel-setup1.png)
+![channel-setup2.png](doc%2Fchannel-setup2.png)
+![channel-setup3.png](doc%2Fchannel-setup3.png)
+
+```java
+UID: govee:govee-light:33_5F_60_74_F4_08_77_21
+label: Govee H6159 RGB Light Strip H6159 (192.168.178.173)
+thingTypeUID: govee:govee-light
+configuration:
+  deviceType: H6159
+  wifiSoftwareVersion: 1.02.11
+  hostname: 192.168.162.233
+  macAddress: 33:5F:60:74:F4:08:66:21
+  wifiHardwareVersion: 1.00.10
+  refreshInterval: 5
+  productName: H6159 RGB Light Strip
+channels:
+  - id: color
+    channelTypeUID: system:color
+    label: Color
+    description: Controls the color of the light
+    configuration: {}
+  - id: color-temperature
+    channelTypeUID: system:color-temperature
+    label: Color Temperature
+    description: Controls the color temperature of the light from 0 (cold) to 100 (warm)
+    configuration: {}
+  - id: color-temperature-abs
+    channelTypeUID: govee:color-temperature-abs
+    label: Absolute Color Temperature
+    description: Controls the color temperature of the light in Kelvin
+    configuration: {}
+```
 
 ## Additional Information
 

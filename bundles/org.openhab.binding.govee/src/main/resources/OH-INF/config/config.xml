@@ -15,8 +15,16 @@
 			<description>MAC Address of the device</description>
 		</parameter>
 		<parameter name="deviceType" type="text" required="true">
-			<label>Device Product Number</label>
+			<label>Device Product Number (sku)</label>
 			<description>The product number of the device</description>
+		</parameter>
+		<parameter name="wifiHardwareVersion" type="text">
+			<label>Wifi Hardware Version Number</label>
+			<description>The Hardware Version of the device</description>
+		</parameter>
+		<parameter name="wifiSoftwareVersion" type="text">
+			<label>Wifi Software Version Number</label>
+			<description>The Software Version of the device</description>
 		</parameter>
 		<parameter name="productName" type="text" required="false">
 			<label>Device Product Name</label>
@@ -25,7 +33,7 @@
 		<parameter name="refreshInterval" type="integer" unit="s">
 			<label>Light Refresh Interval</label>
 			<description>The amount of time that passes until the device is refreshed (in seconds)</description>
-			<default>5</default>
+			<default>2</default>
 		</parameter>
 	</config-description>
 
