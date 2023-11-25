@@ -13,16 +13,16 @@
 package org.openhab.binding.hue.internal.handler.sensors;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
-import static org.openhab.binding.hue.internal.dto.FullSensor.*;
+import static org.openhab.binding.hue.internal.api.dto.clip1.FullSensor.*;
 
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.dto.FullSensor;
-import org.openhab.binding.hue.internal.dto.SensorConfigUpdate;
-import org.openhab.binding.hue.internal.dto.TemperatureConfigUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullSensor;
+import org.openhab.binding.hue.internal.api.dto.clip1.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.TemperatureConfigUpdate;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
