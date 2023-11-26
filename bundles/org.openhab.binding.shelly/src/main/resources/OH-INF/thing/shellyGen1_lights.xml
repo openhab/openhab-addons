@@ -237,7 +237,7 @@
 		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.shelly.whiteBrightness.label</label>
 		<description>@text/channel-type.shelly.whiteBrightness.description</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state min="0" max="100" step="1" readOnly="false"></state>
 	</channel-type>
 

@@ -137,6 +137,7 @@ For any manually added device, you must configure:
     - dry Contact or IR Interface `99`: add `3` before --> `where="399"`
     - energy meter F520/F521 numbered `1`: add `5` before  --> `where="51"`
     - energy meter F522/F523 numbered `4`: add `7` before and `#0` after --> `where="74#0"`
+    - energy meter F520/F521 the `energyRefreshPeriod` configuration parameter sets the number of minutes (the minimum value is 30, the maximum value is 1440) between refreshes for energy totalizers (default: 30 minutes) --> `energyRefreshPeriod` = 35  
     - alarm zone `2` --> `where="2"`
   - example for Zigbee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
 
@@ -208,15 +209,17 @@ OPEN command to execute: *5*8#134##
 
 ### Lighting, Automation, Basic/CEN/CEN+ Scenario Events, Dry Contact / IR Interfaces, Power and Aux channels
 
-| Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                           | Read/Write  |
+| Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                                                                            | Read/Write  |
 |-----------------------------------------|---------------------------------------------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------|:-----------:|
-| `switch` or `switch_01`/`02` for Zigbee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                   |     R/W     |
-| `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                 |     R/W     |
-| `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))               |     R/W     |
-| `scenario`                              | `bus_scenario_control`                                        | String        | Trigger channel for Basic scenario events [see possible values](#scenario-channels)                                   | R (TRIGGER) |
-| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                                | R (TRIGGER) |
-| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if an IR Sensor is detecting movement (`ON`), or not  (`OFF`)  |      R      |
-| `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                      |      R      |
+| `switch` or `switch_01`/`02` for Zigbee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                                                                    |     R/W     |
+| `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                                                                  |     R/W     |
+| `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))                                                                |     R/W     |
+| `scenario`                              | `bus_scenario_control`                                        | String        | Trigger channel for Basic scenario events [see possible values](#scenario-channels)                                                                                    | R (TRIGGER) |
+| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                                                                                 | R (TRIGGER) |
+| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if an IR Sensor is detecting movement (`ON`), or not  (`OFF`)                                                   |      R      |
+| `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                                                                       |      R      |
+| `energyToday`                           | `bus_energy_meter`                                            | Number:Energy | Current day energy totalizer                                                                                                                                           |      R      |
+| `energyThisMonth`                       | `bus_energy_meter`                                            | Number:Energy | Current month energy totalizer                                                                                                                                         |      R      |
 | `aux`                                   | `bus_aux`                                                     | String        | Possible commands: `ON`, `OFF`, `TOGGLE`, `STOP`, `UP`, `DOWN`, `ENABLED`, `DISABLED`, `RESET_GEN`, `RESET_BI`, `RESET_TRI`. Only `ON` and `OFF` are supported for now |     R/W     |
 
 ### Alarm channels
@@ -368,6 +371,10 @@ Rollershutter       iLR_shutter                 "Shutter [%.0f %%]"           (g
 
 Number:Power        iCENTRAL_Ta                 "Power [%.0f %unit%]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
 Number:Power        iCENTRAL_Tb                 "Power [%.0f %unit%]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
+Number:Energy       iCENTRAL_Ta_day             "Energy Day [%.1f]"                             { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:energyToday"}
+Number:Energy       iCENTRAL_Tb_day             "Energy Day [%.1f]"                             { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:energyToday"}
+Number:Energy       iCENTRAL_Ta_month           "Energy Month [%.1f]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:energyThisMonth"}
+Number:Energy       iCENTRAL_Tb_month           "Energy Month [%.1f]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:energyThisMonth"}
 
 // 99 zones thermo central unit
 Group               gCentralUnit                "Thermo Central Unit"
@@ -434,8 +441,12 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 
     Frame label="Energy Meters" icon="energy"
     {
-          Default item=iCENTRAL_Ta label="General"      icon="energy" valuecolor=[>3000="red"]
-          Default item=iCENTRAL_Tb label="Ground Floor" icon="energy" valuecolor=[>3000="red"]
+          Default item=iCENTRAL_Ta      label="General"                        icon="energy" valuecolor=[>3000="red"]
+          Default item=iCENTRAL_Tb      label="Ground Floor"                   icon="energy" valuecolor=[>3000="red"]
+          Default item=CENTRAL_Ta_day   label="General Energy Today"           icon="energy" valuecolor=[>3000="blue"]
+          Default item=CENTRAL_Tb_day   label="Ground Floor Energy Today"      icon="energy" valuecolor=[>3000="blue"]
+          Default item=CENTRAL_Ta_month label="General Energy This Month"      icon="energy" valuecolor=[>3000="yellow"]
+          Default item=CENTRAL_Tb_month label="Ground Floor Energy This Month" icon="energy" valuecolor=[>3000="yellow"]
     }
 
     Frame label="Living Room Thermo"

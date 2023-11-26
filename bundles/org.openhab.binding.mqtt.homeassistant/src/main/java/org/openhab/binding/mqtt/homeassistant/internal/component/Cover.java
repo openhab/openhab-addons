@@ -56,8 +56,7 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
         RollershutterValue value = new RollershutterValue(channelConfiguration.payloadOpen,
                 channelConfiguration.payloadClose, channelConfiguration.payloadStop);
 
-        buildChannel(SWITCH_CHANNEL_ID, value, channelConfiguration.getName(),
-                componentConfiguration.getUpdateListener())
+        buildChannel(SWITCH_CHANNEL_ID, value, getName(), componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())

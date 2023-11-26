@@ -32,4 +32,17 @@
 		<config-description-ref uri="thing-type:shelly:blubattery"/>
 	</thing-type>
 
+	<thing-type id="shellyblumotion">
+		<label>Shelly BLU Motion</label>
+		<description>@text/thing-type.shelly.shellyblumotion.description</description>
+		<category>Sensor</category>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:blubattery"/>
+	</thing-type>
 </thing:thing-descriptions>

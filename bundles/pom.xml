@@ -258,7 +258,6 @@
     <module>org.openhab.binding.mybmw</module>
     <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.mynice</module>
-    <module>org.openhab.binding.myq</module>
     <module>org.openhab.binding.mystrom</module>
     <module>org.openhab.binding.nanoleaf</module>
     <module>org.openhab.binding.neato</module>
@@ -375,6 +374,7 @@
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tapocontrol</module>
+    <module>org.openhab.binding.tasmotaplug</module>
     <module>org.openhab.binding.telegram</module>
     <module>org.openhab.binding.teleinfo</module>
     <module>org.openhab.binding.tellstick</module>
@@ -386,7 +386,6 @@
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
-    <module>org.openhab.binding.twitter</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.upnpcontrol</module>
@@ -418,6 +417,7 @@
     <module>org.openhab.binding.wled</module>
     <module>org.openhab.binding.wolfsmartset</module>
     <module>org.openhab.binding.wundergroundupdatereceiver</module>
+    <module>org.openhab.binding.x</module>
     <module>org.openhab.binding.xmltv</module>
     <module>org.openhab.binding.xmppclient</module>
     <module>org.openhab.binding.yamahamusiccast</module>

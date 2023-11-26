@@ -14,6 +14,8 @@ package org.openhab.binding.mycroft.internal.api.dto;
 
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * This message asks Mycroft to unmute the volume
  *
@@ -28,6 +30,7 @@ public class MessageVolumeUnmute extends BaseMessage {
     }
 
     public static class Data {
-        public Boolean speak_message = false;
+        @SerializedName("speak_messsage")
+        public Boolean speakMessage = false;
     }
 }

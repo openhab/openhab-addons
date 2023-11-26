@@ -45,6 +45,9 @@ Leave this blank.
 **MQTT Client Status Topic:**
 `milight/status`
 
+**MQTT Client Status Messages Mode:**
+Simple.
+
 **group_state_fields:**
 IMPORTANT: Make sure only the following are ticked:
 

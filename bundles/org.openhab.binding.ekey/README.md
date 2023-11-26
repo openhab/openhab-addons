@@ -60,15 +60,15 @@ Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" {
 multi.items
 
 ```java
-Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
-Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerId" }
-String FsName "Name of Scanner [%s]                                            { channel="ekey:cvlan:de3b8db06e:fsName" }
+Number Action "Last action [MAP(ekey_action.map):%s]"                          { channel="ekey:cvlan:de3b8db06e:action" }
+Number FingerID "User used finger [MAP(ekey_finger.map):%s]"                   { channel="ekey:cvlan:de3b8db06e:fingerId" }
+String FsName "Name of Scanner [%s]"                                           { channel="ekey:cvlan:de3b8db06e:fsName" }
 Number FsSerial "Serialnumber [%d]"                                            { channel="ekey:cvlan:de3b8db06e:fsSerial" }
 Number InputID "Last input that has been triggered [%d]"                       { channel="ekey:cvlan:de3b8db06e:inputId" }
 Number KeyID  "Last key that has been used [%d]"                               { channel="ekey:cvlan:de3b8db06e:keyId" }
-Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" { channel="ekey:cvlan:de3b8db06e:userId" }
-String UserName " Name of Last user that accessed the house was : [%d]"        { channel="ekey:cvlan:de3b8db06e:userName" }
-Number UserStatus "Last user that accessed the house was [MAP(ekey_names.map):%d]" { channel="ekey:cvlan:de3b8db06e:userStatus" }
+Number UserID "Last user that accessed the house was [%d]"                     { channel="ekey:cvlan:de3b8db06e:userId" }
+String UserName "Name of Last user that accessed the house was: [%s]"          { channel="ekey:cvlan:de3b8db06e:userName" }
+Number UserStatus "Last user that accessed the house was [MAP(ekey_status.map):%s]" { channel="ekey:cvlan:de3b8db06e:userStatus" }
 ```
 
 home.items
@@ -81,28 +81,36 @@ Number Serialnumber "Serialnumber [%d]"                                        {
 Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" { channel="ekey:cvlan:de3b8db06e:userId" }
 ```
 
-transform/ekey_finger.map [This is just an example, as there is no strict rule what finger belongs to what number]
+transform/ekey_finger.map [this works for HOME and MULTI protocols, for RARE it's individually defined]
 
 ```text
-0=leftlittle
-1=leftring
-2=leftmiddle
-3=leftindex
-4=leftthumb
-5=rightthumb
-6=rightindex
-7=rightmiddle
-8=rightring
-9=rightlittle
--1=unknown
+1=leftlittle
+2=leftring
+3=leftmiddle
+4=leftindex
+5=leftthumb
+6=rightthumb
+7=rightindex
+8=rightmiddle
+9=rightring
+0=rightlittle
+R=RFID
+-1=nofinger
 ```
 
 transform/ekey_names.map [NO spaces allowed]
-
 ```text
 -1=Unspecified
 1=JohnDoe
 2=JaneDoe
+```
+
+transform/ekey_status.map
+
+```text
+-1=undefined
+1=enabled
+0=disabled
 ```
 
 transform/ekey_terminal.map
@@ -115,14 +123,16 @@ transform/ekey_terminal.map
 transform/ekey_multi_action.map
 
 ```text
-0=granted
--1=rejected
-1=timeoutA
-2=timeoutB
-3=inactive
-4=alwaysuser
-5=notcoupled
-6=digitalinput
+1=open
+2=refuseunrecognizedfinger
+3=refusetimeslotA
+4=refusetimeslotB
+5=refusedisabled
+6=refuseOnlyalwaysusers
+7=fingerscannernotconnectedtocontrolpanel
+8=digitalinput
+A=codepad1minutelock
+B=codepad15minutelock
 ```
 
 transform/ekey_rare_action.map
