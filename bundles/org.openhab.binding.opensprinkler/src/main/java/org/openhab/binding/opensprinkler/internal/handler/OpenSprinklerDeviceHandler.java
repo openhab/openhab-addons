@@ -261,11 +261,19 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                     case CHANNEL_PAUSE_PROGRAMS:
                         if (command == OnOffType.OFF) {
                             api.setPausePrograms(0);
-                        } else if (!(command instanceof DecimalType)) {
-                            logger.warn("The CHANNEL_PAUSE_PROGRAMS only supports DecimalType and OFF");
-                            return;
-                        } else {
+                        } else if (command instanceof DecimalType) {
                             api.setPausePrograms(((BigDecimal) command).intValue());
+                        } else if (command instanceof QuantityType<?>) {
+                            QuantityType<?> quantity = (QuantityType<?>) command;
+                            quantity = quantity.toUnit(Units.SECOND);
+                            if (quantity != null) {
+                                api.setPausePrograms(quantity.toBigDecimal().intValue());
+                            }
+                            api.setPausePrograms(((BigDecimal) command).intValue());
+                        } else {
+                            logger.warn(
+                                    "The CHANNEL_PAUSE_PROGRAMS only supports QuanityType in seconds, DecimalType and OFF");
+                            return;
                         }
                         break;
                 }
