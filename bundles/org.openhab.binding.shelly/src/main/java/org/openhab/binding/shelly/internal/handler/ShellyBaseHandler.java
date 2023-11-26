@@ -318,7 +318,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (config.serviceName.isEmpty()) {
             config.serviceName = getString(device.hostname).toLowerCase();
         }
-
         api.setConfig(thingName, config);
 
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType, profile.device);

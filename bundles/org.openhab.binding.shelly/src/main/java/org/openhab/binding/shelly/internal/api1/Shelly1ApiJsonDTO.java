@@ -282,17 +282,6 @@ public class Shelly1ApiJsonDTO {
         public Integer numEMeters;
         @SerializedName("num_rollers")
         public Integer numRollers;
-
-        // Gen2
-        public String app;
-        public Integer slot;
-        @SerializedName("fw_id")
-        public Integer fwId;
-        public String ver;
-        @SerializedName("auth_en")
-        public Integer authEnabled;
-        @SerializedName("auth_domain")
-        public Integer authDomain;
     }
 
     public static class ShellySettingsWiFiAp {
@@ -582,8 +571,7 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("wifi_ap")
         public ShellySettingsWiFiAp wifiAp = new ShellySettingsWiFiAp();
         @SerializedName("wifi_sta")
-        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork(); // WiFi client configuration. See
-                                                                                    // /settings/sta for details
+        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork();
         @SerializedName("wifi_sta1")
         public ShellySettingsWiFiNetwork wifiSta1 = new ShellySettingsWiFiNetwork();
         @SerializedName("wifirecovery_reboot_enabled")
@@ -732,8 +720,10 @@ public class Shelly1ApiJsonDTO {
     public static class ShellySettingsStatus {
         public String name; // FW 1.8: Symbolic Device name is configurable
 
-        @SerializedName("wifi_sta") // WiFi client configuration. See
-        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork();
+        @SerializedName("wifi_sta")
+        public ShellySettingsWiFiNetwork wifiSta = new ShellySettingsWiFiNetwork(); // WiFi client configuration. See
+                                                                                    // /settings/sta for details
+
         public Shelly2APClientList apClients;
 
         public ShellyStatusCloud cloud = new ShellyStatusCloud();

@@ -273,6 +273,9 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 return;
             }
 
+            // If we received a CoAP message successful the thing must be online
+            thingHandler.setThingOnline();
+
             // The device changes the serial on every update, receiving a message with the same serial is a
             // duplicate, excep for battery devices! Those reset the serial every time when they wake-up
             if ((serial == lastSerial) && payload.equals(lastPayload) && (!profile.hasBattery
@@ -280,9 +283,6 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 logger.debug("{}: Serial {} was already processed, ignore update", thingName, serial);
                 return;
             }
-
-            // If we received a CoAP message successful the thing must be online
-            thingHandler.setThingOnline();
 
             // fixed malformed JSON :-(
             payload = fixJSON(payload);

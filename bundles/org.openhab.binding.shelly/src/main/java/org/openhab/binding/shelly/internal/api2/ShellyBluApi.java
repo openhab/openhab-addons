@@ -18,7 +18,6 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,19 +55,17 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
 
-    private static final Map<String, String> MAP_INPUT_EVENT_TYPE = new HashMap<>();
-    static {
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH);
-        MAP_INPUT_EVENT_TYPE.put("1", SHELLY_BTNEVENT_1SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put("2", SHELLY_BTNEVENT_2SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put("3", SHELLY_BTNEVENT_3SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put("4", SHELLY_BTNEVENT_LONGPUSH);
-    }
+    private static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.of( //
+            SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH, //
+            SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH, //
+            SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH, //
+            SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH, //
+            SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH, //
+            SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH, //
+            "1", SHELLY_BTNEVENT_1SHORTPUSH, //
+            "2", SHELLY_BTNEVENT_2SHORTPUSH, //
+            "3", SHELLY_BTNEVENT_3SHORTPUSH, //
+            "4", SHELLY_BTNEVENT_LONGPUSH);
 
     /**
      * Regular constructor - called by Thing handler
@@ -140,7 +137,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             config.serviceName = getString(profile.device.hostname);
         }
 
-        // for now we have to API to get this information
+        // for now we have no API to get this information
         profile.fwDate = profile.fwVersion = profile.status.update.oldVersion = "";
         profile.status.hasUpdate = profile.status.update.hasUpdate = false;
 

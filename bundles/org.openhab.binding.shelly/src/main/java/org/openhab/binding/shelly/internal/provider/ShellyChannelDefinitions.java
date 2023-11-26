@@ -791,10 +791,6 @@ public class ShellyChannelDefinitions {
                 }
             }
             for (HashMap.Entry<String, ShellyChannel> entry : map.entrySet()) {
-                String key = entry.getKey();
-                if (entry.getKey().contains("alarmTrigger")) {
-                    int i = 1;
-                }
                 if (entry.getValue().channel.contains("#" + channelName)) {
                     def = entry.getValue();
                     break;

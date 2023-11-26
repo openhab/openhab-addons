@@ -75,8 +75,8 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
                 logger.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
                 return;
         }
-
         String serviceName = ShellyDeviceProfile.buildBluServiceName(getString(e.data.name), mac);
+
         Map<String, Object> properties = new TreeMap<>();
         addProperty(properties, PROPERTY_MODEL_ID, model);
         addProperty(properties, PROPERTY_SERVICE_NAME, serviceName);
