@@ -43,31 +43,36 @@ class StatusTests {
     void testInvalidConfig() {
         BridgeImpl bi = new BridgeImpl(new ThingTypeUID("test", "account"), "MB");
         Map<String, Object> config = new HashMap<String, Object>();
+        config.put("callbackIP", "999.999.999.999");
+        config.put("callbackPort", "99999");
         bi.setConfiguration(new Configuration(config));
         AccountHandlerMock ahm = new AccountHandlerMock(bi, null);
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
-        assertEquals(ThingStatus.OFFLINE, tcl.status.getStatus(), "EMail offline");
-        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.status.getStatusDetail(), "EMail config");
-        assertEquals("@text/mercedesme.account.status.email-missing", tcl.status.getDescription(), "EMail text");
+        assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "EMail offline");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.getThingStatus().getStatusDetail(), "EMail config");
+        assertEquals("@text/mercedesme.account.status.email-missing", tcl.getThingStatus().getDescription(),
+                "EMail text");
         config.put("email", "a@b.c");
         bi.setConfiguration(new Configuration(config));
         ahm.initialize();
-        assertEquals(ThingStatus.OFFLINE, tcl.status.getStatus(), "Region offline");
-        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.status.getStatusDetail(), "Region config");
-        assertEquals("@text/mercedesme.account.status.region-missing", tcl.status.getDescription(), "Region text");
+        assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "Region offline");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.getThingStatus().getStatusDetail(), "Region config");
+        assertEquals("@text/mercedesme.account.status.region-missing", tcl.getThingStatus().getDescription(),
+                "Region text");
         config.put("region", "row");
         bi.setConfiguration(new Configuration(config));
         ahm.initialize();
-        assertEquals(ThingStatus.OFFLINE, tcl.status.getStatus(), "Auth offline");
-        assertEquals(ThingStatusDetail.NONE, tcl.status.getStatusDetail(), "Auth detail");
+        assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "Auth offline");
+        assertEquals(ThingStatusDetail.NONE, tcl.getThingStatus().getStatusDetail(), "Auth detail");
         config.put("refreshInterval", 0);
         bi.setConfiguration(new Configuration(config));
         ahm.initialize();
-        assertEquals(ThingStatus.OFFLINE, tcl.status.getStatus(), "Refresh offline");
-        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.status.getStatusDetail(), "Refresh config");
-        assertEquals("@text/mercedesme.account.status.refresh-invalid", tcl.status.getDescription(), "Refresh text");
+        assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "Refresh offline");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.getThingStatus().getStatusDetail(), "Refresh config");
+        assertEquals("@text/mercedesme.account.status.refresh-invalid", tcl.getThingStatus().getDescription(),
+                "Refresh text");
     }
 
     @Test
@@ -77,22 +82,25 @@ class StatusTests {
         config.put("refreshInterval", Integer.MAX_VALUE);
         config.put("region", "row");
         config.put("email", "a@b.c");
+        config.put("callbackIP", "999.999.999.999");
+        config.put("callbackPort", "99999");
         bi.setConfiguration(new Configuration(config));
         AccountHandlerMock ahm = new AccountHandlerMock(bi, null);
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
-        assertEquals(ThingStatus.OFFLINE, tcl.status.getStatus(), "Auth Offline");
-        assertEquals(ThingStatusDetail.NONE, tcl.status.getStatusDetail(), "Auth details");
-        assertTrue(tcl.status.getDescription().contains("@text/mercedesme.account.status.authorization-needed"),
+        assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "Auth Offline");
+        assertEquals(ThingStatusDetail.NONE, tcl.getThingStatus().getStatusDetail(), "Auth details");
+        assertTrue(
+                tcl.getThingStatus().getDescription().contains("@text/mercedesme.account.status.authorization-needed"),
                 "Auth text");
         AccessTokenResponse token = new AccessTokenResponse();
         token.setExpiresIn(3000);
-        token.setAccessToken("testToken");
-        token.setRefreshToken("testRefreshToken");
+        token.setAccessToken(Constants.JUNIT_TOKEN);
+        token.setRefreshToken(Constants.JUNIT_REFERSH_TOKEN);
         ahm.onAccessTokenResponse(token);
         ahm.connect();
-        assertEquals(ThingStatus.ONLINE, tcl.status.getStatus(), "Auth Online");
+        assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Auth Online");
     }
 
     @Test
@@ -102,11 +110,13 @@ class StatusTests {
         config.put("refreshInterval", Integer.MAX_VALUE);
         config.put("region", "row");
         config.put("email", "a@b.c");
+        config.put("callbackIP", "999.999.999.999");
+        config.put("callbackPort", "99999");
         bi.setConfiguration(new Configuration(config));
         AccessTokenResponse token = new AccessTokenResponse();
         token.setExpiresIn(3000);
-        token.setAccessToken("testToken");
-        token.setRefreshToken("testRefreshToken");
+        token.setAccessToken(Constants.JUNIT_TOKEN);
+        token.setRefreshToken(Constants.JUNIT_REFERSH_TOKEN);
         token.setCreatedOn(Instant.now());
         token.setTokenType("Bearer");
         token.setScope(Constants.SCOPE);
@@ -114,9 +124,9 @@ class StatusTests {
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
-        assertEquals(ThingStatus.UNKNOWN, tcl.status.getStatus(), "Auth Offline");
+        assertEquals(ThingStatus.UNKNOWN, tcl.getThingStatus().getStatus(), "Socket Unknown");
         ahm.onAccessTokenResponse(token);
         ahm.connect();
-        assertEquals(ThingStatus.ONLINE, tcl.status.getStatus(), "Auth Online");
+        assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Spcket Online");
     }
 }
