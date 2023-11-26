@@ -589,28 +589,20 @@ public class VehicleHandler extends BaseThingHandler {
         /**
          * Deliver proto update
          */
-        try {
-            String newProto = Utils.proto2Json(data, thing.getThingTypeUID());
-            String combinedProto = newProto;
-            ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
-            ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
-            if (oldProtoMap != null) {
-                String oldProto = ((StringType) oldProtoMap.getState()).toFullString();
-                Map combinedMap = Utils.combineMaps(new JSONObject(oldProto).toMap(), new JSONObject(newProto).toMap());
-                combinedProto = (new JSONObject(combinedMap)).toString();
-            }
-            // proto updates causing large printouts in openhab.log
-            // update channel in case of user connected this channel with an item
-            ChannelStateMap dataUpdateMap = new ChannelStateMap("proto-update", GROUP_VEHICLE,
-                    StringType.valueOf(combinedProto));
-            updateChannel(dataUpdateMap);
-        } catch (Throwable t) {
-            logger.trace("Exception when combining Protos: {}", t.getMessage());
-            StackTraceElement[] ste = t.getStackTrace();
-            for (int i = 0; i < ste.length; i++) {
-                logger.trace("{}", ste[i].toString());
-            }
+        String newProto = Utils.proto2Json(data, thing.getThingTypeUID());
+        String combinedProto = newProto;
+        ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
+        ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
+        if (oldProtoMap != null) {
+            String oldProto = ((StringType) oldProtoMap.getState()).toFullString();
+            Map combinedMap = Utils.combineMaps(new JSONObject(oldProto).toMap(), new JSONObject(newProto).toMap());
+            combinedProto = (new JSONObject(combinedMap)).toString();
         }
+        // proto updates causing large printouts in openhab.log
+        // update channel in case of user connected this channel with an item
+        ChannelStateMap dataUpdateMap = new ChannelStateMap("proto-update", GROUP_VEHICLE,
+                StringType.valueOf(combinedProto));
+        updateChannel(dataUpdateMap);
 
         Map<String, VehicleAttributeStatus> atts = data.getAttributesMap();
         /**

@@ -65,9 +65,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
-    private final MetadataRegistry metadataRegistry;
-    private final ItemChannelLinkRegistry channelLinkRegistry;
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
+    private @Nullable MercedesMeMetadataAdjuster mdAdjuster;
 
     public static String ohVersion = "unknown";
 
@@ -85,12 +84,10 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         mmcop = cop;
         mmsop = sop;
         mmdsdp = dsdp;
-        metadataRegistry = mdr;
-        channelLinkRegistry = iclr;
 
-        MercedesMeMetadataAdjuster mdAdjuster = new MercedesMeMetadataAdjuster(mdr, iclr, up);
         Utils.initialze(tzp, lp);
         Mapper.initialze(up);
+        mdAdjuster = new MercedesMeMetadataAdjuster(mdr, iclr, up);
         httpClient = hcf.getCommonHttpClient();
         discoveryService = new MercedesMeDiscoveryService();
     }
@@ -128,6 +125,9 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         super.deactivate(componentContext);
         if (discoveryServiceReg != null) {
             discoveryServiceReg.unregister();
+        }
+        if (mdAdjuster != null) {
+            mdAdjuster = null;
         }
     }
 
