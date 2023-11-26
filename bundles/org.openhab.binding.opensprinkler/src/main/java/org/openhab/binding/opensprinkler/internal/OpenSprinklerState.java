@@ -63,11 +63,9 @@ public class OpenSprinklerState {
         public int rssi = 1;
         public int flcrt = -1;
         public int curr = -1;
-        public int pq = -1;
         public int pt = -1;
         public int nq = -1;
         public int otcs = -1;
-        public String dname = "";
     }
 
     public static class JnResponse {
