@@ -6,7 +6,6 @@
 [![Jenkins Build Status](https://ci.openhab.org/job/openHAB-Addons/badge/icon)](https://ci.openhab.org/job/openHAB-Addons/)
 [![EPL-2.0](https://img.shields.io/badge/license-EPL%202-green.svg)](https://opensource.org/licenses/EPL-2.0)
 [![Crowdin](https://badges.crowdin.net/openhab-addons/localized.svg)](https://crowdin.com/project/openhab-addons)
-[![Bountysource](https://www.bountysource.com/badge/tracker?tracker_id=2164344)](https://www.bountysource.com/teams/openhab/issues?tracker_ids=2164344)
 
 This repository contains the official set of add-ons that are implemented on top of openHAB Core APIs.
 Add-ons that got accepted in here will be maintained (e.g. adapted to new core APIs)

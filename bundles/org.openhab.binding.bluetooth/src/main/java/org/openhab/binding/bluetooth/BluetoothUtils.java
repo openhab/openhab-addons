@@ -47,7 +47,10 @@ public class BluetoothUtils {
      */
     public static int[] toIntArray(byte[] value) {
         int[] ret = new int[value.length];
-        System.arraycopy(value, 0, ret, 0, value.length);
+        // System.arraycopy cannot be used as it throws ArrayStoreException
+        for (int i = 0; i < value.length; i++) {
+            ret[i] = value[i];
+        }
         return ret;
     }
 
