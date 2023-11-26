@@ -1,4 +1,0 @@
-- Starter Battery mappings added
-- park-brake missing in readme
-- max-soc channel unit %
-- Bugfix: End Websockt if disconnected from server side
