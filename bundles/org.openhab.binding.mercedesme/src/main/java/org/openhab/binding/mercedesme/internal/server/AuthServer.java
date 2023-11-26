@@ -59,7 +59,8 @@ public class AuthServer {
     }
 
     public boolean start() {
-        if (server.isPresent()) {
+        // avoid real server start for unit tests
+        if (server.isPresent() || Constants.JUNIT_SERVER_ADDR.equals(callbackUrl)) {
             return true;
         }
         server = Optional.of(new Server());
@@ -71,11 +72,12 @@ public class AuthServer {
         servletHandler.addServletWithMapping(AuthServlet.class, Constants.CALLBACK_ENDPOINT);
         try {
             server.get().start();
+            return true;
         } catch (Exception e) {
             LOGGER.trace("Cannot start Callback Server for port {}, Error {}", config.callbackPort, e.getMessage());
+            server = Optional.empty();
             return false;
         }
-        return true;
     }
 
     public void stop() {

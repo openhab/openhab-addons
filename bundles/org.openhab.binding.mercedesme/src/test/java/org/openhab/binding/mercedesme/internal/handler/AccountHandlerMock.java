@@ -14,6 +14,8 @@ package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.mockito.Mockito.mock;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -34,6 +36,13 @@ import com.daimler.mbcarkit.proto.Client.ClientMessage;
  */
 @NonNullByDefault
 public class AccountHandlerMock extends AccountHandler {
+    private static LocaleProvider localeProvider = new LocaleProvider() {
+
+        @Override
+        public Locale getLocale() {
+            return Locale.getDefault();
+        }
+    };
 
     JSONObject command = new JSONObject();
 
@@ -43,7 +52,7 @@ public class AccountHandlerMock extends AccountHandler {
     }
 
     public AccountHandlerMock(Bridge b, @Nullable String storedObject) {
-        super(b, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class), mock(LocaleProvider.class),
+        super(b, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class), localeProvider,
                 new StorageServiceMock<String>(storedObject));
     }
 

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,7 +52,11 @@ public class ThingCallbackListener implements ThingHandlerCallback {
     public Map<String, State> updatesReceived = new HashMap<String, State>();
     public Map<String, Map<String, State>> updatesPerGroupMap = new HashMap<String, Map<String, State>>();
     public boolean linked = false;
-    public @Nullable ThingStatusInfo status = null;
+    public Optional<ThingStatusInfo> status = Optional.empty();
+
+    public ThingStatusInfo getThingStatus() {
+        return status.get();
+    }
 
     public int getUpdatesForGroup(String group) {
         Map<String, State> groupMap = updatesPerGroupMap.get(group);
@@ -63,9 +68,6 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
-        // if (Constants.GROUP_CHARGE.equals(channelUID.getGroupId())) {
-        // System.out.println("THL " + channelUID.toString() + " received " + state.toFullString());
-        // }
         updatesReceived.put(channelUID.toString(), state);
         Map<String, State> groupMap = updatesPerGroupMap.get(channelUID.getGroupId());
         String groupId = channelUID.getGroupId();
@@ -82,7 +84,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
-        status = thingStatus;
+        status = Optional.of(thingStatus);
     }
 
     @Override

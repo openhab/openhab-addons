@@ -31,6 +31,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -99,6 +100,10 @@ public class MBWebsocket {
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
             String websocketURL = accountHandler.getWSUri();
             logger.trace("Websocket start {}", websocketURL);
+            if (Constants.JUNIT_TOKEN.equals(request.getHeader("Authorization"))) {
+                // avoid unit test requesting real websocket - simply return
+                return;
+            }
             client.start();
             client.connect(this, new URI(websocketURL), request);
             while (keepAlive || Instant.now().isBefore(runTill)) {
@@ -119,13 +124,9 @@ public class MBWebsocket {
             client.destroy();
         } catch (Throwable t) {
             // catch Exceptions of start stop and declare communication error
-            logger.warn("Websocket handling exception: {}", t.getMessage());
-            StackTraceElement[] ste = t.getStackTrace();
-            for (int i = 0; i < ste.length; i++) {
-                logger.warn("{}", ste[i].toString());
-            }
             accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/mercedesme.account.status.websocket-failure");
+            logger.warn("Websocket handling exception: {}", t.getMessage());
         }
         synchronized (this) {
             running = false;
@@ -137,13 +138,15 @@ public class MBWebsocket {
     }
 
     private boolean sendMessage() {
-        if (!commandQueue.isEmpty() && session != null) {
+        if (!commandQueue.isEmpty()) {
             ClientMessage message = commandQueue.remove(0);
             logger.info("Send Message {}", message.getAllFields());
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);
-                session.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                if (session != null) {
+                    session.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                }
                 return true;
             } catch (IOException e) {
                 logger.warn("Error sending message {} : {}", message.getAllFields(), e.getMessage());
@@ -154,14 +157,14 @@ public class MBWebsocket {
     }
 
     private void sendAchnowledgeMessage(ClientMessage message) {
-        if (session != null) {
-            try {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                message.writeTo(baos);
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            message.writeTo(baos);
+            if (session != null) {
                 session.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
-            } catch (IOException e) {
-                logger.warn("Error sending acknowledge {} : {}", message.getAllFields(), e.getMessage());
             }
+        } catch (IOException e) {
+            logger.warn("Error sending acknowledge {} : {}", message.getAllFields(), e.getMessage());
         }
     }
 
@@ -230,15 +233,12 @@ public class MBWebsocket {
             } else {
                 logger.trace("MB Message: {} not handeled", pm.getAllFields());
             }
-
         } catch (IOException e) {
+            // don't report thing status errors here.
+            // Sometimes messages cannot be decoded which doesn't effect the overall functionality
             logger.trace("IOEXception {}", e.getMessage());
         } catch (Error err) {
             logger.trace("Error caught {}", err.getMessage());
-            StackTraceElement[] stack = err.getStackTrace();
-            for (int i = 0; i < stack.length; i++) {
-                logger.trace("{}", stack[i]);
-            }
         }
     }
 
@@ -259,10 +259,8 @@ public class MBWebsocket {
 
     @OnWebSocketError
     public void onError(Throwable t) {
-        logger.warn("Error {}", t.getMessage());
-        StackTraceElement[] stack = t.getStackTrace();
-        for (int i = 0; i < stack.length; i++) {
-            logger.warn("{}", stack[i]);
-        }
+        logger.warn("onError {}", t.getMessage());
+        accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "@text/mercedesme.account.status.websocket-failure");
     }
 }

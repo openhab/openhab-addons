@@ -147,4 +147,8 @@ public class Constants {
 
     public static final String CHANNEL_MILEAGE = "mileage";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+
+    public static final String JUNIT_SERVER_ADDR = "http://999.999.999.999:99999/mb-auth";
+    public static final String JUNIT_TOKEN = "junitTestToken";
+    public static final String JUNIT_REFERSH_TOKEN = "junitRefreshToken";
 }
