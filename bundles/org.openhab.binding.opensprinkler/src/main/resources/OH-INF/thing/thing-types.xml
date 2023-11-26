@@ -135,7 +135,7 @@
 	</channel-type>
 
 	<channel-type id="queuedZones">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Number Of Queued Zones</label>
 		<description>A count of how many zones are running and also waiting to run in the queue.</description>
 		<state readOnly="true"/>
