@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * The {@link EcowattHandler} is responsible for updating the state of the channels
  *
  * @author Laurent Garnier - Initial contribution
+ * @author Laurent Garnier - Add support for API version 5
  */
 @NonNullByDefault
 public class EcowattHandler extends BaseThingHandler {
@@ -100,7 +101,8 @@ public class EcowattHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-unset-parameters");
         } else {
-            api = new EcowattRestApi(oAuthFactory, httpClient, thing.getUID().getAsString(), idClient, idSecret);
+            api = new EcowattRestApi(oAuthFactory, httpClient, thing.getUID().getAsString(), idClient, idSecret,
+                    config.apiVersion);
             updateStatus(ThingStatus.UNKNOWN);
             scheduleNextUpdate(0, true);
         }
@@ -264,7 +266,7 @@ public class EcowattHandler extends BaseThingHandler {
             int hour = dateTime.withZoneSameInstant(day.getZone()).getHour();
             int value = signals.getHourSignal(hour);
             LoggerFactory.getLogger(EcowattHandler.class).debug("hour {} value {}", hour, value);
-            if (value >= 1 && value <= 3) {
+            if (value >= 0 && value <= 3) {
                 return new DecimalType(value);
             }
         }

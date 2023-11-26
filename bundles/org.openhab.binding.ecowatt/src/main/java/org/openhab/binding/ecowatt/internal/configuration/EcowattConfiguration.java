@@ -18,10 +18,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link EcowattConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Laurent Garnier - Initial contribution
+ * @author Laurent Garnier - New parameter apiVersion
  */
 @NonNullByDefault
 public class EcowattConfiguration {
 
+    public int apiVersion = 4;
     public String idClient = "";
     public String idSecret = "";
 }
