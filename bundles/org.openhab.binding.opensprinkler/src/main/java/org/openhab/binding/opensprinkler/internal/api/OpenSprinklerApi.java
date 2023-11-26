@@ -278,7 +278,7 @@ public interface OpenSprinklerApi {
     /**
      * Sets the amount of time that the OpenSprinkler will stop/pause zones.
      *
-     * @param 0 to 600 seconds
+     * @param seconds for the pause duration in seconds (0 to 600)
      * @throws UnauthorizedApiException
      * @throws CommunicationApiException
      */
