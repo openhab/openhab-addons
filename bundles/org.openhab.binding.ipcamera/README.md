@@ -129,7 +129,7 @@ Thing ipcamera:hikvision:West "West Camera"
 ### Reolink
 
 - NVR's made by Reolink have ONVIF disabled by default and may require a screen connected to the hardware to enable ONVIF or newer firmwares may be able to do this via their app or web UI.
-- This binding will use the Reolink API for polling the alarms if the `nvrChannel` is 1 or higher and does not need ONVIF to be enabled. To use ONVIF event methods for the alarms, you can set `nvrChannel` to 0.
+- This binding will use the Reolink API for polling the alarms. To use Reolink API, set `onvifPort` to 0. Otherwise ONVIF event methods are used for the alarms.
 
 ## Discovery
 
@@ -147,17 +147,18 @@ If using openHAB's textual configuration, or when needing to setup HABpanel/site
 
 Example: The thing type for a camera with no ONVIF support is "generic".
 
-| Thing Type ID | Description |
-|-|-|
-| `generic` | For any camera that is not ONVIF compatible, yet has working RTSP or HTTP URLs. |
-| `onvif` | Use for all ONVIF cameras that do not have an API. |
-| `amcrest` | Only use for if your Amcrest cameras wont work as a `dahua` thing. This uses an older polling based method for alarms that is not as efficient as the newer method used in `dahua`. Amcrest are made by Dahua and hence the API is similar. |
-| `dahua` | Use for all Dahua and Amcrest cameras that support the API. |
-| `doorbird` | Use for all current Doorbird cameras as they support an API as well as ONVIF. |
-| `foscam` | Use for all current Foscam HD cameras as they support an API as well as ONVIF. |
-| `hikvision` | Use for all current Hikvision cameras as they support an API as well as ONVIF. |
-| `instar` | Use for all current Instar cameras as they support an API as well as ONVIF. |
-| `group` | Used to display or cast multiple cameras like they are a single camera. This is an advanced feature that may require some tweaking of the cameras settings to fully work. |
+| Thing Type ID | Description                                                                                                                                                                                                                                 |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `generic`     | For any camera that is not ONVIF compatible, yet has working RTSP or HTTP URLs.                                                                                                                                                             |
+| `onvif`       | Use for all ONVIF cameras that do not have an API.                                                                                                                                                                                          |
+| `amcrest`     | Only use for if your Amcrest cameras wont work as a `dahua` thing. This uses an older polling based method for alarms that is not as efficient as the newer method used in `dahua`. Amcrest are made by Dahua and hence the API is similar. |
+| `dahua`       | Use for all Dahua and Amcrest cameras that support the API.                                                                                                                                                                                 |
+| `doorbird`    | Use for all current Doorbird cameras as they support an API as well as ONVIF.                                                                                                                                                               |
+| `foscam`      | Use for all current Foscam HD cameras as they support an API as well as ONVIF.                                                                                                                                                              |
+| `hikvision`   | Use for all current Hikvision cameras as they support an API as well as ONVIF.                                                                                                                                                              |
+| `instar`      | Use for all current Instar cameras as they support an API as well as ONVIF.                                                                                                                                                                 |
+| `group`       | Used to display or cast multiple cameras like they are a single camera. This is an advanced feature that may require some tweaking of the cameras settings to fully work.                                                                   |
+| `reolink`     | Use for all current Reolink cameras as they support an API as well as ONVIF.                                                                                                                                                                |
 
 ## Thing Configuration
 

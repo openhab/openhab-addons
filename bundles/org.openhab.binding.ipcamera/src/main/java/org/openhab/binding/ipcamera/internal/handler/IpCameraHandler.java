@@ -1586,7 +1586,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
                 break;
             case REOLINK_THING:
-                if (cameraConfig.getNvrChannel() > 0) {
+                if (cameraConfig.getOnvifPort() == 0) {
                     sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + "&user="
                             + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
                     sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + "&user="
@@ -1788,7 +1788,7 @@ public class IpCameraHandler extends BaseThingHandler {
             case ONVIF_THING:
                 return true;
             case REOLINK_THING:
-                if (cameraConfig.getNvrChannel() < 1) {
+                if (cameraConfig.getOnvifPort() > 0) {
                     return true;
                 }
         }

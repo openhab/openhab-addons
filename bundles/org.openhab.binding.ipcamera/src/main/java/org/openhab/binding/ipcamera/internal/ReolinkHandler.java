@@ -115,6 +115,10 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     break;
                 case "/api.cgi?cmd=GetAiState":
                     ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
+                    if (content.contains("\"detail\": \"not support\"")) {
+                        ipCameraHandler.logger.debug("API GetAiState is not supported by the camera.");
+                        break;
+                    }
                     GetAiStateResponse[] aiResponse = gson.fromJson(content, GetAiStateResponse[].class);
                     if (aiResponse == null) {
                         ipCameraHandler.logger.debug("The GetAiStateResponse could not be parsed");
