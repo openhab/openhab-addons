@@ -103,7 +103,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(GoveeBindingConstants.THING_TYPE_LIGHT);
 
     @Activate
-    public GoveeDiscoveryService(@Reference TranslationProvider i18nProvider) throws IllegalArgumentException {
+    public GoveeDiscoveryService(@Reference TranslationProvider i18nProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, 0, false);
         this.i18nProvider = i18nProvider;
     }
@@ -149,9 +149,9 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
                 }
             });
         } catch (InterruptedException ie) {
-            // don't care
+            Thread.currentThread().interrupt();
         } catch (UnknownHostException e) {
-            logger.warn("Discovery with UnknownHostException exception: {}", e.getMessage());
+            logger.debug("Discovery with UnknownHostException exception: {}", e.getMessage());
         } finally {
             discoveryActive = false;
         }
@@ -181,9 +181,9 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
 
             final Map<String, Object> properties = getDeviceProperties(response);
             final Object product = properties.get(GoveeBindingConstants.PRODUCT_NAME);
-            final String productName = (product != null) ? product.toString() : "unknown";
+            final String productName = product != null ? product.toString() : "???";
             final Object mac = properties.get(GoveeBindingConstants.MAC_ADDRESS);
-            final String macAddress = (mac != null) ? mac.toString() : "unknown";
+            final String macAddress = mac != null ? mac.toString() : "???";
 
             ThingUID thingUid = new ThingUID(GoveeBindingConstants.THING_TYPE_LIGHT, macAddress.replace(":", "_"));
 
@@ -205,8 +205,8 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
         String sku = "";
         String macAddress = "";
         String productName = "";
-        String hwVersion = "unknown";
-        String swVersion = "unknown";
+        String hwVersion = "???";
+        String swVersion = "???";
 
         if (message != null) {
             ipAddress = message.msg().data().ip();
@@ -216,29 +216,29 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
             swVersion = message.msg().data().wifiVersionSoft();
 
             if (ipAddress.isEmpty()) {
-                ipAddress = "unknown";
+                ipAddress = "???";
                 logger.warn("Empty IP Address received during discovery - device may not work");
             }
 
-            productName = "unknown";
+            productName = "???";
             if (!sku.isEmpty()) {
                 final String skuLabel = "discovery.govee-light." + sku;
                 if (bundle != null) {
                     productName = i18nProvider.getText(bundle, skuLabel, sku, Locale.getDefault());
                 }
             } else {
-                sku = "unknown";
-                productName = "unknown";
+                sku = "???";
+                productName = "???";
                 logger.warn("Empty SKU (product name) received during discovery - device may not work");
             }
 
             if (macAddress.isEmpty()) {
-                macAddress = "unknown";
+                macAddress = "???";
                 logger.warn("Empty Mac Address received during discovery - device may not work");
             }
         }
 
-        Map<String, Object> properties = new HashMap<>(3);
+        Map<String, Object> properties = new HashMap<>(6);
         properties.put(GoveeBindingConstants.IP_ADDRESS, ipAddress);
         properties.put(GoveeBindingConstants.DEVICE_TYPE, sku);
         properties.put(GoveeBindingConstants.MAC_ADDRESS, macAddress);

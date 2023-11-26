@@ -37,10 +37,11 @@ public class GoveeBindingConstants {
     public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "govee-light");
 
     // List of all Channel ids
-    public static final String SWITCH = "switch";
-    public static final String COLOR = "color";
-    public static final String COLOR_TEMPERATURE = "color-temperature";
+    public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_COLOR_TEMPERATURE = "color-temperature";
+    public static final String CHANNEL_COLOR_TEMPERATURE_ABS = "color-temperature-abs";
+
+    // Limit values of channels
     public static final Double COLOR_TEMPERATURE_MIN_VALUE = 2000.0;
     public static final Double COLOR_TEMPERATURE_MAX_VALUE = 9000.0;
-    public static final String COLOR_TEMPERATURE_ABS = "color-temperature-abs";
 }

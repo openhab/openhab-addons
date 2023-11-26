@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.govee.internal;
 
-import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR;
-import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE;
-import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE_ABS;
+import static org.openhab.binding.govee.internal.GoveeBindingConstants.CHANNEL_COLOR;
+import static org.openhab.binding.govee.internal.GoveeBindingConstants.CHANNEL_COLOR_TEMPERATURE;
+import static org.openhab.binding.govee.internal.GoveeBindingConstants.CHANNEL_COLOR_TEMPERATURE_ABS;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE_MAX_VALUE;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE_MIN_VALUE;
 
@@ -169,7 +169,6 @@ public class GoveeHandler extends BaseThingHandler {
     /**
      * Stop the Refresh Status Job, so the same socket can be used for something else (like discovery)
      */
-    @SuppressWarnings("null")
     public static void stopRefreshStatusJob() {
         if (refreshStatusJob != null) {
             refreshStatusJob.cancel(true);
@@ -189,7 +188,6 @@ public class GoveeHandler extends BaseThingHandler {
     }
 
     @Override
-    @SuppressWarnings("null")
     public void dispose() {
         super.dispose();
 
@@ -216,22 +214,17 @@ public class GoveeHandler extends BaseThingHandler {
             } else {
                 logger.debug("Channel ID {} type {}", channelUID.getId(), command.getClass());
                 switch (channelUID.getId()) {
-                    case COLOR:
+                    case CHANNEL_COLOR:
                         if (command instanceof HSBType hsbCommand) {
                             int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
                             sendColor(new Color(rgb[0], rgb[1], rgb[2]));
-                        }
-                        if (command instanceof PercentType percent) {
+                        } else if (command instanceof PercentType percent) {
                             sendBrightness(percent.intValue());
-                        } else if (command instanceof OnOffType) {
-                            if (command.equals(OnOffType.ON)) {
-                                sendOnOff(OnOffType.ON);
-                            } else {
-                                sendOnOff(OnOffType.OFF);
-                            }
+                        } else if (command instanceof OnOffType onOffCommand) {
+                            sendOnOff(onOffCommand);
                         }
                         break;
-                    case COLOR_TEMPERATURE:
+                    case CHANNEL_COLOR_TEMPERATURE:
                         if (command instanceof PercentType percent) {
                             logger.debug("COLOR_TEMPERATURE: Color Temperature change with Percent Type {}",
                                     command.toString());
@@ -242,7 +235,7 @@ public class GoveeHandler extends BaseThingHandler {
                             sendColorTemp(lastColorTempInKelvin);
                         }
                         break;
-                    case COLOR_TEMPERATURE_ABS:
+                    case CHANNEL_COLOR_TEMPERATURE_ABS:
                         if (command instanceof QuantityType<?> quantity) {
                             logger.debug("Color Temperature Absolute change with Percent Type {}", command.toString());
                             lastColorTempInKelvin = quantity.intValue();
@@ -345,7 +338,7 @@ public class GoveeHandler extends BaseThingHandler {
      * @return the computed state
      */
     private HSBType getLastColorState() {
-        PercentType brightness = (lastOnOff == 0) ? new PercentType(0) : new PercentType(lastBrightness);
+        PercentType brightness = lastOnOff == 0 ? new PercentType(0) : new PercentType(lastBrightness);
         int rgb[] = { lastColor.r(), lastColor.g(), lastColor.b() };
         HSBType hsb = ColorUtil.rgbToHsb(rgb);
         HSBType hsbState = new HSBType(hsb.getHue(), hsb.getSaturation(), brightness);
@@ -378,10 +371,10 @@ public class GoveeHandler extends BaseThingHandler {
         HSBType hsbColor = getLastColorState();
         logger.debug("Send HSB = {} {} {}", hsbColor.getHue(), hsbColor.getSaturation(), hsbColor.getBrightness());
 
-        updateState(COLOR, hsbColor);
+        updateState(CHANNEL_COLOR, hsbColor);
         logger.debug("Updating Color-Temperature Status: {} K  {}%", lastColorTempInKelvin, lastColorTempInPercent);
-        updateState(COLOR_TEMPERATURE_ABS, new QuantityType<Temperature>(lastColorTempInKelvin, Units.KELVIN));
-        updateState(COLOR_TEMPERATURE, new PercentType(lastColorTempInPercent));
+        updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<Temperature>(lastColorTempInKelvin, Units.KELVIN));
+        updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(lastColorTempInPercent));
     }
 
     public void statusUpdate(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
