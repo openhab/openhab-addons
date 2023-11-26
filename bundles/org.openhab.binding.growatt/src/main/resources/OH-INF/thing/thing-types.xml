@@ -432,6 +432,23 @@
 				<label>Device Id</label>
 				<description>Id of the inverter.</description>
 			</parameter>
+			<parameter name="userName" type="text" required="false">
+				<label>User Name</label>
+				<description>User name to login to the Shine App.</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to login to the Shine App.</description>
+			</parameter>
+			<parameter name="userId" type="text" required="false">
+				<label>User Id</label>
+				<description>User Id as displayed in the Shine App.</description>
+			</parameter>
+			<parameter name="plantId" type="text" required="false">
+				<label>Plant Id</label>
+				<description>Plant Id as displayed in the Shine App.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

@@ -13,11 +13,14 @@
 package org.openhab.binding.growatt.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -25,17 +28,24 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.growatt.internal.GrowattChannels;
 import org.openhab.binding.growatt.internal.GrowattChannels.UoM;
+import org.openhab.binding.growatt.internal.cloud.ApiException;
+import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
+import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
 import org.openhab.binding.growatt.internal.dto.GrottValues;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -244,5 +254,105 @@ public class GrowattTest {
                 assertEquals(1, mappedFieldCount);
             }
         });
+    }
+
+    /**
+     * Test the Growatt remote cloud API server.
+     * Will not run unless actual user credentials are provided.
+     */
+    @Test
+    void testServer() {
+        GrowattInverterConfiguration configuration = new GrowattInverterConfiguration();
+        /*
+         * To test on an actual inverter, populate its plant data and user credentials below.
+         *
+         * configuration.deviceId = "aa";
+         * configuration.userName = "bb";
+         * configuration.password ="cc";
+         * configuration.userId = "dd";
+         * configuration.plantId = "ee";
+         */
+
+        if (configuration.userName == null) {
+            return;
+        }
+
+        HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
+        when(httpClientFactory.createHttpClient(anyString(), any(SslContextFactory.Client.class)))
+                .thenReturn(new HttpClient(new SslContextFactory.Client(true)));
+
+        try (GrowattCloud api = new GrowattCloud(configuration, httpClientFactory)) {
+            try {
+                assertFalse(api.postLoginCredentials().isEmpty());
+            } catch (ApiException e) {
+                fail(e);
+            }
+            try {
+                assertFalse(api.getPlantList().isEmpty());
+            } catch (ApiException e) {
+                fail(e);
+            }
+            try {
+                assertFalse(api.getPlantInfo().isEmpty());
+            } catch (ApiException e) {
+                fail(e);
+            }
+
+            int chargePower = 97;
+            int targetSOC = 23;
+            boolean allowAcCharge = false;
+            LocalTime startTime = LocalTime.of(1, 16);
+            LocalTime stopTime = LocalTime.of(2, 17);
+            boolean programEnable = false;
+            try {
+                assertFalse(api
+                        .setupChargingProgram(chargePower, targetSOC, allowAcCharge, startTime, stopTime, programEnable)
+                        .isEmpty());
+            } catch (ApiException e) {
+                fail(e);
+            }
+            try {
+                Map<String, JsonElement> result = api.getMixAllSettings();
+                assertFalse(result.isEmpty());
+                assertEquals(chargePower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
+                assertEquals(targetSOC, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_TARGET_SOC));
+                assertEquals(allowAcCharge,
+                        GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ALLOW_AC_CHARGING));
+                assertEquals(startTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
+                assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
+                assertEquals(programEnable, GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ENABLE));
+            } catch (ApiException e) {
+                fail(e);
+            }
+
+            chargePower = 100;
+            targetSOC = 20;
+            allowAcCharge = true;
+            startTime = LocalTime.of(0, 15);
+            stopTime = LocalTime.of(6, 45);
+            programEnable = true;
+            try {
+                assertFalse(api
+                        .setupChargingProgram(chargePower, targetSOC, allowAcCharge, startTime, stopTime, programEnable)
+                        .isEmpty());
+            } catch (ApiException e) {
+                fail(e);
+            }
+            try {
+                Map<String, JsonElement> result = api.getMixAllSettings();
+                assertFalse(result.isEmpty());
+                assertEquals(chargePower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
+                assertEquals(targetSOC, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_TARGET_SOC));
+                assertEquals(allowAcCharge,
+                        GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ALLOW_AC_CHARGING));
+                assertEquals(startTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
+                assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
+                assertEquals(programEnable, GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ENABLE));
+            } catch (ApiException e) {
+                fail(e);
+            }
+        } catch (Exception e) {
+            fail(e);
+        }
     }
 }

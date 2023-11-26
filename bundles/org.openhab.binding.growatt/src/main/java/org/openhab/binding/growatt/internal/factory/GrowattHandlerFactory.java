@@ -31,6 +31,7 @@ import org.openhab.binding.growatt.internal.servlet.GrowattHttpServlet;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -63,6 +64,7 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(GrowattHandlerFactory.class);
 
     private final HttpService httpService;
+    private final HttpClientFactory httpClientFactory;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
     private final Set<ThingUID> bridges = Collections.synchronizedSet(new HashSet<>());
@@ -72,9 +74,10 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
     private @Nullable ServiceRegistration<?> discoveryServiceRegistration;
 
     @Activate
-    public GrowattHandlerFactory(@Reference HttpService httpService, @Reference TranslationProvider i18nProvider,
-            @Reference LocaleProvider localeProvider) {
+    public GrowattHandlerFactory(@Reference HttpService httpService, @Reference HttpClientFactory httpClientFactory,
+            @Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider) {
         this.httpService = httpService;
+        this.httpClientFactory = httpClientFactory;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         try {
@@ -96,7 +99,7 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
-            return new GrowattInverterHandler(thing);
+            return new GrowattInverterHandler(thing, httpClientFactory);
         }
 
         return null;

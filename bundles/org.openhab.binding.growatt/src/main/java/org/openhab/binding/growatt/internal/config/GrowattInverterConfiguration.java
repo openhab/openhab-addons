@@ -13,6 +13,7 @@
 package org.openhab.binding.growatt.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link GrowattInverterConfiguration} class contains fields mapping thing configuration parameters.
@@ -23,6 +24,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class GrowattInverterConfiguration {
 
     public static final String DEVICE_ID = "deviceId";
+    public static final String USER_NAME = "userName";
+    public static final String PASSWORD = "password";
+    public static final String USER_ID = "userId";
+    public static final String PLANT_ID = "plantId";
 
+    // required
     public String deviceId = "";
+
+    // optional
+    public @Nullable String userName;
+    public @Nullable String password;
+
+    // optional for tests only
+    public @Nullable String userId;
+    public @Nullable String plantId;
 }

@@ -30,6 +30,8 @@ The `inverter` thing requires configuration of its serial number resp. `deviceId
 | Name      | Type    | Description                                                                              | Required |
 |-----------|---------|------------------------------------------------------------------------------------------|----------|
 | deviceId  | text    | Device serial number or id as configured in the Growatt cloud and the Grott application. | yes      |
+| userName  | text    | User name for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)  | no       |
+| password  | text    | Password for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)   | no       |
 
 ## Channels
 
@@ -130,6 +132,41 @@ The list of all possible channels is as follows:
 | rac                           | Number:Dimensionless      | RAC code.                                            | yes      |
 | erac-today                    | Number:Dimensionless      | ERAC count today.                                    | yes      |
 | erac-total                    | Number:Dimensionless      | Total ERAC count.                                    | yes      |
+
+## Rule Actions
+
+This binding includes rule actions, which allow you to setup programs for battery charging and discharging.
+Each inverter thing has a separate actions instance, which can be retrieved as follows.
+
+```php
+val growattActions = getActions("growatt", "growatt:inverter:home:sph")
+```
+
+Where the first parameter must always be `growatt` and the second must be the full inverter thing UID.
+Once the action instance has been retrieved, you can invoke the following methods.
+
+```php
+growattActions.setupChargingProgram(int chargingPower, int targetSOC, boolean allowAcCharging, String startTime, String stopTime, boolean programEnable) 
+
+growattActions.setupDischargingProgram(int dischargingPower, int targetSOC, String startTime, String stopTime, boolean programEnable)
+```
+
+| Parameter        | Description                                                                           |
+|------------------|---------------------------------------------------------------------------------------|
+| chargingPower    | The rate of charging the battery 1%..100% (e.g. 50)                                   |
+| dischargingPower | The rate of discharging the battery 1%..100% (e.g. 100)                               |
+| targetSOC        | The target battery SOC (state of charge) when the program stops. (e.g. 20)            |
+| allowAcCharging  | Allow the battery to be charged from the AC mains supply. (e.g. true, false)          |
+| startTime        | String representation of the local time when the program shall start. (e.g. "00:15")  |
+| stopTime         | String representation of the  local time when the program shall stop. (e.g. "06:45")  |
+| programEnable    | Disable / enable the program. (e.g. true, false)                                      |
+
+Example:
+
+```php
+// charge battery from AC supply, at 20% charge rate, from 00:15 .. 06:45, up to 75% fill level
+growattActions.setupChargingProgram(20, 75, true, "00:15", "06:45", true)
+```
 
 ## Full Example
 
