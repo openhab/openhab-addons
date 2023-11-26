@@ -71,6 +71,8 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H7061 LED Flood Lights (4-Pack)
 - H7062 LED Flood Lights (6-Pack)
 - H7065 Outdoor Spot Lights
+- H70C1 Govee Christmas String Lights 10m (*)
+- H70C2 Govee Christmas String Lights 20m (*)
 - H6051 Aura - Smart Table Lamp
 - H6056 H6056 Flow Plus
 - H6059 RGBWW Night Light for Kids
