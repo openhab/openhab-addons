@@ -483,29 +483,4 @@ class VehicleHandlerTest {
                 "Charge Program Command");
         assertEquals(100, ahm.getCommand().getInt("max_soc"), "Charge Program SOC Setting");
     }
-
-    @Test
-    public void testSeatConfiguration() {
-        Thing thingMock = mock(Thing.class);
-        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
-        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
-        AccountHandlerMock ahm = new AccountHandlerMock();
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
-
-        vh.accountHandler = Optional.of(ahm);
-        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
-        ThingCallbackListener updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
-
-        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
-
-        ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_HVAC, "front-right");
-        // vh.handleCommand(cuid, OnOffType.ON);
-        // to be conzinued
-    }
 }

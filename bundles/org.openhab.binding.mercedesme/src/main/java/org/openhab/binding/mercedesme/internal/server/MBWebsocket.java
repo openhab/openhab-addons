@@ -118,6 +118,7 @@ public class MBWebsocket {
             client.stop();
             client.destroy();
         } catch (Throwable t) {
+            // catch Exceptions of start stop and declare communication error
             logger.warn("Websocket handling exception: {}", t.getMessage());
             StackTraceElement[] ste = t.getStackTrace();
             for (int i = 0; i < ste.length; i++) {

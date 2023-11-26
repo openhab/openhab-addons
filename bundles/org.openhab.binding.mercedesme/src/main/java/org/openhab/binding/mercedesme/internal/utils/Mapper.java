@@ -149,7 +149,7 @@ public class Mapper {
                     if (value.hasElectricityConsumptionUnit()) {
                         observer = new UOMObserver(value.getElectricityConsumptionUnit().toString());
                     } else {
-                        LOGGER.debug("Don't have electric consumption unit for {}", key);
+                        LOGGER.trace("Don't have electric consumption unit for {}", key);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
@@ -319,7 +319,7 @@ public class Mapper {
                     if (value.hasPressureUnit()) {
                         observer = new UOMObserver(value.getPressureUnit().toString());
                         if (observer.getUnit().isEmpty()) {
-                            LOGGER.debug("No Unit found for {} - take default ", key);
+                            LOGGER.trace("No Unit found for {} - take default ", key);
                         } else {
                             pressureUnit = observer.getUnit().get();
                         }
