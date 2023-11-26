@@ -94,7 +94,7 @@ public class RefreshStatusReceiver implements Runnable {
                 thingHandler.statusUpdate(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
-            logger.error("exception when receiving status packet {}", Arrays.toString(e.getStackTrace()));
+            logger.warn("exception when receiving status packet {}", Arrays.toString(e.getStackTrace()));
             // as we haven't received a packet we also don't know where it should have come from
             // hence, we don't know which thing put offline.
             // a way to monitor this would be to keep track in a list, which device answers we expect

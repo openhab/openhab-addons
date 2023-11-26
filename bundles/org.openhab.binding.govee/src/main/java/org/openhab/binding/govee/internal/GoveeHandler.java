@@ -170,10 +170,12 @@ public class GoveeHandler extends BaseThingHandler {
      * Stop the Refresh Status Job, so the same socket can be used for something else (like discovery)
      */
     public static void stopRefreshStatusJob() {
-        if (refreshStatusJob != null) {
-            refreshStatusJob.cancel(true);
+        ScheduledFuture<?> refreshStatusJobFuture = refreshStatusJob;
+        if (refreshStatusJobFuture != null) {
+            refreshStatusJobFuture.cancel(true);
+            refreshStatusJob = null;
         }
-        refreshStatusJob = null;
+
         refreshJobRunning = false;
     }
 
@@ -191,8 +193,9 @@ public class GoveeHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
 
-        if (triggerStatusJob != null) {
-            triggerStatusJob.cancel(true);
+        ScheduledFuture<?> triggerStatusJobFuture = triggerStatusJob;
+        if (triggerStatusJobFuture != null) {
+            triggerStatusJobFuture.cancel(true);
             triggerStatusJob = null;
         }
         if (!goveeConfiguration.hostname.isEmpty()) {
