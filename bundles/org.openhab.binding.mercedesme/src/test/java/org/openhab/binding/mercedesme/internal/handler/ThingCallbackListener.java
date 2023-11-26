@@ -84,8 +84,6 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
-        System.out.println(thingStatus);
-        Thread.dumpStack();
         status = Optional.of(thingStatus);
     }
 
