@@ -283,11 +283,6 @@ public class GrowattTest {
 
         try (GrowattCloud api = new GrowattCloud(configuration, httpClientFactory)) {
             try {
-                assertFalse(api.postLoginCredentials().isEmpty());
-            } catch (ApiException e) {
-                fail(e);
-            }
-            try {
                 assertFalse(api.getPlantList().isEmpty());
             } catch (ApiException e) {
                 fail(e);

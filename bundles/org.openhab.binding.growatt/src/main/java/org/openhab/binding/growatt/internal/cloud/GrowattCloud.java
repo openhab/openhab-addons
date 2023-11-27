@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.growatt.internal.cloud;
 
+import java.net.HttpCookie;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -30,7 +32,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
@@ -140,8 +141,10 @@ public class GrowattCloud implements AutoCloseable {
     }
 
     /**
-     * Execute an HTTP request using the given HTTP method, to the given end point, and with the given request URL
-     * parameters and/or request form fields.
+     * Login to the server (if necessary) and then execute an HTTP request using the given HTTP method, to the given end
+     * point, and with the given request URL parameters and/or request form fields. If there are no existing cookies for
+     * this server, or if any of the cookies has expired, then first login to the server before making the actual HTTP
+     * request.
      *
      * @param method the HTTP method to use.
      * @param endPoint the API end point.
@@ -150,11 +153,33 @@ public class GrowattCloud implements AutoCloseable {
      * @return a Map of JSON elements containing the server response.
      * @throws ApiException if any error occurs.
      */
-    public Map<String, JsonElement> doHttpRequest(HttpMethod method, String endPoint,
+    private Map<String, JsonElement> doHttpRequest(HttpMethod method, String endPoint,
             @Nullable Map<String, String> params, @Nullable Fields fields) throws ApiException {
+        //
+        List<HttpCookie> cookies = httpClient.getCookieStore().getCookies();
+        if (cookies.isEmpty() || cookies.stream().anyMatch(HttpCookie::hasExpired)) {
+            postLoginCredentials();
+        }
 
-        Request request = httpClient.newRequest(SERVER_URL + endPoint).method(method)
-                .header(HttpHeader.USER_AGENT, USER_AGENT).timeout(HTTP_TIMEOUT.getSeconds(), TimeUnit.SECONDS);
+        return doHttpRequestInner(method, endPoint, params, fields);
+    }
+
+    /**
+     * Inner method to execute an HTTP request using the given HTTP method, to the given end point, and with the given
+     * request URL parameters and/or request form fields.
+     *
+     * @param method the HTTP method to use.
+     * @param endPoint the API end point.
+     * @param params the request URL parameters (may be null).
+     * @param fields the request form fields (may be null).
+     * @return a Map of JSON elements containing the server response.
+     * @throws ApiException if any error occurs.
+     */
+    private Map<String, JsonElement> doHttpRequestInner(HttpMethod method, String endPoint,
+            @Nullable Map<String, String> params, @Nullable Fields fields) throws ApiException {
+        //
+        Request request = httpClient.newRequest(SERVER_URL + endPoint).method(method).agent(USER_AGENT)
+                .timeout(HTTP_TIMEOUT.getSeconds(), TimeUnit.SECONDS);
 
         if (params != null) {
             params.entrySet().forEach(p -> request.param(p.getKey(), p.getValue()));
@@ -181,7 +206,7 @@ public class GrowattCloud implements AutoCloseable {
             throw new ApiException("HTTP response content is " + (content == null ? "null" : "blank"));
         }
 
-        logger.trace("doHttpRequest() response:{}", content);
+        logger.trace("doHttpRequestInner() response:{}", content);
         try {
             JsonElement jsonObject = JsonParser.parseString(content).getAsJsonObject();
             if (jsonObject instanceof JsonObject jsonElement) {
@@ -277,7 +302,7 @@ public class GrowattCloud implements AutoCloseable {
      * @return a Map of JSON elements containing the server response.
      * @throws ApiException if any error occurs.
      */
-    public Map<String, JsonElement> postLoginCredentials() throws ApiException {
+    private Map<String, JsonElement> postLoginCredentials() throws ApiException {
         if (configuration.userName == null) {
             throw new ApiException("User name missing");
         }
@@ -289,7 +314,7 @@ public class GrowattCloud implements AutoCloseable {
         fields.put("userName", Objects.requireNonNull(configuration.userName));
         fields.put("password", createHash(Objects.requireNonNull(configuration.password)));
 
-        Map<String, JsonElement> result = doHttpRequest(HttpMethod.POST, LOGIN_API, null, fields);
+        Map<String, JsonElement> result = doHttpRequestInner(HttpMethod.POST, LOGIN_API, null, fields);
 
         JsonElement back = result.get("back");
         if (back instanceof JsonObject backObject) {
