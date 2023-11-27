@@ -62,7 +62,7 @@ public class TSmartUDPListener implements Runnable {
     public static void addHandler(InetAddress addr, TSmartHandler handler) {
         if (handlerAddressMap.containsKey(addr)) {
             handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Duplicate hostname configured");
+                    "@text/offline.conf-error.duplicate-hostnames");
         } else {
             handlerAddressMap.put(addr, handler);
             enableListener();
