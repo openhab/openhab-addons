@@ -293,15 +293,15 @@ public class GrowattTest {
                 fail(e);
             }
 
-            int chargePower = 97;
+            int chargingPower = 97;
             int targetSOC = 23;
-            boolean allowAcCharge = false;
+            boolean allowAcCharging = false;
             LocalTime startTime = LocalTime.of(1, 16);
             LocalTime stopTime = LocalTime.of(2, 17);
             boolean programEnable = false;
             try {
                 assertFalse(api
-                        .setupChargingProgram(chargePower, targetSOC, allowAcCharge, startTime, stopTime, programEnable)
+                        .setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable)
                         .isEmpty());
             } catch (ApiException e) {
                 fail(e);
@@ -309,9 +309,9 @@ public class GrowattTest {
             try {
                 Map<String, JsonElement> result = api.getMixAllSettings();
                 assertFalse(result.isEmpty());
-                assertEquals(chargePower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
+                assertEquals(chargingPower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
                 assertEquals(targetSOC, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_TARGET_SOC));
-                assertEquals(allowAcCharge,
+                assertEquals(allowAcCharging,
                         GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ALLOW_AC_CHARGING));
                 assertEquals(startTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
                 assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
@@ -320,15 +320,15 @@ public class GrowattTest {
                 fail(e);
             }
 
-            chargePower = 100;
+            chargingPower = 100;
             targetSOC = 20;
-            allowAcCharge = true;
+            allowAcCharging = true;
             startTime = LocalTime.of(0, 15);
             stopTime = LocalTime.of(6, 45);
             programEnable = true;
             try {
                 assertFalse(api
-                        .setupChargingProgram(chargePower, targetSOC, allowAcCharge, startTime, stopTime, programEnable)
+                        .setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable)
                         .isEmpty());
             } catch (ApiException e) {
                 fail(e);
@@ -336,9 +336,9 @@ public class GrowattTest {
             try {
                 Map<String, JsonElement> result = api.getMixAllSettings();
                 assertFalse(result.isEmpty());
-                assertEquals(chargePower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
+                assertEquals(chargingPower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
                 assertEquals(targetSOC, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_TARGET_SOC));
-                assertEquals(allowAcCharge,
+                assertEquals(allowAcCharging,
                         GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ALLOW_AC_CHARGING));
                 assertEquals(startTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
                 assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
