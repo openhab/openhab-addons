@@ -92,8 +92,8 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
     }
 
     private void retrieveData() {
-        try {
-            if (retrieveDataCallLock.tryLock()) {
+        if (retrieveDataCallLock.tryLock()) {
+            try {
                 String rawJsonData = localHttpConnector.retrieveData();
                 logger.debug("Raw data retrieved = {}", rawJsonData);
 
@@ -103,16 +103,14 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             SolaxBindingConstants.I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED);
                 }
-            } else {
-                logger.debug("Unable to retrieve data because a request is already in progress.");
-            }
-        } catch (IOException e) {
-            logger.debug("Exception received while attempting to retrieve data via HTTP", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } finally {
-            if (retrieveDataCallLock.isHeldByCurrentThread()) {
+            } catch (IOException e) {
+                logger.debug("Exception received while attempting to retrieve data via HTTP", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } finally {
                 retrieveDataCallLock.unlock();
             }
+        } else {
+            logger.debug("Unable to retrieve data because a request is already in progress.");
         }
     }
 
