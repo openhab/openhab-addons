@@ -197,7 +197,7 @@ public class TACmiHandler extends BaseThingHandler {
         assert output >= 1 && output <= 32; // range 1-32
         // pod ID's: 0 & 9 for digital states, 1-8 for analog values
         boolean analog = messageType == MessageType.ANALOG;
-        int outputIdx = output / 4;
+        int outputIdx = (output - 1) / 4;
         if (messageType == MessageType.ANALOG) {
             return (byte) (outputIdx);
         }
