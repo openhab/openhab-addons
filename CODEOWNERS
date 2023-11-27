@@ -217,7 +217,7 @@
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig
 /bundles/org.openhab.binding.monopriceaudio/ @mlobstein
 /bundles/org.openhab.binding.mpd/ @stefanroellin
-/bundles/org.openhab.binding.mqtt/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.mqtt/ @ccutrer
 /bundles/org.openhab.binding.mqtt.espmilighthub/ @Skinah
 /bundles/org.openhab.binding.mqtt.generic/ @ccutrer
 /bundles/org.openhab.binding.mqtt.homeassistant/ @antroids @ccutrer
