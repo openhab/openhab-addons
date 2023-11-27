@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -42,6 +43,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +71,8 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     private final Set<String> unsupportedExistingChannels = new HashSet<String>();
 
+    private final ReentrantLock retrieveDataCallLock = new ReentrantLock();
+
     public SolaxLocalAccessHandler(Thing thing) {
         super(thing);
     }
@@ -88,19 +92,25 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
     }
 
     private void retrieveData() {
-        try {
-            String rawJsonData = localHttpConnector.retrieveData();
-            logger.debug("Raw data retrieved = {}", rawJsonData);
+        if (retrieveDataCallLock.tryLock()) {
+            try {
+                String rawJsonData = localHttpConnector.retrieveData();
+                logger.debug("Raw data retrieved = {}", rawJsonData);
 
-            if (rawJsonData != null && !rawJsonData.isEmpty()) {
-                updateFromData(rawJsonData);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        SolaxBindingConstants.I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED);
+                if (rawJsonData != null && !rawJsonData.isEmpty()) {
+                    updateFromData(rawJsonData);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            SolaxBindingConstants.I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED);
+                }
+            } catch (IOException e) {
+                logger.debug("Exception received while attempting to retrieve data via HTTP", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } finally {
+                retrieveDataCallLock.unlock();
             }
-        } catch (IOException e) {
-            logger.debug("Exception received while attempting to retrieve data via HTTP", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } else {
+            logger.debug("Unable to retrieve data because a request is already in progress.");
         }
     }
 
@@ -283,7 +293,11 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Nothing to do here as of now. Maybe implement a REFRESH command in the future.
+        if (command instanceof RefreshType) {
+            scheduler.execute(this::retrieveData);
+        } else {
+            logger.debug("Binding {} only supports refresh command", SolaxBindingConstants.BINDING_ID);
+        }
     }
 
     @Override
