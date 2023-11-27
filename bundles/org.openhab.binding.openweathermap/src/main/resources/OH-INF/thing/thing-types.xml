@@ -274,6 +274,9 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>location</representation-property>
 
 		<config-description-ref uri="thing-type:openweathermap:onecall"/>
