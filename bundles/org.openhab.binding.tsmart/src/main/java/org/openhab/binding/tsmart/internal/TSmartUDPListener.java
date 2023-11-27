@@ -18,12 +18,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,8 @@ public class TSmartUDPListener implements Runnable {
      */
     public static void addHandler(InetAddress addr, TSmartHandler handler) {
         if (handlerAddressMap.containsKey(addr)) {
-            // throw error
+            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Duplicate hostname configured");
         } else {
             handlerAddressMap.put(addr, handler);
             enableListener();
@@ -75,9 +77,7 @@ public class TSmartUDPListener implements Runnable {
      * @param addr Network address of device
      */
     public static void removeHandler(InetAddress addr) {
-        if (handlerAddressMap.containsKey(addr)) {
-            handlerAddressMap.remove(addr);
-        }
+        handlerAddressMap.remove(addr);
     }
 
     /**
@@ -130,10 +130,10 @@ public class TSmartUDPListener implements Runnable {
             socket.close();
             listener = null;
             discoService = null;
-        } catch (SocketTimeoutException ex) {
-            logger.debug("Timeout error: {}", ex.getMessage());
         } catch (IOException ex) {
-            logger.debug("Client error: {}", ex.getMessage());
+            for (TSmartHandler handler : handlerAddressMap.values()) {
+                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            }
         }
     }
 

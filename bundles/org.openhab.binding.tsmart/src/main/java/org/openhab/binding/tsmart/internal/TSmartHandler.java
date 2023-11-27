@@ -189,6 +189,10 @@ public class TSmartHandler extends BaseThingHandler {
         }
     }
 
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String message) {
+        super.updateStatus(status, statusDetail, message);
+    }
+
     private QuantityType<Temperature> getTemperature(byte firstByte, byte secondByte) {
         ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
