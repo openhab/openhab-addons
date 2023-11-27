@@ -199,7 +199,7 @@ public class TACmiHandler extends BaseThingHandler {
         boolean analog = messageType == MessageType.ANALOG;
         int outputIdx = output / 4;
         if (messageType == MessageType.ANALOG) {
-            return (byte) (outputIdx + 1);
+            return (byte) (outputIdx);
         }
         return (byte) (outputIdx == 0 ? 0 : 9);
     }
