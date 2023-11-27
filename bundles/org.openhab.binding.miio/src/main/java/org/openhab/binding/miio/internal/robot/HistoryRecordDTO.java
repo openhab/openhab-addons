@@ -65,7 +65,7 @@ public class HistoryRecordDTO {
     private Integer dustCollectionStatus;
     @SerializedName("map_flag")
     @Expose
-    private Integer map_flag;
+    private Integer mapFlag;
 
     public final String getStart() {
         return start != null ? start : begin;
@@ -155,11 +155,11 @@ public class HistoryRecordDTO {
         this.dustCollectionStatus = dustCollectionStatus;
     }
 
-    public final Integer getMap_flag() {
-        return map_flag;
+    public final Integer getMapFlag() {
+        return mapFlag;
     }
 
-    public final void setMap_flag(Integer map_flag) {
-        this.map_flag = map_flag;
+    public final void setMapFlag(Integer mapFlag) {
+        this.mapFlag = mapFlag;
     }
 }
