@@ -421,12 +421,15 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     }
                 } else {
                     if (value instanceof Command command) {
-                        logger.trace("processDataReceived postCommand new value '{}' for GA '{}'", asdu, address);
+                        logger.trace("processDataReceived postCommand to channel '{}' new value '{}' for GA '{}'",
+                                channelUID, asdu, destination);
                         postCommand(channelUID, command);
                     }
                 }
             } else {
                 if (value instanceof State state && !(value instanceof UnDefType)) {
+                    logger.trace("processDataReceived updateState to channel '{}' new value '{}' for GA '{}'",
+                            knxChannel.getChannelUID(), value, destination);
                     updateState(knxChannel.getChannelUID(), state);
                 }
             }
