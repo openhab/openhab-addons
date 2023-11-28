@@ -15,6 +15,7 @@ package org.openhab.binding.hue.internal.handler;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.binding.hue.internal.connection.HueTlsTrustManagerProvider;
@@ -510,6 +512,42 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Squash multiple SSE resources (for lights) into fewer resources containing combined sub- DTOs.
+     * <p>
+     * If the input list contains multiple light resources for the identical service then try to squash their ColorXY,
+     * Dimming, resp. OnState sub- DTO values into fewer resources.
+     *
+     * @param inputList the original list of resources.
+     * @return a list containing eventually fewer, merged, resources.
+     */
+    private List<Resource> getSquashedResources(List<Resource> inputList) {
+        if (inputList.size() < 2) {
+            return inputList;
+        }
+        List<Resource> outputList = new ArrayList<>();
+        for (int aIndex = 0; aIndex < inputList.size(); aIndex++) {
+            Resource aResource = inputList.get(aIndex);
+            if (aResource.getType() == ResourceType.LIGHT) {
+                int bIndex = aIndex + 1;
+                while (bIndex < inputList.size()) {
+                    Resource bResource = inputList.get(bIndex);
+                    if (aResource.getId().equals(bResource.getId())
+                            && ((aResource.getOnState() == null) && (bResource.getOnState() != null))
+                            || ((aResource.getDimming() == null) && (bResource.getDimming() != null))
+                            || ((aResource.getColorXy() == null) && (bResource.getColorXy() != null))) {
+                        Setters.setResource(aResource, bResource);
+                        inputList.remove(bIndex);
+                        continue;
+                    }
+                    bIndex++;
+                }
+            }
+            outputList.add(aResource);
+        }
+        return outputList;
+    }
+
+    /**
      * Called when an SSE event message comes in with a valid list of resources. For each resource received, inform all
      * child thing handlers with the respective resource.
      *
@@ -517,10 +555,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public void onResourcesEvent(List<Resource> resources) {
         if (assetsLoaded) {
+            List<Resource> squashedResources = getSquashedResources(resources);
             synchronized (resourcesEventTasks) {
                 int index = resourcesEventTasks.size();
                 resourcesEventTasks.put(index, scheduler.submit(() -> {
-                    onResourcesEventTask(resources);
+                    onResourcesEventTask(squashedResources);
                     resourcesEventTasks.remove(index);
                 }));
             }
