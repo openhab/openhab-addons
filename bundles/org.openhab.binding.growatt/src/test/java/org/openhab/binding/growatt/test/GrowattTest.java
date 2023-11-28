@@ -300,9 +300,8 @@ public class GrowattTest {
             LocalTime stopTime = LocalTime.of(2, 17);
             boolean programEnable = false;
             try {
-                assertFalse(api
-                        .setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable)
-                        .isEmpty());
+                assertFalse(api.setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime,
+                        programEnable).isEmpty());
             } catch (ApiException e) {
                 fail(e);
             }
@@ -327,9 +326,8 @@ public class GrowattTest {
             stopTime = LocalTime.of(6, 45);
             programEnable = true;
             try {
-                assertFalse(api
-                        .setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable)
-                        .isEmpty());
+                assertFalse(api.setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime,
+                        programEnable).isEmpty());
             } catch (ApiException e) {
                 fail(e);
             }
