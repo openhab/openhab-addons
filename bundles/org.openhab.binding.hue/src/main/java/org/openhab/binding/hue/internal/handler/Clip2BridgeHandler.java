@@ -514,8 +514,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     /**
      * Squash multiple SSE resources (for lights) into fewer resources containing combined sub- DTOs.
      * <p>
-     * If the input list contains multiple light resources for the identical service then try to squash their ColorXY,
-     * Dimming, resp. OnState sub- DTO values into fewer resources.
+     * If the input list contains multiple light resources with identical resource Ids, then try to squash their "pure
+     * light state" sub- DTO values into fewer resources. Only squash if neither resource contains other 'variable'
+     * sub-DTOs other than pure light OnOff, Dimming, ColorXy, or ColorTemperature states. Note: 'fixed' state sub-DTOs
+     * (e.g. type, id, metadData, owner) don't matter since they are already known.
      *
      * @param inputList the original list of resources.
      * @return a list containing eventually fewer, merged, resources.
@@ -531,7 +533,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 int bIndex = aIndex + 1;
                 while (bIndex < inputList.size()) {
                     Resource bResource = inputList.get(bIndex);
-                    if (aResource.getId().equals(bResource.getId())) {
+                    if (aResource.getId().equals(bResource.getId()) && aResource.getAlerts() == null
+                            && bResource.getAlerts() == null && aResource.getFixedEffects() == null
+                            && bResource.getFixedEffects() == null && aResource.getTimedEffects() == null
+                            && bResource.getTimedEffects() == null) {
                         Setters.setResource(aResource, bResource);
                         inputList.remove(bIndex);
                         continue;
