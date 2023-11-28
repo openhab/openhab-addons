@@ -10,40 +10,36 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal;
+package org.openhab.binding.solax.internal.handlers;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.solax.internal.SolaxBindingConstants;
+import org.openhab.binding.solax.internal.SolaxConfiguration;
 import org.openhab.binding.solax.internal.connectivity.LocalHttpConnector;
-import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.InverterData;
+import org.openhab.binding.solax.internal.connectivity.SolaxConnector;
+import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterType;
-import org.openhab.binding.solax.internal.model.parsers.RawDataParser;
+import org.openhab.binding.solax.internal.model.local.LocalInverterData;
+import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,64 +53,25 @@ import com.google.gson.JsonParseException;
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public class SolaxLocalAccessHandler extends BaseThingHandler {
+public class SolaxLocalAccessHandler extends AbstractSolaxHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SolaxLocalAccessHandler.class);
-
-    private static final int INITIAL_SCHEDULE_DELAY_SECONDS = 5;
-
-    private @NonNullByDefault({}) LocalHttpConnector localHttpConnector;
-
-    private @Nullable ScheduledFuture<?> schedule;
 
     private boolean alreadyRemovedUnsupportedChannels;
 
     private final Set<String> unsupportedExistingChannels = new HashSet<>();
 
-    private final ReentrantLock retrieveDataCallLock = new ReentrantLock();
-
-    public SolaxLocalAccessHandler(Thing thing) {
-        super(thing);
+    public SolaxLocalAccessHandler(Thing thing, TranslationProvider i18nProvider, TimeZoneProvider timeZoneProvider) {
+        super(thing, i18nProvider, timeZoneProvider);
     }
 
     @Override
-    public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
-        SolaxConfiguration config = getConfigAs(SolaxConfiguration.class);
-        localHttpConnector = new LocalHttpConnector(config.password, config.hostname);
-        int refreshInterval = config.refreshInterval;
-        TimeUnit timeUnit = TimeUnit.SECONDS;
-
-        logger.debug("Scheduling regular interval retrieval every {} {}", refreshInterval, timeUnit);
-        schedule = scheduler.scheduleWithFixedDelay(this::retrieveData, INITIAL_SCHEDULE_DELAY_SECONDS, refreshInterval,
-                timeUnit);
+    protected SolaxConnector createConnector(SolaxConfiguration config) {
+        return new LocalHttpConnector(config.password, config.hostname);
     }
 
-    private void retrieveData() {
-        if (retrieveDataCallLock.tryLock()) {
-            try {
-                String rawJsonData = localHttpConnector.retrieveData();
-                logger.debug("Raw data retrieved = {}", rawJsonData);
-
-                if (rawJsonData != null && !rawJsonData.isEmpty()) {
-                    updateFromData(rawJsonData);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            SolaxBindingConstants.I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED);
-                }
-            } catch (IOException e) {
-                logger.debug("Exception received while attempting to retrieve data via HTTP", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } finally {
-                retrieveDataCallLock.unlock();
-            }
-        } else {
-            logger.debug("Unable to retrieve data because a request is already in progress.");
-        }
-    }
-
-    private void updateFromData(String rawJsonData) {
+    @Override
+    protected void updateFromData(String rawJsonData) {
         try {
             LocalConnectRawDataBean rawDataBean = parseJson(rawJsonData);
             InverterType inverterType = calculateInverterType(rawDataBean);
@@ -125,13 +82,9 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
                     alreadyRemovedUnsupportedChannels = true;
                 }
 
-                InverterData genericInverterData = parser.getData(rawDataBean);
+                LocalInverterData genericInverterData = parser.getData(rawDataBean);
                 updateChannels(parser, genericInverterData);
                 updateProperties(genericInverterData);
-
-                if (getThing().getStatus() != ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
             } else {
                 cancelSchedule();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -144,9 +97,9 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
     }
 
     private LocalConnectRawDataBean parseJson(String rawJsonData) {
-        LocalConnectRawDataBean inverterParsedData = LocalConnectRawDataBean.fromJson(rawJsonData);
-        logger.debug("Received a new inverter JSON object. Data = {}", inverterParsedData.toString());
-        return inverterParsedData;
+        LocalConnectRawDataBean fromJson = LocalConnectRawDataBean.fromJson(rawJsonData);
+        logger.debug("Received a new inverter JSON object. Data = {}", fromJson.toString());
+        return fromJson;
     }
 
     private InverterType calculateInverterType(LocalConnectRawDataBean rawDataBean) {
@@ -154,12 +107,12 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         return InverterType.fromIndex(type);
     }
 
-    private void updateProperties(InverterData genericInverterData) {
+    private void updateProperties(LocalInverterData genericInverterData) {
         updateProperty(Thing.PROPERTY_SERIAL_NUMBER, genericInverterData.getWifiSerial());
         updateProperty(SolaxBindingConstants.PROPERTY_INVERTER_TYPE, genericInverterData.getInverterType().name());
     }
 
-    private void updateChannels(RawDataParser parser, InverterData inverterData) {
+    private void updateChannels(RawDataParser parser, LocalInverterData inverterData) {
         updateState(SolaxBindingConstants.CHANNEL_RAW_DATA, new StringType(inverterData.getRawData()));
 
         Set<String> supportedChannels = parser.getSupportedChannels();
@@ -189,10 +142,6 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         updateChannel(SolaxBindingConstants.CHANNEL_BATTERY_VOLTAGE, inverterData.getBatteryVoltage(), Units.VOLT,
                 supportedChannels);
         updateChannel(SolaxBindingConstants.CHANNEL_BATTERY_TEMPERATURE, inverterData.getBatteryTemperature(),
-                SIUnits.CELSIUS, supportedChannels);
-        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_TEMPERATURE1, inverterData.getInverterTemperature1(),
-                SIUnits.CELSIUS, supportedChannels);
-        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_TEMPERATURE2, inverterData.getInverterTemperature2(),
                 SIUnits.CELSIUS, supportedChannels);
         updateChannel(SolaxBindingConstants.CHANNEL_BATTERY_STATE_OF_CHARGE, inverterData.getBatteryLevel(),
                 Units.PERCENT, supportedChannels);
@@ -295,29 +244,6 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
                 .toList();
         logger.debug("Detected unsupported channels for the current inverter. Channels to be removed: {}",
                 channelsToRemoveForLog);
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            scheduler.execute(this::retrieveData);
-        } else {
-            logger.debug("Binding {} only supports refresh command", SolaxBindingConstants.BINDING_ID);
-        }
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        cancelSchedule();
-    }
-
-    private void cancelSchedule() {
-        ScheduledFuture<?> schedule = this.schedule;
-        if (schedule != null) {
-            schedule.cancel(true);
-            this.schedule = null;
-        }
     }
 
     private <T extends Quantity<T>> void updateChannel(String channelID, double value, Unit<T> unit,

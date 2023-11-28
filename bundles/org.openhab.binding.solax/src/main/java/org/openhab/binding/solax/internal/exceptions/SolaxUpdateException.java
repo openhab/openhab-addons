@@ -10,21 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.connectivity.rawdata;
+package org.openhab.binding.solax.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link RawDataBean} is interface which should be implemented by all types of raw information that is retrieved
- * (the idea is to retrieve a raw data from a Solax inverter locally or their cloud API)
+ * The {@link SolaxUpdateException} exception thrown to the abstract class from the sub-classes if something goes wrong
+ * with the data update
  *
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public interface RawDataBean {
-    @Nullable
-    String getRawData();
+public class SolaxUpdateException extends Exception {
 
-    public void setRawData(String rawData);
+    private static final long serialVersionUID = 1L;
+    private @Nullable Object[] args;
+
+    public SolaxUpdateException(String message, @Nullable Object... args) {
+        super(message);
+        this.args = args;
+    }
+
+    public @Nullable Object[] getArgs() {
+        return args;
+    }
 }

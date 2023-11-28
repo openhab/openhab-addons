@@ -10,16 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal;
+package org.openhab.binding.solax.internal.local;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.InverterData;
+import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterType;
-import org.openhab.binding.solax.internal.model.parsers.RawDataParser;
+import org.openhab.binding.solax.internal.model.local.LocalInverterData;
+import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
 
 /**
  * The {@link TestX1HybridG4Parser} Simple test that tests for proper parsing against a real data from the inverter
@@ -53,7 +53,7 @@ public class TestX1HybridG4Parser {
         RawDataParser parser = inverterType.getParser();
         assertNotNull(parser);
 
-        InverterData data = parser.getData(bean);
+        LocalInverterData data = parser.getData(bean);
         assertEquals("SOME_SERIAL_NUMBER", data.getWifiSerial());
         assertEquals("3.008.10", data.getWifiVersion());
 
