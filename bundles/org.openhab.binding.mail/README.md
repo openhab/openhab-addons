@@ -130,7 +130,7 @@ Both functions return a boolean as the result of the operation.
 
 `recipient` can be a single address (`mail@example.com`) or a list of addresses, concatenated by a comma (`mail@example.com, mail2@example.com`).
 
-Since there is a separate rule action instance for each `smtp` thing, this needs to be retrieved through `getActions(scope, thingUID)`.
+Since there is a separate rule action instance for each `smtp` thing, this needs to be retrieved through `actions.get(scope, thingUID)` (since using ECMAScript (ECMAScript 262 Edition 11) - older JS versions need: `getActions(scope, thingUID)`).
 The first parameter always has to be `mail` and the second is the full Thing UID of the SMTP server that should be used.
 Once this action instance is retrieved, you can invoke the action method on it.
 
@@ -140,7 +140,7 @@ Using different character sets may produce unwanted results.
 Examples:
 
 ```java
-val mailActions = getActions("mail","mail:smtp:samplesmtp")
+val mailActions = actions.get("mail","mail:smtp:samplesmtp")
 val success = mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
 success = mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
 
@@ -152,7 +152,7 @@ import java.util.List
 val List<String> attachmentUrlList = newArrayList(
   "http://some.web/site/snap.jpg&param=value",
   "file:///tmp/201601011031.jpg")
-val mailActions = getActions("mail","mail:smtp:sampleserver")
+val mailActions = actions.get("mail","mail:smtp:sampleserver")
 mailActions.sendHtmlMailWithAttachments("mail@example.com", "Test subject", "<h1>Header</h1>This is the mail content.", attachmentUrlList)
 ```
 
@@ -168,7 +168,7 @@ rule "Send Mail with a 'Reference' header; for threaded view in e-mail client"
 when
     ...
 then
-    val mailActions = getActions("mail","mail:smtp:sampleserver")
+    val mailActions = actions.get("mail","mail:smtp:sampleserver")
     mailActions.addHeader("Reference", "<unique-thread-identifier>")
     mailActions.sendMail("mail@example.com", "Test subject", "Test message text")
 end
