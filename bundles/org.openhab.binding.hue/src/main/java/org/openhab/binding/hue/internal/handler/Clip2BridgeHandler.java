@@ -532,9 +532,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 while (bIndex < inputList.size()) {
                     Resource bResource = inputList.get(bIndex);
                     if (aResource.getId().equals(bResource.getId())
-                            && ((aResource.getOnState() == null) && (bResource.getOnState() != null))
-                            || ((aResource.getDimming() == null) && (bResource.getDimming() != null))
-                            || ((aResource.getColorXy() == null) && (bResource.getColorXy() != null))) {
+                            && ((aResource.getOnState() == null && bResource.getOnState() != null)
+                                    || (aResource.getDimming() == null && bResource.getDimming() != null)
+                                    || (aResource.getColorXy() == null && bResource.getColorXy() != null))) {
                         Setters.setResource(aResource, bResource);
                         inputList.remove(bIndex);
                         continue;
