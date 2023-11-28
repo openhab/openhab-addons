@@ -210,14 +210,9 @@ end
 ::: tab JavaScript
 
 ```javascript
-rule "Send Mail with a 'Reference' header; for threaded view in e-mail client"
-when
-    ...
-then
-    val mailActions = actions.get("mail","mail:smtp:sampleserver")
-    mailActions.addHeader("Reference", "<unique-thread-identifier>")
-    mailActions.sendMail("mail@example.com", "Test subject", "Test message text")
-end
+val mailActions = actions.get("mail","mail:smtp:sampleserver")
+mailActions.addHeader("Reference", "<unique-thread-identifier>")
+mailActions.sendMail("mail@example.com", "Test subject", "Test message text")
 ```
 
 :::
