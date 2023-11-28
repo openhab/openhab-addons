@@ -164,8 +164,41 @@ growattActions.setupDischargingProgram(int dischargingPower, int targetSOC, Stri
 Example:
 
 ```php
-// charge battery from AC supply, at 20% charge rate, from 00:15 .. 06:45, up to 75% fill level
-growattActions.setupChargingProgram(20, 75, true, "00:15", "06:45", true)
+rule "Setup Solar Battery Charging Program"
+when
+    Time cron "0 10 0 ? * * *"
+then
+    val growattActions = getActions("growatt", "growatt:inverter:home:ABCD1234")
+    if (growattActions === null) {
+        logWarn("Rules", "growattActions is null")
+    } else {
+
+        // fixed algorithm parameters
+        val chargingPower = 25
+        val allowAcCharging = true
+        val startTime = "00:20"
+        val stopTime = "07:00"
+        val programEnable = true
+        val batteryFull = 6500
+        val batteryMin = 500
+        val daylightConsumption = 10000
+        val maximumSOC = 100
+        val minimumSOC = 20
+
+        // variable algorithm parameters
+        val solarForecast = (ForecastSolar_PV_Whole_Site_Forecast_Today.state as QuantityType<Energy>).toUnit("Wh").toBigDecimal()
+        var targetSOC = (100 * (batteryMin + daylightConsumption - solarForecast)) / batteryFull
+        if (targetSOC > maximumSOC) {
+            targetSOC = maximumSOC
+        } else if (targetSOC < minimumSOC) {
+            targetSOC = minimumSOC
+        }
+
+        logInfo("Rules", "Setup Charging Program:{solarForecast:" + solarForecast + ", chargingPower:" + chargingPower + ", targetSOC:" + targetSOC + ", allowAcCharging:" +
+            allowAcCharging + ", startTime:" + startTime + ", stopTime:" + stopTime + ", programEnable:" + programEnable +"}")
+        growattActions.setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable)
+    }
+end
 ```
 
 ## Full Example
