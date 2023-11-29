@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
@@ -32,6 +33,8 @@ import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Availability;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AvailabilityMode;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -99,15 +102,42 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         this.configSeen = false;
 
-        String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
-        if (availabilityTopic != null) {
-            String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
-            if (availabilityTemplate != null) {
-                availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+        final List<Availability> availabilities = channelConfiguration.getAvailability();
+        if (availabilities != null) {
+            AvailabilityMode mode = channelConfiguration.getAvailabilityMode();
+            switch (mode) {
+                case ALL:
+                    componentConfiguration.getTracker().setAvailabilityMode(AvailabilityTracker.AvailabilityMode.ALL);
+                    break;
+                case ANY:
+                    componentConfiguration.getTracker().setAvailabilityMode(AvailabilityTracker.AvailabilityMode.ANY);
+                    break;
+                case LATEST:
+                    componentConfiguration.getTracker()
+                            .setAvailabilityMode(AvailabilityTracker.AvailabilityMode.LATEST);
+                    break;
             }
-            componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
-                    this.channelConfiguration.getPayloadAvailable(), this.channelConfiguration.getPayloadNotAvailable(),
-                    availabilityTemplate, componentConfiguration.getTransformationServiceProvider());
+            for (Availability availability : availabilities) {
+                String availabilityTemplate = availability.getValueTemplate();
+                if (availabilityTemplate != null) {
+                    availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+                }
+                componentConfiguration.getTracker().addAvailabilityTopic(availability.getTopic(),
+                        availability.getPayloadAvailable(), availability.getPayloadNotAvailable(), availabilityTemplate,
+                        componentConfiguration.getTransformationServiceProvider());
+            }
+        } else {
+            String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
+            if (availabilityTopic != null) {
+                String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
+                if (availabilityTemplate != null) {
+                    availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+                }
+                componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
+                        this.channelConfiguration.getPayloadAvailable(),
+                        this.channelConfiguration.getPayloadNotAvailable(), availabilityTemplate,
+                        componentConfiguration.getTransformationServiceProvider());
+            }
         }
     }
 
