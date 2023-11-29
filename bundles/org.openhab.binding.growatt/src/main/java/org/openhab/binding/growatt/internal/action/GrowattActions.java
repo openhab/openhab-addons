@@ -35,13 +35,13 @@ public class GrowattActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(GrowattActions.class);
     private @Nullable GrowattInverterHandler handler;
 
-    public static void setupChargingProgram(ThingActions actions, int chargingPower, int targetSOC,
+    public static void setupChargingProgram(ThingActions actions, Number chargingPower, Number targetSOC,
             boolean allowAcCharging, String startTime, String stopTime, boolean programEnable) {
         ((GrowattActions) actions).setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime,
                 programEnable);
     }
 
-    public static void setupDischargingProgram(ThingActions actions, int dischargingPower, int targetSOC,
+    public static void setupDischargingProgram(ThingActions actions, Number dischargingPower, Number targetSOC,
             String startTime, String stopTime, boolean programEnable) {
         ((GrowattActions) actions).setupDischargingProgram(dischargingPower, targetSOC, startTime, stopTime,
                 programEnable);
@@ -59,8 +59,8 @@ public class GrowattActions implements ThingActions {
 
     @RuleAction(label = "@text/actions.charging.label", description = "@text/actions.charging.description")
     public void setupChargingProgram(
-            @ActionInput(name = "charging-power", label = "@text/actions.charging-power.label", description = "@text/actions.charging-power.description") int chargingPower,
-            @ActionInput(name = "target-soc", label = "@text/actions.target-soc.label", description = "@text/actions.target-soc.description") int targetSOC,
+            @ActionInput(name = "charging-power", label = "@text/actions.charging-power.label", description = "@text/actions.charging-power.description") Number chargingPower,
+            @ActionInput(name = "target-soc", label = "@text/actions.target-soc.label", description = "@text/actions.target-soc.description") Number targetSOC,
             @ActionInput(name = "allow-ac-charging", label = "@text/actions.allow-ac-charging.label", description = "@text/actions.allow-ac-charging.description") boolean allowAcCharging,
             @ActionInput(name = "start-time", label = "@text/actions.start-time.label", description = "@text/actions.start-time.description") String startTime,
             @ActionInput(name = "stop-time", label = "@text/actions.stop-time.label", description = "@text/actions.stop-time.description") String stopTime,
@@ -76,8 +76,8 @@ public class GrowattActions implements ThingActions {
 
     @RuleAction(label = "@text/actions.discharging.label", description = "@text/actions.discharging.description")
     public void setupDischargingProgram(
-            @ActionInput(name = "charging-power", label = "@text/actions.charging-power.label", description = "@text/actions.charging-power.description") int dischargingPower,
-            @ActionInput(name = "target-soc", label = "@text/actions.target-soc.label", description = "@text/actions.target-soc.description") int targetSOC,
+            @ActionInput(name = "charging-power", label = "@text/actions.charging-power.label", description = "@text/actions.charging-power.description") Number dischargingPower,
+            @ActionInput(name = "target-soc", label = "@text/actions.target-soc.label", description = "@text/actions.target-soc.description") Number targetSOC,
             @ActionInput(name = "start-time", label = "@text/actions.start-time.label", description = "@text/actions.start-time.description") String startTime,
             @ActionInput(name = "stop-time", label = "@text/actions.stop-time.label", description = "@text/actions.stop-time.description") String stopTime,
             @ActionInput(name = "program-enable", label = "@text/actions.program-enable.label", description = "@text/actions.program-enable.description") boolean programEnable) {

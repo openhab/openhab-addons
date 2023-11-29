@@ -189,10 +189,10 @@ public class GrowattInverterHandler extends BaseThingHandler {
      * @param stopTime the stop time of the charging program; a time formatted string e.g. "12:34"
      * @param programEnable charge program shall be enabled
      */
-    public void setupChargingProgram(int chargingPower, int targetSOC, boolean allowAcCharging, String startTime,
+    public void setupChargingProgram(Number chargingPower, Number targetSOC, boolean allowAcCharging, String startTime,
             String stopTime, boolean programEnable) {
         try {
-            getGrowattCloud().setupChargingProgram(chargingPower, targetSOC, allowAcCharging,
+            getGrowattCloud().setupChargingProgram(chargingPower.intValue(), targetSOC.intValue(), allowAcCharging,
                     GrowattCloud.localTimeOf(startTime), GrowattCloud.localTimeOf(stopTime), programEnable);
         } catch (IllegalStateException | DateTimeParseException | ApiException e) {
             logger.warn("setupChargingProgram() error", e);
@@ -209,11 +209,11 @@ public class GrowattInverterHandler extends BaseThingHandler {
      * @param stopTime the stop time of the discharging program; a time formatted string e.g. "12:34"
      * @param programEnable the discharge program shall be enabled
      */
-    public void setupDischargingProgram(int dischargingPower, int targetSOC, String startTime, String stopTime,
+    public void setupDischargingProgram(Number dischargingPower, Number targetSOC, String startTime, String stopTime,
             boolean programEnable) {
         try {
-            getGrowattCloud().setupDischargingProgram(dischargingPower, targetSOC, GrowattCloud.localTimeOf(startTime),
-                    GrowattCloud.localTimeOf(stopTime), programEnable);
+            getGrowattCloud().setupDischargingProgram(dischargingPower.intValue(), targetSOC.intValue(),
+                    GrowattCloud.localTimeOf(startTime), GrowattCloud.localTimeOf(stopTime), programEnable);
         } catch (IllegalStateException | DateTimeParseException | ApiException e) {
             logger.warn("setupDischargingProgram() error", e);
             this.growattCloud = null;
