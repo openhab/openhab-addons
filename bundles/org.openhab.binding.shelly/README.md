@@ -1178,6 +1178,33 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
+### Shelly Plus Dimmer 10v (thing-type: shellyplus10v)
+
+| Group | Channel      | Type     | read-only | Description                                                                       |
+| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay | brightness   | Dimmer   | r/w       | Currently selected brightness.                                                    |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | input1       | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels            |
+|       | button1      | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|       | lastEvent1   | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                          |
+|       | eventCount1  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|       | input2       | Switch   | yes       | ON: Input/Button for channel 2 is powered, see general notes on channels          |
+|       | button2      | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|       | lastEvent2   | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
+|       | eventCount2  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
+|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+
+`Note: The Dimmer should be calibrated using the device Web UI or Shelly App.`
+
+Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
+`true`:  Brightness will be set and device output is powered = light turns on with the new brightness
+`false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
 
 ### Shelly Plus i4, i4DC (thing-types: shellyplusi4, shellyplusi4dc)
 
@@ -1451,8 +1478,6 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
-
-
 ### Shelly BLU Door/Window Sensor (thing-type: shellybludw)
 
 See notes on discovery of Shelly BLU devices above.
@@ -1467,7 +1492,7 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
-## Shelly BLU Motion Sensor (thing-type: shellyblumotion)
+### Shelly BLU Motion Sensor (thing-type: shellyblumotion)
 
 See notes on discovery of Shelly BLU devices above.
 

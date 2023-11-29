@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class SolaxBindingConstants {
 
-    private static final String BINDING_ID = "solax";
+    protected static final String BINDING_ID = "solax";
     private static final String THING_LOCAL_CONNECT_INVERTER_ID = "local-connect-inverter";
 
     // List of all Thing Type UIDs
