@@ -635,44 +635,51 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resource a Resource object containing the new state.
      */
     public void onResource(Resource resource) {
-        if (!disposing) {
-            boolean resourceConsumed = false;
-            String incomingResourceId = resource.getId();
-            if (resourceId.equals(incomingResourceId)) {
-                if (resource.hasFullState()) {
-                    thisResource = resource;
-                    if (!updatePropertiesDone) {
-                        updateProperties(resource);
-                        resourceConsumed = updatePropertiesDone;
-                    }
-                }
-                if (!updateDependenciesDone) {
-                    resourceConsumed = true;
-                    cancelTask(updateDependenciesTask, false);
-                    updateDependenciesTask = scheduler.submit(() -> updateDependencies());
-                }
-            } else if (SUPPORTED_SCENE_TYPES.contains(resource.getType())) {
-                Resource cachedScene = sceneContributorsCache.get(incomingResourceId);
-                if (Objects.nonNull(cachedScene)) {
-                    Setters.setResource(resource, cachedScene);
-                    resourceConsumed = updateChannels(resource);
-                    sceneContributorsCache.put(incomingResourceId, resource);
-                }
-            } else {
-                Resource cachedService = serviceContributorsCache.get(incomingResourceId);
-                if (Objects.nonNull(cachedService)) {
-                    Setters.setResource(resource, cachedService);
-                    resourceConsumed = updateChannels(resource);
-                    serviceContributorsCache.put(incomingResourceId, resource);
-                    if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
-                        updateLightProperties(resource);
-                    }
+        if (disposing) {
+            return;
+        }
+        boolean resourceConsumed = false;
+        if (resourceId.equals(resource.getId())) {
+            if (resource.hasFullState()) {
+                thisResource = resource;
+                if (!updatePropertiesDone) {
+                    updateProperties(resource);
+                    resourceConsumed = updatePropertiesDone;
                 }
             }
-            if (resourceConsumed) {
-                logger.debug("{} -> onResource() consumed resource {}", resourceId, resource);
+            if (!updateDependenciesDone) {
+                resourceConsumed = true;
+                cancelTask(updateDependenciesTask, false);
+                updateDependenciesTask = scheduler.submit(() -> updateDependencies());
+            }
+        } else {
+            Resource cachedResource = getResourceFromCache(resource);
+            if (cachedResource != null) {
+                Setters.setResource(resource, cachedResource);
+                resourceConsumed = updateChannels(resource);
+                putResourceToCache(resource);
+                if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
+                    updateLightProperties(resource);
+                }
             }
         }
+        if (resourceConsumed) {
+            logger.debug("{} -> onResource() consumed resource {}", resourceId, resource);
+        }
+    }
+
+    private void putResourceToCache(Resource resource) {
+        if (SUPPORTED_SCENE_TYPES.contains(resource.getType())) {
+            sceneContributorsCache.put(resource.getId(), resource);
+        } else {
+            serviceContributorsCache.put(resource.getId(), resource);
+        }
+    }
+
+    private @Nullable Resource getResourceFromCache(Resource resource) {
+        return SUPPORTED_SCENE_TYPES.contains(resource.getType()) //
+                ? sceneContributorsCache.get(resource.getId())
+                : serviceContributorsCache.get(resource.getId());
     }
 
     /**
