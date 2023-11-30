@@ -126,13 +126,14 @@ public class ShellyChannelDefinitions {
                 // Device
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_NAME, "deviceName", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_GATEWAY, "gatewayDevice", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "deviceTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "system:indoor-temperature", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEMT_POWER))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "system:electric-power", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "system:electric-current", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED, "system:electric-current",
+                        ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_VOLTAGE, "supplyVoltage", ITEMT_VOLT))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_VOLTAGE, "system:electric-voltage", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CHARGER, "charger", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE, "ledStatusDisable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE, "ledPowerDisable", ITEMT_SWITCH))
@@ -154,7 +155,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
 
                 // Dimmer
-                .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_BRIGHTNESS, "dimmerBrightness",
+                .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_BRIGHTNESS, "system:brightness",
                         ITEMT_DIMMER))
 
                 // Roller
@@ -190,29 +191,30 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
 
                 // Power Meter
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTWATTS, "meterWatts", ITEMT_POWER))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALKWH, "meterTotal", ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "lastPower1", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTWATTS, "system:electric-power", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALKWH, "system:electric-current", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "system:electric-power", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
 
                 // EMeter
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_TOTALRET, "meterReturned", ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_REACTWATTS, "meterReactive", ITEMT_POWER))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_VOLTAGE, "meterVoltage", ITEMT_VOLT))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_CURRENT, "meterCurrent", ITEMT_AMP))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_TOTALRET, "system:electric-current", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_REACTWATTS, "system:electric-power", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_VOLTAGE, "system:electric-voltage", ITEMT_VOLT))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_CURRENT, "system:electric-current", ITEMT_AMP))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_PFACTOR, "meterPowerFactor", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
 
                 // Sensors
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TEMP, "sensorTemp", ITEMT_TEMP))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_HUM, "sensorHumidity", ITEMT_PERCENT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TEMP, "system:indoor-temperature", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_HUM, "system:atmospheric-humidity",
+                        ITEMT_PERCENT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_LUX, "sensorLux", ITEMT_LUX))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ILLUM, "sensorIllumination", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VOLTAGE, "sensorADC", ITEMT_VOLT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VOLTAGE, "system:electric-voltage", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STATE, "sensorContact", ITEMT_CONTACT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SSTATE, "sensorState", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TILT, "sensorTilt", ITEMT_ANGLE))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "system:motion", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION_TS, "motionTimestamp", ITEMT_DATETIME))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION_ACT, "motionActive", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VIBRATION, "sensorVibration", ITEMT_SWITCH))
@@ -238,7 +240,8 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1, "sensorExtTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP2, "sensorExtTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP3, "sensorExtTemp", ITEMT_TEMP))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY, "sensorExtHum", ITEMT_PERCENT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY, "system:atmospheric-humidity",
+                        ITEMT_PERCENT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE, "sensorExtVolt", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_INPUT1, "sensorContact", ITEMT_CONTACT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT, "sensorExtDigitalInput",
@@ -261,8 +264,21 @@ public class ShellyChannelDefinitions {
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
+        return CHANNEL_DEFINITIONS.get(getDefinitionKey(channelName));
+    }
+
+    public static boolean hasDefinition(String channelName) {
+        try {
+            CHANNEL_DEFINITIONS.get(getDefinitionKey(channelName)); // may throws exception
+            return true;
+        } catch (IllegalArgumentException e) {
+        }
+        return false;
+    }
+
+    private static String getDefinitionKey(String channelName) {
         String group = substringBefore(channelName, "#");
-        String channel = substringAfter(channelName, "#");
+        String channel = channelName.contains("#") ? substringAfter(channelName, "#") : channelName;
 
         if (group.contains(CHANNEL_GROUP_METER)) {
             group = CHANNEL_GROUP_METER; // map meter1..n to meter
@@ -284,8 +300,7 @@ public class ShellyChannelDefinitions {
             channel = CHANNEL_STATUS_EVENTCOUNT;
         }
 
-        String channelId = group + "#" + channel;
-        return CHANNEL_DEFINITIONS.get(channelId);
+        return group.isEmpty() ? channel : group + "#" + channel;
     }
 
     /**
@@ -656,6 +671,7 @@ public class ShellyChannelDefinitions {
             this.itemType = itemType;
             this.typeId = typeId;
 
+            // Auto-Naming if there are multiple instances of the same group, e.g. relay, meter...
             groupLabel = getText(PREFIX_GROUP + group + ".label");
             if (groupLabel.startsWith(PREFIX_GROUP)) {
                 groupLabel = "";
@@ -664,11 +680,21 @@ public class ShellyChannelDefinitions {
             if (groupDescription.startsWith(PREFIX_GROUP)) {
                 groupDescription = "";
             }
-            label = getText(PREFIX_CHANNEL + typeId.replace(':', '.') + ".label");
-            if (label.startsWith(PREFIX_CHANNEL)) {
-                label = "";
+
+            boolean isSystem = typeId.startsWith("system:");
+            label = PREFIX_CHANNEL + (isSystem ? channel : typeId) + ".label";
+            label = getText(label);
+            if (isSystem && label.startsWith(PREFIX_CHANNEL)) {
+                label = getText(PREFIX_CHANNEL + typeId.replace(":", ".") + ".label");
             }
-            description = getText(PREFIX_CHANNEL + typeId + ".description");
+            if (label.startsWith(PREFIX_CHANNEL)) {
+                label = ""; // no resource found
+            }
+            description = PREFIX_CHANNEL + (isSystem ? channel : typeId) + ".description";
+            description = getText(description);
+            if (isSystem && description.startsWith(PREFIX_CHANNEL)) {
+                description = getText(PREFIX_CHANNEL + typeId.replace(":", ".") + ".description");
+            }
             if (description.startsWith(PREFIX_CHANNEL)) {
                 description = ""; // no resource found
             }
@@ -738,6 +764,13 @@ public class ShellyChannelDefinitions {
 
         private String getText(String key) {
             return messages.get(key);
+        }
+
+        public ChannelTypeUID getChannelTypeUID() {
+            if (typeId.contains("system:")) {
+                return new ChannelTypeUID("system", substringAfter(typeId, ":"));
+            }
+            return new ChannelTypeUID(BINDING_ID, typeId);
         }
     }
 

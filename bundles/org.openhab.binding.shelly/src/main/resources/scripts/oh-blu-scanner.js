@@ -1,6 +1,6 @@
 /*
  * This script uses the BLE scan functionality in scripting to pass scan reults to openHAB
- * Supported BLU Devices: SBBT , SBDW
+ * Supported BLU Devices: BLU Button 1, BLU Door/Window, BLU Motion
  * Version 0.2
  */
 
@@ -151,6 +151,7 @@ function scanCB(ev, res) {
 }
 
 // retry several times to start the scanner if script was started before
+<<<<<<< HEAD
 // BLE infrastructure was up in the Shelly
 function startBLEScan() {
     let bleScanSuccess = BLE.Scanner.Start({ duration_ms: SCAN_DURATION, active: true }, scanCB);
@@ -162,6 +163,18 @@ function startBLEScan() {
     }
  }
  
+// BLE infrastructure was up in the Shelly
+function startBLEScan() {
+    let bleScanSuccess = BLE.Scanner.Start({ duration_ms: SCAN_DURATION, active: true }, scanCB);
+    if( bleScanSuccess === null ) {
+        console.log('Unable to start OH-BLU Scanner, make sure Shelly Gateway Support is disabled in device config.');
+        Timer.set(3000, false, startBLEScan);
+    } else {
+        console.log('Success: OH-BLU Event Gateway running');
+    }
+}
+
+>>>>>>> 133e75d091 (Various channel types changed to system-defined ones; Add auto-upgrade)
 let BLEConfig = Shelly.getComponentConfig('ble');
 if(BLEConfig.enable === false) {
     console.log('Error: BLE not enabled, unable to start OH-BLU Scanner');

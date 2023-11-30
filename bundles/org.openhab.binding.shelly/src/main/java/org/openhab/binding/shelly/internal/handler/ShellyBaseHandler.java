@@ -21,6 +21,7 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -51,6 +52,7 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions.ShellyChannel;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
@@ -65,6 +67,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -340,7 +344,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     ? tmpPrf.settings.sleepMode.period * 60 // minutes
                     : tmpPrf.settings.sleepMode.period * 3600; // hours
             tmpPrf.updatePeriod += 60; // give 1min extra
-        } else if ((tmpPrf.settings.coiot != null) && tmpPrf.settings.coiot.updatePeriod != null) {
+        } else if (tmpPrf.settings.coiot != null && tmpPrf.settings.coiot.updatePeriod != null) {
             // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
             tmpPrf.updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS,
                     2 * getInteger(tmpPrf.settings.coiot.updatePeriod)) + 10;
@@ -703,10 +707,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         return false;
     }
 
-    private boolean isWatchdogStarted() {
-        return watchdog > 0;
-    }
-
     @Override
     public void reinitializeThing() {
         logger.debug("{}: Re-Initialize Thing", thingName);
@@ -1008,6 +1008,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         config.serviceName = getString(properties.get(PROPERTY_SERVICE_NAME));
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
+        if (config.localIp.startsWith("169.254")) {
+            logger.warn("{}: An invalid local ip address {} was detected, check system and openHAB network settings",
+                    thingName, config.localIp);
+            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.network-config");
+            return;
+        }
         if (!profile.isGen2 && config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
             // Gen2 has hard coded user "admin"
             config.userId = bindingConfig.defaultUserId;
@@ -1302,29 +1308,68 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return; // already done
         }
 
-        try {
-            // Get subset of those channels that currently do not exist
-            List<Channel> existingChannels = getThing().getChannels();
-            for (Channel channel : existingChannels) {
-                String id = channel.getUID().getId();
-                if (dynChannels.containsKey(id)) {
-                    dynChannels.remove(id);
-                }
-            }
+        List<Channel> channelMap = new ArrayList<>(this.getThing().getChannels());
+        List<Channel> removeChannels = new ArrayList<>();
+        List<Channel> upgradeChannels = new ArrayList<>();
 
-            if (!dynChannels.isEmpty()) {
-                logger.debug("{}: Updating channel definitions, {} channels", thingName, dynChannels.size());
-                ThingBuilder thingBuilder = editThing();
-                for (Map.Entry<String, Channel> channel : dynChannels.entrySet()) {
-                    Channel c = channel.getValue();
-                    logger.debug("{}: Adding channel {}", thingName, c.getUID().getId());
-                    thingBuilder.withChannel(c);
+        // Step 1: Replace existing channels with dynamically created ones
+        for (Map.Entry<String, Channel> channel : dynChannels.entrySet()) {
+            String id = channel.getKey();
+            channelMap.removeIf(c -> (c.getUID().getId().equals(id)));
+            channelMap.add(channel.getValue());
+        }
+
+        // Step 2: check channel definition s for all channels to be up-to-date
+        for (Channel channel : channelMap) {
+            try {
+                boolean upgrade = false;
+                String channelId = channel.getUID().getId();
+                ChannelTypeUID uid = channel.getChannelTypeUID();
+                if (!ShellyChannelDefinitions.hasDefinition(channelId) || uid == null) {
+                    continue;
                 }
-                updateThing(thingBuilder.build());
-                logger.debug("{}: Channel definitions updated", thingName);
+                String typeId = uid.getBindingId().equals("system") ? uid.toString() : uid.getId();
+                ShellyChannel channelDef = ShellyChannelDefinitions.getDefinition(channelId);
+                ThingHandlerCallback callback = getCallback();
+                if (channelDef != null && getThing().getChannel(channel.getUID().getId()) != null && callback != null) {
+                    ChannelBuilder channelBuilder = callback.editChannel(thing, channel.getUID());
+                    if (!channelDef.typeId.equals(typeId)) {
+                        channelBuilder.withType(channelDef.getChannelTypeUID());
+                        upgrade = true;
+                    }
+                    String acceptedItemType = getString(channel.getAcceptedItemType());
+                    if (!acceptedItemType.isEmpty() && !channelDef.itemType.equals(acceptedItemType)) {
+                        channelBuilder.withAcceptedItemType(channelDef.itemType);
+                        upgrade = true;
+                    }
+                    if (upgrade) {
+                        logger.debug(
+                                "{}: Upgrade channel definition for channel {} (typeId {} -> {}, acceptedItemType {} -> {})",
+                                thingName, channelId, typeId, channelDef.typeId, acceptedItemType, channelDef.itemType);
+                        removeChannels.add(channel);
+                        upgradeChannels.add(channelBuilder.build());
+                    }
+                }
+            } catch (Exception e) {
+                logger.debug("failed", e);
             }
-        } catch (IllegalArgumentException e) {
-            logger.debug("{}: Unable to update channel definitions", thingName, e);
+        }
+
+        // Step 3:
+        // - remove channels from channelMap, which gets replaced by the dynamic channels
+        // - add channels, which will get a new definition
+        channelMap.removeAll(removeChannels);
+        channelMap.addAll(upgradeChannels);
+
+        // Step 4: Update thing definition with new channel list+definitions
+        if (!channelMap.isEmpty()) {
+            if (!upgradeChannels.isEmpty()) {
+                logger.debug("{}: Updating channel definitions for {}/{} channels", thingName, upgradeChannels.size(),
+                        channelMap.size());
+            }
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withChannels(channelMap);
+            updateThing(thingBuilder.build());
         }
     }
 
