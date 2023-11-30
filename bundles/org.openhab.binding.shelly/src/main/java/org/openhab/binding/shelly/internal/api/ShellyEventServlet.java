@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
@@ -49,7 +48,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Michels - Initial contribution
  */
-@NonNullByDefault
 @WebServlet(name = "ShellyEventServlet", urlPatterns = { SHELLY1_CALLBACK_URI, SHELLY2_CALLBACK_URI })
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class ShellyEventServlet extends WebSocketServlet {
