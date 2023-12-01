@@ -137,6 +137,15 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Is background discovery for this bridge enabled?
+     *
+     * @return background discovery
+     */
+    public boolean isBackgroundDiscoveryEnabled() {
+        return getConfigAs(PilightBridgeConfiguration.class).getBackgroundDiscovery();
+    }
+
+    /**
      * send action to pilight daemon
      *
      * @param action action to send

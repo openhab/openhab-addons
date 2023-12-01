@@ -14,6 +14,7 @@ package org.openhab.binding.pilight.internal.discovery;
 
 import static org.openhab.binding.pilight.internal.PilightBindingConstants.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,9 +179,13 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService impl
 
     @Override
     public void activate() {
-        super.activate(null);
         final @Nullable PilightBridgeHandler pilightBridgeHandler = this.pilightBridgeHandler;
         if (pilightBridgeHandler != null) {
+            if (pilightBridgeHandler.isBackgroundDiscoveryEnabled()) {
+                super.activate(null);
+            } else {
+                removeOlderResults(new Date().getTime(), pilightBridgeHandler.getThing().getUID());
+            }
             pilightBridgeHandler.registerDiscoveryListener(this);
         }
     }
