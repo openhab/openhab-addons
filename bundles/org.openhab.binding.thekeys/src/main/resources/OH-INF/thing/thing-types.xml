@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="thekeys"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>TheKeys Gateway</label>
+		<description>Gateway controlling a smartlock</description>
+
+		<channels>
+			<channel id="version" typeId="version"/>
+		</channels>
+
+		<properties>
+			<property name="version"/>
+		</properties>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address	</context>
+				<label>Host</label>
+				<description>Host or IP address of the gateway</description>
+			</parameter>
+			<parameter name="code" type="text" required="true">
+				<context>password</context>
+				<label>Code</label>
+				<description>Code to access the gateway</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="1" unit="s" required="true">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in seconds which is used to poll the gateway</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="apiTimeout" type="integer" min="1" unit="s" required="true">
+				<label>API timeout</label>
+				<description>The api timeout for each request</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="smartlock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>TheKeys Smartlock</label>
+		<description>A smartlock controlling by the gateway</description>
+
+		<channels>
+			<channel id="status" typeId="lock_status"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="position" typeId="position"/>
+			<channel id="version" typeId="version"/>
+			<channel id="syncInProgress" typeId="syncInProgress"/>
+			<channel id="lastSync" typeId="lastSync"/>
+			<channel id="lock" typeId="smartlockLock"/>
+		</channels>
+
+		<properties>
+			<property name="version"/>
+		</properties>
+
+		<config-description>
+			<parameter name="lockId" type="integer" required="true">
+				<label>Lock id</label>
+				<description>Identifier of the smartlock</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="version">
+		<item-type>Number</item-type>
+		<label>Firmware version</label>
+		<description>Firmware version</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lock_status">
+		<item-type>String</item-type>
+		<label>Lock status</label>
+		<description>Status of the smartlock</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rssi">
+		<item-type>Number:Power</item-type>
+		<label>Bluetooth rssi</label>
+		<description>Bluetooth Received Signal Strength Indication</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="position">
+		<item-type>Number</item-type>
+		<label>Smartlock position</label>
+		<description>Position of the smartlock</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastSync">
+		<item-type>DateTime</item-type>
+		<label>Last sync</label>
+		<description>Last success synchronization with the smartlock</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="syncInProgress">
+		<item-type>Switch</item-type>
+		<label>Synchronization in progress</label>
+		<description>Indicate synchronization with the gateway</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smartlockLock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<description>Use this channel with a Switch Item to open and close the smartlock</description>
+		<category>Door</category>
+		<state>
+			<options>
+				<option value="ON">Unlock</option>
+				<option value="OFF">Lock</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

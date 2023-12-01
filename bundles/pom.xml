@@ -380,6 +380,7 @@
     <module>org.openhab.binding.teleinfo</module>
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.thekeys</module>
     <module>org.openhab.binding.tibber</module>
     <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
