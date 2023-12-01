@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class ShellyBluApi extends Shelly2ApiRpc {
     private static final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
     private boolean connected = false; // true = BLU devices has connected
