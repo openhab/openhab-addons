@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="opensmartcity"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="city">
+		<label>Open Smart City</label>
+		<description>A binding to integrate smart city data from cities that collaborate on OSCA.</description>
+
+		<config-description>
+			<parameter name="city" type="text" required="true">
+				<label>City</label>
+				<description>The city for which to retrieve the data from</description>
+				<options>
+					<option value="Solingen">Solingen</option>
+				</options>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+				<label>Refresh Interval</label>
+				<description>Interval the city data is polled in sec.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="weather">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="city"/>
+		</supported-bridge-type-refs>
+
+		<label>Local Weather</label>
+		<description>Local weather information</description>
+
+		<channels>
+			<channel typeId="system.outdoor-temperature" id="temperature"></channel>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+		</channels>
+
+		<config-description>
+			<parameter name="location" type="text" required="true">
+				<context>location</context>
+				<label>Location of Weather</label>
+				<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
