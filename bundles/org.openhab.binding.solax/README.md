@@ -128,17 +128,17 @@ Thing solax:local-connect-inverter:localInverter  [ refreshInterval=10, password
 Group gSolaxInverter "Solax Inverter" <energy> (boilerRoom)
 Group solarPanels "Solar panels" <energy> (gSolaxInverter)
 
-Number solaxPowerWest "West [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:localConnectInverter:localInverter:pv1-power" }
-Number solaxPowerEast "East [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:localConnectInverter:localInverter:pv2-power" }
-Number solaxBatteryPower "Battery power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:localConnectInverter:localInverter:battery-power" }
-Number solaxBatterySoc "Battery SoC [%.0f %%]" <batterylevel> (gsolax_inverter,EveryChangePersist) { channel="solax:localConnectInverter:localInverter:battery-state-of-charge" }
+Number solaxPowerWest "West [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:local-connect-inverter:localInverter:pv1-power" }
+Number solaxPowerEast "East [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:local-connect-inverter:localInverter:pv2-power" }
+Number solaxBatteryPower "Battery power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:local-connect-inverter:localInverter:battery-power" }
+Number solaxBatterySoc "Battery SoC [%.0f %%]" <batterylevel> (gsolax_inverter,EveryChangePersist) { channel="solax:local-connect-inverter:localInverter:battery-state-of-charge" }
 
-Number solaxFeedInPower "Feed-in power (CEZ) [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:localConnectInverter:localInverter:feed-in-power" }
-Number solaxAcPower "Invertor output power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist){ channel="solax:localConnectInverter:localInverter:inverter-output-power" }
+Number solaxFeedInPower "Feed-in power (CEZ) [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:local-connect-inverter:localInverter:feed-in-power" }
+Number solaxAcPower "Invertor output power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist){ channel="solax:local-connect-inverter:localInverter:inverter-output-power" }
 
-String solaxInverterType "Inverter Type [%s]" <energy> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:inverter-type"}
-String solaxUploadTime "Last update time [%s]" <calendar> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:last-update-time" }
-String solaxRawData "Raw data [%s]" <data> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:raw-data" }
+String solaxInverterType "Inverter Type [%s]" <energy> (gsolax_inverter) { channel="solax:local-connect-inverter:localInverter:inverter-type"}
+String solaxUploadTime "Last update time [%s]" <calendar> (gsolax_inverter) { channel="solax:local-connect-inverter:localInverter:last-update-time" }
+String solaxRawData "Raw data [%s]" <data> (gsolax_inverter) { channel="solax:local-connect-inverter:localInverter:raw-data" }
 ```
 
 ### Sitemap Configuration
