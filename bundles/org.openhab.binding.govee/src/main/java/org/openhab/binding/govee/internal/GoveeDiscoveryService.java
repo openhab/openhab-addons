@@ -182,17 +182,19 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
             final Map<String, Object> properties = getDeviceProperties(response);
             final Object product = properties.get(GoveeBindingConstants.PRODUCT_NAME);
             final String productName = product != null ? product.toString() : "???";
-            final Object mac = properties.get(GoveeBindingConstants.MAC_ADDRESS);
-            final String macAddress = mac != null ? mac.toString() : "???";
+            final Object macAddress = properties.get(GoveeBindingConstants.MAC_ADDRESS);
 
-            ThingUID thingUid = new ThingUID(GoveeBindingConstants.THING_TYPE_LIGHT, macAddress.replace(":", "_"));
+            if (macAddress != null) {
+                ThingUID thingUid = new ThingUID(GoveeBindingConstants.THING_TYPE_LIGHT,
+                        macAddress.toString().replace(":", "_"));
 
-            DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid).withProperties(properties)
-                    .withRepresentationProperty(GoveeBindingConstants.MAC_ADDRESS)
-                    .withLabel("Govee " + productName + " " + properties.get(GoveeBindingConstants.DEVICE_TYPE) + " ("
-                            + properties.get(GoveeBindingConstants.IP_ADDRESS) + ")");
+                DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid)
+                        .withProperties(properties).withRepresentationProperty(GoveeBindingConstants.MAC_ADDRESS)
+                        .withLabel("Govee " + productName + " " + properties.get(GoveeBindingConstants.DEVICE_TYPE)
+                                + " (" + properties.get(GoveeBindingConstants.IP_ADDRESS) + ")");
 
-            thingDiscovered(discoveryResult.build());
+                thingDiscovered(discoveryResult.build());
+            }
         } while (!Thread.currentThread().isInterrupted()); // left by SocketTimeoutException
     }
 
@@ -201,41 +203,39 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
         Gson gson = new Gson();
 
         DiscoveryResponse message = gson.fromJson(response, DiscoveryResponse.class);
-        String ipAddress = "";
-        String sku = "";
+        String ipAddress;
+        String sku;
         String macAddress = "";
         String productName = "";
         String hwVersion = "???";
         String swVersion = "???";
 
-        if (message != null) {
-            ipAddress = message.msg().data().ip();
-            sku = message.msg().data().sku();
-            macAddress = message.msg().data().device();
-            hwVersion = message.msg().data().wifiVersionHard();
-            swVersion = message.msg().data().wifiVersionSoft();
+        ipAddress = message.msg().data().ip();
+        sku = message.msg().data().sku();
+        macAddress = message.msg().data().device();
+        hwVersion = message.msg().data().wifiVersionHard();
+        swVersion = message.msg().data().wifiVersionSoft();
 
-            if (ipAddress.isEmpty()) {
-                ipAddress = "???";
-                logger.warn("Empty IP Address received during discovery - device may not work");
+        if (ipAddress.isEmpty()) {
+            ipAddress = "???";
+            logger.warn("Empty IP Address received during discovery - device may not work");
+        }
+
+        productName = "???";
+        if (!sku.isEmpty()) {
+            final String skuLabel = "discovery.govee-light." + sku;
+            if (bundle != null) {
+                productName = i18nProvider.getText(bundle, skuLabel, sku, Locale.getDefault());
             }
-
+        } else {
+            sku = "???";
             productName = "???";
-            if (!sku.isEmpty()) {
-                final String skuLabel = "discovery.govee-light." + sku;
-                if (bundle != null) {
-                    productName = i18nProvider.getText(bundle, skuLabel, sku, Locale.getDefault());
-                }
-            } else {
-                sku = "???";
-                productName = "???";
-                logger.warn("Empty SKU (product name) received during discovery - device may not work");
-            }
+            logger.warn("Empty SKU (product name) received during discovery - device may not work");
+        }
 
-            if (macAddress.isEmpty()) {
-                macAddress = "???";
-                logger.warn("Empty Mac Address received during discovery - device may not work");
-            }
+        if (macAddress.isEmpty()) {
+            macAddress = "???";
+            logger.warn("Empty Mac Address received during discovery - device may not work");
         }
 
         Map<String, Object> properties = new HashMap<>(6);

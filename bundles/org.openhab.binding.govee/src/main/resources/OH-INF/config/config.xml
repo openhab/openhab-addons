@@ -18,14 +18,6 @@
 			<label>Device Product Number (sku)</label>
 			<description>The product number of the device</description>
 		</parameter>
-		<parameter name="wifiHardwareVersion" type="text">
-			<label>Wifi Hardware Version Number</label>
-			<description>The Hardware Version of the device</description>
-		</parameter>
-		<parameter name="wifiSoftwareVersion" type="text">
-			<label>Wifi Software Version Number</label>
-			<description>The Software Version of the device</description>
-		</parameter>
 		<parameter name="productName" type="text" required="false">
 			<label>Device Product Name</label>
 			<description>Description of the device</description>

@@ -50,9 +50,9 @@ public class RefreshStatusReceiver implements Runnable {
         }
 
         GoveeHandler.refreshJobRunning = true;
-        logger.trace("REFRESH: running refresh cycle for {} devices", GoveeHandler.THING_HANDLERS.size());
+        logger.trace("REFRESH: running refresh cycle for {} devices", GoveeHandler.getThingHandlers().size());
 
-        if (GoveeHandler.THING_HANDLERS.isEmpty()) {
+        if (GoveeHandler.getThingHandlers().isEmpty()) {
             return;
         }
 
@@ -70,7 +70,7 @@ public class RefreshStatusReceiver implements Runnable {
             logger.trace("Response from {} = {}", deviceIPAddress, response);
             logger.trace("received = {} from {}", response, deviceIPAddress);
 
-            thingHandler = GoveeHandler.THING_HANDLERS.get(deviceIPAddress);
+            thingHandler = GoveeHandler.getThingHandlers().get(deviceIPAddress);
             if (thingHandler == null) {
                 logger.warn("thing Handler for {} couldn't be found.", deviceIPAddress);
                 return;

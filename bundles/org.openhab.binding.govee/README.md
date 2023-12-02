@@ -123,7 +123,7 @@ arp -a | grep "MAC_ADDRESS"
 | color-temperature     | Dimmer | Color Temperature Percentage    | RW         |                      |
 | color-temperature-abs | Dimmer | Color Temperature Absolute      | RW         | in 2000-9000 Kelvin  |
 
-Note: you may have to add "%.0f K" as the state description when creating a color-temperature-abs item.
+Note: you may want to set Unit metadata to "K" when creating a color-temperature-abs item.
 
 ## UI Example for one device
 

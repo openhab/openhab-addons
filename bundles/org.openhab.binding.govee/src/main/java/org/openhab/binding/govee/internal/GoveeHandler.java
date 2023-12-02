@@ -91,7 +91,7 @@ public class GoveeHandler extends BaseThingHandler {
     private static final Gson GSON = new Gson();
 
     // Holds a list of all thing handlers to send them thing updates via the receiver-Thread
-    public static final Map<String, GoveeHandler> THING_HANDLERS = new HashMap<>();
+    private static final Map<String, GoveeHandler> THING_HANDLERS = new HashMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(GoveeHandler.class);
     private static final int SENDTODEVICE_PORT = 4003;
@@ -386,5 +386,9 @@ public class GoveeHandler extends BaseThingHandler {
 
     public void statusUpdate(ThingStatus status) {
         updateStatus(status);
+    }
+
+    public static synchronized Map<String, GoveeHandler> getThingHandlers() {
+        return THING_HANDLERS;
     }
 }

@@ -13,6 +13,10 @@
 			<channel id="color-temperature" typeId="system.color-temperature"/>
 			<channel id="color-temperature-abs" typeId="color-temperature-abs"/>
 		</channels>
+		<properties>
+			<property name="wifiHardwareVersion"/>
+			<property name="wifiSoftwareVersion"/>
+		</properties>
 		<config-description-ref uri="thing-type:govee:govee-light"/>
 	</thing-type>
 
