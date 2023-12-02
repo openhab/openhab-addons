@@ -37,14 +37,21 @@ public class GrowattActions implements ThingActions {
 
     public static void setupChargingProgram(ThingActions actions, Number chargingPower, Number targetSOC,
             boolean allowAcCharging, String startTime, String stopTime, boolean programEnable) {
-        ((GrowattActions) actions).setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime,
-                programEnable);
+        if (actions instanceof GrowattActions growattActions) {
+            growattActions.setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime,
+                    programEnable);
+        } else {
+            throw new IllegalArgumentException("The 'actions' argument is not an instance of GrowattActions");
+        }
     }
 
     public static void setupDischargingProgram(ThingActions actions, Number dischargingPower, Number targetSOC,
             String startTime, String stopTime, boolean programEnable) {
-        ((GrowattActions) actions).setupDischargingProgram(dischargingPower, targetSOC, startTime, stopTime,
-                programEnable);
+        if (actions instanceof GrowattActions growattActions) {
+            growattActions.setupDischargingProgram(dischargingPower, targetSOC, startTime, stopTime, programEnable);
+        } else {
+            throw new IllegalArgumentException("The 'actions' argument is not an instance of GrowattActions");
+        }
     }
 
     @Override
@@ -65,7 +72,6 @@ public class GrowattActions implements ThingActions {
             @ActionInput(name = "start-time", label = "@text/actions.start-time.label", description = "@text/actions.start-time.description") String startTime,
             @ActionInput(name = "stop-time", label = "@text/actions.stop-time.label", description = "@text/actions.stop-time.description") String stopTime,
             @ActionInput(name = "program-enable", label = "@text/actions.program-enable.label", description = "@text/actions.program-enable.description") boolean programEnable) {
-        //
         GrowattInverterHandler handler = this.handler;
         if (handler != null) {
             handler.setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable);
@@ -81,7 +87,6 @@ public class GrowattActions implements ThingActions {
             @ActionInput(name = "start-time", label = "@text/actions.start-time.label", description = "@text/actions.start-time.description") String startTime,
             @ActionInput(name = "stop-time", label = "@text/actions.stop-time.label", description = "@text/actions.stop-time.description") String stopTime,
             @ActionInput(name = "program-enable", label = "@text/actions.program-enable.label", description = "@text/actions.program-enable.description") boolean programEnable) {
-        //
         GrowattInverterHandler handler = this.handler;
         if (handler != null) {
             handler.setupDischargingProgram(dischargingPower, targetSOC, startTime, stopTime, programEnable);

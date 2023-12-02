@@ -17,10 +17,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +35,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.growatt.internal.GrowattChannels;
 import org.openhab.binding.growatt.internal.GrowattChannels.UoM;
-import org.openhab.binding.growatt.internal.cloud.ApiException;
 import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
 import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
@@ -61,8 +62,11 @@ public class GrowattTest {
 
     /**
      * Load a (JSON) string from a file
+     *
+     * @throws IOException
+     * @throws FileNotFoundException
      */
-    private String load(String fileName) {
+    private String load(String fileName) throws FileNotFoundException, IOException {
         try (FileReader file = new FileReader(String.format("src/test/resources/%s.json", fileName));
                 BufferedReader reader = new BufferedReader(file)) {
             StringBuilder builder = new StringBuilder();
@@ -71,10 +75,7 @@ public class GrowattTest {
                 builder.append(line).append("\n");
             }
             return builder.toString();
-        } catch (IOException e) {
-            fail(e.getMessage());
         }
-        return "";
     }
 
     /**
@@ -82,8 +83,10 @@ public class GrowattTest {
      *
      * @param fileName the file containing the JSON payload.
      * @return a GrottValues DTO.
+     * @throws IOException
+     * @throws FileNotFoundException
      */
-    private GrottValues loadGrottValues(String fileName) {
+    private GrottValues loadGrottValues(String fileName) throws FileNotFoundException, IOException {
         String json = load(fileName);
         GrottDevice device = gson.fromJson(json, GrottDevice.class);
         assertNotNull(device);
@@ -93,7 +96,7 @@ public class GrowattTest {
     }
 
     @Test
-    void testGrottValuesAccessibility() {
+    void testGrottValuesAccessibility() throws FileNotFoundException, IOException {
         testGrottValuesAccessibility("simple");
         testGrottValuesAccessibility("sph");
     }
@@ -104,8 +107,10 @@ public class GrowattTest {
      * instance.
      *
      * @param fileName the name of the JSON file to be tested.
+     * @throws IOException
+     * @throws FileNotFoundException
      */
-    private void testGrottValuesAccessibility(String fileName) {
+    private void testGrottValuesAccessibility(String fileName) throws FileNotFoundException, IOException {
         GrottValues grottValues = loadGrottValues(fileName);
 
         List<String> fields = Arrays.asList(GrottValues.class.getFields()).stream().map(f -> f.getName())
@@ -123,6 +128,7 @@ public class GrowattTest {
 
         // test that the CHANNEL_ID_UOM_MAP and the GrottValues DTO have the same number of fields resp. channel ids
         assertEquals(fields.size(), GrowattChannels.getMap().size());
+        List<String> errors = new ArrayList<>();
 
         for (Entry<String, UoM> entry : GrowattChannels.getMap().entrySet()) {
             String channelId = entry.getKey();
@@ -130,11 +136,9 @@ public class GrowattTest {
             // test that the field can be accessed
             try {
                 field = GrottValues.class.getField(GrottValues.getFieldName(channelId));
-            } catch (NoSuchFieldException e) {
-                fail(e.getMessage());
-                continue;
-            } catch (SecurityException e) {
-                fail(e.getMessage());
+            } catch (NoSuchFieldException | SecurityException e) {
+                String msg = e.getMessage();
+                errors.add(msg != null ? msg : e.getClass().getName());
                 continue;
             }
             // test that the field value is either null or an Integer
@@ -142,17 +146,29 @@ public class GrowattTest {
                 Object value = field.get(grottValues);
                 assertTrue(value == null || (value instanceof Integer));
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                fail(e.getMessage());
+                String msg = e.getMessage();
+                errors.add(msg != null ? msg : e.getClass().getName());
                 continue;
             }
+        }
+        if (errors.size() > 0) {
+            fail(errors.toString());
         }
     }
 
     /**
      * Spot checks to test that GrottValues is loaded with the correct contents from the "simple" JSON file.
+     *
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws SecurityException
+     * @throws NoSuchFieldException
      */
     @Test
-    void testGrottValuesContents() {
+    void testGrottValuesContents() throws FileNotFoundException, IOException, NoSuchFieldException, SecurityException,
+            IllegalAccessException, IllegalArgumentException {
         GrottValues grottValues = loadGrottValues("simple");
 
         assertEquals(1, grottValues.system_status);
@@ -174,17 +190,7 @@ public class GrowattTest {
         assertEquals(65503878, grottValues.total_work_time);
 
         Map<String, QuantityType<?>> channelStates = null;
-        try {
-            channelStates = grottValues.getChannelStates();
-        } catch (NoSuchFieldException e) {
-            fail(e.getMessage());
-        } catch (SecurityException e) {
-            fail(e.getMessage());
-        } catch (IllegalAccessException e) {
-            fail(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            fail(e.getMessage());
-        }
+        channelStates = grottValues.getChannelStates();
 
         assertNotNull(channelStates);
         assertEquals(29, channelStates.size());
@@ -221,7 +227,7 @@ public class GrowattTest {
     }
 
     @Test
-    void testJsonFieldsMappedToDto() {
+    void testJsonFieldsMappedToDto() throws FileNotFoundException, IOException {
         testJsonFieldsMappedToDto("simple");
         testJsonFieldsMappedToDto("sph");
     }
@@ -231,8 +237,10 @@ public class GrowattTest {
      * values DTO.
      *
      * @param fileName the name of the JSON file to be tested.
+     * @throws IOException
+     * @throws FileNotFoundException
      */
-    private void testJsonFieldsMappedToDto(String fileName) {
+    private void testJsonFieldsMappedToDto(String fileName) throws FileNotFoundException, IOException {
         Field[] fields = GrottValues.class.getFields();
         String json = load(fileName);
         JsonParser.parseString(json).getAsJsonObject().get("values").getAsJsonObject().entrySet().forEach(e -> {
@@ -242,14 +250,19 @@ public class GrowattTest {
                 testJsonObject.add(key, e.getValue());
                 GrottValues testDto = gson.fromJson(testJsonObject, GrottValues.class);
                 int mappedFieldCount = 0;
+                List<String> errors = new ArrayList<>();
                 for (Field field : fields) {
                     try {
                         if (field.get(testDto) != null) {
                             mappedFieldCount++;
                         }
                     } catch (IllegalAccessException | IllegalArgumentException ex) {
-                        fail("Exception");
+                        String msg = ex.getMessage();
+                        errors.add(msg != null ? msg : ex.getClass().getName());
                     }
+                }
+                if (errors.size() > 0) {
+                    fail(errors.toString());
                 }
                 assertEquals(1, mappedFieldCount);
             }
@@ -259,9 +272,11 @@ public class GrowattTest {
     /**
      * Test the Growatt remote cloud API server.
      * Will not run unless actual user credentials are provided.
+     *
+     * @throws Exception
      */
     @Test
-    void testServer() {
+    void testServer() throws Exception {
         GrowattInverterConfiguration configuration = new GrowattInverterConfiguration();
         /*
          * To test on an actual inverter, populate its plant data and user credentials below.
@@ -282,16 +297,8 @@ public class GrowattTest {
                 .thenReturn(new HttpClient(new SslContextFactory.Client(true)));
 
         try (GrowattCloud api = new GrowattCloud(configuration, httpClientFactory)) {
-            try {
-                assertFalse(api.getPlantList().isEmpty());
-            } catch (ApiException e) {
-                fail(e);
-            }
-            try {
-                assertFalse(api.getPlantInfo().isEmpty());
-            } catch (ApiException e) {
-                fail(e);
-            }
+            assertFalse(api.getPlantList().isEmpty());
+            assertFalse(api.getPlantInfo().isEmpty());
 
             int chargingPower = 97;
             int targetSOC = 23;
@@ -299,25 +306,18 @@ public class GrowattTest {
             LocalTime startTime = LocalTime.of(1, 16);
             LocalTime stopTime = LocalTime.of(2, 17);
             boolean programEnable = false;
-            try {
-                assertFalse(api.setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime,
-                        programEnable).isEmpty());
-            } catch (ApiException e) {
-                fail(e);
-            }
-            try {
-                Map<String, JsonElement> result = api.getMixAllSettings();
-                assertFalse(result.isEmpty());
-                assertEquals(chargingPower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
-                assertEquals(targetSOC, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_TARGET_SOC));
-                assertEquals(allowAcCharging,
-                        GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ALLOW_AC_CHARGING));
-                assertEquals(startTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
-                assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
-                assertEquals(programEnable, GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ENABLE));
-            } catch (ApiException e) {
-                fail(e);
-            }
+            assertFalse(api
+                    .setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable)
+                    .isEmpty());
+            Map<String, JsonElement> result = api.getMixAllSettings();
+            assertFalse(result.isEmpty());
+            assertEquals(chargingPower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
+            assertEquals(targetSOC, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_TARGET_SOC));
+            assertEquals(allowAcCharging,
+                    GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ALLOW_AC_CHARGING));
+            assertEquals(startTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
+            assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
+            assertEquals(programEnable, GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ENABLE));
 
             chargingPower = 100;
             targetSOC = 20;
@@ -325,27 +325,18 @@ public class GrowattTest {
             startTime = LocalTime.of(0, 15);
             stopTime = LocalTime.of(6, 45);
             programEnable = true;
-            try {
-                assertFalse(api.setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime,
-                        programEnable).isEmpty());
-            } catch (ApiException e) {
-                fail(e);
-            }
-            try {
-                Map<String, JsonElement> result = api.getMixAllSettings();
-                assertFalse(result.isEmpty());
-                assertEquals(chargingPower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
-                assertEquals(targetSOC, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_TARGET_SOC));
-                assertEquals(allowAcCharging,
-                        GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ALLOW_AC_CHARGING));
-                assertEquals(startTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
-                assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
-                assertEquals(programEnable, GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ENABLE));
-            } catch (ApiException e) {
-                fail(e);
-            }
-        } catch (Exception e) {
-            fail(e);
+            assertFalse(api
+                    .setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable)
+                    .isEmpty());
+            result = api.getMixAllSettings();
+            assertFalse(result.isEmpty());
+            assertEquals(chargingPower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
+            assertEquals(targetSOC, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_TARGET_SOC));
+            assertEquals(allowAcCharging,
+                    GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ALLOW_AC_CHARGING));
+            assertEquals(startTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
+            assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
+            assertEquals(programEnable, GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ENABLE));
         }
     }
 }

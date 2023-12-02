@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.growatt.internal.action.GrowattActions;
-import org.openhab.binding.growatt.internal.cloud.ApiException;
+import org.openhab.binding.growatt.internal.cloud.GrowattApiException;
 import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
 import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
@@ -194,7 +194,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
         try {
             getGrowattCloud().setupChargingProgram(chargingPower.intValue(), targetSOC.intValue(), allowAcCharging,
                     GrowattCloud.localTimeOf(startTime), GrowattCloud.localTimeOf(stopTime), programEnable);
-        } catch (IllegalStateException | DateTimeParseException | ApiException e) {
+        } catch (IllegalStateException | DateTimeParseException | GrowattApiException e) {
             logger.warn("setupChargingProgram() error", e);
             this.growattCloud = null;
         }
@@ -214,7 +214,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
         try {
             getGrowattCloud().setupDischargingProgram(dischargingPower.intValue(), targetSOC.intValue(),
                     GrowattCloud.localTimeOf(startTime), GrowattCloud.localTimeOf(stopTime), programEnable);
-        } catch (IllegalStateException | DateTimeParseException | ApiException e) {
+        } catch (IllegalStateException | DateTimeParseException | GrowattApiException e) {
             logger.warn("setupDischargingProgram() error", e);
             this.growattCloud = null;
         }

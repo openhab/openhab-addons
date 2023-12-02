@@ -15,20 +15,20 @@ package org.openhab.binding.growatt.internal.cloud;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ApiException} is thrown if a call to the Growatt cloud API server fails.
+ * The {@link GrowattApiException} is thrown if a call to the Growatt cloud API server fails.
  *
  * @author Andrew Fiddian-Green - Initial contribution.
  */
 @NonNullByDefault
-public class ApiException extends Exception {
+public class GrowattApiException extends Exception {
 
     private static final long serialVersionUID = 218139823621683189L;
 
-    public ApiException(String message) {
+    public GrowattApiException(String message) {
         super(message);
     }
 
-    public ApiException(String message, Throwable cause) {
+    public GrowattApiException(String message, Throwable cause) {
         super(message, cause);
     }
 }

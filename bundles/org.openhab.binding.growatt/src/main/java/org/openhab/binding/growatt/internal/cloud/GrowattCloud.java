@@ -118,14 +118,14 @@ public class GrowattCloud implements AutoCloseable {
      *
      * @param password the plain text password
      * @return the hash of the password
-     * @throws ApiException if MD5 algorithm is not supported
+     * @throws GrowattApiException if MD5 algorithm is not supported
      */
-    private static String createHash(String password) throws ApiException {
+    private static String createHash(String password) throws GrowattApiException {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            throw new ApiException("Hash algorithm error", e);
+            throw new GrowattApiException("Hash algorithm error", e);
         }
         byte[] bytes = md.digest(password.getBytes());
         StringBuilder result = new StringBuilder();
@@ -151,10 +151,10 @@ public class GrowattCloud implements AutoCloseable {
      * @param params the request URL parameters (may be null).
      * @param fields the request form fields (may be null).
      * @return a Map of JSON elements containing the server response.
-     * @throws ApiException if any error occurs.
+     * @throws GrowattApiException if any error occurs.
      */
     private Map<String, JsonElement> doHttpRequest(HttpMethod method, String endPoint,
-            @Nullable Map<String, String> params, @Nullable Fields fields) throws ApiException {
+            @Nullable Map<String, String> params, @Nullable Fields fields) throws GrowattApiException {
         //
         List<HttpCookie> cookies = httpClient.getCookieStore().getCookies();
         if (cookies.isEmpty() || cookies.stream().anyMatch(HttpCookie::hasExpired)) {
@@ -173,10 +173,10 @@ public class GrowattCloud implements AutoCloseable {
      * @param params the request URL parameters (may be null).
      * @param fields the request form fields (may be null).
      * @return a Map of JSON elements containing the server response.
-     * @throws ApiException if any error occurs.
+     * @throws GrowattApiException if any error occurs.
      */
     private Map<String, JsonElement> doHttpRequestInner(HttpMethod method, String endPoint,
-            @Nullable Map<String, String> params, @Nullable Fields fields) throws ApiException {
+            @Nullable Map<String, String> params, @Nullable Fields fields) throws GrowattApiException {
         //
         Request request = httpClient.newRequest(SERVER_URL + endPoint).method(method).agent(USER_AGENT)
                 .timeout(HTTP_TIMEOUT.getSeconds(), TimeUnit.SECONDS);
@@ -193,17 +193,17 @@ public class GrowattCloud implements AutoCloseable {
         try {
             response = request.send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new ApiException("HTTP I/O Exception", e);
+            throw new GrowattApiException("HTTP I/O Exception", e);
         }
 
         int status = response.getStatus();
         if (status != HttpStatus.OK_200) {
-            throw new ApiException(String.format("HTTP %d %s", status, HttpStatus.getMessage(status)));
+            throw new GrowattApiException(String.format("HTTP %d %s", status, HttpStatus.getMessage(status)));
         }
 
         String content = response.getContentAsString();
         if (content == null || content.isBlank()) {
-            throw new ApiException("HTTP response content is " + (content == null ? "null" : "blank"));
+            throw new GrowattApiException("HTTP response content is " + (content == null ? "null" : "blank"));
         }
 
         logger.trace("doHttpRequestInner() response:{}", content);
@@ -212,9 +212,9 @@ public class GrowattCloud implements AutoCloseable {
             if (jsonObject instanceof JsonObject jsonElement) {
                 return jsonElement.asMap();
             }
-            throw new ApiException("JSON invalid response");
+            throw new GrowattApiException("JSON invalid response");
         } catch (JsonParseException | IllegalStateException e) {
-            throw new ApiException("JSON parse error", e);
+            throw new GrowattApiException("JSON parse error", e);
         }
     }
 
@@ -222,9 +222,9 @@ public class GrowattCloud implements AutoCloseable {
      * Get all of the mix inverter settings.
      *
      * @return a Map of JSON elements containing the server response.
-     * @throws ApiException if any error occurs.
+     * @throws GrowattApiException if any error occurs.
      */
-    public Map<String, JsonElement> getMixAllSettings() throws ApiException {
+    public Map<String, JsonElement> getMixAllSettings() throws GrowattApiException {
         Map<String, String> params = new LinkedHashMap<>(); // keep params in order
         params.put("op", "getMixSetParams");
         params.put("serialNum", configuration.deviceId);
@@ -239,7 +239,7 @@ public class GrowattCloud implements AutoCloseable {
                 return mixBeanObject.asMap();
             }
         }
-        throw new ApiException("Invalid JSON response");
+        throw new GrowattApiException("Invalid JSON response");
     }
 
     /**
@@ -249,11 +249,11 @@ public class GrowattCloud implements AutoCloseable {
      * See https://github.com/indykoning/PyPi_GrowattServer/blob/master/growattServer/__init__.py
      *
      * @return a Map of JSON elements containing the server response.
-     * @throws ApiException if any error occurs.
+     * @throws GrowattApiException if any error occurs.
      */
-    public Map<String, JsonElement> getPlantInfo() throws ApiException {
+    public Map<String, JsonElement> getPlantInfo() throws GrowattApiException {
         if (configuration.plantId == null) {
-            throw new ApiException("Plant Id missing");
+            throw new GrowattApiException("Plant Id missing");
         }
 
         Map<String, String> params = new LinkedHashMap<>(); // keep params in order
@@ -272,11 +272,11 @@ public class GrowattCloud implements AutoCloseable {
      * See https://github.com/indykoning/PyPi_GrowattServer/blob/master/growattServer/__init__.py
      *
      * @return a Map of JSON elements containing the server response.
-     * @throws ApiException if any error occurs.
+     * @throws GrowattApiException if any error occurs.
      */
-    public Map<String, JsonElement> getPlantList() throws ApiException {
+    public Map<String, JsonElement> getPlantList() throws GrowattApiException {
         if (configuration.userId == null) {
-            throw new ApiException("User Id missing");
+            throw new GrowattApiException("User Id missing");
         }
 
         Map<String, String> params = new LinkedHashMap<>(); // keep params in order
@@ -293,21 +293,21 @@ public class GrowattCloud implements AutoCloseable {
                 }
             }
         }
-        throw new ApiException("Invalid JSON response");
+        throw new GrowattApiException("Invalid JSON response");
     }
 
     /**
      * Attempt to login to the remote server by posting the given user credentials.
      *
      * @return a Map of JSON elements containing the server response.
-     * @throws ApiException if any error occurs.
+     * @throws GrowattApiException if any error occurs.
      */
-    private Map<String, JsonElement> postLoginCredentials() throws ApiException {
+    private Map<String, JsonElement> postLoginCredentials() throws GrowattApiException {
         if (configuration.userName == null) {
-            throw new ApiException("User name missing");
+            throw new GrowattApiException("User name missing");
         }
         if (configuration.password == null) {
-            throw new ApiException("Password missing");
+            throw new GrowattApiException("Password missing");
         }
 
         Fields fields = new Fields();
@@ -325,7 +325,7 @@ public class GrowattCloud implements AutoCloseable {
                 }
             }
         }
-        throw new ApiException("Login failed");
+        throw new GrowattApiException("Login failed");
     }
 
     /**
@@ -338,15 +338,15 @@ public class GrowattCloud implements AutoCloseable {
      * @param stopTime the stop time of the charging program
      * @param programEnable charge program shall be enabled
      * @return a Map of JSON elements containing the server response
-     * @throws ApiException if any error occurs
+     * @throws GrowattApiException if any error occurs
      */
     public Map<String, JsonElement> setupChargingProgram(int chargingPower, int targetSOC, boolean allowAcCharging,
-            LocalTime startTime, LocalTime stopTime, boolean programEnable) throws ApiException {
+            LocalTime startTime, LocalTime stopTime, boolean programEnable) throws GrowattApiException {
         if (chargingPower < 1 || chargingPower > 100) {
-            throw new ApiException("Charge power out of range (1%..100%)");
+            throw new GrowattApiException("Charge power out of range (1%..100%)");
         }
         if (targetSOC < 1 || targetSOC > 100) {
-            throw new ApiException("Target SOC out of range (1%..100%)");
+            throw new GrowattApiException("Target SOC out of range (1%..100%)");
         }
 
         Fields fields = new Fields();
@@ -380,7 +380,7 @@ public class GrowattCloud implements AutoCloseable {
                 return result;
             }
         }
-        throw new ApiException("Command failed");
+        throw new GrowattApiException("Command failed");
     }
 
     /**
@@ -392,15 +392,15 @@ public class GrowattCloud implements AutoCloseable {
      * @param stopTime the stop time of the discharging program
      * @param programEnable discharge program shall be enabled
      * @return a Map of JSON elements containing the server response
-     * @throws ApiException if any error occurs
+     * @throws GrowattApiException if any error occurs
      */
     public Map<String, JsonElement> setupDischargingProgram(int dischargingPower, int targetSOC, LocalTime startTime,
-            LocalTime stopTime, boolean programEnable) throws ApiException {
+            LocalTime stopTime, boolean programEnable) throws GrowattApiException {
         if (dischargingPower < 1 || dischargingPower > 100) {
-            throw new ApiException("Discharge power out of range (1%..100%)");
+            throw new GrowattApiException("Discharge power out of range (1%..100%)");
         }
         if (targetSOC < 1 || targetSOC > 100) {
-            throw new ApiException("Target SOC out of range (1%..100%)");
+            throw new GrowattApiException("Target SOC out of range (1%..100%)");
         }
 
         Fields fields = new Fields();
@@ -433,7 +433,7 @@ public class GrowattCloud implements AutoCloseable {
                 return result;
             }
         }
-        throw new ApiException("Command failed");
+        throw new GrowattApiException("Command failed");
     }
 
     /**
@@ -442,9 +442,9 @@ public class GrowattCloud implements AutoCloseable {
      * @param map the source map.
      * @param key the key to search for in the map.
      * @return the boolean value.
-     * @throws ApiException if any error occurs.
+     * @throws GrowattApiException if any error occurs.
      */
-    public static boolean mapGetBoolean(Map<String, JsonElement> map, String key) throws ApiException {
+    public static boolean mapGetBoolean(Map<String, JsonElement> map, String key) throws GrowattApiException {
         JsonElement element = map.get(key);
         if (element instanceof JsonPrimitive primitive) {
             if (primitive.isBoolean()) {
@@ -458,11 +458,11 @@ public class GrowattCloud implements AutoCloseable {
                             return true;
                     }
                 } catch (NumberFormatException e) {
-                    throw new ApiException("Boolean bad value", e);
+                    throw new GrowattApiException("Boolean bad value", e);
                 }
             }
         }
-        throw new ApiException("Boolean missing or bad value");
+        throw new GrowattApiException("Boolean missing or bad value");
     }
 
     /**
@@ -471,18 +471,18 @@ public class GrowattCloud implements AutoCloseable {
      * @param map the source map.
      * @param key the key to search for in the map.
      * @return the integer value.
-     * @throws ApiException if any error occurs.
+     * @throws GrowattApiException if any error occurs.
      */
-    public static int mapGetInteger(Map<String, JsonElement> map, String key) throws ApiException {
+    public static int mapGetInteger(Map<String, JsonElement> map, String key) throws GrowattApiException {
         JsonElement element = map.get(key);
         if (element instanceof JsonPrimitive primitive) {
             try {
                 return primitive.getAsInt();
             } catch (NumberFormatException e) {
-                throw new ApiException("Integer bad value", e);
+                throw new GrowattApiException("Integer bad value", e);
             }
         }
-        throw new ApiException("Integer missing or bad value");
+        throw new GrowattApiException("Integer missing or bad value");
     }
 
     /**
@@ -491,18 +491,18 @@ public class GrowattCloud implements AutoCloseable {
      * @param source the source map.
      * @param key the key to search for in the map.
      * @return the LocalTime.
-     * @throws ApiException if any error occurs.
+     * @throws GrowattApiException if any error occurs.
      */
-    public static LocalTime mapGetLocalTime(Map<String, JsonElement> source, String key) throws ApiException {
+    public static LocalTime mapGetLocalTime(Map<String, JsonElement> source, String key) throws GrowattApiException {
         JsonElement element = source.get(key);
         if ((element instanceof JsonPrimitive primitive) && primitive.isString()) {
             try {
                 return localTimeOf(primitive.getAsString());
             } catch (DateTimeException e) {
-                throw new ApiException("LocalTime bad value", e);
+                throw new GrowattApiException("LocalTime bad value", e);
             }
         }
-        throw new ApiException("LocalTime missing or bad value");
+        throw new GrowattApiException("LocalTime missing or bad value");
     }
 
     /**
