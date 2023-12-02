@@ -143,7 +143,11 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
 
-            boolean gen2 = "2".equals(service.getPropertyString("gen"));
+            String gen = getString(service.getPropertyString("gen"));
+            boolean gen2 = "2".equals(gen) || "3".equals(gen);
+            if ("3".equals(gen)) {
+                int j = 1;
+            }
             ShellyApiInterface api = null;
             boolean auth = false;
             ShellySettingsDevice devInfo;
@@ -152,7 +156,11 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 api.initialize();
                 devInfo = api.getDeviceInfo();
                 model = devInfo.type;
-                auth = devInfo.auth;
+                gen2 = !(devInfo.gen == 1); // gen 2+3
+                if (devInfo.auth == null) {
+                    int i = 1;
+                }
+                auth = getBool(devInfo.auth);
                 if (devInfo.name != null) {
                     deviceName = devInfo.name;
                 }

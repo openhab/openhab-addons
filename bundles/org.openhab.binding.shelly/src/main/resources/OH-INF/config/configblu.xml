@@ -17,4 +17,19 @@
 		</parameter>
 	</config-description>
 
+
+	<config-description uri="thing-type:shelly:blugw">
+		<parameter name="deviceIp" type="text" required="true">
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<context>network-address</context>
+		</parameter>
+
+		<parameter name="enableBluGateway" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
+			<description>@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<default>true</default>
+		</parameter>
+	</config-description>
+
 </config-description:config-descriptions>

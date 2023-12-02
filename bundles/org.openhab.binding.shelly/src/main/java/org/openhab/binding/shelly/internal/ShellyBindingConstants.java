@@ -104,6 +104,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYBLUBUTTON, //
             THING_TYPE_SHELLYBLUDW, //
             THING_TYPE_SHELLYBLUMOTION, //
+            THING_TYPE_SHELLYBLUGW, //
 
             THING_TYPE_SHELLYPROTECTED, //
             THING_TYPE_SHELLYUNKNOWN);
