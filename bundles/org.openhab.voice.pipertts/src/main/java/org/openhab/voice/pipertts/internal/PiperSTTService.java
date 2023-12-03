@@ -12,6 +12,8 @@
  */
 package org.openhab.voice.pipertts.internal;
 
+import org.openhab.core.voice.AbstractCachedTTSService;
+import org.openhab.core.voice.TTSCache;
 import static org.openhab.voice.pipertts.internal.PiperTTSConstants.SERVICE_CATEGORY;
 import static org.openhab.voice.pipertts.internal.PiperTTSConstants.SERVICE_ID;
 import static org.openhab.voice.pipertts.internal.PiperTTSConstants.SERVICE_NAME;
@@ -25,6 +27,7 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -47,7 +50,6 @@ import org.openhab.core.audio.ByteArrayAudioStream;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.voice.TTSException;
-import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -73,12 +75,17 @@ import io.github.givimad.piperjni.PiperVoice;
 @Component(configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "=" + SERVICE_PID)
 @ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
         + " Text-to-Speech", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
-public class PiperSTTService implements TTSService {
+public class PiperSTTService extends AbstractCachedTTSService {
     private static final Path PIPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "piper");
     private final Logger logger = LoggerFactory.getLogger(PiperSTTService.class);
     private PiperTTSConfiguration config = new PiperTTSConfiguration();
     private @Nullable VoiceModel preloadedModel;
     private @Nullable PiperJNI piper;
+    private HashMap<String, List<Voice>> cachedVoicesByModel = new HashMap<>();
+
+    public PiperSTTService(TTSCache ttsCache) {
+        super(ttsCache);
+    }
 
     @Activate
     protected void activate(Map<String, Object> config) {
@@ -148,11 +155,17 @@ public class PiperSTTService implements TTSService {
     @Override
     public Set<Voice> getAvailableVoices() {
         try (var filesStream = Files.list(PIPER_FOLDER)) {
+            HashMap<String, List<Voice>> newCachedVoices = new HashMap<>();
             Set<Voice> voices = filesStream //
                     .filter(filePath -> filePath.getFileName().toString().endsWith(".onnx")) //
-                    .map(this::getVoice) //
+                    .map(filePath -> {
+                        List<Voice> modelVoices = this.getVoice(filePath);
+                        newCachedVoices.put(filePath.toString(), modelVoices);
+                        return modelVoices;
+                    }) //
                     .flatMap(List::stream) //
                     .collect(Collectors.toSet());
+            cachedVoicesByModel = newCachedVoices;
             logger.debug("Available voice number: {}", voices.size());
             return voices;
         } catch (IOException e) {
@@ -166,6 +179,10 @@ public class PiperSTTService implements TTSService {
             Path configFile = modelPath.getParent().resolve(modelPath.getFileName() + ".json");
             if (!Files.exists(configFile) || Files.isDirectory(configFile)) {
                 throw new IOException("Missed config file: " + configFile.toAbsolutePath());
+            }
+            List<Voice> cachedVoices = this.cachedVoicesByModel.get(modelPath.toString());
+            if(cachedVoices != null) {
+                return cachedVoices;
             }
             String voiceData = Files.readString(configFile);
             JsonNode voiceJsonRoot = new ObjectMapper().readTree(voiceData);
@@ -374,6 +391,11 @@ public class PiperSTTService implements TTSService {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         AudioSystem.write(audioInputStreamTemp, AudioFileFormat.Type.WAVE, outputStream);
         return new ByteArrayAudioStream(outputStream.toByteArray(), audioFormat);
+    }
+
+    @Override
+    public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat audioFormat) throws TTSException {
+        return synthesize(text, voice, audioFormat);
     }
 
     private record PiperSTTVoice(String voiceId, String voiceName, String languageFamily, String languageRegion,
