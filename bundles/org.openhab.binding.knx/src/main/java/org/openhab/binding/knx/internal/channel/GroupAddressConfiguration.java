@@ -36,19 +36,21 @@ public class GroupAddressConfiguration {
     public static final Logger LOGGER = LoggerFactory.getLogger(GroupAddressConfiguration.class);
 
     private static final Pattern PATTERN_GA_CONFIGURATION = Pattern.compile(
-            "^((?<dpt>[1-9][0-9]{0,2}\\.[0-9]{3,5}):)?(?<read><)?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)$");
+            "^((?<dpt>[1-9][0-9]{0,2}\\.[0-9]{3,5}):)?(?<read><)?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)(?<statusGA>(\\+(<<[0-9]{1,5}(/[0-9]{1,4}){0,2}))?)$");
     private static final Pattern PATTERN_LISTEN_GA = Pattern
             .compile("\\+((?<read><)?(?<GA>[0-9]{1,5}(/[0-9]{1,4}){0,2}))");
 
     private final @Nullable String dpt;
     private final GroupAddress mainGA;
+    private final @Nullable GroupAddress statusGA;
     private final Set<GroupAddress> listenGAs;
     private final Set<GroupAddress> readGAs;
 
-    private GroupAddressConfiguration(@Nullable String dpt, GroupAddress mainGA, Set<GroupAddress> listenGAs,
-            Set<GroupAddress> readGAs) {
+    private GroupAddressConfiguration(@Nullable String dpt, GroupAddress mainGA, @Nullable GroupAddress statusGA,
+            Set<GroupAddress> listenGAs, Set<GroupAddress> readGAs) {
         this.dpt = dpt;
         this.mainGA = mainGA;
+        this.statusGA = statusGA;
         this.listenGAs = listenGAs;
         this.readGAs = readGAs;
     }
@@ -59,6 +61,10 @@ public class GroupAddressConfiguration {
 
     public GroupAddress getMainGA() {
         return mainGA;
+    }
+
+    public @Nullable GroupAddress getStatusGA() {
+        return statusGA;
     }
 
     public Set<GroupAddress> getListenGAs() {
@@ -97,13 +103,24 @@ public class GroupAddressConfiguration {
 
             // Main GA
             String mainGA = matcher.group("mainGA");
+            // Status GA
+            String statusGA = matcher.group("statusGA");
             try {
-                GroupAddress groupAddress = new GroupAddress(mainGA);
-                listenGAs.add(groupAddress); // also listening to main GA
+                // Main GA
+                GroupAddress mainGroupAddress = new GroupAddress(mainGA);
+                listenGAs.add(mainGroupAddress); // also listening to main GA
                 if (matcher.group("read") != null) {
-                    readGAs.add(groupAddress); // also reading main GA
+                    readGAs.add(mainGroupAddress); // also reading main GA
                 }
-                return new GroupAddressConfiguration(matcher.group("dpt"), groupAddress, listenGAs, readGAs);
+                GroupAddress statusGroupAddress = null;
+                if (!statusGA.isEmpty()) {
+                    // Status GA
+                    statusGroupAddress = new GroupAddress(statusGA);
+                    listenGAs.add(statusGroupAddress); // listening to status GA
+                    readGAs.add(statusGroupAddress); // reading status GA
+                }
+                return new GroupAddressConfiguration(matcher.group("dpt"), mainGroupAddress, statusGroupAddress,
+                        listenGAs, readGAs);
             } catch (KNXFormatException e) {
                 LOGGER.warn("Failed to create GroupAddress from {}", mainGA);
                 return null;
