@@ -52,6 +52,7 @@ public abstract class KNXChannel {
     private final Map<String, GroupAddressConfiguration> groupAddressConfigurations = new HashMap<>();
     private final Set<GroupAddress> listenAddresses = new HashSet<>();
     private final Set<GroupAddress> writeAddresses = new HashSet<>();
+    private final Set<GroupAddress> statusAddresses = new HashSet<>();
     private final String channelType;
     private final ChannelUID channelUID;
     private final boolean isControl;
@@ -89,6 +90,9 @@ public abstract class KNXChannel {
                 // store address configuration for re-use
                 listenAddresses.addAll(groupAddressConfiguration.getListenGAs());
                 writeAddresses.add(groupAddressConfiguration.getMainGA());
+                if (groupAddressConfiguration.getStatusGA() != null) {
+                    statusAddresses.add(groupAddressConfiguration.getStatusGA());
+                }
             }
         });
     }
@@ -115,6 +119,10 @@ public abstract class KNXChannel {
 
     public final Set<GroupAddress> getWriteAddresses() {
         return writeAddresses;
+    }
+
+    public final Set<GroupAddress> getStatusAddresses() {
+        return statusAddresses;
     }
 
     public final @Nullable OutboundSpec getCommandSpec(Type command) {
