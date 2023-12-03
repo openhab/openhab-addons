@@ -34,6 +34,8 @@ import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * Handles the long polling to the Smart Home Controller.
  *
@@ -141,17 +143,20 @@ public class LongPolling {
     }
 
     /**
-     * Start long polling the home controller. Once a long poll resolves, a new one is started.
+     * Start long polling the home controller. Once a long poll resolves, a new one
+     * is started.
      */
     private void longPoll(BoschHttpClient httpClient, String subscriptionId) {
-        logger.debug("Sending long poll request");
 
         JsonRpcRequest requestContent = new JsonRpcRequest("2.0", "RE/longPoll", new String[] { subscriptionId, "20" });
         String url = httpClient.getBoschShcUrl("remote/json-rpc");
         Request longPollRequest = httpClient.createRequest(url, POST, requestContent);
 
-        // Long polling responds after 20 seconds with an empty response if no update has happened.
-        // 10 second threshold was added to not time out if response from controller takes a bit longer than 20 seconds.
+        logger.debug("Sending long poll request: {} with headers {}", longPollRequest, longPollRequest.getHeaders());
+
+        // Long polling responds after 20 seconds with an empty response if no update
+        // has happened. 10 second threshold was added to not time out if response
+        // from controller takes a bit longer than 20 seconds.
         longPollRequest.timeout(30, TimeUnit.SECONDS);
 
         this.request = longPollRequest;
@@ -159,8 +164,9 @@ public class LongPolling {
         longPollRequest.send(new BufferingResponseListener() {
             @Override
             public void onComplete(@Nullable Result result) {
-                // NOTE: This handler runs inside the HTTP thread, so we schedule the response handling in a new thread
-                // because the HTTP thread is terminated after the timeout expires.
+                // NOTE: This handler runs inside the HTTP thread, so we schedule the response
+                // handling in a new thread because the HTTP thread is terminated after the
+                // timeout expires.
                 scheduler.execute(() -> longPolling.onLongPollComplete(httpClient, subscriptionId, result,
                         this.getContentAsString()));
             }
@@ -188,10 +194,28 @@ public class LongPolling {
         if (failure != null) {
             handleLongPollFailure(subscriptionId, failure);
         } else {
-            logger.debug("Long poll response: {}", content);
+            handleLongPollResponse(httpClient, subscriptionId, content);
+        }
+    }
 
-            String nextSubscriptionId = subscriptionId;
+    /**
+     * Attempts to parse and process the long poll response content.
+     * <p>
+     * If the response cannot be parsed as {@link LongPollResult}, an attempt is made to parse a {@link LongPollError}.
+     * In case a {@link LongPollError} is present with the code <code>SUBSCRIPTION_INVALID</code>, a re-subscription is
+     * initiated.
+     * <p>
+     * If the response does not contain syntactically valid JSON, a new subscription is attempted with a delay of 15
+     * seconds.
+     * 
+     * @param httpClient HTTP client which received the response
+     * @param subscriptionId Id of subscription the response is for
+     * @param content Content of the response
+     */
+    private void handleLongPollResponse(BoschHttpClient httpClient, String subscriptionId, String content) {
+        logger.debug("Long poll response: {}", content);
 
+        try {
             LongPollResult longPollResult = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, LongPollResult.class);
             if (longPollResult != null && longPollResult.result != null) {
                 this.handleResult.accept(longPollResult);
@@ -212,10 +236,14 @@ public class LongPolling {
                     }
                 }
             }
-
-            // Execute next run
-            this.longPoll(httpClient, nextSubscriptionId);
+        } catch (JsonSyntaxException e) {
+            this.handleFailure.accept(
+                    new LongPollingFailedException("Could not deserialize long poll response: '" + content + "'", e));
+            return;
         }
+
+        // Execute next run
+        this.longPoll(httpClient, subscriptionId);
     }
 
     private void handleLongPollFailure(String subscriptionId, Throwable failure) {
