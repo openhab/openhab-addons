@@ -28,8 +28,7 @@ import tuwien.auto.calimero.KNXFormatException;
 /**
  * Data structure representing the content of a channel's group address configuration.
  *
- * @author Simon Kaufmann - initial contribution and API.
- *
+ * @author Simon Kaufmann - Initial contribution and API
  */
 @NonNullByDefault
 public class GroupAddressConfiguration {
@@ -59,18 +58,38 @@ public class GroupAddressConfiguration {
         return dpt;
     }
 
+    /**
+     * Returns the main GA, which is the GA to send commands to.
+     * @return
+     */
     public GroupAddress getMainGA() {
         return mainGA;
     }
 
+    /**
+     * Returns the status GA (if defined), which is the GA to get state from.
+     * The "<<" sign sets a GA as the status GA.
+     * @return
+     */
     public @Nullable GroupAddress getStatusGA() {
         return statusGA;
     }
 
+    /**
+     * Returns all GAs to listen to.
+     * This includes the main GA, the status GA, and additional listening GAs (those after the "+" symbol).
+     * @return
+     */
     public Set<GroupAddress> getListenGAs() {
         return listenGAs;
     }
 
+    /**
+     * Returns all GAs to read from.
+     * Those GAs accept read requests to the KNX bus, i.e. they respond to a "GroupValueRead" with a "GroupValueResponse".
+     * The "<" sign sets a GA as read GA.
+     * @return
+     */
     public Set<GroupAddress> getReadGAs() {
         return readGAs;
     }
