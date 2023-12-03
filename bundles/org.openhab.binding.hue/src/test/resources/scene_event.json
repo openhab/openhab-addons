@@ -1,0 +1,46 @@
+{
+    "errors": [
+    ],
+    "data": [
+        {
+            "id": "00000000-0000-0000-0000-000000000000",
+            "id_v1": "/lights/40",
+            "on": {
+                "on": false
+            },
+            "type": "light"
+        },
+        {
+            "id": "ACTIVE00-0000-0000-0000-000000000001",
+            "id_v1": "/scenes/BK-UE-77VNFHKRi",
+            "status": {
+                "active": "static"
+            },
+            "type": "scene"
+        },
+        {
+            "id": "00000000-0000-0000-0000-000000000002",
+            "id_v1": "/lights/40",
+            "on": {
+                "on": false
+            },
+            "type": "light"
+        },
+        {
+            "id": "00000000-0000-0000-0000-000000000003",
+            "id_v1": "/scenes/rULmu6mjOgC4U7I",
+            "status": {
+                "active": "inactive"
+            },
+            "type": "scene"
+        },
+        {
+            "id": "00000000-0000-0000-0000-000000000004",
+            "id_v1": "/lights/40",
+            "on": {
+                "on": false
+            },
+            "type": "light"
+        }
+    ]
+}

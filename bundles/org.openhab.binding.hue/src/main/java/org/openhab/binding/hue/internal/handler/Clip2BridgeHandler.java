@@ -535,6 +535,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (numberOfResources != resources.size()) {
             logger.debug("onResourcesEventTask() merged to {} resources", resources.size());
         }
+        Setters.sortSceneResources(resources);
         getThing().getThings().forEach(thing -> {
             if (thing.getHandler() instanceof Clip2ThingHandler clip2ThingHandler) {
                 resources.forEach(resource -> clip2ThingHandler.onResource(resource));
