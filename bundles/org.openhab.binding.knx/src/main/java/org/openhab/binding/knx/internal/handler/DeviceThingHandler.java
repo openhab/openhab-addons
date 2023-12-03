@@ -427,7 +427,12 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     }
                 }
             } else {
-                if (value instanceof State state && !(value instanceof UnDefType)) {
+                Set<GroupAddress> statusAddresses = knxChannel.getStatusAddresses();
+                if (!statusAddresses.isEmpty() && !statusAddresses.contains(destination)) {
+                    logger.trace(
+                            "processDataReceived ignoring KNX bus data for GA '{}': is no status GA, but channel '{}' has status GA(s) configured",
+                            destination, knxChannel.getChannelUID());
+                } else if (value instanceof State state && !(value instanceof UnDefType)) {
                     logger.trace("processDataReceived updateState to channel '{}' new value '{}' for GA '{}'",
                             knxChannel.getChannelUID(), value, destination);
                     updateState(knxChannel.getChannelUID(), state);

@@ -90,8 +90,9 @@ public abstract class KNXChannel {
                 // store address configuration for re-use
                 listenAddresses.addAll(groupAddressConfiguration.getListenGAs());
                 writeAddresses.add(groupAddressConfiguration.getMainGA());
-                if (groupAddressConfiguration.getStatusGA() != null) {
-                    statusAddresses.add(groupAddressConfiguration.getStatusGA());
+                GroupAddress statusGA = groupAddressConfiguration.getStatusGA();
+                if (statusGA != null) {
+                    statusAddresses.add(statusGA);
                 }
             }
         });
