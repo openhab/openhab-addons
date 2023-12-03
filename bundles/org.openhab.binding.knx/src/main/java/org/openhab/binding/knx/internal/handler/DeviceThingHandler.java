@@ -126,7 +126,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                 List<InboundSpec> inboundSpecs = knxChannel.getAllGroupAddresses().stream()
                         .map(knxChannel::getListenSpec).filter(Objects::nonNull).map(Objects::requireNonNull).toList();
                 if (inboundSpecs.isEmpty()) {
-                    logger.warn("Skipping {}: configuring a DPT is mandatory on 'number' channels!", channel.getUID());
+                    logger.warn("Skipping {}: group address / DPT not according to Group Address Notation", channel.getUID());
                     continue;
                 }
 
