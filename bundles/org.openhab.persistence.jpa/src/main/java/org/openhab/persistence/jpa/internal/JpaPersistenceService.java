@@ -168,6 +168,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             if (e.getCause() instanceof EntityExistsException) {
                 // there's a UNIQUE constraint in the database, and we tried to write
                 // a duplicate timestamp. Just ignore
+                logger.debug("Skipping persistence of item... it already exists");
             } else {
                 logger.error("Error while persisting item! Rolling back!", e);
             }
