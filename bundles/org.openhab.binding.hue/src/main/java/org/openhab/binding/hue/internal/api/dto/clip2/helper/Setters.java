@@ -67,7 +67,7 @@ public class Setters {
     private static final Comparator<Resource> SCENE_ACTIVE_COMPARATOR = new Comparator<>() {
         @Override
         public int compare(Resource r1, Resource r2) {
-            return !r1.getSceneActive().orElse(false) ? -1 : 0;
+            return (r1.getSceneActive().orElse(false) ? 1 : 0) + (r2.getSceneActive().orElse(false) ? -1 : 0);
         }
     };
 
