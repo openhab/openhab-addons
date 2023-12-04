@@ -84,7 +84,6 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     private AtomicBoolean messageReceived = new AtomicBoolean(false);
     private Map<String, @Nullable ChannelState> availabilityStates = new ConcurrentHashMap<>();
     private AvailabilityMode availabilityMode = AvailabilityMode.ALL;
-    private AtomicBoolean latestAvailability = new AtomicBoolean(false);
 
     public AbstractMQTTThingHandler(Thing thing, int subscribeTimeout) {
         super(thing);
@@ -318,7 +317,6 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
                         @Override
                         public void updateChannelState(ChannelUID channelUID, State value) {
                             boolean online = value.equals(OnOffType.ON);
-                            latestAvailability.set(online);
                             calculateThingStatus(online);
                         }
 
