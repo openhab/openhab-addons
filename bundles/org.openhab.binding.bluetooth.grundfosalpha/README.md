@@ -34,16 +34,16 @@ All readers are auto-detected as soon as Bluetooth is configured in openHAB and 
 
 grundfos_alpha.things (assuming you have a Bluetooth bridge with the ID `bluetooth:bluegiga:adapter1`:
 
-```
+```java
 bluetooth:mi401:hci0:sensor1 "Grundfos Alpha Reader 1" (bluetooth:bluegiga:adapter1) [ address="12:34:56:78:9A:BC" ]
 ```
 
 grundfos_alpha.items:
 
-```
+```java
 Number RSSI "RSSI [%.1f dBm]" <QualityOfService> { channel="bluetooth:mi401:hci0:sensor1:rssi" }
 Number:VolumetricFlowRate Flow_rate "Flowrate [%.1f %unit%]" <flow> { channel="bluetooth:mi401:hci0:sensor1:flow-rate" }
 Number:Length Pump_Head "Pump head [%.1f %unit%]" <water> { channel="bluetooth:mi401:hci0:sensor1:pump-head" }
 Number:Temperature Pump_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="bluetooth:mi401:hci0:sensor1:pump-temperature" }
-Number:Dimensionless Battery_Level "Battery Level [%d %%]" <Battery> { channel="bluetooth:mi401:hci0:sensor1:battery-level" }
+Number:Dimensionless Battery_Level "Battery Level [%d %%]" <battery> { channel="bluetooth:mi401:hci0:sensor1:battery-level" }
 ```
