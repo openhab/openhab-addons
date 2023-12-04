@@ -222,6 +222,7 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
 
             boolean acActive = chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
                     .getRemoteClimateStatus() > 0;
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_SWITCH_AC, OnOffType.from(acActive));
             saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_REMOTE_AC_STATUS,
                     new DecimalType(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
                             .getRemoteClimateStatus()));
