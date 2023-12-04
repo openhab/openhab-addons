@@ -220,6 +220,9 @@ public class ChannelState implements MqttMessageSubscriber {
         }
 
         State newState = cachedValue.getChannelState();
+        // If the user explicitly wants a command sent, not an update, do that. But
+        // we have to check that the state is even possible to send as a command
+        // (i.e. not UNDEF)
         if (config.postCommand && newState instanceof Command newCommand) {
             channelStateUpdateListener.postChannelCommand(channelUID, newCommand);
         } else {
