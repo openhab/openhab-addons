@@ -14,8 +14,13 @@ package org.openhab.binding.hue.internal.api.dto.clip2.helper;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.measure.Unit;
 
@@ -33,6 +38,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
@@ -51,6 +57,8 @@ import org.openhab.core.util.ColorUtil.Gamut;
  */
 @NonNullByDefault
 public class Setters {
+
+    private static final Set<ResourceType> LIGHT_TYPES = Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT);
 
     /**
      * Setter for Alert field:
@@ -341,7 +349,56 @@ public class Setters {
                 targetTimedEffects.setDuration(duration);
             }
         }
-
         return target;
+    }
+
+    /**
+     * Merge on/dimming/color fields from light and grouped light resources.
+     * Subsequent resources will be merged into the first one.
+     * Full state resources are not supported by this method.
+     */
+    public static Collection<Resource> mergeLightResources(Collection<Resource> resources) {
+        Map<String, Resource> resourceIndex = new HashMap<>();
+        Iterator<Resource> iterator = resources.iterator();
+        while (iterator.hasNext()) {
+            Resource resource = iterator.next();
+            String id = resource.getId();
+
+            if (resource.hasFullState()) {
+                throw new IllegalStateException("Resource " + id + " has full state, this is not expected");
+            }
+
+            Resource indexedResource = resourceIndex.get(id);
+            if (indexedResource == null) {
+                resourceIndex.put(id, resource);
+                continue;
+            }
+
+            if (!LIGHT_TYPES.contains(resource.getType()) || !resource.hasHSBField()) {
+                continue;
+            }
+
+            OnState onState = resource.getOnState();
+            if (onState != null) {
+                indexedResource.setOnState(onState);
+                resource.setOnState(null);
+            }
+            Dimming dimming = resource.getDimming();
+            if (dimming != null) {
+                indexedResource.setDimming(dimming);
+                resource.setDimming(null);
+            }
+            ColorXy colorXy = resource.getColorXy();
+            if (colorXy != null) {
+                indexedResource.setColorXy(colorXy);
+                resource.setColorXy(null);
+            }
+
+            if (!resource.hasAnyRelevantField()) {
+                iterator.remove();
+            }
+        }
+
+        return resources;
     }
 }
