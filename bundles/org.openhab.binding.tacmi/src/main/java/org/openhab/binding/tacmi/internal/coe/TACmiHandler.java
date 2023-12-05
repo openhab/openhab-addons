@@ -58,7 +58,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TACmiHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(TACmiHandler.class);
+    private static final int PODSIZE_DIGITAL = 16;
+
+	private static final int PODSIZE_ANALOG = 4;
+
+	private final Logger logger = LoggerFactory.getLogger(TACmiHandler.class);
 
     private final Map<PodIdentifier, PodData> podDatas = new HashMap<>();
     private final Map<ChannelUID, TACmiChannelConfiguration> channelConfigByUID = new HashMap<>();
@@ -193,15 +197,15 @@ public class TACmiHandler extends BaseThingHandler {
         return pd;
     }
 
-    private byte getPodId(final MessageType messageType, final int output) {
+    byte getPodId(final MessageType messageType, final int output) {
         assert output >= 1 && output <= 32; // range 1-32
         // pod ID's: 0 & 9 for digital states, 1-8 for analog values
-        boolean analog = messageType == MessageType.ANALOG;
-        int outputIdx = getOutputIndex(output, analog);
-        if (messageType == MessageType.ANALOG) {
-            return (byte) (outputIdx + 1);
+        if (messageType.equals(MessageType.ANALOG)) {
+        	return (byte) ((output-1) / PODSIZE_ANALOG +1);
+        }else {
+        	int outputIdx = (output-1) / PODSIZE_DIGITAL;
+        	return (byte) (outputIdx == 0 ? 0 : 9);
         }
-        return (byte) (outputIdx == 0 ? 0 : 9);
     }
 
     /**
@@ -212,12 +216,12 @@ public class TACmiHandler extends BaseThingHandler {
      * @param analog
      * @return
      */
-    private int getOutputIndex(int output, boolean analog) {
+    int getOutputIndex(int output, boolean analog) {
         int outputIdx = output - 1;
         if (analog) {
-            outputIdx %= 4;
+            outputIdx %= PODSIZE_ANALOG;
         } else {
-            outputIdx %= 16;
+            outputIdx %= PODSIZE_DIGITAL;
         }
         return outputIdx;
     }
