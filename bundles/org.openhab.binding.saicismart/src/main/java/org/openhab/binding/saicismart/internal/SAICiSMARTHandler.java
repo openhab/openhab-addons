@@ -139,7 +139,6 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             if (lastCarActivity.isAfter(ZonedDateTime.now().minus(10, ChronoUnit.MINUTES))) {
-
                 if (this.getBridgeHandler().getUid() != null && this.getBridgeHandler().getToken() != null) {
                     try {
                         OTA_RVMVehicleStatusResp25857 otaRvmVehicleStatusResp25857 = new VehicleStateUpdater(this)
@@ -153,7 +152,8 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                             logger.debug("ABRP: {}", execute);
                         }
                     } catch (Exception e) {
-                        logger.error("Could not refresh car data for {}", config.vin, e);
+                        logger.warn("Could not refresh car data for {}. {}", config.vin, e.getMessage());
+                        updateStatus(ThingStatus.OFFLINE);
                     }
                 }
             }

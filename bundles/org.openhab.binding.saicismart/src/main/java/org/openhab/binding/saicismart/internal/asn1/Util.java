@@ -14,10 +14,13 @@ package org.openhab.binding.saicismart.internal.asn1;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Markus Heberling - Initial contribution
  */
+@NonNullByDefault
 public final class Util {
     private Util() {
     }

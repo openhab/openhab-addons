@@ -29,6 +29,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.saicismart.internal.asn1.Util;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -53,6 +54,7 @@ import net.heberling.ismart.asn1.v2_1.entity.OTA_RVMVehicleStatusResp25857;
 /**
  * @author Markus Heberling - Initial contribution
  */
+@NonNullByDefault
 class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
     private final Logger logger = LoggerFactory.getLogger(VehicleStateUpdater.class);
 
@@ -63,7 +65,8 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
     }
 
     @Override
-    public OTA_RVMVehicleStatusResp25857 call() {
+    public OTA_RVMVehicleStatusResp25857 call()
+            throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
         try {
             MessageCoder<OTA_RVMVehicleStatusReq> otaRvmVehicleStatusRequstMessageCoder = new MessageCoder<>(
                     OTA_RVMVehicleStatusReq.class);
@@ -91,7 +94,6 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
             // ... use that to request the data again, until we have it
             // TODO: check for real errors (result!=0 and/or errorMessagePresent)
             while (chargingStatusResponseMessage.getApplicationData() == null) {
-
                 if (chargingStatusResponseMessage.getBody().isErrorMessagePresent()) {
                     if (chargingStatusResponseMessage.getBody().getResult() == 2) {
                         saiCiSMARTHandler.getBridgeHandler().relogin();
@@ -112,7 +114,6 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
 
                 chargingStatusResponseMessage = new MessageCoder<>(OTA_RVMVehicleStatusResp25857.class)
                         .decodeResponse(chargingStatusResponse);
-
             }
 
             logger.debug("Got message: {}",
@@ -244,7 +245,7 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
             logger.warn("Could not get vehicle status data for {}. {}", saiCiSMARTHandler.config.vin, e.getMessage());
-            return null;
+            throw e;
         }
     }
 }

@@ -182,9 +182,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     } else {
                         logger.warn("No application data found!");
                     }
-
                     updateStatus(ThingStatus.ONLINE);
-
                 } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException e) {
                     updateStatus(ThingStatus.OFFLINE);
                     logger.error("Could not get messages from SAIC iSMART account", e);
@@ -235,7 +233,6 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
     }
 
     public String hashMD5(String password) throws NoSuchAlgorithmException {
-
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(password.getBytes());
         byte[] digest = md.digest();
