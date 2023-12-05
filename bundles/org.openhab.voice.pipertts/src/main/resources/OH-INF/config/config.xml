@@ -8,10 +8,9 @@
 	<config-description uri="voice:pipertts">
 		<parameter name="preloadModel" type="boolean">
 			<label>Preload Model</label>
-			<description>Keep the last voice model loaded. If the parameter is set to true, the model will be reloaded only on
-				configuration updates or voice changes. If the model is not loaded when needed, the service will try to load it. If
-				the parameter is
-				set to false, the model will be loaded and unloaded on each run.
+			<description>
+				Keep the last voice model loaded. If the parameter is set to true, the model will be reloaded only when
+				using a different voice.
 			</description>
 			<default>false</default>
 		</parameter>

@@ -21,5 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class PiperTTSConfiguration {
+    /**
+     * Keep last voice model used loaded in memory.
+     */
     boolean preloadModel;
 }

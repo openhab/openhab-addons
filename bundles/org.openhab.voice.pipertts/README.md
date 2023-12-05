@@ -4,7 +4,7 @@ Piper STT integrates [Piper](https://github.com/rhasspy/piper) the fast, local n
 
 ## Supported platforms
 
-This add-on relies on native dependencies to work: piper-jni, piper, piper-phonetize, espeak, an the onnxruntime.
+The service relies on native dependencies which are distributed with-in the add-on: piper-jni, piper, piper-phonemize, espeak-ng, an the onnxruntime.
 
 It includes compatibility for the following platforms:
 
@@ -18,7 +18,7 @@ It includes compatibility for the following platforms:
 
 You can find the link to the available voices at the [Piper README](https://github.com/rhasspy/piper).
 
-Each voice model is composed of two files a onnx runtime model with extension '.onnx' and a model config file with extension '.onnx.json'.
+Each voice model is composed of two files a onnx runtime model file with extension '.onnx' and a model config file with extension '.onnx.json'.
 For the add-on to load your voices you need both to be named equal (obviously excluding their extensions).
 
 You should place both voice files at '<OPENHAB_USERDATA>/piper/'.
@@ -26,13 +26,13 @@ After that the UI should display your available voices at 'Settings / System Set
 
 ### Multi Speaker Voices
 
-Models that support multiples speakers register each of them as a different voice in the server.
+Models that support multiples speakers are shown as multiple voices in OpenHAB.
 
 ### Text to Speech Configuration
 
 Use your favorite configuration UI to edit **Settings / Other Services - Piper Text-to-Speech**:
 
-* **Preload model** - Keep first voice model used loaded in memory.
+* **Preload model** - Keep last voice model used loaded in memory, these way it can be reused on next execution if the voice option matches.
 
 ### Configuration via a text file
 
@@ -53,7 +53,7 @@ You can setup your preferred default Speech-to-Text in the UI:
 * Set **Piper** as **Text-to-Speech**.
 * Set your **Default Voice**.
 
-In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
+In case you would like to set up these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
 ```
 org.openhab.voice:defaultTTS=pipertts

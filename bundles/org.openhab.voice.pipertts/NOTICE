@@ -16,12 +16,25 @@ https://github.com/openhab/openhab-addons
 
 io.github.givimad: piper-jni
 * License: Apache 2.0 License
-* Project: https://github.com/GiviMAD/rustpotter
-* Source: https://github.com/GiviMAD/rustpotter-java
+* Project: https://github.com/GiviMAD/piper-jni
+* Source: https://github.com/GiviMAD/piper-jni
 
 io.github.rhasspy: piper
 * License: MIT License
 * Project: https://github.com/rhasspy/piper
 * Source: https://github.com/rhasspy/piper
 
-# TODO add other piper deeps included: eSpeak, onnxruntime, piper-phonetize
+io.github.rhasspy: espeak-ng
+* License: GPL version 3, 2-clause BSD
+* Project: https://github.com/rhasspy/espeak-ng
+* Source: https://github.com/rhasspy/espeak-ng
+
+io.github.rhasspy: piper-phonemize
+* License: MIT License
+* Project: https://github.com/rhasspy/piper-phonemize
+* Source: https://github.com/rhasspy/piper-phonemize
+
+io.github.microsoft: onnxruntime
+* License: MIT License
+* Project: https://github.com/microsoft/onnxruntime
+* Source: https://github.com/microsoft/onnxruntime
