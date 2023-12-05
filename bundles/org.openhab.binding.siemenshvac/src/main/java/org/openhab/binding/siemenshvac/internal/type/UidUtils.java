@@ -56,6 +56,7 @@ public class UidUtils {
         result = result.replace('&', '_');
         result = result.replace('/', '_');
         result = result.replace('°', '_');
+        result = result.replace('+', '_');
 
         return result;
     }
@@ -127,6 +128,7 @@ public class UidUtils {
         result = result.replace('\'', '-');
         result = result.replace('/', '-');
         result = result.replace(' ', '-');
+        result = result.replace("+", "-");
         result = result.replace("--", "-");
 
         result = result.replace("standard-tsp-hc", "time-switch-program-standard");
