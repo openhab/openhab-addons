@@ -46,6 +46,7 @@
 /bundles/org.openhab.binding.bluetooth.enoceanble/ @pfink
 /bundles/org.openhab.binding.bluetooth.generic/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.govee/ @cpmeister
+/bundles/org.openhab.binding.bluetooth.grundfosalpha/ @tisoft
 /bundles/org.openhab.binding.bluetooth.radoneye/ @petero-dk
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
@@ -423,7 +424,6 @@
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.marytts/ @kaikreuzer
 /bundles/org.openhab.voice.mimictts/ @dalgwen
-/bundles/org.openhab.voice.actiontemplatehli/ @GiviMAD
 /bundles/org.openhab.voice.picotts/ @FlorianSW
 /bundles/org.openhab.voice.pollytts/ @openhab/add-ons-maintainers
 /bundles/org.openhab.voice.porcupineks/ @GiviMAD
