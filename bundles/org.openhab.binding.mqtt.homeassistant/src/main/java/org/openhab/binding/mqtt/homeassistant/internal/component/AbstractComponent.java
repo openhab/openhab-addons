@@ -105,18 +105,12 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         final List<Availability> availabilities = channelConfiguration.getAvailability();
         if (availabilities != null) {
             AvailabilityMode mode = channelConfiguration.getAvailabilityMode();
-            switch (mode) {
-                case ALL:
-                    componentConfiguration.getTracker().setAvailabilityMode(AvailabilityTracker.AvailabilityMode.ALL);
-                    break;
-                case ANY:
-                    componentConfiguration.getTracker().setAvailabilityMode(AvailabilityTracker.AvailabilityMode.ANY);
-                    break;
-                case LATEST:
-                    componentConfiguration.getTracker()
-                            .setAvailabilityMode(AvailabilityTracker.AvailabilityMode.LATEST);
-                    break;
-            }
+            AvailabilityTracker.AvailabilityMode availabilityTrackerMode = switch (mode) {
+                case ALL -> AvailabilityTracker.AvailabilityMode.ALL;
+                case ANY -> AvailabilityTracker.AvailabilityMode.ANY;
+                case LATEST -> AvailabilityTracker.AvailabilityMode.LATEST;
+            };
+            componentConfiguration.getTracker().setAvailabilityMode(availabilityTrackerMode);
             for (Availability availability : availabilities) {
                 String availabilityTemplate = availability.getValueTemplate();
                 if (availabilityTemplate != null) {

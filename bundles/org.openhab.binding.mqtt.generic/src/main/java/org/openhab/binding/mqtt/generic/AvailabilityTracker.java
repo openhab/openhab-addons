@@ -26,7 +26,7 @@ public interface AvailabilityTracker {
     /**
      * controls the conditions needed to set the entity to available
      */
-    public enum AvailabilityMode {
+    enum AvailabilityMode {
         /**
          * payload_available must be received on all configured availability topics before the entity is marked as
          * online

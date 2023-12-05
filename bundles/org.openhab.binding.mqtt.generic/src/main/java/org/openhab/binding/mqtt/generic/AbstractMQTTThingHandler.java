@@ -262,7 +262,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void updateChannelState(ChannelUID channelUID, State value) {
         if (messageReceived.compareAndSet(false, true)) {
-            calculateThingStatus(true);
+            calculateAndUpdateThingStatus(true);
         }
         super.updateState(channelUID, value);
     }
@@ -270,7 +270,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void triggerChannel(ChannelUID channelUID, String event) {
         if (messageReceived.compareAndSet(false, true)) {
-            calculateThingStatus(true);
+            calculateAndUpdateThingStatus(true);
         }
         super.triggerChannel(channelUID, event);
     }
@@ -317,7 +317,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
                         @Override
                         public void updateChannelState(ChannelUID channelUID, State value) {
                             boolean online = value.equals(OnOffType.ON);
-                            calculateThingStatus(online);
+                            calculateAndUpdateThingStatus(online);
                         }
 
                         @Override
@@ -359,32 +359,23 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void resetMessageReceived() {
         if (messageReceived.compareAndSet(true, false)) {
-            calculateThingStatus(false);
+            calculateAndUpdateThingStatus(false);
         }
     }
 
-    protected void calculateThingStatus(boolean lastValue) {
+    protected void calculateAndUpdateThingStatus(boolean lastValue) {
         final Optional<Boolean> availabilityTopicsSeen;
 
         if (availabilityStates.isEmpty()) {
             availabilityTopicsSeen = Optional.empty();
         } else {
-            switch (availabilityMode) {
-                case ALL:
-                    availabilityTopicsSeen = Optional.of(availabilityStates.values().stream().allMatch(
-                            c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
-                    break;
-                case ANY:
-                    availabilityTopicsSeen = Optional.of(availabilityStates.values().stream().anyMatch(
-                            c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
-                    break;
-                case LATEST:
-                    availabilityTopicsSeen = Optional.of(lastValue);
-                    break;
-                default:
-                    availabilityTopicsSeen = Optional.empty();
-                    break;
-            }
+            availabilityTopicsSeen = switch (availabilityMode) {
+                case ALL -> Optional.of(availabilityStates.values().stream().allMatch(
+                        c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
+                case ANY -> Optional.of(availabilityStates.values().stream().anyMatch(
+                        c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
+                case LATEST -> Optional.of(lastValue);
+            };
         }
         updateThingStatus(messageReceived.get(), availabilityTopicsSeen);
     }
