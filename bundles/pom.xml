@@ -78,6 +78,7 @@
     <module>org.openhab.binding.bluetooth.enoceanble</module>
     <module>org.openhab.binding.bluetooth.generic</module>
     <module>org.openhab.binding.bluetooth.govee</module>
+    <module>org.openhab.binding.bluetooth.grundfosalpha</module>
     <module>org.openhab.binding.bluetooth.radoneye</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
@@ -442,7 +443,6 @@
     <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.marytts</module>
     <module>org.openhab.voice.mimictts</module>
-    <module>org.openhab.voice.actiontemplatehli</module>
     <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.pollytts</module>
     <module>org.openhab.voice.porcupineks</module>
