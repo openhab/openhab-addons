@@ -304,12 +304,12 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             logger.info("siemensHvac:Initialization():BeginReadMenu");
             root = new SiemensHvacMetadataMenu();
 
-            changeLanguage(1);
+            changeLanguage(user, 1);
             readMetaData(root, -1, false);
             lcHvacConnector.waitNoNewRequest();
             lcHvacConnector.waitAllPendingRequest();
 
-            changeLanguage(user.getLanguageId());
+            changeLanguage(user, user.getLanguageId());
             readMetaData(root, -1, true);
             lcHvacConnector.waitNoNewRequest();
             lcHvacConnector.waitAllPendingRequest();
@@ -695,15 +695,21 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                 Pattern pattern4 = Pattern.compile("userid=(.+?)");
                                 Matcher matcher4 = pattern4.matcher(userEdit);
 
-                                if (matcher4.find()) {
-                                    userId = matcher4.group(1);
-                                }
-
                                 SiemensHvacMetadataUser user = new SiemensHvacMetadataUser();
                                 user.setName(userName);
-                                user.setId(Integer.parseInt(userId));
 
-                                request = "main.app?section=settings&subsection=user&action=modify&userid=" + userId;
+                                if (matcher4.find()) {
+                                    userId = matcher4.group(1);
+                                    user.setId(Integer.parseInt(userId));
+                                } else {
+                                    userId = null;
+                                    user.setId(-1);
+                                }
+
+                                request = "main.app?section=settings&subsection=user&action=modify";
+                                if (userId != null) {
+                                    request = request + "&userid=" + userId;
+                                }
                                 response = lcHvacConnector.doBasicRequest(request);
 
                                 Pattern pattern5 = Pattern.compile(
@@ -744,11 +750,14 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    public void changeLanguage(int lang) {
+    public void changeLanguage(SiemensHvacMetadataUser user, int lang) {
         try {
             SiemensHvacConnector lcHvacConnector = hvacConnector;
-            String request = "main.app?section=settings&subsection=user&action=modify&userid=1&language=" + lang
-                    + "&submit=OK";
+            String request = "main.app?section=settings&subsection=user&action=modify";
+            if (user.getId() != -1) {
+                request = request + "&userid=" + user.getId();
+            }
+            request = request + "&language=" + lang + "&submit=OK";
             if (lcHvacConnector != null) {
                 lcHvacConnector.doBasicRequest(request);
                 lcHvacConnector.resetSessionId(false);
