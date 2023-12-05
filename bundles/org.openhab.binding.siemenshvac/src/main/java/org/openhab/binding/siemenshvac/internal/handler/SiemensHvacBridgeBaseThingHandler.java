@@ -59,8 +59,26 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
     @Override
     public void initialize() {
-        config = getConfigAs(SiemensHvacBridgeConfig.class);
+        SiemensHvacBridgeConfig lcConfig = getConfigAs(SiemensHvacBridgeConfig.class);
+        String baseUrl = null;
 
+        if (lcConfig.baseUrl != null) {
+            baseUrl = lcConfig.baseUrl;
+        }
+
+        if (baseUrl == null) {
+            throw new RuntimeException("baseUrl is mandatory on configuration !");
+        }
+
+        if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+            baseUrl = "http://" + baseUrl;
+        }
+
+        if (!baseUrl.endsWith("/")) {
+            baseUrl = baseUrl + "/";
+        }
+
+        config = lcConfig;
         metaDataRegistry.readMeta();
     }
 
