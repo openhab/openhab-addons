@@ -221,7 +221,6 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
             enableACResponse = new net.heberling.ismart.asn1.v2_1.MessageCoder<>(OTA_RVCStatus25857.class)
                     .decodeResponse(enableACResponseMessage);
-
         }
 
         logger.debug("Got A/C message: {}", new GsonBuilder().setPrettyPrinting().create().toJson(enableACResponse));

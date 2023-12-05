@@ -27,7 +27,6 @@ Once an account has been configured it can be scanned for vehicles.
 |----------|---------|-----------------------------|---------|----------|----------|
 | username | text    | iSMART username             | N/A     | yes      | no       |
 | password | text    | iSMART password             | N/A     | yes      | no       |
-| pin      | text    | Security code setting (PIN) | 123456  | yes      | no       |
 
 ### `vehicle` An iSMART MG Car
 

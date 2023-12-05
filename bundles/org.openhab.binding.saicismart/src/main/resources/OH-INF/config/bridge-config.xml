@@ -14,11 +14,5 @@
 			<description>iSMART Password</description>
 			<context>password</context>
 		</parameter>
-		<parameter name="pin" type="text" required="true">
-			<label>Security Code Setting (PIN)</label>
-			<description>Security Code Setting (PIN)</description>
-			<default>123456</default>
-			<context>password</context>
-		</parameter>
 	</config-description>
 </config-description:config-descriptions>
