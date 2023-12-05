@@ -15,9 +15,9 @@ package org.openhab.binding.hue.internal.api.dto.clip2.helper;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -60,7 +60,7 @@ import org.openhab.core.util.ColorUtil.Gamut;
 public class Setters {
 
     private static final Set<ResourceType> LIGHT_TYPES = Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT);
-    
+
     /*
      * Comparator to sort Resources so that scene activation resources come last.
      */
@@ -409,6 +409,7 @@ public class Setters {
                 iterator.remove();
             }
         }
+        return resources;
     }
 
     /**
