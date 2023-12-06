@@ -420,9 +420,6 @@ public class Setters {
      * @return the sorted list with scene activation event resources moved to the end.
      */
     public static List<Resource> sortSceneResources(List<Resource> resources) {
-        if (resources.stream().filter(r -> r.getSceneActive().isPresent()).count() < 2) {
-            return resources;
-        }
         resources.sort(SCENE_ACTIVE_COMPARATOR);
         return resources;
     }

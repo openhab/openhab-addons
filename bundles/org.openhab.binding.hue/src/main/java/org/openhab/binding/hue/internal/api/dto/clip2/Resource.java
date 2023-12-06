@@ -124,7 +124,7 @@ public class Resource {
     /**
      * Check if <code>light</code> or <code>grouped_light</code> resource contains any
      * relevant fields to process according to its type.
-     * 
+     *
      * As an example, {@link #colorTemperature} is relevant for a <code>light</code>
      * resource because it's needed for updating the color-temperature channels.
      *
@@ -916,6 +916,11 @@ public class Resource {
 
     public Resource setType(ResourceType resourceType) {
         this.type = resourceType.name().toLowerCase();
+        return this;
+    }
+
+    public Resource setStatus(@Nullable JsonElement status) {
+        this.status = status;
         return this;
     }
 

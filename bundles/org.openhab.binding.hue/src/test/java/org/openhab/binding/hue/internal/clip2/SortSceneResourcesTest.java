@@ -14,21 +14,17 @@ package org.openhab.binding.hue.internal.clip2;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
-import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
-import org.openhab.binding.hue.internal.api.serialization.InstantDeserializer;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 /**
  * JUnit test for sorting the sequence of scene events in a list.
@@ -38,40 +34,39 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 class SortSceneResourcesTest {
 
-    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
-            .create();
-
-    private static final String ACTIVE_SCENE_RESOURCE_ID = "ACTIVE00-0000-0000-0000-000000000001";
-
-    private String loadJson(String fileName) {
-        try (FileReader file = new FileReader(String.format("src/test/resources/%s.json", fileName));
-                BufferedReader reader = new BufferedReader(file)) {
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
-            return builder.toString();
-        } catch (IOException e) {
-            fail(e.getMessage());
-        }
-        return "";
-    }
+    private static final JsonElement ACTIVE = JsonParser.parseString("{\"active\":\"static\"}");
+    private static final JsonElement INACTIVE = JsonParser.parseString("{\"active\":\"inactive\"}");
 
     @Test
     void testSceneSorting() {
-        Resources resources = GSON.fromJson(loadJson("scene_event"), Resources.class);
-        assertNotNull(resources);
-        List<Resource> list = resources.getResources();
-        assertNotNull(list);
+        List<Resource> list = new ArrayList<>();
+        list.add(new Resource(ResourceType.LIGHT).setId("0"));
+        list.add(new Resource(ResourceType.SCENE).setId("1").setStatus(ACTIVE));
+        list.add(new Resource(ResourceType.LIGHT).setId("2"));
+        list.add(new Resource(ResourceType.SCENE).setId("3").setStatus(INACTIVE));
+        list.add(new Resource(ResourceType.LIGHT).setId("4"));
         list.forEach(r -> r.markAsSparse());
 
         assertEquals(5, list.size());
-        assertEquals(ACTIVE_SCENE_RESOURCE_ID, list.get(1).getId());
+        assertEquals("0", list.get(0).getId());
+        assertEquals("1", list.get(1).getId());
+        assertEquals("2", list.get(2).getId());
+        assertEquals("3", list.get(3).getId());
+        assertEquals("4", list.get(4).getId());
+
+        assertTrue(list.get(1).getSceneActive().get());
+        assertFalse(list.get(3).getSceneActive().get());
 
         Setters.sortSceneResources(list);
 
         assertEquals(5, list.size());
-        assertEquals(ACTIVE_SCENE_RESOURCE_ID, list.get(4).getId());
+        assertEquals("0", list.get(0).getId());
+        assertEquals("2", list.get(1).getId());
+        assertEquals("3", list.get(2).getId());
+        assertEquals("4", list.get(3).getId());
+        assertEquals("1", list.get(4).getId());
+
+        assertFalse(list.get(2).getSceneActive().get());
+        assertTrue(list.get(4).getSceneActive().get());
     }
 }
