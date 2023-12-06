@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
@@ -195,6 +196,18 @@ public class OSHISysteminfo implements SysteminfoInterface {
     public DecimalType getCpuPhysicalCores() {
         int physicalProcessorCount = cpu.getPhysicalProcessorCount();
         return new DecimalType(physicalProcessorCount);
+    }
+
+    @Override
+    public @Nullable QuantityType<Frequency> getCpuMaxFreq() {
+        long maxFreq = cpu.getMaxFreq();
+        return maxFreq >= 0 ? new QuantityType<>(maxFreq, Units.HERTZ) : null;
+    }
+
+    @Override
+    public @Nullable QuantityType<Frequency> getCpuFreq(int logicalProcessorIndex) {
+        long freq = cpu.getCurrentFreq()[logicalProcessorIndex];
+        return freq >= 0 ? new QuantityType<>(freq, Units.HERTZ) : null;
     }
 
     @Override
@@ -712,5 +725,10 @@ public class OSHISysteminfo implements SysteminfoInterface {
     @Override
     public int getFanCount() {
         return sensors.getFanSpeeds().length;
+    }
+
+    @Override
+    public int getLogicalProcessorCount() {
+        return cpu.getLogicalProcessorCount();
     }
 }

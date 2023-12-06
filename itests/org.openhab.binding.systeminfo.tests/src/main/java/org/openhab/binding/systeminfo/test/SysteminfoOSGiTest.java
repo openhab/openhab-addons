@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
@@ -397,6 +398,30 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
         initializeThingWithChannel(channnelID, acceptedItemType);
         assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY, UnDefType.UNDEF);
+    }
+
+    @Test
+    public void assertChannelCpuMaxFreq() {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_MAXFREQ;
+        String acceptedItemType = "Number:Frequency";
+
+        QuantityType<Frequency> mockedCpuMaxFreqValue = new QuantityType<>(2500, Units.HERTZ);
+        when(mockedSystemInfo.getCpuMaxFreq()).thenReturn(mockedCpuMaxFreqValue);
+
+        initializeThingWithChannel(channnelID, acceptedItemType);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY, mockedCpuMaxFreqValue);
+    }
+
+    @Test
+    public void assertChannelCpuFreq() {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_FREQ;
+        String acceptedItemType = "Number:Frequency";
+
+        QuantityType<Frequency> mockedCpuFreqValue = new QuantityType<>(2500, Units.HERTZ);
+        when(mockedSystemInfo.getCpuFreq(0)).thenReturn(mockedCpuFreqValue);
+
+        initializeThingWithChannel(channnelID, acceptedItemType);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY, mockedCpuFreqValue);
     }
 
     @Test
