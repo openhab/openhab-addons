@@ -38,7 +38,8 @@ public class OnState {
         throw new DTOPresentButEmptyException("'on' DTO is present but empty");
     }
 
-    public void setOn(boolean on) {
+    public OnState setOn(boolean on) {
         this.on = on;
+        return this;
     }
 }
