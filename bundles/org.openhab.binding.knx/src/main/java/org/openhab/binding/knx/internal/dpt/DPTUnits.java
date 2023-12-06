@@ -63,8 +63,8 @@ public class DPTUnits {
      *
      * @return stream of all unit strings
      */
-    static Stream<String> getAllUnitStrings() {
-        return DPT_UNIT_MAP.values().stream();
+    static Stream<Map.Entry<String, String>> getAllUnitStrings() {
+        return DPT_UNIT_MAP.entrySet().stream();
     }
 
     static {
