@@ -153,7 +153,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                 }
             }
 
-            // add chanels only if they could be successfully processed
+            // add channels only if they could be successfully processed
             knxChannels.put(channel.getUID(), knxChannel);
             groupAddresses.addAll(knxChannel.getAllGroupAddresses());
         }
