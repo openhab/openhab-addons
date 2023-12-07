@@ -60,9 +60,9 @@ public class TACmiHandler extends BaseThingHandler {
 
     private static final int PODSIZE_DIGITAL = 16;
 
-	private static final int PODSIZE_ANALOG = 4;
+    private static final int PODSIZE_ANALOG = 4;
 
-	private final Logger logger = LoggerFactory.getLogger(TACmiHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TACmiHandler.class);
 
     private final Map<PodIdentifier, PodData> podDatas = new HashMap<>();
     private final Map<ChannelUID, TACmiChannelConfiguration> channelConfigByUID = new HashMap<>();
@@ -201,10 +201,10 @@ public class TACmiHandler extends BaseThingHandler {
         assert output >= 1 && output <= 32; // range 1-32
         // pod ID's: 0 & 9 for digital states, 1-8 for analog values
         if (messageType.equals(MessageType.ANALOG)) {
-        	return (byte) ((output-1) / PODSIZE_ANALOG +1);
-        }else {
-        	int outputIdx = (output-1) / PODSIZE_DIGITAL;
-        	return (byte) (outputIdx == 0 ? 0 : 9);
+            return (byte) ((output - 1) / PODSIZE_ANALOG + 1);
+        } else {
+            int outputIdx = (output - 1) / PODSIZE_DIGITAL;
+            return (byte) (outputIdx == 0 ? 0 : 9);
         }
     }
 
