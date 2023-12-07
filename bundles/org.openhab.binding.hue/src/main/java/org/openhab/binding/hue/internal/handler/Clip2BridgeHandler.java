@@ -537,7 +537,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         }
         getThing().getThings().forEach(thing -> {
             if (thing.getHandler() instanceof Clip2ThingHandler clip2ThingHandler) {
-                resources.forEach(resource -> clip2ThingHandler.onResource(resource));
+                clip2ThingHandler.onResources(resources);
             }
         });
     }
