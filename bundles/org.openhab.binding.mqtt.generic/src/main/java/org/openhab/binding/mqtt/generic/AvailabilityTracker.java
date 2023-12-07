@@ -35,15 +35,13 @@ public interface AvailabilityTracker {
 
         /**
          * payload_available must be received on at least one configured availability topic before the entity is marked
-         * as
-         * online
+         * as online
          */
         ANY,
 
         /**
          * the last payload_available or payload_not_available received on any configured availability topic controls
-         * the
-         * availability
+         * the availability
          */
         LATEST
     }
