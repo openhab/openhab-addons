@@ -314,6 +314,11 @@ In order to activate one of them you have to use two different channels:
 
 Example: if you want to activate SCENARIO number 9 on the thermo Central Unit you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
 
+### Energy Channels
+
+`energyToday`  and `energyThisMonth` channel updates depend on F520/F521  measurements; As a consequence 
+if the meter registers no variation since the last read the value is not updated
+
 ## Full Example
 
 ### openwebnet.things:
@@ -371,10 +376,10 @@ Rollershutter       iLR_shutter                 "Shutter [%.0f %%]"           (g
 
 Number:Power        iCENTRAL_Ta                 "Power [%.0f %unit%]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
 Number:Power        iCENTRAL_Tb                 "Power [%.0f %unit%]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
-Number:Energy       iCENTRAL_Ta_day             "Energy Day [%.1f]"                             { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:energyToday"}
-Number:Energy       iCENTRAL_Tb_day             "Energy Day [%.1f]"                             { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:energyToday"}
-Number:Energy       iCENTRAL_Ta_month           "Energy Month [%.1f]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:energyThisMonth"}
-Number:Energy       iCENTRAL_Tb_month           "Energy Month [%.1f]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:energyThisMonth"}
+Number:Energy       iCENTRAL_Ta_day             "Energy Day [%.1f %unit%]"                      { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:energyToday"}
+Number:Energy       iCENTRAL_Tb_day             "Energy Day [%.1f %unit%]"                      { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:energyToday"}
+Number:Energy       iCENTRAL_Ta_month           "Energy Month [%.1f %unit%]"                    { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:energyThisMonth"}
+Number:Energy       iCENTRAL_Tb_month           "Energy Month [%.1f %unit%]"                    { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:energyThisMonth"}
 
 // 99 zones thermo central unit
 Group               gCentralUnit                "Thermo Central Unit"
