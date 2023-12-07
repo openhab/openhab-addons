@@ -4,6 +4,6 @@
 
 	<feature name="openhab-binding-salusbinding" description="SalusBinding Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.salusbinding/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.salus/${project.version}</bundle>
 	</feature>
 </features>

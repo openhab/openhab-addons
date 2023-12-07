@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="salusbinding"
+<thing:thing-descriptions bindingId="Salus"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
@@ -8,12 +8,12 @@
 	<thing-type id="sample">
 		<!-- Comment this in for Things which need a Bridge to function.
 			<supported-bridge-type-refs>
-			<bridge-type-ref id="SalusBindingBridge" />
+			<bridge-type-ref id="SalusBridge" />
 			</supported-bridge-type-refs>
 		-->
 
-		<label>SalusBinding Binding Thing</label>
-		<description>Sample thing for SalusBinding Binding</description>
+		<label>Salus Binding Thing</label>
+		<description>Sample thing for Salus Binding</description>
 
 		<channels>
 			<channel id="channel1" typeId="sample-channel"/>
@@ -43,6 +43,6 @@
 	<channel-type id="sample-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for SalusBinding Binding</description>
+		<description>Sample channel for Salus Binding</description>
 	</channel-type>
 </thing:thing-descriptions>
