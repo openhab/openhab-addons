@@ -8,4 +8,15 @@
 	<description>The Hunter Douglas PowerView binding provides access to the Hunter Douglas line of PowerView shades.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_powerview-g3._tcp.local.</mdns-service-type>
+		</discovery-method>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_powerview._tcp.local.</mdns-service-type>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

@@ -12,4 +12,11 @@
 
 	<config-description-ref uri="io:neeo"/>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_neeo._tcp.local.</mdns-service-type>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

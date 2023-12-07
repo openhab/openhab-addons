@@ -8,4 +8,16 @@
 	<description>@text/binding_desc</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_tcp.local.</mdns-service-type>
+			<match-properties>
+				<match-property>
+					<name>application</name>
+					<regex>.*dssweb.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 </addon:addon>

@@ -8,4 +8,11 @@
 	<description>This is the binding for the Music Player Daemon.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_mpd._tcp.local.</mdns-service-type>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

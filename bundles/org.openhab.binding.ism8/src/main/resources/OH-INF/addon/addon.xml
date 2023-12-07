@@ -8,4 +8,11 @@
 	<description>This is the binding for the ISM8 card used for Wolf heating systems or other Wolf eBus devices.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_ism7._tcp.local.</mdns-service-type>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>
