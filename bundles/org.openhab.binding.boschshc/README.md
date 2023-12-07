@@ -29,6 +29,7 @@ Binding for the Bosch Smart Home.
 ## Supported Things
 
 ### Smart Home Controller
+
 The Smart Home Controller is the central hub that allows you to monitor and control your smart home devices from one place.
 
 **Bridge Type ID**: ``shc``
@@ -103,6 +104,7 @@ Detects every movement through an intelligent combination of passive infra-red t
 | Channel Type ID | Item Type | Writable | Description                    |
 | --------------- | --------- | :------: | ------------------------------ |
 | latest-motion   | DateTime  | &#9744;  | The date of the latest motion. |
+| illuminance     | Number    | &#9744;  | The illuminance level measured by the sensor (0 to 100). |
 | battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 

@@ -114,6 +114,7 @@
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
+			<channel id="illuminance" typeId="illuminance"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
@@ -488,6 +489,13 @@
 		<label>Latest motion</label>
 		<description>Timestamp of the latest motion.</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="illuminance">
+		<item-type>Number</item-type>
+		<label>Illuminance</label>
+		<description>The illuminance level measured by the sensor (0 to 100).</description>
+		<state min="0" max="100" step="1" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="level">
