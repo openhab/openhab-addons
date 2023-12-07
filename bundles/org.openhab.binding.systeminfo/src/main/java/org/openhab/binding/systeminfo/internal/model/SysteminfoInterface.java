@@ -535,11 +535,4 @@ public interface SysteminfoInterface {
      * @return fan count
      */
     int getFanCount();
-
-    /**
-     * Returns the number of logical processors.
-     *
-     * @return logical processor count
-     */
-    int getLogicalProcessorCount();
 }

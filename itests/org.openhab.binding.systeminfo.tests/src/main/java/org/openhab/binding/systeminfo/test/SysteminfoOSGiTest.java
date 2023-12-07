@@ -13,7 +13,6 @@
 package org.openhab.binding.systeminfo.test;
 
 import static java.lang.Thread.sleep;
-import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -94,11 +93,13 @@ import org.openhab.core.types.UnDefType;
  * @author Lyubomir Papazov - Created a mock systeminfo object. This way, access to the user's OS will not be required,
  *         but mock data will be used instead, avoiding potential errors from the OS queries.
  * @author Wouter Born - Migrate Groovy to Java tests
+ * @author Mark Herwege - Processor frequency channels
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class SysteminfoOSGiTest extends JavaOSGiTest {
+
     private static final String DEFAULT_TEST_THING_NAME = "work";
     private static final String DEFAULT_TEST_ITEM_NAME = "test";
     private static final String DEFAULT_CHANNEL_TEST_PRIORITY = "High";
@@ -127,16 +128,17 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     private @NonNullByDefault({}) ManagedThingProvider managedThingProvider;
     private @NonNullByDefault({}) ManagedItemChannelLinkProvider itemChannelLinkProvider;
     private @NonNullByDefault({}) UnitProvider unitProvider;
+    private @NonNullByDefault({}) VolatileStorageService volatileStorageService;
 
     @BeforeEach
     public void setUp() {
-        VolatileStorageService volatileStorageService = new VolatileStorageService();
+        volatileStorageService = new VolatileStorageService();
         registerService(volatileStorageService);
 
         // Preparing the mock with OS properties, that are used in the initialize method of SysteminfoHandler
         // Make this lenient because the assertInvalidThingConfigurationValuesAreHandled test does not require them
-        lenient().when(mockedSystemInfo.getCpuLogicalCores()).thenReturn(new DecimalType(2));
-        lenient().when(mockedSystemInfo.getCpuPhysicalCores()).thenReturn(new DecimalType(2));
+        lenient().when(mockedSystemInfo.getCpuLogicalCores()).thenReturn(new DecimalType(1));
+        lenient().when(mockedSystemInfo.getCpuPhysicalCores()).thenReturn(new DecimalType(1));
         lenient().when(mockedSystemInfo.getOsFamily()).thenReturn(new StringType("Mock OS"));
         lenient().when(mockedSystemInfo.getOsManufacturer()).thenReturn(new StringType("Mock OS Manufacturer"));
         lenient().when(mockedSystemInfo.getOsVersion()).thenReturn(new StringType("Mock Os Version"));
@@ -164,11 +166,6 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             }
             systeminfoHandlerFactory.bindSystemInfo(mockedSystemInfo);
         }
-
-        waitForAssert(() -> {
-            systeminfoHandlerFactory = getService(ThingHandlerFactory.class, SysteminfoHandlerFactory.class);
-            assertThat(systeminfoHandlerFactory, is(notNullValue()));
-        });
 
         waitForAssert(() -> {
             thingRegistry = getService(ThingRegistry.class);
@@ -200,13 +197,14 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     public void tearDown() {
         Thing thing = systeminfoThing;
         if (thing != null) {
-            // Remove the systeminfo thing. The handler will be also disposed automatically
+            // Remove the systeminfo thing. The handler will also be disposed automatically
             Thing removedThing = thingRegistry.forceRemove(thing.getUID());
             assertThat("The systeminfo thing cannot be deleted", removedThing, is(notNullValue()));
             waitForAssert(() -> {
                 ThingHandler systemInfoHandler = thing.getHandler();
                 assertThat(systemInfoHandler, is(nullValue()));
             });
+            managedThingProvider.remove(thing.getUID());
         }
 
         if (testItem != null) {
@@ -214,6 +212,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         }
 
         unregisterService(mockedSystemInfo);
+        unregisterService(volatileStorageService);
     }
 
     private void initializeThingWithChannelAndPID(String channelID, String acceptedItemType, int pid) {
@@ -1022,8 +1021,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         }
 
         waitForAssert(() -> {
-            List<DiscoveryResult> results = inbox.stream().filter(InboxPredicates.forThingUID(computerUID))
-                    .collect(toList());
+            List<DiscoveryResult> results = inbox.stream().filter(InboxPredicates.forThingUID(computerUID)).toList();
             assertFalse(results.isEmpty(), "No Thing with UID " + computerUID.getAsString() + " in inbox");
         });
 

@@ -5,7 +5,7 @@
 
 	<thing-type uid="systeminfo:computer">
 		<instruction-set targetVersion="1">
-			<add-channel id="maxFreq" groupIds="cpu">
+			<add-channel id="maxfreq" groupIds="cpu">
 				<type>systeminfo:maxfreq</type>
 			</add-channel>
 			<add-channel id="freq" groupIds="cpu">

@@ -63,6 +63,7 @@ import oshi.util.EdidUtil;
  * @author Wouter Born - Update to OSHI 4.0.0 and add null annotations
  * @author Mark Herwege - Add dynamic creation of extra channels
  * @author Mark Herwege - Use units of measure
+ * @author Mark Herwege - Processor frequency channels
  *
  * @see <a href="https://github.com/oshi/oshi">OSHI GitHub repository</a>
  */
@@ -725,10 +726,5 @@ public class OSHISysteminfo implements SysteminfoInterface {
     @Override
     public int getFanCount() {
         return sensors.getFanSpeeds().length;
-    }
-
-    @Override
-    public int getLogicalProcessorCount() {
-        return cpu.getLogicalProcessorCount();
     }
 }

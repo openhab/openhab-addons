@@ -259,7 +259,7 @@ public class SysteminfoHandler extends BaseThingHandler {
 
         List<Channel> newChannels = new ArrayList<>();
         newChannels.addAll(createChannels(thingUID, CHANNEL_SENSORS_FAN_SPEED, systeminfo.getFanCount()));
-        newChannels.addAll(createChannels(thingUID, CHANNEL_CPU_FREQ, systeminfo.getLogicalProcessorCount()));
+        newChannels.addAll(createChannels(thingUID, CHANNEL_CPU_FREQ, systeminfo.getCpuLogicalCores().intValue()));
         if (!newChannels.isEmpty()) {
             logger.debug("Creating additional channels");
             newChannels.addAll(0, thing.getChannels());
