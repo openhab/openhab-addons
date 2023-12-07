@@ -90,7 +90,7 @@ If you don't want to send measures to Solcast, leave this configuration item emp
 
 `powerUnit` is set to `auto-detect`. 
 In case the `powerItem` is delivering a valid `QuantityType<Power>` state, this setting is fine.
-If the item delivers a raw number without unit please select `powerUnit` accordingly if item state, is Watt or Kilowatt unit. 
+If the item delivers a raw number without unit, please select `powerUnit` accordingly if item state, is Watt or Kilowatt unit. 
 
 ## Solcast Channels
 
