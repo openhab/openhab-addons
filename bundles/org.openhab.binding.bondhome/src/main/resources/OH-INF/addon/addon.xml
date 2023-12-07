@@ -8,4 +8,11 @@
 	<description>This is the binding for the Bond Bridge for Ceiling Fans and other RF devices.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_bond._tcp.local.</mdns-service-type>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

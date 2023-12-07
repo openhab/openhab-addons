@@ -8,4 +8,17 @@
 	<description>This binding can integrate Minecraft servers.</description>
 	<connection>cloud</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_http._tcp.local.</mdns-service-type>
+			<match-properties>
+				<match-property>
+					<name>name</name>
+					<regex>wc-minecraft</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

@@ -7,4 +7,18 @@
 	<name>@text/bindingName</name>
 	<description>@text/bindingDescription</description>
 	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_http._tcp.local.</mdns-service-type>
+			<match-properties>
+				<match-property>
+					<name>name</name>
+					<regex>(?i)FP00112A.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

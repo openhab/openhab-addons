@@ -30,4 +30,16 @@
 			<default>255</default>
 		</parameter>
 	</config-description>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_androidtvremote2._tcp.local.</mdns-service-type>
+		</discovery-method>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_amzn-wplay._tcp.local.</mdns-service-type>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>
