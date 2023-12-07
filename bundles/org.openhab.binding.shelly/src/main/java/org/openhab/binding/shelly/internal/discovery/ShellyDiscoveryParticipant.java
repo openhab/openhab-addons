@@ -157,9 +157,6 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 devInfo = api.getDeviceInfo();
                 model = devInfo.type;
                 gen2 = !(devInfo.gen == 1); // gen 2+3
-                if (devInfo.auth == null) {
-                    int i = 1;
-                }
                 auth = getBool(devInfo.auth);
                 if (devInfo.name != null) {
                     deviceName = devInfo.name;

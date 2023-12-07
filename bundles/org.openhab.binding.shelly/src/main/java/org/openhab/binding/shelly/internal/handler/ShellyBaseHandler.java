@@ -154,9 +154,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         Map<String, String> properties = thing.getProperties();
         String gen = getString(properties.get(PROPERTY_DEV_GEN));
         String thingType = getThingType();
-        if ("3".equals(gen)) {
-            int i = 1;
-        }
         gen2 = "2".equals(gen) || "3".equals(gen) || ShellyDeviceProfile.isGeneration2(thingType);
         blu = ShellyDeviceProfile.isBluSeries(thingType);
         this.api = !blu ? !gen2 ? new Shelly1HttpApi(thingName, this) : new Shelly2ApiRpc(thingName, thingTable, this)
