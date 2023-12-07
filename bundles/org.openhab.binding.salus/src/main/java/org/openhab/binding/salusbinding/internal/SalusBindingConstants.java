@@ -13,19 +13,22 @@
 package org.openhab.binding.salusbinding.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SalusBindingConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link SalusBindingConstants} class defines common constants, which are
+ * used across the whole binding.
  *
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class SalusBindingConfiguration {
+public class SalusBindingConstants {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    private static final String BINDING_ID = "salusbinding";
+
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+
+    // List of all Channel ids
+    public static final String CHANNEL_1 = "channel1";
 }

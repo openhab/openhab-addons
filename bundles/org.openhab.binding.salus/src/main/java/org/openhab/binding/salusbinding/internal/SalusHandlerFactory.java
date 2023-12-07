@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.salusbinding.internal;
 
-import static org.openhab.binding.salusbinding.internal.SalusBindingBindingConstants.*;
+import static org.openhab.binding.salusbinding.internal.SalusBindingConstants.*;
 
 import java.util.Set;
 
@@ -26,14 +26,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link SalusBindingHandlerFactory} is responsible for creating things and thing
+ * The {@link SalusHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.salusbinding", service = ThingHandlerFactory.class)
-public class SalusBindingHandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = "binding.salus", service = ThingHandlerFactory.class)
+public class SalusHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
 
@@ -47,7 +47,7 @@ public class SalusBindingHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new SalusBindingHandler(thing);
+            return new SalusHandler(thing);
         }
 
         return null;
