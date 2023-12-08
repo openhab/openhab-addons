@@ -295,8 +295,9 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         logger.debug("//// handleMultipleMessage {}", msg);
         WhereLightAutom w = (WhereLightAutom) msg.getWhere();
         List<OpenWebNetThingHandler> l = null;
-        if (w.isGeneral()) {
-            l = this.bridgeHandler.getAllLights();
+        OpenWebNetBridgeHandler brH = bridgeHandler;
+        if (w.isGeneral() && brH != null) {
+            l = brH.getAllLights();
             if (l != null) {
                 for (OpenWebNetThingHandler hndlr : l) {
                     hndlr.handleMessage(msg);
@@ -467,18 +468,20 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         if (w != null) {
             int area = ((WhereLightAutom) w).getArea();
             OpenWebNetBridgeHandler brH = this.bridgeHandler;
-            if (areaOwnId != null) {
-                // remove light from listOn for Area
-                OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
-                        .getRegisteredDevice(areaOwnId);
-                if (areaHandler != null) {
-                    if (areaHandler.listOn.remove(ownId)) {
-                        logger.debug("//////////////////// Removed {} from listOn for {}", ownId, areaOwnId);
+            if (brH != null) {
+                if (areaOwnId != null) {
+                    // remove light from listOn for Area
+                    OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
+                            .getRegisteredDevice(areaOwnId);
+                    if (areaHandler != null) {
+                        if (areaHandler.listOn.remove(ownId)) {
+                            logger.debug("//////////////////// Removed {} from listOn for {}", ownId, areaOwnId);
+                        }
                     }
                 }
+                // remove light from lightsMap
+                brH.removeLight(area, this);
             }
-            // remove light from lightsMap
-            brH.removeLight(area, this);
         }
         super.dispose();
     }
