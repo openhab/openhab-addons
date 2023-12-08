@@ -28,7 +28,8 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Example: GEN (general) --> where="0", A=5 (area 5) --> where="5", GR=#25 (group 25) --> where="#25"</description>
+				<description>Example: General (A=GEN) --> where="0", Room 5 (A=AMB PL=5) --> where="5", Group 25 (A=GR PL=25) -->
+					where="#25"</description>
 			</parameter>
 		</config-description>
 
