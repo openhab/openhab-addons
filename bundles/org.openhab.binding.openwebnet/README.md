@@ -133,9 +133,9 @@ For any manually added device, you must configure:
 - the associated gateway Thing (`Parent Bridge` menu)
 - the `where` configuration parameter (`OpenWebNet Address`): this is the OpenWebNet address configured for the device in the BTicino/Legrand system. This address can be found either on the device itself (Physical configuration, using jumpers in case of BUS) or through the MyHOME_Suite software (Virtual configuration). The address can have several formats depending on the device/system:
   - example for MyHOME - BUS/SCS system:
-    - light device A=`2` (Area 2), PL=`4` (Light-point 4) --> `where="24"`
+    - light device A=`2` (room 2), PL=`4` (light-point 4) --> `where="24"`
     - light device A=`03`, PL=`11` on local bus `01` --> `where="0311#4#01"`
-    - light area A=`5` (Area 5) --> `where="5"`
+    - lights in room 5 (A=`AMB`, PL=`5`) --> `where="5"`
     - scenario control module address `53` --> `where="53"`
     - CEN scenario A=`05`, PL=`12` --> `where="0512"`
     - CEN+ scenario `5`: add `2` before --> `where="25"`
@@ -210,6 +210,21 @@ Name: Arm zones 1 3 4
 Event: command OPEN = *9*1*5##
 OPEN command to execute: *5*8#134##
 ```
+
+#### Configuring Light Groups (Room/Group/General)
+
+The `bus_light_group` Thing type represents a set of devices belonging to a room or group in the BUS system:
+
+ - `bus_light_group` with `where="5"` will be associated to all lights configured in room 5 (A=`5`)
+ - `bus_light_group` with `where="#4"` will be associated to all lights belonging to group 4 (G=`4`)
+ - `bus_light_group` with `where="0"` will be associated to all lights in the system (General).
+
+It's not mandatory to define `bus_light_group` Things: however adding them is useful to send commands to a set of lights or to track state of a room/all lights when one of the members changes state.
+It's also not mandatory to define `bus_light_group` Things to track state of a light when a room/group/general ON/OFF command is sent on the BUS (the light state will be updated in any case).
+
+**NOTE 1**
+For a `bus_light_group` Thing to be updated properly, at least one light Thing belonging to that room/group must also be configured.
+
 
 ## Channels
 
@@ -377,7 +392,7 @@ MyHOME BUS/SCS gateway and Things configuration:
 ```java
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde", port=20000, discoveryByActivation=false ] {
       bus_light_group               ALL_lights           "All lights"               [ where="0" ]
-      bus_light_group               LR_area              "Living Room Area"         [ where="5" ]
+      bus_light_group               LR_room              "Living Room"              [ where="5" ]
       bus_on_off_switch             LR_switch            "Living Room Light"        [ where="51" ]
       bus_dimmer                    LR_dimmer            "Living Room Dimmer"       [ where="0311#4#01" ]
       bus_automation                LR_shutter           "Living Room Shutter"      [ where="93", shutterRun="20050"]
@@ -421,7 +436,7 @@ In the following example some `Google Assistant` (`ga="..."`) and `HomeKit` (`ho
 
 ```java
 Switch              iALL_lights                 "All Lights"                                    { channel="openwebnet:bus_light_group:mybridge:ALL_lights:switch", ga="Light", homekit="Lighting" }
-Switch              iLR_area                    "Living Room Area"                              { channel="openwebnet:bus_light_group:mybridge:LR_area:switch", ga="Light", homekit="Lighting" }
+Switch              iLR_room                    "Living Room"                                   { channel="openwebnet:bus_light_group:mybridge:LR_room:switch", ga="Light", homekit="Lighting" }
 Switch              iLR_switch                  "Light"                       (gLivingRoom)     { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
 Dimmer              iLR_dimmer                  "Dimmer [%.0f %%]"            (gLivingRoom)     { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light", homekit="Lighting" }
 
@@ -492,7 +507,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     Frame label="Living Room"
     {
           Default item=iALL_lights          icon="light"
-          Default item=iLR_area             icon="light"
+          Default item=iLR_room             icon="light"
           Default item=iLR_switch           icon="light"
           Default item=iLR_dimmer           icon="light"
           Default item=iLR_shutter

@@ -113,8 +113,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 if (oneHandler == null) {
                     oneHandler = h;
                 }
-                logger.warn("/////////////////////// +++++++++++++++ Added handler {} to Area {}", oId, area);
-                logger.warn("/////////////////////// Map: {}", this.toString());
+                logger.debug("/////////////////////// +++++++++++++++ Added handler {} to Area {}", oId, area);
+                logger.debug("/////////////////////// Map: {}", this.toString());
             }
         }
 
@@ -128,9 +128,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     if (removed && oh != null && oh.equals(h)) {
                         oneHandler = getFirst();
                     }
-                    logger.warn("/////////////////////// ---------------- Removed handler {} from Area {}", h.ownId,
+                    logger.debug("/////////////////////// ---------------- Removed handler {} from Area {}", h.ownId,
                             area);
-                    logger.warn("/////////////////////// Map: {}", this.toString());
+                    logger.debug("/////////////////////// Map: {}", this.toString());
                 }
             }
         }
