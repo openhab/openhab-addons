@@ -490,7 +490,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
     }
 
     private void seekToPercentage(Command command)
-            throws IllegalArgumentException, SyncCallback.SyncCallbackError, ApiClientException {
+            throws NumberFormatException, SyncCallback.SyncCallbackError, ApiClientException {
         if (command.toFullString().equals(UnDefType.NULL.toFullString())) {
             return;
         }
@@ -505,7 +505,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
     }
 
     private void seekToSecond(Command command)
-            throws IllegalArgumentException, SyncCallback.SyncCallbackError, ApiClientException {
+            throws NumberFormatException, SyncCallback.SyncCallbackError, ApiClientException {
         if (command.toFullString().equals(UnDefType.NULL.toFullString())) {
             return;
         }
