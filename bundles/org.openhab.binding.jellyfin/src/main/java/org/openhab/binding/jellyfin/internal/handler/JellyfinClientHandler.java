@@ -129,6 +129,9 @@ public class JellyfinClientHandler extends BaseThingHandler {
                 case PLAYING_ITEM_SECOND_CHANNEL -> seekToSecond(command);
                 case PLAYING_ITEM_PERCENTAGE_CHANNEL -> seekToPercentage(command);
             }
+        } catch (NumberFormatException numberFormatException) {
+            logger.warn("NumberFormatException error while running channel {}: {}", channelUID.getId(),
+                    numberFormatException.getMessage());
         } catch (IllegalArgumentException illegalArgumentException) {
             logger.warn("IllegalArgumentException error while running channel {}: {}", channelUID.getId(),
                     illegalArgumentException.getMessage());
