@@ -1,4 +1,4 @@
-package org.openhab.binding.salusbinding.internal.rest;
+package org.openhab.binding.salus.internal.rest;
 
 public record ApiResponse<T> (T body, Error error) {
     public static <T> ApiResponse<T> ok(T body) {

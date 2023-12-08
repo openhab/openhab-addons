@@ -1,4 +1,4 @@
-package org.openhab.binding.salusbinding.internal.rest;
+package org.openhab.binding.salus.internal.rest;
 
 import java.io.IOException;
 import java.io.Serial;
