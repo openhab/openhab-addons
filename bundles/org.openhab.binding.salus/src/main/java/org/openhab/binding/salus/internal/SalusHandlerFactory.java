@@ -1,0 +1,93 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * <p>
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ * <p>
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ * <p>
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.salus.internal;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
+import org.openhab.binding.salus.internal.discovery.CloudDiscovery;
+import org.openhab.binding.salus.internal.handler.DeviceHandler;
+import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Hashtable;
+
+import static org.openhab.binding.salus.internal.SalusBindingConstants.*;
+
+/**
+ * The {@link SalusHandlerFactory} is responsible for creating things and thing
+ * handlers.
+ *
+ * @author Martin Grzeslowski - Initial contribution
+ */
+@NonNullByDefault
+@Component(configurationPid = "binding.salus", service = ThingHandlerFactory.class)
+public class SalusHandlerFactory extends BaseThingHandlerFactory {
+
+    private final Logger logger = LoggerFactory.getLogger(SalusHandlerFactory.class);
+    protected final @NonNullByDefault({}) HttpClientFactory httpClientFactory;
+
+    @Activate
+    public SalusHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClientFactory = httpClientFactory;
+    }
+
+    @Override
+    public boolean supportsThingType(@NonNullByDefault ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
+
+    @Override
+    protected @Nullable ThingHandler createHandler(@NonNullByDefault Thing thing) {
+        var thingTypeUID = thing.getThingTypeUID();
+
+        if (SALUS_DEVICE_TYPE.equals(thingTypeUID)) {
+            return newSalusDevice(thing);
+        }
+        if (SALUS_SERVER_TYPE.equals(thingTypeUID)) {
+            return newSalusCloudBridge(thing);
+        }
+
+        return null;
+    }
+
+    private ThingHandler newSalusDevice(Thing thing) {
+        logger.debug("New Salus Device {}", thing.getUID().getId());
+        return new DeviceHandler(thing);
+    }
+
+    private ThingHandler newSalusCloudBridge(Thing thing) {
+        logger.debug("Registering CloudBridgeHandler");
+        var handler = new CloudBridgeHandler((Bridge) thing, httpClientFactory);
+        var cloudDiscovery = new CloudDiscovery(handler, handler.getSalusApi());
+        registerThingDiscovery(cloudDiscovery);
+        return handler;
+    }
+
+    private synchronized void registerThingDiscovery(DiscoveryService discoveryService) {
+        logger.trace("Try to register Discovery service on BundleID: {} Service: {}",
+                bundleContext.getBundle().getBundleId(), DiscoveryService.class.getName());
+        bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
+    }
+}

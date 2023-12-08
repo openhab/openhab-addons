@@ -1,14 +1,14 @@
-package org.openhab.binding.salusbinding.internal.rest;
+package org.openhab.binding.salus.internal.rest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
 public record AuthToken(
-        @JsonProperty("access_token") String accessToken,
-        @JsonProperty("refresh_token") String refreshToken,
-        @JsonProperty("expires_in") Long expiresIn,
-        @JsonProperty("role") String role) {
+        @SerializedName("access_token") String accessToken,
+        @SerializedName("refresh_token") String refreshToken,
+        @SerializedName("expires_in") Long expiresIn,
+        @SerializedName("role") String role) {
     public AuthToken {
         Objects.requireNonNull(accessToken, "accessToken cannot be null!");
         Objects.requireNonNull(refreshToken, "refreshToken cannot be null!");
