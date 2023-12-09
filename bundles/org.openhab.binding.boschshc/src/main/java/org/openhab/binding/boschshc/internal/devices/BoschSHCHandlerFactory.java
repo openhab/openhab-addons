@@ -32,6 +32,7 @@ import org.openhab.binding.boschshc.internal.devices.smartbulb.SmartBulbHandler;
 import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.twinguard.TwinguardHandler;
+import org.openhab.binding.boschshc.internal.devices.userdefinedstate.UserStateHandler;
 import org.openhab.binding.boschshc.internal.devices.wallthermostat.WallThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContactHandler;
 import org.openhab.core.thing.Bridge;
@@ -82,7 +83,8 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_INTRUSION_DETECTION_SYSTEM, IntrusionDetectionHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMART_PLUG_COMPACT, PlugHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMART_BULB, SmartBulbHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR, SmokeDetectorHandler::new));
+            new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR, SmokeDetectorHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_USER_DEFINED_STATE, UserStateHandler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

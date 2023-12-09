@@ -243,6 +243,7 @@ class BridgeHandlerTest {
     void getDeviceState() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
+        when(httpClient.getServiceStateUrl(anyString(), anyString(), any())).thenCallRealMethod();
         when(httpClient.getServiceStateUrl(anyString(), anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
@@ -405,6 +406,7 @@ class BridgeHandlerTest {
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
         when(httpClient.getServiceStateUrl(anyString(), anyString())).thenCallRealMethod();
+        when(httpClient.getServiceStateUrl(anyString(), anyString(), any())).thenCallRealMethod();
 
         Request request = mock(Request.class);
         when(request.header(anyString(), anyString())).thenReturn(request);

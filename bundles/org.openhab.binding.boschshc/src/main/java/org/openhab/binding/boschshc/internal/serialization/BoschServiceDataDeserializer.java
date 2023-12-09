@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 import com.google.gson.JsonDeserializationContext;
@@ -57,6 +58,13 @@ public class BoschServiceDataDeserializer implements JsonDeserializer<BoschSHCSe
                 scenario.name = jsonObject.get("name").getAsString();
                 scenario.lastTimeTriggered = jsonObject.get("lastTimeTriggered").getAsString();
                 return scenario;
+            }
+            case "userDefinedState" -> {
+                var state = new UserDefinedState();
+                state.setId(jsonObject.get("id").getAsString());
+                state.setName(jsonObject.get("name").getAsString());
+                state.setState(jsonObject.get("state").getAsBoolean());
+                return state;
             }
             default -> {
                 return new BoschSHCServiceState(dataType.getAsString());

@@ -290,6 +290,21 @@
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
+	<thing-type id="user-defined-state">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>User-defined State</label>
+		<description>A User-defined state.</description>
+
+		<channels>
+			<channel id="user-state" typeId="user-state"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:user-defined-state"/>
+	</thing-type>
+
 	<!-- Channels -->
 
 	<channel-type id="system-availability">
@@ -551,6 +566,12 @@
 		<item-type>String</item-type>
 		<label>Trigger Scenario</label>
 		<description>Name of the scenario to trigger</description>
+	</channel-type>
+
+	<channel-type id="user-state">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<description>State of User-defined state</description>
 	</channel-type>
 
 </thing:thing-descriptions>
