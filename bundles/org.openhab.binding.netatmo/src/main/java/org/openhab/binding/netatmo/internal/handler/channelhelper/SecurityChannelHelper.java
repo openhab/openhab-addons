@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
@@ -51,7 +51,7 @@ public class SecurityChannelHelper extends ChannelHelper {
         super.setNewData(data);
         if (data instanceof HomeData.Security securityData) {
             knownIds = securityData.getKnownPersons().stream().map(HomeDataPerson::getId).toList();
-        } else if (data instanceof NAHomeStatus.Security securityStatus) {
+        } else if (data instanceof HomeStatus securityStatus) {
             List<HomeStatusPerson> present = securityStatus.getPersons().values().stream()
                     .filter(HomeStatusPerson::atHome).toList();
 
