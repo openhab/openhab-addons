@@ -108,7 +108,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
         this.vehiclesTarget = teslaTarget.path(API_VERSION).path(VEHICLES);
         this.vehicleTarget = vehiclesTarget.path(PATH_VEHICLE_ID);
-        this.dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST);
+        this.dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST).queryParam("endpoints",
+                "location_data;charge_state;climate_state;vehicle_state;gui_settings;vehicle_config");
         this.commandTarget = vehicleTarget.path(PATH_COMMAND);
         this.wakeUpTarget = vehicleTarget.path(PATH_WAKE_UP);
     }
