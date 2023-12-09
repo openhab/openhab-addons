@@ -9,6 +9,9 @@ public interface RestClient {
     Response<String> post(String url, Content content, Header... headers);
 
     record Content(String body, String type) {
+        public Content(String body) {
+            this(body, "application/json");
+        }
     }
 
     record Header(String name, List<String> values) {

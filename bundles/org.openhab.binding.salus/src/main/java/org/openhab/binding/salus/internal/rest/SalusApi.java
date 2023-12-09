@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
+import static java.util.Collections.singletonMap;
 import static java.util.Collections.unmodifiableSortedMap;
 import static java.util.Objects.requireNonNull;
 
@@ -417,5 +418,23 @@ public class SalusApi  {
             logger.warn("Cannot parse Error from string:\n{}", errorValue);
             return new Error(response.statusCode(), "<ERROR>");
         }
+    }
+
+    public ApiResponse<Object> setValueForProperty(String dsn, String propertyName, Object value) {
+        refreshAccessToken();
+        var finalUrl = url("/apiv1/dsns/" + dsn + "/properties/" + propertyName + "/datapoints.json");
+        var json = mapper.toJson(singletonMap("datapoint", singletonMap("value", value)));
+        var response = restClient.post(finalUrl, new RestClient.Content(json), authHeader());
+        var map = tryParseBody(response.body(), MAP_TYPE_REFERENCE, Map.of());
+        if(!map.containsKey("datapoint")) {
+            logger.warn("Did not get datapoint. dns={} propertyName={} value={}", dsn, propertyName, value);
+            return ApiResponse.ok(null);
+        }
+        var datapoint = (Map<?, ?>) map.get("datapoint");
+        if(!datapoint.containsKey("value")) {
+            logger.warn("Did not get value. dns={} propertyName={} value={}", dsn, propertyName, value);
+            return ApiResponse.ok(null);
+        }
+        return ApiResponse.ok(datapoint.get("value"));
     }
 }
