@@ -31,10 +31,11 @@ public class SalusBindingConstants {
     // List of all Thing Type UIDs
 
     public static final ThingTypeUID SALUS_DEVICE_TYPE = new ThingTypeUID(BINDING_ID, "salus-device");
+    public static final ThingTypeUID SALUS_IT600_DEVICE_TYPE = new ThingTypeUID(BINDING_ID, "salus-it600-device");
     public static final ThingTypeUID SALUS_SERVER_TYPE = new ThingTypeUID(BINDING_ID, "salus-cloud-bridge");
 
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SALUS_DEVICE_TYPE, SALUS_SERVER_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SALUS_DEVICE_TYPE, SALUS_IT600_DEVICE_TYPE, SALUS_SERVER_TYPE);
 
 
     public static class SalusCloud {
@@ -46,6 +47,12 @@ public class SalusBindingConstants {
     }
 
     public static class Channels {
+        public static class It600 {
+            public static final String TEMPERATURE = "temperature";
+            public static final String EXPECTED_TEMPERATURE = "expected-temperature";
+            public static final String WORK_TYPE = "work-type";
+        }
+
         public static final String GENERIC_OUTPUT_CHANNEL = "generic-output-channel";
         public static final String GENERIC_INPUT_CHANNEL = "generic-input-channel";
         public static final String GENERIC_OUTPUT_BOOL_CHANNEL = "generic-output-bool-channel";

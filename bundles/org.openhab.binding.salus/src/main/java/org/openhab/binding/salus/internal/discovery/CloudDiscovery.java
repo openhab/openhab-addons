@@ -6,15 +6,16 @@ import org.openhab.binding.salus.internal.rest.SalusApi;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
 import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_DEVICE_TYPE;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.*;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
 
 public class CloudDiscovery extends AbstractDiscoveryService {
@@ -36,7 +37,10 @@ public class CloudDiscovery extends AbstractDiscoveryService {
                 return;
             }
             logger.debug("Found {} devices while scanning", response.body().size());
-            response.body().forEach(this::addThing);
+            response.body()
+                    .stream()
+                    .filter(Device::isConnected)
+                    .forEach(this::addThing);
         } catch (Exception e) {
             logger.error("Error while scanning", e);
         }
@@ -45,9 +49,22 @@ public class CloudDiscovery extends AbstractDiscoveryService {
 
     private void addThing(Device device) {
         logger.debug("Adding device \"{}\" ({}) to found things", device.name(), device.dsn());
-        var thingUID = new ThingUID(SALUS_DEVICE_TYPE, findBridgeUID(), device.dsn());
+        var thingUID = new ThingUID(findDeviceType(device), findBridgeUID(), device.dsn());
         var discoveryResult = createDiscoveryResult(thingUID, buildThingLabel(device), buildThingProperties(device));
         thingDiscovered(discoveryResult);
+    }
+
+    private static ThingTypeUID findDeviceType(Device device) {
+        var props = device.properties();
+        if (props.containsKey("oem_model")) {
+            var model = props.get("oem_model");
+            if (model != null) {
+                if (model.toString().toLowerCase(Locale.ENGLISH).contains("it600")) {
+                    return SALUS_IT600_DEVICE_TYPE;
+                }
+            }
+        }
+        return SALUS_DEVICE_TYPE;
     }
 
     private ThingUID findBridgeUID() {
