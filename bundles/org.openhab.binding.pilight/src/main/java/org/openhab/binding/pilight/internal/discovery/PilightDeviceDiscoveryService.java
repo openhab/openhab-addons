@@ -34,6 +34,7 @@ import org.openhab.binding.pilight.internal.handler.PilightBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -180,14 +181,13 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService impl
     @Override
     public void activate() {
         final @Nullable PilightBridgeHandler pilightBridgeHandler = this.pilightBridgeHandler;
+        boolean discoveryEnabled = false;
         if (pilightBridgeHandler != null) {
-            if (pilightBridgeHandler.isBackgroundDiscoveryEnabled()) {
-                super.activate(null);
-            } else {
-                removeOlderResults(new Date().getTime(), pilightBridgeHandler.getThing().getUID());
-            }
+            removeOlderResults(new Date().getTime(), pilightBridgeHandler.getThing().getUID());
+            discoveryEnabled = pilightBridgeHandler.isBackgroundDiscoveryEnabled();
             pilightBridgeHandler.registerDiscoveryListener(this);
         }
+        super.activate(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, discoveryEnabled));
     }
 
     @Override
