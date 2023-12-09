@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.discovery.CloudDiscovery;
 import org.openhab.binding.salus.internal.handler.DeviceHandler;
+import org.openhab.binding.salus.internal.handler.It600Handler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -65,6 +66,9 @@ public class SalusHandlerFactory extends BaseThingHandlerFactory {
         if (SALUS_DEVICE_TYPE.equals(thingTypeUID)) {
             return newSalusDevice(thing);
         }
+        if (SALUS_IT600_DEVICE_TYPE.equals(thingTypeUID)) {
+            return newIt600(thing);
+        }
         if (SALUS_SERVER_TYPE.equals(thingTypeUID)) {
             return newSalusCloudBridge(thing);
         }
@@ -77,6 +81,10 @@ public class SalusHandlerFactory extends BaseThingHandlerFactory {
         return new DeviceHandler(thing);
     }
 
+    private ThingHandler newIt600(Thing thing) {
+        logger.debug("Registering IT600");
+        return new It600Handler(thing);
+    }
     private ThingHandler newSalusCloudBridge(Thing thing) {
         logger.debug("Registering CloudBridgeHandler");
         var handler = new CloudBridgeHandler((Bridge) thing, httpClientFactory);

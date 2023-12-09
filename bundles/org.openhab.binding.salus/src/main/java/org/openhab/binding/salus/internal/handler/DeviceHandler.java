@@ -34,7 +34,7 @@ import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 
 public class DeviceHandler extends BaseThingHandler {
-    public static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
+    private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private final Logger logger;
     private String dsn;
     private CloudBridgeHandler bridge;
@@ -102,6 +102,19 @@ public class DeviceHandler extends BaseThingHandler {
         }
 
         try {
+            var device = this.bridge.findDevice(dsn);
+            if (device.isEmpty()) {
+                var msg = "Device with DSN " + dsn + " not found!";
+                logger.error(msg);
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
+                return;
+            }
+            if (!device.get().isConnected()) {
+                var msg = "Device with DSN " + dsn + " is not connected!";
+                logger.error(msg);
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
+                return;
+            }
             var channels = findDeviceProperties()
                     .stream()
                     .map(this::buildChannel)
@@ -115,8 +128,9 @@ public class DeviceHandler extends BaseThingHandler {
             }
             updateChannels(channels);
         } catch (Exception e) {
-            logger.error("Error when loading IO device from Salus Cloud!", e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "Error when loading IO device from Salus Cloud!");
+            var msg = "Error when connecting to Salus Cloud!";
+            logger.error(msg, e);
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
             return;
         }
 

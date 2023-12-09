@@ -2,10 +2,7 @@ package org.openhab.binding.salus.internal.handler;
 
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
-import org.openhab.binding.salus.internal.rest.ApiResponse;
-import org.openhab.binding.salus.internal.rest.DeviceProperty;
-import org.openhab.binding.salus.internal.rest.JettyHttpClient;
-import org.openhab.binding.salus.internal.rest.SalusApi;
+import org.openhab.binding.salus.internal.rest.*;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -174,6 +171,23 @@ public final class CloudBridgeHandler extends BaseBridgeHandler {
             return Optional.empty();
         }
         return Optional.ofNullable(response.body());
+    }
+
+    public Optional<Device> findDevice(String dsn) {
+        if (salusApi == null) {
+            logger.error("Cannot find device {} because salusClient is null", dsn);
+            return Optional.empty();
+        }
+        logger.debug("Finding device {} using salusClient", dsn);
+        var response = salusApi.findDevices();
+        if (response.failed()) {
+            logger.error("Cannot find device {} using salusClient\n{}", dsn, response.error());
+            return Optional.empty();
+        }
+
+        return response.body().stream()
+                .filter(device -> device.dsn().equals(dsn))
+                .findFirst();
     }
 
     public SalusApi getSalusApi() {
