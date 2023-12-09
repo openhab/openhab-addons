@@ -18,16 +18,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.concurrent.TimeUnit;
+import java.math.MathContext;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static java.math.RoundingMode.HALF_EVEN;
 import static java.util.Collections.emptySortedSet;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.BINDING_ID;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.*;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
@@ -37,6 +34,7 @@ import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 
 public class DeviceHandler extends BaseThingHandler {
+    public static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private final Logger logger;
     private String dsn;
     private CloudBridgeHandler bridge;
@@ -236,7 +234,6 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private void handleRefreshCommand(ChannelUID channelUID) {
-        logger.debug("Refreshing channel {}", channelUID.getId());
         var id = channelUID.getId();
         String salusId;
         boolean isX100;
@@ -265,7 +262,7 @@ public class DeviceHandler extends BaseThingHandler {
             state = booleanProperty.getValue() ? OnOffType.ON : OnOffType.OFF;
         } else if (property instanceof DeviceProperty.LongDeviceProperty longDeviceProperty) {
             if (isX100) {
-                state = new DecimalType(new BigDecimal(longDeviceProperty.getValue()).divide(new BigDecimal(100), HALF_EVEN));
+                state = new DecimalType(new BigDecimal(longDeviceProperty.getValue()).divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN)));
             } else {
                 state = new DecimalType(longDeviceProperty.getValue());
             }
@@ -284,18 +281,18 @@ public class DeviceHandler extends BaseThingHandler {
         try {
             var currentTimeMillis = System.currentTimeMillis();
             if (!deviceProperties.isEmpty() && currentTimeMillis < lastPropertyUpdateTime + propertyCacheMilliSeconds) {
-                logger.debug("Using cached device properties. Next update in {} ms",
+                logger.trace("Using cached device properties. Next update in {} ms",
                         (lastPropertyUpdateTime + propertyCacheMilliSeconds) - currentTimeMillis);
                 return deviceProperties;
             }
-            logger.debug("Getting all properties and putting them in a cache");
+            logger.trace("Getting all properties and putting them in a cache");
             {
                 var response = this.bridge.findPropertiesForDevice(dsn);
                 if (!response.isEmpty()) {
                     this.deviceProperties = response;
                     lastPropertyUpdateTime = currentTimeMillis;
                 } else {
-                    logger.debug("Response was empty. No properties came from the server");
+                    logger.trace("Response was empty. No properties came from the server");
                 }
             }
             return deviceProperties;
@@ -305,16 +302,85 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private void handleBoolCommand(ChannelUID channelUID, boolean command) {
-// todo
+        var id = channelUID.getId();
+        String salusId;
+        if (channelUidMap.containsKey(id)) {
+            salusId = channelUidMap.get(id);
+        } else {
+            logger.warn("Channel {} not found in channelUidMap!", id);
+            return;
+        }
+        var result = bridge.setValueForProperty(dsn, salusId, command);
+        if(result.isPresent()) {
+            devicePropertiesLock.lock();
+            try {
+                deviceProperties.stream()
+                        .filter(property -> property.getName().equals(salusId))
+                        .filter(DeviceProperty.BooleanDeviceProperty.class::isInstance)
+                        .map(DeviceProperty.BooleanDeviceProperty.class::cast)
+                        .findFirst()
+                        .ifPresent(property -> property.setValue(command));
+            } finally {
+                devicePropertiesLock.unlock();
+            }
+        }
     }
 
 
     private void handleDecimalCommand(ChannelUID channelUID, DecimalType command) {
-// todo
+        var id = channelUID.getId();
+        String salusId;
+        long value;
+        if (channelUidMap.containsKey(id)) {
+            salusId = channelUidMap.get(id);
+            value = command.toBigDecimal().longValue();
+        } else if (channelX100UidMap.containsKey(id)) {
+            salusId = channelX100UidMap.get(id);
+            value = command.toBigDecimal().multiply(ONE_HUNDRED).longValue();
+        } else {
+            logger.warn("Channel {} not found in channelUidMap and channelX100UidMap!", id);
+            return;
+        }
+        var result = bridge.setValueForProperty(dsn, salusId, value);
+        if(result.isPresent()) {
+            devicePropertiesLock.lock();
+            try {
+                deviceProperties.stream()
+                        .filter(property -> property.getName().equals(salusId))
+                        .filter(DeviceProperty.LongDeviceProperty.class::isInstance)
+                        .map(DeviceProperty.LongDeviceProperty.class::cast)
+                        .findFirst()
+                        .ifPresent(property -> property.setValue(value));
+            } finally {
+                devicePropertiesLock.unlock();
+            }
+        }
     }
 
     private void handleStringCommand(ChannelUID channelUID, StringType command) {
-// todo
+        var id = channelUID.getId();
+        String salusId;
+        if (channelUidMap.containsKey(id)) {
+            salusId = channelUidMap.get(id);
+        } else {
+            logger.warn("Channel {} not found in channelUidMap!", id);
+            return;
+        }
+        var value = command.toFullString();
+        var result = bridge.setValueForProperty(dsn, salusId, value);
+        if(result.isPresent()) {
+            devicePropertiesLock.lock();
+            try {
+                deviceProperties.stream()
+                        .filter(property -> property.getName().equals(salusId))
+                        .filter(DeviceProperty.StringDeviceProperty.class::isInstance)
+                        .map(DeviceProperty.StringDeviceProperty.class::cast)
+                        .findFirst()
+                        .ifPresent(property -> property.setValue(value));
+            } finally {
+                devicePropertiesLock.unlock();
+            }
+        }
     }
 
 }

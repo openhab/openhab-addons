@@ -12,7 +12,7 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
     private final String dataUpdatedAt;
     private final String productName;
     private final String displayName;
-    private final T value;
+    private T value;
     private final Map<String, Object> properties;
 
     protected DeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt, String productName, String displayName, T value, Map<String, Object> properties) {
@@ -53,6 +53,10 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
 
     public T getValue() {
         return value;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
     }
 
     public Map<String, Object> getProperties() {

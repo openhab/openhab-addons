@@ -2,6 +2,7 @@ package org.openhab.binding.salus.internal.handler;
 
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
+import org.openhab.binding.salus.internal.rest.ApiResponse;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
 import org.openhab.binding.salus.internal.rest.JettyHttpClient;
 import org.openhab.binding.salus.internal.rest.SalusApi;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.concurrent.ScheduledFuture;
 
@@ -156,6 +158,22 @@ public final class CloudBridgeHandler extends BaseBridgeHandler {
             return emptySortedSet();
         }
         return response.body();
+    }
+
+
+    public Optional<Object> setValueForProperty(String dsn, String propertyName, Object value) {
+        if (salusApi == null) {
+            logger.error("Cannot set value for property {} on device {} because salusClient is null", propertyName, dsn);
+            return Optional.empty();
+        }
+        logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
+        var response = salusApi.setValueForProperty(dsn, propertyName, value);
+        if (response.failed()) {
+            logger.error("Cannot set property {} on device {} to value {} using salusClient\n{}",
+                    propertyName, dsn, value, response.error());
+            return Optional.empty();
+        }
+        return Optional.ofNullable(response.body());
     }
 
     public SalusApi getSalusApi() {
