@@ -371,10 +371,10 @@ Rollershutter       iLR_shutter                 "Shutter [%.0f %%]"           (g
 
 Number:Power        iCENTRAL_Ta                 "Power [%.0f %unit%]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
 Number:Power        iCENTRAL_Tb                 "Power [%.0f %unit%]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
-Number:Energy       iCENTRAL_Ta_day             "Energy Day [%.1f]"                             { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:energyToday"}
-Number:Energy       iCENTRAL_Tb_day             "Energy Day [%.1f]"                             { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:energyToday"}
-Number:Energy       iCENTRAL_Ta_month           "Energy Month [%.1f]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:energyThisMonth"}
-Number:Energy       iCENTRAL_Tb_month           "Energy Month [%.1f]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:energyThisMonth"}
+Number:Energy       iCENTRAL_Ta_day             "Energy Day [%.1f %unit%]"                      { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:energyToday"}
+Number:Energy       iCENTRAL_Tb_day             "Energy Day [%.1f %unit%]"                      { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:energyToday"}
+Number:Energy       iCENTRAL_Ta_month           "Energy Month [%.1f %unit%]"                    { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:energyThisMonth"}
+Number:Energy       iCENTRAL_Tb_month           "Energy Month [%.1f %unit%]"                    { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:energyThisMonth"}
 
 // 99 zones thermo central unit
 Group               gCentralUnit                "Thermo Central Unit"
