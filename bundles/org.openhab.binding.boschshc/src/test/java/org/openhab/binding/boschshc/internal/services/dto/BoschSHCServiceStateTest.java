@@ -17,8 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
+import org.openhab.binding.boschshc.internal.services.userstate.dto.UserStateServiceState;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * Test class
@@ -78,5 +80,13 @@ class BoschSHCServiceStateTest {
                 GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"testState2\"}", JsonObject.class),
                 TestState2.class);
         assertNotEquals(null, state2);
+    }
+
+    @Test
+    void fromJson_ReturnsUserStateServiceState_ForValidJson() {
+        var state = BoschSHCServiceState.fromJson(new JsonPrimitive("false"), UserStateServiceState.class);
+        assertNotEquals(null, state);
+        assertTrue(state.getClass().isAssignableFrom(UserStateServiceState.class));
+        assertFalse(state.isState());
     }
 }

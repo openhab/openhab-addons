@@ -186,7 +186,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
         addUserStates(userStates);
     }
 
-    private void addUserStates(List<UserDefinedState> userStates) {
+    protected void addUserStates(List<UserDefinedState> userStates) {
         for (UserDefinedState userState : userStates) {
             addUserState(userState);
         }

@@ -21,7 +21,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
@@ -41,7 +43,10 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceDat
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceTest;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Faults;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedStateTest;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.openhab.binding.boschshc.internal.services.binaryswitch.dto.BinarySwitchServiceState;
 import org.openhab.binding.boschshc.internal.services.intrusion.actions.arm.dto.ArmActionRequest;
 import org.openhab.binding.boschshc.internal.services.intrusion.dto.AlarmState;
@@ -419,6 +424,78 @@ class BridgeHandlerTest {
         BinarySwitchServiceState binarySwitchState = new BinarySwitchServiceState();
         binarySwitchState.on = true;
         fixture.putState("hdm:ZigBee:f0d1b80000f2a3e9", "BinarySwitch", binarySwitchState);
+    }
+
+    @Test
+    void getUserStateInfo() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
+        when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
+        String stateId = UUID.randomUUID().toString();
+
+        Request request = mock(Request.class);
+        when(request.header(anyString(), anyString())).thenReturn(request);
+        ContentResponse response = mock(ContentResponse.class);
+        when(response.getStatus()).thenReturn(200);
+        when(request.send()).thenReturn(response);
+        when(httpClient.createRequest(anyString(), same(HttpMethod.GET))).thenReturn(request);
+        when(httpClient.sendRequest(same(request), same(UserDefinedState.class), any(), any()))
+                .thenReturn(UserDefinedStateTest.createTestState(stateId));
+
+        UserDefinedState userState = fixture.getUserStateInfo(stateId);
+        assertEquals(stateId, userState.getId());
+    }
+
+    @Test
+    void getUserStates() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
+        when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
+        String stateId = UUID.randomUUID().toString();
+
+        Request request = mock(Request.class);
+        when(request.header(anyString(), anyString())).thenReturn(request);
+        ContentResponse response = mock(ContentResponse.class);
+        when(response.getStatus()).thenReturn(200);
+        when(request.send()).thenReturn(response);
+        when(httpClient.createRequest(anyString(), same(HttpMethod.GET))).thenReturn(request);
+        when(response.getContentAsString()).thenReturn(
+                GsonUtils.DEFAULT_GSON_INSTANCE.toJson(List.of(UserDefinedStateTest.createTestState(stateId))));
+
+        List<UserDefinedState> userStates = fixture.getUserStates();
+        assertEquals(1, userStates.size());
+    }
+
+    @Test
+    void getUserStates_ReturnsEmptyList_IfRequestNotSuccessfull()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
+        when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
+
+        Request request = mock(Request.class);
+        when(request.header(anyString(), anyString())).thenReturn(request);
+        ContentResponse response = mock(ContentResponse.class);
+        when(response.getStatus()).thenReturn(401);
+        when(request.send()).thenReturn(response);
+        when(httpClient.createRequest(anyString(), same(HttpMethod.GET))).thenReturn(request);
+
+        List<UserDefinedState> userStates = fixture.getUserStates();
+        assertTrue(userStates.isEmpty());
+    }
+
+    @Test
+    void getUserStates_ReturnsEmptyList_IfExceptionHappened()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
+        when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
+
+        Request request = mock(Request.class);
+        when(request.header(anyString(), anyString())).thenReturn(request);
+        ContentResponse response = mock(ContentResponse.class);
+        when(response.getStatus()).thenReturn(401);
+        when(request.send()).thenThrow(new TimeoutException("text exception"));
+        when(httpClient.createRequest(anyString(), same(HttpMethod.GET))).thenReturn(request);
+
+        List<UserDefinedState> userStates = fixture.getUserStates();
+        assertTrue(userStates.isEmpty());
     }
 
     @AfterEach
