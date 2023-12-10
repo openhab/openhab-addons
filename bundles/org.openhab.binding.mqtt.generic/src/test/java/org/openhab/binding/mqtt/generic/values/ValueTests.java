@@ -37,6 +37,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TypeParser;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Test cases for the value classes. They should throw exceptions if the wrong command type is used
@@ -175,6 +176,9 @@ public class ValueTests {
         command = v.parseCommand(new QuantityType<>("20"));
         assertThat(command, is(new QuantityType<>(20, Units.WATT)));
         assertThat(v.getMQTTpublishValue(command, null), is("20"));
+
+        assertThat(v.parseMessage(new StringType("NaN")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("nan")), is(UnDefType.UNDEF));
     }
 
     @Test
