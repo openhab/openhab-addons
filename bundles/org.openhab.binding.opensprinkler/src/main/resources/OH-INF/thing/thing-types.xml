@@ -60,6 +60,10 @@
 			<channel id="ignoreRain" typeId="ignoreRain"></channel>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="stationIndex" type="integer" required="true">
 				<label>Station Index</label>
@@ -93,6 +97,11 @@
 			<channel id="cloudConnected" typeId="cloudConnected"></channel>
 			<channel id="pausePrograms" typeId="pausePrograms"></channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 	</thing-type>
 
 	<channel-type id="rainsensor">

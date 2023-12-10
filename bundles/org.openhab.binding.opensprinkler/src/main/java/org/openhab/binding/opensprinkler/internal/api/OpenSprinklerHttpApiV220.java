@@ -67,7 +67,7 @@ public class OpenSprinklerHttpApiV220 extends OpenSprinklerHttpApiV219 {
                 }
             }
         } catch (JsonParseException e) {
-            logger.debug("Following json could not be parsed:{} due to {}", returnContent, e);
+            logger.debug("Following json could not be parsed:{}", returnContent);
         }
     }
 
