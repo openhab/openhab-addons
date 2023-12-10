@@ -9,16 +9,6 @@
 
 	<discovery-methods>
 		<discovery-method>
-			<service-type>mdns</service-type>
-			<mdns-service-type>_owserver._tcp.local.</mdns-service-type>
-			<match-properties>
-				<match-property>
-					<name>name</name>
-					<regex>OWFS (1-wire) Server</regex>
-				</match-property>
-			</match-properties>
-		</discovery-method>
-		<discovery-method>
 			<service-type>process</service-type>
 			<match-properties>
 				<match-property>
