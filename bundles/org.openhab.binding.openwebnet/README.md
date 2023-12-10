@@ -314,11 +314,6 @@ In order to activate one of them you have to use two different channels:
 
 Example: if you want to activate SCENARIO number 9 on the thermo Central Unit you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
 
-### Energy Channels
-
-`energyToday`  and `energyThisMonth` channel updates depend on F520/F521  measurements. As a consequence, 
-if the meter doesn't register any  variation since the last reading the value is not updated.
-
 ## Full Example
 
 ### openwebnet.things:
