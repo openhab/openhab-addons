@@ -14,6 +14,7 @@ package org.openhab.binding.pilight.internal.discovery;
 
 import static org.openhab.binding.pilight.internal.PilightBindingConstants.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.openhab.binding.pilight.internal.handler.PilightBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -178,11 +180,14 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService impl
 
     @Override
     public void activate() {
-        super.activate(null);
         final @Nullable PilightBridgeHandler pilightBridgeHandler = this.pilightBridgeHandler;
+        boolean discoveryEnabled = false;
         if (pilightBridgeHandler != null) {
+            removeOlderResults(new Date().getTime(), pilightBridgeHandler.getThing().getUID());
+            discoveryEnabled = pilightBridgeHandler.isBackgroundDiscoveryEnabled();
             pilightBridgeHandler.registerDiscoveryListener(this);
         }
+        super.activate(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, discoveryEnabled));
     }
 
     @Override
