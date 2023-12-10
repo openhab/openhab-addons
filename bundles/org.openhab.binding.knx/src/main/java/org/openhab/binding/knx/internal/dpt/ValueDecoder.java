@@ -146,7 +146,7 @@ public class ValueDecoder {
                 case "16":
                 case "28":
                 case "250": // Map all combined color transitions to String,
-                case "252": // as there is no native support is planned.
+                case "252": // as no native support is planned.
                 case "253": // Currently only one subtype 2xx.600
                 case "254": // is defined for those DPTs.
                     return StringType.valueOf(value);
