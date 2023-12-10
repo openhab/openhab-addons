@@ -19,6 +19,7 @@ Binding for the Bosch Smart Home.
     - [Intrusion Detection System](#intrusion-detection-system)
     - [Smart Bulb](#smart-bulb)
     - [Smoke Detector](#smoke-detector)
+    - [User-defined states](#user-defined-states)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -216,6 +217,18 @@ The smoke detector warns you in case of fire.
 | Channel Type ID    | Item Type            | Writable | Description                                                                                       |
 | ------------------ | -------------------- | :------: | ------------------------------------------------------------------------------------------------- |
 | smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
+
+
+### User-defined states
+The User-defined states enables automations to be better adapted to specific needs and everyday situations. 
+Individual “states” can be activated/deactivated and can be used as triggers, conditions and actions in automations.
+
+**Thing Type ID**: `user-defined-state`
+
+
+| Channel Type ID | Item Type | Writable | Description                                |
+|-----------------|-----------| :------: |--------------------------------------------|
+| user-state      | Switch    | &#9745;  | Switches the User-defined state on or off. |
 
 
 ## Limitations
