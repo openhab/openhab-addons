@@ -29,7 +29,7 @@ These gateways have been tested with the binding:
 [MH200N](https://www.homesystems-legrandgroup.com/home/-/productsheets/2469209),
 [F453](https://www.homesystems-legrandgroup.com/home/-/productsheets/2703566),  etc.
 
-- **Zigbee USB Gateways**, such as [BTicino 3578](doc/3578_datasheet.pdf), also known as *Legrand 088328*
+- **Zigbee USB Gateways**, such as [BTicino 3578](https://www.legrand.be/fr/catalogue/zigbee-interface-openzigbee-3578), also known as *Legrand 088328*
 
 Some of these modules are not on the BTicino catalogue anymore.
 
