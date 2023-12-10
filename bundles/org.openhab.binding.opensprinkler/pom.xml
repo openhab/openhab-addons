@@ -13,5 +13,4 @@
   <artifactId>org.openhab.binding.opensprinkler</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: OpenSprinkler Binding</name>
-
 </project>

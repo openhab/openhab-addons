@@ -116,6 +116,15 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 break;
             case CHANNEL_RESET_STATIONS:
                 break;
+            case CHANNEL_QUEUED_ZONES:
+                updateState(channel, new DecimalType(localAPI.getQueuedZones()));
+                break;
+            case CHANNEL_CLOUD_CONNECTED:
+                updateState(channel, OnOffType.from(localAPI.getCloudConnected() == 3));
+                break;
+            case CHANNEL_PAUSE_PROGRAMS:
+                updateState(channel, new QuantityType<>(localAPI.getPausedState(), Units.SECOND));
+                break;
             default:
                 logger.debug("Can not update the unknown channel {}", channel);
         }
@@ -143,6 +152,18 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
             }
             channel = thing.getChannel(SENSOR_2);
             if (localAPI.getSensor2State() == -1 && channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = thing.getChannel(CHANNEL_QUEUED_ZONES);
+            if (localAPI.getQueuedZones() == -1 && channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = thing.getChannel(CHANNEL_CLOUD_CONNECTED);
+            if (localAPI.getCloudConnected() == -1 && channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = thing.getChannel(CHANNEL_PAUSE_PROGRAMS);
+            if (localAPI.getPausedState() == -1 && channel != null) {
                 removeChannels.add(channel);
             }
             if (!removeChannels.isEmpty()) {
@@ -232,6 +253,23 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                         break;
                     case CHANNEL_RAIN_DELAY:
                         handleRainDelayCommand(channelUID, command, api);
+                        break;
+                    case CHANNEL_PAUSE_PROGRAMS:
+                        if (command == OnOffType.OFF) {
+                            api.setPausePrograms(0);
+                        } else if (command instanceof DecimalType) {
+                            api.setPausePrograms(((BigDecimal) command).intValue());
+                        } else if (command instanceof QuantityType<?>) {
+                            QuantityType<?> quantity = (QuantityType<?>) command;
+                            quantity = quantity.toUnit(Units.SECOND);
+                            if (quantity != null) {
+                                api.setPausePrograms(quantity.toBigDecimal().intValue());
+                            }
+                        } else {
+                            logger.warn(
+                                    "The CHANNEL_PAUSE_PROGRAMS only supports QuanityType in seconds, DecimalType and OFF");
+                            return;
+                        }
                         break;
                 }
                 localBridge.delayedRefresh();// update sensors and controls after command is sent
