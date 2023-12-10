@@ -25,6 +25,8 @@ import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiE
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.core.types.StateOption;
 
+import com.google.gson.JsonParseException;
+
 /**
  * The {@link OpenSprinklerHttpApiV220} class is used for communicating with
  * the firmware versions 2.2.0 and up.
@@ -48,20 +50,24 @@ public class OpenSprinklerHttpApiV220 extends OpenSprinklerHttpApiV219 {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
-        JpResponse resp = gson.fromJson(returnContent, JpResponse.class);
-        if (resp != null && resp.pd.length > 0) {
-            state.programs = new ArrayList<>();
-            int counter = 0;
-            for (Object x : resp.pd) {
-                String temp = x.toString();
-                logger.trace("Program Data:{}", temp);
-                int end = temp.lastIndexOf('[') - 2;
-                int start = temp.lastIndexOf((','), end - 1) + 2;
-                if (start > -1 && end > -1) {
-                    temp = temp.substring(start, end);
-                    state.programs.add(new StateOption(Integer.toString(counter++), temp));
+        try {
+            JpResponse resp = gson.fromJson(returnContent, JpResponse.class);
+            if (resp != null && resp.pd.length > 0) {
+                state.programs = new ArrayList<>();
+                int counter = 0;
+                for (Object x : resp.pd) {
+                    String temp = x.toString();
+                    logger.trace("Program Data:{}", temp);
+                    int end = temp.lastIndexOf('[') - 2;
+                    int start = temp.lastIndexOf((','), end - 1) + 2;
+                    if (start > -1 && end > -1) {
+                        temp = temp.substring(start, end);
+                        state.programs.add(new StateOption(Integer.toString(counter++), temp));
+                    }
                 }
             }
+        } catch (JsonParseException e) {
+            logger.debug("Following json could not be parsed:{} due to {}", returnContent, e);
         }
     }
 

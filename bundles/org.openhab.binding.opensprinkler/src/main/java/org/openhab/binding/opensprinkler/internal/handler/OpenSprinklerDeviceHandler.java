@@ -120,11 +120,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 updateState(channel, new DecimalType(localAPI.getQueuedZones()));
                 break;
             case CHANNEL_CLOUD_CONNECTED:
-                if (localAPI.getCloudConnected() == 3) {
-                    updateState(channel, OnOffType.ON);
-                } else {
-                    updateState(channel, OnOffType.OFF);
-                }
+                updateState(channel, OnOffType.from(localAPI.getCloudConnected() == 3));
                 break;
             case CHANNEL_PAUSE_PROGRAMS:
                 updateState(channel, new QuantityType<>(localAPI.getPausedState(), Units.SECOND));
@@ -269,7 +265,6 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                             if (quantity != null) {
                                 api.setPausePrograms(quantity.toBigDecimal().intValue());
                             }
-                            api.setPausePrograms(((BigDecimal) command).intValue());
                         } else {
                             logger.warn(
                                     "The CHANNEL_PAUSE_PROGRAMS only supports QuanityType in seconds, DecimalType and OFF");

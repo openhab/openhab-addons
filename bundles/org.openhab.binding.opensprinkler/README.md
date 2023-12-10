@@ -79,7 +79,7 @@ NOTE: Some channels will only show up if the hardware has the required sensor an
 |                 |                        |    | in the `nextDuration` channel.                                                  |
 | waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
 |                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
-| queuedZones     | Number:Dimensionless   | RO | A count of how many zones are running and also waiting to run in the queue.        |
+| queuedZones     | Number                 | RO | A count of how many zones are running and also waiting to run in the queue.        |
 
 ## Textual Example
 
