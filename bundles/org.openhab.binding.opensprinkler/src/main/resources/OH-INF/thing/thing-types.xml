@@ -60,10 +60,6 @@
 			<channel id="ignoreRain" typeId="ignoreRain"></channel>
 		</channels>
 
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
-
 		<config-description>
 			<parameter name="stationIndex" type="integer" required="true">
 				<label>Station Index</label>
