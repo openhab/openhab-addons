@@ -82,9 +82,11 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -1211,6 +1213,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
                 State state = scenes.stream().filter(s -> s.getSceneActive().orElse(false)).map(s -> s.getSceneState())
                         .findAny().orElse(UnDefType.UNDEF);
+
+                // create scene channel if it is missing
+                if (getThing().getChannel(CHANNEL_2_SCENE) == null) {
+                    updateThing(editThing()
+                            .withChannel(ChannelBuilder.create(new ChannelUID(getThing().getUID(), CHANNEL_2_SCENE))
+                                    .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_SCENE)).build())
+                            .build());
+                }
 
                 updateState(CHANNEL_2_SCENE, state, true);
 
