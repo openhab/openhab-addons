@@ -25,7 +25,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>vin</representation-property>

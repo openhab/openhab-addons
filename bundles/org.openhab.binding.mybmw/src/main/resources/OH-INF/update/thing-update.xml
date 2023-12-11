@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
 	<thing-type uid="mybmw:bev_rex">
-		<instruction-set targetVersion="4">
+		<instruction-set targetVersion="1">
 			<!-- channels to be removed -->
 			<remove-channel id="charge-info" groupIds="status"/>
 			<remove-channel id="motion" groupIds="status"/>
@@ -29,7 +29,7 @@
 		</instruction-set>
 	</thing-type>
 	<thing-type uid="mybmw:bev">
-		<instruction-set targetVersion="4">
+		<instruction-set targetVersion="1">
 			<!-- channels to be removed -->
 			<remove-channel id="charge-info" groupIds="status"/>
 			<remove-channel id="motion" groupIds="status"/>
@@ -46,7 +46,7 @@
 		</instruction-set>
 	</thing-type>
 	<thing-type uid="mybmw:conv">
-		<instruction-set targetVersion="4">
+		<instruction-set targetVersion="1">
 			<!-- channels to be removed -->
 			<!-- channels to be added -->
 			<add-channel id="last-fetched" groupIds="status">
@@ -65,7 +65,7 @@
 		</instruction-set>
 	</thing-type>
 	<thing-type uid="mybmw:phev">
-		<instruction-set targetVersion="4">
+		<instruction-set targetVersion="1">
 			<!-- channels to be removed -->
 			<remove-channel id="charge-info" groupIds="status"/>
 			<remove-channel id="motion" groupIds="status"/>
