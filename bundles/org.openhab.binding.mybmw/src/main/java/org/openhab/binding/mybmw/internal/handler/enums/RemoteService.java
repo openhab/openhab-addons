@@ -39,7 +39,7 @@ public enum RemoteService {
     HORN_BLOW("Horn Blow", REMOTE_SERVICE_HORN, REMOTE_SERVICE_HORN, ""),
     CLIMATE_NOW_START("Start Climate", REMOTE_SERVICE_AIR_CONDITIONING_START, "climate-now", "{\"action\": \"START\"}"),
     CLIMATE_NOW_STOP("Stop Climate", REMOTE_SERVICE_AIR_CONDITIONING_STOP, "climate-now", "{\"action\": \"STOP\"}"),
-    CHARGE_NOW("Charge", REMOTE_SERVICE_CHARGE, "charge-now", "");
+    CHARGE_NOW("Charge", REMOTE_SERVICE_CHARGE, "start-charging", "");
 
     private final String label;
     private final String id;
