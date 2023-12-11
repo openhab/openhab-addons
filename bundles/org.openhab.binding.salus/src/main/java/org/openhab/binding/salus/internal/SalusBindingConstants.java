@@ -43,9 +43,16 @@ public class SalusBindingConstants {
 
     public static class SalusDevice {
         public static final String DSN = "dsn";
-        public static final String PROPERTY_CACHE = "propertyCache";
     }
 
+    public static class It600Device {
+        public static class HoldType {
+            public static final int AUTO = 0;
+            public static final int MANUAL = 2;
+            public static final int TEMPORARY_MANUAL = 1;
+            public static final int OFF= 7;
+        }
+    }
     public static class Channels {
         public static class It600 {
             public static final String TEMPERATURE = "temperature";

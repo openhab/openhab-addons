@@ -1,8 +1,8 @@
 package org.openhab.binding.salus.internal.discovery;
 
+import org.openhab.binding.salus.internal.handler.CloudApi;
 import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.rest.Device;
-import org.openhab.binding.salus.internal.rest.SalusApi;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -20,25 +20,22 @@ import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevi
 
 public class CloudDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(CloudDiscovery.class);
-    private final CloudBridgeHandler bridgeHandler;
+    private final CloudApi cloudApi;
+    private final ThingUID bridgeUid;
 
-    public CloudDiscovery(CloudBridgeHandler bridgeHandler, SalusApi salusApi) throws IllegalArgumentException {
+    public CloudDiscovery(CloudBridgeHandler bridgeHandler, CloudApi cloudApi, ThingUID bridgeUid) throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
-        this.bridgeHandler = bridgeHandler;
+        this.cloudApi = cloudApi;
+        this.bridgeUid = bridgeUid;
     }
 
     @Override
     protected void startScan() {
         logger.debug("Start Salus discovery");
         try {
-            var response = bridgeHandler.getSalusApi().findDevices();
-            if (response.failed()) {
-                logger.error("Error while scanning: {}", response.error());
-                return;
-            }
-            logger.debug("Found {} devices while scanning", response.body().size());
-            response.body()
-                    .stream()
+            var devices = cloudApi.findDevices();
+            logger.debug("Found {} devices while scanning", devices.size());
+            devices.stream()
                     .filter(Device::isConnected)
                     .forEach(this::addThing);
         } catch (Exception e) {
@@ -49,7 +46,7 @@ public class CloudDiscovery extends AbstractDiscoveryService {
 
     private void addThing(Device device) {
         logger.debug("Adding device \"{}\" ({}) to found things", device.name(), device.dsn());
-        var thingUID = new ThingUID(findDeviceType(device), findBridgeUID(), device.dsn());
+        var thingUID = new ThingUID(findDeviceType(device), bridgeUid, device.dsn());
         var discoveryResult = createDiscoveryResult(thingUID, buildThingLabel(device), buildThingProperties(device));
         thingDiscovered(discoveryResult);
     }
@@ -67,13 +64,9 @@ public class CloudDiscovery extends AbstractDiscoveryService {
         return SALUS_DEVICE_TYPE;
     }
 
-    private ThingUID findBridgeUID() {
-        return bridgeHandler.getThing().getUID();
-    }
-
     private DiscoveryResult createDiscoveryResult(ThingUID thingUID, String label, Map<String, Object> properties) {
         return DiscoveryResultBuilder.create(thingUID)
-                .withBridge(findBridgeUID())
+                .withBridge(bridgeUid)
                 .withProperties(properties)
                 .withLabel(label)
                 .build();

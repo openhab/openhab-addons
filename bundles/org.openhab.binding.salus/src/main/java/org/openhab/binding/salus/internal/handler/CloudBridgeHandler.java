@@ -1,8 +1,13 @@
 package org.openhab.binding.salus.internal.handler;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
-import org.openhab.binding.salus.internal.rest.*;
+import org.openhab.binding.salus.internal.rest.Device;
+import org.openhab.binding.salus.internal.rest.DeviceProperty;
+import org.openhab.binding.salus.internal.rest.JettyHttpClient;
+import org.openhab.binding.salus.internal.rest.SalusApi;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -13,25 +18,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.concurrent.ScheduledFuture;
 
 import static java.util.Collections.emptySortedSet;
 import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
-public final class CloudBridgeHandler extends BaseBridgeHandler {
+public final class CloudBridgeHandler extends BaseBridgeHandler implements CloudApi {
     private Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName());
     private final HttpClientFactory httpClientFactory;
+    private LoadingCache<String, SortedSet<DeviceProperty<?>>> devicePropertiesCache;
     private String username;
     private char[] password;
     private String url;
     private long refreshInterval;
+    private long propertiesRefreshInterval;
     private SalusApi salusApi;
     private ScheduledFuture<?> scheduledFuture;
 
@@ -81,6 +90,11 @@ public final class CloudBridgeHandler extends BaseBridgeHandler {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, msg + " " + ex.getMessage());
             return;
         }
+        this.devicePropertiesCache = Caffeine.newBuilder()
+                .maximumSize(10_000)
+                .expireAfterWrite(Duration.ofSeconds(propertiesRefreshInterval))
+                .refreshAfterWrite(Duration.ofSeconds(propertiesRefreshInterval))
+                .build(this::loadPropertiesForDevice);
         var scheduledPool = ThreadPoolManager.getScheduledPool("Salus");
         this.scheduledFuture = scheduledPool.scheduleWithFixedDelay(
                 this::refreshCloudDevices,
@@ -101,6 +115,13 @@ public final class CloudBridgeHandler extends BaseBridgeHandler {
             url = "https://eu.salusconnect.io";
         }
         refreshInterval = ((BigDecimal) config.get("refreshInterval")).longValue();
+        if (refreshInterval <= 0) {
+            this.refreshInterval = 30;
+        }
+        propertiesRefreshInterval = ((BigDecimal) config.get("propertiesRefreshInterval")).longValue();
+        if (propertiesRefreshInterval <= 0) {
+            this.propertiesRefreshInterval = 5;
+        }
     }
 
     private void refreshCloudDevices() {
@@ -143,54 +164,95 @@ public final class CloudBridgeHandler extends BaseBridgeHandler {
         super.dispose();
     }
 
+    @Override
     public SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn) {
+        return requireNonNullElse(devicePropertiesCache.get(dsn), emptySortedSet());
+    }
+
+    private SortedSet<DeviceProperty<?>> loadPropertiesForDevice(String dsn) {
         if (salusApi == null) {
             logger.error("Cannot find properties for device {} because salusClient is null", dsn);
-            return emptySortedSet();
+            return null;
         }
         logger.debug("Finding properties for device {} using salusClient", dsn);
         var response = salusApi.findDeviceProperties(dsn);
         if (response.failed()) {
             logger.error("Cannot find properties for device {} using salusClient\n{}", dsn, response.error());
-            return emptySortedSet();
+            return null;
         }
         return response.body();
     }
 
 
-    public Optional<Object> setValueForProperty(String dsn, String propertyName, Object value) {
+    @Override
+    public void setValueForProperty(String dsn, String propertyName, Object value) {
         if (salusApi == null) {
             logger.error("Cannot set value for property {} on device {} because salusClient is null", propertyName, dsn);
-            return Optional.empty();
+            return ;
         }
         logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
         var response = salusApi.setValueForProperty(dsn, propertyName, value);
         if (response.failed()) {
             logger.error("Cannot set property {} on device {} to value {} using salusClient\n{}",
                     propertyName, dsn, value, response.error());
-            return Optional.empty();
+            return ;
         }
-        return Optional.ofNullable(response.body());
+        var setValue = response.body();
+        if (setValue instanceof Boolean || setValue instanceof String || setValue instanceof Long || setValue instanceof Integer) {
+            var property = devicePropertiesCache.get(dsn)
+                    .stream()
+                    .filter(prop -> prop.getName().equals(propertyName))
+                    .findFirst();
+            if(property.isPresent()) {
+                var prop = property.get();
+                if (setValue instanceof Boolean b && prop instanceof DeviceProperty.BooleanDeviceProperty boolProp) {
+                    boolProp.setValue(b);
+                } else if (setValue instanceof String s && prop instanceof DeviceProperty.StringDeviceProperty stringProp) {
+                    stringProp.setValue(s);
+                } else if ((setValue instanceof Long || setValue instanceof Integer) && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
+                    long v;
+                    if (setValue instanceof Integer i) {
+                        v = i.longValue();
+                    } else {
+                        v = (long) setValue;
+                    }
+                    longProp.setValue(v);
+                } else {
+                    logger.warn("Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
+                            setValue, setValue.getClass().getSimpleName(), propertyName, prop.getClass().getSimpleName(), dsn);
+                }
+            } else {
+                logger.warn("Cannot set value {} ({}) for property {} on device {} because it is not found in the cache. Invalidating cache",
+                        setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
+                devicePropertiesCache.invalidate(dsn);
+            }
+        } else {
+            logger.warn("Cannot set value {} ({}) for property {} on device {} because it is not a Boolean, String, Long or Integer",
+                    setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
+        }
     }
 
-    public Optional<Device> findDevice(String dsn) {
+    @Override
+    public SortedSet<Device> findDevices() {
+        var salusApi = this.salusApi;
         if (salusApi == null) {
-            logger.error("Cannot find device {} because salusClient is null", dsn);
-            return Optional.empty();
+            logger.error("Cannot find devices because salusClient is null");
+            return emptySortedSet();
         }
-        logger.debug("Finding device {} using salusClient", dsn);
+        logger.debug("Finding devices using salusClient");
         var response = salusApi.findDevices();
         if (response.failed()) {
-            logger.error("Cannot find device {} using salusClient\n{}", dsn, response.error());
-            return Optional.empty();
+            logger.error("Cannot find devices using salusClient\n{}", response.error());
+            return emptySortedSet();
         }
-
-        return response.body().stream()
-                .filter(device -> device.dsn().equals(dsn))
-                .findFirst();
+        return response.body();
     }
 
-    public SalusApi getSalusApi() {
-        return salusApi;
+    @Override
+    public Optional<Device> findDevice(String dsn) {
+        return findDevices()
+                .stream()
+                .filter(device -> device.dsn().equals(dsn))
+                .findFirst();
     }
 }

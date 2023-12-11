@@ -19,12 +19,6 @@
 				<label>DSN</label>
 				<description>ID in Salus cloud system</description>
 			</parameter>
-			<parameter name="propertyCache" type="integer" required="false" min="1" max="600" unit="s" >
-				<label>Property Cache</label>
-				<description></description>
-				<advanced>true</advanced>
-				<default>5</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 

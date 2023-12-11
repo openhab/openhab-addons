@@ -88,7 +88,7 @@ public class SalusHandlerFactory extends BaseThingHandlerFactory {
     private ThingHandler newSalusCloudBridge(Thing thing) {
         logger.debug("Registering CloudBridgeHandler");
         var handler = new CloudBridgeHandler((Bridge) thing, httpClientFactory);
-        var cloudDiscovery = new CloudDiscovery(handler, handler.getSalusApi());
+        var cloudDiscovery = new CloudDiscovery(handler, handler, handler.getThing().getUID());
         registerThingDiscovery(cloudDiscovery);
         return handler;
     }

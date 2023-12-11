@@ -35,6 +35,12 @@
                 <advanced>true</advanced>
                 <default>30</default>
             </parameter>
+            <parameter name="propertiesRefreshInterval" type="integer" required="false" min="1" max="600" unit="s" >
+                <label>Device Property Cache Expiration</label>
+                <description>How long device properties should be cached</description>
+                <advanced>true</advanced>
+                <default>5</default>
+            </parameter>
         </config-description>
 
     </bridge-type>
