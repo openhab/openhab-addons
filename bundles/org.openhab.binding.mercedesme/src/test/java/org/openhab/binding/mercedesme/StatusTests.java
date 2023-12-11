@@ -73,6 +73,7 @@ class StatusTests {
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.getThingStatus().getStatusDetail(), "Refresh config");
         assertEquals("@text/mercedesme.account.status.refresh-invalid", tcl.getThingStatus().getDescription(),
                 "Refresh text");
+        ahm.dispose();
     }
 
     @Test
@@ -101,6 +102,7 @@ class StatusTests {
         ahm.onAccessTokenResponse(token);
         ahm.connect();
         assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Auth Online");
+        ahm.dispose();
     }
 
     @Test
@@ -124,9 +126,11 @@ class StatusTests {
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
-        assertEquals(ThingStatus.UNKNOWN, tcl.getThingStatus().getStatus(), "Socket Unknown");
+        assertEquals(ThingStatus.UNKNOWN, tcl.getThingStatus().getStatus(), "Socket Unknown "
+                + tcl.getThingStatus().getStatusDetail() + " " + tcl.getThingStatus().getDescription());
         ahm.onAccessTokenResponse(token);
         ahm.connect();
         assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Spcket Online");
+        ahm.dispose();
     }
 }
