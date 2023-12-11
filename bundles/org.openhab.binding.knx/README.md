@@ -246,10 +246,12 @@ where parts in brackets `[]` denote optional information.
 This is recommended if you have dedicated status group addresses which are added as `listeningGA`s.
 
 The optional `<` sign tells whether the group address of the datapoint accepts read requests on the KNX bus (it does, if the sign is there).
-Group addresses marked with `<` are read by openHAB during startup, but typically this is useful for only one group address per definition.
+The group addresses marked with `<` are read by openHAB during startup. 
+Future versions might support reading from one GA only.
 With `*-control` channels, the state is not owned by any device on the KNX bus, therefore no read requests will be sent by the binding, i.e. `<` signs will be ignored for them.
 
-The element `dpt` is optional. If omitted, the corresponding default value will be used (see the channel descriptions above).
+The element `dpt` is  highly recommended and may change to a mandatory element in future versions.
+If omitted, the corresponding default value will be used (see the channel descriptions above).
 
 ## KNX Secure
 
