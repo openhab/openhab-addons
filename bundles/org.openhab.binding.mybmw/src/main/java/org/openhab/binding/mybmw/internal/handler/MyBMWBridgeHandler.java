@@ -26,6 +26,7 @@ import org.openhab.binding.mybmw.internal.handler.backend.MyBMWHttpProxy;
 import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.MyBMWConfigurationChecker;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -58,12 +59,12 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
     private Optional<MyBMWProxy> myBmwProxy = Optional.empty();
     private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
     private Optional<VehicleDiscovery> vehicleDiscovery = Optional.empty();
-    private String localeLanguage;
+    private LocaleProvider localeProvider;
 
-    public MyBMWBridgeHandler(Bridge bridge, HttpClientFactory hcf, String language) {
+    public MyBMWBridgeHandler(Bridge bridge, HttpClientFactory hcf, LocaleProvider localeProvider) {
         super(bridge);
         httpClientFactory = hcf;
-        localeLanguage = language;
+        this.localeProvider = localeProvider;
     }
 
     public void setVehicleDiscovery(VehicleDiscovery vehicleDiscovery) {
@@ -83,7 +84,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         MyBMWBridgeConfiguration config = getConfigAs(MyBMWBridgeConfiguration.class);
         if (config.language.equals(Constants.LANGUAGE_AUTODETECT)) {
-            config.language = localeLanguage;
+            config.language = localeProvider.getLocale().getLanguage().toLowerCase();
         }
         if (!MyBMWConfigurationChecker.checkConfiguration(config)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
