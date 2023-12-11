@@ -1,10 +1,6 @@
 
 package org.openhab.binding.salus.internal.rest;
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import org.openhab.binding.salus.internal.rest.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +10,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static java.util.Objects.requireNonNull;
+import static org.openhab.binding.salus.internal.rest.ApiResponse.error;
 
 /**
  * The SalusApi class is responsible for interacting with a REST API to perform various operations related to the Salus system. It handles authentication, token management, and provides methods to retrieve and manipulate device information and properties.
@@ -46,12 +43,43 @@ public class SalusApi {
         // it's helpful when more than one SalusApi exists
         logger = LoggerFactory.getLogger(SalusApi.class.getName() + "[" + username.replaceAll("\\.", "_") + "]");
     }
+
     public SalusApi(String username,
                     char[] password,
                     String baseUrl,
                     RestClient restClient,
                     GsonMapper mapper) {
         this(username, password, baseUrl, restClient, mapper, Clock.systemDefaultZone());
+    }
+
+    private RestClient.Response<String> get(String url, RestClient.Header header, int times) {
+        refreshAccessToken();
+        var response = restClient.get(url, authHeader());
+        if (response.statusCode() == 401) {
+            logger.info("Refreshing access token");
+            login(username, password);
+            if (times > MAX_TIMES) {
+                logger.warn("Could not refresh access token after {} times", MAX_TIMES);
+                return response;
+            }
+            return get(url, header, times + 1);
+        }
+        return response;
+    }
+
+    private RestClient.Response<String> post(String url, RestClient.Content content, RestClient.Header header, int times) {
+        refreshAccessToken();
+        var response = restClient.post(url,content, header);
+        if (response.statusCode() == 401) {
+            logger.info("Refreshing access token");
+            login(username, password);
+            if (times > MAX_TIMES) {
+                logger.warn("Could not refresh access token after {} times", MAX_TIMES);
+                return response;
+            }
+            return post(url,content, header, times + 1);
+        }
+        return response;
     }
 
     private static String removeTrailingSlash(String str) {
@@ -77,10 +105,14 @@ public class SalusApi {
                 new RestClient.Content(inputBody, "application/json"),
                 new RestClient.Header("Accept", "application/json"));
         if (response.statusCode() == 401) {
+            if (times < MAX_TIMES) {
+                login(username, password, times + 1);
+                return;
+            }
             throw new HttpUnauthorizedException(method, finalUrl);
         }
         if (response.statusCode() == 403) {
-            if (times <= MAX_TIMES) {
+            if (times < MAX_TIMES) {
                 login(username, password, times + 1);
                 return;
             }
@@ -137,11 +169,11 @@ public class SalusApi {
     public ApiResponse<SortedSet<Device>> findDevices() {
         logger.debug("findDevices()");
         refreshAccessToken();
-        var response = restClient.get(url("/apiv1/devices.json"), authHeader());
+        var response = get(url("/apiv1/devices.json"), authHeader(), 1);
         if (response.statusCode() != 200) {
             // there was an error when querying endpoint
             logger.debug("findDevices()->ERROR {}", response.statusCode());
-            return ApiResponse.error(mapper.parseError(response));
+            return error(mapper.parseError(response));
         }
 
         var devices = new TreeSet<>(mapper.parseDevices(response.body()));
@@ -156,11 +188,11 @@ public class SalusApi {
     public ApiResponse<SortedSet<DeviceProperty<?>>> findDeviceProperties(String dsn) {
         logger.debug("findDeviceProperties({})", dsn);
         refreshAccessToken();
-        var response = restClient.get(url("/apiv1/dsns/" + dsn + "/properties.json"), authHeader());
+        var response = get(url("/apiv1/dsns/" + dsn + "/properties.json"), authHeader(), 1);
         if (response.statusCode() != 200) {
             // there was an error when querying endpoint
             logger.debug("findDeviceProperties()->ERROR {}", response.statusCode());
-            return ApiResponse.error(mapper.parseError(response));
+            return error(mapper.parseError(response));
         }
 
         var deviceProperties = new TreeSet<>(mapper.parseDeviceProperties(response.body()));
@@ -172,14 +204,13 @@ public class SalusApi {
         refreshAccessToken();
         var finalUrl = url("/apiv1/dsns/" + dsn + "/properties/" + propertyName + "/datapoints.json");
         var json = mapper.datapointParam(value);
-        var response = restClient.post(finalUrl, new RestClient.Content(json), authHeader());
+        var response = post(finalUrl, new RestClient.Content(json), authHeader(), 1);
         if (response.statusCode() < 200 || response.statusCode() > 299) {
-            return ApiResponse.error(mapper.parseError(response));
+            return error(mapper.parseError(response));
         }
         var datapointValue = response.map(mapper::datapointValue).body();
-        if (datapointValue.isEmpty()) {
-            return ApiResponse.error(new Error(404, "No datapoint in return"));
-        }
-        return ApiResponse.ok(datapointValue);
+        return datapointValue
+                .map(ApiResponse::ok)
+                .orElseGet(() -> error(new Error(404, "No datapoint in return")));
     }
 }
