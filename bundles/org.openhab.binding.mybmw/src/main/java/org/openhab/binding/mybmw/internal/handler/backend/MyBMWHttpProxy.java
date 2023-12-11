@@ -144,7 +144,13 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         List<VehicleBase> vehicles = new ArrayList<>();
 
         for (String brand : BimmerConstants.REQUESTED_BRANDS) {
-            vehicles.addAll(requestVehiclesBase(brand));
+            try {
+                vehicles.addAll(requestVehiclesBase(brand));
+
+                Thread.sleep(10000);
+            } catch (Exception e) {
+                logger.error("error retrieving the base vehicles ", e.getMessage());
+            }
         }
 
         return vehicles;
