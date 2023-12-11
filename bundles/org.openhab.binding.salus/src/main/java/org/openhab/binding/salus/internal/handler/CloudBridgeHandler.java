@@ -4,10 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
-import org.openhab.binding.salus.internal.rest.Device;
-import org.openhab.binding.salus.internal.rest.DeviceProperty;
-import org.openhab.binding.salus.internal.rest.JettyHttpClient;
-import org.openhab.binding.salus.internal.rest.SalusApi;
+import org.openhab.binding.salus.internal.rest.*;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -80,7 +77,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         if (salusApi != null) {
             logger.warn("At this point SalusApi should be null!");
         }
-        salusApi = new SalusApi(username, password, url, httpClient, new Gson());
+        salusApi = new SalusApi(username, password, url, httpClient, GsonMapper.INSTANCE);
         logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName() + "[" + username.replaceAll("\\.", "_") + "]");
         try {
             var devices = salusApi.findDevices();
