@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.mybmw.internal.console;
 
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.BINDING_ID;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.THING_TYPE_CONNECTED_DRIVE_ACCOUNT;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,6 +67,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link MyBMWCommandExtension} is responsible for handling console commands
  *
  * @author Mark Herwege - Initial contribution
+ * @author Martin Grassl - improved exception handling
  */
 
 @NonNullByDefault
@@ -201,7 +203,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
             deleteDirectory(path);
             console.println("### Fingerprint has been written to zipfile: " + zipfile);
         } catch (IOException e) {
-            console.println("Exception zipping fingerprint");
+            console.println("Exception zipping fingerprint " + e.getMessage());
             console.println("### Fingerprint has been written to files in directory: " + path);
         }
 
@@ -214,7 +216,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
         try {
             writeJsonToFile(path, filename, json);
         } catch (IOException e) {
-            console.println("Exception writing to file");
+            console.println("Exception writing to file " + e.getMessage());
         }
     }
 

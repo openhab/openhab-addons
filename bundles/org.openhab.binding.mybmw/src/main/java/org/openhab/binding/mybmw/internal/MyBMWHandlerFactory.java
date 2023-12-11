@@ -39,6 +39,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Martin Grassl - changed localeProvider handling
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.mybmw", service = ThingHandlerFactory.class)
