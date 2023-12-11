@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.smgw</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: smgw Binding</name>
+  <name>openHAB Add-ons :: Bundles :: SMGW Binding</name>
 
   <properties>
     <jsoup.version>1.15.3</jsoup.version>

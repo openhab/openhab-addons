@@ -18,6 +18,7 @@ import static org.openhab.binding.smgw.internal.SmgwBindingConstants.CHANNEL_TIM
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -50,22 +51,23 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmgwHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link SmgwHandler} is responsible for refreshing the smart meter's data and handling REFRESH commands.
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
 public class SmgwHandler extends BaseThingHandler {
+    private static final URI URI_NOT_SET = URI.create("");
     private final Logger logger = LoggerFactory.getLogger(SmgwHandler.class);
     private final HttpClient httpClient;
     private final CronScheduler cronScheduler;
     private SmgwConfiguration config = new SmgwConfiguration();
-    private URI uri = URI.create("");
+    private URI uri = URI_NOT_SET;
     private @Nullable ScheduledCompletableFuture<?> cronJob;
 
     public SmgwHandler(Thing thing, HttpClient httpClient, CronScheduler cronScheduler) {
@@ -76,12 +78,23 @@ public class SmgwHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType && !URI_NOT_SET.equals(uri)) {
+            cancelRefreshJob();
+            getData();
+        }
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(SmgwConfiguration.class);
-        uri = URI.create("https://" + config.hostname + "/cgi-bin/hanservice.cgi");
+        try {
+            uri = new URI("https://" + config.hostname + "/cgi-bin/hanservice.cgi");
+        } catch (URISyntaxException e) {
+            uri = URI_NOT_SET;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Could not create URI from given hostname");
+            return;
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
         getData();
@@ -89,6 +102,10 @@ public class SmgwHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        cancelRefreshJob();
+    }
+
+    private void cancelRefreshJob() {
         ScheduledCompletableFuture<?> cronJob = this.cronJob;
         if (cronJob != null) {
             cronJob.cancel(true);
@@ -97,6 +114,10 @@ public class SmgwHandler extends BaseThingHandler {
     }
 
     private void getData() {
+        if (URI_NOT_SET.equals(uri)) {
+            logger.warn("getData() called, but URI is not set. Please describe what happened and report a bug.");
+            return;
+        }
         // clear cookies
         CookieStore cookieStore = httpClient.getCookieStore();
         List<HttpCookie> cookies = cookieStore.get(uri);

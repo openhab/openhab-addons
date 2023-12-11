@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SmgwConfiguration {
-    public String hostname = "";
+    public String hostname = "192.168.1.200";
     public String username = "";
     public String password = "";
 }
