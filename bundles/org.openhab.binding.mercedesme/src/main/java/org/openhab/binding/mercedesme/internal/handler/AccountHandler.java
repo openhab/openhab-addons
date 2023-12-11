@@ -121,7 +121,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             authService = Optional
                     .of(new AuthService(this, httpClient, config.get(), localeProvider.getLocale(), storage));
             if (!server.get().start()) {
-                logger.warn("offline");
+                logger.warn("initialize offline");
                 String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                         + Constants.STATUS_SERVER_RESTART;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
@@ -148,7 +148,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             // server not running - fix first
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                     + Constants.STATUS_SERVER_RESTART;
-            logger.warn("offline");
+            logger.warn("update offline");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
         }
     }
@@ -221,7 +221,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
         } else if (server.isEmpty()) {
             // server not running - fix first
-            logger.warn("offline");
+            logger.warn("onAccessTokenResponse offline");
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                     + Constants.STATUS_SERVER_RESTART;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
