@@ -13,34 +13,26 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Optional;
 import java.util.SortedSet;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static java.math.RoundingMode.HALF_EVEN;
-import static java.util.Collections.emptySortedSet;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.*;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.*;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.PROPERTY_CACHE;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
+import static org.openhab.core.types.RefreshType.REFRESH;
 
 public class It600Handler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private final Logger logger;
     private String dsn;
-    private CloudBridgeHandler bridge;
+    private CloudApi cloudApi;
 
-    private final ReentrantLock devicePropertiesLock = new ReentrantLock();
-    @NotNull
-    private SortedSet<DeviceProperty<?>> deviceProperties = emptySortedSet();
-    private long propertyCacheMilliSeconds;
-    private long lastPropertyUpdateTime;
 
     public It600Handler(Thing thing) {
         super(thing);
@@ -77,16 +69,9 @@ public class It600Handler extends BaseThingHandler {
             updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
             return;
         }
-        this.bridge = cloudHandler;
+        this.cloudApi = cloudHandler;
 
-        {
-            dsn = (String) getConfig().get(DSN);
-            propertyCacheMilliSeconds = ((BigDecimal) getConfig().get(PROPERTY_CACHE)).longValue();
-            if (propertyCacheMilliSeconds <= 0) {
-                propertyCacheMilliSeconds = 5;
-            }
-            propertyCacheMilliSeconds = SECONDS.toMillis(propertyCacheMilliSeconds);
-        }
+        dsn = (String) getConfig().get(DSN);
 
         if (StringUtils.isEmpty(dsn)) {
             logger.debug("No {} for thing with UID {}", DSN, thing.getUID());
@@ -98,7 +83,7 @@ public class It600Handler extends BaseThingHandler {
         }
 
         try {
-            var device = this.bridge.findDevice(dsn);
+            var device = this.cloudApi.findDevice(dsn);
             if (device.isEmpty()) {
                 var msg = "Device with DSN " + dsn + " not found!";
                 logger.error(msg);
@@ -181,16 +166,8 @@ public class It600Handler extends BaseThingHandler {
             if (property.isEmpty()) {
                 return;
             }
-            var result = bridge.setValueForProperty(dsn, property.get().getName(), value);
-            if (result.isPresent()) {
-                devicePropertiesLock.lock();
-                try {
-                    findLongProperty("ep_9:sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
-                            .ifPresent(p -> p.setValue(value));
-                } finally {
-                    devicePropertiesLock.unlock();
-                }
-            }
+            cloudApi.setValueForProperty(dsn, property.get().getName(), value);
+            handleCommand(channelUID, REFRESH);
             return;
         }
 
@@ -203,10 +180,10 @@ public class It600Handler extends BaseThingHandler {
             findLongProperty("ep_9:sIT600TH:HoldType", "HoldType")
                     .map(DeviceProperty.LongDeviceProperty::getValue)
                     .map(value -> switch (value.intValue()) {
-                        case 0 -> "AUTO";
-                        case 2 -> "MANUAL";
-                        case 1 -> "TEMPORARY_MANUAL";
-                        case 7 -> "OFF";
+                        case AUTO -> "AUTO";
+                        case MANUAL -> "MANUAL";
+                        case TEMPORARY_MANUAL -> "TEMPORARY_MANUAL";
+                        case OFF -> "OFF";
                         default -> {
                             logger.warn("Unknown value {} for property HoldType!", value);
                             yield "AUTO";
@@ -220,13 +197,13 @@ public class It600Handler extends BaseThingHandler {
         if (command instanceof StringType typedCommand) {
             long value;
             if (typedCommand.toString().equals("AUTO")) {
-                value = 0;
+                value = AUTO;
             } else if (typedCommand.toString().equals("MANUAL")) {
-                value = 2;
+                value = MANUAL;
             } else if (typedCommand.toString().equals("TEMPORARY_MANUAL")) {
-                value = 1;
+                value = TEMPORARY_MANUAL;
             } else if (typedCommand.toString().equals("OFF")) {
-                value = 7;
+                value = OFF;
             } else {
                 logger.warn("Unknown value `{}` for property HoldType!", typedCommand);
                 return;
@@ -235,16 +212,8 @@ public class It600Handler extends BaseThingHandler {
             if (property.isEmpty()) {
                 return;
             }
-            var result = bridge.setValueForProperty(dsn, property.get().getName(), value);
-            if (result.isPresent()) {
-                devicePropertiesLock.lock();
-                try {
-                    findLongProperty("ep_9:sIT600TH:HoldType", "HoldType")
-                            .ifPresent(p -> p.setValue(value));
-                } finally {
-                    devicePropertiesLock.unlock();
-                }
-            }
+            cloudApi.setValueForProperty(dsn, property.get().getName(), value);
+            handleCommand(channelUID, REFRESH);
             return;
         }
 
@@ -273,27 +242,6 @@ public class It600Handler extends BaseThingHandler {
     }
 
     private SortedSet<DeviceProperty<?>> findDeviceProperties() {
-        devicePropertiesLock.lock();
-        try {
-            var currentTimeMillis = System.currentTimeMillis();
-            if (!deviceProperties.isEmpty() && currentTimeMillis < lastPropertyUpdateTime + propertyCacheMilliSeconds) {
-                logger.trace("Using cached device properties. Next update in {} ms",
-                        (lastPropertyUpdateTime + propertyCacheMilliSeconds) - currentTimeMillis);
-                return deviceProperties;
-            }
-            logger.trace("Getting all properties and putting them in a cache");
-            {
-                var response = this.bridge.findPropertiesForDevice(dsn);
-                if (!response.isEmpty()) {
-                    this.deviceProperties = response;
-                    lastPropertyUpdateTime = currentTimeMillis;
-                } else {
-                    logger.trace("Response was empty. No properties came from the server");
-                }
-            }
-            return deviceProperties;
-        } finally {
-            devicePropertiesLock.unlock();
-        }
+        return this.cloudApi.findPropertiesForDevice(dsn);
     }
 }
