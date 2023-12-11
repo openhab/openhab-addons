@@ -1,14 +1,23 @@
-package org.openhab.binding.salus.internal.rest;
 
+package org.openhab.binding.salus.internal.rest;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import org.openhab.binding.salus.internal.rest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * The SalusApi class is responsible for interacting with a REST API to perform various operations related to the Salus system. It handles authentication, token management, and provides methods to retrieve and manipulate device information and properties.
+ */
 public class SalusApi {
     private static final int MAX_TIMES = 3;
     private final Logger logger;
@@ -19,20 +28,30 @@ public class SalusApi {
     private final GsonMapper mapper;
     private AuthToken authToken;
     private LocalDateTime authTokenExpireTime;
+    private final Clock clock;
 
     public SalusApi(String username,
                     char[] password,
                     String baseUrl,
                     RestClient restClient,
-                    GsonMapper mapper) {
+                    GsonMapper mapper,
+                    Clock clock) {
         this.username = requireNonNull(username, "username");
         this.password = requireNonNull(password, "password");
         this.baseUrl = removeTrailingSlash(requireNonNull(baseUrl, "baseUrl"));
         this.restClient = requireNonNull(restClient, "restClient can not be null!");
         this.mapper = requireNonNull(mapper, "mapper can not be null!");
+        this.clock = requireNonNull(clock, "clock can not be null!");
         // thanks to this, logger will always inform for which rest client it's doing the job
         // it's helpful when more than one SalusApi exists
         logger = LoggerFactory.getLogger(SalusApi.class.getName() + "[" + username.replaceAll("\\.", "_") + "]");
+    }
+    public SalusApi(String username,
+                    char[] password,
+                    String baseUrl,
+                    RestClient restClient,
+                    GsonMapper mapper) {
+        this(username, password, baseUrl, restClient, mapper, Clock.systemDefaultZone());
     }
 
     private static String removeTrailingSlash(String str) {
@@ -77,7 +96,7 @@ public class SalusApi {
             throw new HttpUnknownException(response.statusCode(), method, finalUrl);
         }
         authToken = mapper.authToken(response.body());
-        authTokenExpireTime = LocalDateTime.now().plusSeconds(authToken.expiresIn());
+        authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(authToken.expiresIn());
         logger.info("Correctly logged in for user {}, role={}, expires at {} ({} secs)",
                 username, authToken.role(),
                 authTokenExpireTime, authToken.expiresIn());
@@ -96,7 +115,7 @@ public class SalusApi {
     }
 
     private boolean expiredToken() {
-        return LocalDateTime.now().isAfter(authTokenExpireTime);
+        return LocalDateTime.now(clock).isAfter(authTokenExpireTime);
     }
 
     private boolean shouldRefreshTokenBeforeExpire() {
@@ -112,7 +131,7 @@ public class SalusApi {
     }
 
     private String buildTimestampParam() {
-        return "?timestamp=" + System.currentTimeMillis();
+        return "?timestamp=" + clock.millis();
     }
 
     public ApiResponse<SortedSet<Device>> findDevices() {
