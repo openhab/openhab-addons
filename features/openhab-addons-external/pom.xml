@@ -35,7 +35,7 @@
                 <concat destfile="${project.build.directory}/addons.xml">
                   <header file="src/main/resources/addon-header.xml" filtering="no"/>
                   <fileset dir="${basedirRoot}/bundles">
-                    <include name="*/src/main/resources/OH-INF/addon/addon.xml"/>
+                    <include name="*/src/main/resources/OH-INF/addon/addon*.xml"/>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp negate="true">
