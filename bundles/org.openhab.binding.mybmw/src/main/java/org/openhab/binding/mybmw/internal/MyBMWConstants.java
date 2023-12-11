@@ -32,7 +32,12 @@ public interface MyBMWConstants {
 
     static final String VIN = "vin";
 
+    static final String REFRESH_INTERVAL = "refreshInterval";
+
+    static final String VEHICLE_BRAND = "vehicleBrand";
+
     static final int DEFAULT_IMAGE_SIZE_PX = 1024;
+
     static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 5;
 
     // See constants from bimmer-connected

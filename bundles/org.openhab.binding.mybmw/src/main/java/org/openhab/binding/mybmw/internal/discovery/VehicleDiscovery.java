@@ -152,8 +152,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
                         VehicleAttributes vehicleAttributes = vehicle.getVehicleBase().getAttributes();
                         Map<String, Object> convertedProperties = new HashMap<String, Object>(properties);
                         convertedProperties.put(MyBMWConstants.VIN, vehicle.getVehicleBase().getVin());
-                        convertedProperties.put("vehicleBrand", vehicleAttributes.getBrand());
-                        convertedProperties.put("refreshInterval",
+                        convertedProperties.put(MyBMWConstants.VEHICLE_BRAND, vehicleAttributes.getBrand());
+                        convertedProperties.put(MyBMWConstants.REFRESH_INTERVAL,
                                 Integer.toString(MyBMWConstants.DEFAULT_REFRESH_INTERVAL_MINUTES));
 
                         String vehicleLabel = vehicleAttributes.getBrand() + " " + vehicleAttributes.getModel();
