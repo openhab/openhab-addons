@@ -210,7 +210,7 @@ public class VehicleHandler extends BaseThingHandler {
     public VehicleHandler(Thing thing, MyBMWCommandOptionProvider commandOptionProvider,
             LocationProvider locationProvider, TimeZoneProvider timeZoneProvider, String driveTrain) {
         super(thing);
-        logger.trace("xxxVehicleHandler.constructor {}, {}", thing.getUID(), driveTrain);
+        logger.trace("VehicleHandler.constructor {}, {}", thing.getUID(), driveTrain);
         this.commandOptionProvider = commandOptionProvider;
         this.timeZoneProvider = timeZoneProvider;
         this.locationProvider = locationProvider;
@@ -236,7 +236,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.trace("xxxVehicleHandler.initialize");
+        logger.trace("VehicleHandler.initialize");
         updateStatus(ThingStatus.UNKNOWN);
         vehicleConfiguration = Optional.of(getConfigAs(MyBMWVehicleConfiguration.class));
 
@@ -262,7 +262,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void startSchedule(int interval) {
-        logger.trace("xxxVehicleHandler.startSchedule");
+        logger.trace("VehicleHandler.startSchedule");
         refreshJob.ifPresentOrElse(job -> {
             if (job.isCancelled()) {
                 refreshJob = Optional
@@ -275,14 +275,14 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.trace("xxxVehicleHandler.idispose");
+        logger.trace("VehicleHandler.idispose");
         refreshJob.ifPresent(job -> job.cancel(true));
         editTimeout.ifPresent(job -> job.cancel(true));
         remote.ifPresent(RemoteServiceExecutor::cancel);
     }
 
     public void getData() {
-        logger.trace("xxxVehicleHandler.getData");
+        logger.trace("VehicleHandler.getData");
         proxy.ifPresentOrElse(prox -> {
             vehicleConfiguration.ifPresentOrElse(config -> {
 
@@ -325,7 +325,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void triggerVehicleStatusUpdate(VehicleStateContainer vehicleState, @Nullable String channelToBeUpdated) {
-        logger.trace("xxxVehicleHandler.triggerVehicleStatusUpdate for {}", channelToBeUpdated);
+        logger.trace("VehicleHandler.triggerVehicleStatusUpdate for {}", channelToBeUpdated);
         if (vehicleConfiguration.isPresent()) {
             vehicleStatusCache = Optional.of(vehicleState);
             updateChannel(CHANNEL_GROUP_STATUS, RAW, vehicleState.getRawStateJson(), channelToBeUpdated);
@@ -347,12 +347,12 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public Optional<MyBMWVehicleConfiguration> getVehicleConfiguration() {
-        logger.trace("xxxVehicleHandler.getVehicleConfiguration");
+        logger.trace("VehicleHandler.getVehicleConfiguration");
         return vehicleConfiguration;
     }
 
     public ScheduledExecutorService getScheduler() {
-        logger.trace("xxxVehicleHandler.getScheduler");
+        logger.trace("VehicleHandler.getScheduler");
         return scheduler;
     }
 
@@ -868,7 +868,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("xxxVehicleHandler.handleCommand {}, {}, {}", command.toFullString(), channelUID.getAsString(),
+        logger.trace("VehicleHandler.handleCommand {}, {}, {}", command.toFullString(), channelUID.getAsString(),
                 channelUID.getIdWithoutGroup());
         String group = channelUID.getGroupId();
 

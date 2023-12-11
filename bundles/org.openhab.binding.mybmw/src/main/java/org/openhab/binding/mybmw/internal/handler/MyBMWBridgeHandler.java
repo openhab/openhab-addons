@@ -67,19 +67,19 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
     }
 
     public void setVehicleDiscovery(VehicleDiscovery vehicleDiscovery) {
-        logger.trace("xxxMyBMWBridgeHandler.setVehicleDiscovery");
+        logger.trace("MyBMWBridgeHandler.setVehicleDiscovery");
         this.vehicleDiscovery = Optional.of(vehicleDiscovery);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // no commands available
-        logger.trace("xxxMyBMWBridgeHandler.handleCommand");
+        logger.trace("MyBMWBridgeHandler.handleCommand");
     }
 
     @Override
     public void initialize() {
-        logger.trace("xxxMyBMWBridgeHandler.initialize");
+        logger.trace("MyBMWBridgeHandler.initialize");
         updateStatus(ThingStatus.UNKNOWN);
         MyBMWBridgeConfiguration config = getConfigAs(MyBMWBridgeConfiguration.class);
         if (config.language.equals(Constants.LANGUAGE_AUTODETECT)) {
@@ -111,28 +111,28 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
             } else {
                 myBmwProxy = Optional.of(new MyBMWFileProxy(httpClientFactory, config));
             }
-            logger.trace("xxxMyBMWBridgeHandler proxy set");
+            logger.trace("MyBMWBridgeHandler proxy set");
         }
     }
 
     @Override
     public void dispose() {
-        logger.trace("xxxMyBMWBridgeHandler.dispose");
+        logger.trace("MyBMWBridgeHandler.dispose");
         initializerJob.ifPresent(job -> job.cancel(true));
     }
 
     public void vehicleDiscoveryError() {
-        logger.trace("xxxMyBMWBridgeHandler.vehicleDiscoveryError");
+        logger.trace("MyBMWBridgeHandler.vehicleDiscoveryError");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Request vehicles failed");
     }
 
     public void vehicleDiscoverySuccess() {
-        logger.trace("xxxMyBMWBridgeHandler.vehicleDiscoverySuccess");
+        logger.trace("MyBMWBridgeHandler.vehicleDiscoverySuccess");
         updateStatus(ThingStatus.ONLINE);
     }
 
     private void discoverVehicles() {
-        logger.trace("xxxMyBMWBridgeHandler.requestVehicles");
+        logger.trace("MyBMWBridgeHandler.requestVehicles");
 
         MyBMWBridgeConfiguration config = getConfigAs(MyBMWBridgeConfiguration.class);
 
@@ -143,12 +143,12 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        logger.trace("xxxMyBMWBridgeHandler.getServices");
+        logger.trace("MyBMWBridgeHandler.getServices");
         return Collections.singleton(VehicleDiscovery.class);
     }
 
     public Optional<MyBMWProxy> getMyBmwProxy() {
-        logger.trace("xxxMyBMWBridgeHandler.getProxy");
+        logger.trace("MyBMWBridgeHandler.getProxy");
         createMyBmwProxy(getConfigAs(MyBMWBridgeConfiguration.class), ENVIRONMENT);
         return myBmwProxy;
     }
