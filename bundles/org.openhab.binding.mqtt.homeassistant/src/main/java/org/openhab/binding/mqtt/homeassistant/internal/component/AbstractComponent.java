@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,6 +20,7 @@ import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,7 +28,6 @@ import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
-import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
@@ -66,6 +67,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     // Channels and configuration
     protected final Map<String, ComponentChannel> channels = new TreeMap<>();
+    protected final List<ComponentChannel> hiddenChannels = new ArrayList<>();
+
     // The hash code ({@link String#hashCode()}) of the configuration string
     // Used to determine if a component has changed.
     protected final int configHash;
@@ -155,8 +158,9 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        return channels.values().stream().map(cChannel -> cChannel.start(connection, scheduler, timeout))
-                .collect(FutureCollector.allOf());
+        return Stream.concat(channels.values().stream(), hiddenChannels.stream())
+                .map(v -> v.start(connection, scheduler, timeout)) //
+                .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
     }
 
     /**
@@ -166,7 +170,10 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      *         exceptionally on errors.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return channels.values().stream().map(ComponentChannel::stop).collect(FutureCollector.allOf());
+        return Stream.concat(channels.values().stream(), hiddenChannels.stream()) //
+                .filter(Objects::nonNull) //
+                .map(ComponentChannel::stop) //
+                .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
     }
 
     /**
