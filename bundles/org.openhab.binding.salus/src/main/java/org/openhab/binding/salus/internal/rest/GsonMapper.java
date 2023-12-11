@@ -17,6 +17,9 @@ import static java.util.Collections.singletonMap;
 import static java.util.Collections.unmodifiableSortedMap;
 import static java.util.Optional.empty;
 
+/**
+ * The GsonMapper class is responsible for mapping JSON data to Java objects using the Gson library. It provides methods for converting JSON strings to various types of objects, such as authentication tokens, devices, device properties, and error messages.
+ */
 public class GsonMapper {
     public static final GsonMapper INSTANCE = new GsonMapper();
     private static final Logger logger = LoggerFactory.getLogger(GsonMapper.class);
@@ -99,18 +102,21 @@ public class GsonMapper {
         var list = map.entrySet()
                 .stream()
                 .filter(entry -> entry.getKey() != null)
-                .filter(entry -> !entry.getKey().equals("dns"))
                 .filter(entry -> !entry.getKey().equals("name"))
+                .filter(entry -> !entry.getKey().equals("base_type"))
+                .filter(entry -> !entry.getKey().equals("read_only"))
+                .filter(entry -> !entry.getKey().equals("direction"))
+                .filter(entry -> !entry.getKey().equals("data_updated_at"))
+                .filter(entry -> !entry.getKey().equals("product_name"))
+                .filter(entry -> !entry.getKey().equals("display_name"))
+                .filter(entry -> !entry.getKey().equals("value"))
                 .map(entry -> Pair.of(entry.getKey().toString(), (Object) entry.getValue()))
                 .toList();
-        // this weird thing need to be done,
-        // because `Collectors.toMap` does not support value=null
-        // and in our case, sometimes the values are null
-        SortedMap<String, Object> properties = new TreeMap<>();
+        Map<String, Object> properties = new LinkedHashMap<>();
         for (var entry : list) {
             properties.put(entry.getKey(), entry.getValue());
         }
-        properties = unmodifiableSortedMap(properties);
+        properties = Collections.unmodifiableMap(properties);
 
         return Optional.of(new Device(dsn.trim(), name.trim(), properties));
     }
@@ -145,7 +151,7 @@ public class GsonMapper {
         for (var obj : objects) {
             parseDeviceProperty(obj).ifPresent(deviceProperties::add);
         }
-        return List.copyOf(deviceProperties);
+        return Collections.unmodifiableList(deviceProperties);
     }
 
     private Optional<DeviceProperty<?>> parseDeviceProperty(Object obj) {
@@ -301,11 +307,11 @@ public class GsonMapper {
 
     public Optional<Object> datapointValue(String json) {
         var map = tryParseBody(json, MAP_TYPE_REFERENCE, Map.of());
-        if(!map.containsKey("datapoint")) {
+        if (!map.containsKey("datapoint")) {
             return empty();
         }
         var datapoint = (Map<?, ?>) map.get("datapoint");
-        if(!datapoint.containsKey("value")) {
+        if (!datapoint.containsKey("value")) {
             return empty();
         }
         return Optional.ofNullable(datapoint.get("value"));
