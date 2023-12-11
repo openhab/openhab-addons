@@ -441,6 +441,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
 
     @Override
     public void onNewMessageEvent(MonopriceAudioMessageEvent evt) {
+        updateStatus(ThingStatus.ONLINE);
         String key = evt.getKey();
 
         switch (key) {
@@ -510,8 +511,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     if (error != null) {
                         closeConnection();
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
-                    } else {
-                        updateStatus(ThingStatus.ONLINE);
                     }
                 }
             }
