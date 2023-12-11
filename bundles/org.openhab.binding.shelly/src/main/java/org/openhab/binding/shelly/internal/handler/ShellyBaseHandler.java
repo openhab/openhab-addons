@@ -1336,8 +1336,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         upgradeChannels.add(channelBuilder.build());
                     }
                 }
-            } catch (Exception e) {
-                logger.debug("failed", e);
+            } catch (IllegalArgumentException e) {
+                logger.debug("{}: Unable to upgrade definitions for channel {}", thingName, channel.getUID().toString(),
+                        e);
             }
         }
 
