@@ -8,6 +8,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -15,7 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 
 import static java.math.RoundingMode.HALF_EVEN;
@@ -29,6 +32,13 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 
 public class It600Handler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
+    private static final Set<String> REQUIRED_CHANNELS = Set.of(
+            "ep_9:sIT600TH:LocalTemperature_x100",
+            "ep_9:sIT600TH:HeatingSetpoint_x100",
+            "ep_9:sIT600TH:SetHeatingSetpoint_x100",
+            "ep_9:sIT600TH:HoldType",
+            "ep_9:sIT600TH:SetHoldType"
+    );
     private final Logger logger;
     private String dsn;
     private CloudApi cloudApi;
@@ -53,23 +63,29 @@ public class It600Handler extends BaseThingHandler {
 
 
     private void internalInitialize() {
-        var bridge = getBridge();
-        if (bridge == null) {
-            logger.debug("No bridge for thing with UID {}", thing.getUID());
-            updateStatus(
-                    OFFLINE,
-                    BRIDGE_UNINITIALIZED,
-                    "There is no bridge for this thing. Remove it and add it again.");
-            return;
+        {
+            var bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("No bridge for thing with UID {}", thing.getUID());
+                updateStatus(
+                        OFFLINE,
+                        BRIDGE_UNINITIALIZED,
+                        "There is no bridge for this thing. Remove it and add it again.");
+                return;
+            }
+            var bridgeHandler = bridge.getHandler();
+            if (!(bridgeHandler instanceof CloudBridgeHandler cloudHandler)) {
+                var bridgeHandlerClassName = Optional.ofNullable(bridgeHandler)
+                        .map(BridgeHandler::getClass)
+                        .map(Class::getSimpleName)
+                        .orElse("null");
+                logger.debug("Bridge is not instance of {}! Current bridge class {}, Thing UID {}",
+                        CloudBridgeHandler.class.getSimpleName(), bridgeHandlerClassName, thing.getUID());
+                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
+                return;
+            }
+            this.cloudApi = cloudHandler;
         }
-        var bridgeHandler = bridge.getHandler();
-        if (!(bridgeHandler instanceof CloudBridgeHandler cloudHandler)) {
-            logger.debug("Bridge is not instance of {}! Current bridge class {}, Thing UID {}",
-                    CloudBridgeHandler.class.getSimpleName(), CloudBridgeHandler.class.getSimpleName(), thing.getUID());
-            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
-            return;
-        }
-        this.cloudApi = cloudHandler;
 
         dsn = (String) getConfig().get(DSN);
 
@@ -84,19 +100,33 @@ public class It600Handler extends BaseThingHandler {
 
         try {
             var device = this.cloudApi.findDevice(dsn);
+            // no device in cloud
             if (device.isEmpty()) {
                 var msg = "Device with DSN " + dsn + " not found!";
                 logger.error(msg);
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
                 return;
             }
+            // device is not connected
             if (!device.get().isConnected()) {
                 var msg = "Device with DSN " + dsn + " is not connected!";
                 logger.error(msg);
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
                 return;
             }
-            findDeviceProperties();
+            // device is missing properties
+            var deviceProperties = findDeviceProperties()
+                    .stream()
+                    .map(DeviceProperty::getName)
+                    .toList();
+            var result = new ArrayList<>(REQUIRED_CHANNELS);
+            result.removeAll(deviceProperties);
+            if (result.size() > 0) {
+                var msg = "Device with DSN " + dsn + " is missing required properties: " + result;
+                logger.error(msg);
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, msg);
+                return;
+            }
         } catch (Exception e) {
             var msg = "Error when connecting to Salus Cloud!";
             logger.error(msg, e);
