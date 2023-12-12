@@ -243,7 +243,7 @@ where parts in brackets `[]` denote optional information.
 **Each configuration parameter has a `mainGA` where commands are written to and optionally several `listeningGA`s.**
 
 `mainGA` also listens to incoming packets, unless prefixed with a `>` character.
-This is recommended if you have dedicated status group addresses which are added as `listeningGA`s.
+This is recommended if you have a dedicated status group address which is added as `listeningGA`.
 
 The optional `<` sign tells whether the group address of the datapoint accepts read requests on the KNX bus (it does, if the sign is there).
 The group addresses marked with `<` are read by openHAB during startup. 
