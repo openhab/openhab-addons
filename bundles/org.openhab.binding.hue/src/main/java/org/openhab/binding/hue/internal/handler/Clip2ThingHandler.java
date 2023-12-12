@@ -632,11 +632,37 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Update the channel state depending on new resources sent from the bridge.
+     *
+     * @param resources a collection of Resource objects containing the new state.
+     */
+    public void onResources(Collection<Resource> resources) {
+        boolean sceneActivated = resources.stream().anyMatch(r -> sceneContributorsCache.containsKey(r.getId())
+                && (r.getSceneActive().orElse(false) || r.getSmartSceneActive().orElse(false)));
+        for (Resource resource : resources) {
+            // Skip scene deactivation when we have also received a scene activation.
+            boolean updateChannels = !sceneActivated || !sceneContributorsCache.containsKey(resource.getId())
+                    || resource.getSceneActive().orElse(false) || resource.getSmartSceneActive().orElse(false);
+            onResource(resource, updateChannels);
+        }
+    }
+
+    /**
      * Update the channel state depending on a new resource sent from the bridge.
      *
      * @param resource a Resource object containing the new state.
      */
-    public void onResource(Resource resource) {
+    private void onResource(Resource resource) {
+        onResource(resource, true);
+    }
+
+    /**
+     * Update the channel state depending on a new resource sent from the bridge.
+     *
+     * @param resource a Resource object containing the new state.
+     * @param updateChannels update channels (otherwise only update cache/properties).
+     */
+    private void onResource(Resource resource, boolean updateChannels) {
         if (disposing) {
             return;
         }
@@ -658,7 +684,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Resource cachedResource = getResourceFromCache(resource);
             if (cachedResource != null) {
                 Setters.setResource(resource, cachedResource);
-                resourceConsumed = updateChannels(resource);
+                resourceConsumed = updateChannels && updateChannels(resource);
                 putResourceToCache(resource);
                 if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
                     updateLightProperties(resource);
