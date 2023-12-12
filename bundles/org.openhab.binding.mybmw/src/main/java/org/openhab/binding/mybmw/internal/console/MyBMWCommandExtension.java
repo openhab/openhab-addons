@@ -203,7 +203,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
             deleteDirectory(path);
             console.println("### Fingerprint has been written to zipfile: " + zipfile);
         } catch (IOException e) {
-            console.println("Exception zipping fingerprint " + e.getMessage());
+            console.println("Exception zipping fingerprint: " + e.getMessage());
             console.println("### Fingerprint has been written to files in directory: " + path);
         }
 
