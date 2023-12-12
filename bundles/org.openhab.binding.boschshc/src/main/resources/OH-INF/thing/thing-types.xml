@@ -571,7 +571,7 @@
 	<channel-type id="user-state">
 		<item-type>Switch</item-type>
 		<label>State</label>
-		<description>State of User-defined state</description>
+		<description>State of user-defined state</description>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -19,12 +19,14 @@ import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
  *
  * Example from Json:
  *
+ * <pre>
  * {
  * "@type": "userDefinedState",
  * "id": "23d34fa6-382a-444d-8aae-89c706e22158",
  * "name": "atHome",
  * "state": false
  * }
+ * </pre>
  *
  * @author Patrick Gell - Initial contribution
  */
