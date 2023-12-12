@@ -50,14 +50,17 @@ public class SonyProjectorHandlerFactory extends BaseThingHandlerFactory {
     private final SerialPortManager serialPortManager;
 
     private final SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider;
+    private final SonyProjectorCommandDescriptionOptionProvider commandDescriptionProvider;
     private final TranslationProvider i18nProvider;
 
     @Activate
     public SonyProjectorHandlerFactory(final @Reference SerialPortManager serialPortManager,
             final @Reference SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider,
+            final @Reference SonyProjectorCommandDescriptionOptionProvider commandDescriptionProvider,
             final @Reference TranslationProvider i18nProvider) {
         this.serialPortManager = serialPortManager;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
         this.i18nProvider = i18nProvider;
     }
 
@@ -71,7 +74,8 @@ public class SonyProjectorHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new SonyProjectorHandler(thing, stateDescriptionProvider, serialPortManager, i18nProvider);
+            return new SonyProjectorHandler(thing, stateDescriptionProvider, commandDescriptionProvider,
+                    serialPortManager, i18nProvider);
         }
 
         return null;
