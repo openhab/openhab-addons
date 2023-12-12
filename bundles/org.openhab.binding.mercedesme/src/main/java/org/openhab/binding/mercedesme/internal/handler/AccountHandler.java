@@ -121,7 +121,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             authService = Optional
                     .of(new AuthService(this, httpClient, config.get(), localeProvider.getLocale(), storage));
             if (!server.get().start()) {
-                logger.warn("initialize offline");
+                logger.warn("initialize offline - AuthService present {}", authService.isPresent());
                 String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                         + Constants.STATUS_SERVER_RESTART;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
