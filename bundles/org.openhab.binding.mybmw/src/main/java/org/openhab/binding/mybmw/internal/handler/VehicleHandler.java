@@ -275,7 +275,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.trace("VehicleHandler.idispose");
+        logger.trace("VehicleHandler.dispose");
         refreshJob.ifPresent(job -> job.cancel(true));
         editTimeout.ifPresent(job -> job.cancel(true));
         remote.ifPresent(RemoteServiceExecutor::cancel);
