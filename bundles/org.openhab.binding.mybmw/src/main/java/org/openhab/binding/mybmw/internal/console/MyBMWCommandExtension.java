@@ -216,7 +216,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
         try {
             writeJsonToFile(path, filename, json);
         } catch (IOException e) {
-            console.println("Exception writing to file " + e.getMessage());
+            console.println("Exception writing to file: " + e.getMessage());
         }
     }
 
