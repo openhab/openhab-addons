@@ -63,4 +63,5 @@ public class SonyProjectorBindingConstants {
     public static final String CHANNEL_OVERSCAN = "overscan";
     public static final String CHANNEL_PICTURE_POSITION = "pictureposition";
     public static final String CHANNEL_LAMP_USE_TIME = "lampusetime";
+    public static final String CHANNEL_IR_COMMAND = "ircommand";
 }
