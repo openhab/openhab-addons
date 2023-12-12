@@ -136,7 +136,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     public void update() {
         logger.warn("Auth? {}", authService.isPresent());
-        if (authService.isPresent()) {
+        if (server.isPresent()) {
             if (!Constants.NOT_SET.equals(authService.get().getToken())) {
                 ws.run();
             } else {
@@ -224,7 +224,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
         } else if (server.isEmpty()) {
             // server not running - fix first
-            logger.warn("onAccessTokenResponse offline");
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                     + Constants.STATUS_SERVER_RESTART;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);

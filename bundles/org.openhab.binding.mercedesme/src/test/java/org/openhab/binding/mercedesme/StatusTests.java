@@ -153,9 +153,23 @@ class StatusTests {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        ahm.onAccessTokenResponse(token);
         ahm.connect();
         assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Spcket Online");
+        System.out.println("ONLINE");
+        try {
+            System.out.println("3");
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         tearDown(ahm);
+        try {
+            System.out.println("4");
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
