@@ -294,7 +294,7 @@ State representing current window position.
 | rear-right          | Number               |  Rear Right Window           | X    |       |
 | rear-right-blind    | Number               |  Rear Right Blind            | X    |       |
 | rear-left-blind     | Number               |  Rear Left Blind             | X    |       |
-| rear-blind          | Number               |  Rear  Blind                 | X    |       |
+| rear-blind          | Number               |  Rear Blind                  | X    |       |
 
 #### Window Channel Mapping
 
@@ -361,7 +361,7 @@ Triggers `- PRECONDCONFIGURESEATS` from [Command Name Mapping](#command-name-map
 
 #### Temperature Setting
 
-Preconfigure selected zone with desired temperature.
+Pre-configure selected zone with desired temperature.
 Minimum and maximum temperature depends on your local settings either Degree Celsius or Fahrenheit.
 
 Celsius 
@@ -667,7 +667,7 @@ You've the possibility to perform the below action in your rules.
     /**
      * Send Point of Interest (POI) to your vehicle.
      * This POI is shown in your vehicle messages and can be instantly used to start a navigation route to this point.
-     * A "catchy" title plus latitude / longitude are mandatory.
+     * A title plus latitude / longitude are mandatory.
      * Parameters args is optional. If you use it respect the following order
      * 1) City
      * 2) Street
@@ -719,7 +719,7 @@ In order to be able to analyze problems 3 advanced channels are placed in the ve
 * `proto-update` - latest update of your vehicle data
 
 In case you find problems regarding this binding add items to these 3 channels.
-The items are reporting Strings in json format.
+The items are reporting Strings in JSON format.
 Vehicle Identification Number (VIN) isn't part of data.
 GPS data which is showing your location is anonymized.
 Please double check yourself no critical data is inside.

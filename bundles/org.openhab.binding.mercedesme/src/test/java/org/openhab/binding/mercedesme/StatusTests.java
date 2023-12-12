@@ -47,7 +47,6 @@ class StatusTests {
         } catch (InterruptedException e) {
             fail();
         }
-        System.out.println("--");
     }
 
     @Test
@@ -136,40 +135,11 @@ class StatusTests {
         AccountHandlerMock ahm = new AccountHandlerMock(bi, Utils.toString(token));
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
-        try {
-            System.out.println("1");
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         ahm.initialize();
         assertEquals(ThingStatus.UNKNOWN, tcl.getThingStatus().getStatus(), "Socket Unknown "
                 + tcl.getThingStatus().getStatusDetail() + " " + tcl.getThingStatus().getDescription());
-        try {
-            System.out.println("2");
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         ahm.connect();
         assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Spcket Online");
-        System.out.println("ONLINE");
-        try {
-            System.out.println("3");
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         tearDown(ahm);
-        try {
-            System.out.println("4");
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 }

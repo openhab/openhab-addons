@@ -66,7 +66,6 @@ public class AccountHandlerMock extends AccountHandler {
 
     @Override
     public void sendCommand(@Nullable ClientMessage cm) {
-        // System.out.println(cm.getAllFields());
         if (cm != null) {
             command = ProtoConverter.clientMessage2Json(cm);
         }
