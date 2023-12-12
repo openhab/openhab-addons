@@ -127,6 +127,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
             } else {
+                logger.warn("initialize schedule - AuthService present {}", authService.isPresent());
                 scheduledFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 0,
                         config.get().refreshInterval, TimeUnit.MINUTES));
             }
@@ -134,6 +135,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     public void update() {
+        logger.warn("Auth? {}", authService.isPresent());
         if (authService.isPresent()) {
             if (!Constants.NOT_SET.equals(authService.get().getToken())) {
                 ws.run();
