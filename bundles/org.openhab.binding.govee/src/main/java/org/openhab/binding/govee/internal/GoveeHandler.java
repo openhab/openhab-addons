@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.govee.internal.model.Color;
@@ -340,11 +338,11 @@ public class GoveeHandler extends BaseThingHandler {
      *
      * @return the computed state
      */
-    private HSBType getLastColorState() {
-        PercentType brightness = lastOnOff == 0 ? new PercentType(0) : new PercentType(lastBrightness);
-        int rgb[] = { lastColor.r(), lastColor.g(), lastColor.b() };
+    private HSBType getColorState(Color color, int brightness) {
+        PercentType computedBrightness = lastOnOff == 0 ? new PercentType(0) : new PercentType(brightness);
+        int rgb[] = { color.r(), color.g(), color.b() };
         HSBType hsb = ColorUtil.rgbToHsb(rgb);
-        HSBType hsbState = new HSBType(hsb.getHue(), hsb.getSaturation(), brightness);
+        HSBType hsbState = new HSBType(hsb.getHue(), hsb.getSaturation(), computedBrightness);
         return hsbState;
     }
 
@@ -353,31 +351,45 @@ public class GoveeHandler extends BaseThingHandler {
             return;
         }
 
-        logger.debug("Update Device State ----------------------------------------------");
-        lastOnOff = message.msg().data().onOff();
-        logger.debug("lastOnOff = {}", lastOnOff);
-        lastBrightness = message.msg().data().brightness();
-        logger.debug("lastbrightness = {}", lastBrightness);
-        lastColor = message.msg().data().color();
-        logger.debug("lastColor = {}", lastColor);
-        lastColorTempInKelvin = message.msg().data().colorTemInKelvin();
-        logger.debug("lastColorTempInKelvin = {}", lastColorTempInKelvin);
+        logger.debug("Receiving Device State ----------------------------------------------");
+        int newOnOff = message.msg().data().onOff();
+        logger.debug("newOnOff = {}", newOnOff);
+        int newBrightness = message.msg().data().brightness();
+        logger.debug("newBrightness = {}", newBrightness);
+        Color newColor = message.msg().data().color();
+        logger.debug("newColor = {}", newColor);
+        int newColorTempInKelvin = message.msg().data().colorTemInKelvin();
+        logger.debug("newColorTempInKelvin = {}", newColorTempInKelvin);
 
-        lastColorTempInKelvin = (lastColorTempInKelvin < COLOR_TEMPERATURE_MIN_VALUE)
+        newColorTempInKelvin = (newColorTempInKelvin < COLOR_TEMPERATURE_MIN_VALUE)
                 ? COLOR_TEMPERATURE_MIN_VALUE.intValue()
-                : lastColorTempInKelvin;
-        int lastColorTempInPercent = ((Double) ((lastColorTempInKelvin - COLOR_TEMPERATURE_MIN_VALUE)
+                : newColorTempInKelvin;
+        int newColorTempInPercent = ((Double) ((newColorTempInKelvin - COLOR_TEMPERATURE_MIN_VALUE)
                 / (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) * 100.0)).intValue();
 
-        logger.debug("Last RGB = {} {} {}, brightness {}", lastColor.r(), lastColor.g(), lastColor.b(), lastBrightness);
+        HSBType hsbColor = getColorState(newColor, newBrightness);
 
-        HSBType hsbColor = getLastColorState();
-        logger.debug("Send HSB = {} {} {}", hsbColor.getHue(), hsbColor.getSaturation(), hsbColor.getBrightness());
+        final HSBType lastKnownColor = ColorUtil.rgbToHsb(new int[] { lastColor.r(), lastColor.g(), lastColor.b() });
+        logger.debug("HSB old: {} vs new: {}", lastKnownColor, hsbColor);
+        // avoid noise by only updating if the value has changed on the device
+        if (!hsbColor.equals(lastKnownColor)) {
+            logger.debug("UPDATING HSB old: {} != {}", lastKnownColor, hsbColor);
+            updateState(CHANNEL_COLOR, hsbColor);
+        }
 
-        updateState(CHANNEL_COLOR, hsbColor);
-        logger.debug("Updating Color-Temperature Status: {} K  {}%", lastColorTempInKelvin, lastColorTempInPercent);
-        updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<Temperature>(lastColorTempInKelvin, Units.KELVIN));
-        updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(lastColorTempInPercent));
+        // avoid noise by only updating if the value has changed on the device
+        logger.debug("Color-Temperature Status: old: {} K {}% vs new: {} K", lastColorTempInKelvin,
+                newColorTempInPercent, newColorTempInKelvin);
+        if (newColorTempInKelvin != lastColorTempInKelvin) {
+            logger.debug("Color-Temperature Status: old: {} K {}% vs new: {} K", lastColorTempInKelvin,
+                    newColorTempInPercent, newColorTempInKelvin);
+            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<>(lastColorTempInKelvin, Units.KELVIN));
+            updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
+        }
+
+        lastOnOff = newOnOff;
+        lastColor = newColor;
+        lastBrightness = newBrightness;
     }
 
     public void statusUpdate(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {

@@ -14,14 +14,6 @@
 			<label>MAC Address</label>
 			<description>MAC Address of the device</description>
 		</parameter>
-		<parameter name="deviceType" type="text" required="true">
-			<label>Device Product Number (sku)</label>
-			<description>The product number of the device</description>
-		</parameter>
-		<parameter name="productName" type="text" required="false">
-			<label>Device Product Name</label>
-			<description>Description of the device</description>
-		</parameter>
 		<parameter name="refreshInterval" type="integer" unit="s">
 			<label>Light Refresh Interval</label>
 			<description>The amount of time that passes until the device is refreshed (in seconds)</description>
