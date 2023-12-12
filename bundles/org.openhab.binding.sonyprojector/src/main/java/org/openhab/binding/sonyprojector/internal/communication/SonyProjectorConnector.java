@@ -918,7 +918,7 @@ public abstract class SonyProjectorConnector {
             }
         }
         if (!found) {
-            // Check if the command is a direct IR code in hexadicimal
+            // Check if the command is a direct IR code in hexadecimal
             // Must be 4 characters starting by either 17 or 19 or 1B
             String cmd = command.trim();
             if (cmd.length() != 4) {
@@ -928,7 +928,7 @@ public abstract class SonyProjectorConnector {
             try {
                 hex = Integer.parseInt(cmd, 16);
             } catch (NumberFormatException e) {
-                throw new SonyProjectorException("Invalid IR code: " + command);
+                throw new SonyProjectorException("Invalid IR code: " + command, e);
             }
             irCode = new byte[2];
             irCode[0] = (byte) ((hex >> 8) & 0x000000FF);

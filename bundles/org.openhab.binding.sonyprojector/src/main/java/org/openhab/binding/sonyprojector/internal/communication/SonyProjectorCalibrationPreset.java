@@ -159,8 +159,7 @@ public enum SonyProjectorCalibrationPreset {
 
     /**
      * Get the list of {@link CommandOption} associated to the available calibration presets for a particular category
-     * of
-     * projector models
+     * of projector models
      *
      * @param category a category of projector models
      *
