@@ -149,7 +149,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
 
                 Thread.sleep(10000);
             } catch (Exception e) {
-                logger.error("error retrieving the base vehicles {}", e.getMessage());
+                logger.warn("error retrieving the base vehicles for brand {}: {}", brand, e.getMessage());
             }
         }
 

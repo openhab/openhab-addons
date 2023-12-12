@@ -64,9 +64,9 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof MyBMWBridgeHandler) {
+        if (handler instanceof MyBMWBridgeHandler bmwBridgeHandler) {
             logger.trace("VehicleDiscovery.setThingHandler for MybmwBridge");
-            bridgeHandler = Optional.of((MyBMWBridgeHandler) handler);
+            bridgeHandler = Optional.of(bmwBridgeHandler);
             bridgeHandler.get().setVehicleDiscovery(this);
             bridgeUid = Optional.of(bridgeHandler.get().getThing().getUID());
         }
@@ -115,6 +115,9 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
     /**
      * this method is called by the bridgeHandler if the list of vehicles was retrieved successfully
      * 
+     * it iterates through the list of existing things and checks if the vehicles found via the API
+     * call are already known to OH. If not, it creates a new thing and puts it into the inbox
+     * 
      * @param vehicleList
      */
     private void processVehicles(List<Vehicle> vehicleList) {
@@ -137,7 +140,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
                     List<Thing> vehicleThings = bridgeHandler.get().getThing().getThings();
                     for (Thing vehicleThing : vehicleThings) {
                         Configuration configuration = vehicleThing.getConfiguration();
-                        // boolean thingFound = true;
+
                         if (configuration.containsKey(MyBMWConstants.VIN)) {
                             String thingVIN = configuration.get(MyBMWConstants.VIN).toString();
                             if (vehicle.getVehicleBase().getVin().equals(thingVIN)) {
@@ -147,6 +150,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
                         }
                     }
 
+                    // the vehicle found is not yet known to OH, so put it into the inbox
                     if (!thingFound) {
                         // Properties needed for functional Thing
                         VehicleAttributes vehicleAttributes = vehicle.getVehicleBase().getAttributes();
