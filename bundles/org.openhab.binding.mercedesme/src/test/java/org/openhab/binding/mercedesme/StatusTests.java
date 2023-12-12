@@ -39,6 +39,17 @@ import org.openhab.core.thing.internal.BridgeImpl;
 @NonNullByDefault
 class StatusTests {
 
+    public static void tearDown(AccountHandlerMock ahm) {
+        // ahm.setCallback(null);
+        ahm.dispose();
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+            fail();
+        }
+        System.out.println("--");
+    }
+
     @Test
     void testInvalidConfig() {
         BridgeImpl bi = new BridgeImpl(new ThingTypeUID("test", "account"), "MB");
@@ -73,7 +84,7 @@ class StatusTests {
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.getThingStatus().getStatusDetail(), "Refresh config");
         assertEquals("@text/mercedesme.account.status.refresh-invalid", tcl.getThingStatus().getDescription(),
                 "Refresh text");
-        ahm.dispose();
+        tearDown(ahm);
     }
 
     @Test
@@ -102,7 +113,7 @@ class StatusTests {
         ahm.onAccessTokenResponse(token);
         ahm.connect();
         assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Auth Online");
-        ahm.dispose();
+        tearDown(ahm);
     }
 
     @Test
@@ -125,12 +136,26 @@ class StatusTests {
         AccountHandlerMock ahm = new AccountHandlerMock(bi, Utils.toString(token));
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
+        try {
+            System.out.println("1");
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         ahm.initialize();
         assertEquals(ThingStatus.UNKNOWN, tcl.getThingStatus().getStatus(), "Socket Unknown "
                 + tcl.getThingStatus().getStatusDetail() + " " + tcl.getThingStatus().getDescription());
+        try {
+            System.out.println("2");
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         ahm.onAccessTokenResponse(token);
         ahm.connect();
         assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Spcket Online");
-        ahm.dispose();
+        tearDown(ahm);
     }
 }

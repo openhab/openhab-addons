@@ -220,6 +220,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
         if (!Constants.NOT_SET.equals(tokenResponse.getAccessToken())) {
+            logger.warn("onAccessTokenResponse scheduke");
             scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
         } else if (server.isEmpty()) {
             // server not running - fix first
@@ -432,6 +433,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (cm != null) {
             ws.setCommand(cm);
         }
+        logger.warn("sendCommand scheduke");
         scheduler.schedule(this::update, 2, TimeUnit.SECONDS);
     }
 
