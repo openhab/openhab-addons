@@ -140,7 +140,7 @@ public class MBWebsocket {
     private boolean sendMessage() {
         if (!commandQueue.isEmpty()) {
             ClientMessage message = commandQueue.remove(0);
-            logger.info("Send Message {}", message.getAllFields());
+            logger.trace("Send Message {}", message.getAllFields());
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);

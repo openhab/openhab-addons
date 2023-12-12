@@ -98,7 +98,6 @@ class ProtoTest {
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/proto-blob/MB-BEV-EQA-Charging.blob");
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
-            // System.out.println(pm.getAllFields());
             VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
             Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get(VIN_ANON).getAttributesMap();
             VehicleAttributeStatus value = m.get("endofchargetime");

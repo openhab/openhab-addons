@@ -31,6 +31,5 @@ public class MercedesMeDynamicStateDescriptionProviderMock<V> extends MercedesMe
     @Override
     public void setStatePattern(ChannelUID channelUID, String pattern) {
         patternMap.put(channelUID.toString(), pattern);
-        // System.out.println("Pattern " + pattern + " for " + channelUID.toString());
     }
 }

@@ -121,13 +121,11 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             authService = Optional
                     .of(new AuthService(this, httpClient, config.get(), localeProvider.getLocale(), storage));
             if (!server.get().start()) {
-                logger.warn("initialize offline - AuthService present {}", authService.isPresent());
                 String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                         + Constants.STATUS_SERVER_RESTART;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
             } else {
-                logger.warn("initialize schedule - AuthService present {}", authService.isPresent());
                 scheduledFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 0,
                         config.get().refreshInterval, TimeUnit.MINUTES));
             }
@@ -135,7 +133,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     public void update() {
-        logger.warn("Auth? {}", authService.isPresent());
         if (server.isPresent()) {
             if (!Constants.NOT_SET.equals(authService.get().getToken())) {
                 ws.run();
@@ -150,7 +147,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             // server not running - fix first
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                     + Constants.STATUS_SERVER_RESTART;
-            logger.warn("update offline");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
         }
     }
@@ -220,8 +216,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
         if (!Constants.NOT_SET.equals(tokenResponse.getAccessToken())) {
-            logger.warn("onAccessTokenResponse scheduke");
-            scheduler.schedule(this::update, 0, TimeUnit.SECONDS);
+            scheduler.schedule(this::update, 2, TimeUnit.SECONDS);
         } else if (server.isEmpty()) {
             // server not running - fix first
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
@@ -432,7 +427,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (cm != null) {
             ws.setCommand(cm);
         }
-        logger.warn("sendCommand scheduke");
         scheduler.schedule(this::update, 2, TimeUnit.SECONDS);
     }
 

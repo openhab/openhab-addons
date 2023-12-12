@@ -327,7 +327,6 @@ public class Utils {
     public static String proto2Json(VEPUpdate update, ThingTypeUID ttuid) {
         JSONObject protoJson = new JSONObject();
         Map<String, VehicleAttributeStatus> m = update.getAttributesMap();
-        // System.out.println("Total size " + m.size());
         m.forEach((key, value) -> {
             Map<FieldDescriptor, Object> attMap = value.getAllFields();
             JSONObject attributesJson = getJsonObject(attMap);
@@ -398,8 +397,6 @@ public class Utils {
                 attributesJson.put("double_value", 4.56);
             }
             protoJson.put(key, attributesJson);
-
-            // System.out.println("New size " + protoJson.length());
         });
         // finally put binding version in
         JSONObject bindingInfo = new JSONObject();

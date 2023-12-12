@@ -64,7 +64,6 @@ public class ProtoConverter {
                     .newBuilder();
             while (valueIter.hasNext()) {
                 String valueKey = valueIter.next();
-                // System.out.println("J2P - handle " + valueKey);
                 switch (valueKey) {
                     case "timestamp_in_ms":
                         builder.setTimestampInMs(value.getLong(valueKey));

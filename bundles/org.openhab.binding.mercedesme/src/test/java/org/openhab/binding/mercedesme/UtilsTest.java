@@ -24,7 +24,7 @@ import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.unit.ImperialUnits;
 
 /**
- * {@link UtilsTest} fot helper functions
+ * {@link UtilsTest} for helper functions
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -93,7 +93,6 @@ class UtilsTest {
                 String content = FileReader.readFileInString(configFiles[i].toString());
                 String[] splits = content.split("<channel id=");
                 for (int j = 1; j < splits.length; j++) {
-                    // System.out.println(splits[j]);
                     String[] furtherSplit = splits[j].split("\"");
                     assertTrue(furtherSplit[1].length() <= 20);
                 }
@@ -111,36 +110,10 @@ class UtilsTest {
                 String content = FileReader.readFileInString(configFiles[i].toString());
                 String[] splits = content.split("<label>");
                 for (int j = 1; j < splits.length; j++) {
-                    // System.out.println(splits[j]);
                     String[] furtherSplit = splits[j].split("</label>");
                     assertTrue(furtherSplit[0].length() <= 25, "Length violation " + furtherSplit[0]);
-                    // System.out.println(furtherSplit[0]);
                 }
             }
         }
     }
-
-    // @Test
-    // public void testCommanedTypes() {
-    // CommandType[] ctValues = CommandType.values();
-    // for (int i = 0; i < ctValues.length; i++) {
-    // if (!"UNRECOGNIZED".equals(ctValues[i].toString())) {
-    // System.out.println("- " + ctValues[i].getNumber() + " : " + ctValues[i].toString());
-    // }
-    // }
-    // CommandState[] csValues = CommandState.values();
-    // for (int j = 0; j < csValues.length; j++) {
-    // if (!"UNRECOGNIZED".equals(csValues[j].toString())) {
-    // System.out.println("- " + csValues[j].getNumber() + " : " + csValues[j].toString());
-    // }
-    // }
-    // ChargeProgram[] programs = ChargeProgram.values();
-    // for (int i = 0; i < programs.length - 1; i++) {
-    // System.out.println(programs[i].name() + programs[i].getNumber());
-    // }
-    // Zone[] zones = Zone.values();
-    // for (int i = 0; i < zones.length - 1; i++) {
-    // System.out.println(zones[i].name() + zones[i].getNumber());
-    // }
-    // }
 }
