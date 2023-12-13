@@ -77,8 +77,9 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopScan() {
-        if (scanFuture != null) {
-            scanFuture.cancel(false);
+        Future<?> tmpScanFuture = scanFuture;
+        if (tmpScanFuture != null) {
+            tmpScanFuture.cancel(false);
             scanFuture = null;
         }
     }
@@ -92,7 +93,11 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
             List<Result<SearchResponse>> responses = discovererUdp.getSearchResponses();
 
             for (Result<SearchResponse> r : responses) {
+                @Nullable
                 SearchResponse response = r.getResponse();
+                if (response==null) {
+                    continue;
+                }
                 Map<ServiceFamily, Integer> services = response.getServiceFamilies().families();
 
                 if (services.containsKey(ServiceFamiliesDIB.ServiceFamily.Tunneling)
