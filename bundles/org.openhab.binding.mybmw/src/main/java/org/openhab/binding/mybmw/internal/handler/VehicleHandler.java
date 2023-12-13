@@ -524,8 +524,7 @@ public class VehicleHandler extends BaseThingHandler {
             int rangeCombined = vehicleState.getRange();
 
             // there is a bug/feature in the API that the fuel range is the same like the combined range, hence in case
-            // of
-            // hybrid the fuel range has to be subtracted by the electric range
+            // of hybrid the fuel range has to be subtracted by the electric range
             int rangeFuel = vehicleState.getCombustionFuelLevel().getRange()
                     - vehicleState.getElectricChargingState().getRange();
 
