@@ -102,6 +102,11 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         this.bridgeConfiguration = bridgeConfiguration;
     }
 
+    /**
+     * requests all vehicles
+     * 
+     * @return list of vehicles
+     */
     public List<@NonNull Vehicle> requestVehicles() throws NetworkException {
         List<@NonNull Vehicle> vehicles = new ArrayList<>();
         List<@NonNull VehicleBase> vehiclesBase = requestVehiclesBase();
@@ -123,12 +128,19 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * request all vehicles for one specific brand and their state
      *
      * @param brand
+     * @return the vehicles of one brand
      */
     public List<VehicleBase> requestVehiclesBase(String brand) throws NetworkException {
         String vehicleResponseString = requestVehiclesBaseJson(brand);
         return JsonStringDeserializer.getVehicleBaseList(vehicleResponseString);
     }
 
+    /**
+     * request the raw JSON for the vehicle
+     *
+     * @param brand
+     * @return the base vehicle information as JSON string
+     */
     public String requestVehiclesBaseJson(String brand) throws NetworkException {
         byte[] vehicleResponse = get(vehicleUrl, brand, null, HTTPConstants.CONTENT_TYPE_JSON);
         String vehicleResponseString = new String(vehicleResponse, Charset.defaultCharset());
@@ -138,7 +150,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
     /**
      * request vehicles for all possible brands
      *
-     * @param callback
+     * @return the list of vehicles
      */
     public List<VehicleBase> requestVehiclesBase() throws NetworkException {
         List<VehicleBase> vehicles = new ArrayList<>();
@@ -159,9 +171,10 @@ public class MyBMWHttpProxy implements MyBMWProxy {
     /**
      * request the vehicle image
      *
-     * @param config
-     * @param props
-     * @return
+     * @param vin the vin of the vehicle
+     * @param brand the brand of the vehicle
+     * @param props the image properties
+     * @return the image as a byte array
      */
     public byte[] requestImage(String vin, String brand, ImageProperties props) throws NetworkException {
         final String localImageUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.region)
@@ -172,14 +185,22 @@ public class MyBMWHttpProxy implements MyBMWProxy {
     /**
      * request the state for one specific vehicle
      *
-     * @param baseVehicle
-     * @return
+     * @param vin
+     * @param brand
+     * @return the vehicle state
      */
     public VehicleStateContainer requestVehicleState(String vin, String brand) throws NetworkException {
         String vehicleStateResponseString = requestVehicleStateJson(vin, brand);
         return JsonStringDeserializer.getVehicleState(vehicleStateResponseString);
     }
 
+    /**
+     * request the raw state as JSON for one specific vehicle
+     *
+     * @param vin
+     * @param brand
+     * @return the vehicle state as string
+     */
     public String requestVehicleStateJson(String vin, String brand) throws NetworkException {
         byte[] vehicleStateResponse = get(vehicleStateUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
         String vehicleStateResponseString = new String(vehicleStateResponse, Charset.defaultCharset());
@@ -188,13 +209,23 @@ public class MyBMWHttpProxy implements MyBMWProxy {
 
     /**
      * request charge statistics for electric vehicles
-     *
+     * 
+     * @param vin
+     * @param brand
+     * @return the charge statistics
      */
     public ChargingStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException {
         String chargeStatisticsResponseString = requestChargeStatisticsJson(vin, brand);
         return JsonStringDeserializer.getChargingStatistics(new String(chargeStatisticsResponseString));
     }
 
+    /**
+     * request charge statistics for electric vehicles as JSON
+     * 
+     * @param vin
+     * @param brand
+     * @return the charge statistics as JSON string
+     */
     public String requestChargeStatisticsJson(String vin, String brand) throws NetworkException {
         MultiMap<@Nullable String> chargeStatisticsParams = new MultiMap<>();
         chargeStatisticsParams.put("vin", vin);
@@ -210,12 +241,22 @@ public class MyBMWHttpProxy implements MyBMWProxy {
     /**
      * request charge sessions for electric vehicles
      *
+     * @param vin
+     * @param brand
+     * @return the charge sessions
      */
     public ChargingSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException {
         String chargeSessionsResponseString = requestChargeSessionsJson(vin, brand);
         return JsonStringDeserializer.getChargingSessions(chargeSessionsResponseString);
     }
 
+    /**
+     * request charge sessions for electric vehicles as JSON string
+     *
+     * @param vin
+     * @param brand
+     * @return the charge sessions as JSON string
+     */
     public String requestChargeSessionsJson(String vin, String brand) throws NetworkException {
         MultiMap<@Nullable String> chargeSessionsParams = new MultiMap<>();
         chargeSessionsParams.put("vin", vin);
@@ -229,6 +270,14 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         return chargeSessionsResponseString;
     }
 
+    /**
+     * execute a remote service call
+     *
+     * @param vin
+     * @param brand
+     * @param service the service which should be executed
+     * @return the running service execution for status checks
+     */
     public ExecutionStatusContainer executeRemoteServiceCall(String vin, String brand, RemoteService service)
             throws NetworkException {
         String executionUrl = remoteCommandUrl + vin + "/" + service.getCommand();
@@ -238,6 +287,13 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         return JsonStringDeserializer.getExecutionStatus(new String(response));
     }
 
+    /**
+     * check the status of a service call
+     *
+     * @param brand
+     * @param eventid the ID of the currently running service execution
+     * @return the running service execution for status checks
+     */
     public ExecutionStatusContainer executeRemoteServiceStatusCall(String brand, String eventId)
             throws NetworkException {
         String executionUrl = remoteStatusUrl + Constants.QUESTION + "eventId=" + eventId;
@@ -251,11 +307,10 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * prepares a GET request to the backend
      *
      * @param url
-     * @param coding
-     * @param params
      * @param brand
+     * @param vin
      * @param contentType
-     * @return
+     * @return byte array of the response body
      */
     private byte[] get(String url, final String brand, @Nullable String vin, String contentType)
             throws NetworkException {
@@ -266,11 +321,11 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * prepares a POST request to the backend
      *
      * @param url
-     * @param coding
-     * @param params
      * @param brand
+     * @param vin
      * @param contentType
-     * @return
+     * @param body
+     * @return byte array of the response body
      */
     private byte[] post(String url, final String brand, @Nullable String vin, String contentType, @Nullable String body)
             throws NetworkException {
@@ -281,12 +336,12 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * executes the real call to the backend
      *
      * @param url
-     * @param post
-     * @param encoding
-     * @param queryParams
+     * @param post boolean value indicating if it is a post request
      * @param brand
+     * @param vin
      * @param contentType
-     * @return
+     * @param body
+     * @return byte array of the response body
      */
     private synchronized byte[] call(final String url, final boolean post, final String brand,
             final @Nullable String vin, final String contentType, final @Nullable String body) throws NetworkException {
