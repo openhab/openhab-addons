@@ -28,6 +28,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,18 +53,21 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
 
     private @Nullable Future<?> scanFuture = null;
 
+    @Activate
     public void activate() {
         super.activate(null);
-        startScan();
+        if (isBackgroundDiscoveryEnabled()) {
+            startScan();
+        }
     }
 
+    @Deactivate
     @Override
     public void deactivate() {
         stopScan();
         super.deactivate();
     }
 
-    @Activate
     public KNXnetDiscoveryService() {
         super(Set.of(THING_TYPE_IP_BRIDGE), 3, true);
     }
@@ -85,21 +89,9 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    @Override
-    protected void startBackgroundDiscovery() {
-        // only start once at startup
-        startScan();
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-        stopScan();
-    }
-
     private synchronized void startDiscovery() {
         try {
             logger.debug("Starting KNXnet/IP discovery scan");
-            Thread.sleep(1000);
             Discoverer discovererUdp = new Discoverer(0, false);
             discovererUdp.startSearch(3, true);
 
@@ -143,7 +135,7 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
             }
             logger.debug("Completed KNXnet/IP discovery scan");
         } catch (Exception ex) {
-            logger.info("An error occurred during KNXnet/IP discovery {}", ex.getMessage(), ex);
+            logger.warn("An error occurred during KNXnet/IP discovery {}", ex.getMessage(), ex);
         } finally {
             scanFuture = null;
             removeOlderResults(getTimestampOfLastScan());
