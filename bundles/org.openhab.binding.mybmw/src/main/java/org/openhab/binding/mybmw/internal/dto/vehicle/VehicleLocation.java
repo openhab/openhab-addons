@@ -49,6 +49,6 @@ public class VehicleLocation {
 
     @Override
     public String toString() {
-        return "Location [coordinates=" + coordinates + ", address=" + address + ", heading=" + heading + "]";
+        return "VehicleLocation [coordinates=" + coordinates + ", address=" + address + ", heading=" + heading + "]";
     }
 }
