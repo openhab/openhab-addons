@@ -202,19 +202,19 @@ The `forecastMinutely` channel group provides time series support.
 The One Call API provides hourly forecasts for 48 hours.
 The Channel Group IDs for those are `forecastHours01` to `forecastHours48`, and `forecastHourly` for channels with time series support.
 See above for a description of the available channels.
-The `forecastHourly` channel group provides all channels as described above, except `time-stamp`, `sunrise`, `sunset`, `condition`, `condition-id`, `icon`, and `icon-id`.
+The `forecastHourly` channel group provides all channels as described above with time series support, except `time-stamp`.
 
 ### Daily Forecast
 
 | Channel Group ID                                                                | Channel ID           | Item Type            | Description                                                                      |
 |---------------------------------------------------------------------------------|----------------------|----------------------|----------------------------------------------------------------------------------|
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16                | time-stamp           | DateTime             | Date of data forecasted.                                                         |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16                | sunrise              | DateTime             | Time of sunrise for the given day.                                               |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16                | sunset               | DateTime             | Time of sunset for the given day.                                                |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16                | condition            | String               | Forecast weather condition.                                                      |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16                | condition-id         | String               | Id of the forecasted weather condition. **Advanced**                             |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16                | icon                 | Image                | Icon representing the forecasted weather condition.                              |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16                | icon-id              | String               | Id of the icon representing the forecasted weather condition. **Advanced**       |
+| forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | sunrise              | DateTime             | Time of sunrise for the given day.                                               |
+| forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | sunset               | DateTime             | Time of sunset for the given day.                                                |
+| forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | condition            | String               | Forecast weather condition.                                                      |
+| forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | condition-id         | String               | Id of the forecasted weather condition. **Advanced**                             |
+| forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | icon                 | Image                | Icon representing the forecasted weather condition.                              |
+| forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | icon-id              | String               | Id of the icon representing the forecasted weather condition. **Advanced**       |
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | apparent-temperature | Number:Temperature   | Forecasted apparent temperature. Not available in the One Call API               |
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | min-temperature      | Number:Temperature   | Minimum forecasted temperature of a day.                                         |
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | max-temperature      | Number:Temperature   | Maximum forecasted temperature of a day.                                         |

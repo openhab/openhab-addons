@@ -510,9 +510,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     channelGroupId);
             return;
         }
-        if (channelId.equals(CHANNEL_TIME_STAMP) || channelId.equals(CHANNEL_CONDITION)
-                || channelId.equals(CHANNEL_CONDITION_ID) || channelId.equals(CHANNEL_CONDITION_ICON)
-                || channelId.equals(CHANNEL_CONDITION_ICON_ID)) {
+        if (channelId.equals(CHANNEL_TIME_STAMP)) {
             logger.debug("Channel `{}` of group '{}' is no supported time-series channel.", channelId, channelGroupId);
             return;
         }
@@ -648,10 +646,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     channelGroupId);
             return;
         }
-        if (channelId.equals(CHANNEL_TIME_STAMP) || channelId.equals(CHANNEL_SUNRISE)
-                || channelId.equals(CHANNEL_SUNSET) || channelId.equals(CHANNEL_CONDITION)
-                || channelId.equals(CHANNEL_CONDITION_ID) || channelId.equals(CHANNEL_CONDITION_ICON)
-                || channelId.equals(CHANNEL_CONDITION_ICON_ID)) {
+        if (channelId.equals(CHANNEL_TIME_STAMP)) {
             logger.debug("Channel `{}` of group '{}' is no supported time-series channel.", channelId, channelGroupId);
             return;
         }

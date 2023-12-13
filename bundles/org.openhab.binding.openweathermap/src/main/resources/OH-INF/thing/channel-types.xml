@@ -190,6 +190,10 @@
 		<label>One Call API Hourly Forecast Time Series</label>
 		<description>Hourly weather forecast delivered by the One Call API.</description>
 		<channels>
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
 			<channel id="temperature" typeId="system.outdoor-temperature"/>
 			<channel id="apparent-temperature" typeId="apparent-temperature"/>
 			<channel id="pressure" typeId="system.barometric-pressure"/>
@@ -235,6 +239,12 @@
 		<label>One Call API Daily Forecast Time Series</label>
 		<description>Daily weather forecast delivered by the One Call API.</description>
 		<channels>
+			<channel id="sunrise" typeId="sunrise"/>
+			<channel id="sunset" typeId="sunset"/>
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
 			<channel id="morning-temperature" typeId="morning-temperature"/>
 			<channel id="day-temperature" typeId="day-temperature"/>
 			<channel id="evening-temperature" typeId="evening-temperature"/>
