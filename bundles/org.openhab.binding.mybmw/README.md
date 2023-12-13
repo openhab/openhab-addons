@@ -163,7 +163,7 @@ Reflects overall status of the vehicle.
 | Check Control             | check-control       | String        | Presence of active warning messages            |  X   |  X   |    X    |  X  |
 | Plug Connection Status    | plug-connection     | String        | Plug is _Connected_ or _Not connected_         |      |  X   |    X    |  X  |
 | Charging Status           | charge              | String        | Current charging status                        |      |  X   |    X    |  X  |
-| Remaining Charging Time   | charge-remaining    | Number:Time   | Remainining time for current charging session  |      |  X   |    X    |  X  |
+| Remaining Charging Time   | charge-remaining    | Number:Time   | Remaining time for current charging session    |      |  X   |    X    |  X  |
 | Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
 | Last Fetched Timestamp    | last-fetched        | DateTime      | Date and time of last time status fetched      |  X   |  X   |    X    |  X  |
 
