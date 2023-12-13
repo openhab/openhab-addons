@@ -170,7 +170,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="oneCallMinutelyTimeSeries">
-		<label>One Call API Minutely Forecast Time Series</label>
+		<label>One Call API Minutely Forecast</label>
 		<description>Minutely precipitation delivered by the One Call API.</description>
 		<channels>
 			<channel id="precipitation" typeId="precipitation"/>
@@ -187,7 +187,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="oneCallHourlyTimeSeries">
-		<label>One Call API Hourly Forecast Time Series</label>
+		<label>One Call API Hourly Forecast</label>
 		<description>Hourly weather forecast delivered by the One Call API.</description>
 		<channels>
 			<channel id="condition" typeId="condition"/>
@@ -236,7 +236,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="oneCallDailyTimeSeries">
-		<label>One Call API Daily Forecast Time Series</label>
+		<label>One Call API Daily Forecast</label>
 		<description>Daily weather forecast delivered by the One Call API.</description>
 		<channels>
 			<channel id="sunrise" typeId="sunrise"/>
