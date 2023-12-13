@@ -704,7 +704,8 @@ public class SonosXMLParser {
             } else {
                 String val = attributes == null ? null : attributes.getValue("val");
                 if (val != null) {
-                    changes.put(qName, val);
+                    String key = qName.contains(":") ? qName.split(":")[1] : qName;
+                    changes.put(key, val);
                 }
             }
         }
