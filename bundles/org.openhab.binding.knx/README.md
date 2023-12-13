@@ -235,7 +235,7 @@ For UoM support see the explanations of the `number` channel.
 #### Group Address Notation
 
 ```text
-<config>="[<dpt>:][<>]<mainGA>[[+[<]<listeningGA>][+[<]<listeningGA>..]]"
+<config>="[<dpt>:][<|>]<mainGA>[[+[<]<listeningGA>][+[<]<listeningGA>..]]"
 ```
 
 where parts in brackets `[]` denote optional information.
