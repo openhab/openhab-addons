@@ -535,7 +535,8 @@ Your feedback is highly appreciated!
 
 #### Debug Logging
 
-You can [enable debug logging](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) to get more information on the behaviour of the binding. The package.subpackage in this case would be "org.openhab.binding.mybmw".
+You can [enable debug logging](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) to get more information on the behaviour of the binding.
+The package.subpackage in this case would be "org.openhab.binding.mybmw".
 
 As with fingerprint data, personal data is eliminated from logs.
 
