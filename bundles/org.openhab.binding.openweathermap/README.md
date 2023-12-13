@@ -173,7 +173,7 @@ Where available, the One Call API provides a minutely precipitation forecast for
 | forecastMinutes01 ... forecastMinutes60                   | time-stamp    | DateTime      | Time of data forecasted.                                        |
 | forecastMinutely, forecastMinutes01 ... forecastMinutes60 | precipitation | Number:Length | Expected precipitation volume.                                  |
 
-The `forecastMinutely` channel group provides time series support.
+The `forecastMinutely` channel group provides [time series support](#persisting-time-series).
 
 ### 3 Hour Forecast
 
@@ -204,7 +204,7 @@ The `forecastMinutely` channel group provides time series support.
 The One Call API provides hourly forecasts for 48 hours.
 The Channel Group IDs for those are `forecastHours01` to `forecastHours48`, and `forecastHourly` for channels with time series support.
 See above for a description of the available channels.
-The `forecastHourly` channel group provides all channels as described above with time series support, except `time-stamp`.
+The `forecastHourly` channel group provides all channels as described above with [time series support](#persisting-time-series), except `time-stamp`.
 
 ### Daily Forecast
 
@@ -240,7 +240,7 @@ The `forecastHourly` channel group provides all channels as described above with
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-evening     | Number:Temperature   | Expected apparent temperature in the evening. Only available in the One Call API |
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-night       | Number:Temperature   | Expected apparent temperature in the night. Only available in the One Call API   |
 
-The `forecastDaily` channel group provides time series support.
+The `forecastDaily` channel group provides [time series support](#persisting-time-series).
 
 ### One Call API Weather Warnings
 
