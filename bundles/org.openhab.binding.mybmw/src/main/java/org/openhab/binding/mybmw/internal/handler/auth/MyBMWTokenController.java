@@ -136,7 +136,7 @@ public class MyBMWTokenController {
     }
 
     /**
-     * Everything is catched by surroundig try catch
+     * Everything is caught by surrounding try catch
      * - HTTP Exceptions
      * - JSONSyntax Exceptions
      * - potential NullPointer Exceptions
