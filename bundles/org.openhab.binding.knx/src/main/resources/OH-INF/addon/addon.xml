@@ -26,6 +26,35 @@
 				</match-property>
 			</match-properties>
 		</discovery-method>
+		<discovery-method>
+			<service-type>ip</service-type>
+			<match-properties>
+				<match-property>
+					<name>type</name>
+					<regex>ip_multicast</regex>
+				</match-property>
+				<match-property>
+					<name>dest_ip</name>
+					<regex>224.0.23.12</regex>
+				</match-property>
+				<match-property>
+					<name>dest_port</name>
+					<regex>3671</regex>
+				</match-property>
+				<match-property>
+					<name>request</name>
+					<regex>0x06 0x10 0x02 0x01 0x00 0x0e 0x08 0x01 $src_ip $src_port</regex>
+				</match-property>
+				<match-property>
+					<name>timeout_ms</name>
+					<regex>5000</regex>
+				</match-property>
+				<match-property>
+					<name>response</name>
+					<regex>any</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
 	</discovery-methods>
 
 </addon:addon>
