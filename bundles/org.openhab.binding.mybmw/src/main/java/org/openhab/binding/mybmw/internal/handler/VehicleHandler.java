@@ -363,8 +363,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     /**
      * this method sets the state for a single channel. if a channelToBeUpdated is provided, the update will only take
-     * place for that
-     * single channel
+     * place for that single channel.
      */
     private void updateChannel(final String group, final String id, final State state,
             @Nullable final String channelToBeUpdated) {
