@@ -141,7 +141,7 @@ public class MyBMWTokenController {
      * - JSONSyntax Exceptions
      * - potential NullPointer Exceptions
      *
-     * @return
+     * @return true if the token was successfully updated
      */
     private synchronized boolean updateToken() {
         try {
