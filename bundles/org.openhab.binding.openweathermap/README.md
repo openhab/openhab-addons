@@ -71,7 +71,7 @@ Once the system location will be changed, the background discovery updates the c
 | Parameter       | Description                                                                                                                                                                                                                                                                       |
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | apikey          | API key to access the OpenWeatherMap API. **Mandatory**                                                                                                                                                                                                                           |
-| refreshInterval | Specifies the refresh interval (in minutes). Optional, the default value is 60, the minimum value is 1.                                                                                                                                                                          |
+| refreshInterval | Specifies the refresh interval (in minutes). Optional, the default value is 60, the minimum value is 1.                                                                                                                                                                           |
 | language        | Language to be used by the OpenWeatherMap API. Optional, valid values are: `ar`, `bg`, `ca`, `de`, `el`, `en`, `es`, `fa`, `fi`, `fr`, `gl`, `hr`, `hu`, `it`, `ja`, `kr`, `la`, `lt`, `mk`,  `nl`, `pl`, `pt`, `ro`, `ru`, `se`, `sk`, `sl`, `tr`, `ua`, `vi`, `zh_cn`, `zh_tw`. |
 
 ### Current Weather And Forecast
@@ -287,7 +287,7 @@ Make sure you have a persistence service installed and ready for use.
 
 To configure persisting forecast data, create and link Items to those channels with time series support (as usual).
 Next, enable persistence for these Items using the `forecast` persistence strategy.
-Finally, open MainUI, search for one of the newly created Items, open the analyzer and select a future time range.
+Finally, open the UI, search for one of the newly created Items, open the analyzer and select a future time range.
 
 To access forecast data stored in persistence from scripts and rules, use the [Persistence Extensions]({{base}}/configuration/persistence.html#persistence-extensions-in-scripts-and-rules).
 
