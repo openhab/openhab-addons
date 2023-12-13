@@ -26,9 +26,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,23 +51,19 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
 
     private @Nullable Future<?> scanFuture = null;
 
-    @Activate
-    public void activate() {
-        super.activate(null);
-        if (isBackgroundDiscoveryEnabled()) {
-            startScan();
-        }
-    }
-
-    @Deactivate
-    @Override
-    public void deactivate() {
-        stopScan();
-        super.deactivate();
-    }
-
     public KNXnetDiscoveryService() {
         super(Set.of(THING_TYPE_IP_BRIDGE), 3, true);
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        // only start once at startup
+        startScan();
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        stopScan();
     }
 
     @Override
