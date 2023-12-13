@@ -153,6 +153,14 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             return;
         }
 
+        if (sessionIdHttp == null) {
+            doAuth(true);
+        }
+
+        if (sessionId == null) {
+            doAuth(false);
+        }
+
         try {
             final Request retryRequest = httpClient.newRequest(request.getURI());
             request.method(HttpMethod.GET);
@@ -455,10 +463,12 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         logger.debug("WaitNoNewRequest:end WaitAllStartingRequest");
     }
 
+    @Override
     public Gson getGson() {
         return gson;
     }
 
+    @Override
     public Gson getGsonWithAdapter() {
         return gsonWithAdapter;
     }

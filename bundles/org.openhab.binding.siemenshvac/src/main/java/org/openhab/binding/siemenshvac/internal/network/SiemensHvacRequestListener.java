@@ -195,6 +195,11 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                                 errorMsg = error.get("Txt").getAsString();
                             }
 
+                            if (errorMsg.indexOf("session") >= 0) {
+                                hvacConnector.resetSessionId(false);
+                                hvacConnector.resetSessionId(true);
+                            }
+
                             if (resultVal) {
                                 hvacConnector.onComplete(result.getRequest());
                                 callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(),
