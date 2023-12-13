@@ -35,49 +35,54 @@ public class VehicleCapabilities {
     public static final String SUPPORTED_SUFFIX = "Supported";
     public static final String ENABLED_SUFFIX = "Enabled";
 
-    // private boolean remoteChargingCommands = false; // {}, don't know what comes
-    // private boolean specialThemeSupport = false; // [] don't know what comes here
-    private boolean checkSustainabilityDPP = false; // false,
-    private boolean climateNow = false; // true,
-    private boolean horn = false; // true,
-    private boolean isBmwChargingSupported = false; // false,
-    private boolean isCarSharingSupported = false; // false,
-    private boolean isChargeNowForBusinessSupported = false; // false,
-    private boolean isChargingHistorySupported = false; // false,
-    private boolean isChargingHospitalityEnabled = false; // false,
-    private boolean isChargingLoudnessEnabled = false; // false,
-    private boolean isChargingPlanSupported = false; // false,
-    private boolean isChargingPowerLimitEnabled = false; // false,
-    private boolean isChargingSettingsEnabled = false; // false,
-    private boolean isChargingTargetSocEnabled = false; // false,
-    private boolean isClimateTimerSupported = false; // true,
-    private boolean isClimateTimerWeeklyActive = false; // true,
-    private boolean isCustomerEsimSupported = false; // false,
-    private boolean isDataPrivacyEnabled = false; // false,
-    private boolean isDCSContractManagementSupported = false; // false,
-    private boolean isEasyChargeEnabled = false; // false,
-    private boolean isEvGoChargingSupported = false; // false,
-    private boolean isMiniChargingSupported = false; // false,
-    private boolean isNonLscFeatureEnabled = false; // false,
-    private boolean isRemoteEngineStartSupported = false; // false,
-    private boolean isRemoteHistoryDeletionSupported = false; // false,
-    private boolean isRemoteHistorySupported = false; // true,
-    private boolean isRemoteParkingSupported = false; // false,
-    private boolean isRemoteServicesActivationRequired = false; // false,
-    private boolean isRemoteServicesBookingRequired = false; // false,
-    private boolean isScanAndChargeSupported = false; // false,
-    private boolean isSustainabilityAccumulatedViewEnabled = false; // false,
-    private boolean isSustainabilitySupported = false; // false,
-    private boolean isWifiHotspotServiceSupported = false; // true,
-    private boolean lights = false; // true,
-    private boolean lock = false; // true,
+    private boolean checkSustainabilityDPP = false;
+    private boolean climateNow = false;
+    private boolean horn = false;
+    private boolean isBmwChargingSupported = false;
+    private boolean isCarSharingSupported = false;
+    private boolean isChargeNowForBusinessSupported = false;
+    private boolean isChargingHistorySupported = false;
+    private boolean isChargingHospitalityEnabled = false;
+    private boolean isChargingLoudnessEnabled = false;
+    private boolean isChargingPlanSupported = false;
+    private boolean isChargingPowerLimitEnabled = false;
+    private boolean isChargingSettingsEnabled = false;
+    private boolean isChargingTargetSocEnabled = false;
+    private boolean isClimateTimerSupported = false;
+    private boolean isClimateTimerWeeklyActive = false;
+    private boolean isCustomerEsimSupported = false;
+    private boolean isDataPrivacyEnabled = false;
+    private boolean isDCSContractManagementSupported = false;
+    private boolean isEasyChargeEnabled = false;
+    private boolean isEvGoChargingSupported = false;
+    private boolean isMiniChargingSupported = false;
+    private boolean isNonLscFeatureEnabled = false;
+    private boolean isRemoteEngineStartSupported = false;
+    private boolean isRemoteHistoryDeletionSupported = false;
+    private boolean isRemoteHistorySupported = false;
+    private boolean isRemoteParkingSupported = false;
+    private boolean isRemoteServicesActivationRequired = false;
+    private boolean isRemoteServicesBookingRequired = false;
+    private boolean isScanAndChargeSupported = false;
+    private boolean isSustainabilityAccumulatedViewEnabled = false;
+    private boolean isSustainabilitySupported = false;
+    private boolean isWifiHotspotServiceSupported = false;
+    private boolean lights = false;
+    private boolean lock = false;
     private boolean remote360 = false;
     private RemoteChargingCommands remoteChargingCommands = new RemoteChargingCommands();
-    private boolean remoteSoftwareUpgrade = false; // true,
-    private boolean sendPoi = false; // true,
-    private boolean speechThirdPartyAlexa = false; // true,
-    private boolean speechThirdPartyAlexaSDK = false; // false,
-    private boolean unlock = false; // true,
+    private boolean remoteSoftwareUpgrade = false;
+    private boolean sendPoi = false;
+    private boolean speechThirdPartyAlexa = false;
+    private boolean speechThirdPartyAlexaSDK = false;
+    private boolean unlock = false;
+    private boolean vehicleFinder = false;
+    private DigitalKey digitalKey = new DigitalKey();
+    private String a4aType = ""; // NOT_SUPPORTED,
+    private String climateFunction = ""; // VENTILATION,
+    private String climateTimerTrigger = ""; // DEPARTURE_TIMER,
+    private String lastStateCallState = ""; // ACTIVATED,
+    private String vehicleStateSource = ""; // LAST_STATE_CALL,
 
     /**
      * @return the climateNow
@@ -142,58 +147,12 @@ public class VehicleCapabilities {
         return digitalKey;
     }
 
-    private boolean vehicleFinder = false; // true,
-    private DigitalKey digitalKey = new DigitalKey();
-    private String a4aType = ""; // NOT_SUPPORTED,
-    private String climateFunction = ""; // VENTILATION,
-    private String climateTimerTrigger = ""; // DEPARTURE_TIMER,
-    private String lastStateCallState = ""; // ACTIVATED,
-    private String vehicleStateSource = ""; // LAST_STATE_CALL,
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
-     */
-
-    @Override
-    public String toString() {
-        return "VehicleCapabilities [checkSustainabilityDPP=" + checkSustainabilityDPP + ", climateNow=" + climateNow
-                + ", horn=" + horn + ", isBmwChargingSupported=" + isBmwChargingSupported + ", isCarSharingSupported="
-                + isCarSharingSupported + ", isChargeNowForBusinessSupported=" + isChargeNowForBusinessSupported
-                + ", isChargingHistorySupported=" + isChargingHistorySupported + ", isChargingHospitalityEnabled="
-                + isChargingHospitalityEnabled + ", isChargingLoudnessEnabled=" + isChargingLoudnessEnabled
-                + ", isChargingPlanSupported=" + isChargingPlanSupported + ", isChargingPowerLimitEnabled="
-                + isChargingPowerLimitEnabled + ", isChargingSettingsEnabled=" + isChargingSettingsEnabled
-                + ", isChargingTargetSocEnabled=" + isChargingTargetSocEnabled + ", isClimateTimerSupported="
-                + isClimateTimerSupported + ", isClimateTimerWeeklyActive=" + isClimateTimerWeeklyActive
-                + ", isCustomerEsimSupported=" + isCustomerEsimSupported + ", isDataPrivacyEnabled="
-                + isDataPrivacyEnabled + ", isDCSContractManagementSupported=" + isDCSContractManagementSupported
-                + ", isEasyChargeEnabled=" + isEasyChargeEnabled + ", isEvGoChargingSupported="
-                + isEvGoChargingSupported + ", isMiniChargingSupported=" + isMiniChargingSupported
-                + ", isNonLscFeatureEnabled=" + isNonLscFeatureEnabled + ", isRemoteEngineStartSupported="
-                + isRemoteEngineStartSupported + ", isRemoteHistoryDeletionSupported="
-                + isRemoteHistoryDeletionSupported + ", isRemoteHistorySupported=" + isRemoteHistorySupported
-                + ", isRemoteParkingSupported=" + isRemoteParkingSupported + ", isRemoteServicesActivationRequired="
-                + isRemoteServicesActivationRequired + ", isRemoteServicesBookingRequired="
-                + isRemoteServicesBookingRequired + ", isScanAndChargeSupported=" + isScanAndChargeSupported
-                + ", isSustainabilityAccumulatedViewEnabled=" + isSustainabilityAccumulatedViewEnabled
-                + ", isSustainabilitySupported=" + isSustainabilitySupported + ", isWifiHotspotServiceSupported="
-                + isWifiHotspotServiceSupported + ", lights=" + lights + ", lock=" + lock + ", remote360=" + remote360
-                + ", remoteChargingCommands=" + remoteChargingCommands + ", remoteSoftwareUpgrade="
-                + remoteSoftwareUpgrade + ", sendPoi=" + sendPoi + ", speechThirdPartyAlexa=" + speechThirdPartyAlexa
-                + ", speechThirdPartyAlexaSDK=" + speechThirdPartyAlexaSDK + ", unlock=" + unlock + ", vehicleFinder="
-                + vehicleFinder + ", digitalKey=" + digitalKey + ", a4aType=" + a4aType + ", climateFunction="
-                + climateFunction + ", climateTimerTrigger=" + climateTimerTrigger + ", lastStateCallState="
-                + lastStateCallState + ", vehicleStateSource=" + vehicleStateSource + "]";
-    }
-
     /**
      * returns a list of capabilities filtered by the provided suffix and the enabled requirement
      * 
-     * @param suffix
-     * @param enabled
-     * @return
+     * @param suffix the suffix of the capability
+     * @param enabled if it should return only enabled or disabled capabilities
+     * @return the list of capabilities as single string
      */
     public String getCapabilitiesAsString(String suffix, boolean enabled) {
         StringBuffer capabilitiesAsString = new StringBuffer();
@@ -229,5 +188,37 @@ public class VehicleCapabilities {
                 });
 
         return l;
+    }
+
+    @Override
+    public String toString() {
+        return "VehicleCapabilities [checkSustainabilityDPP=" + checkSustainabilityDPP + ", climateNow=" + climateNow
+                + ", horn=" + horn + ", isBmwChargingSupported=" + isBmwChargingSupported + ", isCarSharingSupported="
+                + isCarSharingSupported + ", isChargeNowForBusinessSupported=" + isChargeNowForBusinessSupported
+                + ", isChargingHistorySupported=" + isChargingHistorySupported + ", isChargingHospitalityEnabled="
+                + isChargingHospitalityEnabled + ", isChargingLoudnessEnabled=" + isChargingLoudnessEnabled
+                + ", isChargingPlanSupported=" + isChargingPlanSupported + ", isChargingPowerLimitEnabled="
+                + isChargingPowerLimitEnabled + ", isChargingSettingsEnabled=" + isChargingSettingsEnabled
+                + ", isChargingTargetSocEnabled=" + isChargingTargetSocEnabled + ", isClimateTimerSupported="
+                + isClimateTimerSupported + ", isClimateTimerWeeklyActive=" + isClimateTimerWeeklyActive
+                + ", isCustomerEsimSupported=" + isCustomerEsimSupported + ", isDataPrivacyEnabled="
+                + isDataPrivacyEnabled + ", isDCSContractManagementSupported=" + isDCSContractManagementSupported
+                + ", isEasyChargeEnabled=" + isEasyChargeEnabled + ", isEvGoChargingSupported="
+                + isEvGoChargingSupported + ", isMiniChargingSupported=" + isMiniChargingSupported
+                + ", isNonLscFeatureEnabled=" + isNonLscFeatureEnabled + ", isRemoteEngineStartSupported="
+                + isRemoteEngineStartSupported + ", isRemoteHistoryDeletionSupported="
+                + isRemoteHistoryDeletionSupported + ", isRemoteHistorySupported=" + isRemoteHistorySupported
+                + ", isRemoteParkingSupported=" + isRemoteParkingSupported + ", isRemoteServicesActivationRequired="
+                + isRemoteServicesActivationRequired + ", isRemoteServicesBookingRequired="
+                + isRemoteServicesBookingRequired + ", isScanAndChargeSupported=" + isScanAndChargeSupported
+                + ", isSustainabilityAccumulatedViewEnabled=" + isSustainabilityAccumulatedViewEnabled
+                + ", isSustainabilitySupported=" + isSustainabilitySupported + ", isWifiHotspotServiceSupported="
+                + isWifiHotspotServiceSupported + ", lights=" + lights + ", lock=" + lock + ", remote360=" + remote360
+                + ", remoteChargingCommands=" + remoteChargingCommands + ", remoteSoftwareUpgrade="
+                + remoteSoftwareUpgrade + ", sendPoi=" + sendPoi + ", speechThirdPartyAlexa=" + speechThirdPartyAlexa
+                + ", speechThirdPartyAlexaSDK=" + speechThirdPartyAlexaSDK + ", unlock=" + unlock + ", vehicleFinder="
+                + vehicleFinder + ", digitalKey=" + digitalKey + ", a4aType=" + a4aType + ", climateFunction="
+                + climateFunction + ", climateTimerTrigger=" + climateTimerTrigger + ", lastStateCallState="
+                + lastStateCallState + ", vehicleStateSource=" + vehicleStateSource + "]";
     }
 }
