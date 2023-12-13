@@ -145,7 +145,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         logger.trace("MyBMWBridgeHandler.getServices");
-        return Collections.singleton(VehicleDiscovery.class);
+        return List.of(VehicleDiscovery.class);
     }
 
     public Optional<MyBMWProxy> getMyBmwProxy() {
