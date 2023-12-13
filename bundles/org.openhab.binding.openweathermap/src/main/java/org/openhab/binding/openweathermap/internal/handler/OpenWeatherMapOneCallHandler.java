@@ -84,9 +84,10 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
 
     private @Nullable OpenWeatherMapOneCallAPIData weatherData;
 
-    private int forecastMinutes = 60;
-    private int forecastHours = 24;
-    private int forecastDays = 8;
+    // forecastMinutes, -Hours and -Days determine the number of channel groups to create for each type
+    private int forecastMinutes = 0;
+    private int forecastHours = 0;
+    private int forecastDays = 0;
     private int numberOfAlerts = 0;
 
     public OpenWeatherMapOneCallHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
@@ -226,8 +227,8 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
             throws CommunicationException, ConfigurationException {
         logger.debug("Update weather and forecast data of thing '{}'.", getThing().getUID());
         try {
-            weatherData = connection.getOneCallAPIData(location, forecastMinutes == 0, forecastHours == 0,
-                    forecastDays == 0, numberOfAlerts == 0);
+            // Include minutely, hourly and daily data as this is needed for the time series channels
+            weatherData = connection.getOneCallAPIData(location, false, false, false, numberOfAlerts == 0);
             return true;
         } catch (JsonSyntaxException e) {
             logger.debug("JsonSyntaxException occurred during execution: {}", e.getMessage(), e);
@@ -434,12 +435,6 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
         OpenWeatherMapOneCallAPIData localWeatherData = weatherData;
-        if (forecastMinutes == 0) {
-            logger.warn(
-                    "Can't update channel group {} because forecastMinutes is set to '0'. Please adjust config accordingly",
-                    channelGroupId);
-            return;
-        }
         if (channelId.equals(CHANNEL_TIME_STAMP)) {
             logger.debug("Channel `{}` of group '{}' is no supported time-series channel.", channelId, channelGroupId);
             return;
@@ -504,12 +499,6 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
     private void updateHourlyForecastTimeSeries(ChannelUID channelUID) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (forecastHours == 0) {
-            logger.warn(
-                    "Can't update channel group {} because forecastHours is set to '0'. Please adjust config accordingly",
-                    channelGroupId);
-            return;
-        }
         if (channelId.equals(CHANNEL_TIME_STAMP)) {
             logger.debug("Channel `{}` of group '{}' is no supported time-series channel.", channelId, channelGroupId);
             return;
@@ -640,12 +629,6 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
     private void updateDailyForecastTimeSeries(ChannelUID channelUID) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (forecastDays == 0) {
-            logger.warn(
-                    "Can't update channel group {} because forecastDays is set to '0'. Please adjust config accordingly",
-                    channelGroupId);
-            return;
-        }
         if (channelId.equals(CHANNEL_TIME_STAMP)) {
             logger.debug("Channel `{}` of group '{}' is no supported time-series channel.", channelId, channelGroupId);
             return;

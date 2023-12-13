@@ -104,13 +104,15 @@ Once the parameter `forecastHours` will be changed, the available channel groups
 
 ### One Call API Weather and Forecast
 
-| Parameter      | Description                                                                                                                                                           |
-|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                                                          |
-| forecastMinutes| Number of minutes for minutely precipitation forecast. Optional, the default value is 0, so by default **no** minutely forecast data is fetched. (min="0", max="60"). |
-| forecastHours  | Number of hours for hourly forecast. Optional, the default value is 24 (min="0", max="48").                                                                           |
-| forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 6 (min="0", max="8").                                                   |
-| numberOfAlerts | Number of alerts to be shown. Optional, the default value is 0 (min="0", max="5").                                                                                    |
+| Parameter       | Description                                                                                                                           |
+|-----------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| location        | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                          |
+| forecastMinutes | Number of minutes for minutely precipitation forecast as minutely channels. Optional, the default value is 0 (min="0", max="60").     |
+| forecastHours   | Number of hours for hourly forecast as hourly channels. Optional, the default value is 0 (min="0", max="48").                         |
+| forecastDays    | Number of days for daily forecast (including todays forecast) as daily channels. Optional, the default value is 0 (min="0", max="8"). |
+| numberOfAlerts  | Number of alerts to be shown. Optional, the default value is 0 (min="0", max="5").                                                    |
+
+Set `forecastMinutes`, `forecastHours` and `forecastDays` to `0` if you only want to use the channels with time series support.
 
 ### One Call API History Data
 
