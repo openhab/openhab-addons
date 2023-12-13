@@ -387,7 +387,12 @@ public class MyBMWHttpProxy implements MyBMWProxy {
                             ResponseContentAnonymizer.anonymizeResponseContent(body));
                 }
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
+            logResponse(ResponseContentAnonymizer.replaceVin(url, vin), e.getMessage(),
+                    ResponseContentAnonymizer.anonymizeResponseContent(vin));
+            throw new NetworkException(url, -1, null, body, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             logResponse(ResponseContentAnonymizer.replaceVin(url, vin), e.getMessage(),
                     ResponseContentAnonymizer.anonymizeResponseContent(vin));
             throw new NetworkException(url, -1, null, body, e);
