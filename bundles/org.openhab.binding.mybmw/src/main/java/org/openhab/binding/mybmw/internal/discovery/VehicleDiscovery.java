@@ -175,20 +175,20 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
 
         // Vehicle Properties
         VehicleAttributes vehicleAttributes = vehicle.getVehicleBase().getAttributes();
-        properties.put("vehicleModel", vehicleAttributes.getModel());
-        properties.put("vehicleDriveTrain", vehicleAttributes.getDriveTrain());
-        properties.put("vehicleConstructionYear", Integer.toString(vehicleAttributes.getYear()));
-        properties.put("vehicleBodytype", vehicleAttributes.getBodyType());
+        properties.put(MyBMWConstants.VEHICLE_MODEL, vehicleAttributes.getModel());
+        properties.put(MyBMWConstants.VEHICLE_DRIVE_TRAIN, vehicleAttributes.getDriveTrain());
+        properties.put(MyBMWConstants.VEHICLE_CONSTRUCTION_YEAR, Integer.toString(vehicleAttributes.getYear()));
+        properties.put(MyBMWConstants.VEHICLE_BODYTYPE, vehicleAttributes.getBodyType());
 
         VehicleCapabilities vehicleCapabilities = vehicle.getVehicleState().getCapabilities();
 
-        properties.put("servicesSupported",
+        properties.put(MyBMWConstants.SERVICES_SUPPORTED,
                 vehicleCapabilities.getCapabilitiesAsString(VehicleCapabilities.SUPPORTED_SUFFIX, true));
-        properties.put("servicesUnsupported",
+        properties.put(MyBMWConstants.SERVICES_UNSUPPORTED,
                 vehicleCapabilities.getCapabilitiesAsString(VehicleCapabilities.SUPPORTED_SUFFIX, false));
-        properties.put("servicesEnabled",
+        properties.put(MyBMWConstants.SERVICES_ENABLED,
                 vehicleCapabilities.getCapabilitiesAsString(VehicleCapabilities.ENABLED_SUFFIX, true));
-        properties.put("servicesDisabled",
+        properties.put(MyBMWConstants.SERVICES_DISABLED,
                 vehicleCapabilities.getCapabilitiesAsString(VehicleCapabilities.ENABLED_SUFFIX, false));
 
         // For RemoteServices we need to do it step-by-step
@@ -224,8 +224,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
         } else {
             remoteServicesDisabled.append(RemoteService.CLIMATE_NOW_START.getLabel() + Constants.SEMICOLON);
         }
-        properties.put("remoteServicesEnabled", remoteServicesEnabled.toString().trim());
-        properties.put("remoteServicesDisabled", remoteServicesDisabled.toString().trim());
+        properties.put(MyBMWConstants.REMOTE_SERVICES_ENABLED, remoteServicesEnabled.toString().trim());
+        properties.put(MyBMWConstants.REMOTE_SERVICES_DISABLED, remoteServicesDisabled.toString().trim());
 
         return properties;
     }

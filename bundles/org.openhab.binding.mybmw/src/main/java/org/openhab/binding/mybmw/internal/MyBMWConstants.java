@@ -36,6 +36,26 @@ public interface MyBMWConstants {
 
     static final String VEHICLE_BRAND = "vehicleBrand";
 
+    static final String REMOTE_SERVICES_DISABLED = "remoteServicesDisabled";
+
+    static final String REMOTE_SERVICES_ENABLED = "remoteServicesEnabled";
+
+    static final String SERVICES_DISABLED = "servicesDisabled";
+
+    static final String SERVICES_ENABLED = "servicesEnabled";
+
+    static final String SERVICES_UNSUPPORTED = "servicesUnsupported";
+
+    static final String SERVICES_SUPPORTED = "servicesSupported";
+
+    static final String VEHICLE_BODYTYPE = "vehicleBodytype";
+
+    static final String VEHICLE_CONSTRUCTION_YEAR = "vehicleConstructionYear";
+
+    static final String VEHICLE_DRIVE_TRAIN = "vehicleDriveTrain";
+
+    static final String VEHICLE_MODEL = "vehicleModel";
+
     static final int DEFAULT_IMAGE_SIZE_PX = 1024;
 
     static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 5;
