@@ -83,6 +83,8 @@ public class ComponentFactory {
                 return new Sensor(componentConfiguration);
             case "switch":
                 return new Switch(componentConfiguration);
+            case "update":
+                return new Update(componentConfiguration);
             case "vacuum":
                 return new Vacuum(componentConfiguration);
             default:
