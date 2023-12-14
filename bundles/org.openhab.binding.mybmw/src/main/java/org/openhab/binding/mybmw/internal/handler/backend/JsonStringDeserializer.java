@@ -46,7 +46,7 @@ public interface JsonStringDeserializer {
             VehicleBase[] vehicleBaseArray = deserializeString(vehicleBaseJson, VehicleBase[].class);
             return Arrays.asList(vehicleBaseArray);
         } catch (JsonSyntaxException e) {
-            LOGGER.warn("JsonSyntaxException {}", e.getMessage());
+            LOGGER.debug("JsonSyntaxException {}", e.getMessage());
             return new ArrayList<VehicleBase>();
         }
     }
@@ -57,7 +57,7 @@ public interface JsonStringDeserializer {
             vehicleState.setRawStateJson(vehicleStateJson);
             return vehicleState;
         } catch (JsonSyntaxException e) {
-            LOGGER.warn("JsonSyntaxException {}", e.getMessage());
+            LOGGER.debug("JsonSyntaxException {}", e.getMessage());
             return new VehicleStateContainer();
         }
     }
@@ -68,7 +68,7 @@ public interface JsonStringDeserializer {
                     ChargingStatisticsContainer.class);
             return chargeStatistics;
         } catch (JsonSyntaxException e) {
-            LOGGER.warn("JsonSyntaxException {}", e.getMessage());
+            LOGGER.debug("JsonSyntaxException {}", e.getMessage());
             return new ChargingStatisticsContainer();
         }
     }
@@ -77,7 +77,7 @@ public interface JsonStringDeserializer {
         try {
             return deserializeString(chargeSessionsJson, ChargingSessionsContainer.class);
         } catch (JsonSyntaxException e) {
-            LOGGER.warn("JsonSyntaxException {}", e.getMessage());
+            LOGGER.debug("JsonSyntaxException {}", e.getMessage());
             return new ChargingSessionsContainer();
         }
     }
@@ -86,7 +86,7 @@ public interface JsonStringDeserializer {
         try {
             return deserializeString(executionStatusJson, ExecutionStatusContainer.class);
         } catch (JsonSyntaxException e) {
-            LOGGER.warn("JsonSyntaxException {}", e.getMessage());
+            LOGGER.debug("JsonSyntaxException {}", e.getMessage());
             return new ExecutionStatusContainer();
         }
     }
