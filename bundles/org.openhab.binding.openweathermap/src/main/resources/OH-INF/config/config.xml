@@ -133,12 +133,12 @@
 			<label>Number of Daily Forecast Channels</label>
 			<description>Number of days for daily forecast, including the current day and determining how many daily channels are
 				created.</description>
-			<default>0</default>
+			<default>6</default>
 		</parameter>
 		<parameter name="forecastHours" type="integer" min="0" max="48" step="1">
 			<label>Number of Hourly Forecast Channels</label>
 			<description>Number of hours for hourly forecast, determining how many hourly channels are created.</description>
-			<default>0</default>
+			<default>12</default>
 		</parameter>
 		<parameter name="forecastMinutes" type="integer" min="0" max="60" step="1">
 			<label>Number of Minutely Forecast Channels</label>
