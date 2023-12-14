@@ -7,9 +7,7 @@
 
 		<instruction-set targetVersion="1">
 			<add-channel id="status-text">
-				<type>opengarage:status-text</type>
-				<label>Status Text</label>
-				<description>Text status of the current door state</description>
+				<type>opengarage:opengarage-status-text</type>
 			</add-channel>
 		</instruction-set>
 

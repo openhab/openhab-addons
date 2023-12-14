@@ -19,6 +19,10 @@
 			<channel id="status-text" typeId="opengarage-status-text"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname/IP Address</label>
