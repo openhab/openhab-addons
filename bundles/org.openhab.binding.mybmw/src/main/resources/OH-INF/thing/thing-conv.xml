@@ -24,6 +24,10 @@
 			<channel-group id="image" typeId="image-values"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>vin</representation-property>
 
 		<config-description-ref uri="thing-type:mybmw:vehicle"/>
