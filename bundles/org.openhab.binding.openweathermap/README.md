@@ -108,11 +108,12 @@ Once the parameter `forecastHours` will be changed, the available channel groups
 |-----------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | location        | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                          |
 | forecastMinutes | Number of minutes for minutely precipitation forecast as minutely channels. Optional, the default value is 0 (min="0", max="60").     |
-| forecastHours   | Number of hours for hourly forecast as hourly channels. Optional, the default value is 0 (min="0", max="48").                         |
-| forecastDays    | Number of days for daily forecast (including todays forecast) as daily channels. Optional, the default value is 0 (min="0", max="8"). |
+| forecastHours   | Number of hours for hourly forecast as hourly channels. Optional, the default value is 12 (min="0", max="48").                        |
+| forecastDays    | Number of days for daily forecast (including todays forecast) as daily channels. Optional, the default value is 6 (min="0", max="8"). |
 | numberOfAlerts  | Number of alerts to be shown. Optional, the default value is 0 (min="0", max="5").                                                    |
 
 Set `forecastMinutes`, `forecastHours` and `forecastDays` to `0` if you only want to use the channels with time series support.
+In a future release, this will become the default setting as usage of the time series channels instead is encouraged.
 
 ### One Call API History Data
 
@@ -206,6 +207,8 @@ The Channel Group IDs for those are `forecastHours01` to `forecastHours48`, and 
 See above for a description of the available channels.
 The `forecastHourly` channel group provides all channels as described above with [time series support](#persisting-time-series), except `time-stamp`.
 
+In a future release, the `forecastHours01` to `forecastHours48` channel groups won't be created anymore by default as usage of the time series channels instead is encouraged.
+
 ### Daily Forecast
 
 | Channel Group ID                                                                | Channel ID           | Item Type            | Description                                                                      |
@@ -241,6 +244,8 @@ The `forecastHourly` channel group provides all channels as described above with
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-night       | Number:Temperature   | Expected apparent temperature in the night. Only available in the One Call API   |
 
 The `forecastDaily` channel group provides [time series support](#persisting-time-series).
+
+In a future release, the `forecastToday` to `forecastDay7` channel groups won't be created anymore by default as usage of the time series channels instead is encouraged.
 
 ### One Call API Weather Warnings
 
