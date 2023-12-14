@@ -20,7 +20,6 @@
 	<config-description uri="thing-type:mqtt:homeassistant-updatable">
 		<parameter-group name="actions">
 			<label>Actions</label>
-			<description></description>
 		</parameter-group>
 
 		<parameter name="topics" type="text" required="true" multiple="true">
