@@ -11,7 +11,12 @@
 	<discovery-methods>
 		<discovery-method>
 			<service-type>mdns</service-type>
-			<mdns-service-type>_tcp.local.</mdns-service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
 			<match-properties>
 				<match-property>
 					<name>application</name>

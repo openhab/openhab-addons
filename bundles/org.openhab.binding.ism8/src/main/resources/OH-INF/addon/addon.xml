@@ -11,7 +11,12 @@
 	<discovery-methods>
 		<discovery-method>
 			<service-type>mdns</service-type>
-			<mdns-service-type>_ism7._tcp.local.</mdns-service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_ism7._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
 		</discovery-method>
 	</discovery-methods>
 
