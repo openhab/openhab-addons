@@ -247,8 +247,8 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 | Hybrid Range                       | range-hybrid               | Number:Length        |      |  X   |    X    |     |
 | Battery Charge Level               | soc                        | Number:Dimensionless |      |  X   |    X    |  X  |
 | Remaining Fuel                     | remaining-fuel             | Number:Volume        |  X   |  X   |    X    |     |
-| Estimated Fuel Consumption l/100km | estimated-fuel-l-100km     | Number:Dimensionless |  X   |  X   |    X    |     |
-| Estimated Fuel Consumption mpg     | estimated-fuel-mpg         | Number:Dimensionless |  X   |  X   |    X    |     |
+| Estimated Fuel Consumption l/100km | estimated-fuel-l-100km     | Number               |  X   |  X   |    X    |     |
+| Estimated Fuel Consumption mpg     | estimated-fuel-mpg         | Number               |  X   |  X   |    X    |     |
 | Fuel Range Radius                  | range-radius-fuel          | Number:Length        |  X   |  X   |    X    |     |
 | Electric Range Radius              | range-radius-electric      | Number:Length        |      |  X   |    X    |  X  |
 | Hybrid Range Radius                | range-radius-hybrid        | Number:Length        |      |  X   |    X    |     |
