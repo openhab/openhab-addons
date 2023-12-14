@@ -40,7 +40,8 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class VelbusVMBELOHandler extends VelbusMemoHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMBELO));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_VMBELO, THING_TYPE_VMBELO_20));
 
     private final ChannelUID outputChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_OUTPUT, CHANNEL_OUTPUT);
 

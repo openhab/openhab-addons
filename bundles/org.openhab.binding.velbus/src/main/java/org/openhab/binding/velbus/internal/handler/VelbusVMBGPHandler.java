@@ -33,7 +33,8 @@ import org.openhab.core.thing.ThingTypeUID;
 public class VelbusVMBGPHandler extends VelbusThermostatHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_VMBGP1, THING_TYPE_VMBGP1_2, THING_TYPE_VMBGP2, THING_TYPE_VMBGP2_2,
-                    THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2, THING_TYPE_VMBGP4PIR, THING_TYPE_VMBGP4PIR_2));
+                    THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2, THING_TYPE_VMBGP4PIR, THING_TYPE_VMBGP4PIR_2,
+                    THING_TYPE_VMBGP1_20, THING_TYPE_VMBGP2_20, THING_TYPE_VMBGP4_20, THING_TYPE_VMBGP4PIR_20));
 
     public VelbusVMBGPHandler(Thing thing) {
         super(thing, 4, new ChannelUID(thing.getUID(), "input", "CH9"));

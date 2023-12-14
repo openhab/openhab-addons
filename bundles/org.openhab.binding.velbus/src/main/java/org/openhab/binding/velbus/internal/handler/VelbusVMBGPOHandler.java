@@ -38,7 +38,7 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class VelbusVMBGPOHandler extends VelbusMemoHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2));
+            Arrays.asList(THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2, THING_TYPE_VMBGPO_20));
 
     public static final int MODULESETTINGS_MEMORY_ADDRESS = 0x02F0;
     public static final int LAST_MEMORY_LOCATION_ADDRESS = 0x1A03;
