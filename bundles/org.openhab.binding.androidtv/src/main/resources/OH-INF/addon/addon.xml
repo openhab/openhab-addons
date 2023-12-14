@@ -8,4 +8,15 @@
 	<description>This is the add-on for AndroidTV.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_androidtvremote2._tcp.local.</mdns-service-type>
+		</discovery-method>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_nv_shield_remote._tcp.local.</mdns-service-type>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

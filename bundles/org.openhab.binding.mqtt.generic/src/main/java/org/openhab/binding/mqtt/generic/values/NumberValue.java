@@ -23,10 +23,13 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.Type;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +46,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NumberValue extends Value {
+    private static final String NAN = "NaN";
+
     private final Logger logger = LoggerFactory.getLogger(NumberValue.class);
     private final @Nullable BigDecimal min;
     private final @Nullable BigDecimal max;
@@ -51,7 +56,8 @@ public class NumberValue extends Value {
 
     public NumberValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step,
             @Nullable Unit<?> unit) {
-        super(CoreItemFactory.NUMBER, List.of(QuantityType.class, IncreaseDecreaseType.class, UpDownType.class));
+        super(CoreItemFactory.NUMBER,
+                List.of(QuantityType.class, IncreaseDecreaseType.class, UpDownType.class, StringType.class));
         this.min = min;
         this.max = max;
         this.step = step == null ? BigDecimal.ONE : step;
@@ -110,6 +116,14 @@ public class NumberValue extends Value {
         } else {
             return new DecimalType(newValue);
         }
+    }
+
+    @Override
+    public Type parseMessage(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType && command.toString().equalsIgnoreCase(NAN)) {
+            return UnDefType.UNDEF;
+        }
+        return parseCommand(command);
     }
 
     private BigDecimal getOldValue() {

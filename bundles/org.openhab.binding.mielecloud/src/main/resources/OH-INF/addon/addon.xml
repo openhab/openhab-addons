@@ -8,4 +8,17 @@
 	<description>@text/addon.mielecloud.description</description>
 	<connection>cloud</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_mieleathome._tcp.local.</mdns-service-type>
+			<match-properties>
+				<match-property>
+					<name>path</name>
+					<regex>^\/$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

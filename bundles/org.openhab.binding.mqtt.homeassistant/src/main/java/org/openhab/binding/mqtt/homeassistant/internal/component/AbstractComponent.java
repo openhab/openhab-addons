@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,19 +20,22 @@ import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
-import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Availability;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AvailabilityMode;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -63,6 +67,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     // Channels and configuration
     protected final Map<String, ComponentChannel> channels = new TreeMap<>();
+    protected final List<ComponentChannel> hiddenChannels = new ArrayList<>();
+
     // The hash code ({@link String#hashCode()}) of the configuration string
     // Used to determine if a component has changed.
     protected final int configHash;
@@ -99,15 +105,36 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         this.configSeen = false;
 
-        String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
-        if (availabilityTopic != null) {
-            String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
-            if (availabilityTemplate != null) {
-                availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+        final List<Availability> availabilities = channelConfiguration.getAvailability();
+        if (availabilities != null) {
+            AvailabilityMode mode = channelConfiguration.getAvailabilityMode();
+            AvailabilityTracker.AvailabilityMode availabilityTrackerMode = switch (mode) {
+                case ALL -> AvailabilityTracker.AvailabilityMode.ALL;
+                case ANY -> AvailabilityTracker.AvailabilityMode.ANY;
+                case LATEST -> AvailabilityTracker.AvailabilityMode.LATEST;
+            };
+            componentConfiguration.getTracker().setAvailabilityMode(availabilityTrackerMode);
+            for (Availability availability : availabilities) {
+                String availabilityTemplate = availability.getValueTemplate();
+                if (availabilityTemplate != null) {
+                    availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+                }
+                componentConfiguration.getTracker().addAvailabilityTopic(availability.getTopic(),
+                        availability.getPayloadAvailable(), availability.getPayloadNotAvailable(), availabilityTemplate,
+                        componentConfiguration.getTransformationServiceProvider());
             }
-            componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
-                    this.channelConfiguration.getPayloadAvailable(), this.channelConfiguration.getPayloadNotAvailable(),
-                    availabilityTemplate, componentConfiguration.getTransformationServiceProvider());
+        } else {
+            String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
+            if (availabilityTopic != null) {
+                String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
+                if (availabilityTemplate != null) {
+                    availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+                }
+                componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
+                        this.channelConfiguration.getPayloadAvailable(),
+                        this.channelConfiguration.getPayloadNotAvailable(), availabilityTemplate,
+                        componentConfiguration.getTransformationServiceProvider());
+            }
         }
     }
 
@@ -131,8 +158,9 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        return channels.values().stream().map(cChannel -> cChannel.start(connection, scheduler, timeout))
-                .collect(FutureCollector.allOf());
+        return Stream.concat(channels.values().stream(), hiddenChannels.stream())
+                .map(v -> v.start(connection, scheduler, timeout)) //
+                .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
     }
 
     /**
@@ -142,7 +170,10 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      *         exceptionally on errors.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return channels.values().stream().map(ComponentChannel::stop).collect(FutureCollector.allOf());
+        return Stream.concat(channels.values().stream(), hiddenChannels.stream()) //
+                .filter(Objects::nonNull) //
+                .map(ComponentChannel::stop) //
+                .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
     }
 
     /**

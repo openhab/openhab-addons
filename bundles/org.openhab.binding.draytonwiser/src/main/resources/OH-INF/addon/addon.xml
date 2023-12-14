@@ -8,4 +8,17 @@
 	<description>This is the binding for Drayton Wiser smart heating system.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<mdns-service-type>_http._tcp.local.</mdns-service-type>
+			<match-properties>
+				<match-property>
+					<name>name</name>
+					<regex>.*WiserHeat.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

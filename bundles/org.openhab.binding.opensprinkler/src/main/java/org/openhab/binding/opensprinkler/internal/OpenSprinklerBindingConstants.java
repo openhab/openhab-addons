@@ -82,4 +82,7 @@ public class OpenSprinklerBindingConstants {
     public static final String NEXT_DURATION = "nextDuration";
     public static final String CHANNEL_IGNORE_RAIN = "ignoreRain";
     public static final String CHANNEL_RAIN_DELAY = "rainDelay";
+    public static final String CHANNEL_QUEUED_ZONES = "queuedZones";
+    public static final String CHANNEL_CLOUD_CONNECTED = "cloudConnected";
+    public static final String CHANNEL_PAUSE_PROGRAMS = "pausePrograms";
 }
