@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.salus.internal.rest;
 
 import static java.lang.Boolean.parseBoolean;
@@ -22,6 +34,8 @@ import com.google.gson.reflect.TypeToken;
  * The GsonMapper class is responsible for mapping JSON data to Java objects using the Gson library. It provides methods
  * for converting JSON strings to various types of objects, such as authentication tokens, devices, device properties,
  * and error messages.
+ * 
+ * @author Martin Grześlowski - Initial contribution
  */
 public class GsonMapper {
     public static final GsonMapper INSTANCE = new GsonMapper();
@@ -47,7 +61,7 @@ public class GsonMapper {
 
     private Optional<Device> parseDevice(Object obj) {
         if (!(obj instanceof Map<?, ?> firstLevelMap)) {
-            logger.warn("Cannot parse device, because object is not type of map!\n", obj);
+            logger.warn("Cannot parse device, because object is not type of map!\n{}", obj);
             return empty();
         }
 
@@ -63,7 +77,7 @@ public class GsonMapper {
         var objLevel2 = firstLevelMap.get("device");
 
         if (!(objLevel2 instanceof Map<?, ?> map)) {
-            logger.warn("Cannot parse device, because object is not type of map!\n", obj);
+            logger.warn("Cannot parse device, because object is not type of map!\n{}", obj);
             return empty();
         }
 
@@ -143,7 +157,7 @@ public class GsonMapper {
 
     private Optional<DeviceProperty<?>> parseDeviceProperty(Object obj) {
         if (!(obj instanceof Map<?, ?> firstLevelMap)) {
-            logger.warn("Cannot parse device property, because object is not type of map!\n", obj);
+            logger.warn("Cannot parse device property, because object is not type of map!\n{}", obj);
             return empty();
         }
 
@@ -160,7 +174,7 @@ public class GsonMapper {
 
         var objLevel2 = firstLevelMap.get("property");
         if (!(objLevel2 instanceof Map<?, ?> map)) {
-            logger.warn("Cannot parse device property, because object is not type of map!\n", obj);
+            logger.warn("Cannot parse device property, because object is not type of map!\n{}", obj);
             return empty();
         }
 
@@ -221,7 +235,7 @@ public class GsonMapper {
             } else if (value instanceof String) {
                 bool = parseBoolean((String) value);
             } else {
-                logger.warn("Cannot parse boolean from [" + value + "]");
+                logger.warn("Cannot parse boolean from [{}]", value);
                 bool = null;
             }
             return new DeviceProperty.BooleanDeviceProperty(name, readOnly, direction, dataUpdatedAt, productName,
@@ -239,11 +253,11 @@ public class GsonMapper {
                 try {
                     longValue = parseLong(string);
                 } catch (NumberFormatException ex) {
-                    logger.warn("Cannot parse long from [" + value + "]", ex);
+                    logger.warn("Cannot parse long from [{}]", value, ex);
                     longValue = null;
                 }
             } else {
-                logger.warn("Cannot parse long from [" + value + "]");
+                logger.warn("Cannot parse long from [{}]", value);
                 longValue = null;
             }
             return new DeviceProperty.LongDeviceProperty(name, readOnly, direction, dataUpdatedAt, productName,

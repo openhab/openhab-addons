@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.salus.internal.rest;
 
 import java.util.Map;
@@ -5,6 +17,9 @@ import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * @author Martin Grześlowski - Initial contribution
+ */
 public abstract sealed class DeviceProperty<T> implements Comparable<DeviceProperty> {
 
     private final @NotNull String name;
@@ -93,6 +108,9 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
                 + '\'' + ", value=" + value + '}';
     }
 
+    /**
+     * @author Martin Grześlowski - Initial contribution
+     */
     public static final class BooleanDeviceProperty extends DeviceProperty<Boolean> {
 
         protected BooleanDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt,
@@ -105,6 +123,9 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
         }
     }
 
+    /**
+     * @author Martin Grześlowski - Initial contribution
+     */
     public static final class LongDeviceProperty extends DeviceProperty<Long> {
 
         protected LongDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt,
@@ -117,6 +138,9 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
         }
     }
 
+    /**
+     * @author Martin Grześlowski - Initial contribution
+     */
     public static final class StringDeviceProperty extends DeviceProperty<String> {
 
         protected StringDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt,

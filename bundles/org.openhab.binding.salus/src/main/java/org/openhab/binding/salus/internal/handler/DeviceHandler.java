@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.salus.internal.handler;
 
 import static java.math.RoundingMode.HALF_EVEN;
@@ -32,6 +44,9 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Martin Grześlowski - Initial contribution
+ */
 public class DeviceHandler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private final Logger logger;
