@@ -1,8 +1,9 @@
 package org.openhab.binding.salus.internal.rest;
 
-import javax.validation.constraints.NotNull;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.validation.constraints.NotNull;
 
 public abstract sealed class DeviceProperty<T> implements Comparable<DeviceProperty> {
 
@@ -15,7 +16,8 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
     private T value;
     private final Map<String, Object> properties;
 
-    protected DeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt, String productName, String displayName, T value, Map<String, Object> properties) {
+    protected DeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt, String productName,
+            String displayName, T value, Map<String, Object> properties) {
         this.name = Objects.requireNonNull(name, "name cannot be null!");
         this.readOnly = readOnly != null ? readOnly : true;
         this.direction = direction;
@@ -63,7 +65,6 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
         return properties;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -88,17 +89,14 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
 
     @Override
     public String toString() {
-        return "DeviceProperty{" +
-                "name='" + name + '\'' +
-                ", readOnly=" + readOnly +
-                ", direction='" + direction + '\'' +
-                ", value=" + value +
-                '}';
+        return "DeviceProperty{" + "name='" + name + '\'' + ", readOnly=" + readOnly + ", direction='" + direction
+                + '\'' + ", value=" + value + '}';
     }
 
     public static final class BooleanDeviceProperty extends DeviceProperty<Boolean> {
 
-        protected BooleanDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt, String productName, String displayName, Boolean value, Map<String, Object> properties) {
+        protected BooleanDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt,
+                String productName, String displayName, Boolean value, Map<String, Object> properties) {
             super(name, readOnly, direction, dataUpdatedAt, productName, displayName, findValue(value), properties);
         }
 
@@ -109,7 +107,8 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
 
     public static final class LongDeviceProperty extends DeviceProperty<Long> {
 
-        protected LongDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt, String productName, String displayName, Long value, Map<String, Object> properties) {
+        protected LongDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt,
+                String productName, String displayName, Long value, Map<String, Object> properties) {
             super(name, readOnly, direction, dataUpdatedAt, productName, displayName, findValue(value), properties);
         }
 
@@ -120,7 +119,8 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
 
     public static final class StringDeviceProperty extends DeviceProperty<String> {
 
-        protected StringDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt, String productName, String displayName, String value, Map<String, Object> properties) {
+        protected StringDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt,
+                String productName, String displayName, String value, Map<String, Object> properties) {
             super(name, readOnly, direction, dataUpdatedAt, productName, displayName, findValue(value), properties);
         }
 

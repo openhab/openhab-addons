@@ -1,8 +1,20 @@
 package org.openhab.binding.salus.internal.handler;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.google.gson.Gson;
+import static java.util.Collections.emptySortedSet;
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.types.RefreshType.REFRESH;
+
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.util.Optional;
+import java.util.SortedSet;
+import java.util.concurrent.ScheduledFuture;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.salus.internal.rest.*;
 import org.openhab.core.common.ThreadPoolManager;
@@ -14,20 +26,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.time.Duration;
-import java.util.Optional;
-import java.util.SortedSet;
-import java.util.concurrent.ScheduledFuture;
-
-import static java.util.Collections.emptySortedSet;
-import static java.util.Objects.requireNonNull;
-import static java.util.Objects.requireNonNullElse;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static org.openhab.core.types.RefreshType.REFRESH;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 
 public final class CloudBridgeHandler extends BaseBridgeHandler implements CloudApi {
     private Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName());
@@ -78,7 +78,8 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             logger.warn("At this point SalusApi should be null!");
         }
         salusApi = new SalusApi(username, password, url, httpClient, GsonMapper.INSTANCE);
-        logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName() + "[" + username.replaceAll("\\.", "_") + "]");
+        logger = LoggerFactory
+                .getLogger(CloudBridgeHandler.class.getName() + "[" + username.replaceAll("\\.", "_") + "]");
         try {
             var devices = salusApi.findDevices();
         } catch (Exception ex) {
@@ -87,17 +88,12 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             updateStatus(OFFLINE, CONFIGURATION_ERROR, msg + " " + ex.getMessage());
             return;
         }
-        this.devicePropertiesCache = Caffeine.newBuilder()
-                .maximumSize(10_000)
+        this.devicePropertiesCache = Caffeine.newBuilder().maximumSize(10_000)
                 .expireAfterWrite(Duration.ofSeconds(propertiesRefreshInterval))
-                .refreshAfterWrite(Duration.ofSeconds(propertiesRefreshInterval))
-                .build(this::loadPropertiesForDevice);
+                .refreshAfterWrite(Duration.ofSeconds(propertiesRefreshInterval)).build(this::loadPropertiesForDevice);
         var scheduledPool = ThreadPoolManager.getScheduledPool("Salus");
-        this.scheduledFuture = scheduledPool.scheduleWithFixedDelay(
-                this::refreshCloudDevices,
-                refreshInterval * 2,
-                refreshInterval,
-                SECONDS);
+        this.scheduledFuture = scheduledPool.scheduleWithFixedDelay(this::refreshCloudDevices, refreshInterval * 2,
+                refreshInterval, SECONDS);
 
         // done
         updateStatus(ONLINE);
@@ -149,7 +145,8 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // no commands in this bridge
-        logger.debug("Bridge does not support any commands to any channels. channelUID={}, command={}", channelUID, command);
+        logger.debug("Bridge does not support any commands to any channels. channelUID={}, command={}", channelUID,
+                command);
     }
 
     @Override
@@ -180,33 +177,34 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         return response.body();
     }
 
-
     @Override
     public void setValueForProperty(String dsn, String propertyName, Object value) {
         if (salusApi == null) {
-            logger.error("Cannot set value for property {} on device {} because salusClient is null", propertyName, dsn);
-            return ;
+            logger.error("Cannot set value for property {} on device {} because salusClient is null", propertyName,
+                    dsn);
+            return;
         }
         logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
         var response = salusApi.setValueForProperty(dsn, propertyName, value);
         if (response.failed()) {
-            logger.error("Cannot set property {} on device {} to value {} using salusClient\n{}",
-                    propertyName, dsn, value, response.error());
-            return ;
+            logger.error("Cannot set property {} on device {} to value {} using salusClient\n{}", propertyName, dsn,
+                    value, response.error());
+            return;
         }
         var setValue = response.body();
-        if (setValue instanceof Boolean || setValue instanceof String || setValue instanceof Long || setValue instanceof Integer) {
-            var property = devicePropertiesCache.get(dsn)
-                    .stream()
-                    .filter(prop -> prop.getName().equals(propertyName))
+        if (setValue instanceof Boolean || setValue instanceof String || setValue instanceof Long
+                || setValue instanceof Integer) {
+            var property = devicePropertiesCache.get(dsn).stream().filter(prop -> prop.getName().equals(propertyName))
                     .findFirst();
-            if(property.isPresent()) {
+            if (property.isPresent()) {
                 var prop = property.get();
                 if (setValue instanceof Boolean b && prop instanceof DeviceProperty.BooleanDeviceProperty boolProp) {
                     boolProp.setValue(b);
-                } else if (setValue instanceof String s && prop instanceof DeviceProperty.StringDeviceProperty stringProp) {
+                } else if (setValue instanceof String s
+                        && prop instanceof DeviceProperty.StringDeviceProperty stringProp) {
                     stringProp.setValue(s);
-                } else if ((setValue instanceof Long || setValue instanceof Integer) && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
+                } else if ((setValue instanceof Long || setValue instanceof Integer)
+                        && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
                     long v;
                     if (setValue instanceof Integer i) {
                         v = i.longValue();
@@ -215,16 +213,20 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                     }
                     longProp.setValue(v);
                 } else {
-                    logger.warn("Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
-                            setValue, setValue.getClass().getSimpleName(), propertyName, prop.getClass().getSimpleName(), dsn);
+                    logger.warn(
+                            "Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
+                            setValue, setValue.getClass().getSimpleName(), propertyName,
+                            prop.getClass().getSimpleName(), dsn);
                 }
             } else {
-                logger.warn("Cannot set value {} ({}) for property {} on device {} because it is not found in the cache. Invalidating cache",
+                logger.warn(
+                        "Cannot set value {} ({}) for property {} on device {} because it is not found in the cache. Invalidating cache",
                         setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
                 devicePropertiesCache.invalidate(dsn);
             }
         } else {
-            logger.warn("Cannot set value {} ({}) for property {} on device {} because it is not a Boolean, String, Long or Integer",
+            logger.warn(
+                    "Cannot set value {} ({}) for property {} on device {} because it is not a Boolean, String, Long or Integer",
                     setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
         }
     }
@@ -247,9 +249,6 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public Optional<Device> findDevice(String dsn) {
-        return findDevices()
-                .stream()
-                .filter(device -> device.dsn().equals(dsn))
-                .findFirst();
+        return findDevices().stream().filter(device -> device.dsn().equals(dsn)).findFirst();
     }
 }

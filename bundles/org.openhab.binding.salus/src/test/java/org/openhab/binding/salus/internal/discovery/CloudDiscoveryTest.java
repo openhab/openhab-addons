@@ -1,22 +1,18 @@
 package org.openhab.binding.salus.internal.discovery;
 
-import org.apache.commons.collections4.list.TreeList;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatcher;
-import org.openhab.binding.salus.internal.handler.CloudApi;
-import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
-import org.openhab.binding.salus.internal.rest.Device;
-import org.openhab.core.config.discovery.DiscoveryListener;
-import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.thing.ThingUID;
-
-import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+import java.util.*;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.salus.internal.handler.CloudApi;
+import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
+import org.openhab.binding.salus.internal.rest.Device;
+import org.openhab.core.config.discovery.DiscoveryListener;
+import org.openhab.core.thing.ThingUID;
 
 public class CloudDiscoveryTest {
 
@@ -26,7 +22,7 @@ public class CloudDiscoveryTest {
         // Given
         var cloudApi = mock(CloudApi.class);
         var bridgeHandler = mock(CloudBridgeHandler.class);
-        var bridgeUid = new ThingUID("salus","salus-device","boo");
+        var bridgeUid = new ThingUID("salus", "salus-device", "boo");
         var discoveryService = new CloudDiscovery(bridgeHandler, cloudApi, bridgeUid);
         var discoveryListener = mock(DiscoveryListener.class);
         discoveryService.addDiscoveryListener(discoveryListener);
@@ -43,17 +39,13 @@ public class CloudDiscoveryTest {
 
         // Then
         verify(cloudApi).findDevices();
-        verify(discoveryListener).thingDiscovered(
-                eq(discoveryService),
+        verify(discoveryListener).thingDiscovered(eq(discoveryService),
                 argThat(discoveryResult -> discoveryResult.getLabel().equals(device1.name())));
-        verify(discoveryListener).thingDiscovered(
-                eq(discoveryService),
+        verify(discoveryListener).thingDiscovered(eq(discoveryService),
                 argThat(discoveryResult -> discoveryResult.getLabel().equals(device2.name())));
-        verify(discoveryListener, never()).thingDiscovered(
-                eq(discoveryService),
+        verify(discoveryListener, never()).thingDiscovered(eq(discoveryService),
                 argThat(discoveryResult -> discoveryResult.getLabel().equals(device3.name())));
-        verify(discoveryListener, never()).thingDiscovered(
-                eq(discoveryService),
+        verify(discoveryListener, never()).thingDiscovered(eq(discoveryService),
                 argThat(discoveryResult -> discoveryResult.getLabel().equals(device4.name())));
     }
 
@@ -78,7 +70,7 @@ public class CloudDiscoveryTest {
     private Device randomDevice(boolean connected) {
         var random = new Random();
         var map = new HashMap<String, Object>();
-        if(connected) {
+        if (connected) {
             map.put("connection_status", "online");
         }
         return new Device("dsn-" + random.nextInt(), "name-" + random.nextInt(), map);

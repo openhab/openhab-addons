@@ -20,10 +20,9 @@ public interface RestClient {
         }
     }
 
-    record Response<T>(int statusCode, T body) {
+    record Response<T> (int statusCode, T body) {
         public <Y> Response<Y> map(Function<T, Y> mapper) {
             return new Response<>(statusCode, mapper.apply(body));
         }
     }
-
 }

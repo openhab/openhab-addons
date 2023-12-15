@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.salus.internal;
 
+import static org.openhab.binding.salus.internal.SalusBindingConstants.*;
+
+import java.util.Hashtable;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.discovery.CloudDiscovery;
+import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.handler.DeviceHandler;
 import org.openhab.binding.salus.internal.handler.It600Handler;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -31,10 +35,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Hashtable;
-
-import static org.openhab.binding.salus.internal.SalusBindingConstants.*;
 
 /**
  * The {@link SalusHandlerFactory} is responsible for creating things and thing
@@ -85,6 +85,7 @@ public class SalusHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Registering IT600");
         return new It600Handler(thing);
     }
+
     private ThingHandler newSalusCloudBridge(Thing thing) {
         logger.debug("Registering CloudBridgeHandler");
         var handler = new CloudBridgeHandler((Bridge) thing, httpClientFactory);

@@ -3,7 +3,7 @@ package org.openhab.binding.salus.internal.rest;
 import java.io.Serial;
 
 @SuppressWarnings("SerializableHasSerializationMethods")
-public class HttpUnknownException extends HttpException{
+public class HttpUnknownException extends HttpException {
     @Serial
     private static final long serialVersionUID = 1L;
 
