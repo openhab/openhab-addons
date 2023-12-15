@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.salus.internal.handler;
 
 import static java.util.Collections.emptySortedSet;
@@ -29,6 +41,9 @@ import org.slf4j.LoggerFactory;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 
+/**
+ * @author Martin Grześlowski - Initial contribution
+ */
 public final class CloudBridgeHandler extends BaseBridgeHandler implements CloudApi {
     private Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName());
     private final HttpClientFactory httpClientFactory;
@@ -69,7 +84,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             sb.append(missingPassword ? "❌" : "✅").append(" password\n");
             sb.append(missingUrl ? "❌" : "✅").append(" url\n");
             sb.append("Please check your configuration!\n");
-            logger.error(sb.toString());
+            logger.error("{}", sb);
             updateStatus(OFFLINE, CONFIGURATION_ERROR, sb.toString());
             return;
         }
@@ -203,15 +218,8 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                 } else if (setValue instanceof String s
                         && prop instanceof DeviceProperty.StringDeviceProperty stringProp) {
                     stringProp.setValue(s);
-                } else if ((setValue instanceof Long || setValue instanceof Integer)
-                        && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
-                    long v;
-                    if (setValue instanceof Integer i) {
-                        v = i.longValue();
-                    } else {
-                        v = (long) setValue;
-                    }
-                    longProp.setValue(v);
+                } else if (setValue instanceof Number l && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
+                    longProp.setValue(l.longValue());
                 } else {
                     logger.warn(
                             "Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
