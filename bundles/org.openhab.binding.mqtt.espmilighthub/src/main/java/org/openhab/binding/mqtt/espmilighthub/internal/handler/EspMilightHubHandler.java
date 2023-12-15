@@ -48,6 +48,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -294,7 +295,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             coefficients = KANG_Y_COEFFICIENTS[0];
         }
         BigDecimal y = polynomialFit(x, coefficients);
-        var rawHsb = HSBType.fromXY(x.floatValue() * 100.0f, y.floatValue() * 100.0f);
+        var rawHsb = ColorUtil.xyToHsb(new double[] { x.doubleValue(), y.doubleValue() });
         return new HSBType(rawHsb.getHue(), rawHsb.getSaturation(), brightness);
     }
 
