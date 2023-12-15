@@ -42,10 +42,9 @@ public class CapabilityMap extends ConcurrentHashMap<Class<?>, Capability> {
         return Optional.ofNullable(cap);
     }
 
-    public <T extends Capability> void remove(Class<T> clazz) {
-        @SuppressWarnings("unchecked")
+    public <T extends Capability> void remove(Class<?> clazz) {
         @Nullable
-        T cap = (T) super.remove(clazz);
+        Capability cap = super.remove(clazz);
         if (cap != null) {
             cap.dispose();
         }

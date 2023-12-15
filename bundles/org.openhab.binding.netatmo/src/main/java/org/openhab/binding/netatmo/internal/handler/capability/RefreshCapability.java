@@ -51,6 +51,10 @@ public class RefreshCapability extends Capability {
     public RefreshCapability(CommonInterface handler, int refreshInterval) {
         super(handler);
         this.dataValidity = Duration.ofSeconds(Math.max(0, refreshInterval));
+    }
+
+    @Override
+    public void initialize() {
         this.refreshConfigured = !probing();
         freeJobAndReschedule(2);
     }
@@ -106,7 +110,7 @@ public class RefreshCapability extends Capability {
                     refreshConfigured = true;
                     logger.debug("Data validity period identified to be {}", dataValidity);
                 } else {
-                    logger.debug("Data validity period not yet found - data timestamp unchanged");
+                    logger.debug("Data validity period not yet found, data timestamp unchanged");
                 }
             }
             dataTimeStamp = tsInstant;
