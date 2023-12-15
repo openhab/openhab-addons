@@ -1,49 +1,54 @@
 package org.openhab.binding.tacmi.internal.coe;
 
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.tacmi.internal.message.MessageType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.internal.ThingImpl;
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 public class TACmiHandlerTest {
 
-    @DataProvider(name = "outputIndices")
-    public Object[][] provideOutputIndices() {
-        return new Object[][] { { 1, true, 0 }, { 2, true, 1 }, { 3, true, 2 }, { 4, true, 3 }, { 5, true, 0 },
-                { 32, true, 3 }, { 1, false, 0 }, { 2, false, 1 }, { 16, false, 15 }, { 17, false, 0 },
-                { 32, false, 15 } };
+    public static Stream<Arguments> provideOutputIndices() {
+        return Stream.of(Arguments.of(1, true, 0), Arguments.of(2, true, 1), Arguments.of(3, true, 2),
+                Arguments.of(4, true, 3), Arguments.of(5, true, 0), Arguments.of(32, true, 3),
+                Arguments.of(1, false, 0), Arguments.of(2, false, 1), Arguments.of(16, false, 15),
+                Arguments.of(17, false, 0), Arguments.of(32, false, 15));
     }
 
-    @Test(dataProvider = "outputIndices")
+    @ParameterizedTest
+    @MethodSource("provideOutputIndices")
     public void testGetOutputIndexHappy(int aIndex, boolean aAnalog, int aExpected) {
         final Thing thing = new ThingImpl(new ThingTypeUID("test:test"), "test");
         final TACmiHandler sut = new TACmiHandler(thing);
 
         final int outputIdx = sut.getOutputIndex(aIndex, aAnalog);
 
-        Assert.assertEquals(outputIdx, aExpected);
+        Assertions.assertEquals(outputIdx, aExpected);
     }
 
     // This is actual target data
-    @DataProvider(name = "podIds")
-    public Object[][] providePodIds() {
-        return new Object[][] { { MessageType.ANALOG, 1, (byte) 1 }, { MessageType.ANALOG, 2, (byte) 1 },
-                { MessageType.ANALOG, 3, (byte) 1 }, { MessageType.ANALOG, 4, (byte) 1 },
-                { MessageType.ANALOG, 5, (byte) 2 }, { MessageType.ANALOG, 32, (byte) 8 },
-                { MessageType.DIGITAL, 1, (byte) 0 }, { MessageType.DIGITAL, 16, (byte) 0 },
-                { MessageType.DIGITAL, 17, (byte) 9 }, { MessageType.DIGITAL, 32, (byte) 9 } };
+
+    public static Stream<Arguments> providePodIds() {
+        return Stream.of(Arguments.of(MessageType.ANALOG, 1, (byte) 1), Arguments.of(MessageType.ANALOG, 2, (byte) 1),
+                Arguments.of(MessageType.ANALOG, 3, (byte) 1), Arguments.of(MessageType.ANALOG, 4, (byte) 1),
+                Arguments.of(MessageType.ANALOG, 5, (byte) 2), Arguments.of(MessageType.ANALOG, 32, (byte) 8),
+                Arguments.of(MessageType.DIGITAL, 1, (byte) 0), Arguments.of(MessageType.DIGITAL, 16, (byte) 0),
+                Arguments.of(MessageType.DIGITAL, 17, (byte) 9), Arguments.of(MessageType.DIGITAL, 32, (byte) 9));
     }
 
-    @Test(dataProvider = "podIds")
+    @ParameterizedTest
+    @MethodSource("providePodIds")
     public void testGetPodIdHappy(final MessageType aMT, final int aOutput, final byte aExpected) {
         final Thing thing = new ThingImpl(new ThingTypeUID("test:test"), "test");
         final TACmiHandler sut = new TACmiHandler(thing);
 
         final byte podId = sut.getPodId(aMT, aOutput);
 
-        Assert.assertEquals(podId, aExpected);
+        Assertions.assertEquals(podId, aExpected);
     }
 }
