@@ -1986,14 +1986,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="hasExternalAlarmInputs" type="boolean" groupName="Settings">
-				<label>Has External Alarm Inputs</label>
-				<description>Select if your camera supports external alarm inputs (i.e. for externally connected PIR sensors, etc.).
-				</description>
-				<default>false</default>
-				<advanced>true</advanced>
-			</parameter>
-
 		</config-description>
 	</thing-type>
 

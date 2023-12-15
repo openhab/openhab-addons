@@ -30,7 +30,6 @@ public class CameraConfig {
     public boolean useToken = true;
     private int onvifMediaProfile;
     private int pollTime;
-    private boolean hasExternalAlarmInputs = false;
     private String ffmpegInput = "";
     private String snapshotUrl = "";
     private String mjpegUrl = "";
@@ -137,10 +136,6 @@ public class CameraConfig {
 
     public int getPollTime() {
         return pollTime;
-    }
-
-    public boolean getHasExternalAlarmInputs() {
-        return hasExternalAlarmInputs;
     }
 
     public int getOnvifPort() {

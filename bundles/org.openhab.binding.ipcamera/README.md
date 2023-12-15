@@ -243,7 +243,6 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `gifHistory` | String | The 50 most recent filenames the binding has used unless reset. |
 | `gifHistoryLength` | Number | How many filenames are in the `gifHistory`. |
 | `gotoPreset` | String | ONVIF cameras that can move only. Will cause the camera to move to a preset location. |
-| `hasExternalAlarmInputs` | Switch | Some Hikvision cameras support external alarm inputs, such as PIR sensors, enable this if your camera support them. | 
 | `hlsUrl` | String | The URL for the ipcamera.m3u8 file. |
 | `humanAlarm` | Switch | When a camera detects a human this switch will turn ON. |
 | `imageUrl` | String | The URL for the ipcamera.jpg file. |
