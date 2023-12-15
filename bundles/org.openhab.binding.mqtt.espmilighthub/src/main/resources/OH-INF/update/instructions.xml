@@ -7,13 +7,13 @@
 		<instruction-set targetVersion="1">
 			<remove-channel id="level"/>
 			<update-channel id="colorTemperature">
-				<type>system.color-temperature</type>
+				<type>system:color-temperature</type>
 			</update-channel>
 			<add-channel id="colourTemperatureAbs">
-				<type>system.color-temperature-abs</type>
+				<type>system:color-temperature-abs</type>
 			</add-channel>
 			<update-channel id="colour">
-				<type>system.color</type>
+				<type>system:color</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -22,13 +22,13 @@
 		<instruction-set targetVersion="1">
 			<remove-channel id="level"/>
 			<update-channel id="colorTemperature">
-				<type>system.color-temperature</type>
+				<type>system:color-temperature</type>
 			</update-channel>
 			<add-channel id="colourTemperatureAbs">
-				<type>system.color-temperature-abs</type>
+				<type>system:color-temperature-abs</type>
 			</add-channel>
 			<update-channel id="colour">
-				<type>system.color</type>
+				<type>system:color</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -36,13 +36,13 @@
 	<thing-type uid="mqtt:fut091">
 		<instruction-set targetVersion="1">
 			<update-channel id="level">
-				<type>system.brightness</type>
+				<type>system:brightness</type>
 			</update-channel>
 			<update-channel id="colorTemperature">
-				<type>system.color-temperature</type>
+				<type>system:color-temperature</type>
 			</update-channel>
 			<add-channel id="colourTemperatureAbs">
-				<type>system.color-temperature-abs</type>
+				<type>system:color-temperature-abs</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -50,13 +50,13 @@
 	<thing-type uid="mqtt:cct">
 		<instruction-set targetVersion="1">
 			<update-channel id="level">
-				<type>system.brightness</type>
+				<type>system:brightness</type>
 			</update-channel>
 			<update-channel id="colorTemperature">
-				<type>system.color-temperature</type>
+				<type>system:color-temperature</type>
 			</update-channel>
 			<add-channel id="colourTemperatureAbs">
-				<type>system.color-temperature-abs</type>
+				<type>system:color-temperature-abs</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -65,7 +65,7 @@
 		<instruction-set targetVersion="1">
 			<remove-channel id="level"/>
 			<update-channel id="colour">
-				<type>system.color</type>
+				<type>system:color</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -74,10 +74,9 @@
 		<instruction-set targetVersion="1">
 			<remove-channel id="level"/>
 			<update-channel id="colour">
-				<type>system.color</type>
+				<type>system:color</type>
 			</update-channel>
 		</instruction-set>
-	</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
