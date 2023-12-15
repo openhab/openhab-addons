@@ -1,16 +1,14 @@
 package org.openhab.binding.salus.internal.rest;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import org.junit.jupiter.api.Test;
 
 public class GsonMapperTest {
-
 
     // Can serialize login parameters to JSON
     @Test
@@ -50,10 +48,8 @@ public class GsonMapperTest {
         // Given
         GsonMapper gsonMapper = GsonMapper.INSTANCE;
         String json = "[{\"device\":{\"dsn\":\"123\",\"product_name\":\"Product 1\"}},{\"device\":{\"dsn\":\"456\",\"product_name\":\"Product 2\"}}]";
-        List<Device> expectedDevices = List.of(
-                new Device("123", "Product 1", Collections.emptyMap()),
-                new Device("456", "Product 2", Collections.emptyMap())
-        );
+        List<Device> expectedDevices = List.of(new Device("123", "Product 1", Collections.emptyMap()),
+                new Device("456", "Product 2", Collections.emptyMap()));
 
         // When
         List<Device> devices = gsonMapper.parseDevices(json);
@@ -103,5 +99,4 @@ public class GsonMapperTest {
         // Then
         assertThat(datapointValue).isEmpty();
     }
-
 }

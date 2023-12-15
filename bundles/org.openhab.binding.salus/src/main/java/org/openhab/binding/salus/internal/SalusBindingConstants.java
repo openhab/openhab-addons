@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.salus.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
-
-import java.util.Set;
 
 /**
  * The {@link SalusBindingConstants} class defines common constants, which are
@@ -34,9 +34,8 @@ public class SalusBindingConstants {
     public static final ThingTypeUID SALUS_IT600_DEVICE_TYPE = new ThingTypeUID(BINDING_ID, "salus-it600-device");
     public static final ThingTypeUID SALUS_SERVER_TYPE = new ThingTypeUID(BINDING_ID, "salus-cloud-bridge");
 
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SALUS_DEVICE_TYPE, SALUS_IT600_DEVICE_TYPE, SALUS_SERVER_TYPE);
-
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SALUS_DEVICE_TYPE,
+            SALUS_IT600_DEVICE_TYPE, SALUS_SERVER_TYPE);
 
     public static class SalusCloud {
     }
@@ -50,9 +49,10 @@ public class SalusBindingConstants {
             public static final int AUTO = 0;
             public static final int MANUAL = 2;
             public static final int TEMPORARY_MANUAL = 1;
-            public static final int OFF= 7;
+            public static final int OFF = 7;
         }
     }
+
     public static class Channels {
         public static class It600 {
             public static final String TEMPERATURE = "temperature";
@@ -68,38 +68,21 @@ public class SalusBindingConstants {
         public static final String GENERIC_INPUT_NUMBER_CHANNEL = "generic-input-number-channel";
         public static final String TEMPERATURE_OUTPUT_NUMBER_CHANNEL = "temperature-output-channel";
         public static final String TEMPERATURE_INPUT_NUMBER_CHANNEL = "temperature-input-channel";
-        public static final Set<String> TEMPERATURE_CHANNELS = Set.of(
-                "ep_9:sIT600TH:AutoCoolingSetpoint_x100",
-                "ep_9:sIT600TH:AutoCoolingSetpoint_x100_a",
-                "ep_9:sIT600TH:AutoHeatingSetpoint_x100",
-                "ep_9:sIT600TH:AutoHeatingSetpoint_x100_a",
-                "ep_9:sIT600TH:CoolingSetpoint_x100",
-                "ep_9:sIT600TH:CoolingSetpoint_x100_a",
-                "ep_9:sIT600TH:FloorCoolingMax_x100",
-                "ep_9:sIT600TH:FloorCoolingMin_x100",
-                "ep_9:sIT600TH:FloorHeatingMax_x100",
-                "ep_9:sIT600TH:FloorHeatingMin_x100",
-                "ep_9:sIT600TH:FrostSetpoint_x100",
-                "ep_9:sIT600TH:HeatingSetpoint_x100",
-                "ep_9:sIT600TH:HeatingSetpoint_x100_a",
-                "ep_9:sIT600TH:LocalTemperature_x100",
-                "ep_9:sIT600TH:MaxCoolSetpoint_x100",
-                "ep_9:sIT600TH:MaxHeatSetpoint_x100",
-                "ep_9:sIT600TH:MaxHeatSetpoint_x100_a",
-                "ep_9:sIT600TH:MinCoolSetpoint_x100",
-                "ep_9:sIT600TH:MinCoolSetpoint_x100_a",
-                "ep_9:sIT600TH:MinHeatSetpoint_x100",
-                "ep_9:sIT600TH:PipeTemperature_x100",
-                "ep_9:sIT600TH:SetAutoCoolingSetpoint_x100",
-                "ep_9:sIT600TH:SetAutoHeatingSetpoint_x100",
-                "ep_9:sIT600TH:SetCoolingSetpoint_x100",
-                "ep_9:sIT600TH:SetFloorCoolingMin_x100",
-                "ep_9:sIT600TH:SetFloorHeatingMax_x100",
-                "ep_9:sIT600TH:SetFloorHeatingMin_x100",
-                "ep_9:sIT600TH:SetFrostSetpoint_x100",
-                "ep_9:sIT600TH:SetHeatingSetpoint_x100",
-                "ep_9:sIT600TH:SetMaxHeatSetpoint_x100",
-                "ep_9:sIT600TH:SetMinCoolSetpoint_x100"
-        );
+        public static final Set<String> TEMPERATURE_CHANNELS = Set.of("ep_9:sIT600TH:AutoCoolingSetpoint_x100",
+                "ep_9:sIT600TH:AutoCoolingSetpoint_x100_a", "ep_9:sIT600TH:AutoHeatingSetpoint_x100",
+                "ep_9:sIT600TH:AutoHeatingSetpoint_x100_a", "ep_9:sIT600TH:CoolingSetpoint_x100",
+                "ep_9:sIT600TH:CoolingSetpoint_x100_a", "ep_9:sIT600TH:FloorCoolingMax_x100",
+                "ep_9:sIT600TH:FloorCoolingMin_x100", "ep_9:sIT600TH:FloorHeatingMax_x100",
+                "ep_9:sIT600TH:FloorHeatingMin_x100", "ep_9:sIT600TH:FrostSetpoint_x100",
+                "ep_9:sIT600TH:HeatingSetpoint_x100", "ep_9:sIT600TH:HeatingSetpoint_x100_a",
+                "ep_9:sIT600TH:LocalTemperature_x100", "ep_9:sIT600TH:MaxCoolSetpoint_x100",
+                "ep_9:sIT600TH:MaxHeatSetpoint_x100", "ep_9:sIT600TH:MaxHeatSetpoint_x100_a",
+                "ep_9:sIT600TH:MinCoolSetpoint_x100", "ep_9:sIT600TH:MinCoolSetpoint_x100_a",
+                "ep_9:sIT600TH:MinHeatSetpoint_x100", "ep_9:sIT600TH:PipeTemperature_x100",
+                "ep_9:sIT600TH:SetAutoCoolingSetpoint_x100", "ep_9:sIT600TH:SetAutoHeatingSetpoint_x100",
+                "ep_9:sIT600TH:SetCoolingSetpoint_x100", "ep_9:sIT600TH:SetFloorCoolingMin_x100",
+                "ep_9:sIT600TH:SetFloorHeatingMax_x100", "ep_9:sIT600TH:SetFloorHeatingMin_x100",
+                "ep_9:sIT600TH:SetFrostSetpoint_x100", "ep_9:sIT600TH:SetHeatingSetpoint_x100",
+                "ep_9:sIT600TH:SetMaxHeatSetpoint_x100", "ep_9:sIT600TH:SetMinCoolSetpoint_x100");
     }
 }

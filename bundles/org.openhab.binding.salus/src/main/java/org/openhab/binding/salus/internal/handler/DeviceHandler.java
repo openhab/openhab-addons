@@ -1,5 +1,21 @@
 package org.openhab.binding.salus.internal.handler;
 
+import static java.math.RoundingMode.HALF_EVEN;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.BINDING_ID;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.*;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatusDetail.*;
+import static org.openhab.core.types.RefreshType.REFRESH;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
@@ -15,22 +31,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-
-import static java.math.RoundingMode.HALF_EVEN;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.BINDING_ID;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.*;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.*;
-import static org.openhab.core.types.RefreshType.REFRESH;
 
 public class DeviceHandler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
@@ -61,9 +61,7 @@ public class DeviceHandler extends BaseThingHandler {
         var bridge = getBridge();
         if (bridge == null) {
             logger.debug("No bridge for thing with UID {}", thing.getUID());
-            updateStatus(
-                    OFFLINE,
-                    BRIDGE_UNINITIALIZED,
+            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED,
                     "There is no bridge for this thing. Remove it and add it again.");
             return;
         }
@@ -80,9 +78,7 @@ public class DeviceHandler extends BaseThingHandler {
 
         if (StringUtils.isEmpty(dsn)) {
             logger.debug("No {} for thing with UID {}", DSN, thing.getUID());
-            updateStatus(
-                    OFFLINE,
-                    CONFIGURATION_ERROR,
+            updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "There is no " + DSN + " for this thing. Remove it and add it again.");
             return;
         }
@@ -101,15 +97,9 @@ public class DeviceHandler extends BaseThingHandler {
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
                 return;
             }
-            var channels = findDeviceProperties()
-                    .stream()
-                    .map(this::buildChannel)
-                    .toList();
+            var channels = findDeviceProperties().stream().map(this::buildChannel).toList();
             if (channels.isEmpty()) {
-                updateStatus(
-                        OFFLINE,
-                        CONFIGURATION_ERROR,
-                        "There are no channels for " + dsn + ".");
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "There are no channels for " + dsn + ".");
                 return;
             }
             updateChannels(channels);
@@ -133,25 +123,25 @@ public class DeviceHandler extends BaseThingHandler {
         } else if (property instanceof DeviceProperty.LongDeviceProperty longDeviceProperty) {
             if (TEMPERATURE_CHANNELS.contains(longDeviceProperty.getName())) {
                 // a temp channel
-                channelId = inOrOut(property.getDirection(), TEMPERATURE_INPUT_NUMBER_CHANNEL, TEMPERATURE_OUTPUT_NUMBER_CHANNEL);
+                channelId = inOrOut(property.getDirection(), TEMPERATURE_INPUT_NUMBER_CHANNEL,
+                        TEMPERATURE_OUTPUT_NUMBER_CHANNEL);
             } else {
-                channelId = inOrOut(property.getDirection(), GENERIC_INPUT_NUMBER_CHANNEL, GENERIC_OUTPUT_NUMBER_CHANNEL);
+                channelId = inOrOut(property.getDirection(), GENERIC_INPUT_NUMBER_CHANNEL,
+                        GENERIC_OUTPUT_NUMBER_CHANNEL);
             }
             acceptedItemType = "Number";
         } else if (property instanceof DeviceProperty.StringDeviceProperty stringDeviceProperty) {
             channelId = inOrOut(property.getDirection(), GENERIC_INPUT_CHANNEL, GENERIC_OUTPUT_CHANNEL);
             acceptedItemType = "String";
         } else {
-            throw new UnsupportedOperationException("Property class " + property.getClass().getSimpleName() + " is not supported!");
+            throw new UnsupportedOperationException(
+                    "Property class " + property.getClass().getSimpleName() + " is not supported!");
         }
 
         var channelUid = new ChannelUID(thing.getUID(), buildChannelUid(property.getName()));
         var channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
-        return ChannelBuilder
-                .create(channelUid, acceptedItemType)
-                .withType(channelTypeUID)
-                .withLabel(buildChannelDisplayName(property.getDisplayName()))
-                .build();
+        return ChannelBuilder.create(channelUid, acceptedItemType).withType(channelTypeUID)
+                .withLabel(buildChannelDisplayName(property.getDisplayName())).build();
     }
 
     private String buildChannelUid(final String name) {
@@ -185,7 +175,6 @@ public class DeviceHandler extends BaseThingHandler {
         }
         return withoutSuffix;
     }
-
 
     private String inOrOut(String direction, String in, String out) {
         if ("output".equalsIgnoreCase(direction)) {
@@ -224,12 +213,12 @@ public class DeviceHandler extends BaseThingHandler {
             } else if (command instanceof StringType typedCommand) {
                 handleStringCommand(channelUID, typedCommand);
             } else {
-                logger.warn("Does not know how to handle command `{}` ({}) on channel `{}`!",
-                        command, command.getClass().getSimpleName(), channelUID);
+                logger.warn("Does not know how to handle command `{}` ({}) on channel `{}`!", command,
+                        command.getClass().getSimpleName(), channelUID);
             }
         } catch (Exception ex) {
-            logger.error("Error occurred while handling command `{}` ({}) on channel `{}`!",
-                    command, command.getClass().getSimpleName(), channelUID.getId(), ex);
+            logger.error("Error occurred while handling command `{}` ({}) on channel `{}`!", command,
+                    command.getClass().getSimpleName(), channelUID.getId(), ex);
         }
     }
 
@@ -248,9 +237,7 @@ public class DeviceHandler extends BaseThingHandler {
             return;
         }
 
-        var propertyOptional = findDeviceProperties()
-                .stream()
-                .filter(property -> property.getName().equals(salusId))
+        var propertyOptional = findDeviceProperties().stream().filter(property -> property.getName().equals(salusId))
                 .findFirst();
         if (propertyOptional.isEmpty()) {
             logger.warn("Property {} not found in response!", salusId);
@@ -262,7 +249,8 @@ public class DeviceHandler extends BaseThingHandler {
             state = booleanProperty.getValue() ? OnOffType.ON : OnOffType.OFF;
         } else if (property instanceof DeviceProperty.LongDeviceProperty longDeviceProperty) {
             if (isX100) {
-                state = new DecimalType(new BigDecimal(longDeviceProperty.getValue()).divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN)));
+                state = new DecimalType(new BigDecimal(longDeviceProperty.getValue()).divide(ONE_HUNDRED,
+                        new MathContext(5, HALF_EVEN)));
             } else {
                 state = new DecimalType(longDeviceProperty.getValue());
             }
@@ -292,7 +280,6 @@ public class DeviceHandler extends BaseThingHandler {
         cloudApi.setValueForProperty(dsn, salusId, command);
         handleCommand(channelUID, REFRESH);
     }
-
 
     private void handleDecimalCommand(ChannelUID channelUID, DecimalType command) {
         var id = channelUID.getId();
@@ -325,5 +312,4 @@ public class DeviceHandler extends BaseThingHandler {
         cloudApi.setValueForProperty(dsn, salusId, value);
         handleCommand(channelUID, REFRESH);
     }
-
 }

@@ -1,5 +1,12 @@
 package org.openhab.binding.salus.internal.discovery;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.*;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
+
+import java.util.Locale;
+import java.util.Map;
+
 import org.openhab.binding.salus.internal.handler.CloudApi;
 import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.rest.Device;
@@ -11,19 +18,13 @@ import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Locale;
-import java.util.Map;
-
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.*;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
-
 public class CloudDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(CloudDiscovery.class);
     private final CloudApi cloudApi;
     private final ThingUID bridgeUid;
 
-    public CloudDiscovery(CloudBridgeHandler bridgeHandler, CloudApi cloudApi, ThingUID bridgeUid) throws IllegalArgumentException {
+    public CloudDiscovery(CloudBridgeHandler bridgeHandler, CloudApi cloudApi, ThingUID bridgeUid)
+            throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
         this.cloudApi = cloudApi;
         this.bridgeUid = bridgeUid;
@@ -35,9 +36,7 @@ public class CloudDiscovery extends AbstractDiscoveryService {
         try {
             var devices = cloudApi.findDevices();
             logger.debug("Found {} devices while scanning", devices.size());
-            devices.stream()
-                    .filter(Device::isConnected)
-                    .forEach(this::addThing);
+            devices.stream().filter(Device::isConnected).forEach(this::addThing);
         } catch (Exception e) {
             logger.error("Error while scanning", e);
         }
@@ -65,10 +64,7 @@ public class CloudDiscovery extends AbstractDiscoveryService {
     }
 
     private DiscoveryResult createDiscoveryResult(ThingUID thingUID, String label, Map<String, Object> properties) {
-        return DiscoveryResultBuilder.create(thingUID)
-                .withBridge(bridgeUid)
-                .withProperties(properties)
-                .withLabel(label)
+        return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUid).withProperties(properties).withLabel(label)
                 .build();
     }
 

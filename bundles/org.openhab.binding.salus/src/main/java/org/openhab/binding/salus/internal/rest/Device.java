@@ -1,9 +1,10 @@
 package org.openhab.binding.salus.internal.rest;
 
-import javax.validation.constraints.NotNull;
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
 
-import static java.util.Objects.requireNonNull;
+import javax.validation.constraints.NotNull;
 
 public record Device(@NotNull String dsn, @NotNull String name,
         @NotNull Map<String, Object> properties) implements Comparable<Device> {

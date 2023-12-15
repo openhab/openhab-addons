@@ -1,19 +1,21 @@
 
 package org.openhab.binding.salus.internal.rest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Objects.requireNonNull;
+import static org.openhab.binding.salus.internal.rest.ApiResponse.error;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.salus.internal.rest.ApiResponse.error;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The SalusApi class is responsible for interacting with a REST API to perform various operations related to the Salus system. It handles authentication, token management, and provides methods to retrieve and manipulate device information and properties.
+ * The SalusApi class is responsible for interacting with a REST API to perform various operations related to the Salus
+ * system. It handles authentication, token management, and provides methods to retrieve and manipulate device
+ * information and properties.
  */
 public class SalusApi {
     private static final int MAX_TIMES = 3;
@@ -27,12 +29,8 @@ public class SalusApi {
     private LocalDateTime authTokenExpireTime;
     private final Clock clock;
 
-    public SalusApi(String username,
-                    char[] password,
-                    String baseUrl,
-                    RestClient restClient,
-                    GsonMapper mapper,
-                    Clock clock) {
+    public SalusApi(String username, char[] password, String baseUrl, RestClient restClient, GsonMapper mapper,
+            Clock clock) {
         this.username = requireNonNull(username, "username");
         this.password = requireNonNull(password, "password");
         this.baseUrl = removeTrailingSlash(requireNonNull(baseUrl, "baseUrl"));
@@ -44,11 +42,7 @@ public class SalusApi {
         logger = LoggerFactory.getLogger(SalusApi.class.getName() + "[" + username.replaceAll("\\.", "_") + "]");
     }
 
-    public SalusApi(String username,
-                    char[] password,
-                    String baseUrl,
-                    RestClient restClient,
-                    GsonMapper mapper) {
+    public SalusApi(String username, char[] password, String baseUrl, RestClient restClient, GsonMapper mapper) {
         this(username, password, baseUrl, restClient, mapper, Clock.systemDefaultZone());
     }
 
@@ -67,9 +61,10 @@ public class SalusApi {
         return response;
     }
 
-    private RestClient.Response<String> post(String url, RestClient.Content content, RestClient.Header header, int times) {
+    private RestClient.Response<String> post(String url, RestClient.Content content, RestClient.Header header,
+            int times) {
         refreshAccessToken();
-        var response = restClient.post(url,content, header);
+        var response = restClient.post(url, content, header);
         if (response.statusCode() == 401) {
             logger.info("Refreshing access token");
             login(username, password);
@@ -77,7 +72,7 @@ public class SalusApi {
                 logger.warn("Could not refresh access token after {} times", MAX_TIMES);
                 return response;
             }
-            return post(url,content, header, times + 1);
+            return post(url, content, header, times + 1);
         }
         return response;
     }
@@ -100,9 +95,7 @@ public class SalusApi {
         var finalUrl = url("/users/sign_in.json");
         var method = "POST";
         var inputBody = mapper.loginParam(username, password);
-        var response = restClient.post(
-                finalUrl,
-                new RestClient.Content(inputBody, "application/json"),
+        var response = restClient.post(finalUrl, new RestClient.Content(inputBody, "application/json"),
                 new RestClient.Header("Accept", "application/json"));
         if (response.statusCode() == 401) {
             if (times < MAX_TIMES) {
@@ -129,8 +122,7 @@ public class SalusApi {
         }
         authToken = mapper.authToken(response.body());
         authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(authToken.expiresIn());
-        logger.info("Correctly logged in for user {}, role={}, expires at {} ({} secs)",
-                username, authToken.role(),
+        logger.info("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, authToken.role(),
                 authTokenExpireTime, authToken.expiresIn());
     }
 
@@ -209,8 +201,6 @@ public class SalusApi {
             return error(mapper.parseError(response));
         }
         var datapointValue = response.map(mapper::datapointValue).body();
-        return datapointValue
-                .map(ApiResponse::ok)
-                .orElseGet(() -> error(new Error(404, "No datapoint in return")));
+        return datapointValue.map(ApiResponse::ok).orElseGet(() -> error(new Error(404, "No datapoint in return")));
     }
 }

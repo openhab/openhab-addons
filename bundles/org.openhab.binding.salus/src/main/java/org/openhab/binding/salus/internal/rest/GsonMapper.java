@@ -1,15 +1,5 @@
 package org.openhab.binding.salus.internal.rest;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
@@ -17,8 +7,21 @@ import static java.util.Collections.singletonMap;
 import static java.util.Collections.unmodifiableSortedMap;
 import static java.util.Optional.empty;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+
 /**
- * The GsonMapper class is responsible for mapping JSON data to Java objects using the Gson library. It provides methods for converting JSON strings to various types of objects, such as authentication tokens, devices, device properties, and error messages.
+ * The GsonMapper class is responsible for mapping JSON data to Java objects using the Gson library. It provides methods
+ * for converting JSON strings to various types of objects, such as authentication tokens, devices, device properties,
+ * and error messages.
  */
 public class GsonMapper {
     public static final GsonMapper INSTANCE = new GsonMapper();
@@ -30,9 +33,7 @@ public class GsonMapper {
     private final Gson gson = new Gson();
 
     public String loginParam(String username, char[] password) {
-        return gson.toJson(
-                Map.of("user",
-                        Map.of("email", username, "password", new String(password))));
+        return gson.toJson(Map.of("user", Map.of("email", username, "password", new String(password))));
     }
 
     public AuthToken authToken(String json) {
@@ -40,12 +41,8 @@ public class GsonMapper {
     }
 
     public List<Device> parseDevices(String json) {
-        return tryParseBody(json, LIST_TYPE_REFERENCE, List.of())
-                .stream()
-                .map(this::parseDevice)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
+        return tryParseBody(json, LIST_TYPE_REFERENCE, List.of()).stream().map(this::parseDevice)
+                .filter(Optional::isPresent).map(Optional::get).toList();
     }
 
     private Optional<Device> parseDevice(Object obj) {
@@ -56,8 +53,7 @@ public class GsonMapper {
 
         if (!firstLevelMap.containsKey("device")) {
             if (logger.isWarnEnabled()) {
-                var str = firstLevelMap.entrySet()
-                        .stream()
+                var str = firstLevelMap.entrySet().stream()
                         .map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
                         .collect(Collectors.joining("\n"));
                 logger.warn("Cannot parse device, because firstLevelMap does not have [device] key!\n{}", str);
@@ -65,7 +61,6 @@ public class GsonMapper {
             return empty();
         }
         var objLevel2 = firstLevelMap.get("device");
-
 
         if (!(objLevel2 instanceof Map<?, ?> map)) {
             logger.warn("Cannot parse device, because object is not type of map!\n", obj);
@@ -75,9 +70,7 @@ public class GsonMapper {
         // parse `dns`
         if (!map.containsKey("dsn")) {
             if (logger.isWarnEnabled()) {
-                var str = map.entrySet()
-                        .stream()
-                        .map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
+                var str = map.entrySet().stream().map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
                         .collect(Collectors.joining("\n"));
                 logger.warn("Cannot parse device, because map does not have [dsn] key!\n{}", str);
             }
@@ -88,9 +81,7 @@ public class GsonMapper {
         // parse `name`
         if (!map.containsKey("product_name")) {
             if (logger.isWarnEnabled()) {
-                var str = map.entrySet()
-                        .stream()
-                        .map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
+                var str = map.entrySet().stream().map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
                         .collect(Collectors.joining("\n"));
                 logger.warn("Cannot parse device, because map does not have [product_name] key!\n{}", str);
             }
@@ -99,19 +90,15 @@ public class GsonMapper {
         var name = (String) map.get("product_name");
 
         // parse `properties`
-        var list = map.entrySet()
-                .stream()
-                .filter(entry -> entry.getKey() != null)
-                .filter(entry -> !entry.getKey().equals("name"))
-                .filter(entry -> !entry.getKey().equals("base_type"))
+        var list = map.entrySet().stream().filter(entry -> entry.getKey() != null)
+                .filter(entry -> !entry.getKey().equals("name")).filter(entry -> !entry.getKey().equals("base_type"))
                 .filter(entry -> !entry.getKey().equals("read_only"))
                 .filter(entry -> !entry.getKey().equals("direction"))
                 .filter(entry -> !entry.getKey().equals("data_updated_at"))
                 .filter(entry -> !entry.getKey().equals("product_name"))
                 .filter(entry -> !entry.getKey().equals("display_name"))
                 .filter(entry -> !entry.getKey().equals("value"))
-                .map(entry -> Pair.of(entry.getKey().toString(), (Object) entry.getValue()))
-                .toList();
+                .map(entry -> Pair.of(entry.getKey().toString(), (Object) entry.getValue())).toList();
         Map<String, Object> properties = new LinkedHashMap<>();
         for (var entry : list) {
             properties.put(entry.getKey(), entry.getValue());
@@ -162,11 +149,11 @@ public class GsonMapper {
 
         if (!firstLevelMap.containsKey("property")) {
             if (logger.isWarnEnabled()) {
-                var str = firstLevelMap.entrySet()
-                        .stream()
+                var str = firstLevelMap.entrySet().stream()
                         .map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
                         .collect(Collectors.joining("\n"));
-                logger.warn("Cannot parse device property, because firstLevelMap does not have [property] key!\n{}", str);
+                logger.warn("Cannot parse device property, because firstLevelMap does not have [property] key!\n{}",
+                        str);
             }
             return empty();
         }
@@ -180,9 +167,7 @@ public class GsonMapper {
         // name
         if (!map.containsKey("name")) {
             if (logger.isWarnEnabled()) {
-                var str = map.entrySet()
-                        .stream()
-                        .map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
+                var str = map.entrySet().stream().map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
                         .collect(Collectors.joining("\n"));
                 logger.warn("Cannot parse device property, because map does not have [name] key!\n{}", str);
             }
@@ -200,19 +185,15 @@ public class GsonMapper {
         var value = findObjectOrNull(map, "value");
 
         // parse `properties`
-        var list = map.entrySet()
-                .stream()
-                .filter(entry -> entry.getKey() != null)
-                .filter(entry -> !entry.getKey().equals("name"))
-                .filter(entry -> !entry.getKey().equals("base_type"))
+        var list = map.entrySet().stream().filter(entry -> entry.getKey() != null)
+                .filter(entry -> !entry.getKey().equals("name")).filter(entry -> !entry.getKey().equals("base_type"))
                 .filter(entry -> !entry.getKey().equals("read_only"))
                 .filter(entry -> !entry.getKey().equals("direction"))
                 .filter(entry -> !entry.getKey().equals("data_updated_at"))
                 .filter(entry -> !entry.getKey().equals("product_name"))
                 .filter(entry -> !entry.getKey().equals("display_name"))
                 .filter(entry -> !entry.getKey().equals("value"))
-                .map(entry -> Pair.of(entry.getKey().toString(), (Object) entry.getValue()))
-                .toList();
+                .map(entry -> Pair.of(entry.getKey().toString(), (Object) entry.getValue())).toList();
         // this weird thing need to be done,
         // because `Collectors.toMap` does not support value=null
         // and in our case, sometimes the values are null
@@ -222,10 +203,13 @@ public class GsonMapper {
         }
         properties = unmodifiableSortedMap(properties);
 
-        return Optional.of(buildDeviceProperty(name, baseType, value, readOnly, direction, dataUpdatedAt, productName, displayName, properties));
+        return Optional.of(buildDeviceProperty(name, baseType, value, readOnly, direction, dataUpdatedAt, productName,
+                displayName, properties));
     }
 
-    private DeviceProperty<?> buildDeviceProperty(String name, String baseType, Object value, Boolean readOnly, String direction, String dataUpdatedAt, String productName, String displayName, SortedMap<String, Object> properties) {
+    private DeviceProperty<?> buildDeviceProperty(String name, String baseType, Object value, Boolean readOnly,
+            String direction, String dataUpdatedAt, String productName, String displayName,
+            SortedMap<String, Object> properties) {
         if ("boolean".equalsIgnoreCase(baseType)) {
             Boolean bool;
             if (value == null) {
@@ -240,7 +224,8 @@ public class GsonMapper {
                 logger.warn("Cannot parse boolean from [" + value + "]");
                 bool = null;
             }
-            return new DeviceProperty.BooleanDeviceProperty(name, readOnly, direction, dataUpdatedAt, productName, displayName, bool, properties);
+            return new DeviceProperty.BooleanDeviceProperty(name, readOnly, direction, dataUpdatedAt, productName,
+                    displayName, bool, properties);
         }
         if ("integer".equalsIgnoreCase(baseType)) {
             Long longValue;
@@ -261,10 +246,12 @@ public class GsonMapper {
                 logger.warn("Cannot parse long from [" + value + "]");
                 longValue = null;
             }
-            return new DeviceProperty.LongDeviceProperty(name, readOnly, direction, dataUpdatedAt, productName, displayName, longValue, properties);
+            return new DeviceProperty.LongDeviceProperty(name, readOnly, direction, dataUpdatedAt, productName,
+                    displayName, longValue, properties);
         }
         var string = value != null ? value.toString() : null;
-        return new DeviceProperty.StringDeviceProperty(name, readOnly, direction, dataUpdatedAt, productName, displayName, string, properties);
+        return new DeviceProperty.StringDeviceProperty(name, readOnly, direction, dataUpdatedAt, productName,
+                displayName, string, properties);
     }
 
     private String findOrNull(Map<?, ?> map, String name) {
@@ -273,7 +260,6 @@ public class GsonMapper {
         }
         return (String) map.get(name);
     }
-
 
     @SuppressWarnings("SameParameterValue")
     private Boolean findBoolOrNull(Map<?, ?> map, String name) {

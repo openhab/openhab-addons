@@ -1,15 +1,5 @@
 package org.openhab.binding.salus.internal.rest;
 
-import org.assertj.core.api.ThrowableAssert;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import java.time.Clock;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,6 +7,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
+import java.util.ArrayList;
+import java.util.Optional;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class SalusApiTest {
 
@@ -40,7 +36,7 @@ public class SalusApiTest {
         when(mapper.parseDevices(anyString())).thenReturn(devices);
 
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
-        setAuthToken(salusApi,restClient, mapper, authToken);
+        setAuthToken(salusApi, restClient, mapper, authToken);
 
         // When
         var result = salusApi.findDevices();
@@ -70,7 +66,7 @@ public class SalusApiTest {
         when(mapper.parseDeviceProperties(anyString())).thenReturn(deviceProperties);
 
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
-        setAuthToken(salusApi,restClient, mapper, authToken);
+        setAuthToken(salusApi, restClient, mapper, authToken);
 
         // When
         var result = salusApi.findDeviceProperties("dsn");
@@ -100,7 +96,7 @@ public class SalusApiTest {
         when(mapper.datapointValue(anyString())).thenReturn(Optional.of(datapointValue));
 
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
-        setAuthToken(salusApi,restClient, mapper, authToken);
+        setAuthToken(salusApi, restClient, mapper, authToken);
 
         // When
         var result = salusApi.setValueForProperty("dsn", "property_name", "value");
@@ -128,8 +124,7 @@ public class SalusApiTest {
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
 
         // When
-        assertThatThrownBy(salusApi::findDevices)
-                .isInstanceOf(HttpUnauthorizedException.class);
+        assertThatThrownBy(salusApi::findDevices).isInstanceOf(HttpUnauthorizedException.class);
     }
 
     // Find devices with invalid auth token throws HttpUnauthorizedException
@@ -150,7 +145,7 @@ public class SalusApiTest {
         when(restClient.get(anyString(), any())).thenReturn(response);
 
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
-        setAuthToken(salusApi,restClient, mapper, authToken);
+        setAuthToken(salusApi, restClient, mapper, authToken);
 
         // When
         var objectApiResponse = salusApi.findDevices();
@@ -179,7 +174,7 @@ public class SalusApiTest {
         when(restClient.get(anyString(), any())).thenReturn(unauthResponse);
 
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
-        setAuthToken(salusApi,restClient, mapper, authToken);
+        setAuthToken(salusApi, restClient, mapper, authToken);
 
         // When
         var response = salusApi.findDeviceProperties("dsn");
@@ -205,7 +200,7 @@ public class SalusApiTest {
         when(restClient.post(anyString(), any(), any())).thenReturn(response);
 
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
-        setAuthToken(salusApi,restClient, mapper, authToken);
+        setAuthToken(salusApi, restClient, mapper, authToken);
 
         // When
         var objectApiResponse = salusApi.setValueForProperty("dsn", "property_name", "value");
@@ -236,7 +231,7 @@ public class SalusApiTest {
         when(mapper.parseError(any())).thenReturn(error);
 
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
-        setAuthToken(salusApi,restClient, mapper, authToken);
+        setAuthToken(salusApi, restClient, mapper, authToken);
 
         // When
         var result = salusApi.findDeviceProperties("invalid_dsn");
@@ -265,39 +260,35 @@ public class SalusApiTest {
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
 
         // When
-        assertThatThrownBy(salusApi::findDevices)
-                .isInstanceOf(HttpForbiddenException.class);
+        assertThatThrownBy(salusApi::findDevices).isInstanceOf(HttpForbiddenException.class);
     }
 
     // Login with correct credentials returns auth token
-//    @Test
-//    @DisplayName("Login with correct credentials returns auth token")
-//    public void test_login_with_correct_credentials_returns_auth_token() {
-//        // Given
-//        var username = "correct_username";
-//        var password = "correct_password".toCharArray();
-//        var baseUrl = "https://example.com";
-//        var restClient = mock(RestClient.class);
-//        var mapper = mock(GsonMapper.class);
-//        var clock = Clock.systemDefaultZone();
-//
-//        var authToken = new AuthToken("access_token", "refresh_token", 3600L, "role");
-//        var response = new RestClient.Response<>(200, mapper.authTokenToJson(authToken));
-//        when(restClient.post(anyString(), any(), any())).thenReturn(response);
-//
-//        var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
-//
-//        // When
-//        salusApi.login(username, password);
-//
-//        // Then
-//        assertThat(salusApi.getAuthToken()).isEqualTo(authToken);
-//        assertThat(salusApi.getAuthTokenExpireTime()).isNotNull();
-//    }
-    private void setAuthToken(SalusApi salusApi,
-                              RestClient restClient,
-                              GsonMapper mapper,    
-                              AuthToken authToken) {
+    // @Test
+    // @DisplayName("Login with correct credentials returns auth token")
+    // public void test_login_with_correct_credentials_returns_auth_token() {
+    // // Given
+    // var username = "correct_username";
+    // var password = "correct_password".toCharArray();
+    // var baseUrl = "https://example.com";
+    // var restClient = mock(RestClient.class);
+    // var mapper = mock(GsonMapper.class);
+    // var clock = Clock.systemDefaultZone();
+    //
+    // var authToken = new AuthToken("access_token", "refresh_token", 3600L, "role");
+    // var response = new RestClient.Response<>(200, mapper.authTokenToJson(authToken));
+    // when(restClient.post(anyString(), any(), any())).thenReturn(response);
+    //
+    // var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
+    //
+    // // When
+    // salusApi.login(username, password);
+    //
+    // // Then
+    // assertThat(salusApi.getAuthToken()).isEqualTo(authToken);
+    // assertThat(salusApi.getAuthTokenExpireTime()).isNotNull();
+    // }
+    private void setAuthToken(SalusApi salusApi, RestClient restClient, GsonMapper mapper, AuthToken authToken) {
         var username = "correct_username";
         var password = "correct_password".toCharArray();
         var inputBody = "login_param_json";
@@ -306,8 +297,7 @@ public class SalusApiTest {
         when(mapper.authToken(authTokenJson)).thenReturn(authToken);
 
         var response = new RestClient.Response<>(200, authTokenJson);
-        when(restClient.post(endsWith("/users/sign_in.json"),
-                eq(new RestClient.Content(inputBody, "application/json")),
+        when(restClient.post(endsWith("/users/sign_in.json"), eq(new RestClient.Content(inputBody, "application/json")),
                 any())).thenReturn(response);
     }
 }

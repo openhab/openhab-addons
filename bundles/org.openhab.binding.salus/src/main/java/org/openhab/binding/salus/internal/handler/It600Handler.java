@@ -1,5 +1,21 @@
 package org.openhab.binding.salus.internal.handler;
 
+import static java.math.RoundingMode.HALF_EVEN;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.*;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.*;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatusDetail.*;
+import static org.openhab.core.types.RefreshType.REFRESH;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
 import org.openhab.core.library.types.DecimalType;
@@ -14,35 +30,14 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-
-import static java.math.RoundingMode.HALF_EVEN;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.*;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.*;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.*;
-import static org.openhab.core.types.RefreshType.REFRESH;
-
 public class It600Handler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
-    private static final Set<String> REQUIRED_CHANNELS = Set.of(
-            "ep_9:sIT600TH:LocalTemperature_x100",
-            "ep_9:sIT600TH:HeatingSetpoint_x100",
-            "ep_9:sIT600TH:SetHeatingSetpoint_x100",
-            "ep_9:sIT600TH:HoldType",
-            "ep_9:sIT600TH:SetHoldType"
-    );
+    private static final Set<String> REQUIRED_CHANNELS = Set.of("ep_9:sIT600TH:LocalTemperature_x100",
+            "ep_9:sIT600TH:HeatingSetpoint_x100", "ep_9:sIT600TH:SetHeatingSetpoint_x100", "ep_9:sIT600TH:HoldType",
+            "ep_9:sIT600TH:SetHoldType");
     private final Logger logger;
     private String dsn;
     private CloudApi cloudApi;
-
 
     public It600Handler(Thing thing) {
         super(thing);
@@ -61,24 +56,19 @@ public class It600Handler extends BaseThingHandler {
         }
     }
 
-
     private void internalInitialize() {
         {
             var bridge = getBridge();
             if (bridge == null) {
                 logger.debug("No bridge for thing with UID {}", thing.getUID());
-                updateStatus(
-                        OFFLINE,
-                        BRIDGE_UNINITIALIZED,
+                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED,
                         "There is no bridge for this thing. Remove it and add it again.");
                 return;
             }
             var bridgeHandler = bridge.getHandler();
             if (!(bridgeHandler instanceof CloudBridgeHandler cloudHandler)) {
-                var bridgeHandlerClassName = Optional.ofNullable(bridgeHandler)
-                        .map(BridgeHandler::getClass)
-                        .map(Class::getSimpleName)
-                        .orElse("null");
+                var bridgeHandlerClassName = Optional.ofNullable(bridgeHandler).map(BridgeHandler::getClass)
+                        .map(Class::getSimpleName).orElse("null");
                 logger.debug("Bridge is not instance of {}! Current bridge class {}, Thing UID {}",
                         CloudBridgeHandler.class.getSimpleName(), bridgeHandlerClassName, thing.getUID());
                 updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
@@ -91,9 +81,7 @@ public class It600Handler extends BaseThingHandler {
 
         if (StringUtils.isEmpty(dsn)) {
             logger.debug("No {} for thing with UID {}", DSN, thing.getUID());
-            updateStatus(
-                    OFFLINE,
-                    CONFIGURATION_ERROR,
+            updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "There is no " + DSN + " for this thing. Remove it and add it again.");
             return;
         }
@@ -115,10 +103,7 @@ public class It600Handler extends BaseThingHandler {
                 return;
             }
             // device is missing properties
-            var deviceProperties = findDeviceProperties()
-                    .stream()
-                    .map(DeviceProperty::getName)
-                    .toList();
+            var deviceProperties = findDeviceProperties().stream().map(DeviceProperty::getName).toList();
             var result = new ArrayList<>(REQUIRED_CHANNELS);
             result.removeAll(deviceProperties);
             if (result.size() > 0) {
@@ -164,20 +149,16 @@ public class It600Handler extends BaseThingHandler {
         }
 
         findLongProperty("ep_9:sIT600TH:LocalTemperature_x100", "LocalTemperature_x100")
-                .map(DeviceProperty.LongDeviceProperty::getValue)
-                .map(BigDecimal::new)
-                .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN)))
-                .map(DecimalType::new)
+                .map(DeviceProperty.LongDeviceProperty::getValue).map(BigDecimal::new)
+                .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN))).map(DecimalType::new)
                 .ifPresent(state -> updateState(channelUID, state));
     }
 
     private void handleCommandForExpectedTemperature(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             findLongProperty("ep_9:sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
-                    .map(DeviceProperty.LongDeviceProperty::getValue)
-                    .map(BigDecimal::new)
-                    .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN)))
-                    .map(DecimalType::new)
+                    .map(DeviceProperty.LongDeviceProperty::getValue).map(BigDecimal::new)
+                    .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN))).map(DecimalType::new)
                     .ifPresent(state -> updateState(channelUID, state));
             return;
         }
@@ -201,14 +182,13 @@ public class It600Handler extends BaseThingHandler {
             return;
         }
 
-        logger.debug("Does not know how to handle command `{}` ({}) on channel `{}`!",
-                command, command.getClass().getSimpleName(), channelUID);
+        logger.debug("Does not know how to handle command `{}` ({}) on channel `{}`!", command,
+                command.getClass().getSimpleName(), channelUID);
     }
 
     private void handleCommandForWorkType(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            findLongProperty("ep_9:sIT600TH:HoldType", "HoldType")
-                    .map(DeviceProperty.LongDeviceProperty::getValue)
+            findLongProperty("ep_9:sIT600TH:HoldType", "HoldType").map(DeviceProperty.LongDeviceProperty::getValue)
                     .map(value -> switch (value.intValue()) {
                         case AUTO -> "AUTO";
                         case MANUAL -> "MANUAL";
@@ -218,9 +198,7 @@ public class It600Handler extends BaseThingHandler {
                             logger.warn("Unknown value {} for property HoldType!", value);
                             yield "AUTO";
                         }
-                    })
-                    .map(StringType::new)
-                    .ifPresent(state -> updateState(channelUID, state));
+                    }).map(StringType::new).ifPresent(state -> updateState(channelUID, state));
             return;
         }
 
@@ -247,23 +225,19 @@ public class It600Handler extends BaseThingHandler {
             return;
         }
 
-        logger.debug("Does not know how to handle command `{}` ({}) on channel `{}`!",
-                command, command.getClass().getSimpleName(), channelUID);
+        logger.debug("Does not know how to handle command `{}` ({}) on channel `{}`!", command,
+                command.getClass().getSimpleName(), channelUID);
     }
 
     private Optional<DeviceProperty.LongDeviceProperty> findLongProperty(String name, String shortName) {
         var deviceProperties = findDeviceProperties();
-        var property = deviceProperties.stream()
-                .filter(p -> p.getName().equals(name))
+        var property = deviceProperties.stream().filter(p -> p.getName().equals(name))
                 .filter(DeviceProperty.LongDeviceProperty.class::isInstance)
-                .map(DeviceProperty.LongDeviceProperty.class::cast)
-                .findAny();
+                .map(DeviceProperty.LongDeviceProperty.class::cast).findAny();
         if (property.isEmpty()) {
-            property = deviceProperties.stream()
-                    .filter(p -> p.getName().contains(shortName))
+            property = deviceProperties.stream().filter(p -> p.getName().contains(shortName))
                     .filter(DeviceProperty.LongDeviceProperty.class::isInstance)
-                    .map(DeviceProperty.LongDeviceProperty.class::cast)
-                    .findAny();
+                    .map(DeviceProperty.LongDeviceProperty.class::cast).findAny();
         }
         if (property.isEmpty()) {
             logger.warn("{} property not found!", shortName);

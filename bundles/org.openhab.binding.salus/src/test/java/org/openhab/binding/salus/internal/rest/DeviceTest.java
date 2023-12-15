@@ -1,16 +1,15 @@
 package org.openhab.binding.salus.internal.rest;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("EqualsWithItself")
 class DeviceTest {
-
 
     // Returns true if 'connection_status' property exists and is set to 'online'
     @Test
@@ -208,5 +207,4 @@ class DeviceTest {
         // Then
         assertThat(result).isEqualTo("Device{dsn='123456', name='Device'}");
     }
-
 }

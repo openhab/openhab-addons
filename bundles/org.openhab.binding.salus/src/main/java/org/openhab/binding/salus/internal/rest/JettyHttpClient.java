@@ -1,15 +1,15 @@
 package org.openhab.binding.salus.internal.rest;
 
+import static java.util.Objects.requireNonNull;
+
+import javax.validation.constraints.NotNull;
+
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.validation.constraints.NotNull;
-
-import static java.util.Objects.requireNonNull;
 
 public class JettyHttpClient implements RestClient {
     private final Logger logger = LoggerFactory.getLogger(JettyHttpClient.class);
