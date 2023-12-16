@@ -13,6 +13,7 @@ For users without a serial connector on the server side, you can use a USB to se
 
 If you are using the Nuvo MPS4 music server with your Grand Concerto or Essentia G, the binding can connect to the server's IP address on port 5006.
 Using the MPS4 connection will also allow for greater interaction with the keypads to include custom menus, custom favorite lists and album art display on the CTP-36 keypad.
+If using MCS v5.35 or later on the server, content that is playing on MPS4 sources will display the album art to that source's Image channel.
 
 You don't need to have your Grand Concerto or Essentia G whole house amplifier device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on the LAN (serial over IP).
@@ -109,7 +110,7 @@ The following channels are available:
 | sourceN#track_position (where N= 1-6)| Number:Time | The running time elapsed of the current playing track (ReadOnly) See rules example for updating                                |
 | sourceN#button_press (where N= 1-6)  | String      | Indicates the last button pressed on the keypad for a non NuvoNet source or openHAB NuvoNet source (ReadOnly)                  |
 | sourceN#art_url (where N= 1-6)       | String      | MPS4 Only! The URL of the Album Art JPG for this source that is displayed on a CTP-36. See _very advanced_ rules (SendOnly)    |
-| sourceN#album_art (where N= 1-6)     | Image       | The Album Art loaded from the art_url channel for display in a UI widget (ReadOnly)                                            |
+| sourceN#album_art (where N= 1-6)     | Image       | The Album Art loaded from an MPS4 source or from the art_url channel for display in a UI widget (ReadOnly)                     |
 
 ## Full Example
 

@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -136,6 +137,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private static final Pattern ZONE_CFG_EQ_PATTERN = Pattern.compile("^BASS(.*),TREB(.*),BAL(.*),LOUDCMP([0-1])$");
     private static final Pattern ZONE_CFG_PATTERN = Pattern.compile(
             "^ENABLE1,NAME\"(.*)\",SLAVETO(.*),GROUP([0-4]),SOURCES(.*),XSRC(.*),IR(.*),DND(.*),LOCKED(.*),SLAVEEQ(.*)$");
+    private static final Pattern MCS_INSTANCE_PATTERN = Pattern.compile("MCSInstance\",\"value\":\"(.*?)\"");
+    private static final Pattern ART_GUID_PATTERN = Pattern.compile("NowPlayingGuid\",\"value\":\"\\{(.*?)\\}\"\\}");
 
     private final Logger logger = LoggerFactory.getLogger(NuvoHandler.class);
     private final NuvoStateDescriptionOptionProvider stateDescriptionProvider;
@@ -160,10 +163,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private HashMap<NuvoEnum, Integer> nuvoNetSrcMap = new HashMap<NuvoEnum, Integer>();
     private HashMap<NuvoEnum, String> favPrefixMap = new HashMap<NuvoEnum, String>();
     private HashMap<NuvoEnum, String[]> favoriteMap = new HashMap<NuvoEnum, String[]>();
+    private HashMap<NuvoEnum, NuvoEnum> sourceZoneMap = new HashMap<NuvoEnum, NuvoEnum>();
+    private HashMap<NuvoEnum, String> sourceInstanceMap = new HashMap<NuvoEnum, String>();
 
     private HashMap<NuvoEnum, byte[]> albumArtMap = new HashMap<NuvoEnum, byte[]>();
     private HashMap<NuvoEnum, Integer> albumArtIds = new HashMap<NuvoEnum, Integer>();
     private HashMap<NuvoEnum, String> dispInfoCache = new HashMap<NuvoEnum, String>();
+    private HashMap<NuvoEnum, String> mps4ArtGuids = new HashMap<NuvoEnum, String>();
 
     Set<Integer> activeZones = new HashSet<>(1);
 
@@ -173,6 +179,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     // Indicates if there is a need to poll status because of a disconnection used for MPS4 systems
     boolean pollStatusNeeded = true;
     boolean isMps4 = false;
+    String mps4Host = BLANK;
 
     /**
      * Constructor
@@ -220,6 +227,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         } else if (host != null && port != null) {
             connector = new NuvoIpConnector(host, port, uid);
             this.isMps4 = (port.intValue() == MPS4_PORT);
+            mps4Host = host;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Either Serial port or Host & Port must be specifed");
@@ -244,6 +252,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             this.isAnyOhNuvoNet = (config.nuvoNetSrc1.equals(2) || config.nuvoNetSrc2.equals(2)
                     || config.nuvoNetSrc3.equals(2) || config.nuvoNetSrc4.equals(2) || config.nuvoNetSrc5.equals(2)
                     || config.nuvoNetSrc6.equals(2));
+
+            mps4ArtGuids.put(NuvoEnum.SOURCE1, BLANK);
+            mps4ArtGuids.put(NuvoEnum.SOURCE2, BLANK);
+            mps4ArtGuids.put(NuvoEnum.SOURCE3, BLANK);
+            mps4ArtGuids.put(NuvoEnum.SOURCE4, BLANK);
+            mps4ArtGuids.put(NuvoEnum.SOURCE5, BLANK);
+            mps4ArtGuids.put(NuvoEnum.SOURCE6, BLANK);
 
             if (this.isAnyOhNuvoNet) {
                 logger.debug("At least one source is configured as an openHAB NuvoNet source");
@@ -442,6 +457,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                                 // update the other group member's selected source
                                 updateSrcForZoneGroup(target, String.valueOf(value));
+                                sourceZoneMap.put(NuvoEnum.valueOf("SOURCE" + value), target);
                             }
                         }
                         break;
@@ -747,6 +763,21 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         updateChannelState(source, CHANNEL_TRACK_LENGTH, matcher.group(1));
                         updateChannelState(source, CHANNEL_TRACK_POSITION, matcher.group(2));
                         updateChannelState(source, CHANNEL_PLAY_MODE, matcher.group(3));
+                        updateChannelState(source, CHANNEL_TYPE_CONTROL, matcher.group(3));
+
+                        // if this is an MPS4 source, the following retrieves album art when the source is playing
+                        if (nuvoNetSrcMap.get(source) == 1
+                                && isLinked(source.name().toLowerCase() + CHANNEL_DELIMIT + CHANNEL_ALBUM_ART)) {
+                            if (MPS4_PLAYING_MODES.contains(matcher.group(3))) {
+                                logger.debug("DISPINFO update, trying to get album art");
+                                getMps4AlbumArt(source);
+                            } else if (MPS4_IDLE_MODES.contains(matcher.group(3)) && ZERO.equals(matcher.group(1))) {
+                                // clear album art channel for this source
+                                logger.debug("DISPINFO update- not playing; clearing art, mode: {}", matcher.group(3));
+                                updateChannelState(source, CHANNEL_ALBUM_ART, UNDEF);
+                                mps4ArtGuids.put(source, BLANK);
+                            }
+                        }
                     } else {
                         logger.debug("no match on message: {}", updateData);
                     }
@@ -770,6 +801,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     if (matcher.find()) {
                         updateChannelState(zone, CHANNEL_TYPE_POWER, ON);
                         updateChannelState(zone, CHANNEL_TYPE_SOURCE, matcher.group(1));
+                        sourceZoneMap.put(NuvoEnum.valueOf("SOURCE" + matcher.group(1)), zone);
 
                         // update the other group member's selected source
                         updateSrcForZoneGroup(zone, matcher.group(1));
@@ -1383,6 +1415,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             case CHANNEL_PLAY_MODE:
                 state = new StringType(NuvoStatusCodes.PLAY_MODE.get(value));
                 break;
+            case CHANNEL_TYPE_CONTROL:
+                state = PLAYING_MODES.contains(value) ? PlayPauseType.PLAY : PlayPauseType.PAUSE;
+                break;
             case CHANNEL_TRACK_LENGTH:
             case CHANNEL_TRACK_POSITION:
                 state = new QuantityType<Time>(Integer.parseInt(value) / 10, NuvoHandler.API_SECOND_UNIT);
@@ -1433,5 +1468,122 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         } else {
             logger.warn("Unknown control command: {}", command);
         }
+    }
+
+    /**
+     * Scrapes the MPS4's json api to retrieve the currently playing media's album art
+     *
+     * @param source the source to load album art for
+     */
+    private void getMps4AlbumArt(NuvoEnum source) {
+        final String clientId = UUID.randomUUID().toString();
+
+        // try to get cached source instance
+        String instance = sourceInstanceMap.get(source);
+
+        // if not found, need to retrieve from the api, once found these calls will be skipped
+        if (instance == null) {
+            // find which zone is using this source
+            NuvoEnum zone = sourceZoneMap.get(source);
+
+            if (zone == null) {
+                logger.debug("Unable to determine zone that is using source {}", source);
+                return;
+            } else {
+                try {
+                    final String json = getMcsJson(String.format(GET_MCS_INSTANCE, mps4Host, zone.getNum(), clientId),
+                            clientId);
+
+                    Matcher matcher = MCS_INSTANCE_PATTERN.matcher(json);
+                    if (matcher.find()) {
+                        instance = matcher.group(1);
+                        sourceInstanceMap.put(source, instance);
+                        logger.debug("Found instance '{}' for source {}", instance, source);
+                    } else {
+                        logger.debug("No instance match found for json: {}", json);
+                        return;
+                    }
+                } catch (TimeoutException | ExecutionException e) {
+                    logger.debug("Failed getting instance name", e);
+                    return;
+                } catch (InterruptedException e) {
+                    logger.debug("InterruptedException getting instance name", e);
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
+
+        try {
+            logger.debug("Using MCS instance '{}' for source {}", instance, source);
+            final String json = getMcsJson(String.format(GET_MCS_STATUS, mps4Host, instance, clientId), clientId);
+
+            if (json.contains("\"name\":\"PlayState\",\"value\":3}")) {
+                Matcher matcher = ART_GUID_PATTERN.matcher(json);
+                if (matcher.find()) {
+                    final String nowPlayingGuid = matcher.group(1);
+
+                    // If streaming (NowPlayingType=Radio), always retrieve because the same NowPlayingGuid can
+                    // get a different image written to it by Gracenote when the track changes
+                    if (!mps4ArtGuids.get(source).equals(nowPlayingGuid)
+                            || json.contains("NowPlayingType\",\"value\":\"Radio\"}")) {
+                        ContentResponse artResponse = httpClient
+                                .newRequest(String.format(GET_MCS_ART, mps4Host, nowPlayingGuid, instance)).method(GET)
+                                .timeout(10, TimeUnit.SECONDS).send();
+
+                        if (artResponse.getStatus() == OK_200) {
+                            logger.debug("Retrieved album art for guid: {}", nowPlayingGuid);
+                            updateChannelState(source, CHANNEL_ALBUM_ART, BLANK, artResponse.getContent());
+                            mps4ArtGuids.put(source, nowPlayingGuid);
+                        }
+                    } else {
+                        logger.debug("Album art has not changed, guid: {}", nowPlayingGuid);
+                    }
+                } else {
+                    logger.debug("NowPlayingGuid not found");
+                }
+            } else {
+                logger.debug("PlayState not valid");
+            }
+        } catch (TimeoutException | ExecutionException e) {
+            logger.debug("Failed getting album art", e);
+            updateChannelState(source, CHANNEL_ALBUM_ART, UNDEF);
+            mps4ArtGuids.put(source, BLANK);
+        } catch (InterruptedException e) {
+            logger.debug("InterruptedException getting album art", e);
+            updateChannelState(source, CHANNEL_ALBUM_ART, UNDEF);
+            mps4ArtGuids.put(source, BLANK);
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Used by getMps4AlbumArt to abstract retrieval of status json from mcs
+     *
+     * @param url the url with the embedded commands to send to mcs
+     * @param clientId the current clientId
+     * @return string json result from the command executed
+     *
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
+    private String getMcsJson(String url, String clientId)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        ContentResponse commandResp = httpClient.newRequest(url).method(GET).timeout(10, TimeUnit.SECONDS).send();
+
+        if (commandResp.getStatus() == OK_200) {
+            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+            ContentResponse jsonResponse = httpClient.newRequest(String.format(GET_MCS_JSON, mps4Host, clientId))
+                    .method(GET).timeout(10, TimeUnit.SECONDS).send();
+            if (jsonResponse.getStatus() == OK_200) {
+                return jsonResponse.getContentAsString();
+            } else {
+                logger.debug("Got error response {} when getting json from mcs", commandResp.getStatus());
+                return BLANK;
+            }
+        }
+        logger.debug("Got error response {} when sending json command url: {}", commandResp.getStatus(), url);
+        return BLANK;
     }
 }
