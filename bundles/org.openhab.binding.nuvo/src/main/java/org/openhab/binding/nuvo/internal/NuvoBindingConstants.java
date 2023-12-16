@@ -113,7 +113,6 @@ public class NuvoBindingConstants {
     public static final String HTTPS = "https://";
     public static final String PLAY_MUSIC_PRESET = "PLAY_MUSIC_PRESET:";
 
-    public static final List<String> PLAYING_MODES = List.of("0", "2", "6", "7", "8", "9", "10", "11");
     public static final List<String> MPS4_PLAYING_MODES = List.of("2", "6", "7", "8");
     public static final List<String> MPS4_IDLE_MODES = List.of("0", "1");
 

@@ -1566,7 +1566,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
      */
     private String getMcsJson(String commandUrl, String clientId)
             throws InterruptedException, TimeoutException, ExecutionException {
-        ContentResponse commandResp = httpClient.newRequest(commandUrl).method(GET).timeout(10, TimeUnit.SECONDS).send();
+        ContentResponse commandResp = httpClient.newRequest(commandUrl).method(GET).timeout(10, TimeUnit.SECONDS)
+                .send();
 
         if (commandResp.getStatus() == OK_200) {
             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
