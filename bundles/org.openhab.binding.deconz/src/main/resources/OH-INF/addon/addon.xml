@@ -29,6 +29,15 @@
 				</match-property>
 			</match-properties>
 		</discovery-method>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>command</name>
+					<regex>(?i).*[/\\](deconz)(\.exe)?$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
 	</discovery-methods>
 
 </addon:addon>
