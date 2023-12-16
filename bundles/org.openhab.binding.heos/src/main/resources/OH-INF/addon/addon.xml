@@ -14,7 +14,15 @@
 			<match-properties>
 				<match-property>
 					<name>manufacturer</name>
-					<regex>(?i)DENON</regex>
+					<regex>Denon</regex>
+				</match-property>
+				<match-property>
+					<name>modelName</name>
+					<regex>HEOS.*|.*H|.*Home.*</regex>
+				</match-property>
+				<match-property>
+					<name>deviceType</name>
+					<regex>ACT.*|Aios.*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>
