@@ -763,7 +763,6 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         updateChannelState(source, CHANNEL_TRACK_LENGTH, matcher.group(1));
                         updateChannelState(source, CHANNEL_TRACK_POSITION, matcher.group(2));
                         updateChannelState(source, CHANNEL_PLAY_MODE, matcher.group(3));
-                        updateChannelState(source, CHANNEL_TYPE_CONTROL, matcher.group(3));
 
                         // if this is an MPS4 source, the following retrieves album art when the source is playing
                         if (nuvoNetSrcMap.get(source) == 1
@@ -1414,9 +1413,6 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case CHANNEL_PLAY_MODE:
                 state = new StringType(NuvoStatusCodes.PLAY_MODE.get(value));
-                break;
-            case CHANNEL_TYPE_CONTROL:
-                state = PLAYING_MODES.contains(value) ? PlayPauseType.PLAY : PlayPauseType.PAUSE;
                 break;
             case CHANNEL_TRACK_LENGTH:
             case CHANNEL_TRACK_POSITION:
