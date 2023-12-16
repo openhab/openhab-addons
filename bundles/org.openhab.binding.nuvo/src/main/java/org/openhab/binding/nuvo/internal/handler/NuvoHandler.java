@@ -1473,7 +1473,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     /**
      * Scrapes the MPS4's json api to retrieve the currently playing media's album art
      *
-     * @param source the source to load album art for
+     * @param source the source that should be queried to load the current album art
      */
     private void getMps4AlbumArt(NuvoEnum source) {
         final String clientId = UUID.randomUUID().toString();
@@ -1558,9 +1558,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     }
 
     /**
-     * Used by getMps4AlbumArt to abstract retrieval of status json from mcs
+     * Used by getMps4AlbumArt to abstract retrieval of status json from MCS
      *
-     * @param url the url with the embedded commands to send to mcs
+     * @param commandUrl the url with the embedded commands to send to MCS
      * @param clientId the current clientId
      * @return string json result from the command executed
      *
@@ -1568,22 +1568,22 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
      * @throws TimeoutException
      * @throws ExecutionException
      */
-    private String getMcsJson(String url, String clientId)
+    private String getMcsJson(String commandUrl, String clientId)
             throws InterruptedException, TimeoutException, ExecutionException {
-        ContentResponse commandResp = httpClient.newRequest(url).method(GET).timeout(10, TimeUnit.SECONDS).send();
+        ContentResponse commandResp = httpClient.newRequest(commandUrl).method(GET).timeout(10, TimeUnit.SECONDS).send();
 
         if (commandResp.getStatus() == OK_200) {
             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-            ContentResponse jsonResponse = httpClient.newRequest(String.format(GET_MCS_JSON, mps4Host, clientId))
+            ContentResponse jsonResp = httpClient.newRequest(String.format(GET_MCS_JSON, mps4Host, clientId))
                     .method(GET).timeout(10, TimeUnit.SECONDS).send();
-            if (jsonResponse.getStatus() == OK_200) {
-                return jsonResponse.getContentAsString();
+            if (jsonResp.getStatus() == OK_200) {
+                return jsonResp.getContentAsString();
             } else {
-                logger.debug("Got error response {} when getting json from mcs", commandResp.getStatus());
+                logger.debug("Got error response {} when getting json from MCS", commandResp.getStatus());
                 return BLANK;
             }
         }
-        logger.debug("Got error response {} when sending json command url: {}", commandResp.getStatus(), url);
+        logger.debug("Got error response {} when sending json command url: {}", commandResp.getStatus(), commandUrl);
         return BLANK;
     }
 }
