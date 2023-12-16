@@ -11,7 +11,12 @@
 	<discovery-methods>
 		<discovery-method>
 			<service-type>mdns</service-type>
-			<mdns-service-type>_printer._tcp.local.</mdns-service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_printer._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
 			<match-properties>
 				<match-property>
 					<name>rp</name>
@@ -25,7 +30,12 @@
 		</discovery-method>
 		<discovery-method>
 			<service-type>mdns</service-type>
-			<mdns-service-type>_ipp._tcp.local.</mdns-service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_ipp._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
 			<match-properties>
 				<match-property>
 					<name>rp</name>
