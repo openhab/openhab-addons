@@ -16,9 +16,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.govee.internal.model.DiscoveryResponse;
+import org.openhab.core.config.discovery.DiscoveryResult;
+
+import com.google.gson.Gson;
 
 /**
  * @author Stefan Höhn - Initial contribution
@@ -46,8 +52,12 @@ public class GoveeDiscoveryTest {
     @Test
     public void testProcessScanMessage() {
         GoveeDiscoveryService service = new GoveeDiscoveryService();
-        Map<String, Object> deviceProperties = service.getDeviceProperties(response);
-        assertNotNull(deviceProperties);
+        DiscoveryResponse resp = new Gson().fromJson(response, DiscoveryResponse.class);
+        Objects.requireNonNull(resp);
+        @Nullable
+        DiscoveryResult result = service.responseToResult(resp);
+        assertNotNull(result);
+        Map<String, Object> deviceProperties = result.getProperties();
         assertEquals(deviceProperties.get(GoveeBindingConstants.DEVICE_TYPE), "H6076");
         assertEquals(deviceProperties.get(GoveeBindingConstants.IP_ADDRESS), "192.168.178.171");
         assertEquals(deviceProperties.get(GoveeBindingConstants.MAC_ADDRESS), "7D:31:C3:35:33:33:44:15");
