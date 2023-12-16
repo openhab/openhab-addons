@@ -56,7 +56,8 @@ import org.openhab.binding.energidataservice.internal.exception.DataServiceExcep
 import org.openhab.binding.energidataservice.internal.retry.RetryPolicyFactory;
 import org.openhab.binding.energidataservice.internal.retry.RetryStrategy;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.dimension.EnergyPrice;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -320,14 +321,19 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             return;
         }
         BigDecimal spotPrice = cacheManager.getSpotPrice();
-        updateState(CHANNEL_SPOT_PRICE, spotPrice != null ? new DecimalType(spotPrice) : UnDefType.UNDEF);
+        updateState(CHANNEL_SPOT_PRICE,
+                spotPrice != null ? getEnergyPrice(spotPrice, config.getCurrency()) : UnDefType.UNDEF);
     }
 
     private void updateCurrentTariff(String channelId, @Nullable BigDecimal tariff) {
         if (!isLinked(channelId)) {
             return;
         }
-        updateState(channelId, tariff != null ? new DecimalType(tariff) : UnDefType.UNDEF);
+        updateState(channelId, tariff != null ? getEnergyPrice(tariff, CURRENCY_DKK) : UnDefType.UNDEF);
+    }
+
+    private QuantityType<EnergyPrice> getEnergyPrice(BigDecimal price, Currency currency) {
+        return new QuantityType<>(price + " " + currency.getSymbol() + "/kWh");
     }
 
     private void updateHourlyPrices() {
@@ -367,7 +373,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         for (Entry<Instant, BigDecimal> spotPrice : spotPrices) {
             Instant hourStart = spotPrice.getKey();
             if (isLinked(CHANNEL_SPOT_PRICE)) {
-                spotPriceTimeSeries.add(hourStart, new DecimalType(spotPrice.getValue()));
+                spotPriceTimeSeries.add(hourStart, getEnergyPrice(spotPrice.getValue(), config.getCurrency()));
             }
             for (Map.Entry<DatahubTariff, TimeSeries> entry : datahubTimeSeriesMap.entrySet()) {
                 DatahubTariff datahubTariff = entry.getKey();
@@ -378,7 +384,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
                 BigDecimal tariff = cacheManager.getTariff(datahubTariff, hourStart);
                 if (tariff != null) {
                     TimeSeries timeSeries = entry.getValue();
-                    timeSeries.add(hourStart, new DecimalType(tariff));
+                    timeSeries.add(hourStart, getEnergyPrice(tariff, CURRENCY_DKK));
                 }
             }
         }
