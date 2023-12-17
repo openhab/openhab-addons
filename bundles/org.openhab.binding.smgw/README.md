@@ -1,6 +1,6 @@
-# SMGW Binding
+# PPC SMGW Binding
 
-The SMGW binding adds support for PPC Smart Meter Gateways.
+The PPC SMGW binding adds support for PPC Smart Meter Gateways.
 The gateway is commonly installed by the network operator to allow remote access to a smart meter.
 It also provides a HAN (home area network) interface for local access.
 
