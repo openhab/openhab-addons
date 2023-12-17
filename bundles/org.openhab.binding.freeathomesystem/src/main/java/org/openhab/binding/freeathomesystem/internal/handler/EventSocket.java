@@ -15,6 +15,7 @@ package org.openhab.binding.freeathomesystem.internal.handler;
 
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,7 +46,7 @@ public class EventSocket extends WebSocketAdapter {
         super.onWebSocketConnect(session);
 
         if (closureLatch != null) {
-            session.setIdleTimeout(60 * 60 * 1000);
+            session.setIdleTimeout(-1);
 
             logger.debug("Socket Connected - Timeout {} - latch [ {} ] - sesson: {}", session.getIdleTimeout(),
                     closureLatch.getCount(), session);
@@ -100,13 +101,14 @@ public class EventSocket extends WebSocketAdapter {
         }
     }
 
-    public void awaitEndCommunication() throws InterruptedException {
+    public boolean awaitEndCommunication(int timeOut) throws InterruptedException {
+        boolean retVal = false;
         if (closureLatch != null) {
-            logger.debug("Awaiting ending the communication from remote or error");
-            closureLatch.await();
+            retVal = closureLatch.await(timeOut, TimeUnit.SECONDS);
         } else {
             logger.debug("Awaiting called - Latch was not reseted");
         }
+        return retVal;
     }
 
     public void resetEventSocket() {

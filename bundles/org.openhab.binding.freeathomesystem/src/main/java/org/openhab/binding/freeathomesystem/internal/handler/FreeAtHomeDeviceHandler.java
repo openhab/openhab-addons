@@ -25,6 +25,7 @@ import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceC
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
 import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeChannelGroupTypeProvider;
 import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeChannelTypeProvider;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
 import org.openhab.binding.freeathomesystem.internal.util.UidUtils;
 import org.openhab.binding.freeathomesystem.internal.valuestateconverter.ValueStateConverter;
 import org.openhab.core.library.types.OnOffType;
@@ -104,10 +105,96 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         logger.info("Device removed - device id: {}", deviceID);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleRefreshCommand(FreeAtHomeBridgeHandler freeAtHomeBridge, FreeAtHomeDatapointGroup dpg,
+            ChannelUID channelUID) {
+        String valueStr = "0";
+        String channelID;
+        String datapointID;
+
+        // Check whether it is a INPUT only datapoint group
+        if (dpg.getDirection() == FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUT) {
+            channelID = dpg.getInputDatapoint().channelId;
+            datapointID = dpg.getInputDatapoint().getDatapointId();
+        } else {
+            channelID = dpg.getOutputDatapoint().channelId;
+            datapointID = dpg.getOutputDatapoint().getDatapointId();
+        }
+
+        try {
+            valueStr = freeAtHomeBridge.getDatapoint(deviceID, channelID, datapointID);
+
+            ValueStateConverter vsc = dpg.getValueStateConverter();
+
+            updateState(channelUID, vsc.convertToState(valueStr));
+
+            // in case of virtual channels store the current value string
+            if (device.isVirtual()) {
+                mapChannelUIDVal.put(channelUID, valueStr);
+            }
+        } catch (FreeAtHomeHttpCommunicationException e) {
+            logger.debug("Communication error during refresh command {} - at channel {} - Error string {}", deviceID,
+                    channelUID.getAsString(), e.getMessage());
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    public void handleSetCommand(FreeAtHomeBridgeHandler freeAtHomeBridge, FreeAtHomeDatapointGroup dpg,
+            ChannelUID channelUID, Command command) {
+        ValueStateConverter vsc = dpg.getValueStateConverter();
+
+        State state = null;
         String valueString = "0";
 
+        if (command instanceof StopMoveType) {
+            valueString = "0";
+        } else {
+            state = ((State) command);
+            valueString = vsc.convertToValueString(state);
+        }
+
+        try {
+            freeAtHomeBridge.setDatapoint(deviceID, dpg.getInputDatapoint().channelId,
+                    dpg.getInputDatapoint().getDatapointId(), valueString);
+
+            if (state != null) {
+                updateState(channelUID, state);
+            } else {
+                updateState(channelUID, new StringType("STOP"));
+            }
+
+            // in case of virtual channels store the current value string
+            if (device.isVirtual()) {
+                logger.info("refresh virtual device state device: {} ch: {} val: {}", deviceID,
+                        channelUID.getAsString(), valueString);
+
+                mapChannelUIDVal.put(channelUID, valueString);
+            }
+
+            if (device.isScene()) {
+                // the scene can be triggered only therefore reset after 5 seconds
+                scheduler.execute(() -> {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        logger.debug("Handle wait for scene {} - at channel {} - full command {}", deviceID,
+                                channelUID.getAsString(), command.toFullString());
+                    }
+
+                    updateState(channelUID, OnOffType.OFF);
+                });
+            }
+        } catch (FreeAtHomeHttpCommunicationException e) {
+            logger.debug(
+                    "Communication error during set command {} - at channel {} - full command {} - Error string {}",
+                    deviceID, channelUID.getAsString(), command.toFullString(), e.getMessage());
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
         FreeAtHomeBridgeHandler freeAtHomeBridge = null;
 
         Bridge bridge = this.getBridge();
@@ -139,67 +226,9 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, errInfo);
         } else {
             if (command instanceof RefreshType) {
-                String valueStr = "0";
-
-                // Check whether it is a INPUT only datapoint group
-                if (dpg.getDirection() == FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUT) {
-                    valueStr = freeAtHomeBridge.getDatapoint(deviceID, dpg.getInputDatapoint().channelId,
-                            dpg.getInputDatapoint().getDatapointId());
-                } else {
-                    valueStr = freeAtHomeBridge.getDatapoint(deviceID, dpg.getOutputDatapoint().channelId,
-                            dpg.getOutputDatapoint().getDatapointId());
-                }
-
-                ValueStateConverter vsc = dpg.getValueStateConverter();
-
-                updateState(channelUID, vsc.convertToState(valueStr));
-
-                // in case of virtual channels store the current value string
-                if (device.isVirtual()) {
-                    mapChannelUIDVal.put(channelUID, valueStr);
-                }
+                handleRefreshCommand(freeAtHomeBridge, dpg, channelUID);
             } else {
-                ValueStateConverter vsc = dpg.getValueStateConverter();
-
-                State state = null;
-
-                if (command instanceof StopMoveType) {
-                    valueString = "0";
-                } else {
-                    state = ((State) command);
-                    valueString = vsc.convertToValueString(state);
-                }
-
-                freeAtHomeBridge.setDatapoint(deviceID, dpg.getInputDatapoint().channelId,
-                        dpg.getInputDatapoint().getDatapointId(), valueString);
-
-                if (state != null) {
-                    updateState(channelUID, state);
-                } else {
-                    updateState(channelUID, new StringType("STOP"));
-                }
-
-                // in case of virtual channels store the current value string
-                if (device.isVirtual()) {
-                    logger.info("refresh virtual device state device: {} ch: {} val: {}", deviceID,
-                            channelUID.getAsString(), valueString);
-
-                    mapChannelUIDVal.put(channelUID, valueString);
-                }
-            }
-
-            if (device.isScene()) {
-                // the scene can be triggered only therefore reset after 5 seconds
-                scheduler.execute(() -> {
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        logger.debug("Handle wait for scene {} - at channel {} - full command {}", deviceID,
-                                channelUID.getAsString(), command.toFullString());
-                    }
-
-                    updateState(channelUID, OnOffType.OFF);
-                });
+                handleSetCommand(freeAtHomeBridge, dpg, channelUID, command);
             }
 
             logger.debug("Handle command for device {} - at channel {} - full command {}", deviceID,
@@ -233,16 +262,23 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        if ((dpg.getDirection() == FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUT)
-                || (dpg.getDirection() == FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUTOUTPUT)) {
+        if ((dpg.getDirection() != FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUT)
+                || (dpg.getDirection() != FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUTOUTPUT)) {
+            logger.debug("Handle feedback for virtual device {} - at channel {} - but wrong config", deviceID,
+                    channelUID.getAsString());
+        }
+
+        try {
             freeAtHomeBridge.setDatapoint(deviceID, dpg.getInputDatapoint().channelId,
                     dpg.getInputDatapoint().getDatapointId(), valueString);
 
             logger.debug("Handle feedback for virtual device {} - at channel {} - value {}", deviceID,
                     channelUID.getAsString(), valueString);
-        } else {
-            logger.debug("Handle feedback for virtual device {} - at channel {} - but only ubout DPG", deviceID,
-                    channelUID.getAsString());
+        } catch (FreeAtHomeHttpCommunicationException e) {
+            logger.debug("Communication error during set command {} - at channel {} - vakue {} - Error string {}",
+                    deviceID, channelUID.getAsString(), valueString, e.getMessage());
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -291,14 +327,20 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
         Bridge bridge = this.getBridge();
 
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
+        try {
+            if (bridge != null) {
+                ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof FreeAtHomeBridgeHandler) {
-                freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
+                if (handler instanceof FreeAtHomeBridgeHandler) {
+                    freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
 
-                device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
+                    device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
+                }
             }
+        } catch (FreeAtHomeHttpCommunicationException e) {
+            logger.debug("Communication error during updateChannels - {}", e.getMessage());
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         // Initialize channels
@@ -396,14 +438,20 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
         ThingUID thingUID = thing.getUID();
 
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
+        try {
+            if (bridge != null) {
+                ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof FreeAtHomeBridgeHandler) {
-                freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
+                if (handler instanceof FreeAtHomeBridgeHandler) {
+                    freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
 
-                device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
+                    device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
+                }
             }
+        } catch (FreeAtHomeHttpCommunicationException e) {
+            logger.debug("Communication error during updateChannels - {}", e.getMessage());
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         for (int i = 0; i < device.getNumberOfChannels(); i++) {
@@ -444,14 +492,20 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
         Bridge bridge = this.getBridge();
 
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
+        try {
+            if (bridge != null) {
+                ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof FreeAtHomeBridgeHandler) {
-                freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
+                if (handler instanceof FreeAtHomeBridgeHandler) {
+                    freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
 
-                device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
+                    device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
+                }
             }
+        } catch (FreeAtHomeHttpCommunicationException e) {
+            logger.debug("Communication error during updateChannels - {}", e.getMessage());
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         // Initialize channels

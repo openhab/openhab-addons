@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
 import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeBridgeHandler;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -50,38 +51,41 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
             if (bridge != null) {
                 ThingUID bridgeUID = bridge.getThing().getUID();
 
-                List<String> deviceList = bridge.getDeviceDeviceList();
+                List<String> deviceList;
+                try {
+                    deviceList = bridge.getDeviceDeviceList();
 
-                if (deviceList == null) {
-                    return;
-                }
+                    for (int i = 0; i < deviceList.size(); i++) {
 
-                for (int i = 0; i < deviceList.size(); i++) {
+                        FreeAtHomeDeviceDescription device = bridge.getFreeatHomeDeviceDescription(deviceList.get(i));
 
-                    FreeAtHomeDeviceDescription device = bridge.getFreeatHomeDeviceDescription(deviceList.get(i));
+                        boolean useGenericDevice = true;
 
-                    boolean useGenericDevice = true;
+                        if (useGenericDevice) {
+                            ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.FREEATHOMEDEVICE_TYPE_UID,
+                                    bridgeUID, device.deviceId);
+                            Map<String, Object> properties = new HashMap<>(1);
+                            properties.put("deviceId", device.deviceId);
+                            properties.put("interface", device.interfaceType);
 
-                    if (useGenericDevice) {
-                        ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.FREEATHOMEDEVICE_TYPE_UID,
-                                bridgeUID, device.deviceId);
-                        Map<String, Object> properties = new HashMap<>(1);
-                        properties.put("deviceId", device.deviceId);
-                        properties.put("interface", device.interfaceType);
+                            String deviceLabel = device.deviceLabel;
 
-                        String deviceLabel = device.deviceLabel;
+                            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel)
+                                    .withBridge(bridgeUID).withProperties(properties).build();
 
-                        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel)
-                                .withBridge(bridgeUID).withProperties(properties).build();
+                            thingDiscovered(discoveryResult);
 
-                        thingDiscovered(discoveryResult);
-
-                        logger.debug("Thing discovered - DeviceId: {} - Device label: {}", device.getDeviceId(),
-                                device.getDeviceLabel());
+                            logger.debug("Thing discovered - DeviceId: {} - Device label: {}", device.getDeviceId(),
+                                    device.getDeviceLabel());
+                        }
                     }
-                }
 
-                stopScan();
+                    stopScan();
+
+                } catch (FreeAtHomeHttpCommunicationException e) {
+                    logger.debug("TCommunication error in device discovery with the bridge: {}",
+                            bridge.getThing().getLabel());
+                }
             }
         }
     };
@@ -113,7 +117,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
 
     @Override
     protected void startScan() {
-        this.removeOlderResults(getTimestampOfLastScan());
+        this.removeOlderResults(Instant.now().getEpochSecond());
 
         scheduler.execute(runnable);
     }
@@ -121,7 +125,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan());
+        removeOlderResults(Instant.now().getEpochSecond());
     }
 
     @Override
