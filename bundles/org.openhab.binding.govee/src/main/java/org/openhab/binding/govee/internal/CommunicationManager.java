@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.govee.internal.model.DiscoveryResponse;
 import org.openhab.binding.govee.internal.model.GenericGoveeRequest;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,8 @@ public class CommunicationManager {
         void onResultReceived(DiscoveryResponse result);
     }
 
-    CommunicationManager() {
+    @Activate
+    public CommunicationManager() {
     }
 
     public void registerHandler(GoveeHandler handler) {
