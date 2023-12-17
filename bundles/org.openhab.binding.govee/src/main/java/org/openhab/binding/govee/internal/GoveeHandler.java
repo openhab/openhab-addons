@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.govee.internal;
 
-import static org.openhab.binding.govee.internal.GoveeBindingConstants.CHANNEL_COLOR;
-import static org.openhab.binding.govee.internal.GoveeBindingConstants.CHANNEL_COLOR_TEMPERATURE;
-import static org.openhab.binding.govee.internal.GoveeBindingConstants.CHANNEL_COLOR_TEMPERATURE_ABS;
-import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE_MAX_VALUE;
-import static org.openhab.binding.govee.internal.GoveeBindingConstants.COLOR_TEMPERATURE_MIN_VALUE;
+import static org.openhab.binding.govee.internal.GoveeBindingConstants.*;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -89,6 +85,8 @@ public class GoveeHandler extends BaseThingHandler {
     private ScheduledFuture<?> triggerStatusJob; // send device status update job
     private GoveeConfiguration goveeConfiguration = new GoveeConfiguration();
 
+    private CommunicationManager communicationManager;
+
     private int lastOnOff;
     private int lastBrightness;
     private HSBType lastColor = new HSBType();
@@ -112,8 +110,9 @@ public class GoveeHandler extends BaseThingHandler {
         }
     };
 
-    public GoveeHandler(Thing thing) {
+    public GoveeHandler(Thing thing, CommunicationManager communicationManager) {
         super(thing);
+        this.communicationManager = communicationManager;
     }
 
     public String getHostname() {
@@ -131,7 +130,7 @@ public class GoveeHandler extends BaseThingHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
-        CommunicationManager.registerHandler(this);
+        communicationManager.registerHandler(this);
         if (triggerStatusJob == null) {
             logger.debug("Starting refresh trigger job for thing {} ", thing.getLabel());
 
@@ -149,7 +148,7 @@ public class GoveeHandler extends BaseThingHandler {
             triggerStatusJobFuture.cancel(true);
             triggerStatusJob = null;
         }
-        CommunicationManager.unregisterHandler(this);
+        communicationManager.unregisterHandler(this);
     }
 
     @Override
@@ -214,7 +213,7 @@ public class GoveeHandler extends BaseThingHandler {
         logger.debug("trigger Refresh Status of device {}", thing.getLabel());
         GenericGoveeRequest lightQuery = new GenericGoveeRequest(
                 new GenericGoveeMsg("devStatus", new EmptyValueQueryStatusData()));
-        CommunicationManager.sendRequest(this, lightQuery);
+        communicationManager.sendRequest(this, lightQuery);
     }
 
     public void sendColor(Color color) throws IOException {
@@ -222,21 +221,21 @@ public class GoveeHandler extends BaseThingHandler {
 
         GenericGoveeRequest lightColor = new GenericGoveeRequest(
                 new GenericGoveeMsg("colorwc", new ColorData(color, 0)));
-        CommunicationManager.sendRequest(this, lightColor);
+        communicationManager.sendRequest(this, lightColor);
     }
 
     public void sendBrightness(int brightness) throws IOException {
         lastBrightness = brightness;
         GenericGoveeRequest lightBrightness = new GenericGoveeRequest(
                 new GenericGoveeMsg("brightness", new ValueIntData(brightness)));
-        CommunicationManager.sendRequest(this, lightBrightness);
+        communicationManager.sendRequest(this, lightBrightness);
     }
 
     private void sendOnOff(OnOffType switchValue) throws IOException {
         lastOnOff = (switchValue == OnOffType.ON) ? 1 : 0;
         GenericGoveeRequest switchLight = new GenericGoveeRequest(
                 new GenericGoveeMsg("turn", new ValueIntData(lastOnOff)));
-        CommunicationManager.sendRequest(this, switchLight);
+        communicationManager.sendRequest(this, switchLight);
     }
 
     private void sendColorTemp(int colorTemp) throws IOException {
@@ -244,7 +243,7 @@ public class GoveeHandler extends BaseThingHandler {
         logger.debug("sendColorTemp {}", colorTemp);
         GenericGoveeRequest lightColor = new GenericGoveeRequest(
                 new GenericGoveeMsg("colorwc", new ColorData(new Color(0, 0, 0), colorTemp)));
-        CommunicationManager.sendRequest(this, lightColor);
+        communicationManager.sendRequest(this, lightColor);
     }
 
     /**

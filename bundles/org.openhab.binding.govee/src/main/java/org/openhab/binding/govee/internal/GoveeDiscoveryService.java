@@ -83,19 +83,23 @@ import org.slf4j.LoggerFactory;
 public class GoveeDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(GoveeDiscoveryService.class);
 
+    private CommunicationManager communicationManager;
+
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(GoveeBindingConstants.THING_TYPE_LIGHT);
 
     @Activate
-    public GoveeDiscoveryService(@Reference TranslationProvider i18nProvider,
-            @Reference LocaleProvider localeProvider) {
+    public GoveeDiscoveryService(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider,
+            @Reference CommunicationManager communicationManager) {
         super(SUPPORTED_THING_TYPES_UIDS, 0, false);
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
+        this.communicationManager = communicationManager;
     }
 
     // for test purposes only
-    public GoveeDiscoveryService() {
+    public GoveeDiscoveryService(CommunicationManager communicationManager) {
         super(SUPPORTED_THING_TYPES_UIDS, 0, false);
+        this.communicationManager = communicationManager;
     }
 
     @Override
@@ -105,7 +109,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
         getLocalNetworkInterfaces().forEach(localNetworkInterface -> {
             logger.debug("Discovering Govee devices on {} ...", localNetworkInterface);
             try {
-                CommunicationManager.runDiscoveryForInterface(localNetworkInterface, response -> {
+                communicationManager.runDiscoveryForInterface(localNetworkInterface, response -> {
                     DiscoveryResult result = responseToResult(response);
                     if (result != null) {
                         thingDiscovered(result);

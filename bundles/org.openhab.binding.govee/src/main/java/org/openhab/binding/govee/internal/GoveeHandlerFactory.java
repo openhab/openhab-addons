@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.govee.internal;
 
-import static org.openhab.binding.govee.internal.GoveeBindingConstants.*;
+import static org.openhab.binding.govee.internal.GoveeBindingConstants.THING_TYPE_LIGHT;
 
 import java.util.Set;
 
@@ -23,7 +23,9 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link GoveeHandlerFactory} is responsible for creating things and thing
@@ -36,6 +38,13 @@ import org.osgi.service.component.annotations.Component;
 public class GoveeHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT);
 
+    private CommunicationManager communicationManager;
+
+    @Activate
+    public GoveeHandlerFactory(@Reference CommunicationManager communicationManager) {
+        this.communicationManager = communicationManager;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -46,7 +55,7 @@ public class GoveeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_LIGHT.equals(thingTypeUID)) {
-            return new GoveeHandler(thing);
+            return new GoveeHandler(thing, communicationManager);
         }
 
         return null;
