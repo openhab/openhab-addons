@@ -79,7 +79,7 @@ import com.google.gson.JsonSyntaxException;
 public class GoveeHandler extends BaseThingHandler {
 
     /*
-     * Messages to be sent to the Govee Devices
+     * Messages to be sent to the Govee devices
      */
     private static final Gson GSON = new Gson();
 

@@ -34,10 +34,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link CommunicationManager} is a thread that handles the answers of all devices
- * Therefore it needs to apply the information it to the right thing.
+ * The {@link CommunicationManager} is a thread that handles the answers of all devices.
+ * Therefore it needs to apply the information to the right thing.
  *
- * Discovery uses the same response code, so we must not refresh the status during discovery
+ * Discovery uses the same response code, so we must not refresh the status during discovery.
  *
  * @author Stefan Höhn - Initial contribution
  * @author Danny Baumann - Thread-Safe design refactoring

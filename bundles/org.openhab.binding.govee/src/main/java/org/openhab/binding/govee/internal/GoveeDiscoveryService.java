@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers Govee Devices
+ * Discovers Govee devices
  *
  * Scan approach:
  * 1. Determines all local network interfaces
@@ -103,7 +103,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
         logger.debug("starting Scan");
 
         getLocalNetworkInterfaces().forEach(localNetworkInterface -> {
-            logger.debug("Discovering Govee Devices on {} ...", localNetworkInterface);
+            logger.debug("Discovering Govee devices on {} ...", localNetworkInterface);
             try {
                 CommunicationManager.runDiscoveryForInterface(localNetworkInterface, response -> {
                     DiscoveryResult result = responseToResult(response);
@@ -117,21 +117,19 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
             }
             logger.trace("After try");
         });
-        logger.trace("Stopping Scan");
-        // stopScan();
     }
 
     public @Nullable DiscoveryResult responseToResult(DiscoveryResponse response) {
         final DiscoveryData data = response.msg().data();
         final String macAddress = data.device();
         if (macAddress.isEmpty()) {
-            logger.warn("Empty Mac Address received during discovery - ignoring {}", response);
+            logger.warn("Empty Mac address received during discovery - ignoring {}", response);
             return null;
         }
 
         final String ipAddress = data.ip();
         if (ipAddress.isEmpty()) {
-            logger.warn("Empty IP Address received during discovery - ignoring {}", response);
+            logger.warn("Empty IP address received during discovery - ignoring {}", response);
             return null;
         }
 
