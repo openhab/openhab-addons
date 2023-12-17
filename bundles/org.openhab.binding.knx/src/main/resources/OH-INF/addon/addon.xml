@@ -31,22 +31,22 @@
 			<discovery-parameters>
 				<discovery-parameter>
 					<name>type</name>
-					<value>ip_multicast</value>
+					<value>IpMulticast</value>
 				</discovery-parameter>
 				<discovery-parameter>
-					<name>dest_ip</name>
+					<name>destIp</name>
 					<value>224.0.23.12</value>
 				</discovery-parameter>
 				<discovery-parameter>
-					<name>dest_port</name>
+					<name>destPort</name>
 					<value>3671</value>
 				</discovery-parameter>
 				<discovery-parameter>
 					<name>request</name>
-					<value>0x06 0x10 0x02 0x01 0x00 0x0e 0x08 0x01 $src_ip $src_port</value>
+					<value>0x06 0x10 0x02 0x01 0x00 0x0e 0x08 0x01 $srcIp $srcPort</value>
 				</discovery-parameter>
 				<discovery-parameter>
-					<name>timeout_ms</name>
+					<name>timeoutMs</name>
 					<value>5000</value>
 				</discovery-parameter>
 			</discovery-parameters>
