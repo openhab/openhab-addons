@@ -12,11 +12,10 @@
 
   <artifactId>org.openhab.binding.smgw</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: SMGW Binding</name>
+  <name>openHAB Add-ons :: Bundles :: PPC SMGW Binding</name>
 
   <properties>
     <jsoup.version>1.15.3</jsoup.version>
-    <bnd.importpackage>!javax.annotation.meta.*</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -24,7 +23,7 @@
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
       <version>${jsoup.version}</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

@@ -4,7 +4,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>PPC Smart Meter Gateway</name>
+	<name>PPC SMGW Binding</name>
 	<description>This integrates the PPC Smart Meter Gateways.</description>
+
+	<connection>local</connection>
 
 </addon:addon>

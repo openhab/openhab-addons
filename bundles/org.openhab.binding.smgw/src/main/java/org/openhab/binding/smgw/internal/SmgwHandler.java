@@ -180,8 +180,8 @@ public class SmgwHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         } else {
             Element valueElement = response.document().selectFirst("#table_metervalues_col_wert");
-            Element unitElement = response.document.selectFirst("#table_metervalues_col_einheit");
-            Element dateTimeElement = response.document.selectFirst("#table_metervalues_col_timestamp");
+            Element unitElement = response.document().selectFirst("#table_metervalues_col_einheit");
+            Element dateTimeElement = response.document().selectFirst("#table_metervalues_col_timestamp");
             if (valueElement == null || unitElement == null || dateTimeElement == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             } else {
@@ -219,11 +219,11 @@ public class SmgwHandler extends BaseThingHandler {
                             : result.getRequest().getHeaders().get(HttpHeader.COOKIE);
                     Document doc = Jsoup.parse(getContentAsString());
                     resultFuture.complete(new SmgwResponse(cookies, doc));
+                    return;
                 }
-            } else {
-                logger.warn("Failed to request {}", result.getRequest().getURI());
-                resultFuture.completeExceptionally(new IllegalStateException());
             }
+            logger.warn("Failed to request {}", result.getRequest().getURI());
+            resultFuture.completeExceptionally(new IllegalStateException());
         }
     }
 
