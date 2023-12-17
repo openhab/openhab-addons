@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.govee.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
 import java.util.Objects;
@@ -51,7 +50,7 @@ public class GoveeDiscoveryTest {
 
     @Test
     public void testProcessScanMessage() {
-        GoveeDiscoveryService service = new GoveeDiscoveryService();
+        GoveeDiscoveryService service = new GoveeDiscoveryService(new CommunicationManager());
         DiscoveryResponse resp = new Gson().fromJson(response, DiscoveryResponse.class);
         Objects.requireNonNull(resp);
         @Nullable

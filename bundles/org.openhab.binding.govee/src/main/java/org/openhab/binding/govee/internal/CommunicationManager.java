@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.govee.internal.model.DiscoveryResponse;
 import org.openhab.binding.govee.internal.model.GenericGoveeRequest;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +44,13 @@ import com.google.gson.JsonParseException;
  * @author Danny Baumann - Thread-Safe design refactoring
  */
 @NonNullByDefault
+@Component(service = CommunicationManager.class)
 public class CommunicationManager {
-    private static final Gson GSON = new Gson();
+    private final Gson gson = new Gson();
     // Holds a list of all thing handlers to send them thing updates via the receiver-Thread
-    private static final Map<String, GoveeHandler> THING_HANDLERS = new HashMap<>();
+    private final Map<String, GoveeHandler> thingHandlers = new HashMap<>();
     @Nullable
-    private static StatusReceiver receiverThread;
+    private StatusReceiver receiverThread;
 
     private static final String DISCOVERY_MULTICAST_ADDRESS = "239.255.255.250";
     private static final int DISCOVERY_PORT = 4001;
@@ -63,12 +65,12 @@ public class CommunicationManager {
         void onResultReceived(DiscoveryResponse result);
     }
 
-    private CommunicationManager() {
+    CommunicationManager() {
     }
 
-    public static void registerHandler(GoveeHandler handler) {
-        synchronized (THING_HANDLERS) {
-            THING_HANDLERS.put(handler.getHostname(), handler);
+    public void registerHandler(GoveeHandler handler) {
+        synchronized (thingHandlers) {
+            thingHandlers.put(handler.getHostname(), handler);
             if (receiverThread == null) {
                 receiverThread = new StatusReceiver();
                 receiverThread.start();
@@ -76,10 +78,10 @@ public class CommunicationManager {
         }
     }
 
-    public static void unregisterHandler(GoveeHandler handler) {
-        synchronized (THING_HANDLERS) {
-            THING_HANDLERS.remove(handler.getHostname());
-            if (THING_HANDLERS.isEmpty()) {
+    public void unregisterHandler(GoveeHandler handler) {
+        synchronized (thingHandlers) {
+            thingHandlers.remove(handler.getHostname());
+            if (thingHandlers.isEmpty()) {
                 StatusReceiver receiver = receiverThread;
                 if (receiver != null) {
                     receiver.stopReceiving();
@@ -89,11 +91,11 @@ public class CommunicationManager {
         }
     }
 
-    public static void sendRequest(GoveeHandler handler, GenericGoveeRequest request) throws IOException {
+    public void sendRequest(GoveeHandler handler, GenericGoveeRequest request) throws IOException {
         final String hostname = handler.getHostname();
         final DatagramSocket socket = new DatagramSocket();
         socket.setReuseAddress(true);
-        final String message = GSON.toJson(request);
+        final String message = gson.toJson(request);
         final byte[] data = message.getBytes();
         final InetAddress address = InetAddress.getByName(hostname);
         DatagramPacket packet = new DatagramPacket(data, data.length, address, REQUEST_PORT);
@@ -102,8 +104,7 @@ public class CommunicationManager {
         socket.close();
     }
 
-    public static void runDiscoveryForInterface(NetworkInterface intf, DiscoveryResultReceiver receiver)
-            throws IOException {
+    public void runDiscoveryForInterface(NetworkInterface intf, DiscoveryResultReceiver receiver) throws IOException {
         synchronized (receiver) {
             StatusReceiver localReceiver = null;
             StatusReceiver activeReceiver = null;
@@ -158,7 +159,7 @@ public class CommunicationManager {
         }
     }
 
-    private static class StatusReceiver extends Thread {
+    private class StatusReceiver extends Thread {
         private final Logger logger = LoggerFactory.getLogger(CommunicationManager.class);
         private boolean stopped = false;
         private @Nullable DiscoveryResultReceiver discoveryResultReceiver;
@@ -213,7 +214,7 @@ public class CommunicationManager {
                             // We're in discovery mode: try to parse result as discovery message and signal the receiver
                             // if parsing was successful
                             try {
-                                DiscoveryResponse result = GSON.fromJson(response, DiscoveryResponse.class);
+                                DiscoveryResponse result = gson.fromJson(response, DiscoveryResponse.class);
                                 if (result != null) {
                                     synchronized (discoveryReceiver) {
                                         discoveryReceiver.onResultReceived(result);
@@ -225,8 +226,8 @@ public class CommunicationManager {
                             }
                         } else {
                             final @Nullable GoveeHandler handler;
-                            synchronized (THING_HANDLERS) {
-                                handler = THING_HANDLERS.get(deviceIPAddress);
+                            synchronized (thingHandlers) {
+                                handler = thingHandlers.get(deviceIPAddress);
                             }
                             if (handler == null) {
                                 logger.warn("thing Handler for {} couldn't be found.", deviceIPAddress);
