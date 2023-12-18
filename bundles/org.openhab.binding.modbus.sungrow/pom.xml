@@ -14,4 +14,14 @@
 
   <name>openHAB Add-ons :: Bundles :: Modbus Sungrow Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.modbus</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+
 </project>

@@ -13,21 +13,14 @@
 package org.openhab.binding.modbus.sungrow.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.modbus.ModbusBindingConstants;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link ModbusSungrowBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link SungrowInverterConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Sönke Küper - Initial contribution
  */
 @NonNullByDefault
-public class ModbusSungrowBindingConstants {
+public class SungrowInverterConfiguration {
 
-    /**
-     * ThingType-ID for Inverter.
-     */
-    public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
-            "sungrowInverter");
+    public int pollInterval;
 }

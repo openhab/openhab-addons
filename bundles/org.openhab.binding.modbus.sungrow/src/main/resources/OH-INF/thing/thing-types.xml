@@ -1,48 +1,405 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="sungrow"
+<thing:thing-descriptions bindingId="modbus"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="ModbusSungrowBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<thing-type id="sungrowInverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
 
-		<label>Modbus Sungrow Binding Thing</label>
-		<description>Sample thing for Modbus Sungrow Binding</description>
-
+		<label>Sungrow inverter</label>
+		<description>Sungrow inverter connected via Modbus.</description>
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="daily_output_energy" typeId="daily_output_energy"/>
+			<channel id="total_output_energy" typeId="total_output_energy"/>
+			<channel id="internal_temperature" typeId="internal_temperature"/>
+			<channel id="mppt1_voltage" typeId="mppt1_voltage"/>
+			<channel id="mppt1_current" typeId="mppt1_current"/>
+			<channel id="mppt2_voltage" typeId="mppt2_voltage"/>
+			<channel id="mppt2_current" typeId="mppt2_current"/>
+			<channel id="total_dc_power" typeId="total_dc_power"/>
+			<channel id="phase_a_voltage" typeId="phase_a_voltage"/>
+			<channel id="phase_b_voltage" typeId="phase_b_voltage"/>
+			<channel id="phase_c_voltage" typeId="phase_c_voltage"/>
+			<channel id="reactive_power" typeId="reactive_power"/>
+			<channel id="power_factor" typeId="power_factor"/>
+			<channel id="grid_frequency" typeId="grid_frequency"/>
+			<channel id="system_state" typeId="system_state"/>
+			<channel id="running_state" typeId="running_state"/>
+			<channel id="daily_pv_generation" typeId="daily_pv_generation"/>
+			<channel id="total_pv_generation" typeId="total_pv_generation"/>
+			<channel id="daily_export_power_from_pv" typeId="daily_export_power_from_pv"/>
+			<channel id="total_export_energy_from_pv" typeId="total_export_energy_from_pv"/>
+			<channel id="load_power" typeId="load_power"/>
+			<channel id="export_power" typeId="export_power"/>
+			<channel id="daily_battery_charge" typeId="daily_battery_charge"/>
+			<channel id="total_battery_charge" typeId="total_battery_charge"/>
+			<channel id="co2_reduction" typeId="co2_reduction"/>
+			<channel id="daily_direct_energy_consumption" typeId="daily_direct_energy_consumption"/>
+			<channel id="total_direct_energy_consumption" typeId="total_direct_energy_consumption"/>
+			<channel id="battery_voltage" typeId="battery_voltage"/>
+			<channel id="battery_current" typeId="battery_current"/>
+			<channel id="battery_power" typeId="battery_power"/>
+			<channel id="battery_level" typeId="battery_level"/>
+			<channel id="battery_healthy" typeId="battery_healthy"/>
+			<channel id="battery_temperatur" typeId="battery_temperatur"/>
+			<channel id="daily_battery_discharge_energy" typeId="daily_battery_discharge_energy"/>
+			<channel id="total_battery_discharge_energy" typeId="total_battery_discharge_energy"/>
+			<channel id="self_consumption_today" typeId="self_consumption_today"/>
+			<channel id="grid_state" typeId="grid_state"/>
+			<channel id="phase_a_current" typeId="phase_a_current"/>
+			<channel id="phase_b_current" typeId="phase_b_current"/>
+			<channel id="phase_c_current" typeId="phase_c_current"/>
+			<channel id="total_active_power" typeId="total_active_power"/>
+			<channel id="daily_import_energy" typeId="daily_import_energy"/>
+			<channel id="total_import_energy" typeId="total_import_energy"/>
+			<channel id="battery_capacity" typeId="battery_capacity"/>
+			<channel id="daily_charge_energy" typeId="daily_charge_energy"/>
+			<channel id="total_charge_energy" typeId="total_charge_energy"/>
+			<channel id="drm_state" typeId="drm_state"/>
+			<channel id="daily_export_energy" typeId="daily_export_energy"/>
+			<channel id="total_export_energy" typeId="total_export_energy"/>
+			<channel id="inverter_alarm" typeId="inverter_alarm"/>
+			<channel id="grid_side_fault" typeId="grid_side_fault"/>
+			<channel id="system_fault_1" typeId="system_fault_1"/>
+			<channel id="system_fault_2" typeId="system_fault_2"/>
+			<channel id="dc_side_fault" typeId="dc_side_fault"/>
+			<channel id="permanent_fault" typeId="permanent_fault"/>
+			<channel id="bdc_side_fault" typeId="bdc_side_fault"/>
+			<channel id="bdc_side_permanent_fault" typeId="bdc_side_permanent_fault"/>
+			<channel id="battery_fault" typeId="battery_fault"/>
+			<channel id="battery_alarm" typeId="battery_alarm"/>
+			<channel id="bms_alarm_1" typeId="bms_alarm_1"/>
+			<channel id="bms_protection" typeId="bms_protection"/>
+			<channel id="bms_fault_1" typeId="bms_fault_1"/>
+			<channel id="bms_fault_2" typeId="bms_fault_2"/>
+			<channel id="bms_alarm_2" typeId="bms_alarm_2"/>
 		</channels>
-
-		<config-description>
-			<parameter name="hostname" type="text" required="true">
-				<context>network-address</context>
-				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:sungrow:inverter"/>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for ModbusSungrow Binding</description>
+	<channel-type id="daily_output_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>DAILY_OUTPUT_ENERGY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="total_output_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>TOTAL_OUTPUT_ENERGY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="internal_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>INTERNAL_TEMPERATURE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="mppt1_voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>MPPT1_VOLTAGE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="mppt1_current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>MPPT1_CURRENT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="mppt2_voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>MPPT2_VOLTAGE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="mppt2_current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>MPPT2_CURRENT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_dc_power">
+		<item-type>Number:Power</item-type>
+		<label>TOTAL_DC_POWER</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="phase_a_voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>PHASE_A_VOLTAGE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="phase_b_voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>PHASE_B_VOLTAGE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="phase_c_voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>PHASE_C_VOLTAGE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="reactive_power">
+		<item-type>Number:Power</item-type>
+		<label>REACTIVE_POWER</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="power_factor">
+		<item-type>Number:Dimensionless</item-type>
+		<label>POWER_FACTOR</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="grid_frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>GRID_FREQUENCY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="system_state">
+		<item-type>Number:Dimensionless</item-type>
+		<label>SYSTEM_STATE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="running_state">
+		<item-type>Number:Energy</item-type>
+		<label>RUNNING_STATE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="daily_pv_generation">
+		<item-type>Number:Energy</item-type>
+		<label>DAILY_PV_GENERATION</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_pv_generation">
+		<item-type>Number:Energy</item-type>
+		<label>TOTAL_PV_GENERATION</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="daily_export_power_from_pv">
+		<item-type>Number:Power</item-type>
+		<label>DAILY_EXPORT_POWER_FROM_PV</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_export_energy_from_pv">
+		<item-type>Number:Energy</item-type>
+		<label>TOTAL_EXPORT_ENERGY_FROM_PV</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="load_power">
+		<item-type>Number:Power</item-type>
+		<label>LOAD_POWER</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="export_power">
+		<item-type>Number:Power</item-type>
+		<label>EXPORT_POWER</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="daily_battery_charge">
+		<item-type>Number:Energy</item-type>
+		<label>DAILY_BATTERY_CHARGE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_battery_charge">
+		<item-type>Number:Energy</item-type>
+		<label>TOTAL_BATTERY_CHARGE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="co2_reduction">
+		<item-type>Number:Mass</item-type>
+		<label>CO2_REDUCTION</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="daily_direct_energy_consumption">
+		<item-type>Number:Energy</item-type>
+		<label>DAILY_DIRECT_ENERGY_CONSUMPTION</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_direct_energy_consumption">
+		<item-type>Number:Energy</item-type>
+		<label>TOTAL_DIRECT_ENERGY_CONSUMPTION</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery_voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>BATTERY_VOLTAGE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery_current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>BATTERY_CURRENT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery_power">
+		<item-type>Number:Power</item-type>
+		<label>BATTERY_POWER</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery_level">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BATTERY_LEVEL</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery_healthy">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BATTERY_HEALTHY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery_temperatur">
+		<item-type>Number:Temperature</item-type>
+		<label>BATTERY_TEMPERATUR</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="daily_battery_discharge_energy">
+		<item-type>Number:Energy</item-type>
+		<label>DAILY_BATTERY_DISCHARGE_ENERGY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_battery_discharge_energy">
+		<item-type>Number:Energy</item-type>
+		<label>TOTAL_BATTERY_DISCHARGE_ENERGY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="self_consumption_today">
+		<item-type>Number:Dimensionless</item-type>
+		<label>SELF_CONSUMPTION_TODAY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="grid_state">
+		<item-type>Number:Dimensionless</item-type>
+		<label>GRID_STATE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="phase_a_current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>PHASE_A_CURRENT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="phase_b_current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>PHASE_B_CURRENT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="phase_c_current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>PHASE_C_CURRENT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_active_power">
+		<item-type>Number:Power</item-type>
+		<label>TOTAL_ACTIVE_POWER</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="daily_import_energy">
+		<item-type>Number:Energy</item-type>
+		<label>DAILY_IMPORT_ENERGY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_import_energy">
+		<item-type>Number:Energy</item-type>
+		<label>TOTAL_IMPORT_ENERGY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery_capacity">
+		<item-type>Number:Energy</item-type>
+		<label>BATTERY_CAPACITY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="daily_charge_energy">
+		<item-type>Number:Energy</item-type>
+		<label>DAILY_CHARGE_ENERGY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_charge_energy">
+		<item-type>Number:Energy</item-type>
+		<label>TOTAL_CHARGE_ENERGY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="drm_state">
+		<item-type>Number:Dimensionless</item-type>
+		<label>DRM_STATE</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="daily_export_energy">
+		<item-type>Number:Energy</item-type>
+		<label>DAILY_EXPORT_ENERGY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_export_energy">
+		<item-type>Number:Energy</item-type>
+		<label>TOTAL_EXPORT_ENERGY</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="inverter_alarm">
+		<item-type>Number:Dimensionless</item-type>
+		<label>INVERTER_ALARM</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="grid_side_fault">
+		<item-type>Number:Dimensionless</item-type>
+		<label>GRID_SIDE_FAULT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="system_fault_1">
+		<item-type>Number:Dimensionless</item-type>
+		<label>SYSTEM_FAULT_1</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="system_fault_2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>SYSTEM_FAULT_2</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="dc_side_fault">
+		<item-type>Number:Dimensionless</item-type>
+		<label>DC_SIDE_FAULT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="permanent_fault">
+		<item-type>Number:Dimensionless</item-type>
+		<label>PERMANENT_FAULT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="bdc_side_fault">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BDC_SIDE_FAULT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="bdc_side_permanent_fault">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BDC_SIDE_PERMANENT_FAULT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery_fault">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BATTERY_FAULT</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery_alarm">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BATTERY_ALARM</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="bms_alarm_1">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BMS_ALARM_1</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="bms_protection">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BMS_PROTECTION</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="bms_fault_1">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BMS_FAULT_1</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="bms_fault_2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BMS_FAULT_2</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="bms_alarm_2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BMS_ALARM_2</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

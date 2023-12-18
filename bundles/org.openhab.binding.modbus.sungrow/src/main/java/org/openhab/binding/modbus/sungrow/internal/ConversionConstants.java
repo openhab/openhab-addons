@@ -12,20 +12,25 @@
  */
 package org.openhab.binding.modbus.sungrow.internal;
 
+import java.math.BigDecimal;
+import java.util.function.Function;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ModbusSungrowConfiguration} class contains fields mapping thing configuration parameters.
+ * Constants for converting values.
  *
  * @author Sönke Küper - Initial contribution
  */
 @NonNullByDefault
-public class ModbusSungrowConfiguration {
+final class ConversionConstants {
+
+    private ConversionConstants() {
+    }
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Value conversion from Celsius to Kelvin.
      */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    static final Function<BigDecimal, BigDecimal> CELSIUS_TO_KELVIN = (BigDecimal celsius) -> celsius
+            .add(new BigDecimal(273.15f));
 }

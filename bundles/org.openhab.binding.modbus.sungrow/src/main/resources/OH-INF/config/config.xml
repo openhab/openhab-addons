@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:sungrow:inverter">
+		<parameter name="pollInterval" type="integer" required="true" min="100" unit="ms">
+			<label>Poll Interval</label>
+			<description>Time between polling the data in ms.</description>
+			<default>5000</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

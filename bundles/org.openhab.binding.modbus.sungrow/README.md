@@ -76,6 +76,7 @@ _*.sitemap examples are optional._
 ```java
 Example thing configuration goes here.
 ```
+
 ### Item Configuration
 
 ```java
