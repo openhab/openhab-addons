@@ -355,7 +355,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sg-battery_level">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>BATTERY_LEVEL</label>
 		<category>Battery</category>
 		<tags>
@@ -365,7 +365,7 @@
 		<state pattern="%.2f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sg-battery_healthy">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>BATTERY_HEALTHY</label>
 		<category>Battery</category>
 		<state pattern="%.2f %%" readOnly="true"/>
@@ -401,7 +401,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sg-self_consumption_today">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>SELF_CONSUMPTION_TODAY</label>
 		<state pattern="%.2f %%" readOnly="true"/>
 	</channel-type>
