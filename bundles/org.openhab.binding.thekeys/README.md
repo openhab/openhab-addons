@@ -25,12 +25,12 @@ It is recommended to configure static IP addresses for the Gateway.
 This binding supports just one bridge type: The Keys Gateway (`thekeys:gateway`).
 The following configuration options are available:
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| host            | text    | Host or IP address of the device      | N/A     | yes      | no       |
-| code            | text    | The gateway access code               | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 5       | yes      | no       |
-| apiTimeout      | integer | Interval the device is polled in sec. | 30      | yes      | yes      |
+| Name            | Type    | Description                             | Default | Required | Advanced |
+|-----------------|---------|-----------------------------------------|---------|----------|----------|
+| host            | text    | Host or IP address of the device        | N/A     | yes      | no       |
+| code            | text    | The gateway access code                 | N/A     | yes      | no       |
+| refreshInterval | integer | Interval the device is polled in sec    | 5       | no       | no       |
+| apiTimeout      | integer | API timeout in seconds for each request | 30      | no       | yes      |
 
 ### Discovery
 
