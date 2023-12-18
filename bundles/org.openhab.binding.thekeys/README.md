@@ -1,6 +1,6 @@
 # The Keys Binding
 
-This is the binding for [TheKeys Smartlock](https://www.the-keys.eu/fr/produits/8-serrure-connectee.html).  
+This is the binding for [TheKeys Smartlock](https://www.the-keys.eu/fr/produits/8-serrure-connectee.html).
 This binding allows you to integrate, view, control and configure TheKeys Gateway and TheKeys Smartlock.
 
 ![The Keys smartlock](doc/thekeys-smartlock.png)
@@ -8,8 +8,9 @@ This binding allows you to integrate, view, control and configure TheKeys Gatewa
 
 ## Prerequisites
 
-At least one TheKeys Smartlock which is associated with The Keys Gateway. The Gateway must be paired with the Smartlock
-via the android/ios app. It is recommended to configure static IP addresses for the Gateway.
+At least one TheKeys Smartlock which is associated with The Keys Gateway.
+The Gateway must be paired with the Smartlock via the android/ios app.
+It is recommended to configure static IP addresses for the Gateway.
 
 ### Setup
 
@@ -20,8 +21,8 @@ via the android/ios app. It is recommended to configure static IP addresses for 
 
 ### `gateway` Bridge Thing Configuration
 
-This binding supports just one bridge type: The Keys Gateway (`thekeys:gateway`). The following configuration options
-are available:
+This binding supports just one bridge type: The Keys Gateway (`thekeys:gateway`).
+The following configuration options are available:
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
@@ -32,12 +33,14 @@ are available:
 
 ### Discovery
 
-The bridge can't be discovered automatically. The `host` must be provided. You can find it from the ios/android app :
-Home Page > Accessories > TK Gateway > Configure > IP
+The bridge can't be discovered automatically.
+The `host` must be provided.
+You can find it from the ios/android app : Home Page > Accessories > TK Gateway > Configure > IP
 
 ### Supported Channels
 
-The gateway have no channels. It only exposes one property `version` containing the firmware version.
+The gateway have no channels.
+It only exposes one property `version` containing the firmware version.
 
 ## Supported Things
 
@@ -51,8 +54,8 @@ This thing allows to control the smartlock and check its state
 
 ### Discovery
 
-The smartlock can be discovered when the Gateway is configured and online. Hit the "scan" button when you add the thing
-through the UI
+The smartlock can be discovered when the Gateway is configured and online.
+Hit the "scan" button when you add the thing through the UI
 
 ### Supported Channels
 
