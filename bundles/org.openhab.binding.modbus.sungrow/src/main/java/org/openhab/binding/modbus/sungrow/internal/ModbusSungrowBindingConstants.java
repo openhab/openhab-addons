@@ -29,5 +29,5 @@ public class ModbusSungrowBindingConstants {
      * ThingType-ID for Inverter.
      */
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
-            "sungrowInverter");
+            "sungrow-inverter");
 }

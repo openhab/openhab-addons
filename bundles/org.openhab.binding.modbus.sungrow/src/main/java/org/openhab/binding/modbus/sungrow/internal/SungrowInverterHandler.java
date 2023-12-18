@@ -175,11 +175,11 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                 "Failed to retrieve data: " + error.getCause().getMessage());
     }
 
-    private ChannelUID createChannelUid(SungrowInverterRegisters channel) {
+    private ChannelUID createChannelUid(SungrowInverterRegisters register) {
         return new ChannelUID( //
                 thing.getUID(), //
-                "sg-" + channel.getChannelGroup(), //
-                "sg-" + channel.name().toLowerCase() //
+                "sg-" + register.getChannelGroup(), //
+                "sg-" + register.getChannelName() //
         );
     }
 }

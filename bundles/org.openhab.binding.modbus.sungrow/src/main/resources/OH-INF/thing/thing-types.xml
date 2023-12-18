@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="sungrowInverter">
+	<thing-type id="sungrow-inverter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serial"/>
 			<bridge-type-ref id="tcp"/>
@@ -15,10 +15,10 @@
 		<category>Inverter</category>
 		<channel-groups>
 			<channel-group id="sg-overview" typeId="sg-overview"/>
-			<channel-group id="sg-mppt_information" typeId="sg-mppt_information"/>
-			<channel-group id="sg-battery_information" typeId="sg-battery_information"/>
-			<channel-group id="sg-grid_information" typeId="sg-grid_information"/>
-			<channel-group id="sg-load_information" typeId="sg-load_information"/>
+			<channel-group id="sg-mppt-information" typeId="sg-mppt-information"/>
+			<channel-group id="sg-battery-information" typeId="sg-battery-information"/>
+			<channel-group id="sg-grid-information" typeId="sg-grid-information"/>
+			<channel-group id="sg-load-information" typeId="sg-load-information"/>
 		</channel-groups>
 		<config-description-ref uri="thing-type:sungrow:inverter"/>
 	</thing-type>
@@ -26,84 +26,84 @@
 	<channel-group-type id="sg-overview">
 		<label>OVERVIEW</label>
 		<channels>
-			<channel id="sg-total_active_power" typeId="sg-total_active_power"/>
-			<channel id="sg-total_dc_power" typeId="sg-total_dc_power"/>
-			<channel id="sg-phase_a_voltage" typeId="sg-phase_a_voltage"/>
-			<channel id="sg-phase_b_voltage" typeId="sg-phase_b_voltage"/>
-			<channel id="sg-phase_c_voltage" typeId="sg-phase_c_voltage"/>
-			<channel id="sg-phase_a_current" typeId="sg-phase_a_current"/>
-			<channel id="sg-phase_b_current" typeId="sg-phase_b_current"/>
-			<channel id="sg-phase_c_current" typeId="sg-phase_c_current"/>
-			<channel id="sg-reactive_power" typeId="sg-reactive_power"/>
-			<channel id="sg-grid_frequency" typeId="sg-grid_frequency"/>
-			<channel id="sg-daily_pv_generation" typeId="sg-daily_pv_generation"/>
-			<channel id="sg-total_pv_generation" typeId="sg-total_pv_generation"/>
-			<channel id="sg-power_factor" typeId="sg-power_factor"/>
+			<channel id="sg-total-active-power" typeId="sg-total-active-power"/>
+			<channel id="sg-total-dc-power" typeId="sg-total-dc-power"/>
+			<channel id="sg-phase-a-voltage" typeId="sg-phase-a-voltage"/>
+			<channel id="sg-phase-b-voltage" typeId="sg-phase-b-voltage"/>
+			<channel id="sg-phase-c-voltage" typeId="sg-phase-c-voltage"/>
+			<channel id="sg-phase-a-current" typeId="sg-phase-a-current"/>
+			<channel id="sg-phase-b-current" typeId="sg-phase-b-current"/>
+			<channel id="sg-phase-c-current" typeId="sg-phase-c-current"/>
+			<channel id="sg-reactive-power" typeId="sg-reactive-power"/>
+			<channel id="sg-grid-frequency" typeId="sg-grid-frequency"/>
+			<channel id="sg-daily-pv-generation" typeId="sg-daily-pv-generation"/>
+			<channel id="sg-total-pv-generation" typeId="sg-total-pv-generation"/>
+			<channel id="sg-power-factor" typeId="sg-power-factor"/>
 			<!-- Not working
-				<channel id="sg-co2_reduction" typeId="sg-co2_reduction"/>
+				<channel id="sg-co2-reduction" typeId="sg-co2-reduction"/>
 			-->
-			<channel id="sg-internal_temperature" typeId="sg-internal_temperature"/>
+			<channel id="sg-internal-temperature" typeId="sg-internal-temperature"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="sg-mppt_information">
-		<label>MPPT_INFORMATION</label>
+	<channel-group-type id="sg-mppt-information">
+		<label>MPPT-INFORMATION</label>
 		<channels>
-			<channel id="sg-mppt1_voltage" typeId="sg-mppt1_voltage"/>
-			<channel id="sg-mppt1_current" typeId="sg-mppt1_current"/>
-			<channel id="sg-mppt2_voltage" typeId="sg-mppt2_voltage"/>
-			<channel id="sg-mppt2_current" typeId="sg-mppt2_current"/>
+			<channel id="sg-mppt1-voltage" typeId="sg-mppt1-voltage"/>
+			<channel id="sg-mppt1-current" typeId="sg-mppt1-current"/>
+			<channel id="sg-mppt2-voltage" typeId="sg-mppt2-voltage"/>
+			<channel id="sg-mppt2-current" typeId="sg-mppt2-current"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="sg-battery_information">
-		<label>BATTERY_INFORMATION</label>
+	<channel-group-type id="sg-battery-information">
+		<label>BATTERY-INFORMATION</label>
 		<channels>
-			<channel id="sg-battery_voltage" typeId="sg-battery_voltage"/>
-			<channel id="sg-battery_current" typeId="sg-battery_current"/>
-			<channel id="sg-battery_power" typeId="sg-battery_power"/>
-			<channel id="sg-battery_level" typeId="sg-battery_level"/>
-			<channel id="sg-battery_healthy" typeId="sg-battery_healthy"/>
-			<channel id="sg-battery_temperature" typeId="sg-battery_temperature"/>
-			<channel id="sg-battery_capacity" typeId="sg-battery_capacity"/>
-			<channel id="sg-daily_charge_energy" typeId="sg-daily_charge_energy"/>
-			<channel id="sg-total_charge_energy" typeId="sg-total_charge_energy"/>
-			<channel id="sg-daily_battery_charge" typeId="sg-daily_battery_charge"/>
-			<channel id="sg-total_battery_charge" typeId="sg-total_battery_charge"/>
-			<channel id="sg-daily_battery_discharge_energy" typeId="sg-daily_battery_discharge_energy"/>
-			<channel id="sg-total_battery_discharge_energy" typeId="sg-total_battery_discharge_energy"/>
+			<channel id="sg-battery-voltage" typeId="sg-battery-voltage"/>
+			<channel id="sg-battery-current" typeId="sg-battery-current"/>
+			<channel id="sg-battery-power" typeId="sg-battery-power"/>
+			<channel id="sg-battery-level" typeId="sg-battery-level"/>
+			<channel id="sg-battery-healthy" typeId="sg-battery-healthy"/>
+			<channel id="sg-battery-temperature" typeId="sg-battery-temperature"/>
+			<channel id="sg-battery-capacity" typeId="sg-battery-capacity"/>
+			<channel id="sg-daily-charge-energy" typeId="sg-daily-charge-energy"/>
+			<channel id="sg-total-charge-energy" typeId="sg-total-charge-energy"/>
+			<channel id="sg-daily-battery-charge" typeId="sg-daily-battery-charge"/>
+			<channel id="sg-total-battery-charge" typeId="sg-total-battery-charge"/>
+			<channel id="sg-daily-battery-discharge-energy" typeId="sg-daily-battery-discharge-energy"/>
+			<channel id="sg-total-battery-discharge-energy" typeId="sg-total-battery-discharge-energy"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="sg-grid_information">
-		<label>GRID_INFORMATION</label>
+	<channel-group-type id="sg-grid-information">
+		<label>GRID-INFORMATION</label>
 		<channels>
-			<channel id="sg-daily_export_energy" typeId="sg-daily_export_energy"/>
-			<channel id="sg-total_export_energy" typeId="sg-total_export_energy"/>
-			<channel id="sg-daily_import_energy" typeId="sg-daily_import_energy"/>
-			<channel id="sg-total_import_energy" typeId="sg-total_import_energy"/>
-			<channel id="sg-daily_export_power_from_pv" typeId="sg-daily_export_power_from_pv"/>
-			<channel id="sg-total_export_energy_from_pv" typeId="sg-total_export_energy_from_pv"/>
-			<channel id="sg-export_power" typeId="sg-export_power"/>
+			<channel id="sg-daily-export-energy" typeId="sg-daily-export-energy"/>
+			<channel id="sg-total-export-energy" typeId="sg-total-export-energy"/>
+			<channel id="sg-daily-import-energy" typeId="sg-daily-import-energy"/>
+			<channel id="sg-total-import-energy" typeId="sg-total-import-energy"/>
+			<channel id="sg-daily-export-power-from-pv" typeId="sg-daily-export-power-from-pv"/>
+			<channel id="sg-total-export-energy-from-pv" typeId="sg-total-export-energy-from-pv"/>
+			<channel id="sg-export-power" typeId="sg-export-power"/>
 			<!-- not working
-				<channel id="sg-grid_state" typeId="sg-grid_state"/>
+				<channel id="sg-grid-state" typeId="sg-grid-state"/>
 			-->
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="sg-load_information">
-		<label>LOAD_INFORMATION</label>
+	<channel-group-type id="sg-load-information">
+		<label>LOAD-INFORMATION</label>
 		<channels>
-			<channel id="sg-load_power" typeId="sg-load_power"/>
-			<channel id="sg-daily_direct_energy_consumption" typeId="sg-daily_direct_energy_consumption"/>
-			<channel id="sg-total_direct_energy_consumption" typeId="sg-total_direct_energy_consumption"/>
-			<channel id="sg-self_consumption_today" typeId="sg-self_consumption_today"/>
+			<channel id="sg-load-power" typeId="sg-load-power"/>
+			<channel id="sg-daily-direct-energy-consumption" typeId="sg-daily-direct-energy-consumption"/>
+			<channel id="sg-total-direct-energy-consumption" typeId="sg-total-direct-energy-consumption"/>
+			<channel id="sg-self-consumption-today" typeId="sg-self-consumption-today"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="sg-internal_temperature" advanced="true">
+	<channel-type id="sg-internal-temperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>INTERNAL_TEMPERATURE</label>
+		<label>INTERNAL-TEMPERATURE</label>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -111,9 +111,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-mppt1_voltage" advanced="true">
+	<channel-type id="sg-mppt1-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>MPPT1_VOLTAGE</label>
+		<label>MPPT1-VOLTAGE</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -121,9 +121,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-mppt1_current" advanced="true">
+	<channel-type id="sg-mppt1-current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>MPPT1_CURRENT</label>
+		<label>MPPT1-CURRENT</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -131,9 +131,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-mppt2_voltage" advanced="true">
+	<channel-type id="sg-mppt2-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>MPPT2_VOLTAGE</label>
+		<label>MPPT2-VOLTAGE</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -141,9 +141,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-mppt2_current" advanced="true">
+	<channel-type id="sg-mppt2-current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>MPPT2_CURRENT</label>
+		<label>MPPT2-CURRENT</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -151,9 +151,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-total_dc_power">
+	<channel-type id="sg-total-dc-power">
 		<item-type>Number:Power</item-type>
-		<label>TOTAL_DC_POWER</label>
+		<label>TOTAL-DC-POWER</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -161,9 +161,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-phase_a_voltage" advanced="true">
+	<channel-type id="sg-phase-a-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>PHASE_A_VOLTAGE</label>
+		<label>PHASE-A-VOLTAGE</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -171,9 +171,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-phase_b_voltage" advanced="true">
+	<channel-type id="sg-phase-b-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>PHASE_B_VOLTAGE</label>
+		<label>PHASE-B-VOLTAGE</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -181,9 +181,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-phase_c_voltage" advanced="true">
+	<channel-type id="sg-phase-c-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>PHASE_C_VOLTAGE</label>
+		<label>PHASE-C-VOLTAGE</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -191,9 +191,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-reactive_power" advanced="true">
+	<channel-type id="sg-reactive-power" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>REACTIVE_POWER</label>
+		<label>REACTIVE-POWER</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -201,15 +201,15 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-power_factor" advanced="true">
+	<channel-type id="sg-power-factor" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>POWER_FACTOR</label>
+		<label>POWER-FACTOR</label>
 		<category>Energy</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-grid_frequency" advanced="true">
+	<channel-type id="sg-grid-frequency" advanced="true">
 		<item-type>Number:Frequency</item-type>
-		<label>GRID_FREQUENCY</label>
+		<label>GRID-FREQUENCY</label>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Frequency</tag>
@@ -217,9 +217,9 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="sg-daily_pv_generation">
+	<channel-type id="sg-daily-pv-generation">
 		<item-type>Number:Energy</item-type>
-		<label>DAILY_PV_GENERATION</label>
+		<label>DAILY-PV-GENERATION</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -227,9 +227,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-total_pv_generation">
+	<channel-type id="sg-total-pv-generation">
 		<item-type>Number:Energy</item-type>
-		<label>TOTAL_PV_GENERATION</label>
+		<label>TOTAL-PV-GENERATION</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -237,9 +237,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-daily_export_power_from_pv">
+	<channel-type id="sg-daily-export-power-from-pv">
 		<item-type>Number:Power</item-type>
-		<label>DAILY_EXPORT_POWER_FROM_PV</label>
+		<label>DAILY-EXPORT-POWER-FROM-PV</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -247,9 +247,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-total_export_energy_from_pv">
+	<channel-type id="sg-total-export-energy-from-pv">
 		<item-type>Number:Energy</item-type>
-		<label>TOTAL_EXPORT_ENERGY_FROM_PV</label>
+		<label>TOTAL-EXPORT-ENERGY-FROM-PV</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -257,9 +257,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-load_power">
+	<channel-type id="sg-load-power">
 		<item-type>Number:Power</item-type>
-		<label>LOAD_POWER</label>
+		<label>LOAD-POWER</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -267,9 +267,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-export_power">
+	<channel-type id="sg-export-power">
 		<item-type>Number:Power</item-type>
-		<label>EXPORT_POWER</label>
+		<label>EXPORT-POWER</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -277,9 +277,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-daily_battery_charge">
+	<channel-type id="sg-daily-battery-charge">
 		<item-type>Number:Energy</item-type>
-		<label>DAILY_BATTERY_CHARGE</label>
+		<label>DAILY-BATTERY-CHARGE</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -287,9 +287,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-total_battery_charge">
+	<channel-type id="sg-total-battery-charge">
 		<item-type>Number:Energy</item-type>
-		<label>TOTAL_BATTERY_CHARGE</label>
+		<label>TOTAL-BATTERY-CHARGE</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -298,15 +298,15 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<!--
-		<channel-type id="sg-co2_reduction">
+		<channel-type id="sg-co2-reduction">
 		<item-type>Number:Mass</item-type>
-		<label>CO2_REDUCTION</label>
+		<label>CO2-REDUCTION</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 		</channel-type>
 	-->
-	<channel-type id="sg-daily_direct_energy_consumption">
+	<channel-type id="sg-daily-direct-energy-consumption">
 		<item-type>Number:Energy</item-type>
-		<label>DAILY_DIRECT_ENERGY_CONSUMPTION</label>
+		<label>DAILY-DIRECT-ENERGY-CONSUMPTION</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -314,9 +314,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-total_direct_energy_consumption">
+	<channel-type id="sg-total-direct-energy-consumption">
 		<item-type>Number:Energy</item-type>
-		<label>TOTAL_DIRECT_ENERGY_CONSUMPTION</label>
+		<label>TOTAL-DIRECT-ENERGY-CONSUMPTION</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -324,9 +324,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-battery_voltage" advanced="true">
+	<channel-type id="sg-battery-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>BATTERY_VOLTAGE</label>
+		<label>BATTERY-VOLTAGE</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -334,9 +334,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-battery_current" advanced="true">
+	<channel-type id="sg-battery-current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>BATTERY_CURRENT</label>
+		<label>BATTERY-CURRENT</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -344,9 +344,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-battery_power">
+	<channel-type id="sg-battery-power">
 		<item-type>Number:Power</item-type>
-		<label>BATTERY_POWER</label>
+		<label>BATTERY-POWER</label>
 		<category>Battery</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -354,9 +354,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-battery_level">
+	<channel-type id="sg-battery-level">
 		<item-type>Number:Dimensionless</item-type>
-		<label>BATTERY_LEVEL</label>
+		<label>BATTERY-LEVEL</label>
 		<category>Battery</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -364,15 +364,15 @@
 		</tags>
 		<state pattern="%.2f %%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-battery_healthy">
+	<channel-type id="sg-battery-healthy">
 		<item-type>Number:Dimensionless</item-type>
-		<label>BATTERY_HEALTHY</label>
+		<label>BATTERY-HEALTHY</label>
 		<category>Battery</category>
 		<state pattern="%.2f %%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-battery_temperature">
+	<channel-type id="sg-battery-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>BATTERY_TEMPERATUR</label>
+		<label>BATTERY-TEMPERATUR</label>
 		<category>Battery</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -380,9 +380,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-daily_battery_discharge_energy">
+	<channel-type id="sg-daily-battery-discharge-energy">
 		<item-type>Number:Energy</item-type>
-		<label>DAILY_BATTERY_DISCHARGE_ENERGY</label>
+		<label>DAILY-BATTERY-DISCHARGE-ENERGY</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -390,9 +390,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-total_battery_discharge_energy">
+	<channel-type id="sg-total-battery-discharge-energy">
 		<item-type>Number:Energy</item-type>
-		<label>TOTAL_BATTERY_DISCHARGE_ENERGY</label>
+		<label>TOTAL-BATTERY-DISCHARGE-ENERGY</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -400,21 +400,21 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-self_consumption_today">
+	<channel-type id="sg-self-consumption-today">
 		<item-type>Number:Dimensionless</item-type>
-		<label>SELF_CONSUMPTION_TODAY</label>
+		<label>SELF-CONSUMPTION-TODAY</label>
 		<state pattern="%.2f %%" readOnly="true"/>
 	</channel-type>
 	<!-->
-		<channel-type id="sg-grid_state" advanced="true">
+		<channel-type id="sg-grid-state" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>GRID_STATE</label>
+		<label>GRID-STATE</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 		</channel-type>
 	-->
-	<channel-type id="sg-phase_a_current" advanced="true">
+	<channel-type id="sg-phase-a-current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>PHASE_A_CURRENT</label>
+		<label>PHASE-A-CURRENT</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -422,9 +422,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-phase_b_current" advanced="true">
+	<channel-type id="sg-phase-b-current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>PHASE_B_CURRENT</label>
+		<label>PHASE-B-CURRENT</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -432,9 +432,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-phase_c_current" advanced="true">
+	<channel-type id="sg-phase-c-current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>PHASE_C_CURRENT</label>
+		<label>PHASE-C-CURRENT</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -442,9 +442,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-total_active_power">
+	<channel-type id="sg-total-active-power">
 		<item-type>Number:Power</item-type>
-		<label>TOTAL_ACTIVE_POWER</label>
+		<label>TOTAL-ACTIVE-POWER</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -452,9 +452,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-daily_import_energy">
+	<channel-type id="sg-daily-import-energy">
 		<item-type>Number:Energy</item-type>
-		<label>DAILY_IMPORT_ENERGY</label>
+		<label>DAILY-IMPORT-ENERGY</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -462,9 +462,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-total_import_energy">
+	<channel-type id="sg-total-import-energy">
 		<item-type>Number:Energy</item-type>
-		<label>TOTAL_IMPORT_ENERGY</label>
+		<label>TOTAL-IMPORT-ENERGY</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -472,9 +472,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-battery_capacity">
+	<channel-type id="sg-battery-capacity">
 		<item-type>Number:Energy</item-type>
-		<label>BATTERY_CAPACITY</label>
+		<label>BATTERY-CAPACITY</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -482,9 +482,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-daily_charge_energy">
+	<channel-type id="sg-daily-charge-energy">
 		<item-type>Number:Energy</item-type>
-		<label>DAILY_CHARGE_ENERGY</label>
+		<label>DAILY-CHARGE-ENERGY</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -492,9 +492,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-total_charge_energy">
+	<channel-type id="sg-total-charge-energy">
 		<item-type>Number:Energy</item-type>
-		<label>TOTAL_CHARGE_ENERGY</label>
+		<label>TOTAL-CHARGE-ENERGY</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -503,9 +503,9 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="sg-daily_export_energy">
+	<channel-type id="sg-daily-export-energy">
 		<item-type>Number:Energy</item-type>
-		<label>DAILY_EXPORT_ENERGY</label>
+		<label>DAILY-EXPORT-ENERGY</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -513,9 +513,9 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-total_export_energy">
+	<channel-type id="sg-total-export-energy">
 		<item-type>Number:Energy</item-type>
-		<label>TOTAL_EXPORT_ENERGY</label>
+		<label>TOTAL-EXPORT-ENERGY</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
