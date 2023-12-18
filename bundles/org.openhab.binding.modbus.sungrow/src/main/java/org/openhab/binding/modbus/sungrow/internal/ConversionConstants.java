@@ -13,6 +13,7 @@
 package org.openhab.binding.modbus.sungrow.internal;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,6 +28,11 @@ final class ConversionConstants {
 
     private ConversionConstants() {
     }
+
+    /**
+     * Multiplicand for 0.1.
+     */
+    static final BigDecimal DIV_BY_TEN = new BigDecimal(BigInteger.ONE, 1);
 
     /**
      * Value conversion from Celsius to Kelvin.
