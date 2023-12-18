@@ -8,10 +8,6 @@
 		<label>TheKeys Gateway</label>
 		<description>Gateway controlling a smartlock</description>
 
-		<channels>
-			<channel id="version" typeId="version"/>
-		</channels>
-
 		<properties>
 			<property name="version"/>
 		</properties>
@@ -55,7 +51,6 @@
 			<channel id="lowBattery" typeId="system.low-battery"/>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="position" typeId="position"/>
-			<channel id="version" typeId="version"/>
 			<channel id="syncInProgress" typeId="syncInProgress"/>
 			<channel id="lastSync" typeId="lastSync"/>
 			<channel id="lock" typeId="smartlockLock"/>
@@ -72,13 +67,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="version">
-		<item-type>Number</item-type>
-		<label>Firmware version</label>
-		<description>Firmware version</description>
-		<state readOnly="true"/>
-	</channel-type>
 
 	<channel-type id="lock_status">
 		<item-type>String</item-type>

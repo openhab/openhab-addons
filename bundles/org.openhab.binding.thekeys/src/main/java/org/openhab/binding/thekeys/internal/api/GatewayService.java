@@ -12,18 +12,6 @@
  */
 package org.openhab.binding.thekeys.internal.api;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.net.ConnectException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
-import java.util.Base64;
-import java.util.List;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.thekeys.internal.api.model.GatewayInfosDTO;
 import org.openhab.binding.thekeys.internal.api.model.LockerDTO;
@@ -34,6 +22,17 @@ import org.openhab.binding.thekeys.internal.gateway.TheKeysGatewayConfiguration;
 import org.openhab.binding.thekeys.internal.utils.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.EOFException;
+import java.io.IOException;
+import java.net.ConnectException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.util.Base64;
+import java.util.List;
 
 /**
  * Implement the communication with the Gateway via HTTP

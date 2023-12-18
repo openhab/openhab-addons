@@ -31,7 +31,6 @@ public class TheKeysBindingConstants {
     public static final ThingTypeUID THING_TYPE_SMARTLOCK = new ThingTypeUID(BINDING_ID, "smartlock");
 
     // List of all Channel ids
-    public static final String CHANNEL_VERSION = "version";
     public static final String CHANNEL_STATUS = "status";
     public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
     public static final String CHANNEL_LOW_BATTERY = "lowBattery";

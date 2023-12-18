@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.thekeys.internal.gateway;
 
-import static org.openhab.binding.thekeys.internal.TheKeysBindingConstants.CHANNEL_VERSION;
 import static org.openhab.binding.thekeys.internal.TheKeysBindingConstants.PROPERTY_VERSION;
 
 import java.util.Collection;
@@ -33,7 +32,6 @@ import org.openhab.binding.thekeys.internal.api.model.LockerDTO;
 import org.openhab.binding.thekeys.internal.provider.TheKeyTranslationProvider;
 import org.openhab.binding.thekeys.internal.smartlock.TheKeysDiscoveryService;
 import org.openhab.binding.thekeys.internal.smartlock.TheKeysSmartlockHandler;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -85,7 +83,6 @@ public class TheKeysGatewayHandler extends BaseBridgeHandler {
     private void pollGateway() {
         try {
             GatewayInfosDTO gwInfos = api.getGatewayInfos();
-            updateState(CHANNEL_VERSION, new DecimalType(gwInfos.getVersion()));
             updateProperty(PROPERTY_VERSION, String.valueOf(gwInfos.getVersion()));
 
             // Here the api answer without errors => back online

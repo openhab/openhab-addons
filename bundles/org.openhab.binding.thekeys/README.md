@@ -8,7 +8,7 @@ This binding allows you to integrate, view, control and configure TheKeys Gatewa
 
 ## Prerequisites
 
-At least one TheKeys Smartlock which is associated with a The Keys Gateway. The Gateway must be paired with the Sartlock
+At least one TheKeys Smartlock which is associated with The Keys Gateway. The Gateway must be paired with the Smartlock
 via the android/ios app. It is recommended to configure static IP addresses for the Gateway.
 
 ### Setup
@@ -32,14 +32,12 @@ are available:
 
 ### Discovery
 
-The bridge can't be discoverd automatically. The `host` must be provided. You can find it from the ios/android app :
+The bridge can't be discovered automatically. The `host` must be provided. You can find it from the ios/android app :
 Home Page > Accessories > TK Gateway > Configure > IP
 
 ### Supported Channels
 
-| Channel       | Type   | Read/Write | Description                                 |
-|---------------|--------|------------|---------------------------------------------|
-| version       | Number | R          | Firmware version                            |
+The gateway have no channels. It only exposes one property `version` containing the firmware version.
 
 ## Supported Things
 
@@ -54,20 +52,20 @@ This thing allows to control the smartlock and check its state
 ### Discovery
 
 The smartlock can be discovered when the Gateway is configured and online. Hit the "scan" button when you add the thing
-througth the UI
+through the UI
 
 ### Supported Channels
 
-| Channel       | Type   | Read/Write | Description                                |
-|---------------|--------|------------|--------------------------------------------|
-| status        | String | R          | Status of the smartlock                    |
-| batteryLevel  | Number | R          | Current battery level                      |
-| lowBattery    | Switch | R          | Low battery warning                        |
-| rssi          | Number | R          | Bluetooth Signal strength with the gateway |
-| position      | Number | R          | Position of the lock                       |
-| version       | Number | R          | Firmware version                           |
-| lastSync      | Switch | R          | Last success sync with the lock            |
-| lock          | Switch | RW         | Switch to open and close the lock          |
+| Channel         | Type   | Read/Write | Description                                    |
+|-----------------|--------|------------|------------------------------------------------|
+| status          | String | R          | Status of the smartlock                        |
+| batteryLevel    | Number | R          | Current battery level                          |
+| lowBattery      | Switch | R          | Low battery warning                            |
+| rssi            | Number | R          | Bluetooth Signal strength with the gateway     |
+| position        | Number | R          | Position of the lock                           |
+| syncInProgress  | Number | R          | Indicates the pending update of the lock state |
+| lastSync        | String | R          | Date of the last success sync with the lock    |
+| lock            | Switch | RW         | Switch to open and close the lock              |
 
 ## Full Example
 
@@ -93,7 +91,6 @@ Number   Smartlock_Niveau_Batterie             "Battery level"               <Ba
 Switch   Smartlock_Batterie_Faible             "Low battery"                 <LowBattery>       (Smartlock) ["Energy", "LowBattery"]   { channel="thekeys:smartlock:tk-gateway:1234:lowBattery" }     
 Number   Smartlock_Bluetooth_rssi              "Bluetooth rssi"              <QualityOfService> (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:rssi" }           
 Number   Smartlock_Smartlock_position          "Smartlock position"                             (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:position" }       
-Number   Smartlock_Firmware_version            "Firmware version"                               (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:version" }        
 Switch   Smartlock_Synchronization_in_progress "Synchronization in progress"                    (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:syncInProgress" } 
 DateTime Smartlock_Last_sync                   "Last sync"                                      (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:lastSync" }       
 Switch   Smartlock_Lock                        "Lock"                        <Door>             (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:lock" }           
