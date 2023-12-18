@@ -1,95 +1,62 @@
 # Modbus Sungrow Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+<img src="./doc/sungrow_logo_25_pc.png" alt="Sungrow logo" align="right"/>
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+This binding integrates the sungrow inverters into openHAB.
+It is based on the Sungrow specification "Communication Protocol of Residential Hybrid Inverter V1.0.23",
+which can be found here: https://github.com/bohdan-s/SunGather/issues/36.
 
-_Put each sentence in a separate line to improve readability of diffs._
+## Supported inverters
+
+As said within the spec the following inverters are supported (but not all are tested yet):
+
+- SH3K6
+- SH4K6
+- SH5K-20
+- SH5K-V13
+- SH3K6-30
+- SH4K6-30
+- SH5K-30
+- SH3.0RS
+- SH3.6RS
+- SH4.0RS
+- SH5.0RS
+- SH6.0RS
+- SH5.0RT
+- SH6.0RT
+- SH8.0RT
+- SH10RT
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The binding supports only one thing:
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+- `sungrowInverter`: The sungrow inverter
 
-## Discovery
+## Preparation
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+The data from the inverter is read via Modbus. So you need to configure a Modbus Serial Slave `serial` or Modbus TCP Slave `tcp` as bridge first.
+If you are using a Modbus TCP Slave and the WiNet-S Communication Module please ensure:
 
-## Binding Configuration
+- that you have the correct IP-Address of your WiNet-S Device
+- that Modbus is enabled within the Communication Module
+- that you've the correct port number
+- that the white list is disabled or your openHAB instance IP is listed
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the ModbusSungrow Binding
-#
-# Default secret key for the pairing of the ModbusSungrow Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+<img src="./doc/WiNet-S_Modbus.PNG" alt="WiNet-S Modbus configuration"/>
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+Once you've configured the Modbus TCP Slave or Modbus Serial Slave as Bridge you can configure the Sungrow inverter thing.
+You just have to select the configured bridge and give the 
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+### `sungrowInverter` Thing Configuration
 
-### `sample` Thing Configuration
-
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name            | Type    | Description                          | Default | Required | Advanced |
+|-----------------|---------|--------------------------------------|---------|----------|----------|
+| pollInterval    | integer | Interval the device is polled in ms.  | 5000    | no       | no       |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
-
-## Full Example
-
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
-
-### Thing Configuration
-
-```java
-Example thing configuration goes here.
-```
-
-### Item Configuration
-
-```java
-Example item configuration goes here.
-```
-
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+The `sungrowInverter` thing has channels that serve the current state of the sungrow inverter,
+as you are used to from the iSolareCloud Website and App.
