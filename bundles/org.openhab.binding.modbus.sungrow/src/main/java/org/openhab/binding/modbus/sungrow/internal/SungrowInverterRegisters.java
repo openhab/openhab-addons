@@ -43,20 +43,20 @@ public enum SungrowInverterRegisters {
     // DAILY_OUTPUT_ENERGY(5003, UINT16, 0.1f, quantityTypeFactory(Units.KILOWATT_HOUR),
     // TOTAL_OUTPUT_ENERGY(5004, UINT32_SWAP, 0.1f, quantityTypeFactory(Units.KILOWATT_HOUR),
 
-    INTERNAL_TEMPERATURE(5008, INT16, 0.1f, QUANTITY_FACTORY(Units.KELVIN), ConversionConstants.CELSIUS_TO_KELVIN,
+    INTERNAL_TEMPERATURE(5008, INT16, 0.1f, quantityFactory(Units.KELVIN), ConversionConstants.CELSIUS_TO_KELVIN,
             "overview"),
-    MPPT1_VOLTAGE(5011, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "mppt_information"),
-    MPPT1_CURRENT(5012, UINT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "mppt_information"),
-    MPPT2_VOLTAGE(5013, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "mppt_information"),
-    MPPT2_CURRENT(5014, UINT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "mppt_information"),
-    TOTAL_DC_POWER(5017, UINT32_SWAP, 1, QUANTITY_FACTORY(Units.WATT), "overview"),
-    PHASE_A_VOLTAGE(5019, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "overview"),
-    PHASE_B_VOLTAGE(5020, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "overview"),
-    PHASE_C_VOLTAGE(5021, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "overview"),
+    MPPT1_VOLTAGE(5011, UINT16, 0.1f, quantityFactory(Units.VOLT), "mppt_information"),
+    MPPT1_CURRENT(5012, UINT16, 0.1f, quantityFactory(Units.AMPERE), "mppt_information"),
+    MPPT2_VOLTAGE(5013, UINT16, 0.1f, quantityFactory(Units.VOLT), "mppt_information"),
+    MPPT2_CURRENT(5014, UINT16, 0.1f, quantityFactory(Units.AMPERE), "mppt_information"),
+    TOTAL_DC_POWER(5017, UINT32_SWAP, 1, quantityFactory(Units.WATT), "overview"),
+    PHASE_A_VOLTAGE(5019, UINT16, 0.1f, quantityFactory(Units.VOLT), "overview"),
+    PHASE_B_VOLTAGE(5020, UINT16, 0.1f, quantityFactory(Units.VOLT), "overview"),
+    PHASE_C_VOLTAGE(5021, UINT16, 0.1f, quantityFactory(Units.VOLT), "overview"),
 
-    REACTIVE_POWER(5033, INT32_SWAP, 1, QUANTITY_FACTORY(Units.VAR), "overview"),
+    REACTIVE_POWER(5033, INT32_SWAP, 1, quantityFactory(Units.VAR), "overview"),
     POWER_FACTOR(5035, INT16, 0.001f, DecimalType::new, "overview"),
-    GRID_FREQUENCY(5036, UINT16, 0.01f, QUANTITY_FACTORY(Units.HERTZ), "overview"),
+    GRID_FREQUENCY(5036, UINT16, 0.01f, quantityFactory(Units.HERTZ), "overview"),
 
     /*
      * Not working
@@ -76,47 +76,46 @@ public enum SungrowInverterRegisters {
      * RUNNING_STATE(13001, UINT16, 1, quantityTypeFactory(Units.ONE)),
      */
 
-    DAILY_PV_GENERATION(13002, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "overview"),
-    TOTAL_PV_GENERATION(13003, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "overview"),
-    DAILY_EXPORT_POWER_FROM_PV(13005, UINT16, 100, QUANTITY_FACTORY(Units.WATT), "grid_information"),
-    TOTAL_EXPORT_ENERGY_FROM_PV(13006, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "grid_information"),
-    LOAD_POWER(13008, INT32_SWAP, 1, QUANTITY_FACTORY(Units.WATT), "load_information"),
-    EXPORT_POWER(13010, INT32_SWAP, 1, QUANTITY_FACTORY(Units.WATT), "grid_information"),
-    DAILY_BATTERY_CHARGE(13012, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
-    TOTAL_BATTERY_CHARGE(13013, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
+    DAILY_PV_GENERATION(13002, UINT16, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "overview"),
+    TOTAL_PV_GENERATION(13003, UINT32_SWAP, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "overview"),
+    DAILY_EXPORT_POWER_FROM_PV(13005, UINT16, 100, quantityFactory(Units.WATT), "grid_information"),
+    TOTAL_EXPORT_ENERGY_FROM_PV(13006, UINT32_SWAP, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "grid_information"),
+    LOAD_POWER(13008, INT32_SWAP, 1, quantityFactory(Units.WATT), "load_information"),
+    EXPORT_POWER(13010, INT32_SWAP, 1, quantityFactory(Units.WATT), "grid_information"),
+    DAILY_BATTERY_CHARGE(13012, UINT16, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "battery_information"),
+    TOTAL_BATTERY_CHARGE(13013, UINT32_SWAP, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "battery_information"),
     /*
      * Not working
      * CO2_REDUCTION(13015, UINT32_SWAP, 0.1f, tech.units.indriya.unit.Units.KILOGRAM),
      */
-    DAILY_DIRECT_ENERGY_CONSUMPTION(13017, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "load_information"),
-    TOTAL_DIRECT_ENERGY_CONSUMPTION(13018, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR),
-            "load_information"),
-    BATTERY_VOLTAGE(13020, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "battery_information"),
-    BATTERY_CURRENT(13021, UINT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "battery_information"),
-    BATTERY_POWER(13022, UINT16, 1, QUANTITY_FACTORY(Units.WATT), "battery_information"),
+    DAILY_DIRECT_ENERGY_CONSUMPTION(13017, UINT16, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "load_information"),
+    TOTAL_DIRECT_ENERGY_CONSUMPTION(13018, UINT32_SWAP, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "load_information"),
+    BATTERY_VOLTAGE(13020, UINT16, 0.1f, quantityFactory(Units.VOLT), "battery_information"),
+    BATTERY_CURRENT(13021, UINT16, 0.1f, quantityFactory(Units.AMPERE), "battery_information"),
+    BATTERY_POWER(13022, UINT16, 1, quantityFactory(Units.WATT), "battery_information"),
     BATTERY_LEVEL(13023, UINT16, 0.1f, PercentType::new, "battery_information"),
     BATTERY_HEALTHY(13024, UINT16, 0.1f, PercentType::new, "battery_information"),
-    BATTERY_TEMPERATUR(13025, INT16, 0.1f, QUANTITY_FACTORY(Units.KELVIN), ConversionConstants.CELSIUS_TO_KELVIN,
+    BATTERY_TEMPERATUR(13025, INT16, 0.1f, quantityFactory(Units.KELVIN), ConversionConstants.CELSIUS_TO_KELVIN,
             "battery_information"),
-    DAILY_BATTERY_DISCHARGE_ENERGY(13026, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
-    TOTAL_BATTERY_DISCHARGE_ENERGY(13027, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR),
+    DAILY_BATTERY_DISCHARGE_ENERGY(13026, UINT16, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "battery_information"),
+    TOTAL_BATTERY_DISCHARGE_ENERGY(13027, UINT32_SWAP, 0.1f, quantityFactory(Units.KILOWATT_HOUR),
             "battery_information"),
     SELF_CONSUMPTION_TODAY(13029, UINT16, 0.1f, PercentType::new, "load_information"),
     // Not working
     // GRID_STATE(13030, UINT16, 1, quantityTypeFactory(Units.ONE, "grid_information"),
-    PHASE_A_CURRENT(13031, INT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "overview"),
-    PHASE_B_CURRENT(13032, INT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "overview"),
-    PHASE_C_CURRENT(13033, INT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "overview"),
-    TOTAL_ACTIVE_POWER(13034, INT32_SWAP, 1, QUANTITY_FACTORY(Units.WATT), "overview"),
-    DAILY_IMPORT_ENERGY(13036, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "grid_information"),
-    TOTAL_IMPORT_ENERGY(13037, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "grid_information"),
-    BATTERY_CAPACITY(13039, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
-    DAILY_CHARGE_ENERGY(13040, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
-    TOTAL_CHARGE_ENERGY(13041, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
+    PHASE_A_CURRENT(13031, INT16, 0.1f, quantityFactory(Units.AMPERE), "overview"),
+    PHASE_B_CURRENT(13032, INT16, 0.1f, quantityFactory(Units.AMPERE), "overview"),
+    PHASE_C_CURRENT(13033, INT16, 0.1f, quantityFactory(Units.AMPERE), "overview"),
+    TOTAL_ACTIVE_POWER(13034, INT32_SWAP, 1, quantityFactory(Units.WATT), "overview"),
+    DAILY_IMPORT_ENERGY(13036, UINT16, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "grid_information"),
+    TOTAL_IMPORT_ENERGY(13037, UINT32_SWAP, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "grid_information"),
+    BATTERY_CAPACITY(13039, UINT16, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "battery_information"),
+    DAILY_CHARGE_ENERGY(13040, UINT16, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "battery_information"),
+    TOTAL_CHARGE_ENERGY(13041, UINT32_SWAP, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "battery_information"),
     // DRM_STATE(13043, UINT16, 1, quantityTypeFactory(Units.ONE, "channelGroup"),
 
-    DAILY_EXPORT_ENERGY(13045, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "grid_information"),
-    TOTAL_EXPORT_ENERGY(13046, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "grid_information");
+    DAILY_EXPORT_ENERGY(13045, UINT16, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "grid_information"),
+    TOTAL_EXPORT_ENERGY(13046, UINT32_SWAP, 0.1f, quantityFactory(Units.KILOWATT_HOUR), "grid_information");
 
     /*
      * Status Registers -not known if working so not implemented yet.
@@ -171,7 +170,7 @@ public enum SungrowInverterRegisters {
     /**
      * Creates a Function that creates {@link QuantityType} states with the given {@link Unit}.
      */
-    private static Function<BigDecimal, State> QUANTITY_FACTORY(Unit<?> unit) {
+    private static Function<BigDecimal, State> quantityFactory(Unit<?> unit) {
         return (BigDecimal value) -> new QuantityType<>(value, unit);
     }
 
