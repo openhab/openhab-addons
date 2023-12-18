@@ -157,7 +157,7 @@ public enum SungrowInverterRegisters {
         this.channelGroup = channelGroup;
     }
 
-    private SungrowInverterRegisters(int registerNumber, ValueType type, float multiplier,
+    SungrowInverterRegisters(int registerNumber, ValueType type, float multiplier,
             Function<BigDecimal, State> stateFactory, String channelGroup) {
         this.multiplier = new BigDecimal(multiplier);
         this.registerNumber = registerNumber;
