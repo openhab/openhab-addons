@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.thekeys.internal.gateway;
 
-import static org.openhab.binding.thekeys.internal.TheKeysBindingConstants.PROPERTY_VERSION;
+import static org.openhab.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -83,7 +83,7 @@ public class TheKeysGatewayHandler extends BaseBridgeHandler {
     private void pollGateway() {
         try {
             GatewayInfosDTO gwInfos = api.getGatewayInfos();
-            updateProperty(PROPERTY_VERSION, String.valueOf(gwInfos.getVersion()));
+            updateProperty(PROPERTY_FIRMWARE_VERSION, String.valueOf(gwInfos.getVersion()));
 
             // Here the api answer without errors => back online
             if (getThing().getStatus() != ThingStatus.ONLINE) {

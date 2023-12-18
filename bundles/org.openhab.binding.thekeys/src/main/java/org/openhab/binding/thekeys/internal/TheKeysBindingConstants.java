@@ -42,7 +42,4 @@ public class TheKeysBindingConstants {
 
     // List of thing configuration
     public static final String CONF_SMARTLOCK_LOCKID = "lockId";
-
-    // List of property
-    public static final String PROPERTY_VERSION = "version";
 }

@@ -9,7 +9,7 @@
 		<description>Gateway controlling a smartlock</description>
 
 		<properties>
-			<property name="version"/>
+			<property name="firmwareVersion"/>
 		</properties>
 
 		<config-description>
@@ -57,7 +57,7 @@
 		</channels>
 
 		<properties>
-			<property name="version"/>
+			<property name="firmwareVersion"/>
 		</properties>
 
 		<config-description>

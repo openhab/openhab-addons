@@ -20,7 +20,7 @@ import static org.openhab.binding.thekeys.internal.TheKeysBindingConstants.CHANN
 import static org.openhab.binding.thekeys.internal.TheKeysBindingConstants.CHANNEL_RSSI;
 import static org.openhab.binding.thekeys.internal.TheKeysBindingConstants.CHANNEL_STATUS;
 import static org.openhab.binding.thekeys.internal.TheKeysBindingConstants.CHANNEL_SYNC_IN_PROGRESS;
-import static org.openhab.binding.thekeys.internal.TheKeysBindingConstants.PROPERTY_VERSION;
+import static org.openhab.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -141,7 +141,7 @@ public class TheKeysSmartlockHandler extends BaseThingHandler {
             updateState(CHANNEL_RSSI, new DecimalType(lockStatus.getRssi()));
             updateState(CHANNEL_LAST_SYNC, new DateTimeType(ZonedDateTime.now()));
 
-            updateProperty(PROPERTY_VERSION, String.valueOf(lockStatus.getVersion()));
+            updateProperty(PROPERTY_FIRMWARE_VERSION, String.valueOf(lockStatus.getVersion()));
 
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);

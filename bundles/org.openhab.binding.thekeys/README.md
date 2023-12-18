@@ -41,7 +41,7 @@ You can find it from the ios/android app : Home Page > Accessories > TK Gateway 
 ### Supported Channels
 
 The gateway have no channels.
-It only exposes one property `version` containing the firmware version.
+It only exposes one property `firmwareVersion` containing the firmware version.
 
 ## Supported Things
 
