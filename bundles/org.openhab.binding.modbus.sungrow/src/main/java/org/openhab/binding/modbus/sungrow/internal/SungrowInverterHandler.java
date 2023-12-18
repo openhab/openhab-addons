@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.modbus.sungrow.internal;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -26,7 +25,6 @@ import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.core.io.transport.modbus.ModbusConstants;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -71,8 +69,6 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
             );
         }
     }
-
-    private static final int SERIAL_NUMBER_REGISTER = 4990;
 
     private final Logger logger = LoggerFactory.getLogger(SungrowInverterHandler.class);
 
@@ -141,8 +137,7 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
             return;
         }
 
-        updateThingProperties();
-        updateStatus(ThingStatus.UNKNOWN);
+        this.updateStatus(ThingStatus.UNKNOWN);
 
         this.modbusRequests = this.buildRequests();
 
@@ -157,45 +152,6 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
         }
     }
 
-    private void updateThingProperties() {
-        final ModbusReadRequestBlueprint informationBlueprint = new ModbusReadRequestBlueprint(getSlaveId(),
-                ModbusReadFunctionCode.READ_INPUT_REGISTERS, SERIAL_NUMBER_REGISTER - 1, 13, TRIES);
-        submitOneTimePoll(informationBlueprint, this::updateThingProperties, this::readError);
-    }
-
-    private void updateThingProperties(AsyncModbusReadResult result) {
-        result.getRegisters().ifPresent(registers -> {
-            final byte[] serialBytes = new byte[10];
-            System.arraycopy(registers.getBytes(), 0, serialBytes, 0, 10);
-            String serialNumber = new String(serialBytes, StandardCharsets.UTF_8);
-            thing.setProperty("serialNumber", serialNumber);
-
-            final int deviceTypeCode = ModbusBitUtilities.extractUInt16(registers.getBytes(), 10);
-            final DeviceTypeCode typeCode = DeviceTypeCode.getByTypeCode(deviceTypeCode);
-            if (typeCode == null) {
-                thing.setProperty("model", "unknown device type: " + deviceTypeCode);
-            } else {
-                thing.setProperty("model", typeCode.getModel());
-            }
-
-            final float nominalOutputPower = ModbusBitUtilities.extractUInt16(registers.getBytes(), 11) * 0.1f;
-            thing.setProperty("nominalOutputPower", String.valueOf(nominalOutputPower));
-
-            final int outputType = ModbusBitUtilities.extractUInt16(registers.getBytes(), 12);
-            String outputTypeString = mapOutputTypeValue(outputType);
-            thing.setProperty("outputType", outputTypeString);
-        });
-    }
-
-    private static String mapOutputTypeValue(int outputType) {
-        return switch (outputType) {
-            case 0 -> "Single Phase";
-            case 1 -> "3P4L";
-            case 2 -> "3P3L";
-            default -> "unknown";
-        };
-    }
-
     private void readSuccessful(ModbusRequest request, AsyncModbusReadResult result) {
         result.getRegisters().ifPresent(registers -> {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
@@ -208,9 +164,7 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                 int index = channel.getRegisterNumber() - firstRegister;
 
                 ModbusBitUtilities.extractStateFromRegisters(registers, index, channel.getType())
-                        .map(d -> d.toBigDecimal().multiply(channel.getMultiplier())).map(channel.getConversion())
-                        .map(bigDecimal -> new QuantityType<>(bigDecimal, channel.getUnit()))
-                        .ifPresent(v -> updateState(createChannelUid(channel), v));
+                        .map(channel::createState).ifPresent(v -> updateState(createChannelUid(channel), v));
             }
         });
     }
@@ -222,6 +176,10 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
     }
 
     private ChannelUID createChannelUid(SungrowInverterRegisters channel) {
-        return new ChannelUID(thing.getUID(), channel.name().toLowerCase());
+        return new ChannelUID( //
+                thing.getUID(), //
+                "sg-" + channel.getChannelGroup(), //
+                "sg-" + channel.name().toLowerCase() //
+        );
     }
 }

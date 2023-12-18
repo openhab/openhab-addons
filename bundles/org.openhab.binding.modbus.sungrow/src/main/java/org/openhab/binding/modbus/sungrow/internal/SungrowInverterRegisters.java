@@ -24,7 +24,11 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
 
 /**
  * The {@link SungrowInverterRegisters} is responsible for defining Modbus registers and their units.
@@ -35,117 +39,140 @@ import org.openhab.core.library.unit.Units;
 public enum SungrowInverterRegisters {
 
     // the following register numbers are 1-based. They need to be converted before sending them on the wire.
-    DAILY_OUTPUT_ENERGY(5003, UINT16, 0.1f, Units.KILOWATT_HOUR),
-    TOTAL_OUTPUT_ENERGY(5004, UINT32_SWAP, 0.1f, Units.KILOWATT_HOUR),
-    INTERNAL_TEMPERATURE(5008, INT16, 0.1f, Units.KELVIN, ConversionConstants.CELSIUS_TO_KELVIN),
-    MPPT1_VOLTAGE(5011, UINT16, 0.1f, Units.VOLT),
-    MPPT1_CURRENT(5012, UINT16, 0.1f, Units.AMPERE),
-    MPPT2_VOLTAGE(5013, UINT16, 0.1f, Units.VOLT),
-    MPPT2_CURRENT(5014, UINT16, 0.1f, Units.AMPERE),
-    TOTAL_DC_POWER(5017, UINT32_SWAP, 1, Units.WATT),
-    PHASE_A_VOLTAGE(5019, UINT16, 0.1f, Units.VOLT),
-    PHASE_B_VOLTAGE(5020, UINT16, 0.1f, Units.VOLT),
-    PHASE_C_VOLTAGE(5021, UINT16, 0.1f, Units.VOLT),
+    // Registers are duplicate to DAILY_PV_GENERATION / TOTAL_PV_GENERATION
+    // DAILY_OUTPUT_ENERGY(5003, UINT16, 0.1f, quantityTypeFactory(Units.KILOWATT_HOUR),
+    // TOTAL_OUTPUT_ENERGY(5004, UINT32_SWAP, 0.1f, quantityTypeFactory(Units.KILOWATT_HOUR),
 
-    REACTIVE_POWER(5033, INT32_SWAP, 1, Units.VAR),
-    POWER_FACTOR(5035, INT16, 0.001f, Units.ONE),
-    GRID_FREQUENCY(5036, UINT16, 0.01f, Units.HERTZ),
+    INTERNAL_TEMPERATURE(5008, INT16, 0.1f, QUANTITY_FACTORY(Units.KELVIN), ConversionConstants.CELSIUS_TO_KELVIN,
+            "overview"),
+    MPPT1_VOLTAGE(5011, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "mppt_information"),
+    MPPT1_CURRENT(5012, UINT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "mppt_information"),
+    MPPT2_VOLTAGE(5013, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "mppt_information"),
+    MPPT2_CURRENT(5014, UINT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "mppt_information"),
+    TOTAL_DC_POWER(5017, UINT32_SWAP, 1, QUANTITY_FACTORY(Units.WATT), "overview"),
+    PHASE_A_VOLTAGE(5019, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "overview"),
+    PHASE_B_VOLTAGE(5020, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "overview"),
+    PHASE_C_VOLTAGE(5021, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "overview"),
 
-    /**
+    REACTIVE_POWER(5033, INT32_SWAP, 1, QUANTITY_FACTORY(Units.VAR), "overview"),
+    POWER_FACTOR(5035, INT16, 0.001f, DecimalType::new, "overview"),
+    GRID_FREQUENCY(5036, UINT16, 0.01f, QUANTITY_FACTORY(Units.HERTZ), "overview"),
+
+    /*
      * Not working
-     * EXPORT_LIMIT_MIN(10, 5622, UINT16, Units.WATT),
-     * EXPORT_LIMIT_MAX(10, 5623, UINT16, Units.WATT),
-     * BDC_RATED_POWER(100, 5628, UINT16, Units.WATT),
-     * MAX_CHARGING_CURRENT(1, 5635, UINT16, Units.AMPERE),
-     * MAX_DISCHARGING_CURRENT(1, 5636, UINT16, Units.AMPERE),
-     * PV_POWER_TODAY(1, 6100, UINT16, Units.WATT),
-     * DAILY_PV_ENERGY_YIELDS(1, 6196, UINT16, Units.KILOWATT_HOUR),
-     * MONTHLY_PV_ENERGY_YIELDS(1, 9227, UINT16, Units.KILOWATT_HOUR),
+     * EXPORT_LIMIT_MIN(10, 5622, UINT16, quantityTypeFactory(Units.WATT)),
+     * EXPORT_LIMIT_MAX(10, 5623, UINT16, quantityTypeFactory(Units.WATT)),
+     * BDC_RATED_POWER(100, 5628, UINT16, quantityTypeFactory(Units.WATT)),
+     * MAX_CHARGING_CURRENT(1, 5635, UINT16, quantityTypeFactory(Units.AMPERE)),
+     * MAX_DISCHARGING_CURRENT(1, 5636, UINT16, quantityTypeFactory(Units.AMPERE)),
+     * PV_POWER_TODAY(1, 6100, UINT16, quantityTypeFactory(Units.WATT)),
+     * DAILY_PV_ENERGY_YIELDS(1, 6196, UINT16, quantityTypeFactory(Units.KILOWATT_HOUR)),
+     * MONTHLY_PV_ENERGY_YIELDS(1, 9227, UINT16, quantityTypeFactory(Units.KILOWATT_HOUR)),
      */
 
-    SYSTEM_STATE(13000, UINT16, 1, Units.ONE),
-    RUNNING_STATE(13001, UINT16, 1, Units.ONE),
-    DAILY_PV_GENERATION(13002, UINT16, 0.1f, Units.KILOWATT_HOUR),
-    TOTAL_PV_GENERATION(13003, UINT32_SWAP, 0.1f, Units.KILOWATT_HOUR),
-    DAILY_EXPORT_POWER_FROM_PV(13005, UINT16, 100, Units.WATT),
-    TOTAL_EXPORT_ENERGY_FROM_PV(13006, UINT32_SWAP, 0.1f, Units.KILOWATT_HOUR),
-    LOAD_POWER(13008, INT32_SWAP, 1, Units.WATT),
-    EXPORT_POWER(13010, INT32_SWAP, 1, Units.WATT),
-    DAILY_BATTERY_CHARGE(13012, UINT16, 0.1f, Units.KILOWATT_HOUR),
-    TOTAL_BATTERY_CHARGE(13013, UINT32_SWAP, 0.1f, Units.KILOWATT_HOUR),
-    CO2_REDUCTION(13015, UINT32_SWAP, 0.1f, tech.units.indriya.unit.Units.KILOGRAM),
-    DAILY_DIRECT_ENERGY_CONSUMPTION(13017, UINT16, 0.1f, Units.KILOWATT_HOUR),
-    TOTAL_DIRECT_ENERGY_CONSUMPTION(13018, UINT32_SWAP, 0.1f, Units.KILOWATT_HOUR),
-    BATTERY_VOLTAGE(13020, UINT16, 0.1f, Units.VOLT),
-    BATTERY_CURRENT(13021, UINT16, 0.1f, Units.AMPERE),
-    BATTERY_POWER(13022, UINT16, 1, Units.WATT),
-    BATTERY_LEVEL(13023, UINT16, 0.1f, Units.PERCENT),
-    BATTERY_HEALTHY(13024, UINT16, 0.1f, Units.PERCENT),
-    BATTERY_TEMPERATUR(13025, INT16, 0.1f, Units.KELVIN, ConversionConstants.CELSIUS_TO_KELVIN),
-    DAILY_BATTERY_DISCHARGE_ENERGY(13026, UINT16, 0.1f, Units.KILOWATT_HOUR),
-    TOTAL_BATTERY_DISCHARGE_ENERGY(13027, UINT32_SWAP, 0.1f, Units.KILOWATT_HOUR),
-    SELF_CONSUMPTION_TODAY(13029, UINT16, 0.1f, Units.PERCENT),
-    GRID_STATE(13030, UINT16, 1, Units.ONE),
-    PHASE_A_CURRENT(13031, INT16, 0.1f, Units.AMPERE),
-    PHASE_B_CURRENT(13032, INT16, 0.1f, Units.AMPERE),
-    PHASE_C_CURRENT(13033, INT16, 0.1f, Units.AMPERE),
-    TOTAL_ACTIVE_POWER(13034, INT32_SWAP, 1, Units.WATT),
-    DAILY_IMPORT_ENERGY(13036, UINT16, 0.1f, Units.KILOWATT_HOUR),
-    TOTAL_IMPORT_ENERGY(13037, UINT32_SWAP, 0.1f, Units.KILOWATT_HOUR),
-    BATTERY_CAPACITY(13039, UINT16, 0.1f, Units.KILOWATT_HOUR),
-    DAILY_CHARGE_ENERGY(13040, UINT16, 0.1f, Units.KILOWATT_HOUR),
-    TOTAL_CHARGE_ENERGY(13041, UINT32_SWAP, 0.1f, Units.KILOWATT_HOUR),
-    DRM_STATE(13043, UINT16, 1, Units.ONE),
+    /**
+     * Registers return invalid values.
+     * SYSTEM_STATE(13000, UINT16, 1, quantityTypeFactory(Units.ONE)),
+     * RUNNING_STATE(13001, UINT16, 1, quantityTypeFactory(Units.ONE)),
+     */
 
-    DAILY_EXPORT_ENERGY(13045, UINT16, 0.1f, Units.KILOWATT_HOUR),
-    TOTAL_EXPORT_ENERGY(13046, UINT32_SWAP, 0.1f, Units.KILOWATT_HOUR),
+    DAILY_PV_GENERATION(13002, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "overview"),
+    TOTAL_PV_GENERATION(13003, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "overview"),
+    DAILY_EXPORT_POWER_FROM_PV(13005, UINT16, 100, QUANTITY_FACTORY(Units.WATT), "grid_information"),
+    TOTAL_EXPORT_ENERGY_FROM_PV(13006, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "grid_information"),
+    LOAD_POWER(13008, INT32_SWAP, 1, QUANTITY_FACTORY(Units.WATT), "load_information"),
+    EXPORT_POWER(13010, INT32_SWAP, 1, QUANTITY_FACTORY(Units.WATT), "grid_information"),
+    DAILY_BATTERY_CHARGE(13012, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
+    TOTAL_BATTERY_CHARGE(13013, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
+    /*
+     * Not working
+     * CO2_REDUCTION(13015, UINT32_SWAP, 0.1f, tech.units.indriya.unit.Units.KILOGRAM),
+     */
+    DAILY_DIRECT_ENERGY_CONSUMPTION(13017, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "load_information"),
+    TOTAL_DIRECT_ENERGY_CONSUMPTION(13018, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR),
+            "load_information"),
+    BATTERY_VOLTAGE(13020, UINT16, 0.1f, QUANTITY_FACTORY(Units.VOLT), "battery_information"),
+    BATTERY_CURRENT(13021, UINT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "battery_information"),
+    BATTERY_POWER(13022, UINT16, 1, QUANTITY_FACTORY(Units.WATT), "battery_information"),
+    BATTERY_LEVEL(13023, UINT16, 0.1f, PercentType::new, "battery_information"),
+    BATTERY_HEALTHY(13024, UINT16, 0.1f, PercentType::new, "battery_information"),
+    BATTERY_TEMPERATUR(13025, INT16, 0.1f, QUANTITY_FACTORY(Units.KELVIN), ConversionConstants.CELSIUS_TO_KELVIN,
+            "battery_information"),
+    DAILY_BATTERY_DISCHARGE_ENERGY(13026, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
+    TOTAL_BATTERY_DISCHARGE_ENERGY(13027, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR),
+            "battery_information"),
+    SELF_CONSUMPTION_TODAY(13029, UINT16, 0.1f, PercentType::new, "load_information"),
+    // Not working
+    // GRID_STATE(13030, UINT16, 1, quantityTypeFactory(Units.ONE, "grid_information"),
+    PHASE_A_CURRENT(13031, INT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "overview"),
+    PHASE_B_CURRENT(13032, INT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "overview"),
+    PHASE_C_CURRENT(13033, INT16, 0.1f, QUANTITY_FACTORY(Units.AMPERE), "overview"),
+    TOTAL_ACTIVE_POWER(13034, INT32_SWAP, 1, QUANTITY_FACTORY(Units.WATT), "overview"),
+    DAILY_IMPORT_ENERGY(13036, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "grid_information"),
+    TOTAL_IMPORT_ENERGY(13037, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "grid_information"),
+    BATTERY_CAPACITY(13039, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
+    DAILY_CHARGE_ENERGY(13040, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
+    TOTAL_CHARGE_ENERGY(13041, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "battery_information"),
+    // DRM_STATE(13043, UINT16, 1, quantityTypeFactory(Units.ONE, "channelGroup"),
 
-    INVERTER_ALARM(13050, UINT32_SWAP, 1, Units.ONE),
-    GRID_SIDE_FAULT(13052, UINT32_SWAP, 1, Units.ONE),
-    SYSTEM_FAULT_1(13054, UINT32_SWAP, 1, Units.ONE),
-    SYSTEM_FAULT_2(13056, UINT32_SWAP, 1, Units.ONE),
-    DC_SIDE_FAULT(13058, UINT32_SWAP, 1, Units.ONE),
-    PERMANENT_FAULT(13060, UINT32_SWAP, 1, Units.ONE),
-    BDC_SIDE_FAULT(13062, UINT32_SWAP, 1, Units.ONE),
-    BDC_SIDE_PERMANENT_FAULT(13064, UINT32_SWAP, 1, Units.ONE),
-    BATTERY_FAULT(13066, UINT32_SWAP, 1, Units.ONE),
-    BATTERY_ALARM(13068, UINT32_SWAP, 1, Units.ONE),
-    BMS_ALARM_1(13070, UINT32_SWAP, 1, Units.ONE),
-    BMS_PROTECTION(13072, UINT32_SWAP, 1, Units.ONE),
-    BMS_FAULT_1(13074, UINT32_SWAP, 1, Units.ONE),
-    BMS_FAULT_2(13076, UINT32_SWAP, 1, Units.ONE),
-    BMS_ALARM_2(13078, UINT32_SWAP, 1, Units.ONE);
+    DAILY_EXPORT_ENERGY(13045, UINT16, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "grid_information"),
+    TOTAL_EXPORT_ENERGY(13046, UINT32_SWAP, 0.1f, QUANTITY_FACTORY(Units.KILOWATT_HOUR), "grid_information");
+
+    /*
+     * Status Registers -not known if working so not implemented yet.
+     *
+     * 
+     * INVERTER_ALARM(13050, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * GRID_SIDE_FAULT(13052, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * SYSTEM_FAULT_1(13054, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * SYSTEM_FAULT_2(13056, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * DC_SIDE_FAULT(13058, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * PERMANENT_FAULT(13060, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * BDC_SIDE_FAULT(13062, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * BDC_SIDE_PERMANENT_FAULT(13064, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * BATTERY_FAULT(13066, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * BATTERY_ALARM(13068, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * BMS_ALARM_1(13070, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * BMS_PROTECTION(13072, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * BMS_FAULT_1(13074, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * BMS_FAULT_2(13076, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE),
+     * BMS_ALARM_2(13078, UINT32_SWAP, 1, quantityTypeFactory(Units.ONE);
+     */
 
     private final BigDecimal multiplier;
     private final int registerNumber;
     private final ValueType type;
-    private final Unit<?> unit;
 
     private final Function<BigDecimal, BigDecimal> conversion;
+    private final Function<BigDecimal, State> stateFactory;
+    private final String channelGroup;
 
-    SungrowInverterRegisters(int registerNumber, ValueType type, float multiplier, Unit<?> unit,
-            Function<BigDecimal, BigDecimal> conversion) {
+    SungrowInverterRegisters(int registerNumber, ValueType type, float multiplier,
+            Function<BigDecimal, State> stateFactory, Function<BigDecimal, BigDecimal> conversion,
+            String channelGroup) {
         this.multiplier = new BigDecimal(multiplier);
         this.registerNumber = registerNumber;
         this.type = type;
-        this.unit = unit;
         this.conversion = conversion;
+        this.stateFactory = stateFactory;
+        this.channelGroup = channelGroup;
     }
 
-    private SungrowInverterRegisters(int registerNumber, ValueType type, float multiplier, Unit<?> unit) {
+    private SungrowInverterRegisters(int registerNumber, ValueType type, float multiplier,
+            Function<BigDecimal, State> stateFactory, String channelGroup) {
         this.multiplier = new BigDecimal(multiplier);
         this.registerNumber = registerNumber;
         this.type = type;
-        this.unit = unit;
         this.conversion = Function.identity();
+        this.stateFactory = stateFactory;
+        this.channelGroup = channelGroup;
     }
 
-    public Unit<?> getUnit() {
-        return unit;
-    }
-
-    public BigDecimal getMultiplier() {
-        return multiplier;
+    /**
+     * Creates a Function that creates {@link QuantityType} states with the given {@link Unit}.
+     */
+    private static Function<BigDecimal, State> QUANTITY_FACTORY(Unit<?> unit) {
+        return (BigDecimal value) -> new QuantityType<>(value, unit);
     }
 
     public int getRegisterNumber() {
@@ -164,9 +191,18 @@ public enum SungrowInverterRegisters {
     }
 
     /**
-     * Returns the value conversion.
+     * Returns the channel group.
      */
-    public Function<BigDecimal, BigDecimal> getConversion() {
-        return conversion;
+    public String getChannelGroup() {
+        return channelGroup;
+    }
+
+    /**
+     * Creates the {@link State} for the given register value.
+     */
+    public State createState(DecimalType registerValue) {
+        final BigDecimal scaledValue = registerValue.toBigDecimal().multiply(this.multiplier);
+        final BigDecimal convertedValue = conversion.apply(scaledValue);
+        return this.stateFactory.apply(convertedValue);
     }
 }
