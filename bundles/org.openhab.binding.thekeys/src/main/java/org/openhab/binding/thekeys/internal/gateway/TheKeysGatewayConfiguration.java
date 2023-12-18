@@ -24,6 +24,6 @@ public class TheKeysGatewayConfiguration {
 
     public String host = "";
     public String code = "";
-    public int refreshInterval;
-    public int apiTimeout;
+    public int refreshInterval = 5;
+    public int apiTimeout = 30;
 }
