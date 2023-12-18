@@ -9,6 +9,7 @@ Binding for the Bosch Smart Home.
     - [Compact Smart Plug](#compact-smart-plug)
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
     - [Door/Window Contact](#door-window-contact)
+    - [Door/Window Contact II](#door-window-contact-ii)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
     - [Thermostat](#thermostat)
@@ -95,6 +96,20 @@ Detects open windows and doors.
 | contact         | Contact   | &#9744;  | Contact state of the device. |
 | battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
+
+### Door/Window Contact II
+
+Detects open windows and doors and features an additional button.
+
+**Thing Type ID**: `window-contact`
+
+| Channel Type ID | Item Type | Writable | Description                  |
+| --------------- | --------- | :------: | ---------------------------- |
+| contact         | Contact   | &#9744;  | Contact state of the device. |
+| battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
+| bypass          | String    | &#9744;  | Bypass state of the device. Possible values are `BYPASS_INACTIVE`,`BYPASS_ACTIVE` and `UNKNOWN`. |
+| communication-quality | String | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values are `BAD`, `MEDIUM`, `NORMAL`, `GOOD` and `UNKNOWN`. |
 
 ### Motion Detector
 
