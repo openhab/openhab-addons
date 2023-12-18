@@ -39,12 +39,14 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature in room</description>
+		<category>Temperature</category>
 		<state min="5" max="35" step="0.5" readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="it600-expected-temp-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Expected Temperature</label>
 		<description>Sets the desired temperature in room</description>
+		<category>Temperature</category>
 		<state min="5" max="35" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="it600-work-type-channel">

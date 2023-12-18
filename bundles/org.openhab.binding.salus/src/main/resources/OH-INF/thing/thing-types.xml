@@ -95,23 +95,23 @@
 	<channel-type id="temperature-output-channel">
 		<item-type>Number</item-type>
 		<label>Generic Output Temperature Channel</label>
-		<category>Temperature</category>
 		<description>
 			This channel type represents a generic output.
 			The channel is read-only and its state is represented as a
 			temperature (numeric).
 		</description>
+		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature-input-channel">
 		<item-type>Number</item-type>
 		<label>Generic Input Temperature Channel</label>
-		<category>Temperature</category>
 		<description>
 			This channel type represents a generic input.
 			The channel is write-only and its state is represented as a
 			temperature (numeric).
 		</description>
+		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>
