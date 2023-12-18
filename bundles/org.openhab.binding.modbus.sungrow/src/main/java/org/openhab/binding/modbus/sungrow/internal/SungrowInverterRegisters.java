@@ -81,7 +81,7 @@ public enum SungrowInverterRegisters {
             "overview"),
     TOTAL_PV_GENERATION(13003, UINT32_SWAP, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.KILOWATT_HOUR),
             "overview"),
-    DAILY_EXPORT_POWER_FROM_PV(13005, UINT16, BigDecimal.valueOf(100), quantityFactory(Units.WATT), "grid-information"),
+    DAILY_EXPORT_ENERGY_FROM_PV(13005, UINT16,  ConversionConstants.DIV_BY_TEN, quantityFactory(Units.KILOWATT_HOUR), "grid-information"),
     TOTAL_EXPORT_ENERGY_FROM_PV(13006, UINT32_SWAP, ConversionConstants.DIV_BY_TEN,
             quantityFactory(Units.KILOWATT_HOUR), "grid-information"),
     LOAD_POWER(13008, INT32_SWAP, BigDecimal.ONE, quantityFactory(Units.WATT), "load-information"),
