@@ -15,7 +15,7 @@ package org.openhab.binding.thekeys.internal.gateway;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link TheKeysGatewayConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link TheKeysGatewayConfiguration} class contains fields mapping bridge configuration parameters.
  *
  * @author Jordan Martin - Initial contribution
  */
