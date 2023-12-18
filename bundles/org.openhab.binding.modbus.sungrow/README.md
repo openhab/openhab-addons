@@ -63,9 +63,11 @@ The `sungrowInverter` thing has channels that serve the current state of the sun
 as you are used to from the iSolareCloud Website and App.
 
 ## Configuration Example
+
 This example shows how to configure a sungrow inverter connected via modbus and uses the most common channels.
 
 sungrow.things
+
 ```java
 Bridge modbus:tcp:sungrowBridge [ host="10.0.0.2", port=502, id=1, enableDiscovery=false ] {
     Thing modbus:sungrow-inverter:sungrowBridge:sungrowInverter "Sungrow Inverter" [ pollInterval=5000 ]
@@ -73,6 +75,7 @@ Bridge modbus:tcp:sungrowBridge [ host="10.0.0.2", port=502, id=1, enableDiscove
 ```
 
 sungrow.items
+
 ```java
 // Groups
 Group sungrowInverter "Sungrow Inverter" ["Inverter"]
