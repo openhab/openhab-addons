@@ -15,7 +15,8 @@ It is recommended to configure static IP addresses for the Gateway.
 ### Setup
 
 - Create access for the Gateway from the app or from https://api.the-keys.fr
-- Open the share on https://api.the-keys.fr to get the share code
+- Go to the shares section of the lock (https://api.the-keys.fr/en/compte/serrure)
+- In the accessory shares table, get the code of your Gateway
 
 ## Supported Bridges
 
