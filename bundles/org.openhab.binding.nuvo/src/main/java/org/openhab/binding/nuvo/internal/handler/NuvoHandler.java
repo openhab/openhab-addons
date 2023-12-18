@@ -457,7 +457,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                                 // update the other group member's selected source
                                 updateSrcForZoneGroup(target, String.valueOf(value));
-                                sourceZoneMap.put(NuvoEnum.valueOf("SOURCE" + value), target);
+                                sourceZoneMap.put(NuvoEnum.valueOf(SOURCE + value), target);
                             }
                         }
                         break;
@@ -800,7 +800,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     if (matcher.find()) {
                         updateChannelState(zone, CHANNEL_TYPE_POWER, ON);
                         updateChannelState(zone, CHANNEL_TYPE_SOURCE, matcher.group(1));
-                        sourceZoneMap.put(NuvoEnum.valueOf("SOURCE" + matcher.group(1)), zone);
+                        sourceZoneMap.put(NuvoEnum.valueOf(SOURCE + matcher.group(1)), zone);
 
                         // update the other group member's selected source
                         updateSrcForZoneGroup(zone, matcher.group(1));
