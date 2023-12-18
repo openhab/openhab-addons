@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>TheKeys Binding</name>
-	<description>TheKeys Binding to control a smart lock through the bluetooth gateway</description>
+	<description>TheKeys Binding controls a smartlock through the bluetooth gateway</description>
 	<connection>local</connection>
 
 </addon:addon>

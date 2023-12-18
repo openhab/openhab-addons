@@ -8,13 +8,9 @@
 		<label>TheKeys Gateway</label>
 		<description>Gateway controlling a smartlock</description>
 
-		<properties>
-			<property name="firmwareVersion"/>
-		</properties>
-
 		<config-description>
 			<parameter name="host" type="text" required="true">
-				<context>network-address	</context>
+				<context>network-address</context>
 				<label>Host</label>
 				<description>Host or IP address of the gateway</description>
 			</parameter>
@@ -23,13 +19,13 @@
 				<label>Code</label>
 				<description>Code to access the gateway</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" min="1" unit="s" required="true">
+			<parameter name="refreshInterval" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in seconds which is used to poll the gateway</description>
 				<default>5</default>
 			</parameter>
-			<parameter name="apiTimeout" type="integer" min="1" unit="s" required="true">
-				<label>API timeout</label>
+			<parameter name="apiTimeout" type="integer" min="1" unit="s">
+				<label>API Timeout</label>
 				<description>The api timeout for each request</description>
 				<default>30</default>
 				<advanced>true</advanced>
@@ -43,7 +39,7 @@
 		</supported-bridge-type-refs>
 
 		<label>TheKeys Smartlock</label>
-		<description>A smartlock controlling by the gateway</description>
+		<description>A smartlock controlled by the gateway</description>
 
 		<channels>
 			<channel id="status" typeId="lock_status"/>
@@ -56,13 +52,9 @@
 			<channel id="lock" typeId="smartlockLock"/>
 		</channels>
 
-		<properties>
-			<property name="firmwareVersion"/>
-		</properties>
-
 		<config-description>
 			<parameter name="lockId" type="integer" required="true">
-				<label>Lock id</label>
+				<label>Lock ID</label>
 				<description>Identifier of the smartlock</description>
 			</parameter>
 		</config-description>
@@ -70,14 +62,14 @@
 
 	<channel-type id="lock_status">
 		<item-type>String</item-type>
-		<label>Lock status</label>
+		<label>Lock Status</label>
 		<description>Status of the smartlock</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rssi">
 		<item-type>Number:Power</item-type>
-		<label>Bluetooth rssi</label>
+		<label>Bluetooth RSSI</label>
 		<description>Bluetooth Received Signal Strength Indication</description>
 		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -85,21 +77,21 @@
 
 	<channel-type id="position">
 		<item-type>Number</item-type>
-		<label>Smartlock position</label>
-		<description>Position of the smartlock</description>
-		<state readOnly="true"/>
+		<label>Smartlock Position</label>
+		<description>Rotation position of the smartlock</description>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="lastSync">
 		<item-type>DateTime</item-type>
-		<label>Last sync</label>
+		<label>Last Sync</label>
 		<description>Last success synchronization with the smartlock</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="syncInProgress">
 		<item-type>Switch</item-type>
-		<label>Synchronization in progress</label>
+		<label>Synchronization In Progress</label>
 		<description>Indicate synchronization with the gateway</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -108,13 +100,7 @@
 		<item-type>Switch</item-type>
 		<label>Lock</label>
 		<description>Use this channel with a Switch Item to open and close the smartlock</description>
-		<category>Door</category>
-		<state>
-			<options>
-				<option value="ON">Unlock</option>
-				<option value="OFF">Lock</option>
-			</options>
-		</state>
+		<category>Lock</category>
 	</channel-type>
 
 </thing:thing-descriptions>
