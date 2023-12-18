@@ -19,11 +19,13 @@ package org.openhab.binding.thekeys.internal.api.model;
  */
 public class LockerStatusDTO {
 
+    public static final int NEED_RESYNC = 0x26;
     public static final int CODE_LOCK_CLOSE = 0x31;
     public static final int CODE_LOCK_OPEN = 0x32;
 
     private String status;
     private int code;
+    private String cause;
     private int id;
     private int version;
     private int position;
@@ -86,11 +88,23 @@ public class LockerStatusDTO {
         this.battery = battery;
     }
 
+    public String getCause() {
+        return cause;
+    }
+
+    public void setCause(String cause) {
+        this.cause = cause;
+    }
+
     public boolean isClosed() {
         return CODE_LOCK_CLOSE == code;
     }
 
     public boolean isOpened() {
         return CODE_LOCK_OPEN == code;
+    }
+
+    public boolean isNeedResync() {
+        return NEED_RESYNC == code;
     }
 }

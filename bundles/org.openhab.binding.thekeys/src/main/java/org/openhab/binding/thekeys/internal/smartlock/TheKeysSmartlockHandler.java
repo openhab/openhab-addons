@@ -129,7 +129,8 @@ public class TheKeysSmartlockHandler extends BaseThingHandler {
             updateState(CHANNEL_SYNC_IN_PROGRESS, OnOffType.ON);
             LockerStatusDTO lockStatus = gatewayApi().getLockStatus(config.lockId);
             if ("ko".equals(lockStatus.getStatus())) {
-                throw new TheKeysError("Request failed with code " + lockStatus.getCode());
+                throw new TheKeysError(
+                        "Request failed with code " + lockStatus.getCode() + ". " + lockStatus.getCause());
             }
 
             updateState(CHANNEL_STATUS, new StringType(lockStatus.getStatus()));
