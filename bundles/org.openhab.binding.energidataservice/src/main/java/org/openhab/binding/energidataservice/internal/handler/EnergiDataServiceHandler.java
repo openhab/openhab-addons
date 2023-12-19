@@ -56,7 +56,7 @@ import org.openhab.binding.energidataservice.internal.exception.DataServiceExcep
 import org.openhab.binding.energidataservice.internal.retry.RetryPolicyFactory;
 import org.openhab.binding.energidataservice.internal.retry.RetryStrategy;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.dimension.EnergyPrice;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -68,6 +68,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -321,19 +322,27 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             return;
         }
         BigDecimal spotPrice = cacheManager.getSpotPrice();
-        updateState(CHANNEL_SPOT_PRICE,
-                spotPrice != null ? getEnergyPrice(spotPrice, config.getCurrency()) : UnDefType.UNDEF);
+        updatePriceState(CHANNEL_SPOT_PRICE, spotPrice, config.getCurrency());
     }
 
     private void updateCurrentTariff(String channelId, @Nullable BigDecimal tariff) {
         if (!isLinked(channelId)) {
             return;
         }
-        updateState(channelId, tariff != null ? getEnergyPrice(tariff, CURRENCY_DKK) : UnDefType.UNDEF);
+        updatePriceState(channelId, tariff, CURRENCY_DKK);
     }
 
-    private QuantityType<EnergyPrice> getEnergyPrice(BigDecimal price, Currency currency) {
-        return new QuantityType<>(price + " " + currency.getSymbol() + "/kWh");
+    private void updatePriceState(String channelID, @Nullable BigDecimal price, Currency currency) {
+        updateState(channelID, price != null ? getEnergyPrice(price, currency) : UnDefType.UNDEF);
+    }
+
+    private State getEnergyPrice(BigDecimal price, Currency currency) {
+        try {
+            return new QuantityType<>(price + " " + currency.getSymbol() + "/kWh");
+        } catch (IllegalArgumentException e) {
+            logger.trace("Unable to create QuantityType, falling back to DecimalType", e);
+            return new DecimalType(price);
+        }
     }
 
     private void updateHourlyPrices() {
