@@ -208,7 +208,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         }
         var setValue = response.body();
         if (setValue instanceof Boolean || setValue instanceof String || setValue instanceof Long
-                || setValue instanceof Integer) {
+                || setValue instanceof Integer|| setValue instanceof Double|| setValue instanceof Float) {
             var property = devicePropertiesCache.get(dsn).stream().filter(prop -> prop.getName().equals(propertyName))
                     .findFirst();
             if (property.isPresent()) {
