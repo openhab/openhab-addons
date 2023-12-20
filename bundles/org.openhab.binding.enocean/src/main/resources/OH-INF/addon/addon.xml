@@ -13,7 +13,7 @@
 			<service-type>usb</service-type>
 			<match-properties>
 				<match-property>
-					<name>product</name>
+					<name>manufacturer</name>
 					<regex>(?i).*enocean.*</regex>
 				</match-property>
 			</match-properties>
