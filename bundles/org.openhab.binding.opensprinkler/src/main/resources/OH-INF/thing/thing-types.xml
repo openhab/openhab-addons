@@ -163,7 +163,7 @@
 		<label>Current Draw</label>
 		<description>The current draw in mA</description>
 		<category>Energy</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="stationState">
