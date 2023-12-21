@@ -23,10 +23,7 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
@@ -121,8 +118,8 @@ public class It600Handler extends BaseThingHandler {
             var deviceProperties = findDeviceProperties().stream().map(DeviceProperty::getName).toList();
             var result = new ArrayList<>(REQUIRED_CHANNELS);
             result.removeAll(deviceProperties);
-            if (!result.isEmpty()) {
-                var msg = "Device with DSN " + dsn + " is missing required properties: " + result;
+            if (result.isEmpty()) {
+                var msg = "Device with DSN " + dsn + " is missing required properties: " + String.join(", ", result);
                 logger.error(msg);
                 updateStatus(OFFLINE, CONFIGURATION_ERROR, msg);
                 return;
