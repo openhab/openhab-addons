@@ -22,7 +22,6 @@ import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegi
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
@@ -50,7 +49,6 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
     public void initialize() {
         logger.debug("Initialize() bridge");
         super.initialize();
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

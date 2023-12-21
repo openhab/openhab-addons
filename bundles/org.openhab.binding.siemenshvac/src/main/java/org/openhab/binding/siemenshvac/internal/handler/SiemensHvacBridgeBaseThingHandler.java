@@ -12,19 +12,25 @@
  */
 package org.openhab.binding.siemenshvac.internal.handler;
 
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.discovery.SiemensHvacDeviceDiscoveryService;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
+import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SiemensHvacBridgeBaseThingHandler} is responsible for handling commands, which are
@@ -35,6 +41,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(SiemensHvacBridgeBaseThingHandler.class);
     private @Nullable SiemensHvacDeviceDiscoveryService discoveryService;
     private final @Nullable HttpClientFactory httpClientFactory;
     private final SiemensHvacMetadataRegistry metaDataRegistry;
@@ -58,7 +65,15 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
     }
 
     @Override
+    public void dispose() {
+        metaDataRegistry.invalidate();
+    }
+
+    @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
+                "Waiting bridge initialization, reading metadata in background");
+
         SiemensHvacBridgeConfig lcConfig = getConfigAs(SiemensHvacBridgeConfig.class);
         String baseUrl = null;
 
@@ -79,11 +94,45 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         }
 
         config = lcConfig;
-        metaDataRegistry.readMeta();
+
+        // Will read metadata in background to not block initialize for a long period !
+        scheduler.schedule(this::pollingCode, 1, TimeUnit.SECONDS);
+    }
+
+    public static String getStackTrace(final Throwable throwable) {
+        StringBuffer sb = new StringBuffer();
+
+        Throwable current = throwable;
+        while (current != null) {
+            sb.append(current.getLocalizedMessage());
+            sb.append(",\r\n");
+            if (throwable.getCause() != throwable) {
+                current = current.getCause();
+            } else {
+                current = null;
+            }
+        }
+        return sb.toString();
+    }
+
+    private void pollingCode() {
+        try {
+            metaDataRegistry.readMeta();
+            updateStatus(ThingStatus.ONLINE);
+        } catch (SiemensHvacException ex) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Error occurs during gateway initialization: %s", getStackTrace(ex)));
+        }
+
     }
 
     public @Nullable SiemensHvacBridgeConfig getBridgeConfiguration() {
         return config;
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.info("bridge status changed : " + bridgeStatusInfo);
     }
 
     @Override

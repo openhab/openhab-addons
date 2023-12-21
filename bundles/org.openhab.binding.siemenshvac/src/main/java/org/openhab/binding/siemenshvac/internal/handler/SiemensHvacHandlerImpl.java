@@ -27,15 +27,19 @@ import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataData
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacCallback;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
+import org.openhab.binding.siemenshvac.internal.network.SiemensHvacRequestListener.ErrorSource;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelType;
@@ -85,8 +89,23 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
     }
 
     @Override
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+    }
+
+    @Override
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.info("bridge status changed : " + bridgeStatusInfo);
+    }
+
+    @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY);
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
     }
 
@@ -99,20 +118,71 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
     }
 
     private void pollingCode() {
+        Bridge lcBridge = getBridge();
+
+        if (lcBridge == null) {
+            return;
+        }
+
+        if (lcBridge.getStatus() == ThingStatus.OFFLINE) {
+            logger.debug("Bridge is offline, change thing status to offline!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
+            return;
+        }
+
+        if (lcBridge.getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Bridge is not ready, don't enter pooling for now!");
+            return;
+        }
+
+        if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+
         long start = System.currentTimeMillis();
         var chList = this.getThing().getChannels();
-        for (Channel channel : chList) {
-            readChannel(channel);
-        }
-        updateStatus(ThingStatus.ONLINE);
 
         SiemensHvacConnector lcHvacConnector = hvacConnector;
         if (lcHvacConnector != null) {
+            int previousRequestCount = lcHvacConnector.getRequestCount();
+            int previousErrorCount = lcHvacConnector.getErrorCount();
+
+            for (Channel channel : chList) {
+                readChannel(channel);
+            }
+
             logger.debug("WaitAllPendingRequest:Start waiting()");
             lcHvacConnector.waitAllPendingRequest();
             long end = System.currentTimeMillis();
             logger.debug("WaitAllPendingRequest:All request done(): {}", (end - start) / 1000.00);
+
+            int newRequestCount = lcHvacConnector.getRequestCount();
+            int newErrorCount = lcHvacConnector.getErrorCount();
+
+            int requestCount = newRequestCount - previousRequestCount;
+            int errorCount = newErrorCount - previousErrorCount;
+
+            double errorRate = (double) errorCount / requestCount * 100.00;
+
+            if (errorRate > 20) {
+                SiemensHvacBridgeBaseThingHandler bridgeHandler = (SiemensHvacBridgeBaseThingHandler) lcBridge
+                        .getHandler();
+
+                if (lcHvacConnector.getErrorSource() == ErrorSource.ErrorBridge) {
+                    if (bridgeHandler != null) {
+                        bridgeHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                String.format("Communication ErrorRate to gateway is too high : %f", errorRate));
+                    }
+                } else if (lcHvacConnector.getErrorSource() == ErrorSource.ErrorThings) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            String.format("Communication ErrorRate to thing is too high : %f", errorRate));
+                }
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
+
         }
+
     }
 
     private void readChannel(Channel channel) {

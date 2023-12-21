@@ -36,6 +36,7 @@ import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelGroupTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacConfigDescriptionProvider;
+import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacThingTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.UidUtils;
 import org.openhab.core.OpenHAB;
@@ -259,7 +260,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     }
 
     @Override
-    public void readMeta() {
+    public void readMeta() throws SiemensHvacException {
         ArrayList<SiemensHvacMetadataDevice> lcDevices = devices;
         SiemensHvacConnector lcHvacConnector = hvacConnector;
 
@@ -643,7 +644,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         return "";
     }
 
-    public void readUserInfo() {
+    public void readUserInfo() throws SiemensHvacException {
         try {
             SiemensHvacConnector lcHvacConnector = hvacConnector;
             String request = "main.app?section=settings&subsection=user";
@@ -745,7 +746,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 }
             }
         } catch (Exception e) {
-            logger.error("siemensHvac:ResolveDpt:Error during dp reading: {}", e.getLocalizedMessage());
+            logger.error("siemensHvac:ResolveDpt:Error during reading user info: {}", e.getLocalizedMessage());
+            throw new SiemensHvacException("Error durring reading user info", e);
             // Reset sessionId so we redone _auth on error
         }
     }
@@ -1201,6 +1203,14 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     }
                 }
             });
+        }
+    }
+
+    @Override
+    public void invalidate() {
+        root = null;
+        if (hvacConnector != null) {
+            hvacConnector.invalidate();
         }
     }
 }
