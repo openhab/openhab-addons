@@ -147,12 +147,11 @@ public class LongPolling {
      * is started.
      */
     private void longPoll(BoschHttpClient httpClient, String subscriptionId) {
+        logger.debug("Sending long poll request");
 
         JsonRpcRequest requestContent = new JsonRpcRequest("2.0", "RE/longPoll", new String[] { subscriptionId, "20" });
         String url = httpClient.getBoschShcUrl("remote/json-rpc");
         Request longPollRequest = httpClient.createRequest(url, POST, requestContent);
-
-        logger.debug("Sending long poll request: {} with headers {}", longPollRequest, longPollRequest.getHeaders());
 
         // Long polling responds after 20 seconds with an empty response if no update
         // has happened. 10 second threshold was added to not time out if response
