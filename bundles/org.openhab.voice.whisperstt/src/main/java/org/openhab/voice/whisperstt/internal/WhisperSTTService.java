@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -87,9 +88,7 @@ import io.github.givimad.whisperjni.WhisperState;
 public class WhisperSTTService implements STTService {
     protected static final Path WHISPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "whisper");
     private static final Path SAMPLES_FOLDER = Path.of(WHISPER_FOLDER.toString(), "samples");
-    private static final Path GRAMMAR_FILE = Path.of(WHISPER_FOLDER.toString(), "grammar.gbnf");
     private static final int WHISPER_SAMPLE_RATE = 16000;
-
     private final Logger logger = LoggerFactory.getLogger(WhisperSTTService.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-whisperstt");
     private final LocaleService localeService;
@@ -181,10 +180,11 @@ public class WhisperSTTService implements STTService {
             logger.warn("library not loaded, the add-on will not work");
             return;
         }
-        if (this.config.useGrammar && Files.exists(GRAMMAR_FILE) && !Files.isDirectory(GRAMMAR_FILE)) {
+        String grammarText = String.join("\n", this.config.grammarLines);
+        if (this.config.useGrammar && isValidGrammar(grammarText)) {
             try {
-                logger.debug("Parsing GBNF grammar file");
-                this.grammar = whisper.parseGrammar(GRAMMAR_FILE);
+                logger.debug("Parsing GBNF grammar...");
+                this.grammar = whisper.parseGrammar(grammarText);
             } catch (IOException e) {
                 logger.warn("Error parsing grammar: {}", e.getMessage());
             }
@@ -204,6 +204,16 @@ public class WhisperSTTService implements STTService {
                 logger.warn("IOException unloading model: {}", e.getMessage());
             }
         }
+    }
+
+    private boolean isValidGrammar(String grammarText) {
+        try {
+            WhisperGrammar.assertValidGrammar(grammarText);
+        } catch (IllegalArgumentException | ParseException e) {
+            logger.warn("Invalid grammar: {}", e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     @Override

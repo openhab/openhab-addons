@@ -12,6 +12,8 @@
  */
 package org.openhab.voice.whisperstt.internal;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.github.givimad.libfvadjni.VoiceActivityDetector;
@@ -101,7 +103,11 @@ public class WhisperSTTConfiguration {
      */
     public String initialPrompt = "";
     /**
-     * Loads 'grammar.gbnf' file from whisper userdata dir.
+     * Grammar in GBNF format.
+     */
+    public List<String> grammarLines = List.of();
+    /**
+     * Enables grammar usage.
      */
     public boolean useGrammar = false;
     /**

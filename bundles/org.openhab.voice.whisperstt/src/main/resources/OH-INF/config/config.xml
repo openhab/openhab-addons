@@ -9,9 +9,17 @@
 			<label>STT Configuration</label>
 			<description>Configure Speech to Text.</description>
 		</parameter-group>
+		<parameter-group name="vad">
+			<label>Voice Activity Detection</label>
+			<description>Configure the VAD mechanisim used to isolate single phrases to feed whisper with.</description>
+		</parameter-group>
 		<parameter-group name="whisper">
 			<label>Whisper Options</label>
-			<description>Configure some library settings.</description>
+			<description>Configure the whisper.cpp transcription options.</description>
+		</parameter-group>
+		<parameter-group name="grammar">
+			<label>Grammar</label>
+			<description>Define a grammar to improve transcrptions.</description>
 		</parameter-group>
 		<parameter-group name="messages">
 			<label>Info Messages</label>
@@ -53,49 +61,6 @@
 			<description>Seconds to force transcription before silence detection.</description>
 			<default>10</default>
 		</parameter>
-		<parameter name="stepSeconds" type="decimal" groupName="stt">
-			<label>Audio Step</label>
-			<description>Audio step for the voice activity detection.</description>
-			<default>1</default>
-			<options>
-				<option value="0.1">100ms</option>
-				<option value="0.2">200ms</option>
-				<option value="0.3">300ms</option>
-				<option value="0.5">500ms</option>
-				<option value="0.6">600ms</option>
-				<option value="1">1s</option>
-			</options>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="vadSensitivity" type="decimal" groupName="stt" min="0" max="1" step="0.01">
-			<label>Voice Activity Detection Sensitivity</label>
-			<description>Percentage in range 0-1 of voice activity in each audio step analyzed to consider it as voice.</description>
-			<default>0.3</default>
-		</parameter>
-		<parameter name="vadMode" type="text" groupName="stt">
-			<label>Voice Activity Detection Mode</label>
-			<description>Available VAD modes. Quality is the most likely to detect voice.</description>
-			<default>VERY_AGGRESSIVE</default>
-			<options>
-				<option value="QUALITY">Quality</option>
-				<option value="LOW_BITRATE">Low Bitrate</option>
-				<option value="AGGRESSIVE">Aggressive</option>
-				<option value="VERY_AGGRESSIVE">Very Aggressive</option>
-			</options>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="vadStep" type="integer" groupName="stt">
-			<label>Voice Activity Detector Step</label>
-			<description>Audio ms passed to the voice activity detector. Defines how much times the voice activity detector is
-				executed per audio step.</description>
-			<default>20</default>
-			<options>
-				<option value="10">10ms</option>
-				<option value="20">20ms</option>
-				<option value="30">30ms</option>
-			</options>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="initSilenceSeconds" type="decimal" min="0.1" step="0.1" unit="s" groupName="stt">
 			<label>Initial Silence Seconds</label>
 			<description>Max initial seconds of silence to discard transcription.</description>
@@ -110,6 +75,49 @@
 			<label>Remove Silence</label>
 			<description>Remove silence frames from the beginning and end of the audio.</description>
 			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stepSeconds" type="decimal" groupName="vad">
+			<label>Audio Step</label>
+			<description>Audio step for the voice activity detection.</description>
+			<default>1</default>
+			<options>
+				<option value="0.1">100ms</option>
+				<option value="0.2">200ms</option>
+				<option value="0.3">300ms</option>
+				<option value="0.5">500ms</option>
+				<option value="0.6">600ms</option>
+				<option value="1">1s</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="vadSensitivity" type="decimal" groupName="vad" min="0" max="1" step="0.01">
+			<label>Voice Activity Detection Sensitivity</label>
+			<description>Percentage in range 0-1 of voice activity in each audio step analyzed to consider it as voice.</description>
+			<default>0.3</default>
+		</parameter>
+		<parameter name="vadMode" type="text" groupName="vad">
+			<label>Voice Activity Detection Mode</label>
+			<description>Available VAD modes. Quality is the most likely to detect voice.</description>
+			<default>VERY_AGGRESSIVE</default>
+			<options>
+				<option value="QUALITY">Quality</option>
+				<option value="LOW_BITRATE">Low Bitrate</option>
+				<option value="AGGRESSIVE">Aggressive</option>
+				<option value="VERY_AGGRESSIVE">Very Aggressive</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="vadStep" type="integer" groupName="vad">
+			<label>Voice Activity Detector Step</label>
+			<description>Audio ms passed to the voice activity detector. Defines how much times the voice activity detector is
+				executed per audio step.</description>
+			<default>20</default>
+			<options>
+				<option value="10">10ms</option>
+				<option value="20">20ms</option>
+				<option value="30">30ms</option>
+			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="threads" type="integer" groupName="whisper">
@@ -170,17 +178,20 @@
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="grammarLines" type="text" groupName="grammar" multiple="true">
+			<label>Grammar</label>
+			<description>Grammar to use in GBNF format. (BNF variant used by whisper.cpp).</description>
+			<default></default>
+		</parameter>
 		<parameter name="useGrammar" type="boolean" groupName="whisper">
 			<label>Use Grammar</label>
-			<description>Use 'grammar.gbnf' file from whisper userdata dir.</description>
+			<description>Enables grammar usage.</description>
 			<default>false</default>
-			<advanced>true</advanced>
 		</parameter>
-		<parameter name="grammarPenalty" type="decimal" groupName="whisper" min="0" max="100" step="0.01">
+		<parameter name="grammarPenalty" type="decimal" groupName="whisper" min="0" max="100" step="0.1">
 			<label>grammarPenalty</label>
 			<description>Penalty for non grammar tokens when using grammar.</description>
 			<default>100</default>
-			<advanced>true</advanced>
 		</parameter>
 		<parameter name="errorMessage" type="text" groupName="messages">
 			<label>Error Message</label>

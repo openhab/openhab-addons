@@ -1,6 +1,7 @@
 # Whisper Speech-to-Text
 
 Whisper STT Service uses [whisper.cpp](https://github.com/ggerganov/whisper.cpp) to perform offline speech-to-text in openHAB.
+It also uses [libfvad](https://github.com/dpirch/libfvad) for voice activity detection to isolate single command to transcribe, speeding up the execution.
 
 [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) is a high-optimized lightweight c++ implementation of [whisper](https://github.com/openai/whisper) that allows to easily integrate it in different platforms and applications.
 
@@ -13,8 +14,6 @@ slovenian, kannada, estonian, macedonian, breton, basque, icelandic, armenian, n
 marathi, punjabi, sinhala, khmer, shona, yoruba, somali, afrikaans, occitan, georgian, belarusian, tajik, sindhi, gujarati, amharic, yiddish, lao, 
 uzbek, faroese, haitian, pashto, turkmen, nynorsk, maltese, sanskrit, luxembourgish, myanmar, tibetan, tagalog, malagasy, assamese, tatar, lingala, 
 hausa, bashkir, javanese and sundanese.
-
-The voice activity detection functionality is possible thanks to [libfvad](https://github.com/dpirch/libfvad).
 
 ## Supported platforms
 
@@ -30,10 +29,11 @@ The following platforms are supported:
 * macos-x86_64 (+v11.0)
 * windows-x86_64
 
-Note that the Raspberry PI 4 has bad performance running this add-on (the transcription time is similar to the audio duration using the tiny model).
+The add-on has been tested on a Raspberry PI 5 with execution times:
 
-For modern arm64 devices which cpu supports the flag fphp (Half Precision(16bit) Floating Point Data Processing Instructions) (armv8.2-a) the add-on will use a binary compiled with the [fp16 feature](https://gcc.gnu.org/onlinedocs/gcc/AArch64-Options.html) enabled offering a better performance. (This was tested on an Orange Pi 5).
-Cpu flags can be checked on debian using `lscpu`.
+* tiny model ~=1.5s
+* base model ~=3.5s
+* small model ~=8s
 
 ## Configuring the model
 
@@ -86,19 +86,28 @@ Use your favorite configuration UI to edit the Whisper settings:
 
 ### Speech to Text Configuration
 
+General options.
+
 * **Model Name** - Model name. The 'ggml-' prefix and '.bin' extension are optional here but required on the filename. (ex: tiny.en -> ggml-tiny.en.bin)
 * **Preload Model** - Keep whisper model loaded.
-* **Audio Step** - Audio processing step in seconds for the voice activity detection.
 * **Single Utterance Mode** - When enabled recognition stops listening after a single utterance.
-* **Voice Activity Detection Mode** - Selected VAD Mode.
-* **Voice Activity Detection Sensitivity** - Percentage in range 0-1 of voice activity in one second to consider it as voice.
-* **Voice Activity Detection Step** - VAD detector internal step in ms (only allows 10, 20 or 30). (Audio Step / Voice Activity Detection Step = number of vad executions per audio step).
 * **Max Transcription Seconds** - Max seconds for force trigger the transcription, without wait for detect silence.
 * **Initial Silence Seconds** - Max seconds without any voice activity to abort the transcription.
 * **Max Silence Seconds** - Max consecutive silence seconds to trigger the transcription.
 * **Remove Silence** - Remove start and end silence from the audio to transcribe.
 
+### Voice Activity Detection Configuration
+
+Configure VAD options.
+
+* **Audio Step** - Audio processing step in seconds for the voice activity detection.
+* **Voice Activity Detection Mode** - Selected VAD Mode.
+* **Voice Activity Detection Sensitivity** - Percentage in range 0-1 of voice activity in one second to consider it as voice.
+* **Voice Activity Detection Step** - VAD detector internal step in ms (only allows 10, 20 or 30). (Audio Step / Voice Activity Detection Step = number of vad executions per audio step).
+
 ### Whisper Configuration
+
+Configure whisper options.
 
 * **Threads** - Number of threads used by whisper. (0 for default)
 * **Sampling Strategy** - Sampling strategy used.
@@ -108,27 +117,30 @@ Use your favorite configuration UI to edit the Whisper settings:
 * **Audio Context** - Overwrite the audio context size. (0 for default)
 * **Temperature** - Temperature threshold.
 * **Initial Prompt** - Initial prompt for whisper.
-* **Grammar** - Enable the use '$OPENHAB_USERDATA/whisper/grammar.gbnf' file to limit grammar.
+
+### Grammar Configuration
+
+Configure the grammar options.
+
+* **Grammar** - Grammar to use in GBNF format (whisper.cpp BNF variant).
+* **Use Grammar** - Enable grammar usage.
 * **Grammar penalty** - Penalty for non grammar tokens.
 
-### Grammar
+#### Simple Grammar Example:
 
-You can use the file '$OPENHAB_USERDATA/whisper/grammar.gbnf' to define a grammar for whisper, this is specially useful to get usable result for the smallest models (tiny/base).
 
-This is an example:
-
-```ebdf
-# Grammar should define the root expression.
-# It should end with a dot, and its prefixed with a space like default whisper transcriptions.
+```gbnf
+# Grammar should define a root expression that should end with a dot.
 root     ::= " " command "."
 # Alternative command expression to expand into the root.
 command  ::= "Turn " onoff " " (connector)? thing |
              put " " thing " to " state |
-             watch " " show " at bedroom"
+             watch " " show " at bedroom" |
+             "Start " timer " minutes timer"
 
 # You can use as many expressions as you need.
-thing   ::= "light" | "bedroom light" | "living room light" | "tv" |
-          "computer" | "bedroom tv"
+
+thing   ::= "light" | "bedroom light" | "living room light" | "tv"
 
 put     ::= "set" | "put"
 
@@ -140,11 +152,11 @@ connector ::= "the"
 
 state   ::= "low" | "high" | "normal"
 
-show  ::= "title one" | "title two"
+show  ::= [a-zA-Z]+
+
+timer ::= [0-9]+
 
 ```
-
-The addon uses the [grammar parser implementation available at whisper.cpp examples](https://github.com/ggerganov/whisper.cpp/blob/master/examples/grammar-parser.cpp).
 
 ### Messages Configuration
 
@@ -152,8 +164,10 @@ The addon uses the [grammar parser implementation available at whisper.cpp examp
 
 ### Developer Configuration
 
-* **Create WAV Record** - Create wav audio file on each transcription call. Useful for checking the audio quality or collecting private samples.
-* **Record Sample Format** - Changes the record sample format. (allows i16 or f32)
+* **Create WAV Record** - Create wav audio file on each whisper execution, also creates a '.prop' file containing the transcription.
+* **Record Sample Format** - Change the record sample format. (allows i16 or f32)
+
+You can find [here](https://github.com/givimad/whisper-finetune-oh) information on how to fine-tune a model using the generated records.
 
 ### Configuration via a text file
 
