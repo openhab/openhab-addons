@@ -95,7 +95,8 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
             try {
                 lcMetadataRegistry.readMeta();
             } catch (SiemensHvacException ex) {
-
+                logger.debug("Exception occurred during execution: {}", ex.getMessage(), ex);
+                return;
             }
 
             ArrayList<SiemensHvacMetadataDevice> devices = lcMetadataRegistry.getDevices();
