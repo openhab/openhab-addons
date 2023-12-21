@@ -100,7 +100,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.info("bridge status changed : " + bridgeStatusInfo);
+        logger.info("bridge status changed : {} ", bridgeStatusInfo);
     }
 
     @Override

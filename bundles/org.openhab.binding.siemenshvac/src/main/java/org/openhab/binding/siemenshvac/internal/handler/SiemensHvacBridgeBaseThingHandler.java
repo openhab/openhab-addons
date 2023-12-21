@@ -106,7 +106,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         while (current != null) {
             sb.append(current.getLocalizedMessage());
             sb.append(",\r\n");
-            if (throwable.getCause() != throwable) {
+            if (!throwable.getCause().equals(throwable)) {
                 current = current.getCause();
             } else {
                 current = null;
@@ -131,7 +131,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.info("bridge status changed : " + bridgeStatusInfo);
+        logger.info("bridge status changed : {} ", bridgeStatusInfo);
     }
 
     @Override
