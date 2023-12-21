@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.myuplink.internal;
 
-import static org.openhab.binding.myuplink.internal.myUplinkBindingConstants.*;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 import java.util.Set;
 
@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.myuplink", service = ThingHandlerFactory.class)
-public class myUplinkHandlerFactory extends BaseThingHandlerFactory {
+public class MyUplinkHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
 
@@ -47,7 +47,7 @@ public class myUplinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new myUplinkHandler(thing);
+            return new MyUplinkHandler(thing);
         }
 
         return null;

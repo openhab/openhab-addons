@@ -16,13 +16,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link myUplinkBindingConstants} class defines common constants, which are
+ * The {@link MyUplinkBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Alexander Friese - Initial contribution
  */
 @NonNullByDefault
-public class myUplinkBindingConstants {
+public class MyUplinkBindingConstants {
 
     private static final String BINDING_ID = "myuplink";
 
