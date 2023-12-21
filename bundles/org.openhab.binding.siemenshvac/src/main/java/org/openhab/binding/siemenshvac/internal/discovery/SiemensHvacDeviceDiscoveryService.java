@@ -23,6 +23,7 @@ import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingCons
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThingHandler;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDevice;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
+import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 import org.openhab.binding.siemenshvac.internal.type.UidUtils;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -91,7 +92,11 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
         logger.debug("call startScan()");
 
         if (lcMetadataRegistry != null) {
-            lcMetadataRegistry.readMeta();
+            try {
+                lcMetadataRegistry.readMeta();
+            } catch (SiemensHvacException ex) {
+
+            }
 
             ArrayList<SiemensHvacMetadataDevice> devices = lcMetadataRegistry.getDevices();
 

@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelTypeProvider;
+import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 
 /**
  *
@@ -31,7 +32,7 @@ public interface SiemensHvacMetadataRegistry {
      */
     void initialize();
 
-    void readMeta();
+    void readMeta() throws SiemensHvacException;
 
     @Nullable
     SiemensHvacMetadataMenu getRoot();
@@ -47,4 +48,6 @@ public interface SiemensHvacMetadataRegistry {
 
     @Nullable
     SiemensHvacConnector getSiemensHvacConnector();
+
+    void invalidate();
 }

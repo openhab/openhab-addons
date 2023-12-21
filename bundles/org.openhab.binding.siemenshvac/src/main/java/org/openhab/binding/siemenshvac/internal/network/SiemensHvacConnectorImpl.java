@@ -15,14 +15,13 @@ package org.openhab.binding.siemenshvac.internal.network;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,6 +61,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private final Logger logger = LoggerFactory.getLogger(SiemensHvacConnectorImpl.class);
 
+    private Map<SiemensHvacRequestHandler, SiemensHvacRequestHandler> currentHandlerRegistry = new HashMap<SiemensHvacRequestHandler, SiemensHvacRequestHandler>();
+    private Map<SiemensHvacRequestHandler, SiemensHvacRequestHandler> handlerInErrorRegistry = new HashMap<SiemensHvacRequestHandler, SiemensHvacRequestHandler>();
     private final Gson gson;
     private final Gson gsonWithAdapter;
 
@@ -73,11 +74,11 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     protected HttpClient httpClient;
 
-    private static int startedRequest = 0;
-    private static int completedRequest = 0;
-    private Lock lockObj = new ReentrantLock();
-
     private Map<String, Type> updateCommand;
+
+    private int requestCount = 0;
+    private int errorCount = 0;
+    private SiemensHvacRequestListener.ErrorSource errorSource = SiemensHvacRequestListener.ErrorSource.ErrorBridge;
 
     private @Nullable SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler;
 
@@ -129,29 +130,30 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     @Override
-    public void onComplete(@Nullable Request request) {
-        lockObj.lock();
-        try {
-            logger.debug("OnComplete");
-            completedRequest++;
-        } finally {
-            lockObj.unlock();
-        }
+    public void onComplete(@Nullable Request request, SiemensHvacRequestHandler reqHandler) throws Exception {
+        UnregisterRequestHandler(reqHandler);
     }
 
     @Override
-    public void onError(@Nullable Request request, @Nullable SiemensHvacCallback cb) throws Exception {
-        lockObj.lock();
-        try {
-            logger.debug("OnError");
-            completedRequest++;
-        } finally {
-            lockObj.unlock();
+    public void onError(@Nullable Request request, @Nullable SiemensHvacRequestHandler reqHandler,
+            SiemensHvacRequestListener.ErrorSource errorSource) throws Exception {
+        if (reqHandler == null || request == null) {
+            throw new SiemensHvacException("internalError : onError call with reqHandler == null");
         }
 
-        if (cb == null || request == null) {
+        // reqHandler.displayStats();
+
+        if (reqHandler.getRetryCount() >= 1) {
+            logger.info("unable to handle request, retryCount>5, cancel it");
+            UnregisterRequestHandler(reqHandler);
+            RegisterHandlerError(reqHandler);
+            errorCount++;
+            this.errorSource = errorSource;
             return;
         }
+
+        // Wait one second before retrying the request to avoid flooding the gateway
+        Thread.sleep(1000);
 
         if (sessionIdHttp == null) {
             doAuth(true);
@@ -164,9 +166,10 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         try {
             final Request retryRequest = httpClient.newRequest(request.getURI());
             request.method(HttpMethod.GET);
+            reqHandler.incrementRetryCount();
 
             if (retryRequest != null) {
-                executeRequest(retryRequest, cb);
+                executeRequest(retryRequest, reqHandler);
             }
         } catch (Exception ex) {
             logger.debug("Error during gateway request:", ex);
@@ -174,43 +177,60 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
     }
 
+    private @Nullable ContentResponse executeRequest(final Request request) throws Exception {
+        return executeRequest(request, (SiemensHvacCallback) null);
+    }
+
     private @Nullable ContentResponse executeRequest(final Request request, @Nullable SiemensHvacCallback callback)
             throws Exception {
+
+        requestCount++;
+
+        // For asynchronous request, we create a RequestHandler that will enable us to follow request state
+        SiemensHvacRequestHandler requestHandler = null;
+        if (callback != null) {
+            requestHandler = new SiemensHvacRequestHandler(callback, this);
+            currentHandlerRegistry.put(requestHandler, requestHandler);
+        }
+
+        return executeRequest(request, requestHandler);
+    }
+
+    private void UnregisterRequestHandler(SiemensHvacRequestHandler handler) throws SiemensHvacException {
+        if (!currentHandlerRegistry.containsKey(handler)) {
+            throw new SiemensHvacException("Internal error, try to unregister not registred handler: " + handler);
+        }
+
+        currentHandlerRegistry.remove(handler);
+    }
+
+    private void RegisterHandlerError(SiemensHvacRequestHandler handler) {
+        handlerInErrorRegistry.put(handler, handler);
+    }
+
+    private @Nullable ContentResponse executeRequest(final Request request,
+            @Nullable SiemensHvacRequestHandler requestHandler) throws Exception {
         // Give a high timeout because we queue a lot of async request,
         // so enqueued them will take some times ...
         request.timeout(240, TimeUnit.SECONDS);
 
         ContentResponse response = null;
 
-        @Nullable
-        SiemensHvacRequestListener requestListener = null;
-        if (callback != null) {
-            requestListener = new SiemensHvacRequestListener(callback, this);
-        }
-
         try {
-            if (requestListener != null) {
-                lockObj.lock();
-                try {
-                    startedRequest++;
-                    logger.trace("StartedRequest: {}", startedRequest - completedRequest);
-
-                } finally {
-                    lockObj.unlock();
-                }
-
+            if (requestHandler != null) {
+                SiemensHvacRequestListener requestListener = new SiemensHvacRequestListener(requestHandler);
                 request.send(requestListener);
             } else {
                 response = request.send();
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new SiemensHvacException("siemensHvac:Exception by executing request: " + request.getQuery() + " ; "
+            throw new SiemensHvacException("siemensHvac:Exception by executing request: " + request.getURI() + " ; "
                     + e.getLocalizedMessage());
         }
         return response;
     }
 
-    private void initConfig() throws Exception {
+    private void initConfig() throws SiemensHvacException {
         SiemensHvacBridgeBaseThingHandler lcHvacBridgeBaseThingHandler = hvacBridgeBaseThingHandler;
 
         if (lcHvacBridgeBaseThingHandler != null) {
@@ -226,7 +246,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         return config;
     }
 
-    private void doAuth(boolean http) throws Exception {
+    private void doAuth(boolean http) throws SiemensHvacException {
         logger.debug("siemensHvac:doAuth()");
 
         initConfig();
@@ -255,7 +275,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         logger.debug("siemensHvac:doAuth:connect()");
 
         try {
-            ContentResponse response = executeRequest(request, null);
+            ContentResponse response = executeRequest(request);
             if (response != null) {
                 int statusCode = response.getStatus();
 
@@ -299,7 +319,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                             logger.debug("siemensHvac:doAuth:decodeResponse:()");
 
                             if (sessionId == null) {
-                                logger.debug("Session request auth was unsuccessful in _doAuth()");
+                                throw new SiemensHvacException(
+                                        "Session request auth was unsuccessful in _doAuth(), please verify login parameters");
                             }
 
                         }
@@ -312,6 +333,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
         } catch (Exception ex) {
             logger.debug("siemensHvac:doAuth:error() {}", ex.getLocalizedMessage());
+            throw new SiemensHvacException("Error during authentification", ex);
         }
     }
 
@@ -413,8 +435,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     @Override
     public void displayRequestStats() {
-        logger.info("DisplayRequestStats : {} ({}/{})", (startedRequest - completedRequest), startedRequest,
-                completedRequest);
+        logger.info("DisplayRequestStats : currentRuning {}, error {}", currentHandlerRegistry.keySet().size(),
+                handlerInErrorRegistry.keySet().size());
     }
 
     @Override
@@ -423,20 +445,18 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         try {
             Thread.sleep(1000);
             boolean allRequestDone = false;
+            int idx = 0;
 
             while (!allRequestDone) {
-                int idx = 0;
+                allRequestDone = false;
+                int currentRequestCount = currentHandlerRegistry.keySet().size();
+                logger.debug("WaitAllPendingRequest:waitAllRequestDone {} : {}", idx, currentRequestCount);
 
-                allRequestDone = true;
-                while (idx < 5 && allRequestDone) {
-                    logger.debug("WaitAllPendingRequest:waitAllRequestDone {} : {} ({}/{})", idx,
-                            (startedRequest - completedRequest), startedRequest, completedRequest);
-                    if (startedRequest != completedRequest) {
-                        allRequestDone = false;
-                    }
-                    Thread.sleep(1000);
-                    idx++;
+                if (currentRequestCount == 0) {
+                    allRequestDone = true;
                 }
+                Thread.sleep(1000);
+                idx++;
             }
         } catch (InterruptedException ex) {
             logger.debug("WaitAllPendingRequest:interrupted in WaitAllRequest");
@@ -449,12 +469,17 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     public void waitNoNewRequest() {
         logger.debug("WaitNoNewRequest:start");
         try {
-            int lastRequest = startedRequest;
-            Thread.sleep(5000);
-            while (lastRequest != startedRequest) {
-                logger.debug("waitNoNewRequest  {}/{})", startedRequest, lastRequest);
+            int lastRequestCount = currentHandlerRegistry.keySet().size();
+            boolean newRequest = true;
+            while (newRequest) {
                 Thread.sleep(5000);
-                lastRequest = startedRequest;
+                int newRequestCount = currentHandlerRegistry.keySet().size();
+                if (newRequestCount != lastRequestCount) {
+                    logger.debug("waitNoNewRequest  {}/{})", newRequestCount, lastRequestCount);
+                    lastRequestCount = newRequestCount;
+                } else {
+                    newRequest = false;
+                }
             }
         } catch (InterruptedException ex) {
             logger.debug("WaitAllPendingRequest:interrupted in WaitAllRequest");
@@ -486,5 +511,28 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         } else {
             sessionId = null;
         }
+    }
+
+    @Override
+    public int getRequestCount() {
+        return requestCount;
+    }
+
+    @Override
+    public int getErrorCount() {
+        return errorCount;
+    }
+
+    @Override
+    public SiemensHvacRequestListener.ErrorSource getErrorSource() {
+        return errorSource;
+    }
+
+    @Override
+    public void invalidate() {
+        sessionId = null;
+        sessionIdHttp = null;
+        currentHandlerRegistry.clear();
+        handlerInErrorRegistry.clear();
     }
 }

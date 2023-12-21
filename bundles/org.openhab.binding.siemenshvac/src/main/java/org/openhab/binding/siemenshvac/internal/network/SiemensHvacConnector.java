@@ -40,9 +40,10 @@ public interface SiemensHvacConnector {
 
     void waitNoNewRequest();
 
-    void onComplete(Request request);
+    void onComplete(Request request, SiemensHvacRequestHandler reqListener) throws Exception;
 
-    void onError(Request request, SiemensHvacCallback cb) throws Exception;
+    void onError(Request request, SiemensHvacRequestHandler reqListener,
+            SiemensHvacRequestListener.ErrorSource errorSource) throws Exception;
 
     void setSiemensHvacBridgeBaseThingHandler(SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler);
 
@@ -56,4 +57,12 @@ public interface SiemensHvacConnector {
     Gson getGson();
 
     Gson getGsonWithAdapter();
+
+    int getRequestCount();
+
+    int getErrorCount();
+
+    SiemensHvacRequestListener.ErrorSource getErrorSource();
+
+    void invalidate();
 }
