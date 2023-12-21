@@ -187,7 +187,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
     }
 
     private void readChannel(Channel channel) {
-        logger.debug("{}", channel.getDescription());
+        logger.debug("readChannel : {}", channel.getDescription());
 
         ThingHandlerCallback cb = this.getCallback();
         boolean isLink = false;
@@ -223,7 +223,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             return;
         }
         readDp(id, uid, type, true);
-        logger.debug("{}", isLink);
+        logger.debug("isChannelLink : {}", isLink);
     }
 
     public void decodeReadDp(@Nullable JsonObject response, @Nullable String uid, @Nullable String dp,

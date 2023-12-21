@@ -47,7 +47,7 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
 
     @Override
     public void initialize() {
-        logger.debug("Initialize() bridge");
+        logger.debug("Initialize() bridge4");
         super.initialize();
     }
 

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.siemenshvac.internal.network;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
@@ -36,6 +39,8 @@ public class SiemensHvacRequestHandler {
     @Nullable
     private Result result = null;
 
+    private Instant startRequest;
+
     /**
      * Callback to execute on complete response
      */
@@ -49,6 +54,7 @@ public class SiemensHvacRequestHandler {
     public SiemensHvacRequestHandler(SiemensHvacCallback callback, SiemensHvacConnector hvacConnector) {
         this.callback = callback;
         this.hvacConnector = hvacConnector;
+        startRequest = Instant.now();
     }
 
     public SiemensHvacConnector getHvacConnector() {
@@ -80,5 +86,23 @@ public class SiemensHvacRequestHandler {
     @Nullable
     public Result getResult() {
         return result;
+    }
+
+    public void setResponse(@Nullable Response response) {
+        this.response = response;
+    }
+
+    public void setRequest(@Nullable Request request) {
+        this.request = request;
+    }
+
+    public void setResult(@Nullable Result result) {
+        this.result = result;
+    }
+
+    public long getElapseTime() {
+        Instant finish = Instant.now();
+        long elapseTime = Duration.between(startRequest, finish).toSeconds();
+        return elapseTime;
     }
 }

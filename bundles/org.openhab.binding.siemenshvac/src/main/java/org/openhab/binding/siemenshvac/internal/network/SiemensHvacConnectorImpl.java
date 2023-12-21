@@ -166,6 +166,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         try {
             final Request retryRequest = httpClient.newRequest(request.getURI());
             request.method(HttpMethod.GET);
+            reqHandler.setRequest(retryRequest);
             reqHandler.incrementRetryCount();
 
             if (retryRequest != null) {
@@ -189,6 +190,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         SiemensHvacRequestHandler requestHandler = null;
         if (callback != null) {
             requestHandler = new SiemensHvacRequestHandler(callback, this);
+            requestHandler.setRequest(request);
             currentHandlerRegistry.put(requestHandler, requestHandler);
         }
 
@@ -443,7 +445,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     public void waitAllPendingRequest() {
         logger.debug("WaitAllPendingRequest:start2");
         try {
-            Thread.sleep(1000);
             boolean allRequestDone = false;
             int idx = 0;
 
@@ -456,6 +457,10 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                     allRequestDone = true;
                 }
                 Thread.sleep(1000);
+
+                if ((idx % 30) == 0) {
+                    CheckStaleRequest();
+                }
                 idx++;
             }
         } catch (InterruptedException ex) {
@@ -463,6 +468,30 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
 
         logger.debug("WaitAllPendingRequest:end WaitAllPendingRequest");
+    }
+
+    public void CheckStaleRequest() {
+        logger.debug("check stale request::begin");
+        for (SiemensHvacRequestHandler handler : handlerInErrorRegistry.keySet()) {
+            long elapseTime = handler.getElapseTime();
+            if (elapseTime > 300) {
+                String uri = "";
+                Request request = handler.getRequest();
+                if (request != null) {
+                    uri = request.getURI().toString();
+                }
+                logger.debug("find stale request: {} {}", elapseTime, uri);
+
+                try {
+                    unregisterRequestHandler(handler);
+                    registerHandlerError(handler);
+                } catch (SiemensHvacException ex) {
+                    logger.debug("error unregistring handler: {}", handler);
+                }
+
+            }
+        }
+        logger.debug("check stale request::end");
     }
 
     @Override
