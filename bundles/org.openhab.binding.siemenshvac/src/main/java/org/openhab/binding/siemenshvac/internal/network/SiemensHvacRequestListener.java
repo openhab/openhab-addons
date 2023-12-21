@@ -17,8 +17,6 @@ import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,8 +48,6 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
         ErrorBridge,
         ErrorThings
     }
-
-    private static Lock lockObj = new ReentrantLock();
 
     private static int onSuccessCount = 0;
     private static int onBeginCount = 0;
@@ -102,12 +98,8 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
     @Override
     public void onSuccess(@Nullable Response response) {
-        lockObj.lock();
-        try {
-            onSuccessCount++;
-        } finally {
-            lockObj.unlock();
-        }
+        onSuccessCount++;
+        requestHandler.setResponse(response);
 
         if (response != null) {
             logger.debug("{} response: {}", response.getRequest().getURI(), response.getStatus());
@@ -116,12 +108,8 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
     @Override
     public void onFailure(@Nullable Response response, @Nullable Throwable failure) {
-        lockObj.lock();
-        try {
-            onFailureCount++;
-        } finally {
-            lockObj.unlock();
-        }
+        onFailureCount++;
+        requestHandler.setResponse(response);
 
         if (response != null && failure != null) {
             Throwable cause = failure.getCause();
@@ -151,22 +139,14 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
     @Override
     public void onQueued(@Nullable Request request) {
-        lockObj.lock();
-        try {
-            onQueuedCount++;
-        } finally {
-            lockObj.unlock();
-        }
+        onQueuedCount++;
+        requestHandler.setRequest(request);
     }
 
     @Override
     public void onBegin(@Nullable Request request) {
-        lockObj.lock();
-        try {
-            onBeginCount++;
-        } finally {
-            lockObj.unlock();
-        }
+        onBeginCount++;
+        requestHandler.setRequest(request);
     }
 
     public void displayStats() {
@@ -184,12 +164,8 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
     @Override
     public void onComplete(@Nullable Result result) {
-        lockObj.lock();
-        try {
-            onCompleteCount++;
-        } finally {
-            lockObj.unlock();
-        }
+        onCompleteCount++;
+        requestHandler.setResult(result);
 
         if (result == null) {
             return;
