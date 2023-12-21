@@ -203,34 +203,32 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             return;
         }
         var setValue = response.body();
-        if (setValue instanceof Boolean || setValue instanceof String || setValue instanceof Number) {
-            var property = devicePropertiesCache.get(dsn).stream().filter(prop -> prop.getName().equals(propertyName))
-                    .findFirst();
-            if (property.isPresent()) {
-                var prop = property.get();
-                if (setValue instanceof Boolean b && prop instanceof DeviceProperty.BooleanDeviceProperty boolProp) {
-                    boolProp.setValue(b);
-                } else if (setValue instanceof String s
-                        && prop instanceof DeviceProperty.StringDeviceProperty stringProp) {
-                    stringProp.setValue(s);
-                } else if (setValue instanceof Number l && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
-                    longProp.setValue(l.longValue());
-                } else {
-                    logger.warn(
-                            "Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
-                            setValue, setValue.getClass().getSimpleName(), propertyName,
-                            prop.getClass().getSimpleName(), dsn);
-                }
-            } else {
-                logger.warn(
-                        "Cannot set value {} ({}) for property {} on device {} because it is not found in the cache. Invalidating cache",
-                        setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
-                devicePropertiesCache.invalidate(dsn);
-            }
-        } else {
+        if (!(setValue instanceof Boolean) && !(setValue instanceof String) && !(setValue instanceof Number)) {
             logger.warn(
                     "Cannot set value {} ({}) for property {} on device {} because it is not a Boolean, String, Long or Integer",
                     setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
+            return;
+        }
+        var property = devicePropertiesCache.get(dsn).stream().filter(prop -> prop.getName().equals(propertyName))
+                .findFirst();
+        if (property.isEmpty()) {
+            logger.warn(
+                    "Cannot set value {} ({}) for property {} on device {} because it is not found in the cache. Invalidating cache",
+                    setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
+            devicePropertiesCache.invalidate(dsn);
+            return;
+        }
+        var prop = property.get();
+        if (setValue instanceof Boolean b && prop instanceof DeviceProperty.BooleanDeviceProperty boolProp) {
+            boolProp.setValue(b);
+        } else if (setValue instanceof String s && prop instanceof DeviceProperty.StringDeviceProperty stringProp) {
+            stringProp.setValue(s);
+        } else if (setValue instanceof Number l && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
+            longProp.setValue(l.longValue());
+        } else {
+            logger.warn(
+                    "Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
+                    setValue, setValue.getClass().getSimpleName(), propertyName, prop.getClass().getSimpleName(), dsn);
         }
     }
 
