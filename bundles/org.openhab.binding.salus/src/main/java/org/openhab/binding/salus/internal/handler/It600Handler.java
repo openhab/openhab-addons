@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2010-2023 Contributors to the openHAB project
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * <p>
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.salus.internal.handler;
@@ -19,7 +19,6 @@ import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevi
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
-import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -190,7 +189,6 @@ public class It600Handler extends BaseThingHandler {
                 return;
             }
             cloudApi.setValueForProperty(dsn, property.get().getName(), value);
-            handleCommand(channelUID, REFRESH);
             return;
         }
 
@@ -233,7 +231,6 @@ public class It600Handler extends BaseThingHandler {
                 return;
             }
             cloudApi.setValueForProperty(dsn, property.get().getName(), value);
-            handleCommand(channelUID, REFRESH);
             return;
         }
 
@@ -252,7 +249,7 @@ public class It600Handler extends BaseThingHandler {
                     .map(DeviceProperty.LongDeviceProperty.class::cast).findAny();
         }
         if (property.isEmpty()) {
-            logger.warn("{} property not found!", shortName);
+            logger.warn("{}/{} property not found!", name, shortName);
         }
         return property;
     }
