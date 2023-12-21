@@ -131,7 +131,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     @Override
     public void onComplete(@Nullable Request request, SiemensHvacRequestHandler reqHandler) throws Exception {
-        UnregisterRequestHandler(reqHandler);
+        unregisterRequestHandler(reqHandler);
     }
 
     @Override
@@ -145,8 +145,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
         if (reqHandler.getRetryCount() >= 1) {
             logger.info("unable to handle request, retryCount>5, cancel it");
-            UnregisterRequestHandler(reqHandler);
-            RegisterHandlerError(reqHandler);
+            unregisterRequestHandler(reqHandler);
+            registerHandlerError(reqHandler);
             errorCount++;
             this.errorSource = errorSource;
             return;
@@ -183,7 +183,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private @Nullable ContentResponse executeRequest(final Request request, @Nullable SiemensHvacCallback callback)
             throws Exception {
-
         requestCount++;
 
         // For asynchronous request, we create a RequestHandler that will enable us to follow request state
@@ -196,7 +195,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         return executeRequest(request, requestHandler);
     }
 
-    private void UnregisterRequestHandler(SiemensHvacRequestHandler handler) throws SiemensHvacException {
+    private void unregisterRequestHandler(SiemensHvacRequestHandler handler) throws SiemensHvacException {
         if (!currentHandlerRegistry.containsKey(handler)) {
             throw new SiemensHvacException("Internal error, try to unregister not registred handler: " + handler);
         }
@@ -204,7 +203,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         currentHandlerRegistry.remove(handler);
     }
 
-    private void RegisterHandlerError(SiemensHvacRequestHandler handler) {
+    private void registerHandlerError(SiemensHvacRequestHandler handler) {
         handlerInErrorRegistry.put(handler, handler);
     }
 
@@ -435,13 +434,14 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     @Override
     public void displayRequestStats() {
-        logger.info("DisplayRequestStats : currentRuning {}, error {}", currentHandlerRegistry.keySet().size(),
-                handlerInErrorRegistry.keySet().size());
+        logger.debug("DisplayRequestStats : ");
+        logger.debug("    currentRuning   : {}", currentHandlerRegistry.keySet().size());
+        logger.debug("    errors          : {}", handlerInErrorRegistry.keySet().size());
     }
 
     @Override
     public void waitAllPendingRequest() {
-        logger.debug("WaitAllPendingRequest:start");
+        logger.debug("WaitAllPendingRequest:start2");
         try {
             Thread.sleep(1000);
             boolean allRequestDone = false;

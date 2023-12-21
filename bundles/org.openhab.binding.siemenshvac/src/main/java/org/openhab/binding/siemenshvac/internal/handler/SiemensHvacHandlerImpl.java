@@ -181,6 +181,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
 
+            lcHvacConnector.displayRequestStats();
+
         }
     }
 

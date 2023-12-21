@@ -82,7 +82,8 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         }
 
         if (baseUrl == null) {
-            throw new RuntimeException("baseUrl is mandatory on configuration !");
+            logger.debug("baseUrl is mandatory on configuration !");
+            return;
         }
 
         if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
@@ -106,8 +107,14 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         while (current != null) {
             sb.append(current.getLocalizedMessage());
             sb.append(",\r\n");
-            if (!throwable.getCause().equals(throwable)) {
-                current = current.getCause();
+
+            Throwable cause = throwable.getCause();
+            if (cause != null) {
+                if (!cause.equals(throwable)) {
+                    current = current.getCause();
+                } else {
+                    current = null;
+                }
             } else {
                 current = null;
             }
