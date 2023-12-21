@@ -15,12 +15,12 @@ package org.openhab.binding.myuplink.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link myUplinkConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link MyUplinkConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Alexander Friese - Initial contribution
  */
 @NonNullByDefault
-public class myUplinkConfiguration {
+public class MyUplinkConfiguration {
 
     /**
      * Sample configuration parameters. Replace with your own.

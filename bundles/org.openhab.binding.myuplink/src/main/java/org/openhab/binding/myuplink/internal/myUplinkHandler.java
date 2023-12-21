@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.myuplink.internal;
 
-import static org.openhab.binding.myuplink.internal.myUplinkBindingConstants.*;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,13 +32,13 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - Initial contribution
  */
 @NonNullByDefault
-public class myUplinkHandler extends BaseThingHandler {
+public class MyUplinkHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(myUplinkHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MyUplinkHandler.class);
 
-    private @Nullable myUplinkConfiguration config;
+    private @Nullable MyUplinkConfiguration config;
 
-    public myUplinkHandler(Thing thing) {
+    public MyUplinkHandler(Thing thing) {
         super(thing);
     }
 
@@ -60,7 +60,7 @@ public class myUplinkHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(myUplinkConfiguration.class);
+        config = getConfigAs(MyUplinkConfiguration.class);
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly, i.e. any network access must be done in
