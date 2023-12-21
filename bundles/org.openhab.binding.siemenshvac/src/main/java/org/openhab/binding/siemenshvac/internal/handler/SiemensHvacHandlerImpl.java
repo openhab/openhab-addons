@@ -182,7 +182,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             }
 
         }
-
     }
 
     private void readChannel(Channel channel) {

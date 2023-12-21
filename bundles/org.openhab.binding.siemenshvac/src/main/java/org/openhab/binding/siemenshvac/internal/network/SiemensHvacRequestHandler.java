@@ -81,5 +81,4 @@ public class SiemensHvacRequestHandler {
     public Result getResult() {
         return result;
     }
-
 }
