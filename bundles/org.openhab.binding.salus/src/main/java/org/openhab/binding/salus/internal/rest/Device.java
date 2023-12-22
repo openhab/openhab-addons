@@ -37,7 +37,7 @@ public record Device(@NotNull String dsn, @NotNull String name,
     public boolean isConnected() {
         if (properties.containsKey("connection_status")) {
             var connectionStatus = properties.get("connection_status");
-            return connectionStatus != null && connectionStatus.toString().equalsIgnoreCase("online");
+            return connectionStatus != null && "online".equalsIgnoreCase(connectionStatus.toString());
         }
         return false;
     }
