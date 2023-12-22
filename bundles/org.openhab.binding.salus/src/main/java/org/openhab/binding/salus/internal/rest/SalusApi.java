@@ -52,7 +52,7 @@ public class SalusApi {
         this.clock = requireNonNull(clock, "clock can not be null!");
         // thanks to this, logger will always inform for which rest client it's doing the job
         // it's helpful when more than one SalusApi exists
-        logger = LoggerFactory.getLogger(SalusApi.class.getName() + "[" + username.replaceAll("\\.", "_") + "]");
+        logger = LoggerFactory.getLogger(SalusApi.class.getName() + "[" + username.replace(".", "_") + "]");
     }
 
     public SalusApi(String username, char[] password, String baseUrl, RestClient restClient, GsonMapper mapper) {
