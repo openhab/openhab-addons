@@ -35,7 +35,7 @@
 			<label>Nibe ID</label>
 			<description>The ID to identify the heat pump at myUplink.</description>
 		</parameter>
-		<parameter name="pollingInterval" type="integer" required="false" min="30" max="3600" unit="s"
+		<parameter name="dataPollingInterval" type="integer" required="false" min="30" max="3600" unit="s"
 			groupName="connection">
 			<label>Polling Interval</label>
 			<description>Interval in which data is polled from myUplink (in seconds).</description>
