@@ -275,9 +275,9 @@ Additional DPTs have been introduced to add functionality:
 
 | DPT           | Description                                                 | Remark     |
 |---------------|-------------------------------------------------------------|------------|
-| DPT 232.60000 | 232.600 with RGB data (see below)                           | read/write |
-| DPT 235.001   | Composed type 235.001, first element ActiveEnergy (Wh)      | read only  |
-| DPT 235.60011 | Composed type 235.001, second element Traiff (plain number) | read only  |
+| DPT 232.60000 | DPT 232.600 with HSB instead of RGB data (see below)        | read/write |
+| DPT 235.001   | Composed DPT 235.001, first element ActiveEnergy (Wh)       | read only  |
+| DPT 235.61001 | Composed DPT 235.001, second element Tariff (plain number)  | read only  |
 
 ## KNX Secure
 
