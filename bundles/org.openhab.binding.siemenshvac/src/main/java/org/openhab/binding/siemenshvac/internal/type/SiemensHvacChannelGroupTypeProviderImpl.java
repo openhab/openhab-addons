@@ -68,4 +68,9 @@ public class SiemensHvacChannelGroupTypeProviderImpl implements SiemensHvacChann
         }
         return result;
     }
+
+    @Override
+    public void invalidate() {
+        channelGroupTypesByUID.clear();
+    }
 }

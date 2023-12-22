@@ -45,4 +45,6 @@ public interface SiemensHvacChannelTypeProvider extends ChannelTypeProvider {
      */
     @Nullable
     ChannelType getInternalChannelType(@Nullable ChannelTypeUID channelTypeUID);
+
+    void invalidate();
 }

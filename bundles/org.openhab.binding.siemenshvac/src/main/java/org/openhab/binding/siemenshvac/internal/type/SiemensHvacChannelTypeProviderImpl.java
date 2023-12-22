@@ -68,4 +68,9 @@ public class SiemensHvacChannelTypeProviderImpl implements SiemensHvacChannelTyp
     public @Nullable ChannelType getInternalChannelType(@Nullable ChannelTypeUID channelTypeUID) {
         return channelTypesByUID.get(channelTypeUID);
     }
+
+    @Override
+    public void invalidate() {
+        channelTypesByUID.clear();
+    }
 }

@@ -58,4 +58,9 @@ public class SiemensHvacThingTypeProviderImpl implements SiemensHvacThingTypePro
     public @Nullable ThingType getThingType(ThingTypeUID thingTypeUID, @Nullable Locale locale) {
         return thingTypesByUID.get(thingTypeUID);
     }
+
+    @Override
+    public void invalidate() {
+        thingTypesByUID.clear();
+    }
 }

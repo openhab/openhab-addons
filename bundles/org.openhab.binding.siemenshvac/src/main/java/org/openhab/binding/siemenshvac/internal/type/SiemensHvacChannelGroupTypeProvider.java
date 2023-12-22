@@ -46,4 +46,6 @@ public interface SiemensHvacChannelGroupTypeProvider extends ChannelGroupTypePro
      */
     @Nullable
     ChannelGroupType getInternalChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID);
+
+    void invalidate();
 }
