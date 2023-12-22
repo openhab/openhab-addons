@@ -61,4 +61,9 @@ public class SiemensHvacConfigDescriptionProviderImpl implements SiemensHvacConf
     public void addConfigDescription(ConfigDescription configDescription) {
         configDescriptionsByURI.put(configDescription.getUID(), configDescription);
     }
+
+    @Override
+    public void invalidate() {
+        configDescriptionsByURI.clear();
+    }
 }

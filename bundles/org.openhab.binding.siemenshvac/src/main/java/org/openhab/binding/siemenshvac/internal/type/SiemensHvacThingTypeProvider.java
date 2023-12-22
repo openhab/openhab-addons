@@ -46,4 +46,6 @@ public interface SiemensHvacThingTypeProvider extends ThingTypeProvider {
      */
     @Nullable
     ThingType getInternalThingType(ThingTypeUID thingTypeUID);
+
+    void invalidate();
 }

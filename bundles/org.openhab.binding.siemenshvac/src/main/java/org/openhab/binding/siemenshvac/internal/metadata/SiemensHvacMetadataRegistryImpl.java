@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -298,10 +300,19 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         logger.info("siemensHvac:Initialization():ReadCache");
         loadMetaDataFromCache();
 
+        // increase the timeout during this phase
+        // because we queued a lot of request
+        // and timeout start to run when request is queued (not executed)
+
+        Instant start = Instant.now();
+        lcHvacConnector.setTimeOut(600);
+
         logger.info("siemensHvac:Initialization():ReadDeviceList");
         readDeviceList();
 
         if (root == null) {
+            logger.info("siemensHvac:Initialization():No cache information, root==null, reading metadata from device");
+
             logger.info("siemensHvac:Initialization():BeginReadMenu");
             root = new SiemensHvacMetadataMenu();
 
@@ -334,6 +345,12 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             unresolveCount = unresolveCount();
         }
 
+        Instant end = Instant.now();
+        lcHvacConnector.setTimeOut(30);
+
+        long elapseTime = Duration.between(start, end).toSeconds();
+        logger.info("siemensHvac:Initialization():ReadMetadata in {} s", elapseTime);
+
         logger.info("siemensHvac:Initialization():SaveCache");
         saveMetaDataToCache();
 
@@ -342,10 +359,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         lcDevices = devices;
         if (lcDevices != null) {
             for (SiemensHvacMetadataDevice device : lcDevices) {
-                if (device.getType().indexOf("OZW672") >= 0) {
-                    continue;
-                }
-
                 generateThingsType(device);
             }
         }
@@ -355,8 +368,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
     private void generateThingsType(SiemensHvacMetadataDevice device) {
         SiemensHvacThingTypeProvider lcThingTypeProvider = thingTypeProvider;
-        SiemensHvacChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
-        SiemensHvacChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
         logger.debug("Generate thing types for device : {} / {}", device.getName(), device.getSerialNr());
         if (lcThingTypeProvider != null) {
             ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
@@ -374,74 +385,9 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     if (menu != null) {
                         var childs = menu.getChilds().values();
                         for (SiemensHvacMetadata child : childs) {
-
-                            if (child instanceof SiemensHvacMetadataMenu) {
-                                SiemensHvacMetadataMenu subMenu = (SiemensHvacMetadataMenu) child;
-
-                                List<ChannelDefinition> channelDefinitions = new ArrayList<>();
-
-                                for (SiemensHvacMetadata childDt : subMenu.getChilds().values()) {
-
-                                    if (childDt instanceof SiemensHvacMetadataDataPoint) {
-                                        SiemensHvacMetadataDataPoint dataPoint = (SiemensHvacMetadataDataPoint) childDt;
-
-                                        if (dataPoint.getDptType().isEmpty()) {
-                                            continue;
-                                        }
-
-                                        ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dataPoint);
-
-                                        ChannelType channelType = null;
-
-                                        if (channelTypeProvider != null && lcChannelTypeProvider != null) {
-                                            channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
-                                            if (channelType == null) {
-                                                channelType = createChannelType(dataPoint, channelTypeUID);
-                                                lcChannelTypeProvider.addChannelType(channelType);
-                                            }
-                                        }
-
-                                        SiemensHvacMetadataDataPoint dpt = ((SiemensHvacMetadataDataPoint) childDt);
-
-                                        Map<String, String> props = new Hashtable<String, String>();
-                                        props.put("dptId", "" + dpt.getDptId());
-                                        props.put("id", "" + dpt.getId());
-                                        props.put("subId", "" + dpt.getSubId());
-                                        props.put("groupdId", "" + dpt.getGroupId());
-
-                                        String id = dataPoint.getId() + "_"
-                                                + UidUtils.sanetizeId(dataPoint.getShortDesc());
-
-                                        if (channelType != null) {
-                                            ChannelDefinition channelDef = new ChannelDefinitionBuilder(id,
-                                                    channelType.getUID()).withLabel(dataPoint.getShortDesc())
-                                                    .withDescription(dataPoint.getLongDesc()).withProperties(props)
-                                                    .build();
-
-                                            channelDefinitions.add(channelDef);
-                                        }
-                                    }
-                                }
-
-                                // generate group
-                                ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(subMenu);
-                                ChannelGroupType groupType = null;
-
-                                if (lcChannelGroupTypeProvider != null) {
-                                    groupType = lcChannelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
-
-                                    if (groupType == null) {
-                                        String groupLabel = subMenu.getShortDesc();
-                                        groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
-                                                .withChannelDefinitions(channelDefinitions).withCategory("")
-                                                .withDescription(menu.getLongDesc()).build();
-                                        lcChannelGroupTypeProvider.addChannelGroupType(groupType);
-                                        groupTypes.add(groupType);
-                                    }
-                                }
-
-                            }
+                            generateThingsType(child, groupTypes, menu);
                         }
+
                     }
 
                 }
@@ -449,6 +395,84 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 tt = createThingType(device, groupTypes);
                 lcThingTypeProvider.addThingType(tt);
             }
+        }
+    }
+
+    private void generateThingsType(SiemensHvacMetadata child, List<ChannelGroupType> groupTypes,
+            SiemensHvacMetadataMenu menu) {
+        SiemensHvacChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
+        SiemensHvacChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
+
+        if (child instanceof SiemensHvacMetadataMenu) {
+            SiemensHvacMetadataMenu subMenu = (SiemensHvacMetadataMenu) child;
+
+            List<ChannelDefinition> channelDefinitions = new ArrayList<>();
+
+            for (SiemensHvacMetadata childDt : subMenu.getChilds().values()) {
+
+                try {
+                    if (childDt instanceof SiemensHvacMetadataMenu) {
+                        generateThingsType(childDt, groupTypes, menu);
+                    }
+                    if (childDt instanceof SiemensHvacMetadataDataPoint) {
+                        SiemensHvacMetadataDataPoint dataPoint = (SiemensHvacMetadataDataPoint) childDt;
+
+                        if (dataPoint.getDptType().isEmpty()) {
+                            continue;
+                        }
+
+                        ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dataPoint);
+
+                        ChannelType channelType = null;
+
+                        if (channelTypeProvider != null && lcChannelTypeProvider != null) {
+                            channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
+                            if (channelType == null) {
+                                channelType = createChannelType(dataPoint, channelTypeUID);
+                                lcChannelTypeProvider.addChannelType(channelType);
+                            }
+                        }
+
+                        SiemensHvacMetadataDataPoint dpt = ((SiemensHvacMetadataDataPoint) childDt);
+
+                        Map<String, String> props = new Hashtable<String, String>();
+                        props.put("dptId", "" + dpt.getDptId());
+                        props.put("id", "" + dpt.getId());
+                        props.put("subId", "" + dpt.getSubId());
+                        props.put("groupdId", "" + dpt.getGroupId());
+
+                        String id = dataPoint.getId() + "_" + UidUtils.sanetizeId(dataPoint.getShortDesc());
+
+                        if (channelType != null) {
+                            ChannelDefinition channelDef = new ChannelDefinitionBuilder(id, channelType.getUID())
+                                    .withLabel(dataPoint.getShortDesc()).withDescription(dataPoint.getLongDesc())
+                                    .withProperties(props).build();
+
+                            channelDefinitions.add(channelDef);
+                        }
+                    }
+                } catch (Exception ex) {
+                    logger.info("unable to create channel for: {}", childDt);
+                }
+            }
+
+            // generate group
+            ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(subMenu);
+            ChannelGroupType groupType = null;
+
+            if (lcChannelGroupTypeProvider != null) {
+                groupType = lcChannelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
+
+                if (groupType == null) {
+                    String groupLabel = subMenu.getShortDesc();
+                    groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
+                            .withChannelDefinitions(channelDefinitions).withCategory("")
+                            .withDescription(menu.getLongDesc()).build();
+                    lcChannelGroupTypeProvider.addChannelGroupType(groupType);
+                    groupTypes.add(groupType);
+                }
+            }
+
         }
     }
 
@@ -1211,6 +1235,22 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         root = null;
         if (hvacConnector != null) {
             hvacConnector.invalidate();
+        }
+
+        if (channelGroupTypeProvider != null) {
+            channelGroupTypeProvider.invalidate();
+        }
+
+        if (thingTypeProvider != null) {
+            thingTypeProvider.invalidate();
+        }
+
+        if (channelTypeProvider != null) {
+            channelTypeProvider.invalidate();
+        }
+
+        if (configDescriptionProvider != null) {
+            configDescriptionProvider.invalidate();
         }
     }
 }
