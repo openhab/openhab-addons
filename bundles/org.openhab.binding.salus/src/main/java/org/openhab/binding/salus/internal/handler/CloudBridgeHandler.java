@@ -28,6 +28,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.*;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -44,6 +45,7 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public final class CloudBridgeHandler extends BaseBridgeHandler implements CloudApi {
     private Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName());
     private final HttpClientFactory httpClientFactory;

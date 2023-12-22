@@ -15,12 +15,14 @@ package org.openhab.binding.salus.internal.handler;
 import java.util.Optional;
 import java.util.SortedSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public interface CloudApi {
     SortedSet<Device> findDevices();
 

@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class DeviceHandler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private final Logger logger;

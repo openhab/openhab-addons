@@ -19,6 +19,7 @@ import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevi
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.handler.CloudApi;
 import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.rest.Device;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class CloudDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(CloudDiscovery.class);
     private final CloudApi cloudApi;
