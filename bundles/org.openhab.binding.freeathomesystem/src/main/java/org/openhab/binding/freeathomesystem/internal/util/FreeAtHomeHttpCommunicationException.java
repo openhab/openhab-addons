@@ -15,6 +15,9 @@ package org.openhab.binding.freeathomesystem.internal.util;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link FreeAtHomeHttpCommunicationException} is responsible for handling the communication exception to the SysAp
  * via HTTP link
@@ -23,6 +26,7 @@ import java.util.Objects;
  * @param <FreeAtHomeHttpCommunicationException>
  *
  */
+@NonNullByDefault
 public class FreeAtHomeHttpCommunicationException extends Exception {
     private static final long serialVersionUID = -817364286035448863L;
     private String errorMessage = "Unknown_Exception";
@@ -35,7 +39,7 @@ public class FreeAtHomeHttpCommunicationException extends Exception {
         this.errorCode = errorCode;
     }
 
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return this.errorMessage;
     }
 
@@ -54,7 +58,7 @@ public class FreeAtHomeHttpCommunicationException extends Exception {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }

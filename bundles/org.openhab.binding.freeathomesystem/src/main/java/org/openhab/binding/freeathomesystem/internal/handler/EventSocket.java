@@ -13,9 +13,9 @@
 
 package org.openhab.binding.freeathomesystem.internal.handler;
 
+import java.io.IOException;
 import java.util.Locale;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Phaser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,37 +39,47 @@ public class EventSocket extends WebSocketAdapter {
 
     private @Nullable FreeAtHomeBridgeHandler freeAtHomeBridge;
 
-    private @Nullable CountDownLatch closureLatch = null;
+    private Phaser phaser = new Phaser();
+
+    int registeredParties = 1;
 
     @Override
     public void onWebSocketConnect(@Nullable Session session) {
         super.onWebSocketConnect(session);
 
-        if (closureLatch != null) {
-            session.setIdleTimeout(-1);
+        Session localSession = session;
 
-            logger.debug("Socket Connected - Timeout {} - latch [ {} ] - sesson: {}", session.getIdleTimeout(),
-                    closureLatch.getCount(), session);
+        if (localSession != null) {
+            localSession.setIdleTimeout(-1);
+
+            logger.debug("Socket Connected - Timeout {} - phaser [ {} ] - sesson: {}", localSession.getIdleTimeout(),
+                    phaser.getArrivedParties(), localSession);
         } else {
-            logger.debug("Socket Connected - but latch was not initialized - sesson: {}", session);
+            logger.debug("Socket Connected - Timeout (invalid) - latch [ 1 ] - sesson: (invalid)");
         }
     }
 
     @Override
-    @SuppressWarnings("null")
     public void onWebSocketText(@Nullable String message) {
         super.onWebSocketText(message);
 
-        if (message.toLowerCase(Locale.US).contains("bye")) {
-            getSession().close(StatusCode.NORMAL, "Thanks");
-            logger.debug("Websocket connection closed: {} ", message);
-        } else {
-            logger.info("Received websocket text: {} ", message);
-            if (freeAtHomeBridge != null) {
-                freeAtHomeBridge.processSocketEvent(message);
+        if (message != null) {
+            if (message.toLowerCase(Locale.US).contains("bye")) {
+                getSession().close(StatusCode.NORMAL, "Thanks");
+                logger.debug("Websocket connection closed: {} ", message);
             } else {
-                logger.debug("No bridge available to handle the event");
+                logger.info("Received websocket text: {} ", message);
+
+                FreeAtHomeBridgeHandler bridge = freeAtHomeBridge;
+
+                if (bridge != null) {
+                    bridge.processSocketEvent(message);
+                } else {
+                    logger.debug("No bridge available to handle the event");
+                }
             }
+        } else {
+            logger.debug("Invalid message string");
         }
     }
 
@@ -79,45 +89,35 @@ public class EventSocket extends WebSocketAdapter {
 
         logger.debug("Socket Closed: [ {} ] {}", statusCode, reason);
 
-        if (closureLatch != null) {
-            closureLatch.countDown();
-
-            logger.debug("Socket Closed - Latch [ {} ]", closureLatch.getCount());
-        } else {
-            logger.debug("Socket Closed - Latch was not reseted");
-        }
+        phaser.arrive();
     }
 
     @Override
     public void onWebSocketError(@Nullable Throwable cause) {
         super.onWebSocketError(cause);
 
-        logger.debug("Socket Error: {}", cause.getLocalizedMessage());
-
-        if (closureLatch != null) {
-            closureLatch.countDown();
+        if (cause != null) {
+            logger.debug("Socket Error: {}", cause.getLocalizedMessage());
         } else {
-            logger.debug("Socket Error - Latch was not reseted");
+            logger.debug("Socket Error: unknown");
         }
+
+        phaser.arrive();
     }
 
-    public boolean awaitEndCommunication(int timeOut) throws InterruptedException {
-        boolean retVal = false;
-        if (closureLatch != null) {
-            retVal = closureLatch.await(timeOut, TimeUnit.SECONDS);
-        } else {
-            logger.debug("Awaiting called - Latch was not reseted");
-        }
-        return retVal;
+    public void sendKeepAliveMessage(String message) throws IOException {
+        getSession().getRemote().sendString(message);
     }
 
     public void resetEventSocket() {
-        closureLatch = new CountDownLatch(1);
-        logger.debug("Socket latch reseted - restart latch to [ {} ]", closureLatch.getCount());
+        if (phaser.getRegisteredParties() > 0)
+
+            registeredParties = phaser.register();
+        logger.debug("Socket phaser reseted - restart phaser to [ {} ]", phaser.getRegisteredParties());
     }
 
-    public @Nullable CountDownLatch getLatch() {
-        return closureLatch;
+    public boolean isSocketClosed() {
+        return phaser.isTerminated();
     }
 
     public void setBridge(@Nullable FreeAtHomeBridgeHandler bridge) {

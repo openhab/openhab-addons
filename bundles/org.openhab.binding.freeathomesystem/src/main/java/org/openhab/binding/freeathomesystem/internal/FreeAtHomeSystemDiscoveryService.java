@@ -56,7 +56,6 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
                     deviceList = bridge.getDeviceDeviceList();
 
                     for (int i = 0; i < deviceList.size(); i++) {
-
                         FreeAtHomeDeviceDescription device = bridge.getFreeatHomeDeviceDescription(deviceList.get(i));
 
                         boolean useGenericDevice = true;
@@ -81,7 +80,6 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
                     }
 
                     stopScan();
-
                 } catch (FreeAtHomeHttpCommunicationException e) {
                     logger.debug("TCommunication error in device discovery with the bridge: {}",
                             bridge.getThing().getLabel());
