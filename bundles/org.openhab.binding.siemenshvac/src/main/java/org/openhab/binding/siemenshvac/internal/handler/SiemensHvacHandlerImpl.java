@@ -147,6 +147,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             int previousRequestCount = lcHvacConnector.getRequestCount();
             int previousErrorCount = lcHvacConnector.getErrorCount();
 
+            logger.debug("readChannels :");
             for (Channel channel : chList) {
                 readChannel(channel);
             }
@@ -187,8 +188,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
     }
 
     private void readChannel(Channel channel) {
-        logger.debug("readChannel : {}", channel.getDescription());
-
         ThingHandlerCallback cb = this.getCallback();
         boolean isLink = false;
 
@@ -199,6 +198,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         if (!isLink) {
             return;
         }
+
+        logger.debug("readChannel : {}", channel.getDescription());
 
         ChannelType tp = channelTypeRegistry.getChannelType(channel.getChannelTypeUID());
 
@@ -223,7 +224,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             return;
         }
         readDp(id, uid, type, true);
-        logger.debug("isChannelLink : {}", isLink);
     }
 
     public void decodeReadDp(@Nullable JsonObject response, @Nullable String uid, @Nullable String dp,
