@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.salus.internal.rest;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import java.util.Map;
 import java.util.Objects;
 
@@ -20,6 +22,7 @@ import javax.validation.constraints.NotNull;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public abstract sealed class DeviceProperty<T> implements Comparable<DeviceProperty> {
 
     private final @NotNull String name;
