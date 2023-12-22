@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.salus.internal;
 
-import static org.openhab.binding.salus.internal.SalusBindingConstants.*;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_DEVICE_TYPE;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_IT600_DEVICE_TYPE;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_SERVER_TYPE;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import java.util.Hashtable;
 
