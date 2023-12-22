@@ -184,7 +184,7 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private static String removeX100(String name) {
-        var withoutSuffix = name.replaceAll("_x100", "").replaceAll("x100", "");
+        var withoutSuffix = name.replace("_x100", "").replace("x100", "");
         if (withoutSuffix.endsWith("_")) {
             withoutSuffix = withoutSuffix.substring(0, withoutSuffix.length() - 2);
         }
