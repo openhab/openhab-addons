@@ -47,7 +47,7 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class GsonMapper {
     public static final GsonMapper INSTANCE = new GsonMapper();
-    private static final Logger logger = LoggerFactory.getLogger(GsonMapper.class);
+    private final Logger logger = LoggerFactory.getLogger(GsonMapper.class);
     private static final TypeToken<Map<String, Object>> MAP_TYPE_REFERENCE = new TypeToken<>() {
     };
     private static final TypeToken<List<Object>> LIST_TYPE_REFERENCE = new TypeToken<>() {
