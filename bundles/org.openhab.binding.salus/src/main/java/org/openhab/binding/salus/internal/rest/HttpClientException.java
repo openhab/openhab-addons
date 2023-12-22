@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.salus.internal.rest;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.io.Serial;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Martin Grześlowski - Initial contribution

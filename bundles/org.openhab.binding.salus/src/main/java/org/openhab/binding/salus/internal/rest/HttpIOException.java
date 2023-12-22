@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.salus.internal.rest;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.io.IOException;
 import java.io.Serial;
 import java.io.UncheckedIOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Martin Grześlowski - Initial contribution
