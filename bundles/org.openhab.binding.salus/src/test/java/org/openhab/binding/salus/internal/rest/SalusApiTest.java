@@ -194,7 +194,7 @@ public class SalusApiTest {
         setAuthToken(salusApi, restClient, mapper, authToken);
 
         // When
-        var response = salusApi.findDeviceProperties("dsn");
+        salusApi.findDeviceProperties("dsn");
 
         // Given
     }
