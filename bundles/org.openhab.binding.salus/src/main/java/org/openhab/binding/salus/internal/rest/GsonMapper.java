@@ -29,6 +29,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,7 @@ import com.google.gson.reflect.TypeToken;
  * 
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class GsonMapper {
     public static final GsonMapper INSTANCE = new GsonMapper();
     private static final Logger logger = LoggerFactory.getLogger(GsonMapper.class);
