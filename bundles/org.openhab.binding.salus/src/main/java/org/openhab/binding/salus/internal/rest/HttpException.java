@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.salus.internal.rest;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import java.io.Serial;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class HttpException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 1453496993827105778L;

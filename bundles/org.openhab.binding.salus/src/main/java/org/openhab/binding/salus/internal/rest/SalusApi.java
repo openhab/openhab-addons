@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class SalusApi {
     private static final int MAX_TIMES = 3;
     private final Logger logger;

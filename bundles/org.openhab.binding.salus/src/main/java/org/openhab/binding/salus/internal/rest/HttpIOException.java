@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.salus.internal.rest;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.io.UncheckedIOException;
@@ -20,6 +22,7 @@ import java.io.UncheckedIOException;
  * @author Martin Grześlowski - Initial contribution
  */
 @SuppressWarnings("SerializableHasSerializationMethods")
+@NonNullByDefault
 final class HttpIOException extends UncheckedIOException {
     @Serial
     private static final long serialVersionUID = 1L;
