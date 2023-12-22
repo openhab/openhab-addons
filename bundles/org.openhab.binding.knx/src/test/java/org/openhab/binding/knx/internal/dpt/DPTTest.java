@@ -331,6 +331,30 @@ class DPTTest {
     }
 
     @Test
+    public void dpt235Decoder() {
+        byte[] noActiveEnergy = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xfd };
+        assertNull(ValueDecoder.decode("235.001", noActiveEnergy, QuantityType.class));
+
+        byte[] noTariff = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xfe };
+        assertNull(ValueDecoder.decode("235.61001", noTariff, DecimalType.class));
+
+        byte[] activeEnergy = new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x03, (byte) 0xff, (byte) 0x0a, (byte) 0x02 };
+        assertEquals(new QuantityType<>("1023 Wh"), ValueDecoder.decode("235.001", activeEnergy, QuantityType.class));
+
+        byte[] activeTariff = new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x03, (byte) 0xff, (byte) 0x0a, (byte) 0x01 };
+        assertEquals(new DecimalType("10"), ValueDecoder.decode("235.61001", activeTariff, DecimalType.class));
+
+        byte[] activeAll = new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x03, (byte) 0xff, (byte) 0x0a, (byte) 0x03 };
+        assertEquals(new QuantityType<>("1023 Wh"), ValueDecoder.decode("235.001", activeAll, QuantityType.class));
+        assertEquals(new DecimalType("10"), ValueDecoder.decode("235.61001", activeAll, DecimalType.class));
+
+        byte[] negativeEnergy = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00,
+                (byte) 0x02 };
+        assertEquals(new QuantityType<>("-1 Wh"), ValueDecoder.decode("235.001", negativeEnergy, QuantityType.class));
+    }
+
+    @Test
     public void dpt251White() {
         // input data: color white
         byte[] data = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x00, 0x00, 0x0e };
