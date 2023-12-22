@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
  * @author Martin Grześlowski - Initial contribution
  */
 @SuppressWarnings("EqualsWithItself")
+@NonNullByDefault
 class DeviceTest {
 
     // Returns true if 'connection_status' property exists and is set to 'online'
