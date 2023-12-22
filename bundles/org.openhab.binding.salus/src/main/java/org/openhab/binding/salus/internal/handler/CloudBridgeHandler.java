@@ -29,7 +29,11 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.salus.internal.rest.*;
+import org.openhab.binding.salus.internal.rest.Device;
+import org.openhab.binding.salus.internal.rest.DeviceProperty;
+import org.openhab.binding.salus.internal.rest.GsonMapper;
+import org.openhab.binding.salus.internal.rest.JettyHttpClient;
+import org.openhab.binding.salus.internal.rest.SalusApi;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
