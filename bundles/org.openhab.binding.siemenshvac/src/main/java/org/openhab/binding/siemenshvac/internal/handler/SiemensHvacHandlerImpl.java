@@ -255,7 +255,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             }
 
             if (("Numeric").equals(typer)) {
-                updateState(updateKey, new DecimalType(value.getAsDouble()));
+                if ("----".equals(value.getAsString())) {
+                    updateState(updateKey, new DecimalType(0));
+                } else {
+                    updateState(updateKey, new DecimalType(value.getAsDouble()));
+                }
             } else if ("Enumeration".equals(typer)) {
                 if (enumValue != null) {
                     updateState(updateKey, new DecimalType(enumValue.getAsInt()));
