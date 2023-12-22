@@ -21,6 +21,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,9 @@ public class SalusApi {
     private final String baseUrl;
     private final RestClient restClient;
     private final GsonMapper mapper;
+    @Nullable
     private AuthToken authToken;
+    @Nullable
     private LocalDateTime authTokenExpireTime;
     private final Clock clock;
 
@@ -61,7 +64,7 @@ public class SalusApi {
         this(username, password, baseUrl, restClient, mapper, Clock.systemDefaultZone());
     }
 
-    private RestClient.Response<String> get(String url, RestClient.Header header, int times) {
+    private RestClient.Response<@Nullable String> get(String url, RestClient.Header header, int times) {
         refreshAccessToken();
         var response = restClient.get(url, authHeader());
         if (response.statusCode() == 401) {
@@ -76,7 +79,7 @@ public class SalusApi {
         return response;
     }
 
-    private RestClient.Response<String> post(String url, RestClient.Content content, RestClient.Header header,
+    private RestClient.Response<@Nullable String> post(String url, RestClient.Content content, RestClient.Header header,
             int times) {
         refreshAccessToken();
         var response = restClient.post(url, content, header);
@@ -135,7 +138,7 @@ public class SalusApi {
         if (response.statusCode() != 200) {
             throw new HttpUnknownException(response.statusCode(), method, finalUrl);
         }
-        authToken = mapper.authToken(response.body());
+        authToken = mapper.authToken(requireNonNull(response.body()));
         authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(authToken.expiresIn());
         logger.info("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, authToken.role(),
                 authTokenExpireTime, authToken.expiresIn());
@@ -154,7 +157,11 @@ public class SalusApi {
     }
 
     private boolean expiredToken() {
-        return LocalDateTime.now(clock).isAfter(authTokenExpireTime);
+        var token = authTokenExpireTime;
+        if (token == null) {
+            return true;
+        }
+        return LocalDateTime.now(clock).isAfter(token);
     }
 
     private boolean shouldRefreshTokenBeforeExpire() {
@@ -179,7 +186,7 @@ public class SalusApi {
             return error(mapper.parseError(response));
         }
 
-        var devices = new TreeSet<>(mapper.parseDevices(response.body()));
+        var devices = new TreeSet<>(mapper.parseDevices(requireNonNull(response.body())));
         logger.debug("findDevices()->OK");
         return ApiResponse.ok(devices);
     }
@@ -198,7 +205,7 @@ public class SalusApi {
             return error(mapper.parseError(response));
         }
 
-        var deviceProperties = new TreeSet<>(mapper.parseDeviceProperties(response.body()));
+        var deviceProperties = new TreeSet<>(mapper.parseDeviceProperties(requireNonNull(response.body())));
         logger.debug("findDeviceProperties({})->OK", dsn);
         return ApiResponse.ok(deviceProperties);
     }

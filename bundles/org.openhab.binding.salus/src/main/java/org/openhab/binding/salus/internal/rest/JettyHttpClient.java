@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2010-2023 Contributors to the openHAB project
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * <p>
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.salus.internal.rest;
@@ -17,6 +17,7 @@ import static java.util.Objects.requireNonNull;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.Request;
@@ -40,14 +41,14 @@ public class JettyHttpClient implements RestClient {
     }
 
     @Override
-    public Response<String> get(String url, Header... headers) {
-        var request = client.newRequest(url);
+    public Response<@Nullable String> get(String url, @Nullable Header... headers) {
+        var request = requireNonNull(client.newRequest(url));
         return execute(request, headers, url);
     }
 
     @Override
-    public Response<String> post(String url, Content content, Header... headers) {
-        var request = client.POST(url);
+    public Response<@Nullable String> post(String url, @Nullable Content content, @Nullable Header... headers) {
+        var request = requireNonNull(client.POST(url));
         if (content != null) {
             request.content(new StringContentProvider(content.body()), content.type());
         }
@@ -55,13 +56,11 @@ public class JettyHttpClient implements RestClient {
     }
 
     @NotNull
-    private RestClient.Response<String> execute(Request request, Header[] headers, String url) {
+    private Response<@Nullable String> execute(Request request, @Nullable Header[] headers, String url) {
         try {
-            if (headers != null) {
-                for (var header : headers) {
-                    for (var value : header.values()) {
-                        request.header(header.name(), value);
-                    }
+            for (var header : headers) {
+                for (var value : header.values()) {
+                    request.header(header.name(), value);
                 }
             }
             var response = request.send();
