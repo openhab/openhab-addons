@@ -16,6 +16,7 @@ import static java.util.Objects.requireNonNull;
 
 import javax.validation.constraints.NotNull;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.Request;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class JettyHttpClient implements RestClient {
     private final Logger logger = LoggerFactory.getLogger(JettyHttpClient.class);
     private final HttpClient client;
