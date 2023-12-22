@@ -302,7 +302,7 @@ public class GsonMapper {
     }
 
     public String datapointParam(Object value) {
-        return gson.toJson(singletonMap("datapoint", singletonMap("value", value)));
+        return gson.toJson(Map.of("datapoint", Map.of("value", value)));
     }
 
     public Optional<Object> datapointValue(String json) {
