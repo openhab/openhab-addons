@@ -51,7 +51,9 @@ public class It600Handler extends BaseThingHandler {
             "ep_9:sIT600TH:HeatingSetpoint_x100", "ep_9:sIT600TH:SetHeatingSetpoint_x100", "ep_9:sIT600TH:HoldType",
             "ep_9:sIT600TH:SetHoldType");
     private final Logger logger;
+    @NonNullByDefault({})
     private String dsn;
+    @NonNullByDefault({})
     private CloudApi cloudApi;
 
     public It600Handler(Thing thing) {

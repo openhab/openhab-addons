@@ -12,37 +12,44 @@
  */
 package org.openhab.binding.salus.internal.rest;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
-import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public abstract sealed class DeviceProperty<T> implements Comparable<DeviceProperty> {
+public abstract sealed class DeviceProperty<T> implements Comparable<DeviceProperty<?>> {
 
     private final @NotNull String name;
     private final Boolean readOnly;
+    @Nullable
     private final String direction;
+    @Nullable
     private final String dataUpdatedAt;
+    @Nullable
     private final String productName;
+    @Nullable
     private final String displayName;
     private T value;
     private final Map<String, Object> properties;
 
-    protected DeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt, String productName,
-            String displayName, T value, Map<String, Object> properties) {
-        this.name = Objects.requireNonNull(name, "name cannot be null!");
+    protected DeviceProperty(String name, @Nullable Boolean readOnly, @Nullable String direction,
+            @Nullable String dataUpdatedAt, @Nullable String productName, @Nullable String displayName,
+            @Nullable T value, @Nullable Map<String, Object> properties) {
+        this.name = requireNonNull(name, "name cannot be null!");
         this.readOnly = readOnly != null ? readOnly : true;
         this.direction = direction;
         this.dataUpdatedAt = dataUpdatedAt;
         this.productName = productName;
         this.displayName = displayName;
-        this.value = Objects.requireNonNull(value, "value");
+        this.value = requireNonNull(value, "value");
         this.properties = properties != null ? properties : Map.of();
     }
 
@@ -54,21 +61,25 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
         return readOnly;
     }
 
+    @Nullable
     public String getDirection() {
         return direction;
     }
 
+    @Nullable
     public String getDataUpdatedAt() {
         return dataUpdatedAt;
     }
 
+    @Nullable
     public String getProductName() {
         return productName;
     }
 
     @NotNull
     public String getDisplayName() {
-        return displayName != null ? displayName : name;
+        var dn = displayName;
+        return dn != null ? dn : name;
     }
 
     public T getValue() {
@@ -84,7 +95,7 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) {
             return true;
         }
@@ -118,12 +129,13 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
      */
     public static final class BooleanDeviceProperty extends DeviceProperty<Boolean> {
 
-        protected BooleanDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt,
-                String productName, String displayName, Boolean value, Map<String, Object> properties) {
+        protected BooleanDeviceProperty(String name, @Nullable Boolean readOnly, @Nullable String direction,
+                @Nullable String dataUpdatedAt, @Nullable String productName, @Nullable String displayName,
+                @Nullable Boolean value, @Nullable Map<String, Object> properties) {
             super(name, readOnly, direction, dataUpdatedAt, productName, displayName, findValue(value), properties);
         }
 
-        private static Boolean findValue(Boolean value) {
+        private static Boolean findValue(@Nullable Boolean value) {
             return value != null ? value : false;
         }
     }
@@ -133,12 +145,13 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
      */
     public static final class LongDeviceProperty extends DeviceProperty<Long> {
 
-        protected LongDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt,
-                String productName, String displayName, Long value, Map<String, Object> properties) {
+        protected LongDeviceProperty(String name, @Nullable Boolean readOnly, @Nullable String direction,
+                @Nullable String dataUpdatedAt, @Nullable String productName, @Nullable String displayName,
+                @Nullable Long value, @Nullable Map<String, Object> properties) {
             super(name, readOnly, direction, dataUpdatedAt, productName, displayName, findValue(value), properties);
         }
 
-        private static Long findValue(Long value) {
+        private static Long findValue(@Nullable Long value) {
             return value != null ? value : 0;
         }
     }
@@ -148,12 +161,13 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
      */
     public static final class StringDeviceProperty extends DeviceProperty<String> {
 
-        protected StringDeviceProperty(String name, Boolean readOnly, String direction, String dataUpdatedAt,
-                String productName, String displayName, String value, Map<String, Object> properties) {
+        protected StringDeviceProperty(String name, @Nullable Boolean readOnly, @Nullable String direction,
+                @Nullable String dataUpdatedAt, @Nullable String productName, @Nullable String displayName,
+                @Nullable String value, @Nullable Map<String, Object> properties) {
             super(name, readOnly, direction, dataUpdatedAt, productName, displayName, findValue(value), properties);
         }
 
-        private static String findValue(String value) {
+        private static String findValue(@Nullable String value) {
             return value != null ? value : "";
         }
     }

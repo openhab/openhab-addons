@@ -16,6 +16,7 @@ import static java.lang.Boolean.parseBoolean;
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static java.util.Collections.unmodifiableSortedMap;
+import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +61,7 @@ public class GsonMapper {
     }
 
     public AuthToken authToken(String json) {
-        return gson.fromJson(json, AuthToken.class);
+        return requireNonNull(gson.fromJson(json, AuthToken.class));
     }
 
     public List<Device> parseDevices(String json) {
@@ -131,7 +133,10 @@ public class GsonMapper {
     }
 
     @SuppressWarnings("SameParameterValue")
-    private <T> T tryParseBody(String body, TypeToken<T> typeToken, T defaultValue) {
+    private <T> T tryParseBody(@Nullable String body, TypeToken<T> typeToken, T defaultValue) {
+        if (body == null) {
+            return defaultValue;
+        }
         try {
             return gson.fromJson(body, typeToken);
         } catch (JsonSyntaxException e) {
@@ -140,14 +145,14 @@ public class GsonMapper {
         }
     }
 
-    public Error parseError(RestClient.Response<String> response) {
+    public Error parseError(RestClient.Response<@Nullable String> response) {
         var map = tryParseBody(response.body(), MAP_TYPE_REFERENCE, Map.of());
         if (!map.containsKey("error")) {
             return new Error(response.statusCode(), "<ERROR>");
         }
         var errorValue = (String) map.get("error");
         try {
-            return gson.fromJson(errorValue, Error.class);
+            return requireNonNull(gson.fromJson(errorValue, Error.class));
         } catch (JsonSyntaxException e) {
             logger.warn("Cannot parse Error from string:\n{}", errorValue);
             return new Error(response.statusCode(), "<ERROR>");
@@ -163,7 +168,7 @@ public class GsonMapper {
         return Collections.unmodifiableList(deviceProperties);
     }
 
-    private Optional<DeviceProperty<?>> parseDeviceProperty(Object obj) {
+    private Optional<DeviceProperty<?>> parseDeviceProperty(@Nullable Object obj) {
         if (!(obj instanceof Map<?, ?> firstLevelMap)) {
             logger.warn("Cannot parse device property, because object is not type of map!\n{}", obj);
             return empty();
@@ -195,7 +200,7 @@ public class GsonMapper {
             }
             return empty();
         }
-        var name = (String) map.get("name");
+        var name = requireNonNull((String) map.get("name"));
 
         // other meaningful properties
         var baseType = findOrNull(map, "base_type");
@@ -229,9 +234,9 @@ public class GsonMapper {
                 displayName, properties));
     }
 
-    private DeviceProperty<?> buildDeviceProperty(String name, String baseType, Object value, Boolean readOnly,
-            String direction, String dataUpdatedAt, String productName, String displayName,
-            SortedMap<String, Object> properties) {
+    private DeviceProperty<?> buildDeviceProperty(String name, @Nullable String baseType, @Nullable Object value,
+            @Nullable Boolean readOnly, @Nullable String direction, @Nullable String dataUpdatedAt,
+            @Nullable String productName, @Nullable String displayName, SortedMap<String, Object> properties) {
         if ("boolean".equalsIgnoreCase(baseType)) {
             Boolean bool;
             if (value == null) {
@@ -276,6 +281,7 @@ public class GsonMapper {
                 displayName, string, properties);
     }
 
+    @Nullable
     private String findOrNull(Map<?, ?> map, String name) {
         if (!map.containsKey(name)) {
             return null;
@@ -284,6 +290,7 @@ public class GsonMapper {
     }
 
     @SuppressWarnings("SameParameterValue")
+    @Nullable
     private Boolean findBoolOrNull(Map<?, ?> map, String name) {
         if (!map.containsKey(name)) {
             return null;
@@ -302,6 +309,7 @@ public class GsonMapper {
     }
 
     @SuppressWarnings("SameParameterValue")
+    @Nullable
     private Object findObjectOrNull(Map<?, ?> map, String name) {
         if (!map.containsKey(name)) {
             return null;
@@ -313,7 +321,10 @@ public class GsonMapper {
         return gson.toJson(Map.of("datapoint", Map.of("value", value)));
     }
 
-    public Optional<Object> datapointValue(String json) {
+    public Optional<Object> datapointValue(@Nullable String json) {
+        if (json == null) {
+            return empty();
+        }
         var map = tryParseBody(json, MAP_TYPE_REFERENCE, Map.of());
         if (!map.containsKey("datapoint")) {
             return empty();

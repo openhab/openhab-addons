@@ -15,13 +15,17 @@ package org.openhab.binding.salus.internal.rest;
 import java.util.List;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public interface RestClient {
-    Response<String> get(String url, Header... headers);
+    Response<@Nullable String> get(String url, @Nullable Header... headers);
 
-    Response<String> post(String url, Content content, Header... headers);
+    Response<@Nullable String> post(String url, Content content, @Nullable Header... headers);
 
     record Content(String body, String type) {
         public Content(String body) {
