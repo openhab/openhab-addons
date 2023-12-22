@@ -16,6 +16,7 @@ import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.myuplink.internal.AtomicReferenceTrait;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - Initial contribution
  */
 @NonNullByDefault
-public class MyUplinkAccountHandler extends BaseThingHandler {
+public class MyUplinkAccountHandler extends BaseThingHandler implements MyUplinkBridgeHandler, AtomicReferenceTrait {
 
     private final Logger logger = LoggerFactory.getLogger(MyUplinkAccountHandler.class);
 
