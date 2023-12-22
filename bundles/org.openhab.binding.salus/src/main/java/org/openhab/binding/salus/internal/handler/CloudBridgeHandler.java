@@ -105,7 +105,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         salusApi = new SalusApi(username, password, url, httpClient, GsonMapper.INSTANCE);
         logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName() + "[" + username.replace(".", "_") + "]");
         try {
-            var devices = salusApi.findDevices();
+            salusApi.findDevices();
         } catch (Exception ex) {
             var msg = "Cannot connect to Salus Cloud! Probably username/password mismatch!";
             logger.error(msg, ex);
