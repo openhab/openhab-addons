@@ -458,7 +458,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 }
                 Thread.sleep(1000);
 
-                if ((idx % 30) == 0) {
+                if ((idx % 60) == 0) {
                     CheckStaleRequest();
                 }
                 idx++;
@@ -472,6 +472,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     public void CheckStaleRequest() {
         logger.debug("check stale request::begin");
+        int staleRequest = 0;
         for (SiemensHvacRequestHandler handler : handlerInErrorRegistry.keySet()) {
             long elapseTime = handler.getElapseTime();
             if (elapseTime > 300) {
@@ -481,6 +482,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                     uri = request.getURI().toString();
                 }
                 logger.debug("find stale request: {} {}", elapseTime, uri);
+                staleRequest++;
 
                 try {
                     unregisterRequestHandler(handler);
@@ -491,7 +493,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
             }
         }
-        logger.debug("check stale request::end");
+        logger.debug("check stale request::end : {}", staleRequest);
     }
 
     @Override
