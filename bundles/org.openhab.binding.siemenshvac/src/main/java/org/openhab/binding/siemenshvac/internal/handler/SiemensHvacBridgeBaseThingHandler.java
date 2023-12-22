@@ -97,7 +97,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         config = lcConfig;
 
         // Will read metadata in background to not block initialize for a long period !
-        scheduler.schedule(this::pollingCode, 1, TimeUnit.SECONDS);
+        scheduler.schedule(this::initializeCode, 1, TimeUnit.SECONDS);
     }
 
     public static String getStackTrace(final Throwable throwable) {
@@ -122,7 +122,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         return sb.toString();
     }
 
-    private void pollingCode() {
+    private void initializeCode() {
         try {
             metaDataRegistry.readMeta();
             updateStatus(ThingStatus.ONLINE);
