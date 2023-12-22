@@ -31,10 +31,6 @@
 			<context>password</context>
 			<description>The Client Secret to login at myUplink.</description>
 		</parameter>
-		<parameter name="nibeId" type="text" required="true" groupName="general">
-			<label>Nibe ID</label>
-			<description>The ID to identify the heat pump at myUplink.</description>
-		</parameter>
 		<parameter name="dataPollingInterval" type="integer" required="false" min="30" max="3600" unit="s"
 			groupName="connection">
 			<label>Polling Interval</label>

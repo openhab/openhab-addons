@@ -24,7 +24,6 @@ public class MyUplinkConfiguration {
 
     private String clientId = "";
     private String clientSecret = "";
-    private String nibeId = "";
 
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
@@ -56,20 +55,6 @@ public class MyUplinkConfiguration {
      */
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
-    }
-
-    /**
-     * @return the nibeId
-     */
-    public String getNibeId() {
-        return nibeId;
-    }
-
-    /**
-     * @param nibeId the nibeId to set
-     */
-    public void setNibeId(String nibeId) {
-        this.nibeId = nibeId;
     }
 
     /**
@@ -118,9 +103,8 @@ public class MyUplinkConfiguration {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("MyUplinkConfiguration [clientId=").append(clientId).append(", clientSecret=")
-                .append(clientSecret).append(", nibeId=").append(nibeId).append(", asyncTimeout=").append(asyncTimeout)
-                .append(", syncTimeout=").append(syncTimeout).append(", dataPollingInterval=")
-                .append(dataPollingInterval).append("]");
+                .append(clientSecret).append(", asyncTimeout=").append(asyncTimeout).append(", syncTimeout=")
+                .append(syncTimeout).append(", dataPollingInterval=").append(dataPollingInterval).append("]");
         return builder.toString();
     }
 }
