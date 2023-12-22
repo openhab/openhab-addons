@@ -65,4 +65,6 @@ public interface SiemensHvacConnector {
     SiemensHvacRequestListener.ErrorSource getErrorSource();
 
     void invalidate();
+
+    void setTimeOut(int timeout);
 }
