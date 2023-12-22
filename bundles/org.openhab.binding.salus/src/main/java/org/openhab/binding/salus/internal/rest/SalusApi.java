@@ -169,10 +169,6 @@ public class SalusApi {
         return baseUrl + url;
     }
 
-    private String buildTimestampParam() {
-        return "?timestamp=" + clock.millis();
-    }
-
     public ApiResponse<SortedSet<Device>> findDevices() {
         logger.debug("findDevices()");
         refreshAccessToken();
