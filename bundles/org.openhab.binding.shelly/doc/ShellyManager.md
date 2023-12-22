@@ -4,7 +4,7 @@ The Shelly Manager is a small extension to the binding, which provides some low 
 
 To open the Shelly Manage launch the following URL in your browser
 - http://&lt;openHAB IP address&gt;:8080/shelly/manager or
-- http://&lt;openHAB IP address&gt;:8443/shelly/manager
+- https://&lt;openHAB IP address&gt;:8443/shelly/manager
 
 Maybe you need to change the port matching your setup.
 
