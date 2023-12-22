@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.salus.internal.rest;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.util.Map;
 import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Martin Grześlowski - Initial contribution
