@@ -78,6 +78,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private int requestCount = 0;
     private int errorCount = 0;
+    private int timeout = 10;
     private SiemensHvacRequestListener.ErrorSource errorSource = SiemensHvacRequestListener.ErrorSource.ErrorBridge;
 
     private @Nullable SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler;
@@ -213,7 +214,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             @Nullable SiemensHvacRequestHandler requestHandler) throws Exception {
         // Give a high timeout because we queue a lot of async request,
         // so enqueued them will take some times ...
-        request.timeout(240, TimeUnit.SECONDS);
+        request.timeout(timeout, TimeUnit.SECONDS);
 
         ContentResponse response = null;
 
@@ -442,7 +443,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     @Override
     public void waitAllPendingRequest() {
-        logger.debug("WaitAllPendingRequest:start2");
+        logger.debug("WaitAllPendingRequest:start");
         try {
             boolean allRequestDone = false;
             int idx = 0;
@@ -564,5 +565,9 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         sessionIdHttp = null;
         currentHandlerRegistry.clear();
         handlerInErrorRegistry.clear();
+    }
+
+    public void setTimeOut(int timeout) {
+        this.timeout = timeout;
     }
 }
