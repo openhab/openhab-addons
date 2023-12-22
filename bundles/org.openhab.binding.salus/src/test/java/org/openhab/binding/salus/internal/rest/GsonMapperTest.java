@@ -29,7 +29,7 @@ public class GsonMapperTest {
 
     // Can serialize login parameters to JSON
     @Test
-    public void test_serialize_login_parameters_to_json() {
+    public void testSerializeLoginParametersToJson() {
         // Given
         GsonMapper gsonMapper = GsonMapper.INSTANCE;
         String username = "test@example.com";
@@ -46,7 +46,7 @@ public class GsonMapperTest {
 
     // Can deserialize authentication token from JSON
     @Test
-    public void test_deserialize_authentication_token_from_json() {
+    public void testDeserializeAuthenticationTokenFromJson() {
         // Given
         GsonMapper gsonMapper = GsonMapper.INSTANCE;
         String json = "{\"access_token\":\"token\",\"refresh_token\":\"refresh\",\"expires_in\":3600,\"role\":\"admin\"}";
@@ -61,7 +61,7 @@ public class GsonMapperTest {
 
     // Can parse list of devices from JSON
     @Test
-    public void test_parse_list_of_devices_from_json() {
+    public void testParseListOfDevicesFromJson() {
         // Given
         GsonMapper gsonMapper = GsonMapper.INSTANCE;
         String json = "[{\"device\":{\"dsn\":\"123\",\"product_name\":\"Product 1\"}},{\"device\":{\"dsn\":\"456\",\"product_name\":\"Product 2\"}}]";
@@ -77,7 +77,7 @@ public class GsonMapperTest {
 
     // Returns empty list when parsing invalid JSON for devices
     @Test
-    public void test_returns_empty_list_when_parsing_invalid_json_for_devices() {
+    public void testReturnsEmptyListWhenParsingInvalidJsonForDevices() {
         // Given
         GsonMapper gsonMapper = GsonMapper.INSTANCE;
         String json = "invalid json";
@@ -91,7 +91,7 @@ public class GsonMapperTest {
 
     // Returns empty list when parsing invalid JSON for device properties
     @Test
-    public void test_returns_empty_list_when_parsing_invalid_json_for_device_properties() {
+    public void testReturnsEmptyListWhenParsingInvalidJsonForDeviceProperties() {
         // Given
         GsonMapper gsonMapper = GsonMapper.INSTANCE;
         String json = "invalid json";
@@ -105,7 +105,7 @@ public class GsonMapperTest {
 
     // Returns empty optional when parsing invalid JSON for datapoint value
     @Test
-    public void test_returns_empty_optional_when_parsing_invalid_json_for_datapoint_value() {
+    public void testReturnsEmptyOptionalWhenParsingInvalidJsonForDatapointValue() {
         // Given
         GsonMapper gsonMapper = GsonMapper.INSTANCE;
         String json = "invalid json";
