@@ -23,12 +23,14 @@ import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class SalusApiTest {
 
     // Find devices returns sorted set of devices
