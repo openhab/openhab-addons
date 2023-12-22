@@ -66,7 +66,7 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
                     Date dt = new Date(cnx.getLastModified());
                     DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     return df.format(dt);
-                }a
+                }
             }
 
         } catch (Exception ex) {

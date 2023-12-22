@@ -373,7 +373,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             mUri = mUri + "SessionId=" + sessionId;
         }
 
-        logger.debug("Execute request: {}", uri);
         CookieStore c = httpClient.getCookieStore();
         java.net.HttpCookie cookie = new HttpCookie("SessionId", sessionIdHttp);
         cookie.setPath("/");
