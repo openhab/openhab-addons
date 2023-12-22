@@ -15,7 +15,6 @@ package org.openhab.binding.salus.internal.rest;
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
-import static java.util.Collections.singletonMap;
 import static java.util.Collections.unmodifiableSortedMap;
 import static java.util.Optional.empty;
 
