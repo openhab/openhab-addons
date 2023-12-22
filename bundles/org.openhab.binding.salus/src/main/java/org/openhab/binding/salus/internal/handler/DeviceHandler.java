@@ -13,13 +13,12 @@
 package org.openhab.binding.salus.internal.handler;
 
 import static java.math.RoundingMode.HALF_EVEN;
+import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.BINDING_ID;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
-import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.thing.ThingStatusDetail.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.math.BigDecimal;
@@ -31,14 +30,10 @@ import java.util.SortedSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.SalusBindingConstants;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.types.*;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -58,7 +53,9 @@ import org.slf4j.LoggerFactory;
 public class DeviceHandler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private final Logger logger;
+    @NonNullByDefault({})
     private String dsn;
+    @NonNullByDefault({})
     private CloudApi cloudApi;
     private final Map<String, String> channelUidMap = new HashMap<>();
     private final Map<String, String> channelX100UidMap = new HashMap<>();
@@ -141,20 +138,24 @@ public class DeviceHandler extends BaseThingHandler {
         String channelId;
         String acceptedItemType;
         if (property instanceof DeviceProperty.BooleanDeviceProperty booleanProperty) {
-            channelId = inOrOut(property.getDirection(), SalusBindingConstants.Channels.GENERIC_INPUT_BOOL_CHANNEL, SalusBindingConstants.Channels.GENERIC_OUTPUT_BOOL_CHANNEL);
+            channelId = inOrOut(property.getDirection(), SalusBindingConstants.Channels.GENERIC_INPUT_BOOL_CHANNEL,
+                    SalusBindingConstants.Channels.GENERIC_OUTPUT_BOOL_CHANNEL);
             acceptedItemType = "Switch";
         } else if (property instanceof DeviceProperty.LongDeviceProperty longDeviceProperty) {
             if (SalusBindingConstants.Channels.TEMPERATURE_CHANNELS.contains(longDeviceProperty.getName())) {
                 // a temp channel
-                channelId = inOrOut(property.getDirection(), SalusBindingConstants.Channels.TEMPERATURE_INPUT_NUMBER_CHANNEL,
+                channelId = inOrOut(property.getDirection(),
+                        SalusBindingConstants.Channels.TEMPERATURE_INPUT_NUMBER_CHANNEL,
                         SalusBindingConstants.Channels.TEMPERATURE_OUTPUT_NUMBER_CHANNEL);
             } else {
-                channelId = inOrOut(property.getDirection(), SalusBindingConstants.Channels.GENERIC_INPUT_NUMBER_CHANNEL,
+                channelId = inOrOut(property.getDirection(),
+                        SalusBindingConstants.Channels.GENERIC_INPUT_NUMBER_CHANNEL,
                         SalusBindingConstants.Channels.GENERIC_OUTPUT_NUMBER_CHANNEL);
             }
             acceptedItemType = "Number";
         } else if (property instanceof DeviceProperty.StringDeviceProperty stringDeviceProperty) {
-            channelId = inOrOut(property.getDirection(), SalusBindingConstants.Channels.GENERIC_INPUT_CHANNEL, SalusBindingConstants.Channels.GENERIC_OUTPUT_CHANNEL);
+            channelId = inOrOut(property.getDirection(), SalusBindingConstants.Channels.GENERIC_INPUT_CHANNEL,
+                    SalusBindingConstants.Channels.GENERIC_OUTPUT_CHANNEL);
             acceptedItemType = "String";
         } else {
             throw new UnsupportedOperationException(
@@ -199,7 +200,7 @@ public class DeviceHandler extends BaseThingHandler {
         return withoutSuffix;
     }
 
-    private String inOrOut(String direction, String in, String out) {
+    private String inOrOut(@Nullable String direction, String in, String out) {
         if ("output".equalsIgnoreCase(direction)) {
             return out;
         }
@@ -295,7 +296,7 @@ public class DeviceHandler extends BaseThingHandler {
         var id = channelUID.getId();
         String salusId;
         if (channelUidMap.containsKey(id)) {
-            salusId = channelUidMap.get(id);
+            salusId = requireNonNull(channelUidMap.get(id));
         } else {
             logger.warn("Channel {} not found in channelUidMap!", id);
             return;
@@ -304,15 +305,18 @@ public class DeviceHandler extends BaseThingHandler {
         handleCommand(channelUID, REFRESH);
     }
 
-    private void handleDecimalCommand(ChannelUID channelUID, DecimalType command) {
+    private void handleDecimalCommand(ChannelUID channelUID, @Nullable DecimalType command) {
+        if (command == null) {
+            return;
+        }
         var id = channelUID.getId();
         String salusId;
         long value;
         if (channelUidMap.containsKey(id)) {
-            salusId = channelUidMap.get(id);
+            salusId = requireNonNull(channelUidMap.get(id));
             value = command.toBigDecimal().longValue();
         } else if (channelX100UidMap.containsKey(id)) {
-            salusId = channelX100UidMap.get(id);
+            salusId = requireNonNull(channelX100UidMap.get(id));
             value = command.toBigDecimal().multiply(ONE_HUNDRED).longValue();
         } else {
             logger.warn("Channel {} not found in channelUidMap and channelX100UidMap!", id);
@@ -326,7 +330,7 @@ public class DeviceHandler extends BaseThingHandler {
         var id = channelUID.getId();
         String salusId;
         if (channelUidMap.containsKey(id)) {
-            salusId = channelUidMap.get(id);
+            salusId = requireNonNull(channelUidMap.get(id));
         } else {
             logger.warn("Channel {} not found in channelUidMap!", id);
             return;

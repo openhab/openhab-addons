@@ -29,11 +29,8 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.salus.internal.rest.Device;
-import org.openhab.binding.salus.internal.rest.DeviceProperty;
-import org.openhab.binding.salus.internal.rest.GsonMapper;
-import org.openhab.binding.salus.internal.rest.JettyHttpClient;
-import org.openhab.binding.salus.internal.rest.SalusApi;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.salus.internal.rest.*;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -53,13 +50,19 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 public final class CloudBridgeHandler extends BaseBridgeHandler implements CloudApi {
     private Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName());
     private final HttpClientFactory httpClientFactory;
+    @NonNullByDefault({})
     private LoadingCache<String, SortedSet<DeviceProperty<?>>> devicePropertiesCache;
+    @NonNullByDefault({})
     private String username;
+    @NonNullByDefault({})
     private char[] password;
+    @NonNullByDefault({})
     private String url;
     private long refreshInterval;
     private long propertiesRefreshInterval;
+    @Nullable
     private SalusApi salusApi;
+    @Nullable
     private ScheduledFuture<?> scheduledFuture;
 
     public CloudBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
@@ -180,6 +183,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         return requireNonNullElse(devicePropertiesCache.get(dsn), emptySortedSet());
     }
 
+    @Nullable
     private SortedSet<DeviceProperty<?>> loadPropertiesForDevice(String dsn) {
         if (salusApi == null) {
             logger.error("Cannot find properties for device {} because salusClient is null", dsn);
