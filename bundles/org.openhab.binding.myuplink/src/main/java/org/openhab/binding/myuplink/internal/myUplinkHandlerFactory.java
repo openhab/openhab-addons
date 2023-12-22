@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.myuplink.internal.handler.MyUplinkHandler;
+import org.openhab.binding.myuplink.internal.handler.MyUplinkAccountHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -36,8 +36,6 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.myuplink", service = ThingHandlerFactory.class)
 public class MyUplinkHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -47,8 +45,8 @@ public class MyUplinkHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new MyUplinkHandler(thing);
+        if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
+            return new MyUplinkAccountHandler(thing);
         }
 
         return null;

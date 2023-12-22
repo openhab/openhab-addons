@@ -22,10 +22,105 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MyUplinkConfiguration {
 
+    private String clientId = "";
+    private String clientSecret = "";
+    private String nibeId = "";
+
+    private Integer asyncTimeout = 120;
+    private Integer syncTimeout = 120;
+    private Integer dataPollingInterval = 120;
+
     /**
-     * Sample configuration parameters. Replace with your own.
+     * @return the clientId
      */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    public String getClientId() {
+        return clientId;
+    }
+
+    /**
+     * @param clientId the clientId to set
+     */
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    /**
+     * @return the clientSecret
+     */
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    /**
+     * @param clientSecret the clientSecret to set
+     */
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
+    /**
+     * @return the nibeId
+     */
+    public String getNibeId() {
+        return nibeId;
+    }
+
+    /**
+     * @param nibeId the nibeId to set
+     */
+    public void setNibeId(String nibeId) {
+        this.nibeId = nibeId;
+    }
+
+    /**
+     * @return the asyncTimeout
+     */
+    public Integer getAsyncTimeout() {
+        return asyncTimeout;
+    }
+
+    /**
+     * @param asyncTimeout the asyncTimeout to set
+     */
+    public void setAsyncTimeout(Integer asyncTimeout) {
+        this.asyncTimeout = asyncTimeout;
+    }
+
+    /**
+     * @return the syncTimeout
+     */
+    public Integer getSyncTimeout() {
+        return syncTimeout;
+    }
+
+    /**
+     * @param syncTimeout the syncTimeout to set
+     */
+    public void setSyncTimeout(Integer syncTimeout) {
+        this.syncTimeout = syncTimeout;
+    }
+
+    /**
+     * @return the dataPollingInterval
+     */
+    public Integer getDataPollingInterval() {
+        return dataPollingInterval;
+    }
+
+    /**
+     * @param dataPollingInterval the dataPollingInterval to set
+     */
+    public void setDataPollingInterval(Integer dataPollingInterval) {
+        this.dataPollingInterval = dataPollingInterval;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MyUplinkConfiguration [clientId=").append(clientId).append(", clientSecret=")
+                .append(clientSecret).append(", nibeId=").append(nibeId).append(", asyncTimeout=").append(asyncTimeout)
+                .append(", syncTimeout=").append(syncTimeout).append(", dataPollingInterval=")
+                .append(dataPollingInterval).append("]");
+        return builder.toString();
+    }
 }
