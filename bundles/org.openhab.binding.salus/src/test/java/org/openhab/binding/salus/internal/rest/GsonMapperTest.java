@@ -18,11 +18,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class GsonMapperTest {
 
     // Can serialize login parameters to JSON
