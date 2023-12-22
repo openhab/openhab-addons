@@ -214,13 +214,13 @@ public class It600Handler extends BaseThingHandler {
 
         if (command instanceof StringType typedCommand) {
             long value;
-            if ("AUTO".equals(typedCommand.toString()) {
+            if ("AUTO".equals(typedCommand.toString())) {
                 value = AUTO;
-            } else if ("MANUAL".equals(typedCommand.toString()) {
+            } else if ("MANUAL".equals(typedCommand.toString())) {
                 value = MANUAL;
-            } else if ("TEMPORARY_MANUAL".equals(typedCommand.toString()) {
+            } else if ("TEMPORARY_MANUAL".equals(typedCommand.toString())) {
                 value = TEMPORARY_MANUAL;
-            } else if ("OFF".equals(typedCommand.toString()) {
+            } else if ("OFF".equals(typedCommand.toString())) {
                 value = OFF;
             } else {
                 logger.warn("Unknown value `{}` for property HoldType!", typedCommand);
