@@ -130,7 +130,7 @@ public class It600Handler extends BaseThingHandler {
             var deviceProperties = findDeviceProperties().stream().map(DeviceProperty::getName).toList();
             var result = new ArrayList<>(REQUIRED_CHANNELS);
             result.removeAll(deviceProperties);
-            if (result.isEmpty()) {
+            if (!result.isEmpty()) {
                 var msg = "Device with DSN " + dsn + " is missing required properties: " + String.join(", ", result);
                 logger.error(msg);
                 updateStatus(OFFLINE, CONFIGURATION_ERROR, msg);
