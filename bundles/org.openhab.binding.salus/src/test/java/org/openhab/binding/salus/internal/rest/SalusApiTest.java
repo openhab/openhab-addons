@@ -14,7 +14,6 @@ package org.openhab.binding.salus.internal.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,7 +35,7 @@ public class SalusApiTest {
     // Find devices returns sorted set of devices
     @Test
     @DisplayName("Find devices returns sorted set of devices")
-    public void test_find_devices_returns_sorted_set_of_devices() {
+    public void testFindDevicesReturnsSortedSetOfDevices() {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -66,7 +65,7 @@ public class SalusApiTest {
     // Find device properties returns sorted set of device properties
     @Test
     @DisplayName("Find device properties returns sorted set of device properties")
-    public void test_find_device_properties_returns_sorted_set_of_device_properties() {
+    public void testFindDevicePropertiesReturnsSortedSetOfDeviceProperties() {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -96,7 +95,7 @@ public class SalusApiTest {
     // Set value for property returns OK response with datapoint value
     @Test
     @DisplayName("Set value for property returns OK response with datapoint value")
-    public void test_set_value_for_property_returns_ok_response_with_datapoint_value() {
+    public void testSetValueForPropertyReturnsOkResponseWithDatapointValue() {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -126,7 +125,7 @@ public class SalusApiTest {
     // Login with incorrect credentials throws HttpUnauthorizedException
     @Test
     @DisplayName("Login with incorrect credentials throws HttpUnauthorizedException")
-    public void test_login_with_incorrect_credentials_throws_http_unauthorized_exception() {
+    public void testLoginWithIncorrectCredentialsThrowsHttpUnauthorizedException() {
         // Given
         var username = "incorrect_username";
         var password = "incorrect_password".toCharArray();
@@ -147,7 +146,7 @@ public class SalusApiTest {
     // Find devices with invalid auth token throws HttpUnauthorizedException
     @Test
     @DisplayName("Find devices with invalid auth token throws HttpUnauthorizedException")
-    public void test_find_devices_with_invalid_auth_token_throws_http_unauthorized_exception() {
+    public void testFindDevicesWithInvalidAuthTokenThrowsHttpUnauthorizedException() {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -176,7 +175,7 @@ public class SalusApiTest {
     // Find device properties with invalid auth token throws HttpUnauthorizedException
     @Test
     @DisplayName("Find device properties with invalid auth token throws HttpUnauthorizedException")
-    public void test_find_device_properties_with_invalid_auth_token_throws_http_unauthorized_exception() {
+    public void testFindDevicePropertiesWithInvalidAuthTokenThrowsHttpUnauthorizedException() {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -202,7 +201,7 @@ public class SalusApiTest {
     // Set value for property with invalid auth token throws HttpUnauthorizedException
     @Test
     @DisplayName("Set value for property with invalid auth token throws HttpUnauthorizedException")
-    public void test_set_value_for_property_with_invalid_auth_token_throws_http_unauthorized_exception() {
+    public void testSetValueForPropertyWithInvalidAuthTokenThrowsHttpUnauthorizedException() {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -231,7 +230,7 @@ public class SalusApiTest {
     // Find device properties with invalid DSN returns ApiResponse with error
     @Test
     @DisplayName("Find device properties with invalid DSN returns ApiResponse with error")
-    public void test_find_device_properties_with_invalid_dsn_returns_apiresponse_with_error() {
+    public void testFindDevicePropertiesWithInvalidDsnReturnsApiResponseWithError() {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -262,7 +261,7 @@ public class SalusApiTest {
     // Login with incorrect credentials 3 times throws HttpForbiddenException
     @Test
     @DisplayName("Login with incorrect credentials 3 times throws HttpForbiddenException")
-    public void test_login_with_incorrect_credentials_3_times_throws_http_forbidden_exception() {
+    public void testLoginWithIncorrectCredentials3TimesThrowsHttpForbiddenException() {
         // Given
         var username = "incorrect_username";
         var password = "incorrect_password".toCharArray();
@@ -280,31 +279,6 @@ public class SalusApiTest {
         assertThatThrownBy(salusApi::findDevices).isInstanceOf(HttpForbiddenException.class);
     }
 
-    // Login with correct credentials returns auth token
-    // @Test
-    // @DisplayName("Login with correct credentials returns auth token")
-    // public void test_login_with_correct_credentials_returns_auth_token() {
-    // // Given
-    // var username = "correct_username";
-    // var password = "correct_password".toCharArray();
-    // var baseUrl = "https://example.com";
-    // var restClient = mock(RestClient.class);
-    // var mapper = mock(GsonMapper.class);
-    // var clock = Clock.systemDefaultZone();
-    //
-    // var authToken = new AuthToken("access_token", "refresh_token", 3600L, "role");
-    // var response = new RestClient.Response<>(200, mapper.authTokenToJson(authToken));
-    // when(restClient.post(anyString(), any(), any())).thenReturn(response);
-    //
-    // var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
-    //
-    // // When
-    // salusApi.login(username, password);
-    //
-    // // Then
-    // assertThat(salusApi.getAuthToken()).isEqualTo(authToken);
-    // assertThat(salusApi.getAuthTokenExpireTime()).isNotNull();
-    // }
     private void setAuthToken(SalusApi salusApi, RestClient restClient, GsonMapper mapper, AuthToken authToken) {
         var username = "correct_username";
         var password = "correct_password".toCharArray();
