@@ -22,7 +22,10 @@ import static org.openhab.core.thing.ThingStatusDetail.*;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
