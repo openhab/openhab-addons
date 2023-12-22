@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class It600Handler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private static final Set<String> REQUIRED_CHANNELS = Set.of("ep_9:sIT600TH:LocalTemperature_x100",
@@ -93,7 +94,7 @@ public class It600Handler extends BaseThingHandler {
 
         dsn = (String) getConfig().get(DSN);
 
-        if (StringUtils.isEmpty(dsn)) {
+        if (dsn == null || dsn.length() == 0) {
             logger.debug("No {} for thing with UID {}", DSN, thing.getUID());
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "There is no " + DSN + " for this thing. Remove it and add it again.");
