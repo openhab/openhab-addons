@@ -57,8 +57,9 @@ public class JettyHttpClient implements RestClient {
         try {
             if (headers != null) {
                 for (var header : headers) {
-                    for (var value : header.values())
+                    for (var value : header.values()) {
                         request.header(header.name(), value);
+                    }
                 }
             }
             var response = request.send();
