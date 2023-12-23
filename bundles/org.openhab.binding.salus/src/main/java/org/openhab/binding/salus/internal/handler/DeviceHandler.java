@@ -103,7 +103,7 @@ public class DeviceHandler extends BaseThingHandler {
 
         dsn = (String) getConfig().get(DSN);
 
-        if (StringUtils.isEmpty(dsn)) {
+        if ("".equals(dsn)) {
             logger.debug("No {} for thing with UID {}", DSN, thing.getUID());
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "There is no " + DSN + " for this thing. Remove it and add it again.");
