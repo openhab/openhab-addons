@@ -86,9 +86,9 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     private void internalInitialize() {
         loadConfigs();
-        var missingUsername = StringUtils.isEmpty(username);
+        var missingUsername = "".equals(username);
         var missingPassword = password == null || password.length == 0;
-        var missingUrl = StringUtils.isEmpty(url);
+        var missingUrl = "".equals(url);
         if (missingUsername || missingPassword || missingUrl) {
             var sb = new StringBuilder();
             sb.append("Missing configuration!\n");
