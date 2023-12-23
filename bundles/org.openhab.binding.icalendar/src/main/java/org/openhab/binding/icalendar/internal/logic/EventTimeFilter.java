@@ -38,6 +38,16 @@ public abstract class EventTimeFilter {
     /**
      * Creates the strategy to search for events that end in a specific time frame. The exact end of the time frame is
      * inclusive.
+     *
+     * @return The search strategy.
+     */
+    public static EventTimeFilter searchByEnd() {
+        return new SearchByEnd();
+    }
+
+    /**
+     * Creates the strategy to search for events that end in a specific time frame. The exact end of the time frame is
+     * inclusive.
      * <p>
      * This is the strategy applied by {@link BiweeklyPresentableCalendar#getJustEndedEvents(Instant, Instant)}.
      * It is used here for backwards compatibility.
@@ -98,6 +108,23 @@ public abstract class EventTimeFilter {
         @Override
         public boolean eventBeforeFrame(Instant frameStart, Instant eventStart, Duration eventDuration) {
             return eventStart.isBefore(frameStart);
+        }
+    }
+
+    private static class SearchByEnd extends EventTimeFilter {
+        @Override
+        public Instant searchFrom(Instant frameStart, Duration eventDuration) {
+            return frameStart.minus(eventDuration);
+        }
+
+        @Override
+        public boolean eventAfterFrame(Instant frameEnd, Instant eventStart, Duration eventDuration) {
+            return eventStart.plus(eventDuration).isAfter(frameEnd);
+        }
+
+        @Override
+        public boolean eventBeforeFrame(Instant frameStart, Instant eventStart, Duration eventDuration) {
+            return !eventStart.plus(eventDuration).isAfter(frameStart);
         }
     }
 
