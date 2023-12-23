@@ -96,7 +96,7 @@ public class SalusApi {
     }
 
     private static String removeTrailingSlash(String str) {
-        if (str != null && str.endsWith("/")) {
+        if (str.endsWith("/")) {
             return str.substring(0, str.length() - 1);
         }
         return str;
@@ -138,10 +138,10 @@ public class SalusApi {
         if (response.statusCode() != 200) {
             throw new HttpUnknownException(response.statusCode(), method, finalUrl);
         }
-        authToken = mapper.authToken(requireNonNull(response.body()));
-        authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(authToken.expiresIn());
-        logger.info("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, authToken.role(),
-                authTokenExpireTime, authToken.expiresIn());
+        var token = authToken = mapper.authToken(requireNonNull(response.body()));
+        authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(token.expiresIn());
+        logger.info("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, token.role(),
+                authTokenExpireTime, token.expiresIn());
     }
 
     private void refreshAccessToken() {
@@ -192,7 +192,7 @@ public class SalusApi {
     }
 
     private RestClient.Header authHeader() {
-        return new RestClient.Header("Authorization", "auth_token " + authToken.accessToken());
+        return new RestClient.Header("Authorization", "auth_token " + requireNonNull(authToken).accessToken());
     }
 
     public ApiResponse<SortedSet<DeviceProperty<?>>> findDeviceProperties(String dsn) {

@@ -29,6 +29,9 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
+import org.checkerframework.checker.units.qual.K;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -99,7 +102,7 @@ public class GsonMapper {
             }
             return empty();
         }
-        var dsn = (String) map.get("dsn");
+        var dsn = requireNonNull((String) map.get("dsn"));
 
         // parse `name`
         if (!map.containsKey("product_name")) {
@@ -110,19 +113,20 @@ public class GsonMapper {
             }
             return empty();
         }
-        var name = (String) map.get("product_name");
+        var name = requireNonNull((String) map.get("product_name"));
 
         // parse `properties`
         var list = map.entrySet().stream().filter(entry -> entry.getKey() != null)
-                .filter(entry -> !entry.getKey().equals("name")).filter(entry -> !entry.getKey().equals("base_type"))
-                .filter(entry -> !entry.getKey().equals("read_only"))
-                .filter(entry -> !entry.getKey().equals("direction"))
-                .filter(entry -> !entry.getKey().equals("data_updated_at"))
-                .filter(entry -> !entry.getKey().equals("product_name"))
-                .filter(entry -> !entry.getKey().equals("display_name"))
-                .filter(entry -> !entry.getKey().equals("value"))
-                .map(entry -> new Pair<>(entry.getKey().toString(), (Object) entry.getValue())).toList();
-        Map<String, Object> properties = new LinkedHashMap<>();
+                .filter(entry -> !"name".equals(entry.getKey())).filter(entry -> !"base_type".equals(entry.getKey()))
+                .filter(entry -> !"read_only".equals(entry.getKey()))
+                .filter(entry -> !"direction".equals(entry.getKey()))
+                .filter(entry -> !"data_updated_at".equals(entry.getKey()))
+                .filter(entry -> !"product_name".equals(entry.getKey()))
+                .filter(entry -> !"display_name".equals(entry.getKey()))
+                .filter(entry -> !"value".equals(entry.getKey()))
+                .map(entry -> new Pair<>(requireNonNull(entry.getKey()).toString(), (Object) entry.getValue()))
+                .toList();
+        Map<@NotNull String, @Nullable Object> properties = new LinkedHashMap<>();
         for (var entry : list) {
             properties.put(entry.key, entry.value);
         }
@@ -212,18 +216,19 @@ public class GsonMapper {
 
         // parse `properties`
         var list = map.entrySet().stream().filter(entry -> entry.getKey() != null)
-                .filter(entry -> !entry.getKey().equals("name")).filter(entry -> !entry.getKey().equals("base_type"))
-                .filter(entry -> !entry.getKey().equals("read_only"))
-                .filter(entry -> !entry.getKey().equals("direction"))
-                .filter(entry -> !entry.getKey().equals("data_updated_at"))
-                .filter(entry -> !entry.getKey().equals("product_name"))
-                .filter(entry -> !entry.getKey().equals("display_name"))
-                .filter(entry -> !entry.getKey().equals("value"))
-                .map(entry -> new Pair<>(entry.getKey().toString(), (Object) entry.getValue())).toList();
+                .filter(entry -> !"name".equals(entry.getKey())).filter(entry -> !"base_type".equals(entry.getKey()))
+                .filter(entry -> !"read_only".equals(entry.getKey()))
+                .filter(entry -> !"direction".equals(entry.getKey()))
+                .filter(entry -> !"data_updated_at".equals(entry.getKey()))
+                .filter(entry -> !"product_name".equals(entry.getKey()))
+                .filter(entry -> !"display_name".equals(entry.getKey()))
+                .filter(entry -> !"value".equals(entry.getKey()))
+                .map(entry -> new Pair<>(requireNonNull(entry.getKey()).toString(), (Object) entry.getValue()))
+                .toList();
         // this weird thing need to be done,
         // because `Collectors.toMap` does not support value=null
         // and in our case, sometimes the values are null
-        SortedMap<String, Object> properties = new TreeMap<>();
+        SortedMap<@NotNull String, @Nullable Object> properties = new TreeMap<>();
         for (var entry : list) {
             properties.put(entry.key, entry.value);
         }
@@ -235,7 +240,8 @@ public class GsonMapper {
 
     private DeviceProperty<?> buildDeviceProperty(String name, @Nullable String baseType, @Nullable Object value,
             @Nullable Boolean readOnly, @Nullable String direction, @Nullable String dataUpdatedAt,
-            @Nullable String productName, @Nullable String displayName, SortedMap<String, Object> properties) {
+            @Nullable String productName, @Nullable String displayName,
+            SortedMap<String, @Nullable Object> properties) {
         if ("boolean".equalsIgnoreCase(baseType)) {
             Boolean bool;
             if (value == null) {
@@ -329,12 +335,12 @@ public class GsonMapper {
             return empty();
         }
         var datapoint = (Map<?, ?>) map.get("datapoint");
-        if (!datapoint.containsKey("value")) {
+        if (datapoint == null || !datapoint.containsKey("value")) {
             return empty();
         }
         return Optional.ofNullable(datapoint.get("value"));
     }
 
-    private static record Pair<K, V> (K key, V value) {
+    private static record Pair<K, @Nullable V> (K key, @Nullable V value) {
     }
 }

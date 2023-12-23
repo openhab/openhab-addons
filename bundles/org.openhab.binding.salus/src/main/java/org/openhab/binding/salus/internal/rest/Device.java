@@ -18,11 +18,13 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 public record Device(@NotNull String dsn, @NotNull String name,
-        @NotNull Map<String, Object> properties) implements Comparable<Device> {
+        @NotNull Map<@NotNull String, @Nullable Object> properties) implements Comparable<Device> {
     public Device {
         requireNonNull(dsn, "DSN is required!");
         requireNonNull(name, "name is required!");

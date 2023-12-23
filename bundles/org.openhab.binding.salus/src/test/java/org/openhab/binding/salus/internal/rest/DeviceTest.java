@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +34,7 @@ class DeviceTest {
     @DisplayName("Returns true if 'connection_status' property exists and is set to 'online'")
     public void testReturnsTrueIfConnectionStatusPropertyExistsAndIsSetToOnline() {
         // Given
-        var properties = new HashMap<String, Object>();
+        var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", "online");
         var device = new Device("dsn", "name", properties);
 
@@ -49,7 +50,7 @@ class DeviceTest {
     @DisplayName("Returns false if 'connection_status' property exists and is not set to 'online'")
     public void testReturnsFalseIfConnectionStatusPropertyExistsAndIsNotSetToOnline() {
         // Given
-        var properties = new HashMap<String, Object>();
+        var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", "offline");
         var device = new Device("dsn", "name", properties);
 
@@ -65,7 +66,7 @@ class DeviceTest {
     @DisplayName("Returns false if 'connection_status' property does not exist")
     public void testReturnsFalseIfConnectionStatusPropertyDoesNotExist() {
         // Given
-        var properties = new HashMap<String, Object>();
+        var properties = new HashMap<String, @Nullable Object>();
         var device = new Device("dsn", "name", properties);
 
         // When
@@ -80,7 +81,7 @@ class DeviceTest {
     @DisplayName("Returns false if 'properties' parameter does not contain 'connection_status' key")
     public void testReturnsFalseIfPropertiesParameterDoesNotContainConnectionStatusKey() {
         // Given
-        var properties = new HashMap<String, Object>();
+        var properties = new HashMap<String, @Nullable Object>();
         var device = new Device("dsn", "name", properties);
 
         // When
@@ -95,7 +96,7 @@ class DeviceTest {
     @DisplayName("Returns false if 'connection_status' property is null")
     public void testReturnsFalseIfConnectionStatusPropertyIsNull() {
         // Given
-        var properties = new HashMap<String, Object>();
+        var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", null);
         var device = new Device("dsn", "name", properties);
 
@@ -111,7 +112,7 @@ class DeviceTest {
     @DisplayName("Returns false if 'connection_status' property is not a string")
     public void testReturnsFalseIfConnectionStatusPropertyIsNotAString() {
         // Given
-        var properties = new HashMap<String, Object>();
+        var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", 123);
         var device = new Device("dsn", "name", properties);
 
@@ -129,7 +130,7 @@ class DeviceTest {
         // Given
         String dsn = "123456";
         String name = "Device 1";
-        Map<String, Object> properties = Map.of("connection_status", "online");
+        Map<String, @Nullable Object> properties = Map.of("connection_status", "online");
 
         // When
         Device device = new Device(dsn, name, properties);
@@ -149,7 +150,7 @@ class DeviceTest {
         String dsn = "123456";
         String name1 = "Device 1";
         String name2 = "Device 2";
-        Map<String, Object> properties = Map.of("connection_status", "online");
+        Map<String, @Nullable Object> properties = Map.of("connection_status", "online");
 
         Device device1 = new Device(dsn, name1, properties);
         Device device2 = new Device(dsn, name2, properties);
@@ -169,7 +170,7 @@ class DeviceTest {
         String dsn1 = "123456";
         String dsn2 = "654321";
         String name = "Device";
-        Map<String, Object> properties = Map.of("connection_status", "online");
+        Map<String, @Nullable Object> properties = Map.of("connection_status", "online");
 
         Device device1 = new Device(dsn1, name, properties);
         Device device2 = new Device(dsn2, name, properties);
@@ -192,8 +193,8 @@ class DeviceTest {
         // Given
         String dsn = "123456";
         String name = "Device";
-        Map<String, Object> properties1 = Map.of("connection_status", "online");
-        Map<String, Object> properties2 = Map.of("connection_status", "offline");
+        Map<String, @Nullable Object> properties1 = Map.of("connection_status", "online");
+        Map<String, @Nullable Object> properties2 = Map.of("connection_status", "offline");
 
         Device device1 = new Device(dsn, name, properties1);
         Device device2 = new Device(dsn, name, properties2);
@@ -214,7 +215,7 @@ class DeviceTest {
         // Given
         String dsn = "123456";
         String name = "Device";
-        Map<String, Object> properties = Map.of("connection_status", "online");
+        Map<String, @Nullable Object> properties = Map.of("connection_status", "online");
 
         Device device = new Device(dsn, name, properties);
 

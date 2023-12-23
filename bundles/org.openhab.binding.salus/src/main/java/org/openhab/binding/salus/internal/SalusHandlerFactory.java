@@ -58,12 +58,12 @@ public class SalusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public boolean supportsThingType(@NonNullByDefault ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(@NonNullByDefault Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         var thingTypeUID = thing.getThingTypeUID();
 
         if (SALUS_DEVICE_TYPE.equals(thingTypeUID)) {
