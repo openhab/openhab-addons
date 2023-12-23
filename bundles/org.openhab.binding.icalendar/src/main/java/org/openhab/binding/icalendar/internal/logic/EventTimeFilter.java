@@ -40,10 +40,16 @@ public abstract class EventTimeFilter {
      * inclusive.
      * <p>
      * This is the strategy applied by {@link BiweeklyPresentableCalendar#getJustEndedEvents(Instant, Instant)}.
+     * It is used here for backwards compatibility.
+     * There are problems when an event ends exactly at the end of the search period.
+     * Then the result is found for both this search period and one that begins immediately after it.
+     * However, the usual behavior should be that if there are several non-overlapping search periods, an event will
+     * only be found at most once.
+     * That's why it is only offered here as non-public for internal use.
      *
      * @return The search strategy.
      */
-    public static EventTimeFilter searchByJustEnded() {
+    static EventTimeFilter searchByJustEnded() {
         return new SearchByJustEnded();
     }
 

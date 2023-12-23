@@ -90,14 +90,14 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public List<Event> getJustBegunEvents(Instant frameBegin, Instant frameEnd) {
-        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, 0).stream().map(e -> e.toEvent())
-                .collect(Collectors.toList());
+        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, 0, EventTimeFilter.searchByStart()).stream()
+                .map(VEventWPeriod::toEvent).collect(Collectors.toList());
     }
 
     @Override
     public List<Event> getJustEndedEvents(Instant frameBegin, Instant frameEnd) {
         return this.getVEventWPeriodsBetween(frameBegin, frameEnd, 0, EventTimeFilter.searchByJustEnded()).stream()
-                .map(e -> e.toEvent()).collect(Collectors.toList());
+                .map(VEventWPeriod::toEvent).collect(Collectors.toList());
     }
 
     @Override
@@ -143,22 +143,22 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     @Override
-    public List<Event> getFilteredEventsBetween(Instant begin, Instant end, @Nullable EventTextFilter filter,
-            int maximumCount) {
-        List<VEventWPeriod> candidates = this.getVEventWPeriodsBetween(begin, end, maximumCount);
+    public List<Event> getFilteredEventsBetween(Instant begin, Instant end, EventTimeFilter eventTimeFilter,
+            @Nullable EventTextFilter eventTextFilter, int maximumCount) {
+        List<VEventWPeriod> candidates = this.getVEventWPeriodsBetween(begin, end, maximumCount, eventTimeFilter);
         final List<Event> results = new ArrayList<>(candidates.size());
 
-        if (filter != null) {
+        if (eventTextFilter != null) {
             Pattern filterPattern;
-            if (filter.type == Type.TEXT) {
-                filterPattern = Pattern.compile(".*" + Pattern.quote(filter.value) + ".*",
+            if (eventTextFilter.type == Type.TEXT) {
+                filterPattern = Pattern.compile(".*" + Pattern.quote(eventTextFilter.value) + ".*",
                         Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
             } else {
-                filterPattern = Pattern.compile(filter.value);
+                filterPattern = Pattern.compile(eventTextFilter.value);
             }
 
             Class<? extends TextProperty> propertyClass;
-            switch (filter.field) {
+            switch (eventTextFilter.field) {
                 case SUMMARY:
                     propertyClass = Summary.class;
                     break;
@@ -197,18 +197,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         Collections.sort(results);
 
         return results.subList(0, (maximumCount > results.size() ? results.size() : maximumCount));
-    }
-
-    /**
-     * Finds events which begin in the given frame.
-     *
-     * @param frameBegin Begin of the frame where to search events.
-     * @param frameEnd End of the time frame where to search events.
-     * @param maximumPerSeries Limit the results per series. Set to 0 for no limit.
-     * @return All events which begin in the time frame.
-     */
-    private List<VEventWPeriod> getVEventWPeriodsBetween(Instant frameBegin, Instant frameEnd, int maximumPerSeries) {
-        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, maximumPerSeries, EventTimeFilter.searchByStart());
     }
 
     /**
