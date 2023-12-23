@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Strategy for time based filtering.
@@ -104,6 +105,19 @@ public abstract class EventTimeFilter {
      * @return {@code true} if an occurrence of the event was found before the time frame, otherwise {@code false}.
      */
     public abstract boolean eventBeforeFrame(Instant frameStart, Instant eventStart, Duration eventDuration);
+
+    @Override
+    public boolean equals(@Nullable Object other) {
+        if (other == null) {
+            return false;
+        }
+        return getClass().equals(other.getClass());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 
     private static class SearchByStart extends EventTimeFilter {
         @Override
