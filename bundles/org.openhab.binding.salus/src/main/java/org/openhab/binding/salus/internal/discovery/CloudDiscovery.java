@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.salus.internal.discovery;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_DEVICE_TYPE;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_IT600_DEVICE_TYPE;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SUPPORTED_THING_TYPES_UIDS;
