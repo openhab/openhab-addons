@@ -11,5 +11,6 @@
 		and
 		control.
 	</description>
+	<connection>cloud</connection>
 
 </addon:addon>
