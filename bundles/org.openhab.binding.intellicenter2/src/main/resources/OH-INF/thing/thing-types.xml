@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="intellicenter2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>IntelliCenter 2 Bridge</label>
+		<description>Pentair IntelliCenter 2 Bridge</description>
+		<properties>
+			<property name="vendor">Pentair</property>
+		</properties>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<context>host</context>
+				<label>Port</label>
+				<description>Port of the device, default to 6681</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="pool">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>IntelliCenter2 Pool</label>
+		<description>Pool for IntelliCenter2 Binding</description>
+
+		<channels>
+			<channel id="current-temperature" typeId="temperature">
+				<label>Current temperature</label>
+				<description>The current pool temperature.</description>
+			</channel>
+			<channel id="target-temperature" typeId="temperature">
+				<label>Target temperature</label>
+				<description>The target pool temperature.</description>
+			</channel>
+			<channel id="heater-status" typeId="heater-status">
+				<label>Heater status</label>
+				<description>On if the heater is running, off otherwise.</description>
+			</channel>
+		</channels>
+
+		<representation-property>SNAME</representation-property>
+
+	</thing-type>
+
+	<thing-type id="feature">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>IntelliCenter2 Feature</label>
+		<description>Feature for IntelliCenter2 Binding</description>
+
+		<channels>
+			<channel id="feature-on-off" typeId="feature-on-off">
+				<label>Feature Status</label>
+				<description>Feature On/Off</description>
+			</channel>
+		</channels>
+
+		<representation-property>OBJNAM</representation-property>
+
+	</thing-type>
+
+	<thing-type id="light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>IntelliCenter2 Light</label>
+		<description>Light for IntelliCenter2 Binding</description>
+
+		<channels>
+			<channel id="light-color" typeId="system.color"/>
+			<channel id="light-power" typeId="system.power"/>
+		</channels>
+
+		<representation-property>OBJNAM</representation-property>
+
+	</thing-type>
+
+	<thing-type id="pump">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>IntelliCenter2 Pump</label>
+		<description>Pump for IntelliCenter2 Binding</description>
+
+		<channels>
+			<channel id="pump-gpm" typeId="pump-gpm"/>
+			<channel id="pump-rpm" typeId="pump-rpm"/>
+			<channel id="pump-power" typeId="pump-power"/>
+		</channels>
+
+		<representation-property>OBJNAM</representation-property>
+
+	</thing-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The temperature value.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heater-status">
+		<item-type>Switch</item-type>
+		<label>Pool Heater</label>
+		<description>ON if the pool heater is running.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="feature-on-off">
+		<item-type>Switch</item-type>
+		<label>Feature Status</label>
+		<description>Feature On/Off</description>
+	</channel-type>
+
+	<channel-type id="pump-gpm">
+		<item-type>Number</item-type>
+		<label>Flow Rate (GPM)</label>
+		<description>Pump Flow Rate (GPM)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pump-rpm">
+		<item-type>Number</item-type>
+		<label>Pump Speed (RPM)</label>
+		<description>Pump Speed (RPM)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pump-power">
+		<item-type>Number</item-type>
+		<label>Power Usage</label>
+		<description>Pump Power Usage in Watts</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
