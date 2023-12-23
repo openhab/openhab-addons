@@ -15,11 +15,12 @@ package org.openhab.binding.thekeys.internal.smartlock;
 import static org.openhab.binding.thekeys.internal.TheKeysBindingConstants.CONF_SMARTLOCK_LOCKID;
 import static org.openhab.binding.thekeys.internal.TheKeysBindingConstants.THING_TYPE_SMARTLOCK;
 
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.thekeys.internal.api.GatewayService;
 import org.openhab.binding.thekeys.internal.api.model.LockerDTO;
 import org.openhab.binding.thekeys.internal.gateway.TheKeysGatewayHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -50,13 +51,8 @@ public class TheKeysDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     protected void startScan() {
-        if (gatewayHandler == null) {
-            return;
-        }
-
         try {
-            Stream<LockerDTO> locks = gatewayHandler.getApi().getLocks().stream();
-            locks.map(this::createDiscoveryResult).forEach(this::thingDiscovered);
+            getGatewayService().getLocks().stream().map(this::createDiscoveryResult).forEach(this::thingDiscovered);
         } catch (Exception e) {
             logger.warn("Cannot start TheKeys discovery : {}", e.getMessage(), e);
         }
@@ -69,14 +65,13 @@ public class TheKeysDiscoveryService extends AbstractDiscoveryService implements
      * @return The discoveryResult associated with the gateway
      */
     private DiscoveryResult createDiscoveryResult(LockerDTO lock) {
-        if (gatewayHandler == null) {
-            throw new IllegalStateException();
-        }
+        TheKeysGatewayHandler gatewayHandler = Objects.requireNonNull(this.gatewayHandler);
         ThingUID gatewayThingUID = gatewayHandler.getThing().getUID();
         String label = gatewayHandler.getTranslationProvider().getText("discovery.thekeys.smartlock.label");
+
         return DiscoveryResultBuilder.create(createThingUID(lock)).withBridge(gatewayThingUID)
-                .withLabel(label + " " + lock.getIdentifier()).withRepresentationProperty(CONF_SMARTLOCK_LOCKID)
-                .withProperty(CONF_SMARTLOCK_LOCKID, lock.getIdentifier()).build();
+                .withLabel(label + " " + lock.identifier()).withRepresentationProperty(CONF_SMARTLOCK_LOCKID)
+                .withProperty(CONF_SMARTLOCK_LOCKID, lock.identifier()).build();
     }
 
     /**
@@ -86,11 +81,9 @@ public class TheKeysDiscoveryService extends AbstractDiscoveryService implements
      * @return The thingUID
      */
     private ThingUID createThingUID(LockerDTO lock) {
-        if (gatewayHandler == null) {
-            throw new IllegalStateException();
-        }
+        TheKeysGatewayHandler gatewayHandler = Objects.requireNonNull(this.gatewayHandler);
         ThingUID gatewayThingUID = gatewayHandler.getThing().getUID();
-        String lockId = String.valueOf(lock.getIdentifier());
+        String lockId = String.valueOf(lock.identifier());
         return new ThingUID(THING_TYPE_SMARTLOCK, gatewayThingUID, lockId);
     }
 
@@ -107,12 +100,17 @@ public class TheKeysDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TheKeysGatewayHandler) {
-            gatewayHandler = (TheKeysGatewayHandler) handler;
+        if (handler instanceof TheKeysGatewayHandler theKeysGatewayHandler) {
+            gatewayHandler = theKeysGatewayHandler;
         }
     }
 
     @Override
     public void deactivate() {
+        super.deactivate();
+    }
+
+    private GatewayService getGatewayService() {
+        return Objects.requireNonNull(Objects.requireNonNull(this.gatewayHandler).getApi());
     }
 }

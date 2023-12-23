@@ -30,9 +30,15 @@ public class ExceptionUtils {
      * Get the root cause of an exception
      */
     public static @Nullable Throwable getRootCause(@Nullable Throwable throwable) {
-        if (throwable == null || throwable.getCause() == null || throwable.getCause().equals(throwable)) {
+        if (throwable == null) {
+            return null;
+        }
+
+        Throwable cause = throwable.getCause();
+        if (cause == null || cause.equals(throwable)) {
             return throwable;
         }
-        return getRootCause(throwable.getCause());
+
+        return getRootCause(cause);
     }
 }

@@ -43,11 +43,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GatewayService {
-
-    private final Logger logger = LoggerFactory.getLogger(GatewayService.class);
-
     private static final String API_SCHEME = "http://";
-
+    private final Logger logger = LoggerFactory.getLogger(GatewayService.class);
     private final TheKeysGatewayConfiguration configuration;
     private final TheKeysHttpClient httpClient;
 
@@ -142,9 +139,10 @@ public class GatewayService {
         } catch (Exception e) {
             Throwable rootCause = ExceptionUtils.getRootCause(e);
             // Retry the same request because the gateway failed sometimes to handle the request
-            if (remainingRetryCount > 0
-                    && (rootCause instanceof ConnectException || rootCause instanceof EOFException)) {
-                logger.debug("Request failed. {}, retrying {} more times", rootCause.getClass(), remainingRetryCount);
+            if ((remainingRetryCount > 0
+                    && (rootCause instanceof ConnectException || rootCause instanceof EOFException))) {
+                String rootCauseString = rootCause == null ? "" : String.valueOf(rootCause.getClass());
+                logger.debug("Request failed. {}, retrying {} more times", rootCauseString, remainingRetryCount);
                 return get(path, responseType, --remainingRetryCount);
             }
             throw e;
@@ -191,7 +189,7 @@ public class GatewayService {
      */
     String computeRequestBodyWithHash(String timestamp, int lockId) {
         String hash = hmacSha256(timestamp, configuration.code);
-        return String.format("identifier=%s&ts=%s&hash=%s", lockId, timestamp, hash);
+        return "identifier=%s&ts=%s&hash=%s".formatted(lockId, timestamp, hash);
     }
 
     /**

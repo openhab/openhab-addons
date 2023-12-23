@@ -1,6 +1,6 @@
 # The Keys Binding
 
-This is the binding for [TheKeys Smartlock](https://www.the-keys.eu/fr/produits/8-serrure-connectee.html).
+This is the binding for [TheKeys Smartlock](https://www.the-keys.eu/en/produits/8-serrure-connectee.html).
 This binding allows you to integrate, view, control and configure TheKeys Gateway and TheKeys Smartlock.
 
 ![The Keys smartlock](doc/thekeys-smartlock.png)
@@ -79,7 +79,7 @@ A manual setup through files could look like this:
 
 ```
 Bridge thekeys:gateway:tk-gateway [ host="192.168.1.50", code="secretcode", refreshInterval=5, apiTimeout=30 ] {
-    Thing smartlock tk-smartlock [ lockId=1234 ]
+    Thing smartlock 1234 [ lockId=1234 ]
 }
 ```
 
@@ -90,12 +90,12 @@ Bridge thekeys:gateway:tk-gateway [ host="192.168.1.50", code="secretcode", refr
 Group Smartlock "Smartlock" ["Equipment"]
 
 // Points
-String   Smartlock_Lock_status                 "Lock status"                                    (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:status" }         
-Number   Smartlock_Niveau_Batterie             "Battery level"               <Battery>          (Smartlock) ["Measurement", "Energy"]  { channel="thekeys:smartlock:tk-gateway:1234:batteryLevel" }   
-Switch   Smartlock_Batterie_Faible             "Low battery"                 <LowBattery>       (Smartlock) ["Energy", "LowBattery"]   { channel="thekeys:smartlock:tk-gateway:1234:lowBattery" }     
-Number   Smartlock_Bluetooth_rssi              "Bluetooth rssi"              <QualityOfService> (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:rssi" }           
-Number   Smartlock_Smartlock_position          "Smartlock position"                             (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:position" }       
-Switch   Smartlock_Synchronization_in_progress "Synchronization in progress"                    (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:syncInProgress" } 
-DateTime Smartlock_Last_sync                   "Last sync"                                      (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:lastSync" }       
-Switch   Smartlock_Lock                        "Lock"                        <Lock>             (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:lock" }           
+String       Smartlock_Lock_Status                 "Lock Status"                                    (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:status" }         
+Number       Smartlock_Battery_Level               "Battery Level"               <Battery>          (Smartlock) ["Measurement", "Energy"]  { channel="thekeys:smartlock:tk-gateway:1234:batteryLevel" }   
+Switch       Smartlock_Low_Battery                 "Low Battery"                 <LowBattery>       (Smartlock) ["Energy", "LowBattery"]   { channel="thekeys:smartlock:tk-gateway:1234:lowBattery" }     
+Number:Power Smartlock_Bluetooth_RSSI              "Bluetooth RSSI"              <QualityOfService> (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:rssi" }           
+Number       Smartlock_Smartlock_Position          "Smartlock Position"                             (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:position" }       
+Switch       Smartlock_Synchronization_In_Progress "Synchronization In Progress"                    (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:syncInProgress" } 
+DateTime     Smartlock_Last_Sync                   "Last Sync"                                      (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:lastSync" }       
+Switch       Smartlock_Lock                        "Lock"                        <Lock>             (Smartlock) ["Point"]                  { channel="thekeys:smartlock:tk-gateway:1234:lock" }                      
 ```

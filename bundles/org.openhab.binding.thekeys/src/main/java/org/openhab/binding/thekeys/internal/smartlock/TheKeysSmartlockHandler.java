@@ -56,11 +56,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TheKeysSmartlockHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(TheKeysSmartlockHandler.class);
-
     private static final int BATTERY_MIN_LEVEL_MV = 6200;
     private static final int BATTERY_MAX_LEVEL_MV = 8000;
     private static final int BATTERY_SECURITY_MV = 200;
+
+    private final Logger logger = LoggerFactory.getLogger(TheKeysSmartlockHandler.class);
 
     private @Nullable TheKeysSmartlockConfiguration config;
     private @Nullable TheKeysGatewayHandler gateway;
@@ -75,8 +75,13 @@ public class TheKeysSmartlockHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return;
+        }
+
         config = getConfigAs(TheKeysSmartlockConfiguration.class);
-        gateway = (TheKeysGatewayHandler) getBridge().getHandler();
+        gateway = (TheKeysGatewayHandler) bridge.getHandler();
         lastLog = -1;
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
                 "@text/message.status.wait-data-from-gateway");
@@ -100,9 +105,9 @@ public class TheKeysSmartlockHandler extends BaseThingHandler {
         try {
             updateState(CHANNEL_SYNC_IN_PROGRESS, OnOffType.ON);
             if (open == OnOffType.ON) {
-                gatewayApi().open(config.lockId);
+                gatewayApi().open(getTheKeysConfig().lockId);
             } else {
-                gatewayApi().close(config.lockId);
+                gatewayApi().close(getTheKeysConfig().lockId);
             }
         } catch (Exception e) {
             logger.debug("Fail to execute {} request", open == OnOffType.OFF ? "open" : "close", e);
@@ -127,7 +132,7 @@ public class TheKeysSmartlockHandler extends BaseThingHandler {
     private boolean fetchAndUpdateLockStatus() {
         try {
             updateState(CHANNEL_SYNC_IN_PROGRESS, OnOffType.ON);
-            LockerStatusDTO lockStatus = gatewayApi().getLockStatus(config.lockId);
+            LockerStatusDTO lockStatus = gatewayApi().getLockStatus(getTheKeysConfig().lockId);
             if ("ko".equals(lockStatus.getStatus())) {
                 throw new TheKeysError(
                         "Request failed with code " + lockStatus.getCode() + ". " + lockStatus.getCause());
@@ -146,13 +151,13 @@ public class TheKeysSmartlockHandler extends BaseThingHandler {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
-
-            updateState(CHANNEL_SYNC_IN_PROGRESS, OnOffType.OFF);
             return true;
         } catch (Exception e) {
             logger.debug("Fail to fetch data of the lock", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return false;
+        } finally {
+            updateState(CHANNEL_SYNC_IN_PROGRESS, OnOffType.OFF);
         }
     }
 
@@ -166,7 +171,7 @@ public class TheKeysSmartlockHandler extends BaseThingHandler {
      * @param data The data from the gateway
      */
     public void updateLockState(LockerDTO data) {
-        int lastLogUpdated = data.getLastLog();
+        int lastLogUpdated = data.lastLog();
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
@@ -206,6 +211,10 @@ public class TheKeysSmartlockHandler extends BaseThingHandler {
 
     private GatewayService gatewayApi() {
         return Objects.requireNonNull(Objects.requireNonNull(gateway).getApi());
+    }
+
+    private TheKeysSmartlockConfiguration getTheKeysConfig() {
+        return Objects.requireNonNull(this.config);
     }
 
     @Override

@@ -15,6 +15,7 @@ package org.openhab.binding.thekeys.internal.api;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.net.http.HttpUtil;
 
@@ -36,14 +37,14 @@ public class TheKeysHttpClient {
         this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     }
 
-    public <T> T get(String url, int timeoutMs, Class<T> responseType) throws IOException {
+    public <T> T get(String url, int timeoutMs, Class<@NonNull T> responseType) throws IOException {
         String json = HttpUtil.executeUrl("GET", url, timeoutMs);
-        return gson.fromJson(json, responseType);
+        return (T) gson.fromJson(json, responseType);
     }
 
     public <T> T post(String url, String body, int timeout, Class<T> responseType) throws IOException {
         ByteArrayInputStream bodyInputStream = new ByteArrayInputStream(body.getBytes());
         String json = HttpUtil.executeUrl("POST", url, bodyInputStream, "application/x-www-form-urlencoded", timeout);
-        return gson.fromJson(json, responseType);
+        return (T) gson.fromJson(json, responseType);
     }
 }

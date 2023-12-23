@@ -15,9 +15,10 @@ package org.openhab.binding.thekeys.internal.gateway;
 import static org.openhab.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -82,8 +83,8 @@ public class TheKeysGatewayHandler extends BaseBridgeHandler {
      */
     private void pollGateway() {
         try {
-            GatewayInfosDTO gwInfos = api.getGatewayInfos();
-            updateProperty(PROPERTY_FIRMWARE_VERSION, String.valueOf(gwInfos.getVersion()));
+            GatewayInfosDTO gwInfos = Objects.requireNonNull(api).getGatewayInfos();
+            updateProperty(PROPERTY_FIRMWARE_VERSION, String.valueOf(gwInfos.version()));
 
             // Here the api answer without errors => back online
             if (getThing().getStatus() != ThingStatus.ONLINE) {
@@ -99,8 +100,8 @@ public class TheKeysGatewayHandler extends BaseBridgeHandler {
             List<TheKeysSmartlockHandler> locksThing = getThing().getThings().stream().map(Thing::getHandler)
                     .map(TheKeysSmartlockHandler.class::cast).toList();
 
-            Map<Integer, LockerDTO> locksResponse = api.getLocks().stream()
-                    .collect(Collectors.toMap(LockerDTO::getIdentifier, Function.identity()));
+            Map<Integer, LockerDTO> locksResponse = Objects.requireNonNull(api).getLocks().stream()
+                    .collect(Collectors.toMap(LockerDTO::identifier, Function.identity()));
 
             // Update each handler with corresponding data
             for (TheKeysSmartlockHandler lockHandler : locksThing) {
@@ -130,16 +131,17 @@ public class TheKeysGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> gwPollingJob = this.gwPollingJob;
         if (gwPollingJob != null && !gwPollingJob.isCancelled()) {
             gwPollingJob.cancel(true);
-            gwPollingJob = null;
+            this.gwPollingJob = null;
         }
         super.dispose();
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(TheKeysDiscoveryService.class);
+        return Set.of(TheKeysDiscoveryService.class);
     }
 
     public @Nullable GatewayService getApi() {

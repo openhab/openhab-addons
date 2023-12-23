@@ -17,33 +17,5 @@ package org.openhab.binding.thekeys.internal.api.model;
  *
  * @author Jordan Martin - Initial contribution
  */
-public class SynchronizeDTO {
-
-    private String status;
-    private int code;
-    private String message;
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
+public record SynchronizeDTO(String status, int code, String message) {
 }
