@@ -167,7 +167,7 @@ public class TradfriAirPurifierData extends TradfriDeviceData {
         QuantityType<Time> ttl = getNextFilterCheckTTL();
         if (ttl != null) {
             int ttlValue = ttl.intValue();
-            return ttlValue < 0 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(ttlValue < 0);
         } else {
             return null;
         }

@@ -167,7 +167,7 @@ public abstract class F6_02 extends _RPSMessage {
     }
 
     protected State inverse(OnOffType currentState) {
-        return currentState == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(currentState != OnOffType.ON);
     }
 
     protected State inverse(UpDownType currentState) {

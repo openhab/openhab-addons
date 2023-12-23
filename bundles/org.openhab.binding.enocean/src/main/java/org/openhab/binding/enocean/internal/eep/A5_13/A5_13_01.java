@@ -68,7 +68,7 @@ public class A5_13_01 extends A5_13 {
     }
 
     protected State getRainStatus() {
-        return getBit(getDB0Value(), 1) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(getBit(getDB0Value(), 1));
     }
 
     @Override

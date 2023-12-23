@@ -777,7 +777,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 break;
             case CHANNEL_POWER:
             case CHANNEL_MUTE:
-                state = ON.equals(value) ? OnOffType.ON : OnOffType.OFF;
+                state = OnOffType.from(ON.equals(value));
                 break;
             case CHANNEL_SOURCE:
             case CHANNEL_SUB_SHIFT:
