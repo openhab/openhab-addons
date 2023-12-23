@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="infokey"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Input Group Type -->
+	<channel-group-type id="inputgroup">
+		<label>Input Pins</label>
+		<description>MCP 23017 pins working in DIGITAL_INPUT mode (contact)</description>
+		<channels>
+			<channel id="A1" typeId="input_pin"/>
+			<channel id="B3" typeId="input_pin"/>
+			<channel id="A0" typeId="input_pin"/>
+			<channel id="B4" typeId="input_pin"/>
+			<channel id="B5" typeId="input_pin"/>
+			<channel id="B6" typeId="input_pin"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Output Group Type -->
+	<channel-group-type id="outputgroup">
+		<label>Output Pins</label>
+		<description>MCP 23017 pins working in DIGITAL_OUTPUT mode (switch)</description>
+		<channels>
+			<channel id="B2" typeId="output_pin"/>
+			<channel id="B1" typeId="output_pin"/>
+			<channel id="B0" typeId="output_pin"/>
+			<channel id="A5" typeId="output_pin"/>
+			<channel id="A6" typeId="output_pin"/>
+			<channel id="A7" typeId="output_pin"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Pulse Output Group Type -->
+	<channel-group-type id="pulseoutputgroup">
+		<label>Pulse Output Pins</label>
+		<description>MCP 23017 pins working in DIGITAL_OUTPUT mode (pulse)</description>
+		<channels>
+			<channel id="B2" typeId="pulse_output_pin"/>
+			<channel id="B1" typeId="pulse_output_pin"/>
+			<channel id="B0" typeId="pulse_output_pin"/>
+			<channel id="A5" typeId="pulse_output_pin"/>
+			<channel id="A6" typeId="pulse_output_pin"/>
+			<channel id="A7" typeId="pulse_output_pin"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Input Group Type For OptoDinV1 -->
+	<channel-group-type id="optoinputgroup">
+		<label>Input Pins</label>
+		<description>MCP 23017 pins working in DIGITAL_INPUT mode (contact)</description>
+		<channels>
+			<channel id="A5" typeId="input_pin"/>
+			<channel id="A0" typeId="input_pin"/>
+			<channel id="A4" typeId="input_pin"/>
+			<channel id="A1" typeId="input_pin"/>
+			<channel id="A2" typeId="input_pin"/>
+			<channel id="A3" typeId="input_pin"/>
+			<channel id="B0" typeId="input_pin"/>
+			<channel id="B1" typeId="input_pin"/>
+			<channel id="B2" typeId="input_pin"/>
+			<channel id="B3" typeId="input_pin"/>
+			<channel id="B4" typeId="input_pin"/>
+			<channel id="B5" typeId="input_pin"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- MosFet Output Group Type -->
+	<channel-group-type id="mosfetdinv1outputgroup">
+		<label>Output Pins</label>
+		<description>MCP 23017 pins working in DIGITAL_OUTPUT mode (switch)</description>
+		<channels>
+			<channel id="A2" typeId="output_pin"/>
+			<channel id="A1" typeId="output_pin"/>
+			<channel id="A0" typeId="output_pin"/>
+			<channel id="A5" typeId="output_pin"/>
+			<channel id="A4" typeId="output_pin"/>
+			<channel id="A3" typeId="output_pin"/>
+			<channel id="B0" typeId="output_pin"/>
+			<channel id="A7" typeId="output_pin"/>
+			<channel id="A6" typeId="output_pin"/>
+			<channel id="B7" typeId="output_pin"/>
+			<channel id="B6" typeId="output_pin"/>
+			<channel id="B5" typeId="output_pin"/>
+			<channel id="B4" typeId="output_pin"/>
+			<channel id="B3" typeId="output_pin"/>
+			<channel id="B2" typeId="output_pin"/>
+			<channel id="B1" typeId="output_pin"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- MosFet Pulse Output Group Type -->
+	<channel-group-type id="mosfetdinv1pulseoutputgroup">
+		<label>Pulse Output Pins</label>
+		<description>MCP 23017 pins working in DIGITAL_OUTPUT mode (pulse)</description>
+		<channels>
+			<channel id="A2" typeId="pulse_output_pin"/>
+			<channel id="A1" typeId="pulse_output_pin"/>
+			<channel id="A0" typeId="pulse_output_pin"/>
+			<channel id="A5" typeId="pulse_output_pin"/>
+			<channel id="A4" typeId="pulse_output_pin"/>
+			<channel id="A3" typeId="pulse_output_pin"/>
+			<channel id="B0" typeId="pulse_output_pin"/>
+			<channel id="A7" typeId="pulse_output_pin"/>
+			<channel id="A6" typeId="pulse_output_pin"/>
+			<channel id="B7" typeId="pulse_output_pin"/>
+			<channel id="B6" typeId="pulse_output_pin"/>
+			<channel id="B5" typeId="pulse_output_pin"/>
+			<channel id="B4" typeId="pulse_output_pin"/>
+			<channel id="B3" typeId="pulse_output_pin"/>
+			<channel id="B2" typeId="pulse_output_pin"/>
+			<channel id="B1" typeId="pulse_output_pin"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- 2 Coil Relay Pulse Output Group Type -->
+	<channel-group-type id="2coilrelaydinv1pulseoutputgroup">
+		<label>Pulse Output Pins</label>
+		<description>MCP 23017 pins working in DIGITAL_OUTPUT mode (pulse)</description>
+		<channels>
+			<channel id="B5" typeId="pulse_output_pin">
+				<label>On Relay 1</label>
+			</channel>
+			<channel id="B4" typeId="pulse_output_pin">
+				<label>Off Relay 1</label>
+			</channel>
+			<channel id="B3" typeId="pulse_output_pin">
+				<label>On Relay 2</label>
+			</channel>
+			<channel id="A0" typeId="pulse_output_pin">
+				<label>Off Relay 2</label>
+			</channel>
+			<channel id="A1" typeId="pulse_output_pin">
+				<label>On Relay 3</label>
+			</channel>
+			<channel id="A2" typeId="pulse_output_pin">
+				<label>Off Relay 3</label>
+			</channel>
+			<channel id="B0" typeId="pulse_output_pin">
+				<label>On Relay 4</label>
+			</channel>
+			<channel id="B1" typeId="pulse_output_pin">
+				<label>Off Relay 4</label>
+			</channel>
+			<channel id="B2" typeId="pulse_output_pin">
+				<label>On Relay 5</label>
+			</channel>
+			<channel id="A3" typeId="pulse_output_pin">
+				<label>Off Relay 5</label>
+			</channel>
+			<channel id="A4" typeId="pulse_output_pin">
+				<label>On Relay 6</label>
+			</channel>
+			<channel id="A5" typeId="pulse_output_pin">
+				<label>Off Relay 6</label>
+			</channel>
+			<channel id="A6" typeId="pulse_output_pin">
+				<label>On Relay 7</label>
+			</channel>
+			<channel id="A7" typeId="pulse_output_pin">
+				<label>Off Relay 7</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- Analog Input Group Type For mcp3008DinV1 -->
+	<channel-group-type id="mcp3008dinv1inputgroup">
+		<label>Input Pins</label>
+		<description>MCP 3008 pins working in Analog To Digital Input Mode (value)</description>
+		<channels>
+			<channel id="CH0" typeId="analog_input_pin"/>
+			<channel id="CH1" typeId="analog_input_pin"/>
+			<channel id="CH2" typeId="analog_input_pin"/>
+			<channel id="CH3" typeId="analog_input_pin"/>
+			<channel id="CH4" typeId="analog_input_pin"/>
+			<channel id="CH5" typeId="analog_input_pin"/>
+			<channel id="CH6" typeId="analog_input_pin"/>
+			<channel id="CH7" typeId="analog_input_pin"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Analog Input Group Type For mcp3008DinV1 -->
+	<channel-group-type id="dht_module_group">
+		<label>Output</label>
+		<description>DHT 11 / 22 / AM2302 Output (values)</description>
+		<channels>
+			<channel id="Temp_Celsius" typeId="setpointTemperatureCelcius"/>
+			<channel id="Temp_Fahrenheit" typeId="setpointTemperatureFahrenheit"/>
+			<channel id="Humidity" typeId="setpointHumidity"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="waterflowmeteryfs201_module_group">
+		<label>Output</label>
+		<description>Water flowmeter Output (values)</description>
+		<channels>
+			<channel id="Water_Is_Running" typeId="setpointWaterIsRunning"/>
+			<channel id="Water_Flow" typeId="setpointWaterFlow"/>
+			<channel id="Last_Total_Ammount" typeId="setpointWaterLastConsumption"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="input_pin">
+		<item-type>Contact</item-type>
+		<label>Input Pin</label>
+		<description>channel type for MCP23017 pin in DIGITAL_INPUT mode (contact)</description>
+		<category>Contact</category>
+		<state readOnly="true">
+			<options>
+				<option value="OPEN">OPEN</option>
+				<option value="CLOSE">CLOSE</option>
+			</options>
+		</state>
+		<config-description-ref uri="channel-type:infokey:input_pin"/>
+	</channel-type>
+
+	<channel-type id="analog_input_pin">
+		<item-type>String</item-type>
+		<label>Analog Input Pin</label>
+		<description>channel type for MCP 3008 pin in Analog To Digital Input Mode (value)</description>
+		<state readOnly="true"/>
+		<config-description-ref uri="channel-type:infokey:analog_input_pin"/>
+	</channel-type>
+
+	<channel-type id="output_pin">
+		<item-type>Switch</item-type>
+		<label>Output Pin</label>
+		<description>channel type for MCP23017 pin in DIGITAL_INPUT mode (switch)</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+		<config-description-ref uri="channel-type:infokey:output_pin"/>
+	</channel-type>
+
+	<channel-type id="pulse_output_pin">
+		<item-type>Switch</item-type>
+		<label>Pulse Output Pin</label>
+		<description>channel type for MCP23017 pin in DIGITAL_INPUT mode (pulse)</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+		<config-description-ref uri="channel-type:infokey:pulse_output_pin"/>
+	</channel-type>
+
+	<channel-type id="setpointTemperatureCelcius" advanced="false">
+		<item-type>String</item-type>
+		<label>Temperature °C</label>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="setpointTemperatureFahrenheit" advanced="false">
+		<item-type>String</item-type>
+		<label>Temperature °F</label>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="setpointHumidity" advanced="false">
+		<item-type>String</item-type>
+		<label>Humidity</label>
+		<category>Humidity</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="setpointWaterIsRunning" advanced="false">
+		<item-type>String</item-type>
+		<label>Water Is Running</label>
+		<category>Water</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="setpointWaterFlow" advanced="false">
+		<item-type>String</item-type>
+		<label>Water flow (L/min)</label>
+		<category>Flow</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="setpointWaterLastConsumption">
+		<item-type>String</item-type>
+		<label>Water Consumption</label>
+		<description>The total consumption of the last run</description>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

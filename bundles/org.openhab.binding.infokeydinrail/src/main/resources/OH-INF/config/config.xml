@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+
+	<config-description uri="channel-type:infokeydinrail:input_pin">
+		<parameter name="pull_mode" type="text" required="true">
+			<label>PullResistor Mode</label>
+			<description>mcp2317 input pull resistor mode</description>
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="PULL_UP">Internal PULL_UP</option>
+			</options>
+			<default>OFF</default>
+		</parameter>
+	</config-description>
+
+	<!--<config-description uri="channel-type:infokeydinrail:output_pin"> <parameter name="default_open_state" type="text" required="true">
+		<label>Default Open State</label> <description>mcp2317 input pin set open when pin state is LOW or HIGH</description> <options>
+		<option value="LOW">LOW</option> <option value="HIGH">HIGH</option> </options> <default>LOW</default> </parameter> </config-description> -->
+
+	<config-description uri="channel-type:infokeydinrail:analog_input_pin">
+		<parameter name="value_renderer_type" type="text" required="true">
+			<label>Default Open State</label>
+			<description>mcp2317 input pin set open when pin state is LOW or HIGH</description>
+			<options>
+				<option value="RAW">RAW</option>
+				<option value="VOLTS_5_1">5.0 Volts (4.7k/8.2k)</option>
+				<option value="VOLTS_3_1">3.3 Volts (4.7k/12k)</option>
+				<option value="VOLTS_3_2">3.3 Volts (2.7k/8.2k)</option>
+				<option value="VOLTS_3_3">3.3 Volts (4.7k/8.2k)</option>
+				<option value="ZMPT101B">Voltage Sensor (ZMPT101B)</option>
+			</options>
+			<default>RAW</default>
+		</parameter>
+		<parameter name="min_value_change" type="integer" unit="ms">
+			<label>Value Change Threshold</label>
+			<description>Set the minimum value of change in order to update</description>
+			<default>15</default>
+		</parameter>
+		<parameter name="polling_interval" type="integer" unit="ms">
+			<label>Channel Polling Interval Time</label>
+			<description>mcp3008 channel polling interval time</description>
+			<default>2000</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:infokeydinrail:output_pin">
+		<parameter name="default_state" type="text" required="true">
+			<label>Default State For Switch</label>
+			<description>mcp2317 pin default state (LOW, HIGH)</description>
+			<options>
+				<option value="LOW">LOW</option>
+				<option value="HIGH">HIGH</option>
+			</options>
+			<default>LOW</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:infokeydinrail:pulse_output_pin">
+		<parameter name="pulse_duration" type="integer" unit="ms">
+			<label>Pulse Duration</label>
+			<description>Set the duration of the pulse in milliseconds.</description>
+			<default>250</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
