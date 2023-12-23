@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.boschshc.internal.services.communicationquality.dto;
 
+import org.openhab.core.library.types.DecimalType;
+
 /**
- * Possible states for the communication quality between a device and the bridge.
+ * Possible states for the communication quality between a device and the
+ * bridge.
  * 
  * @author David Pace - Initial contribution
  *
@@ -23,5 +26,27 @@ public enum CommunicationQualityState {
     MEDIUM,
     NORMAL,
     GOOD,
-    UNKNOWN
+    UNKNOWN;
+
+    /**
+     * Converts this Bosch-specific communication quality state into a numeric state
+     * for the system channel of type <code>signal-strength</code>.
+     * 
+     * @return
+     */
+    public DecimalType toSystemSignalStrength() {
+        switch (this) {
+            case BAD:
+                return new DecimalType(1);
+            case MEDIUM:
+                return new DecimalType(2);
+            case NORMAL:
+                return new DecimalType(3);
+            case GOOD:
+                return new DecimalType(4);
+            default:
+                // includes UNKNOWN
+                return new DecimalType(0);
+        }
+    }
 }

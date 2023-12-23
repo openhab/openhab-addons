@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
@@ -95,7 +96,7 @@ class WindowContact2HandlerTest extends WindowContactHandlerTest {
         getFixture().processUpdate("CommunicationQuality", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_COMMUNICATION_QUALITY),
-                new StringType("UNKNOWN"));
+                new DecimalType(0));
 
         json = """
                 {
@@ -108,6 +109,6 @@ class WindowContact2HandlerTest extends WindowContactHandlerTest {
         getFixture().processUpdate("CommunicationQuality", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_COMMUNICATION_QUALITY),
-                new StringType("GOOD"));
+                new DecimalType(4));
     }
 }

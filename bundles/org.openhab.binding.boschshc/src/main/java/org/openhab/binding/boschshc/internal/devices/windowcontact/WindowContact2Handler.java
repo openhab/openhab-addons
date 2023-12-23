@@ -53,6 +53,6 @@ public class WindowContact2Handler extends WindowContactHandler {
     }
 
     private void updateChannels(CommunicationQualityServiceState communicationQualityServiceState) {
-        updateState(CHANNEL_COMMUNICATION_QUALITY, new StringType(communicationQualityServiceState.quality.toString()));
+        updateState(CHANNEL_COMMUNICATION_QUALITY, communicationQualityServiceState.quality.toSystemSignalStrength());
     }
 }

@@ -116,7 +116,7 @@
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 			<channel id="bypass-state" typeId="bypass-state"/>
-			<channel id="communication-quality" typeId="communication-quality"/>
+			<channel id="communication-quality" typeId="system.signal-strength"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -603,21 +603,6 @@
 				<option value="BYPASS_INACTIVE">Bypass is not active</option>
 				<option value="BYPASS_ACTIVE">Bypass is active</option>
 				<option value="UNKNOWN">Bypass state cannot be determined</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="communication-quality">
-		<item-type>String</item-type>
-		<label>Communication Quality</label>
-		<description>The quality of communication between a device and the Bosch Smart Home Controller.</description>
-		<state readOnly="true">
-			<options>
-				<option value="BAD">Bad</option>
-				<option value="MEDIUM">Medium</option>
-				<option value="NORMAL">Normal</option>
-				<option value="GOOD">Good</option>
-				<option value="UNKNOWN">Unknown</option>
 			</options>
 		</state>
 	</channel-type>
