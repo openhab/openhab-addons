@@ -548,7 +548,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
         } catch (SonyProjectorException e) {
             logger.debug("Get Status Power failed: {}", e.getMessage());
         }
-        updateChannelStateAndCache(CHANNEL_POWER, on ? OnOffType.ON : OnOffType.OFF);
+        updateChannelStateAndCache(CHANNEL_POWER, OnOffType.from(on));
         updateChannelStateAndCache(CHANNEL_POWERSTATE, state);
         return on;
     }
@@ -627,7 +627,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
                 try {
                     switch (channel) {
                         case CHANNEL_POWER:
-                            state = connector.getStatusPower().isOn() ? OnOffType.ON : OnOffType.OFF;
+                            state = OnOffType.from(connector.getStatusPower().isOn());
                             break;
                         case CHANNEL_POWERSTATE:
                             state = new StringType(connector.getStatusPower().name());

@@ -204,13 +204,13 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
                     switch (attributeName) {
                         case "Switch":
-                            State relayState = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                            State relayState = OnOffType.from(!"0".equals(attributeValue));
                             logger.debug("New relayState '{}' for device '{}' received", relayState,
                                     getThing().getUID());
                             updateState(CHANNEL_RELAY, relayState);
                             break;
                         case "Sensor":
-                            State sensorState = "1".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                            State sensorState = OnOffType.from(!"1".equals(attributeValue));
                             logger.debug("New sensorState '{}' for device '{}' received", sensorState,
                                     getThing().getUID());
                             updateState(CHANNEL_SENSOR, sensorState);

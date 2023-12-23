@@ -84,7 +84,7 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(POWER, (ONE).equals(matcher.group(1)) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateChannel(POWER, OnOffType.from(ONE.equals(matcher.group(1))));
             } else {
                 logger.debug("DEVICE_POWER_STATE - no match on message: {}", message);
             }
@@ -346,10 +346,10 @@ public enum KaleidescapeMessageHandler {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
                 // update REPEAT switch state
-                handler.updateChannel(MUSIC_REPEAT, (ONE).equals(matcher.group(3)) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateChannel(MUSIC_REPEAT, OnOffType.from(ONE.equals(matcher.group(3))));
 
                 // update RANDOM switch state
-                handler.updateChannel(MUSIC_RANDOM, (ONE).equals(matcher.group(4)) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateChannel(MUSIC_RANDOM, OnOffType.from(ONE.equals(matcher.group(4))));
             } else {
                 logger.debug("MUSIC_NOW_PLAYING_STATUS - no match on message: {}", message);
             }

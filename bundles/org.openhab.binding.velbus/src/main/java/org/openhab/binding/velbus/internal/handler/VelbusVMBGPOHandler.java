@@ -95,7 +95,7 @@ public class VelbusVMBGPOHandler extends VelbusMemoHandler {
 
                     if ((memoryAddress + i) == MODULESETTINGS_MEMORY_ADDRESS) {
                         this.moduleSettings = data[i];
-                        OnOffType state = ((this.moduleSettings & 0x80) != 0x00) ? OnOffType.ON : OnOffType.OFF;
+                        OnOffType state = OnOffType.from((this.moduleSettings & 0x80) != 0x00);
                         updateState(screensaverChannel, state);
                     }
                 }

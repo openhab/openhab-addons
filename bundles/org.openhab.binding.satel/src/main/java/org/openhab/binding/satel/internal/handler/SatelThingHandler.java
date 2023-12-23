@@ -108,7 +108,7 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
      * @param switchOn if <code>true</code> the channel is updated with ON state, with OFF state otherwise
      */
     protected void updateSwitch(ChannelUID channelUID, boolean switchOn) {
-        State state = switchOn ? OnOffType.ON : OnOffType.OFF;
+        State state = OnOffType.from(switchOn);
         updateState(channelUID, state);
     }
 
