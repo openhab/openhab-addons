@@ -55,12 +55,15 @@ public class JettyHttpClient implements RestClient {
         return execute(request, headers, url);
     }
 
+    @SuppressWarnings("ConstantValue")
     @NotNull
     private Response<@Nullable String> execute(Request request, @Nullable Header[] headers, String url) {
         try {
-            for (var header : headers) {
-                for (var value : header.values()) {
-                    request.header(header.name(), value);
+            if (headers != null) {
+                for (var header : headers) {
+                    for (var value : header.values()) {
+                        request.header(header.name(), value);
+                    }
                 }
             }
             var response = request.send();
