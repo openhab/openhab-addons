@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.SortedSet;
 import java.util.concurrent.ScheduledFuture;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.rest.Device;
@@ -101,10 +102,10 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             return;
         }
         var httpClient = new JettyHttpClient(httpClientFactory.getCommonHttpClient());
-        salusApi = new SalusApi(username, password, url, httpClient, GsonMapper.INSTANCE);
+        var x = salusApi = new SalusApi(username, password, url, httpClient, GsonMapper.INSTANCE);
         logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName() + "[" + username.replace(".", "_") + "]");
         try {
-            salusApi.findDevices();
+            x.findDevices();
         } catch (Exception ex) {
             var msg = "Cannot connect to Salus Cloud! Probably username/password mismatch!";
             logger.error(msg, ex);
@@ -174,26 +175,28 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public void dispose() {
-        if (scheduledFuture != null) {
-            scheduledFuture.cancel(true);
+        var f = scheduledFuture;
+        if (f != null) {
+            f.cancel(true);
             scheduledFuture = null;
         }
         super.dispose();
     }
 
     @Override
-    public SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn) {
+    public SortedSet<@NonNull DeviceProperty<?>> findPropertiesForDevice(String dsn) {
         return requireNonNullElse(devicePropertiesCache.get(dsn), emptySortedSet());
     }
 
     @Nullable
     private SortedSet<DeviceProperty<?>> loadPropertiesForDevice(String dsn) {
-        if (salusApi == null) {
+        var api = salusApi;
+        if (api == null) {
             logger.error("Cannot find properties for device {} because salusClient is null", dsn);
             return null;
         }
         logger.debug("Finding properties for device {} using salusClient", dsn);
-        var response = salusApi.findDeviceProperties(dsn);
+        var response = api.findDeviceProperties(dsn);
         if (response.failed()) {
             logger.error("Cannot find properties for device {} using salusClient\n{}", dsn, response.error());
             return null;
@@ -203,13 +206,14 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public void setValueForProperty(String dsn, String propertyName, Object value) {
-        if (salusApi == null) {
+        var api = salusApi;
+        if (api == null) {
             logger.error("Cannot set value for property {} on device {} because salusClient is null", propertyName,
                     dsn);
             return;
         }
         logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
-        var response = salusApi.setValueForProperty(dsn, propertyName, value);
+        var response = api.setValueForProperty(dsn, propertyName, value);
         if (response.failed()) {
             logger.error("Cannot set property {} on device {} to value {} using salusClient\n{}", propertyName, dsn,
                     value, response.error());
@@ -225,13 +229,13 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public SortedSet<Device> findDevices() {
-        var salusApi = this.salusApi;
-        if (salusApi == null) {
+        var api = this.salusApi;
+        if (api == null) {
             logger.error("Cannot find devices because salusClient is null");
             return emptySortedSet();
         }
         logger.debug("Finding devices using salusClient");
-        var response = salusApi.findDevices();
+        var response = api.findDevices();
         if (response.failed()) {
             logger.error("Cannot find devices using salusClient\n{}", response.error());
             return emptySortedSet();

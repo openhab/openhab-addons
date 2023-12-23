@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.salus.internal.rest;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Martin Grześlowski - Initial contribution
  */
-public record ApiResponse<T> (T body, Error error) {
+public record ApiResponse<T> (@Nullable T body, @Nullable Error error) {
     public static <T> ApiResponse<T> ok(T body) {
         return new ApiResponse<>(body, null);
     }

@@ -225,7 +225,7 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(@NonNullByDefault ChannelUID channelUID, @NonNullByDefault Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Accepting command {} for channel {}", command, channelUID.getId());
         try {
             if (command instanceof RefreshType) {

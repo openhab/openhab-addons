@@ -22,15 +22,12 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
 public class JettyHttpClient implements RestClient {
-    private final Logger logger = LoggerFactory.getLogger(JettyHttpClient.class);
     private final HttpClient client;
 
     public JettyHttpClient(HttpClient client) {
@@ -61,6 +58,9 @@ public class JettyHttpClient implements RestClient {
         try {
             if (headers != null) {
                 for (var header : headers) {
+                    if (header == null) {
+                        continue;
+                    }
                     for (var value : header.values()) {
                         request.header(header.name(), value);
                     }
