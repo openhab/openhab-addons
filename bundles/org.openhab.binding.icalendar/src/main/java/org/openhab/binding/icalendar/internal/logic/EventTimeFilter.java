@@ -46,6 +46,17 @@ public abstract class EventTimeFilter {
     }
 
     /**
+     * Creates the strategy to search for events that are active in a specific time frame.
+     * It finds the same events as {@link #searchByStart()} and {@link #searchByEnd()}, but additionally also events
+     * that start before the time frame or end after.
+     *
+     * @return The search strategy.
+     */
+    public static EventTimeFilter searchByActive() {
+        return new SearchByActive();
+    }
+
+    /**
      * Creates the strategy to search for events that end in a specific time frame. The exact end of the time frame is
      * inclusive.
      * <p>
@@ -102,7 +113,7 @@ public abstract class EventTimeFilter {
 
         @Override
         public boolean eventAfterFrame(Instant frameEnd, Instant eventStart, Duration eventDuration) {
-            return eventStart.isAfter(frameEnd) || eventStart.equals(frameEnd);
+            return !eventStart.isBefore(frameEnd);
         }
 
         @Override
@@ -120,6 +131,23 @@ public abstract class EventTimeFilter {
         @Override
         public boolean eventAfterFrame(Instant frameEnd, Instant eventStart, Duration eventDuration) {
             return eventStart.plus(eventDuration).isAfter(frameEnd);
+        }
+
+        @Override
+        public boolean eventBeforeFrame(Instant frameStart, Instant eventStart, Duration eventDuration) {
+            return !eventStart.plus(eventDuration).isAfter(frameStart);
+        }
+    }
+
+    private static class SearchByActive extends EventTimeFilter {
+        @Override
+        public Instant searchFrom(Instant frameStart, Duration eventDuration) {
+            return frameStart.minus(eventDuration);
+        }
+
+        @Override
+        public boolean eventAfterFrame(Instant frameEnd, Instant eventStart, Duration eventDuration) {
+            return !eventStart.isBefore(frameEnd);
         }
 
         @Override
