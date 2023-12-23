@@ -29,7 +29,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -122,10 +121,10 @@ public class GsonMapper {
                 .filter(entry -> !entry.getKey().equals("product_name"))
                 .filter(entry -> !entry.getKey().equals("display_name"))
                 .filter(entry -> !entry.getKey().equals("value"))
-                .map(entry -> Pair.of(entry.getKey().toString(), (Object) entry.getValue())).toList();
+                .map(entry -> new Pair<>(entry.getKey().toString(), (Object) entry.getValue())).toList();
         Map<String, Object> properties = new LinkedHashMap<>();
         for (var entry : list) {
-            properties.put(entry.getKey(), entry.getValue());
+            properties.put(entry.key, entry.value);
         }
         properties = Collections.unmodifiableMap(properties);
 
@@ -220,13 +219,13 @@ public class GsonMapper {
                 .filter(entry -> !entry.getKey().equals("product_name"))
                 .filter(entry -> !entry.getKey().equals("display_name"))
                 .filter(entry -> !entry.getKey().equals("value"))
-                .map(entry -> Pair.of(entry.getKey().toString(), (Object) entry.getValue())).toList();
+                .map(entry -> new Pair<>(entry.getKey().toString(), (Object) entry.getValue())).toList();
         // this weird thing need to be done,
         // because `Collectors.toMap` does not support value=null
         // and in our case, sometimes the values are null
         SortedMap<String, Object> properties = new TreeMap<>();
         for (var entry : list) {
-            properties.put(entry.getKey(), entry.getValue());
+            properties.put(entry.key, entry.value);
         }
         properties = unmodifiableSortedMap(properties);
 
@@ -334,5 +333,8 @@ public class GsonMapper {
             return empty();
         }
         return Optional.ofNullable(datapoint.get("value"));
+    }
+
+    private static record Pair<K, V> (K key, V value) {
     }
 }
