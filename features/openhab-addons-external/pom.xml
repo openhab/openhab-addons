@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.features.karaf</groupId>
     <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
@@ -35,7 +35,7 @@
                 <concat destfile="${project.build.directory}/addons.xml">
                   <header file="src/main/resources/addon-header.xml" filtering="no"/>
                   <fileset dir="${basedirRoot}/bundles">
-                    <include name="*/src/main/resources/OH-INF/addon/addon.xml"/>
+                    <include name="*/src/main/resources/OH-INF/addon/addon*.xml"/>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp negate="true">

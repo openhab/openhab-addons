@@ -82,9 +82,11 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -602,7 +604,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         String resourceId = config.resourceId;
         if (resourceId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.api2.conf-error.resource-id-bad");
+                    "@text/offline.api2.conf-error.resource-id-missing");
             return;
         }
         thisResource.setId(resourceId);
@@ -632,11 +634,37 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Update the channel state depending on new resources sent from the bridge.
+     *
+     * @param resources a collection of Resource objects containing the new state.
+     */
+    public void onResources(Collection<Resource> resources) {
+        boolean sceneActivated = resources.stream().anyMatch(r -> sceneContributorsCache.containsKey(r.getId())
+                && (r.getSceneActive().orElse(false) || r.getSmartSceneActive().orElse(false)));
+        for (Resource resource : resources) {
+            // Skip scene deactivation when we have also received a scene activation.
+            boolean updateChannels = !sceneActivated || !sceneContributorsCache.containsKey(resource.getId())
+                    || resource.getSceneActive().orElse(false) || resource.getSmartSceneActive().orElse(false);
+            onResource(resource, updateChannels);
+        }
+    }
+
+    /**
      * Update the channel state depending on a new resource sent from the bridge.
      *
      * @param resource a Resource object containing the new state.
      */
-    public void onResource(Resource resource) {
+    private void onResource(Resource resource) {
+        onResource(resource, true);
+    }
+
+    /**
+     * Update the channel state depending on a new resource sent from the bridge.
+     *
+     * @param resource a Resource object containing the new state.
+     * @param updateChannels update channels (otherwise only update cache/properties).
+     */
+    private void onResource(Resource resource, boolean updateChannels) {
         if (disposing) {
             return;
         }
@@ -658,7 +686,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Resource cachedResource = getResourceFromCache(resource);
             if (cachedResource != null) {
                 Setters.setResource(resource, cachedResource);
-                resourceConsumed = updateChannels(resource);
+                resourceConsumed = updateChannels && updateChannels(resource);
                 putResourceToCache(resource);
                 if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
                     updateLightProperties(resource);
@@ -700,8 +728,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     .ifPresentOrElse(r -> onResource(r), () -> {
                         if (resourceType == thisResource.getType()) {
                             logger.debug("{} -> onResourcesList() configuration error: unknown resourceId", resourceId);
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "@text/offline.api2.conf-error.resource-id-bad");
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                                    "@text/offline.api2.gone.resource-id-unknown");
                         }
                     });
         }
@@ -1211,6 +1239,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
                 State state = scenes.stream().filter(s -> s.getSceneActive().orElse(false)).map(s -> s.getSceneState())
                         .findAny().orElse(UnDefType.UNDEF);
+
+                // create scene channel if it is missing
+                if (getThing().getChannel(CHANNEL_2_SCENE) == null) {
+                    updateThing(editThing()
+                            .withChannel(ChannelBuilder.create(new ChannelUID(getThing().getUID(), CHANNEL_2_SCENE))
+                                    .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_2_SCENE)).build())
+                            .build());
+                }
 
                 updateState(CHANNEL_2_SCENE, state, true);
 

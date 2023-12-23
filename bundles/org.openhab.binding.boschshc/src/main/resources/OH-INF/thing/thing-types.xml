@@ -114,9 +114,14 @@
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
+			<channel id="illuminance" typeId="illuminance"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 
@@ -488,6 +493,13 @@
 		<label>Latest motion</label>
 		<description>Timestamp of the latest motion.</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="illuminance">
+		<item-type>Number</item-type>
+		<label>Illuminance</label>
+		<description>The illuminance level measured by the sensor (0 to 1000).</description>
+		<state min="0" max="1000" step="1" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="level">

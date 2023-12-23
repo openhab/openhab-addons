@@ -169,12 +169,44 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="oneCallMinutelyTimeSeries">
+		<label>One Call API Minutely Forecast</label>
+		<description>Minutely precipitation delivered by the One Call API.</description>
+		<channels>
+			<channel id="precipitation" typeId="precipitation"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="oneCallMinutely">
 		<label>One Call API Minutely Forecast</label>
 		<description>Minutely precipitation delivered by the One Call API.</description>
 		<channels>
 			<channel id="time-stamp" typeId="time-stamp"/>
 			<channel id="precipitation" typeId="precipitation"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="oneCallHourlyTimeSeries">
+		<label>One Call API Hourly Forecast</label>
+		<description>Hourly weather forecast delivered by the One Call API.</description>
+		<channels>
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="apparent-temperature" typeId="apparent-temperature"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="precip-probability" typeId="precip-probability"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="visibility" typeId="visibility"/>
 		</channels>
 	</channel-group-type>
 
@@ -200,6 +232,40 @@
 			<channel id="rain" typeId="rain"/>
 			<channel id="snow" typeId="snow"/>
 			<channel id="visibility" typeId="visibility"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="oneCallDailyTimeSeries">
+		<label>One Call API Daily Forecast</label>
+		<description>Daily weather forecast delivered by the One Call API.</description>
+		<channels>
+			<channel id="sunrise" typeId="sunrise"/>
+			<channel id="sunset" typeId="sunset"/>
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="morning-temperature" typeId="morning-temperature"/>
+			<channel id="day-temperature" typeId="day-temperature"/>
+			<channel id="evening-temperature" typeId="evening-temperature"/>
+			<channel id="night-temperature" typeId="night-temperature"/>
+			<channel id="min-temperature" typeId="forecasted-min-outdoor-temperature"/>
+			<channel id="max-temperature" typeId="forecasted-max-outdoor-temperature"/>
+			<channel id="apparent-morning" typeId="apparent-morning"/>
+			<channel id="apparent-day" typeId="apparent-day"/>
+			<channel id="apparent-evening" typeId="apparent-evening"/>
+			<channel id="apparent-night" typeId="apparent-night"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="uvindex" typeId="forecasted-uvindex"/>
+			<channel id="precip-probability" typeId="precip-probability"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
 		</channels>
 	</channel-group-type>
 

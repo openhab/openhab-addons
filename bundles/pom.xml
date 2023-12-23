@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -154,6 +154,7 @@
     <module>org.openhab.binding.gce</module>
     <module>org.openhab.binding.generacmobilelink</module>
     <module>org.openhab.binding.goecharger</module>
+    <module>org.openhab.binding.govee</module>
     <module>org.openhab.binding.gpio</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
@@ -349,6 +350,7 @@
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.smartthings</module>
+    <module>org.openhab.binding.smgw</module>
     <module>org.openhab.binding.smhi</module>
     <module>org.openhab.binding.smsmodem</module>
     <module>org.openhab.binding.sncf</module>
@@ -445,7 +447,6 @@
     <module>org.openhab.voice.mimictts</module>
     <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.pollytts</module>
-    <module>org.openhab.voice.porcupineks</module>
     <module>org.openhab.voice.rustpotterks</module>
     <module>org.openhab.voice.voicerss</module>
     <module>org.openhab.voice.voskstt</module>
