@@ -73,11 +73,11 @@ public class VehiclePositionWrapper {
     }
 
     public State isCalculated() {
-        return position.map(pos -> isCalculated ? (State) OnOffType.ON : OnOffType.OFF).orElse(UnDefType.UNDEF);
+        return position.map(pos -> (State) OnOffType.from(isCalculated)).orElse(UnDefType.UNDEF);
     }
 
     public State isHeading() {
-        return position.map(pos -> pos.isHeading() ? (State) OnOffType.ON : OnOffType.OFF).orElse(UnDefType.UNDEF);
+        return position.map(pos -> (State) OnOffType.from(pos.isHeading())).orElse(UnDefType.UNDEF);
     }
 
     public State getTimestamp() {

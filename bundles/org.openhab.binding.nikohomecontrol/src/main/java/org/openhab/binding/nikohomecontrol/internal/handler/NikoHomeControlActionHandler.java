@@ -316,10 +316,10 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
         switch (actionType) {
             case TRIGGER:
-                updateState(CHANNEL_BUTTON, (actionState == 0) ? OnOffType.OFF : OnOffType.ON);
+                updateState(CHANNEL_BUTTON, OnOffType.from(actionState != 0));
                 updateStatus(ThingStatus.ONLINE);
             case RELAY:
-                updateState(CHANNEL_SWITCH, (actionState == 0) ? OnOffType.OFF : OnOffType.ON);
+                updateState(CHANNEL_SWITCH, OnOffType.from(actionState != 0));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case DIMMER:

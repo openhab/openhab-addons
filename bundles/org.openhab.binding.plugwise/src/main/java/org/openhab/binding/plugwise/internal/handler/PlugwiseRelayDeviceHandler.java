@@ -368,7 +368,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
     private void handleInformationResponse(InformationResponseMessage message) {
         recentLogAddress = message.getLogAddress();
-        OnOffType powerState = message.getPowerState() ? OnOffType.ON : OnOffType.OFF;
+        OnOffType powerState = OnOffType.from(message.getPowerState());
 
         PendingPowerStateChange change = pendingPowerStateChange;
         if (change != null) {

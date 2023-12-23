@@ -678,10 +678,9 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
         updateState(CHANNEL_COLOR, stateColor);
         updateState(CHANNEL_COLOR_MODE, new StringType(state.getColorMode()));
-        updateState(CHANNEL_RHYTHM_ACTIVE, controllerInfo.getRhythm().getRhythmActive() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_RHYTHM_ACTIVE, OnOffType.from(controllerInfo.getRhythm().getRhythmActive()));
         updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode()));
-        updateState(CHANNEL_RHYTHM_STATE,
-                controllerInfo.getRhythm().getRhythmConnected() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_RHYTHM_STATE, OnOffType.from(controllerInfo.getRhythm().getRhythmConnected()));
 
         updatePanelColors();
         if (EFFECT_NAME_SOLID_COLOR.equals(controllerInfo.getEffects().getSelect())) {

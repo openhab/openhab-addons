@@ -976,7 +976,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
 
             State boolLikeState;
             if (containsOnOff(acceptedDataTypes)) {
-                boolLikeState = boolValue ? OnOffType.ON : OnOffType.OFF;
+                boolLikeState = OnOffType.from(boolValue);
             } else if (containsOpenClosed(acceptedDataTypes)) {
                 boolLikeState = boolValue ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             } else {

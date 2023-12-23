@@ -159,7 +159,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.notsenseguard");
             return null;
         }
-        return ((ApplianceCommand) commandOptional.get()).getCommand().getValveOpen() ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(((ApplianceCommand) commandOptional.get()).getCommand().getValveOpen());
     }
 
     @Override

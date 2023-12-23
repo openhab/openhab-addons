@@ -67,7 +67,7 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
             case "Number":
                 return new DecimalType(value);
             case "Switch":
-                return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(Integer.parseInt(value) > 0);
             case "Number:Dimensionless":
                 switch (channelID) {
                     case HaywardBindingConstants.CHANNEL_CHLORINATOR_AVGSALTLEVEL:

@@ -1355,7 +1355,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             case CHANNEL_TYPE_ALLMUTE:
             case CHANNEL_TYPE_PAGE:
             case CHANNEL_TYPE_LOUDNESS:
-                state = ON.equals(value) ? OnOffType.ON : OnOffType.OFF;
+                state = OnOffType.from(ON.equals(value));
                 break;
             case CHANNEL_TYPE_LOCK:
                 state = ON.equals(value) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;

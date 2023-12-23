@@ -97,7 +97,7 @@ public class MyStromPlugHandler extends AbstractMyStromHandler {
     protected void pollDevice() {
         MyStromReport report = cache.getValue();
         if (report != null) {
-            updateState(CHANNEL_SWITCH, report.relay ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_SWITCH, OnOffType.from(report.relay));
             updateState(CHANNEL_POWER, QuantityType.valueOf(report.power, WATT));
             updateState(CHANNEL_ENERGY_CONSUMED_SINCE_LAST_CALL, QuantityType.valueOf(report.Ws, WATT_SECOND));
             updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(report.temperature, CELSIUS));

@@ -114,7 +114,7 @@ public class BooleanItemReader {
     }
 
     private OnOffType getOffValue(OnOffType onValue) {
-        return onValue == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(onValue != OnOffType.ON);
     }
 
     void setValue(Boolean value) {

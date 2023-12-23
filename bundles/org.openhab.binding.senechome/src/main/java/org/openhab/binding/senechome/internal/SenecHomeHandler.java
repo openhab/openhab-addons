@@ -399,7 +399,7 @@ public class SenecHomeHandler extends BaseThingHandler {
         }
 
         logger.debug("Updating power limitation state {}", status);
-        updateState(channel.getUID(), status ? OnOffType.ON : OnOffType.OFF);
+        updateState(channel.getUID(), OnOffType.from(status));
     }
 
     protected void updateGridPowerValues(BigDecimal gridTotalValue) {

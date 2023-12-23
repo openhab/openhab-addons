@@ -455,7 +455,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             state = new StringType(converted.toString());
 
         } else if ("Switch".equalsIgnoreCase(acceptedItemType)) {
-            state = converted.intValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+            state = OnOffType.from(converted.intValue() != 0);
 
         } else if ("Number".equalsIgnoreCase(acceptedItemType)) {
             state = new DecimalType(converted);

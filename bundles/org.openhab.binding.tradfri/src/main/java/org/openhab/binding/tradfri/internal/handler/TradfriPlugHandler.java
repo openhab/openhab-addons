@@ -48,7 +48,7 @@ public class TradfriPlugHandler extends TradfriThingHandler {
             TradfriPlugData state = new TradfriPlugData(data);
             updateStatus(state.getReachabilityStatus() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
-            updateState(CHANNEL_POWER, state.getOnOffState() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_POWER, OnOffType.from(state.getOnOffState()));
             updateDeviceProperties(state);
         }
     }

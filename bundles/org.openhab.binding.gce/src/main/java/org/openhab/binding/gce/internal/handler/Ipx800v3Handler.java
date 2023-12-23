@@ -252,7 +252,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                         state = new DecimalType(value);
                         break;
                     case RELAY:
-                        state = value == 1 ? OnOffType.ON : OnOffType.OFF;
+                        state = OnOffType.from(value == 1);
                         break;
                     case ANALOG:
                         state = new DecimalType(value);

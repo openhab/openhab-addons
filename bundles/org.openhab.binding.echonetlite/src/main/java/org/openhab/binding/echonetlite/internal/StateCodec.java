@@ -51,7 +51,7 @@ public interface StateCodec extends StateEncode, StateDecode {
 
         @Override
         public State decodeState(final ByteBuffer edt) {
-            return b(on) == edt.get() ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(b(on) == edt.get());
         }
 
         @Override

@@ -50,6 +50,6 @@ public enum PrivacyModeState {
      * @return the on/off state corresponding to the privacy mode state of this enumeration literal
      */
     public OnOffType toOnOffType() {
-        return this == ENABLED ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(this == ENABLED);
     }
 }

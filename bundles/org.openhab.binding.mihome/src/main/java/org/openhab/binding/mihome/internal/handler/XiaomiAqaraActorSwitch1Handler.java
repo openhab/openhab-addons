@@ -74,7 +74,7 @@ public class XiaomiAqaraActorSwitch1Handler extends XiaomiActorBaseHandler {
     void parseDefault(JsonObject data) {
         if (data.has(CHANNEL_0)) {
             boolean isOn = ON.equals(data.get(CHANNEL_0).getAsString().toLowerCase());
-            updateState(CHANNEL_SWITCH_CH0, isOn ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_SWITCH_CH0, OnOffType.from(isOn));
         }
     }
 }

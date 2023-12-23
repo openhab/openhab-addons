@@ -279,7 +279,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (flag != null) {
             try {
                 boolean value = Boolean.parseBoolean(String.valueOf(flag));
-                updateState(CHANNEL_FLAG, value ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_FLAG, OnOffType.from(value));
             } catch (DateTimeParseException e) {
                 // do nothing
             }
@@ -289,7 +289,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (battery != null) {
             DecimalType batteryLevel = DecimalType.valueOf(String.valueOf(battery));
             updateState(CHANNEL_BATTERY_LEVEL, batteryLevel);
-            updateState(CHANNEL_BATTERY_LOW, batteryLevel.intValue() <= 10 ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_BATTERY_LOW, OnOffType.from(batteryLevel.intValue() <= 10));
         }
 
         if (!configInitializedSuccessfully) {

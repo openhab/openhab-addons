@@ -82,7 +82,7 @@ public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl im
     @Override
     public CompletableFuture<Void> setActive(ActiveEnum value) {
         getCharacteristic(HomekitCharacteristicType.ACTIVE).ifPresent(tItem -> {
-            tItem.send(value == ActiveEnum.ACTIVE ? OnOffType.ON : OnOffType.OFF);
+            tItem.send(OnOffType.from(value == ActiveEnum.ACTIVE));
         });
         return CompletableFuture.completedFuture(null);
     }

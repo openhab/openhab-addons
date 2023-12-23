@@ -305,11 +305,11 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                             updateState(CHANNEL_WATER_LEVEL_REACHED, newAttributeValue);
                             break;
                         case "CleanAdvise":
-                            newAttributeValue = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                            newAttributeValue = OnOffType.from(!"0".equals(attributeValue));
                             updateState(CHANNEL_CLEAN_ADVISE, newAttributeValue);
                             break;
                         case "FilterAdvise":
-                            newAttributeValue = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                            newAttributeValue = OnOffType.from(!"0".equals(attributeValue));
                             updateState(CHANNEL_FILTER_ADVISE, newAttributeValue);
                             break;
                         case "Brewed":

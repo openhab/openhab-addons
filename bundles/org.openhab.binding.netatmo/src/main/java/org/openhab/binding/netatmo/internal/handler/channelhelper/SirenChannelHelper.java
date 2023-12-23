@@ -45,8 +45,8 @@ public class SirenChannelHelper extends EventChannelHelper {
             return switch (channelId) {
                 case CHANNEL_MONITORING -> homeStatus.getMonitoring();
                 case CHANNEL_STATUS -> homeStatus.getStatus().map(SirenStatus::get)
-                        .map(status -> SirenStatus.SOUND == status ? OnOffType.ON : OnOffType.OFF)
-                        .map(State.class::cast).orElse(UnDefType.UNDEF);
+                        .map(status -> OnOffType.from(SirenStatus.SOUND == status)).map(State.class::cast)
+                        .orElse(UnDefType.UNDEF);
                 default -> null;
             };
         }

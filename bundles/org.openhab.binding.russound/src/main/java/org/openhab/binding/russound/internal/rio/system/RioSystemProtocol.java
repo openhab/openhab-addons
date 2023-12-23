@@ -124,7 +124,7 @@ class RioSystemProtocol extends AbstractRioProtocol {
      * Refresh the system status
      */
     void refreshSystemAllOn() {
-        stateChanged(RioConstants.CHANNEL_SYSALLON, allOn.get() ? OnOffType.ON : OnOffType.OFF);
+        stateChanged(RioConstants.CHANNEL_SYSALLON, OnOffType.from(allOn.get()));
     }
 
     /**
@@ -216,7 +216,7 @@ class RioSystemProtocol extends AbstractRioProtocol {
                     stateChanged(RioConstants.CHANNEL_SYSLANG, new StringType(value));
                     break;
                 case SYS_STATUS:
-                    stateChanged(RioConstants.CHANNEL_SYSSTATUS, "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                    stateChanged(RioConstants.CHANNEL_SYSSTATUS, OnOffType.from("ON".equals(value)));
                     break;
 
                 default:

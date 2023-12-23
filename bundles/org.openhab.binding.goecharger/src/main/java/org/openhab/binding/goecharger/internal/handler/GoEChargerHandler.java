@@ -148,7 +148,7 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
                 if (goeResponse.allowCharging == null) {
                     return UnDefType.UNDEF;
                 }
-                return goeResponse.allowCharging == 1 ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(goeResponse.allowCharging == 1);
             case PHASES:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;

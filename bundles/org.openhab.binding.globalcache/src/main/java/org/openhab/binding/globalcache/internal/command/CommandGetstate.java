@@ -56,7 +56,7 @@ public class CommandGetstate extends AbstractCommand {
 
         setModule(deviceReply.substring(6, 7));
         setConnector(deviceReply.substring(8, 9));
-        setState((deviceReply.charAt(10) == '0' ? OnOffType.OFF : OnOffType.ON));
+        setState(OnOffType.from(deviceReply.charAt(10) != '0'));
     }
 
     private void setState(OnOffType s) {

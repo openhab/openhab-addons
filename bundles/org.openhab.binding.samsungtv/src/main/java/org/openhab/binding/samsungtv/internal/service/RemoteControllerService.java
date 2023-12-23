@@ -472,11 +472,11 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         for (EventListener listener : listeners) {
             // order of state updates is important to prevent extraneous transitions in overall state
             if (on) {
-                listener.valueReceived(POWER, on ? OnOffType.ON : OnOffType.OFF);
-                listener.valueReceived(ART_MODE, artmode ? OnOffType.ON : OnOffType.OFF);
+                listener.valueReceived(POWER, OnOffType.from(on));
+                listener.valueReceived(ART_MODE, OnOffType.from(artmode));
             } else {
-                listener.valueReceived(ART_MODE, artmode ? OnOffType.ON : OnOffType.OFF);
-                listener.valueReceived(POWER, on ? OnOffType.ON : OnOffType.OFF);
+                listener.valueReceived(ART_MODE, OnOffType.from(artmode));
+                listener.valueReceived(POWER, OnOffType.from(on));
             }
         }
     }

@@ -403,14 +403,14 @@ public class AllPlayHandler extends BaseThingHandler
     @Override
     public void onShuffleModeChanged(ShuffleMode shuffleMode) {
         logger.debug("{}: ShuffleMode changed to {}", speaker.getName(), shuffleMode);
-        OnOffType shuffleOnOff = (shuffleMode == ShuffleMode.SHUFFLE) ? OnOffType.ON : OnOffType.OFF;
+        OnOffType shuffleOnOff = OnOffType.from(shuffleMode == ShuffleMode.SHUFFLE);
         updateState(SHUFFLE_MODE, shuffleOnOff);
     }
 
     @Override
     public void onMuteChanged(boolean mute) {
         logger.debug("{}: Mute changed to {}", speaker.getName(), mute);
-        updateState(MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(MUTE, OnOffType.from(mute));
     }
 
     @Override
@@ -425,7 +425,7 @@ public class AllPlayHandler extends BaseThingHandler
 
     @Override
     public void onVolumeControlChanged(boolean enabled) {
-        updateState(VOLUME_CONTROL, enabled ? OnOffType.ON : OnOffType.OFF);
+        updateState(VOLUME_CONTROL, OnOffType.from(enabled));
     }
 
     @Override

@@ -691,7 +691,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     break;
                 case "switch":
                     if (val.getAsJsonPrimitive().isNumber()) {
-                        updateState(basicChannel.getChannel(), val.getAsInt() > 0 ? OnOffType.ON : OnOffType.OFF);
+                        updateState(basicChannel.getChannel(), OnOffType.from(val.getAsInt() > 0));
                     } else {
                         String strVal = val.getAsString().toLowerCase();
                         updateState(basicChannel.getChannel(),

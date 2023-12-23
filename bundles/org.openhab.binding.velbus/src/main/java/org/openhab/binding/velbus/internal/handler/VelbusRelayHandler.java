@@ -91,7 +91,7 @@ public class VelbusRelayHandler extends VelbusThingHandler {
                 boolean on = packet[7] != 0x00;
 
                 VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address, channel);
-                OnOffType state = on ? OnOffType.ON : OnOffType.OFF;
+                OnOffType state = OnOffType.from(on);
                 updateState(getModuleAddress().getChannelId(velbusChannelIdentifier), state);
             }
         }

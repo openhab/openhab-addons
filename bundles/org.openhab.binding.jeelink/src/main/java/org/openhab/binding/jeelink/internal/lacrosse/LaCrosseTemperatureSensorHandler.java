@@ -133,8 +133,8 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                                 reading.getHumidity(), reading.isBatteryNew(), reading.isBatteryLow());
                         updateState(TEMPERATURE_CHANNEL, new QuantityType<>(temp, SIUnits.CELSIUS));
                         updateState(HUMIDITY_CHANNEL, new QuantityType<>(reading.getHumidity(), Units.PERCENT));
-                        updateState(BATTERY_NEW_CHANNEL, reading.isBatteryNew() ? OnOffType.ON : OnOffType.OFF);
-                        updateState(BATTERY_LOW_CHANNEL, reading.isBatteryLow() ? OnOffType.ON : OnOffType.OFF);
+                        updateState(BATTERY_NEW_CHANNEL, OnOffType.from(reading.isBatteryNew()));
+                        updateState(BATTERY_LOW_CHANNEL, OnOffType.from(reading.isBatteryLow()));
                     } else {
                         logger.debug("updating states for channel {} of thing {} ({}): temp={} ({}), humidity={}",
                                 reading.getChannel(), getThing().getLabel(), getThing().getUID().getId(), temp,

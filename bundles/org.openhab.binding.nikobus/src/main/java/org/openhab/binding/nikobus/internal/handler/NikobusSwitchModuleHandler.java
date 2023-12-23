@@ -44,6 +44,6 @@ public class NikobusSwitchModuleHandler extends NikobusModuleHandler {
 
     @Override
     protected State stateFromValue(String channelId, int value) {
-        return value != 0 ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(value != 0);
     }
 }

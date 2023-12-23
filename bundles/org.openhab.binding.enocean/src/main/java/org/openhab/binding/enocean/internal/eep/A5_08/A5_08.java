@@ -85,9 +85,9 @@ public abstract class A5_08 extends _4BSMessage {
                             / (getUnscaledIlluminationMax() - getUnscaledIlluminationMin()));
             return new QuantityType<>(scaledIllumination, Units.LUX);
         } else if (channelId.equals(CHANNEL_MOTIONDETECTION)) {
-            return getBit(getDB0(), 1) ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(!getBit(getDB0(), 1));
         } else if (channelId.equals(CHANNEL_OCCUPANCY)) {
-            return getBit(getDB0(), 0) ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(!getBit(getDB0(), 0));
         }
 
         return UnDefType.UNDEF;

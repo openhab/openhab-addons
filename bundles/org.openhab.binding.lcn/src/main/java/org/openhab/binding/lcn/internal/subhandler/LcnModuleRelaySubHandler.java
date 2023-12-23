@@ -61,7 +61,7 @@ public class LcnModuleRelaySubHandler extends AbstractLcnModuleSubHandler {
     public void handleCommandPercent(PercentType command, LcnChannelGroup channelGroup, int number)
             throws LcnException {
         // don't use OnOffType.as(), because it returns @Nullable
-        handleCommandOnOff(command.intValue() > 0 ? OnOffType.ON : OnOffType.OFF, channelGroup, number);
+        handleCommandOnOff(OnOffType.from(command.intValue() > 0), channelGroup, number);
     }
 
     @Override

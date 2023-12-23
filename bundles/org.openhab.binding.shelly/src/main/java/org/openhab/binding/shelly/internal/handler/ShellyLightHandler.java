@@ -172,8 +172,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         logger.debug("{}: Changing brightness from {} to {}", thingName, oldCol.brightness, value);
                         col.setBrightness(value);
                     }
-                    updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER,
-                            value > 0 ? OnOffType.ON : OnOffType.OFF);
+                    updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER, OnOffType.from(value > 0));
                     break;
 
                 case CHANNEL_COLOR_TEMP:

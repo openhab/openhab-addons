@@ -95,7 +95,7 @@ public class PresenceHandler extends HueSensorHandler {
         Object presence = sensor.getState().get(STATE_PRESENCE);
         if (presence != null) {
             boolean value = Boolean.parseBoolean(String.valueOf(presence));
-            updateState(CHANNEL_PRESENCE, value ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_PRESENCE, OnOffType.from(value));
         }
 
         if (sensor.getConfig().containsKey(CONFIG_LED_INDICATION)) {

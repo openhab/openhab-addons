@@ -146,7 +146,7 @@ public class HVACHandler extends BaseThingHandler {
                     if (command instanceof RefreshType) {
                         final String on = query(controller, "o");
                         if (on != null) {
-                            updateState(ON, "1".equals(on) ? OnOffType.ON : OnOffType.OFF);
+                            updateState(ON, OnOffType.from("1".equals(on)));
                         }
                     } else if (command instanceof OnOffType onOffCommand) {
                         controller

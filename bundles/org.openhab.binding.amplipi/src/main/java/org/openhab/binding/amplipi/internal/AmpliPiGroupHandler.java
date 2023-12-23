@@ -163,7 +163,7 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
         Integer volDelta = groupState.getVolDelta();
         Integer sourceId = groupState.getSourceId();
 
-        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, OnOffType.from(mute));
         updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(volDelta));
         updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(sourceId));
     }

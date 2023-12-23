@@ -148,7 +148,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                     logger.debug("Received unknown door value: {}", controllerVariables.door);
                 } else {
                     boolean doorOpen = controllerVariables.door == 1;
-                    OnOffType onOff = maybeInvert.apply(doorOpen) ? OnOffType.ON : OnOffType.OFF;
+                    OnOffType onOff = OnOffType.from(maybeInvert.apply(doorOpen));
                     UpDownType upDown = doorOpen ? UpDownType.UP : UpDownType.DOWN;
                     OpenClosedType contact = doorOpen ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
 

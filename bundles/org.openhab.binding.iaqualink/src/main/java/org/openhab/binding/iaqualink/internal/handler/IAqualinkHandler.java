@@ -458,7 +458,7 @@ public class IAqualinkHandler extends BaseThingHandler {
                 case "Dimmer":
                     return new PercentType(value);
                 case "Switch":
-                    return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(Integer.parseInt(value) > 0);
                 default:
                     return StringType.valueOf(value);
             }

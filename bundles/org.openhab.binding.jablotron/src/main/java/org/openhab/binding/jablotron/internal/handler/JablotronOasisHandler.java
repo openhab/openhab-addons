@@ -111,7 +111,7 @@ public class JablotronOasisHandler extends JablotronAlarmHandler {
     @Override
     protected void updateSegmentStatus(JablotronServiceDetailSegment segment) {
         logger.debug("Segment id: {} and status: {}", segment.getSegmentId(), segment.getSegmentState());
-        State newState = "unset".equals(segment.getSegmentState()) ? OnOffType.OFF : OnOffType.ON;
+        State newState = OnOffType.from(!"unset".equals(segment.getSegmentState()));
         switch (segment.getSegmentId()) {
             case "STATE_1":
                 updateState(CHANNEL_STATUS_A, newState);

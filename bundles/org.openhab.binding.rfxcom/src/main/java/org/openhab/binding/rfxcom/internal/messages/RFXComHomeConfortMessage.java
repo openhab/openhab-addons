@@ -130,7 +130,7 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl<RFXComHome
     public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
             throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         if (channelId.equals(CHANNEL_COMMAND)) {
-            return (command == Commands.OFF || command == Commands.GROUP_OFF ? OnOffType.OFF : OnOffType.ON);
+            return OnOffType.from(command != Commands.OFF && command != Commands.GROUP_OFF);
         } else {
             return super.convertToState(channelId, config, deviceState);
         }

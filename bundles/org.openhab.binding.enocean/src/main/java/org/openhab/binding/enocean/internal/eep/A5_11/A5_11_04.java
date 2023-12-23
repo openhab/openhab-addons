@@ -104,7 +104,7 @@ public class A5_11_04 extends _4BSMessage {
         byte db0 = getDB0();
         boolean lightOn = getBit(db0, 0);
 
-        return lightOn ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(lightOn);
     }
 
     protected State getDimmerStatus() {

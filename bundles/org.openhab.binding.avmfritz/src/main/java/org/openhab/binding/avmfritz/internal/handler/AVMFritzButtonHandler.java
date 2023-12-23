@@ -130,8 +130,7 @@ public class AVMFritzButtonHandler extends DeviceHandler {
         if (lowBattery == null) {
             updateThingChannelState(lowBatteryChannelId, UnDefType.UNDEF);
         } else {
-            updateThingChannelState(lowBatteryChannelId,
-                    BatteryModel.BATTERY_ON.equals(lowBattery) ? OnOffType.ON : OnOffType.OFF);
+            updateThingChannelState(lowBatteryChannelId, OnOffType.from(BatteryModel.BATTERY_ON.equals(lowBattery)));
         }
     }
 

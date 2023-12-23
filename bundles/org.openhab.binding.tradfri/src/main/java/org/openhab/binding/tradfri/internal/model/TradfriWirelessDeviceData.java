@@ -47,7 +47,7 @@ public abstract class TradfriWirelessDeviceData extends TradfriDeviceData {
 
     public @Nullable OnOffType getBatteryLow() {
         if (generalInfo.get(DEVICE_BATTERY_LEVEL) != null) {
-            return generalInfo.get(DEVICE_BATTERY_LEVEL).getAsInt() <= 10 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(generalInfo.get(DEVICE_BATTERY_LEVEL).getAsInt() <= 10);
         } else {
             return null;
         }

@@ -173,7 +173,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     }
 
     private void processBattery(boolean batteryLow) {
-        OnOffType state = batteryLow ? OnOffType.ON : OnOffType.OFF;
+        OnOffType state = OnOffType.from(batteryLow);
 
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_LOW_BATTERY), state);
     }

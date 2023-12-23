@@ -53,7 +53,7 @@ public class LightState extends ErrorResponse {
     }
 
     public OnOffType getOnOff() {
-        return onOff == 1 ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(onOff == 1);
     }
 
     public PercentType getSaturation() {

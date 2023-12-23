@@ -108,7 +108,7 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
                 }
             } else if (CHANNEL_HEATING_ACTIVE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, room.isHeatingActive() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(room.isHeatingActive()));
                 }
             } else {
                 logger.debug("Received command {} on channel {}, but this channel is not handled or supported by {}",

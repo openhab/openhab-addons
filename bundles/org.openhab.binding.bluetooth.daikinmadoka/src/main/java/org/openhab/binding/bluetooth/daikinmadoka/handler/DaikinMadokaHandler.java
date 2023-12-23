@@ -669,7 +669,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             return;
         }
 
-        OnOffType oot = command.isPowerState() ? OnOffType.ON : OnOffType.OFF;
+        OnOffType oot = OnOffType.from(command.isPowerState());
 
         this.madokaSettings.setOnOffState(oot);
 

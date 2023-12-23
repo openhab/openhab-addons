@@ -481,14 +481,14 @@ public class YamahaZoneThingHandler extends BaseThingHandler
         String id = channelUID.getId();
 
         if (id.equals(grpZone(CHANNEL_POWER))) {
-            updateState(channelUID, zoneState.power ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUID, OnOffType.from(zoneState.power));
 
         } else if (id.equals(grpZone(CHANNEL_VOLUME_DB))) {
             updateState(channelUID, new DecimalType(zoneState.volumeDB));
         } else if (id.equals(grpZone(CHANNEL_VOLUME))) {
             updateState(channelUID, new PercentType((int) zoneConfig.getVolumePercentage(zoneState.volumeDB)));
         } else if (id.equals(grpZone(CHANNEL_MUTE))) {
-            updateState(channelUID, zoneState.mute ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUID, OnOffType.from(zoneState.mute));
         } else if (id.equals(grpZone(CHANNEL_INPUT))) {
             updateState(channelUID, new StringType(zoneState.inputID));
         } else if (id.equals(grpZone(CHANNEL_SURROUND))) {
@@ -498,9 +498,9 @@ public class YamahaZoneThingHandler extends BaseThingHandler
         } else if (id.equals(grpZone(CHANNEL_DIALOGUE_LEVEL))) {
             updateState(channelUID, new DecimalType(zoneState.dialogueLevel));
         } else if (id.equals(grpZone(CHANNEL_HDMI1OUT))) {
-            updateState(channelUID, zoneState.hdmi1Out ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUID, OnOffType.from(zoneState.hdmi1Out));
         } else if (id.equals(grpZone(CHANNEL_HDMI2OUT))) {
-            updateState(channelUID, zoneState.hdmi2Out ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUID, OnOffType.from(zoneState.hdmi2Out));
 
         } else if (id.equals(grpPlayback(CHANNEL_PLAYBACK))) {
             updateState(channelUID, new StringType(playInfoState.playbackMode));
@@ -539,15 +539,15 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
         updateStatus(ThingStatus.ONLINE);
 
-        updateState(grpZone(CHANNEL_POWER), zoneState.power ? OnOffType.ON : OnOffType.OFF);
+        updateState(grpZone(CHANNEL_POWER), OnOffType.from(zoneState.power));
         updateState(grpZone(CHANNEL_INPUT), new StringType(zoneState.inputID));
         updateState(grpZone(CHANNEL_SURROUND), new StringType(zoneState.surroundProgram));
         updateState(grpZone(CHANNEL_VOLUME_DB), new DecimalType(zoneState.volumeDB));
         updateState(grpZone(CHANNEL_VOLUME), new PercentType((int) zoneConfig.getVolumePercentage(zoneState.volumeDB)));
-        updateState(grpZone(CHANNEL_MUTE), zoneState.mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(grpZone(CHANNEL_MUTE), OnOffType.from(zoneState.mute));
         updateState(grpZone(CHANNEL_DIALOGUE_LEVEL), new DecimalType(zoneState.dialogueLevel));
-        updateState(grpZone(CHANNEL_HDMI1OUT), zoneState.hdmi1Out ? OnOffType.ON : OnOffType.OFF);
-        updateState(grpZone(CHANNEL_HDMI2OUT), zoneState.hdmi2Out ? OnOffType.ON : OnOffType.OFF);
+        updateState(grpZone(CHANNEL_HDMI1OUT), OnOffType.from(zoneState.hdmi1Out));
+        updateState(grpZone(CHANNEL_HDMI2OUT), OnOffType.from(zoneState.hdmi2Out));
 
         // If the input changed
         if (inputChanged) {
