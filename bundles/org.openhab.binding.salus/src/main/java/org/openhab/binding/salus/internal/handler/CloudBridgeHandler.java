@@ -127,7 +127,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         username = (String) config.get("username");
         password = ((String) config.get("password")).toCharArray();
         url = (String) config.get("url");
-        if (StringUtils.isEmpty(url)) {
+        if ("".equals(url)) {
             url = "https://eu.salusconnect.io";
         }
         refreshInterval = ((BigDecimal) config.get("refreshInterval")).longValue();
