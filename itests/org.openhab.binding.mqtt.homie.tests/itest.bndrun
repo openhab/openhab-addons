@@ -114,5 +114,6 @@ Import-Package: \
 	org.openhab.core.io.transport.mqtt;version='[4.2.0,4.2.1)',\
 	org.openhab.core.test;version='[4.2.0,4.2.1)',\
 	org.openhab.core.thing;version='[4.2.0,4.2.1)',\
-	org.openhab.core.transform;version='[4.2.0,4.2.1)'
+	org.openhab.core.transform;version='[4.2.0,4.2.1)',\
+	jakarta.ws.rs-api;version='[2.1.6,2.1.7)'
 
