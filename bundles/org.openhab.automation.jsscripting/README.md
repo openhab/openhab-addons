@@ -231,7 +231,7 @@ var myVar = 'Hello world!';
 // Schedule a timer that expires in ten seconds
 setTimeout(() => {
   console.info(`Timer expired with variable value = "${myVar}"`);
-}, 1000);
+}, 10000);
 
 myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello mutation!" instead of "Hello world!"
 ```
@@ -245,7 +245,7 @@ var myVar = 'Hello world!';
 // Schedule a timer that expires in ten seconds
 setTimeout((myVariable) => {
   console.info(`Timer expired with variable value = "${myVariable}"`);
-}, 1000, myVar); // Pass one or more variables as parameters here. They are passed through to the callback function.
+}, 10000, myVar); // Pass one or more variables as parameters here. They are passed through to the callback function.
 
 myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello world!"
 ```
