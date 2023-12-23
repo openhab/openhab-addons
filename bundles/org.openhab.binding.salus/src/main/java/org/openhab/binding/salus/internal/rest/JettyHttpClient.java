@@ -14,8 +14,6 @@ package org.openhab.binding.salus.internal.rest;
 
 import static java.util.Objects.requireNonNull;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -53,7 +51,6 @@ public class JettyHttpClient implements RestClient {
     }
 
     @SuppressWarnings("ConstantValue")
-    @NotNull
     private Response<@Nullable String> execute(Request request, @Nullable Header[] headers, String url) {
         try {
             if (headers != null) {
