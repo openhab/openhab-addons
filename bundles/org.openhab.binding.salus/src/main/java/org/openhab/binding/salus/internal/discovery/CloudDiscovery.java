@@ -90,7 +90,7 @@ public class CloudDiscovery extends AbstractDiscoveryService {
         var sb = new StringBuilder();
         {
             var name = device.name();
-            if (!isEmpty(name)) {
+            if (!"".equals(name)) {
                 sb.append(name);
             } else {
                 sb.append(device.dsn());
