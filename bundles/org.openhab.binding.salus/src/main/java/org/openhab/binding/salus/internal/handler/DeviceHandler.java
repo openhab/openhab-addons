@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.SalusBindingConstants;
