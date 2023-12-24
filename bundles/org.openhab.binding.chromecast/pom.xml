@@ -33,7 +33,7 @@
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
+      <artifactId>protobuf-javalite</artifactId>
       <version>3.25.1</version>
       <scope>compile</scope>
     </dependency>
