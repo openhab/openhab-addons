@@ -82,11 +82,12 @@ public abstract sealed class DeviceProperty<T> implements Comparable<DevicePrope
         return dn != null ? dn : name;
     }
 
+    @Nullable
     public T getValue() {
         return value;
     }
 
-    public void setValue(T value) {
+    public void setValue(@Nullable T value) {
         this.value = value;
     }
 

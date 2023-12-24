@@ -205,12 +205,12 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     }
 
     @Override
-    public void setValueForProperty(String dsn, String propertyName, Object value) {
+    public boolean setValueForProperty(String dsn, String propertyName, Object value) {
         var api = salusApi;
         if (api == null) {
             logger.error("Cannot set value for property {} on device {} because salusClient is null", propertyName,
                     dsn);
-            return;
+            return false;
         }
         logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
         var response = api.setValueForProperty(dsn, propertyName, value);
@@ -218,13 +218,48 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             logger.error("Cannot set property {} on device {} to value {} using salusClient\n{}", propertyName, dsn,
                     value, response.error());
             devicePropertiesCache.invalidate(dsn);
-            return;
+            return false;
         }
-        // need to invalidate all properties on a device cause changes on 1 property might invoke changes on other
-        // properties, like:
-        // ep_9:sIT600TH:SetHeatingSetpoint_x100 will change ep_9:sIT600TH:HeatingSetpoint_x100 and
-        // ep_9:sIT600TH:HoldType
-        devicePropertiesCache.invalidate(dsn);
+        var setValue = response.body();
+        if (setValue != null
+                && (!(setValue instanceof Boolean) && !(setValue instanceof String) && !(setValue instanceof Number))) {
+            logger.warn(
+                    "Cannot set value {} ({}) for property {} on device {} because it is not a Boolean, String, Long or Integer",
+                    setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
+            return false;
+        }
+        var property = devicePropertiesCache.get(dsn).stream().filter(prop -> prop.getName().equals(propertyName))
+                .findFirst();
+        if (property.isEmpty()) {
+            var simpleName = setValue != null ? setValue.getClass().getSimpleName() : "<null>";
+            logger.warn(
+                    "Cannot set value {} ({}) for property {} on device {} because it is not found in the cache. Invalidating cache",
+                    setValue, simpleName, propertyName, dsn);
+            devicePropertiesCache.invalidate(dsn);
+            return false;
+        }
+        var prop = property.get();
+        if (setValue == null) {
+            prop.setValue(null);
+            return true;
+        }
+        if (setValue instanceof Boolean b && prop instanceof DeviceProperty.BooleanDeviceProperty boolProp) {
+            boolProp.setValue(b);
+            return true;
+        }
+        if (setValue instanceof String s && prop instanceof DeviceProperty.StringDeviceProperty stringProp) {
+            stringProp.setValue(s);
+            return true;
+        }
+        if (setValue instanceof Number l && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
+            longProp.setValue(l.longValue());
+            return true;
+        }
+
+        logger.warn(
+                "Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
+                setValue, setValue.getClass().getSimpleName(), propertyName, prop.getClass().getSimpleName(), dsn);
+        return false;
     }
 
     @Override
@@ -240,7 +275,13 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             logger.error("Cannot find devices using salusClient\n{}", response.error());
             return emptySortedSet();
         }
-        return response.body();
+
+        var body = response.body();
+        if (body == null) {
+            return emptySortedSet();
+        }
+
+        return body;
     }
 
     @Override

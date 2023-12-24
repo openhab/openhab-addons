@@ -276,13 +276,21 @@ public class DeviceHandler extends BaseThingHandler {
         var property = propertyOptional.get();
         State state;
         if (property instanceof DeviceProperty.BooleanDeviceProperty booleanProperty) {
-            state = booleanProperty.getValue() ? OnOffType.ON : OnOffType.OFF;
-        } else if (property instanceof DeviceProperty.LongDeviceProperty longDeviceProperty) {
-            if (isX100) {
-                state = new DecimalType(new BigDecimal(longDeviceProperty.getValue()).divide(ONE_HUNDRED,
-                        new MathContext(5, HALF_EVEN)));
+            var value = booleanProperty.getValue();
+            if (value != null && value) {
+                state = OnOffType.ON;
             } else {
-                state = new DecimalType(longDeviceProperty.getValue());
+                state = OnOffType.OFF;
+            }
+        } else if (property instanceof DeviceProperty.LongDeviceProperty longDeviceProperty) {
+            var value = longDeviceProperty.getValue();
+            if (value == null) {
+                value = 0L;
+            }
+            if (isX100) {
+                state = new DecimalType(new BigDecimal(value).divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN)));
+            } else {
+                state = new DecimalType(value);
             }
         } else if (property instanceof DeviceProperty.StringDeviceProperty stringDeviceProperty) {
             state = new StringType(stringDeviceProperty.getValue());

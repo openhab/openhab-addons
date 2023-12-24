@@ -201,7 +201,12 @@ public class It600Handler extends BaseThingHandler {
             if (property.isEmpty()) {
                 return;
             }
-            cloudApi.setValueForProperty(dsn, property.get().getName(), value);
+            var wasSet = cloudApi.setValueForProperty(dsn, property.get().getName(), value);
+            if (wasSet) {
+                findLongProperty("ep_9:sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
+                        .ifPresent(prop -> prop.setValue(value));
+                findLongProperty("ep_9:sIT600TH:HoldType", "HoldType").ifPresent(prop -> prop.setValue((long) MANUAL));
+            }
             return;
         }
 
