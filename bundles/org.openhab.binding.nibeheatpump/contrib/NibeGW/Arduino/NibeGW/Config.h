@@ -27,6 +27,9 @@
 // Enable if ENC28J60 LAN module is used
 //#define TRANSPORT_ETH_ENC28J60
 
+// Enable if you use ESP8266 board (WiFi)
+// #define ESP8266_BOARD
+
 // ######### CONFIGURATION #######################
 
 // Enable dynamic configuration mode via WiFi connection (supported only by the PRODINO_BOARD_ESP32 board)
@@ -53,6 +56,15 @@
 #define DNS_SERVER              "192.168.1.1"
 #define GATEWAY_IP              "192.168.1.1"
 #define NETWORK_MASK            "255.255.255.0"
+#define HOST_NAME               "nibegw"
+
+#ifdef ESP8266_BOARD
+  // WiFi configuration
+  #define WIFI_SSID             ""
+  #define WIFI_PSK              ""
+  // OTA
+  #define ENABLE_OTA
+#endif
 
 // UDP ports for incoming messages
 #define INCOMING_PORT_READCMDS  9999
@@ -62,8 +74,8 @@
 #define TARGET_IP               "192.168.1.101"
 #define TARGET_PORT             9999
 
-// Delay before initialize ethernet on startup in seconds
-#define ETH_INIT_DELAY          5
+// Delay before initialize ethernet on startup in milliseconds
+#define ETH_INIT_DELAY          5000
 
 // Send acknowledge PDU's to Nibe
 #define SEND_ACK                true
@@ -73,6 +85,9 @@
 #define ACK_SMS40               false
 #define ACK_RMU40               false
 
+// Flash LED off when message received from Nibe
+// LED flash duration in milliseconds. 0 turns flash off
+#define LED_FLASH_DURATION      20
 
 
 // Used serial port and direction change pin for RS-485 port
@@ -91,6 +106,12 @@
 
 
 
+// ######### DERIVED DEFINES ##################
+
+// LED flash
+#if !defined(PRODINO_BOARD) && !defined(PRODINO_BOARD_ESP32) && defined(LED_BUILTIN) && LED_FLASH_DURATION > 0
+  #define LED_FLASH_ENABLED
+#endif
 
 
 // ######### VARIABLES #######################
@@ -109,8 +130,17 @@
       persistentStringVar(dns, DNS_SERVER);
       persistentStringVar(gateway, GATEWAY_IP);
       persistentStringVar(mask, NETWORK_MASK);
+      persistentStringVar(hostName, HOST_NAME);
       persistentIntVar(initDelay, ETH_INIT_DELAY);
   };
+
+  #ifdef ESP8266_BOARD
+  class WifiConfig: public Configuration {
+    public:
+      persistentStringVar(ssid, WIFI_SSID);
+      persistentStringVar(psk, WIFI_PSK);
+  };
+  #endif
 
   class NibeAckConfig: public Configuration {
     public:
@@ -140,6 +170,9 @@
     public:
       persistentStringVar(boardName, BOARD_NAME);
       subconfig(EthConfig, eth);
+      #ifdef ESP8266_BOARD
+      subconfig(WifiConfig, wifi);
+      #endif
       subconfig(NibeConfig, nibe);
       #ifdef ENABLE_DEBUG
       subconfig(DebugConfig, debug);
@@ -156,9 +189,17 @@
       String    dns;
       String    gateway;
       String    mask;
+      String    hostName;
       uint16_t  initDelay;
     } eth;
-    
+
+    #ifdef ESP8266_BOARD
+    struct {
+      String    ssid;
+      String    psk;
+    } wifi;
+    #endif
+
     struct {
       String    targetIp;
       uint16_t  targetPort;
@@ -190,9 +231,17 @@
       DNS_SERVER,
       GATEWAY_IP,
       NETWORK_MASK,
+      HOST_NAME,
       ETH_INIT_DELAY
     },
-  
+
+    #ifdef ESP8266_BOARD
+    {
+      WIFI_SSID,
+      WIFI_PSK,
+    },
+    #endif
+
     {
       TARGET_IP,
       TARGET_PORT,
@@ -207,7 +256,6 @@
       },
     },
   
-    
     #ifdef ENABLE_DEBUG
     {
       VERBOSE_LEVEL

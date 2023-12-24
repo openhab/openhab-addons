@@ -56,8 +56,12 @@ void NibeGw::connect()
     #else
       RS485->begin(9600, SERIAL_8N1);
     #endif
-    
+
     connectionState = true;
+#ifdef ENABLE_NIBE_DEBUG
+    if (debug)
+      debug(4, "Started serial connection\n");
+#endif
   }
 }
 
@@ -67,6 +71,10 @@ void NibeGw::disconnect()
   {
     RS485->end();
     connectionState = false;
+#ifdef ENABLE_NIBE_DEBUG
+    if (debug)
+      debug(4, "Stopped serial connection\n");
+#endif
   }
 }
 
@@ -150,7 +158,7 @@ void NibeGw::loop()
         }
 #endif
 
-        if (b == 0x5C)
+        if (b == MSG_START)
         {
           buffer[0] = b;
           index = 1;
@@ -211,18 +219,16 @@ void NibeGw::loop()
       if (debug)
         debug(1, "CRC failure\n");
 #endif
-      if (shouldAckNakSend(buffer[2]))
+      if (shouldAckNakSend(*msg_address))
         sendNak();
       state = STATE_WAIT_START;
       break;
 
     case STATE_OK_MESSAGE_RECEIVED:
-      if (buffer[0] == 0x5C && buffer[1] == 0x00 &&
-          buffer[2] == 0x20 && buffer[4] == 0x00 &&
-          (buffer[3] == 0x69 || buffer[3] == 0x6B) )
+      if (buffer[1] == 0x00 && *msg_address == MODBUS40 &&
+          buffer[4] == 0x00 && (*msg_type == MSG_READ_TOKEN || *msg_type == MSG_WRITE_TOKEN) )
       {
-
-        eTokenType token = buffer[3] == 0x6B ? WRITE_TOKEN : READ_TOKEN;
+        eTokenType token = *msg_type == MSG_WRITE_TOKEN ? WRITE_TOKEN : READ_TOKEN;
 
 #ifdef ENABLE_NIBE_DEBUG
         if (debug)
@@ -240,7 +246,7 @@ void NibeGw::loop()
           if (debug)
             debug(2, "No message to send\n");
 #endif
-          if (shouldAckNakSend(buffer[2]))
+          if (shouldAckNakSend(*msg_address))
             sendAck();
         }
       }
@@ -252,7 +258,7 @@ void NibeGw::loop()
           debug(1, "Message received\n");
         }
 #endif
-        if (shouldAckNakSend(buffer[2]))
+        if (shouldAckNakSend(*msg_address))
           sendAck();
 
         callback_msg_received(buffer, index);
@@ -276,7 +282,7 @@ int NibeGw::checkNibeMessage(const byte* const data, byte len)
 
   if (len >= 1)
   {
-    if (data[0] != 0x5C)
+    if (data[0] != MSG_START)
       return -1;
 
     if (len >= 6)
@@ -305,7 +311,7 @@ int NibeGw::checkNibeMessage(const byte* const data, byte len)
       {
         // if checksum is 0x5C (start character),
         // heat pump seems to send 0xC5 checksum
-        if (checksum != 0x5C && msg_checksum != 0xC5)
+        if (checksum != MSG_START && msg_checksum != 0xC5)
           return -2;
       }
 
@@ -322,12 +328,8 @@ void NibeGw::sendData(const byte* const data, byte len)
   if (debug)
   {
     debug(1, "Send message to heat pump: ");
-    for (int i = 0; i < len; i++)
-    {
-      sprintf(debug_buf, "%02X", data[i]);
-      debug(1, debug_buf);
-    }
-    debug(1, "\n");
+    NIBE_FORMAT_HEX(debug_buf, sizeof(debug_buf), data, len);
+    debug(1, debug_buf);
   }
 #endif
 
@@ -348,7 +350,7 @@ void NibeGw::sendAck()
 
   digitalWrite(directionPin, HIGH);
   delay(1);
-  RS485->write(0x06);
+  RS485->write(MSG_ACK);
   RS485->flush();
   delay(1);
   digitalWrite(directionPin, LOW);
@@ -363,7 +365,7 @@ void NibeGw::sendNak()
 
   digitalWrite(directionPin, HIGH);
   delay(1);
-  RS485->write(0x15);
+  RS485->write(MSG_NACK);
   RS485->flush();
   delay(1);
   digitalWrite(directionPin, LOW);

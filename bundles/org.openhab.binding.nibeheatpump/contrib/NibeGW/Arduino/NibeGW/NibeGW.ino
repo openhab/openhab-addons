@@ -42,14 +42,23 @@
   #include "KMPProDinoESP32.h"
   #include "KMPCommon.h"
 #elif defined(TRANSPORT_ETH_ENC28J60)
- #include <UIPEthernet.h>
+  #include <UIPEthernet.h>
+#elif defined(ESP8266_BOARD)
+  #include <Esp.h>
+  #include <ESP8266WiFi.h>
+  #include <WiFiUdp.h>
+  #if defined(ENABLE_OTA)
+    #include <ArduinoOTA.h>
+  #endif
+  #define EthernetClient WiFiClient
+  #define EthernetServer WiFiServer
 #else
- #include <SPI.h>
- #include <Ethernet.h>
- #include <EthernetUdp.h>
+  #include <SPI.h>
+  #include <Ethernet.h>
+  #include <EthernetUdp.h>
 #endif
  
-#if !defined(PRODINO_BOARD_ESP32)
+#if !defined(PRODINO_BOARD_ESP32) && !defined(ESP8266_BOARD)
   #include <avr/wdt.h>
 #endif
 
@@ -61,8 +70,20 @@
 boolean ethInitialized = false;
 
 IPAddress targetIp;
+
+#if defined(LED_FLASH_ENABLED)
+unsigned long ledflash = 0;
+#endif
+
+#if defined(ESP8266_BOARD)
+WiFiUDP udp;
+WiFiUDP udp4writeCmnds;
+#define WIFI_CHECK_INTERVAL 5000
+unsigned long lastWifiCheck = 0;
+#else
 EthernetUDP udp;
 EthernetUDP udp4writeCmnds;
+#endif
 
 #if defined(PRODINO_BOARD_ESP32)
   HardwareSerial RS485_PORT(1);
@@ -83,7 +104,6 @@ EthernetUDP udp4writeCmnds;
         String(value.newValue).c_str());
     }
   };
-
 #endif
 
 // ######### SETUP #######################
@@ -130,7 +150,23 @@ void setupStaticConfigMode() {
     Serial.begin(115200, SERIAL_8N1);
     DinoInit();
   #endif
-   
+
+  #if defined(LED_FLASH_ENABLED)
+    // Initialize the LED_BUILTIN pin as an output
+    pinMode(LED_BUILTIN, OUTPUT);
+  #endif
+
+  #if defined(ESP8266_BOARD)
+    // Early connect to WiFi
+    initializeEthernet();
+    #if defined(ENABLE_DEBUG)
+      telnetServer.begin();
+    #endif
+    #if defined(ENABLE_OTA)
+      initializeOTA();
+    #endif
+  #endif
+
   // Start watchdog
   #if defined(PRODINO_BOARD_ESP32)
     esp_task_wdt_init(WDT_TIMEOUT, true);
@@ -217,7 +253,14 @@ void loopNormalMode() {
     wdt_reset();
   #endif
   
-  long now = millis() / 1000;
+  unsigned long now = millis();
+
+  #if defined(LED_FLASH_ENABLED)
+    if (ledflash && now - ledflash > LED_FLASH_DURATION) {
+      digitalWrite(LED_BUILTIN, LOW);  // Turn the LED on again (normal)
+      ledflash = 0;
+    }
+  #endif
 
   if (!nibegw.connected()) {
     nibegw.connect();
@@ -230,10 +273,23 @@ void loopNormalMode() {
     } while (nibegw.messageStillOnProgress());
   }
 
+  #if defined(ESP8266_BOARD)
+    if (now - lastWifiCheck > WIFI_CHECK_INTERVAL) {
+      lastWifiCheck = now;
+      if (!WiFi.isConnected()) {
+        DEBUG_PRINT_VARS(0, "Lost WiFi connection (%d)\n", WiFi.status());
+        WiFi.reconnect();
+      }
+    }
+    #if defined(ENABLE_OTA)
+      ArduinoOTA.handle();
+    #endif
+  #endif
+
   if (!ethInitialized && now >= config.eth.initDelay) {
     initializeEthernet();
     #ifdef ENABLE_DEBUG
-      telnet.begin();
+      telnetServer.begin();
     #endif
   }
 
@@ -253,12 +309,51 @@ void loopDynamicConfigMode() {
 
 // ######### FUNCTIONS #######################
 
+#if defined(ENABLE_OTA)
+void initializeOTA()
+{
+  // Port defaults to 8266
+  ArduinoOTA.setHostname(config.eth.hostName.c_str());
+
+  // Callbacks
+  ArduinoOTA.onStart([]() {
+    String type;
+    if (ArduinoOTA.getCommand() == U_FLASH) {
+      type = "sketch";
+    } else { // U_FS
+      type = "filesystem";
+    }
+
+    // NOTE: if updating FS this would be the place to unmount FS using FS.end()
+    DEBUG_PRINT_VARS(0, "OTA Start updating %s\n", type);
+  });
+  ArduinoOTA.onEnd([]() {
+    DEBUG_PRINT_MSG(0, "\nOTA End\n");
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    DEBUG_PRINT_VARS(0, "OTA Progress: %u%%\r", (progress / (total / 100)));
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    DEBUG_PRINT_VARS(0, "OTA Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) {
+      DEBUG_PRINT_MSG(0, "Auth Failed\n");
+    } else if (error == OTA_BEGIN_ERROR) {
+      DEBUG_PRINT_MSG(0, "Begin Failed\n");
+    } else if (error == OTA_CONNECT_ERROR) {
+      DEBUG_PRINT_MSG(0, "Connect Failed\n");
+    } else if (error == OTA_RECEIVE_ERROR) {
+      DEBUG_PRINT_MSG(0, "Receive Failed\n");
+    } else if (error == OTA_END_ERROR) {
+      DEBUG_PRINT_MSG(0, "End Failed\n");
+    }
+  });
+  ArduinoOTA.begin();
+}
+#endif
+
 void initializeEthernet() {
   DEBUG_PRINT_MSG(1, "Initializing Ethernet\n");
 
-  uint8_t   mac[6];
-  sscanf(config.eth.mac.c_str(), "%x:%x:%x:%x:%x:%x", mac, mac+1, mac+2, mac+3, mac+4, mac+5);
-  
   IPAddress ip;
   IPAddress dns;
   IPAddress gw;
@@ -269,14 +364,23 @@ void initializeEthernet() {
   gw.fromString(config.eth.gateway);
   mask.fromString(config.eth.mask);
   
-  Ethernet.begin(mac, ip, dns, gw, mask);
-
-  #if defined(PRODINO_BOARD_ESP32)
-    Ethernet.setRetransmissionCount(1);
-    Ethernet.setRetransmissionTimeout(50);
-  #elif defined(PRODINO_BOARD)
-    W5100.setRetransmissionCount(1);
-    W5100.setRetransmissionTime(50);
+  #if defined(ESP8266_BOARD)
+    WiFi.mode(WIFI_STA);
+    WiFi.setSleepMode(WIFI_NONE_SLEEP);
+    WiFi.hostname(config.eth.hostName.c_str());
+    WiFi.config(ip, gw, mask, gw);
+    WiFi.begin(WIFI_SSID, WIFI_PSK);
+  #else
+    uint8_t   mac[6];
+    sscanf(config.eth.mac.c_str(), "%x:%x:%x:%x:%x:%x", mac, mac+1, mac+2, mac+3, mac+4, mac+5);
+    Ethernet.begin(mac, ip, gw, mask);
+    #if defined(PRODINO_BOARD_ESP32)
+      Ethernet.setRetransmissionCount(1);
+      Ethernet.setRetransmissionTimeout(50);
+    #elif defined(PRODINO_BOARD)
+      W5100.setRetransmissionCount(1);
+      W5100.setRetransmissionTime(50);
+    #endif
   #endif
   
   ethInitialized = true;
@@ -293,8 +397,11 @@ void initializeEthernet() {
 void nibeCallbackMsgReceived(const byte* const data, int len) {
   #if defined(PRODINO_BOARD_ESP32)
     KMPProDinoESP32.setStatusLed(green);
+  #elif defined(LED_FLASH_ENABLED)
+    digitalWrite(LED_BUILTIN, HIGH);  // Turn the LED off
+    ledflash = millis();
   #endif
-    
+
   if (ethInitialized) {
     sendUdpPacket(data, len);
   }
@@ -319,7 +426,6 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data) {
         DEBUG_PRINT_VARS(2, "Send read command to nibe, len=%d, ", len);
         DEBUG_PRINT_MSG(1, " data in: ");
         DEBUG_PRINT_ARRAY(1, data, len)
-        DEBUG_PRINT_MSG(1, "\n");
         
         #if defined(TRANSPORT_ETH_ENC28J60)
           udp4readCmnds.flush();
@@ -339,7 +445,6 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data) {
         DEBUG_PRINT_VARS(2, "Send write command to nibe, len=%d, ", len);
         DEBUG_PRINT_MSG(1, " data in: ");
         DEBUG_PRINT_ARRAY(1, data, len)
-        DEBUG_PRINT_MSG(1, "\n");
         
         #if defined(TRANSPORT_ETH_ENC28J60)
           udp4writeCmnds.flush();
@@ -365,7 +470,6 @@ void sendUdpPacket(const byte* const data, int len) {
     DEBUG_PRINT_VARS(2, "Sending UDP packet to %s:%d, len=%d", IPtoString(targetIp).c_str(), config.nibe.targetPort, len);
     DEBUG_PRINT_MSG(1, " data out: ");
     DEBUG_PRINT_ARRAY(1, data, len)
-    DEBUG_PRINT_MSG(1, "\n");
   #endif
 
   #if defined(PRODINO_BOARD_ESP32)
@@ -377,7 +481,6 @@ void sendUdpPacket(const byte* const data, int len) {
   #endif
     
   udp.beginPacket(targetIp, config.nibe.targetPort);
-  
   udp.write(data, len);
   int retval = udp.endPacket();
   if (retval) {
@@ -394,7 +497,11 @@ String IPtoString(const IPAddress& address) {
 void printInfo() {
   #ifdef ENABLE_DEBUG
   DEBUG_PRINT_VARS(0, "%s version %s\nUsing configuration:\n", config.boardName.c_str(), VERSION);
-  DEBUG_PRINT_VARS(0, "MAC=%s\n", config.eth.mac.c_str());
+  #if defined(ESP8266_BOARD)
+    DEBUG_PRINT_VARS(0, "MAC=%s\n", WiFi.macAddress().c_str());
+  #else
+    DEBUG_PRINT_VARS(0, "MAC=%s\n", config.eth.mac.c_str());
+  #endif
   DEBUG_PRINT_VARS(0, "IP=%s\n", config.eth.ip.c_str());
   DEBUG_PRINT_VARS(0, "DNS=%s\n", config.eth.dns.c_str());
   DEBUG_PRINT_VARS(0, "MASK=%s\n", config.eth.mask.c_str());
@@ -428,46 +535,61 @@ void printInfo() {
 
 #if defined(ENABLE_DEBUG) && defined(ENABLE_REMOTE_DEBUG)
 void handleTelnet() {
-  EthernetClient client = telnet.available();
+  static const byte sample[] = { 0x5C, 0x00, 0x19, 0x60, 0x00, 0x79 };
+
+  if (telnetServer.hasClient()) {
+    telnetClient = telnetServer.available();
+  }
   
-  if (client) {
-    char c = client.read();
+  if (telnetClient && telnetClient.available()) {
+    char c = telnetClient.read();
 
     switch (c) {
 
       case '?':
       case 'h':
-        client.println(config.boardName.c_str());
-        client.println("Commands:");
-        client.println(" E -> exit");
-        client.println(" i -> info");
+        telnetClient.println(config.boardName.c_str());
+        telnetClient.println("Commands:");
+        telnetClient.println(" E -> exit");
+        telnetClient.println(" i -> info");
         #ifdef ENABLE_DEBUG
-        client.println(" 1 -> set verbose level to 1");
-        client.println(" 2 -> set verbose level to 2");
-        client.println(" 3 -> set verbose level to 3");
-        client.println(" 4 -> set verbose level to 4");
-        client.println(" 5 -> set verbose level to 5");
+        telnetClient.println(" t -> test (simulate) message");
+        telnetClient.println(" 1 -> set verbose level to 1");
+        telnetClient.println(" 2 -> set verbose level to 2");
+        telnetClient.println(" 3 -> set verbose level to 3");
+        telnetClient.println(" 4 -> set verbose level to 4");
+        telnetClient.println(" 5 -> set verbose level to 5");
         #endif
         break;
         
       case 'i':
         printInfo();
+        #if defined(ESP8266_BOARD)
+          telnetClient.println("\nWiFi status:");
+          WiFi.printDiag(telnetClient);
+        #endif
         break;
 
       case 'E':
-        client.println("Connection closed");
-        client.flush();
-        client.stop();
+        telnetClient.println("Connection closed");
+        telnetClient.flush();
+        telnetClient.stop();
         break;
 
       #ifdef ENABLE_DEBUG
+      case 't':
+        telnetClient.println("Simulate incoming message");
+        nibeCallbackMsgReceived(sample, sizeof(sample));
+        telnetClient.println("Simulation done");
+        break;
+
       case '1':
       case '2':
       case '3':
       case '4':
       case '5': 
-        client.print("Setting verbose level to ");
-        client.println(c);
+        telnetClient.print("Setting verbose level to ");
+        telnetClient.println(c);
         config.debug.verboseLevel = c - 0x30;
         break;
       #endif
@@ -477,8 +599,8 @@ void handleTelnet() {
         break;
 
       default:
-        client.print("Unknown command ");
-        client.println(c);
+        telnetClient.print("Unknown command ");
+        telnetClient.println(c);
     }
   }
 }

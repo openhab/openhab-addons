@@ -66,12 +66,28 @@ enum eTokenType
 #define NIBE_CALLBACK_MSG_RECEIVED_TOKEN int (*callback_msg_token_received)(eTokenType token, byte* data)
 
 #ifdef ENABLE_NIBE_DEBUG
-#define NIBE_CALLBACK_MSG_RECEIVED_DEBUG void (*debug)(byte verbose, char* data)
+  #define NIBE_CALLBACK_MSG_RECEIVED_DEBUG void (*debug)(byte verbose, char* data)
+  #define NIBE_FORMAT_HEX(buf, bufsize, data, len) do { \
+    char *p = buf; \
+    char *end = p + bufsize - 2; \
+    for (int i = 0; i < len && p < end; i++) { \
+      p += sprintf(p, "%02X", data[i]); \
+    }; \
+    sprintf(p, "\n"); \
+  } while(0)
+
 #endif
 
 #define SMS40     0x16
 #define RMU40     0x19
 #define MODBUS40  0x20
+
+#define MSG_START 0x5C
+#define MSG_ACK   0x06
+#define MSG_NACK  0x15
+#define MSG_READ_TOKEN  0x69
+#define MSG_WRITE_TOKEN 0x6B
+
 
 class NibeGw
 {
@@ -80,6 +96,8 @@ class NibeGw
     boolean connectionState;
     byte directionPin;
     byte buffer[MAX_DATA_LEN];
+    byte *msg_address = &buffer[2];
+    byte *msg_type = &buffer[3];
     byte index;
     #if defined(HARDWARE_SERIAL_WITH_PINS)
       HardwareSerial* RS485;
@@ -106,7 +124,7 @@ class NibeGw
 
     #ifdef ENABLE_NIBE_DEBUG
     NIBE_CALLBACK_MSG_RECEIVED_DEBUG;
-    char debug_buf[100];
+    char debug_buf[MAX_DATA_LEN*2+2];
     #endif
 
   public:
