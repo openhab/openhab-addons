@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,9 +34,10 @@ import org.junit.jupiter.api.Test;
  *
  * @author Christian Heinemann - Initial contribution
  */
+@NonNullByDefault
 public class MultiDayEventSearchByActiveTest {
 
-    private AbstractPresentableCalendar calendar;
+    private @NonNullByDefault({}) AbstractPresentableCalendar calendar;
     private final EventTimeFilter eventTimeFilter = EventTimeFilter.searchByActive();
 
     @BeforeEach

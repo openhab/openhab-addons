@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 
 import java.time.ZoneId;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,14 +47,15 @@ import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
  * @author Christian Heinemann - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class EventFilterHandlerTest {
 
-    private @Mock TimeZoneProvider timeZoneProvider;
-    private @Mock ThingHandlerCallback thingHandlerCallback;
-    private @Mock ICalendarHandler iCalendarHandler;
-    private @Mock AbstractPresentableCalendar calendar;
+    private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
+    private @Mock @NonNullByDefault({}) ICalendarHandler iCalendarHandler;
+    private @Mock @NonNullByDefault({}) AbstractPresentableCalendar calendar;
 
-    private EventFilterHandler eventFilterHandler;
+    private @NonNullByDefault({}) EventFilterHandler eventFilterHandler;
 
     @BeforeEach
     public void setUp() {
