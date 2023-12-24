@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Markus Katter - Initial contribution
- * @contributer Jan Vybíral - Improved thing id generation
+ * @author Jan Vybíral - Improved thing id generation
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nuki")
 @NonNullByDefault

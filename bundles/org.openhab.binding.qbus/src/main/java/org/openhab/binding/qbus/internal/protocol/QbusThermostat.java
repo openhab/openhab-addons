@@ -54,7 +54,7 @@ public final class QbusThermostat {
     }
 
     /**
-     * This method sets a pointer to the qComm THERMOSTAT of class {@link QbusCommuncation}.
+     * This method sets a pointer to the qComm THERMOSTAT of class {@link QbusCommunication}.
      * This is then used to be able to call back the sendCommand method in this class to send a command to the
      * Qbus client.
      *

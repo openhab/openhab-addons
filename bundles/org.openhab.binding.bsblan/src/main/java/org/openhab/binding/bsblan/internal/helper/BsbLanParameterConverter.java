@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.unbescape.html.HtmlEscape;
 
 /**
- * The {@link BsbLanParameterHandler} is responsible for updating the data, which are
+ * The {@link BsbLanParameterConverter} is responsible for updating the data, which are
  * sent to one of the channels.
  *
  * @author Peter Schraffl - Initial contribution
@@ -106,7 +106,7 @@ public class BsbLanParameterConverter {
 
     private static State getStateForSwitchValueChannel(BsbLanApiParameterDTO parameter) {
         // treat "0" as OFF and everything else as ON
-        return "0".equals(parameter.value) ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(!"0".equals(parameter.value));
     }
 
     /**

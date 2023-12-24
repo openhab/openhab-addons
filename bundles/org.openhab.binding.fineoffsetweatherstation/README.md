@@ -19,7 +19,7 @@ Here is a product picture of how this Weather Station looks like:
 
 ![WH2650](doc/WH2650.png)
 
-This binding works offline by [implementing the wire protocol](https://osswww.ecowitt.net/uploads/20210716/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.0%20.pdf) of the WiFi gateway device.
+This binding works offline by [implementing the wire protocol](https://osswww.ecowitt.net/uploads/20220407/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.4.pdf) of the WiFi gateway device.
 
 ## Discussion
 

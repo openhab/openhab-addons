@@ -93,7 +93,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         clearAllAvailabilityTopics();
         initializeAvailabilityTopicsFromConfig();
         return channelStateByChannelUID.values().stream().map(c -> c.start(connection, scheduler, 0))
-                .collect(FutureCollector.allOf()).thenRun(this::calculateThingStatus);
+                .collect(FutureCollector.allOf()).thenRun(() -> calculateAndUpdateThingStatus(false));
     }
 
     @Override

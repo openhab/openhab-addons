@@ -62,7 +62,7 @@ public class AsuswrtHttpClient {
     /**
      * Sends a synchronous HTTP request.
      *
-     * The result will be handled in {@link #handleHttpSuccessResponse(String, String) or
+     * The result will be handled in {@link #handleHttpSuccessResponse(String, String)} or
      * {@link #handleHttpResultError(Throwable)}.
      *
      * If the response should be returned use {@link #getSyncRequest(String, String)} instead.
@@ -106,7 +106,7 @@ public class AsuswrtHttpClient {
     /**
      * Sends an asynchronous HTTP request so it does not wait for an answer.
      *
-     * The result will be handled in {@link #handleHttpSuccessResponse(String, String) or
+     * The result will be handled in {@link #handleHttpSuccessResponse(String, String)} or
      * {@link #handleHttpResultError(Throwable)}.
      *
      * @param url the URL to which the request is sent to

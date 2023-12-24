@@ -70,14 +70,15 @@ import org.eclipse.jetty.http2.frames.ResetFrame;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.Promise.Completable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.hue.internal.dto.CreateUserRequest;
-import org.openhab.binding.hue.internal.dto.SuccessResponse;
-import org.openhab.binding.hue.internal.dto.clip2.BridgeConfig;
-import org.openhab.binding.hue.internal.dto.clip2.Event;
-import org.openhab.binding.hue.internal.dto.clip2.Resource;
-import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
-import org.openhab.binding.hue.internal.dto.clip2.Resources;
-import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.api.dto.clip1.CreateUserRequest;
+import org.openhab.binding.hue.internal.api.dto.clip1.SuccessResponse;
+import org.openhab.binding.hue.internal.api.dto.clip2.BridgeConfig;
+import org.openhab.binding.hue.internal.api.dto.clip2.Event;
+import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
+import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
+import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.api.serialization.InstantDeserializer;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
@@ -87,6 +88,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -98,9 +100,11 @@ import com.google.gson.JsonSyntaxException;
  *
  * It uses the following connection mechanisms:
  *
+ * <ul>
  * <li>The primary communication uses HTTP 2 streams over a shared permanent HTTP 2 session.</li>
  * <li>The 'registerApplicationKey()' method uses HTTP/1.1 over the OH common Jetty client.</li>
  * <li>The 'isClip2Supported()' static method uses HTTP/1.1 over the OH common Jetty client via 'HttpUtil'.</li>
+ * </ul>
  *
  * @author Andrew Fiddian-Green - Initial Contribution
  */
@@ -339,7 +343,7 @@ public class Clip2Bridge implements Closeable {
         RESET,
         IDLE,
         GO_AWAY,
-        UNAUTHORIZED;
+        UNAUTHORIZED
     }
 
     /**
@@ -445,7 +449,7 @@ public class Clip2Bridge implements Closeable {
     /**
      * Enum showing the online state of the session connection.
      */
-    private static enum State {
+    private enum State {
         /**
          * Session closed
          */
@@ -457,7 +461,7 @@ public class Clip2Bridge implements Closeable {
         /**
          * Session open for HTTP calls and actively receiving SSE events
          */
-        ACTIVE;
+        ACTIVE
     }
 
     /**
@@ -554,7 +558,8 @@ public class Clip2Bridge implements Closeable {
     private final String registrationUrl;
     private final String applicationKey;
     private final Clip2BridgeHandler bridgeHandler;
-    private final Gson jsonParser = new Gson();
+    private final Gson jsonParser = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
+            .create();
     private final Semaphore streamMutex = new Semaphore(MAX_CONCURRENT_STREAMS, true); // i.e. fair
     private final ReadWriteLock sessionUseCreateLock = new ReentrantReadWriteLock(true); // i.e. fair
     private final Map<Integer, Future<?>> fatalErrorTasks = new ConcurrentHashMap<>();
@@ -800,7 +805,7 @@ public class Clip2Bridge implements Closeable {
         // work around for issue #15468 (and similar)
         ResourceType resourceType = reference.getType();
         if (resourceType == ResourceType.ERROR) {
-            LOGGER.warn("Resource '{}' type '{}' unknown => GET aborted", reference.getId(), resourceType);
+            LOGGER.debug("Resource '{}' type '{}' unknown => GET aborted", reference.getId(), resourceType);
             return new Resources();
         }
         Stream stream = null;

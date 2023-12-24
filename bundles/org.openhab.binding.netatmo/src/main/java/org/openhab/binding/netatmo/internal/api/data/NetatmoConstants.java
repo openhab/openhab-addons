@@ -203,6 +203,23 @@ public class NetatmoConstants {
         UNKNOWN
     }
 
+    // Topology Changes
+    public enum TopologyChange {
+        @SerializedName("home_owner_added")
+        HOME_OWNER_ADDED,
+        @SerializedName("device_associated_to_user")
+        DEVICE_ASSOCIATED_TO_USER,
+        @SerializedName("device_associated_to_home")
+        DEVICE_ASSOCIATED_TO_HOME,
+        @SerializedName("device_updated")
+        DEVICE_UPDATED,
+        @SerializedName("device_associated_to_room")
+        DEVICE_ASSOCIATED_TO_ROOM,
+        @SerializedName("room_created")
+        ROOM_CREATED,
+        UNKNOWN
+    }
+
     private static final Scope[] SMOKE_SCOPES = { Scope.READ_SMOKEDETECTOR };
     private static final Scope[] CARBON_MONOXIDE_SCOPES = { Scope.READ_CARBONMONOXIDEDETECTOR };
     private static final Scope[] AIR_CARE_SCOPES = { Scope.READ_HOMECOACH };
@@ -430,5 +447,28 @@ public class NetatmoConstants {
         JSON_GIVEN_HAS_AN_INVALID_ENCODING,
         @SerializedName("41")
         DEVICE_IS_UNREACHABLE
+    }
+
+    public enum HomeStatusError {
+        @SerializedName("1")
+        UNKNOWN_ERROR("homestatus-unknown-error"),
+        @SerializedName("2")
+        INTERNAL_ERROR("homestatus-internal-error"),
+        @SerializedName("3")
+        PARSER_ERROR("homestatus-parser-error"),
+        @SerializedName("4")
+        COMMAND_UNKNOWN_NODE_MODULE_ERROR("homestatus-command-unknown"),
+        @SerializedName("5")
+        COMMAND_INVALID_PARAMS("homestatus-invalid-params"),
+        @SerializedName("6")
+        UNREACHABLE("device-not-connected"),
+        UNKNOWN("deserialization-unknown");
+
+        // Associated error message that can be found in properties files
+        public final String message;
+
+        HomeStatusError(String message) {
+            this.message = message;
+        }
     }
 }

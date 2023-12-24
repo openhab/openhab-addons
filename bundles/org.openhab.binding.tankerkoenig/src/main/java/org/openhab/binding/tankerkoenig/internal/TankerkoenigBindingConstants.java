@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link TankerkoenigBinding} class defines common constants, which are
+ * The {@link TankerkoenigBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Dennis Dollinger - Initial contribution

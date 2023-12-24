@@ -77,7 +77,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
      *
      * @param adapter the bridge handler through which this device is connected
      * @param address the Bluetooth address of the device
-     * @param name the name of the device
      */
     public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address) {
         super(adapter, address);

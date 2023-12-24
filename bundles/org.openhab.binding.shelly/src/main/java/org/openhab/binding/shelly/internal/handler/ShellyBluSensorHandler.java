@@ -13,7 +13,6 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api2.ShellyBluApi.buildBluServiceName;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
@@ -23,6 +22,7 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
@@ -54,7 +54,7 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
 
     public static void addBluThing(String gateway, Shelly2NotifyEvent e, ShellyThingTable thingTable) {
         String model = substringBefore(getString(e.data.name), "-").toUpperCase();
-        String mac = e.data.addr.replace(":", "");
+        String mac = e.data.addr.replaceAll(":", "");
         String ttype = "";
         logger.debug("{}: Create thing for new BLU device {}: {} / {}", gateway, e.data.name, model, mac);
         ThingTypeUID tuid;
@@ -67,11 +67,15 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
                 ttype = THING_TYPE_SHELLYBLUDW_STR;
                 tuid = THING_TYPE_SHELLYBLUDW;
                 break;
+            case SHELLYDT_BLUMOTION:
+                ttype = THING_TYPE_SHELLYBLUMOTION_STR;
+                tuid = THING_TYPE_SHELLYBLUMOTION;
+                break;
             default:
                 logger.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
                 return;
         }
-        String serviceName = buildBluServiceName(model, mac);
+        String serviceName = ShellyDeviceProfile.buildBluServiceName(getString(e.data.name), mac);
 
         Map<String, Object> properties = new TreeMap<>();
         addProperty(properties, PROPERTY_MODEL_ID, model);

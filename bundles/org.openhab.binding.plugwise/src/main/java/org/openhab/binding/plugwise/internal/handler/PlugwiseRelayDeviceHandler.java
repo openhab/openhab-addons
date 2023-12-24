@@ -205,9 +205,9 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
             if (deviceType == DeviceType.CIRCLE_PLUS) {
                 // The Circle+ real-time clock needs to be updated first to prevent clock sync issues
                 sendCommandMessage(new RealTimeClockSetRequestMessage(macAddress, LocalDateTime.now()));
-                scheduler.schedule(() -> {
-                    sendCommandMessage(new ClockSetRequestMessage(macAddress, LocalDateTime.now()));
-                }, 5, TimeUnit.SECONDS);
+                scheduler.schedule(
+                        () -> sendCommandMessage(new ClockSetRequestMessage(macAddress, LocalDateTime.now())), 5,
+                        TimeUnit.SECONDS);
             } else {
                 sendCommandMessage(new ClockSetRequestMessage(macAddress, LocalDateTime.now()));
             }
@@ -368,7 +368,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
     private void handleInformationResponse(InformationResponseMessage message) {
         recentLogAddress = message.getLogAddress();
-        OnOffType powerState = message.getPowerState() ? OnOffType.ON : OnOffType.OFF;
+        OnOffType powerState = OnOffType.from(message.getPowerState());
 
         PendingPowerStateChange change = pendingPowerStateChange;
         if (change != null) {
@@ -467,12 +467,11 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
     }
 
     @Override
-    public void handleReponseMessage(Message message) {
+    public void handleResponseMessage(Message message) {
         updateLastSeen();
 
         switch (message.getType()) {
-            case ACKNOWLEDGEMENT_V1:
-            case ACKNOWLEDGEMENT_V2:
+            case ACKNOWLEDGEMENT_V1, ACKNOWLEDGEMENT_V2:
                 handleAcknowledgement((AcknowledgementMessage) message);
                 break;
             case CLOCK_GET_RESPONSE:

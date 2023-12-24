@@ -35,7 +35,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
- * The {@link HaywarThingHandler} is a subclass of the BaseThingHandler and a Super
+ * The {@link HaywardThingHandler} is a subclass of the BaseThingHandler and a Super
  * Class to each Hayward Thing Handler
  *
  * @author Matt Myers - Initial contribution
@@ -67,7 +67,7 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
             case "Number":
                 return new DecimalType(value);
             case "Switch":
-                return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(Integer.parseInt(value) > 0);
             case "Number:Dimensionless":
                 switch (channelID) {
                     case HaywardBindingConstants.CHANNEL_CHLORINATOR_AVGSALTLEVEL:

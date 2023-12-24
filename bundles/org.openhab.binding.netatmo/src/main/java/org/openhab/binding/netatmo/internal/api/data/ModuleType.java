@@ -195,7 +195,7 @@ public enum ModuleType {
                     : WIFI_SIGNAL_LEVELS;
         }
         throw new IllegalArgumentException(
-                "getSignalLevels should not be called for module type : '%s', please file a bug report."
+                "getSignalLevels should not be called for module type: '%s', please file a bug report."
                         .formatted(name()));
     }
 

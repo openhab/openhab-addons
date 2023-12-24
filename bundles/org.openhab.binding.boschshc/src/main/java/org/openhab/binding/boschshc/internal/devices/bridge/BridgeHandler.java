@@ -34,11 +34,13 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
 import org.openhab.binding.boschshc.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
@@ -46,7 +48,9 @@ import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.binding.boschshc.internal.services.dto.JsonRestExceptionResponse;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -55,6 +59,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -99,8 +104,11 @@ public class BridgeHandler extends BaseBridgeHandler {
      */
     private @Nullable ThingDiscoveryService thingDiscoveryService;
 
+    private final ScenarioHandler scenarioHandler;
+
     public BridgeHandler(Bridge bridge) {
         super(bridge);
+        scenarioHandler = new ScenarioHandler();
 
         this.longPolling = new LongPolling(this.scheduler, this::handleLongPollResult, this::handleLongPollFailure);
     }
@@ -195,6 +203,11 @@ public class BridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // commands are handled by individual device handlers
+        BoschHttpClient localHttpClient = httpClient;
+        if (BoschSHCBindingConstants.CHANNEL_TRIGGER_SCENARIO.equals(channelUID.getId())
+                && !RefreshType.REFRESH.equals(command) && localHttpClient != null) {
+            scenarioHandler.triggerScenario(localHttpClient, command.toString());
+        }
     }
 
     /**
@@ -410,8 +423,15 @@ public class BridgeHandler extends BaseBridgeHandler {
      * @param result Results from Long Polling
      */
     private void handleLongPollResult(LongPollResult result) {
-        for (DeviceServiceData deviceServiceData : result.result) {
-            handleDeviceServiceData(deviceServiceData);
+        for (BoschSHCServiceState serviceState : result.result) {
+            if (serviceState instanceof DeviceServiceData deviceServiceData) {
+                handleDeviceServiceData(deviceServiceData);
+            } else if (serviceState instanceof Scenario scenario) {
+                final Channel channel = this.getThing().getChannel(BoschSHCBindingConstants.CHANNEL_SCENARIO_TRIGGERED);
+                if (channel != null && isLinked(channel.getUID())) {
+                    updateState(channel.getUID(), new StringType(scenario.name));
+                }
+            }
         }
     }
 

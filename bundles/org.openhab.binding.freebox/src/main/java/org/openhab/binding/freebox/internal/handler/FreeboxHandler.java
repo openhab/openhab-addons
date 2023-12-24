@@ -706,7 +706,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
     }
 
     private void updateChannelSwitchState(String channel, boolean state) {
-        updateState(new ChannelUID(getThing().getUID(), channel), state ? OnOffType.ON : OnOffType.OFF);
+        updateState(new ChannelUID(getThing().getUID(), channel), OnOffType.from(state));
     }
 
     private void updateChannelDecimalState(String channel, int state) {

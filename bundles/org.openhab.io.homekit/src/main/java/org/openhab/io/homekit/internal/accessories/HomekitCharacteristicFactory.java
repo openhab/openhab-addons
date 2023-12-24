@@ -346,7 +346,7 @@ public class HomekitCharacteristicFactory {
      * Takes item state as value and retrieves the key for that value from mapping.
      * E.g. used to map StringItem value to HomeKit Enum
      *
-     * @param characteristicType characteristicType to identify item
+     * @param item item
      * @param mapping mapping
      * @param defaultValue default value if nothing found in mapping
      * @param <T> type of the result derived from
@@ -583,7 +583,7 @@ public class HomekitCharacteristicFactory {
         BigDecimal lowThreshold = taggedItem.getConfiguration(HomekitTaggedItem.BATTERY_LOW_THRESHOLD,
                 BigDecimal.valueOf(20));
         BooleanItemReader lowBatteryReader = new BooleanItemReader(taggedItem.getItem(),
-                taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                OnOffType.from(!taggedItem.isInverted()),
                 taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN, lowThreshold, true);
         return new StatusLowBatteryCharacteristic(
                 () -> CompletableFuture.completedFuture(
@@ -1210,10 +1210,10 @@ public class HomekitCharacteristicFactory {
     private static MuteCharacteristic createMuteCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         BooleanItemReader muteReader = new BooleanItemReader(taggedItem.getItem(),
-                taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                OnOffType.from(!taggedItem.isInverted()),
                 taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
         return new MuteCharacteristic(() -> CompletableFuture.completedFuture(muteReader.getValue()),
-                (value) -> taggedItem.send(value ? OnOffType.ON : OnOffType.OFF),
-                getSubscriber(taggedItem, MUTE, updater), getUnsubscriber(taggedItem, MUTE, updater));
+                (value) -> taggedItem.send(OnOffType.from(value)), getSubscriber(taggedItem, MUTE, updater),
+                getUnsubscriber(taggedItem, MUTE, updater));
     }
 }

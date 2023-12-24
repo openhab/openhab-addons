@@ -65,10 +65,7 @@ public class KonnectedHandler extends BaseThingHandler {
      * This is the constructor of the Konnected Handler.
      *
      * @param thing the instance of the Konnected thing
-     * @param webHookServlet the instance of the callback servlet that is running for communication with the Konnected
-     *            Module
-     * @param hostAddress the webaddress of the openHAB server instance obtained by the runtime
-     * @param port the port on which the openHAB instance is running that was obtained by the runtime.
+     * @param callbackUrl the webaddress of the openHAB server instance obtained by the runtime
      */
     public KonnectedHandler(Thing thing, String callbackUrl) {
         super(thing);
@@ -107,8 +104,8 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     /**
-     * Process a {@link WebHookEvent} that has been received by the Servlet from a Konnected module with respect to a
-     * sensor event or status update request
+     * Process a {@link KonnectedModuleGson} that has been received by the Servlet from a Konnected module with respect
+     * to a sensor event or status update request
      *
      * @param event the {@link KonnectedModuleGson} event that contains the state and pin information to be processed
      */
@@ -138,7 +135,7 @@ public class KonnectedHandler extends BaseThingHandler {
                     Integer state = event.getState();
                     logger.debug("The event state is: {}", state);
                     if (state != null) {
-                        OnOffType onOffType = state == zoneConfig.onValue ? OnOffType.ON : OnOffType.OFF;
+                        OnOffType onOffType = OnOffType.from(state == zoneConfig.onValue);
                         updateState(channelId, onOffType);
                     }
                 } else if (channelType.contains(CHANNEL_HUMIDITY)) {

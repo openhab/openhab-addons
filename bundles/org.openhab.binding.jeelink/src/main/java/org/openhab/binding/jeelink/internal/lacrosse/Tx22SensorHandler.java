@@ -55,8 +55,8 @@ public class Tx22SensorHandler extends JeeLinkSensorHandler<Tx22Reading> {
                     logger.debug("updating states for thing {} ({}): {}", getThing().getLabel(),
                             getThing().getUID().getId(), reading);
 
-                    updateState(BATTERY_NEW_CHANNEL, reading.isBatteryNew() ? OnOffType.ON : OnOffType.OFF);
-                    updateState(BATTERY_LOW_CHANNEL, reading.isBatteryLow() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(BATTERY_NEW_CHANNEL, OnOffType.from(reading.isBatteryNew()));
+                    updateState(BATTERY_LOW_CHANNEL, OnOffType.from(reading.isBatteryLow()));
 
                     if (reading.hasTemperature()) {
                         BigDecimal temp = new BigDecimal(reading.getTemperature()).setScale(1, RoundingMode.HALF_UP);

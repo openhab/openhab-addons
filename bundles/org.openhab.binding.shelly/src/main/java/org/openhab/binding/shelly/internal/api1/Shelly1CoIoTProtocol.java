@@ -89,8 +89,7 @@ public class Shelly1CoIoTProtocol {
                         toQuantityType(s.value, DIGITS_PERCENT, Units.PERCENT));
                 break;
             case "m" /* Motion */:
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
-                        s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION, OnOffType.from(s.value == 1));
                 break;
             case "l": // Luminosity +
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
@@ -123,11 +122,11 @@ public class Shelly1CoIoTProtocol {
                         break;
                     case "flood":
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
-                                s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                OnOffType.from(s.value == 1));
                         break;
                     case "vibration": // DW with FW1.6.5+
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                                s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                OnOffType.from(s.value == 1));
                         if (s.value == 1) {
                             thingHandler.triggerChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE,
                                     EVENT_TYPE_VIBRATION);
@@ -138,7 +137,7 @@ public class Shelly1CoIoTProtocol {
                         break;
                     case "charger": // Sense
                         updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
-                                s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                OnOffType.from(s.value == 1));
                         break;
                     // RGBW2/Bulb
                     case "red":
@@ -193,7 +192,7 @@ public class Shelly1CoIoTProtocol {
         int idx = getSensorNumber(sen.desc, sen.id) - 1;
         String iGroup = profile.getInputGroup(idx);
         String iChannel = CHANNEL_INPUT + profile.getInputSuffix(idx);
-        updateChannel(updates, iGroup, iChannel, s.value == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateChannel(updates, iGroup, iChannel, OnOffType.from(s.value != 0));
     }
 
     protected void handleInputEvent(CoIotDescrSen sen, String type, int count, int serial, Map<String, State> updates) {
@@ -225,14 +224,14 @@ public class Shelly1CoIoTProtocol {
      *
      * Handles the combined updated of the brightness channel:
      * brightness$Switch is the OnOffType (power state)
-     * brightness&Value is the brightness value
+     * brightness&amp;Value is the brightness value
      *
      * @param profile Device profile, required to select the channel group and name
-     * @param updates List of updates. updatePower will add brightness$Switch and brightness&Value if changed
+     * @param updates List of updates. updatePower will add brightness$Switch and brightness&amp;Value if changed
      * @param id Sensor id from the update
      * @param sen Sensor description from the update
      * @param s New sensor value
-     * @param allUpdatesList of updates. This is required, because we need to update both values at the same time
+     * @param allUpdates List of updates. This is required, because we need to update both values at the same time
      */
     protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
             CoIotSensor s, List<CoIotSensor> allUpdates) {
@@ -270,7 +269,7 @@ public class Shelly1CoIoTProtocol {
                 }
             }
             if (power != -1) {
-                updateChannel(updates, group, channel + "$Switch", power == 1 ? OnOffType.ON : OnOffType.OFF);
+                updateChannel(updates, group, channel + "$Switch", OnOffType.from(power == 1));
             }
             if (brightness != -1) {
                 updateChannel(updates, group, channel + "$Value",
@@ -278,15 +277,14 @@ public class Shelly1CoIoTProtocol {
             }
         } else if (profile.hasRelays) {
             group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + id;
-            updateChannel(updates, group, CHANNEL_OUTPUT, s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+            updateChannel(updates, group, CHANNEL_OUTPUT, OnOffType.from(s.value == 1));
         } else if (profile.isSensor) {
             // Sensor state
             if (profile.isDW) { // Door Window has item type Contact
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
                         s.value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
             } else {
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
-                        s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE, OnOffType.from(s.value == 1));
             }
         }
     }
@@ -294,7 +292,7 @@ public class Shelly1CoIoTProtocol {
     /**
      * Find index of Input id, which is required to map to channel name
      *
-     * @parm sensorDesc D field from sensor update
+     * @param sensorDesc D field from sensor update
      * @param sensorId The id from the sensor update
      * @return Index of found entry (+1 will be the suffix for the channel name) or null if sensorId is not found
      */

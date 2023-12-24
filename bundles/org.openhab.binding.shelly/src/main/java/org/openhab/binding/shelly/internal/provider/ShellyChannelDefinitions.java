@@ -56,7 +56,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link ShellyCHANNEL_DEFINITIONSDTO} defines channel information for dynamically created channels. Those will be
+ * The {@link #CHANNEL_DEFINITIONS} defines channel information for dynamically created channels. Those will be
  * added on the first thing status update
  *
  * @author Markus Michels - Initial contribution
@@ -291,7 +291,7 @@ public class ShellyChannelDefinitions {
     /**
      * Auto-create relay channels depending on relay type/mode
      *
-     * @return ArrayList<Channel> of channels to be added to the thing
+     * @return {@code ArrayList<Channel>} of channels to be added to the thing
      */
     public static Map<String, Channel> createDeviceChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsStatus status) {
@@ -315,7 +315,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
         // If device has more than 1 meter the channel accumulatedWatts receives the accumulated value
-        boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && !profile.isRGBW2;
+        boolean accuChannel = profile.hasRelays && profile.numMeters > 1 && !profile.isRoller && !profile.isRGBW2;
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         addChannel(thing, add, accuChannel && (status.emeters != null), CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
@@ -337,7 +337,7 @@ public class ShellyChannelDefinitions {
     /**
      * Auto-create relay channels depending on relay type/mode
      *
-     * @return ArrayList<Channel> of channels to be added to the thing
+     * @return {@code ArrayList<Channel>} of channels to be added to the thing
      */
     public static Map<String, Channel> createRelayChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsRelay rstatus, int idx) {
@@ -519,7 +519,7 @@ public class ShellyChannelDefinitions {
                     CHANNEL_SENSOR_VIBRATION);
         }
         // Create tilt for DW/DW2, for BLU DW create channel even tilt is currently not reported
-        if (sdata.accel != null || (profile.isBlu && sdata.lux != null)) {
+        if (sdata.accel != null || (profile.isBlu && profile.isDW && sdata.lux != null)) {
             addChannel(thing, newChannels, sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT);
         }
 
@@ -657,20 +657,20 @@ public class ShellyChannelDefinitions {
             this.typeId = typeId;
 
             groupLabel = getText(PREFIX_GROUP + group + ".label");
-            if (groupLabel.contains(PREFIX_GROUP)) {
+            if (groupLabel.startsWith(PREFIX_GROUP)) {
                 groupLabel = "";
             }
             groupDescription = getText(PREFIX_GROUP + group + ".description");
-            if (groupDescription.contains(PREFIX_GROUP)) {
+            if (groupDescription.startsWith(PREFIX_GROUP)) {
                 groupDescription = "";
             }
             label = getText(PREFIX_CHANNEL + typeId.replace(':', '.') + ".label");
-            if (label.contains(PREFIX_CHANNEL)) {
+            if (label.startsWith(PREFIX_CHANNEL)) {
                 label = "";
             }
             description = getText(PREFIX_CHANNEL + typeId + ".description");
-            if (description.contains(PREFIX_CHANNEL)) {
-                description = "";
+            if (description.startsWith(PREFIX_CHANNEL)) {
+                description = ""; // no resource found
             }
         }
 

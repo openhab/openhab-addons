@@ -2,6 +2,11 @@
 
 This binding adds support to read information from ASUS-Routers (Copyright © ASUS).
 
+## Discovery
+
+The ASUS routers are discovered through UPnP in the local network.
+After adding a discovered router it is required to configure the username and password to use it.
+
 ## Supported Things
 
 This binding supports ASUS routers with Asuswrt or [Asuswrt-Merlin](https://www.asuswrt-merlin.net/) firmware.

@@ -34,7 +34,7 @@ import com.google.gson.JsonObject;
  * The KM200SwitchProgramService representing a switch program service with its all capabilities
  *
  * @author Markus Eckhardt - Initial contribution
- * @NonNullByDefault is not working here because of the switchMap array handling
+ * @implNote {@code @NonNullByDefault} is not working here because of the switchMap array handling
  */
 
 public class KM200SwitchProgramServiceHandler {

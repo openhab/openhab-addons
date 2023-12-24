@@ -13,7 +13,7 @@
 package org.openhab.binding.hue.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.dto.FullLight;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
 
 /**
  * The {@link LightStatusListener} is notified when a light status has changed or a light has been removed or added.

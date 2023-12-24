@@ -68,7 +68,7 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
         if (CaddxBindingConstants.PARTITION_SECONDARY_COMMAND.equals(channelUID.getId())) {
             updateState(channelUID, new DecimalType(data));
         } else {
-            OnOffType onOffType = ("true".equals(data)) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType onOffType = OnOffType.from("true".equals(data));
             updateState(channelUID, onOffType);
         }
     }

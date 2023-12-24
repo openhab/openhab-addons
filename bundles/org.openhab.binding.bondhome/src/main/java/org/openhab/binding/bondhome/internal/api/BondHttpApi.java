@@ -169,7 +169,7 @@ public class BondHttpApi {
      * Executes a device action
      *
      * @param deviceId The ID of the device
-     * @param actionId The Bond action
+     * @param action The Bond action
      * @param argument An additional argument for the actions (such as the fan speed)
      */
     public synchronized void executeDeviceAction(String deviceId, BondDeviceAction action, @Nullable Integer argument) {
@@ -194,7 +194,7 @@ public class BondHttpApi {
         try {
             response = request.send();
         } catch (Exception e) {
-            logger.warn("Unable to execute device action {} against device {}: {}", deviceId, action, e.getMessage());
+            logger.debug("Unable to execute device action {} against device {}: {}", deviceId, action, e.getMessage());
             return;
         }
 
@@ -218,7 +218,7 @@ public class BondHttpApi {
                 final Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("BOND-Token",
                         bridgeHandler.getBridgeToken());
                 ContentResponse response;
-                response = request.send();
+                response = request.timeout(BOND_API_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
                 String encoding = response.getEncoding() != null ? response.getEncoding().replace("\"", "").trim()
                         : StandardCharsets.UTF_8.name();
                 try {

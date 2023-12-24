@@ -18,13 +18,14 @@ Examples: Lights, pool filters, wash machines, ...
 - only V3, V3duo have a power generator and thus MPPs (V3 has 2 MPP, V3duo has 3 MPP)
 - not equipped battery packs will return 0 for all ...Pack channels
 - currently channels for the first wallbox are implemented (senec could handle 4 wallboxes)
+- Senec disables http access at ~30.08.2023
 
 ## Thing Configuration
 
 demo.things
 
 ```java
-Thing senechome:senechome:pvbattery [ hostname="192.168.0.128", refreshInterval=60, limitationTresholdValue=70, limitationDuration=60 ]
+Thing senechome:senechome:pvbattery [ hostname="192.168.0.128", refreshInterval=60, limitationTresholdValue=70, limitationDuration=60, useHttp=false ]
 ```
 
 If the thing goes online then the connection to the web interface is successful.
@@ -69,13 +70,6 @@ The property `limitationTresholdValue` is used as threshold for channel `powerLi
 | gridVoltagePhase2             | volt           | Grid voltage on Phase 2                                                  |
 | gridVoltagePhase3             | volt           | Grid voltage on Phase 3                                                  |
 | gridFrequency                 | hertz          | Grid frequency                                                           |
-| liveBatCharge                 | kilo watt hour | Live Total Bat Charge                                                    |
-| liveBatDischarge              | kilo watt hour | Live Total Bat Discharge                                                 |
-| liveGridImport                | kilo watt hour | Live Total Grid Import                                                   |
-| liveGridExport                | kilo watt hour | Live Total Grid Export                                                   |
-| liveHouseConsumption          | kilo watt hour | Live Total House Consumption (without WB)                                |
-| livePowerGenerator            | kilo watt hour | Live Total PV generator generated energy                                 |
-| liveEnergyWallbox1            | kilo watt hour | Live Total Wallbox 1 charged energy                                      |
 | chargedEnergyPack1            | kilo watt hour | total charged energy battery pack 1                                      |
 | chargedEnergyPack2            | kilo watt hour | total charged energy battery pack 2                                      |
 | chargedEnergyPack3            | kilo watt hour | total charged energy battery pack 3                                      |
@@ -141,10 +135,6 @@ Number SenecGridVoltagePh2       "Voltage Level on Phase 2 [%d V]"            <e
 Number SenecGridVoltagePh3       "Voltage Level on Phase 3 [%d V]"            <energy> { channel="senechome:senechome:pvbattery:gridVoltagePhase3" }
 Number SenecGridFrequency        "Grid Frequency [%.2f Hz]"                   <energy> { channel="senechome:senechome:pvbattery:gridFrequency" }
 Number SenecBatteryVoltage       "Battery Voltage [%.1f V]"                   <energy> { channel="senechome:senechome:pvbattery:batteryVoltage" }
-Number SenecLiveBatCharge        "Live Bat Charge [%d kWh]"                   <energy> { channel="senechome:senechome:pvbattery:liveBatCharge" }
-Number SenecLiveBatDischarge     "Live Bat Discharge [%d kWh]"                <energy> { channel="senechome:senechome:pvbattery:liveBatDischarge" }
-Number SenecLiveGridImport       "Live Grid Import [%d kWh]"                  <energy> { channel="senechome:senechome:pvbattery:liveGridImport" }
-Number SenecLiveGridExport       "Live Grid Export [%d kWh]"                  <energy> { channel="senechome:senechome:pvbattery:liveGridExport" }
 ```
 
 ## Sitemap
@@ -176,10 +166,6 @@ Text label="Power Grid"{
         Default item=SenecGridVoltagePh3
         Default item=SenecGridFrequency
         Default item=SenecBatteryVoltage
-        Default item=SenecLiveBatCharge
-        Default item=SenecLiveBatDischarge
-        Default item=SenecLiveGridImport
-        Default item=SenecLiveGridExport
     }
 }
 ```

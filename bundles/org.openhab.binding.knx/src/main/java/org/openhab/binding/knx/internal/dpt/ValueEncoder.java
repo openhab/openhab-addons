@@ -16,6 +16,7 @@ import static org.openhab.binding.knx.internal.dpt.DPTUtil.NORMALIZED_DPT;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
@@ -108,6 +109,10 @@ public class ValueEncoder {
             } else if (value instanceof DecimalType || value instanceof QuantityType<?>) {
                 return handleNumericTypes(dptId, mainNumber, dpt, value);
             } else if (value instanceof StringType) {
+                if ("243.600".equals(dptId) || "249.600".equals(dptId)) {
+                    return value.toString().replace('.', ((DecimalFormat) DecimalFormat.getInstance())
+                            .getDecimalFormatSymbols().getDecimalSeparator());
+                }
                 return value.toString();
             } else if (value instanceof DateTimeType type) {
                 return handleDateTimeType(dptId, type);
@@ -162,8 +167,9 @@ public class ValueEncoder {
                 double[] xyY = ColorUtil.hsbToXY(hsb);
                 return String.format("(%,.4f %,.4f) %,.1f %%", xyY[0], xyY[1], xyY[2] * 100.0);
             case "251.600":
-                rgb = ColorUtil.hsbToRgb(hsb);
-                return String.format("%d %d %d - %%", rgb[0], rgb[1], rgb[2]);
+                PercentType[] rgbw = ColorUtil.hsbToRgbPercent(hsb);
+                return String.format("%,.1f %,.1f %,.1f - %%", rgbw[0].doubleValue(), rgbw[1].doubleValue(),
+                        rgbw[2].doubleValue());
             case "5.003":
                 return hsb.getHue().toString();
             default:

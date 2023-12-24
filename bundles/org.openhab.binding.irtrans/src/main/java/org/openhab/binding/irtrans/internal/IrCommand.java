@@ -43,8 +43,8 @@ public class IrCommand {
      *
      */
     private class PulsePair {
-        public int Pulse;
-        public int Pause;
+        public int pulse;
+        public int pause;
     }
 
     private String remote;
@@ -254,7 +254,7 @@ public class IrCommand {
 
         // Pause timings - 8 Shorts = 16 bytes
         for (int i = 0; i < pulsePairs.size(); i++) {
-            byteBuffer.putShort((short) Math.round(pulsePairs.get(i).Pause / 8));
+            byteBuffer.putShort((short) Math.round(pulsePairs.get(i).pause / 8));
         }
         for (int i = pulsePairs.size(); i <= 7; i++) {
             byteBuffer.putShort((short) 0);
@@ -262,7 +262,7 @@ public class IrCommand {
 
         // Pulse timings - 8 Shorts = 16 bytes
         for (int i = 0; i < pulsePairs.size(); i++) {
-            byteBuffer.putShort((short) Math.round(pulsePairs.get(i).Pulse / 8));
+            byteBuffer.putShort((short) Math.round(pulsePairs.get(i).pulse / 8));
         }
         for (int i = pulsePairs.size(); i <= 7; i++) {
             byteBuffer.putShort((short) 0);

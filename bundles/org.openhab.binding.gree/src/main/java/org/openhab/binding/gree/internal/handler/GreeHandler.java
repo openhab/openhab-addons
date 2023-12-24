@@ -481,7 +481,7 @@ public class GreeHandler extends BaseThingHandler {
 
     private @Nullable State updateOnOff(final String valueName) throws GreeException {
         if (device.hasStatusValChanged(valueName)) {
-            return device.getIntStatusVal(valueName) == 1 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(device.getIntStatusVal(valueName) == 1);
         }
         return null;
     }

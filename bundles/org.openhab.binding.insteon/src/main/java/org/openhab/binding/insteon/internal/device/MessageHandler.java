@@ -292,7 +292,7 @@ public abstract class MessageHandler {
      * Extract button information from message
      *
      * @param msg the message to extract from
-     * @param the device feature (needed for debug printing)
+     * @param f the device feature (needed for debug printing)
      * @return the button number or -1 if no button found
      */
     protected static int getButtonInfo(Msg msg, DeviceFeature f) {
@@ -514,7 +514,7 @@ public abstract class MessageHandler {
                 } else {
                     boolean isOn = isLEDLit(cmd2, button);
                     logger.debug("{}: dev {} button {} switched to {}", nm(), a, button, isOn ? "ON" : "OFF");
-                    feature.publish(isOn ? OnOffType.ON : OnOffType.OFF, StateChangeType.CHANGED);
+                    feature.publish(OnOffType.from(isOn), StateChangeType.CHANGED);
                 }
             } catch (FieldException e) {
                 logger.warn("{} error parsing {}: ", nm(), msg, e);

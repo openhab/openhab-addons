@@ -781,7 +781,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     public void bluegigaEventReceived(@Nullable BlueGigaResponse event) {
         if (event instanceof BlueGigaScanResponseEvent scanEvent) {
             if (initComplete) {
-
                 // We use the scan event to add any devices we hear to the devices list
                 // The device gets created, and then manages itself for discovery etc.
                 BluetoothAddress sender = new BluetoothAddress(scanEvent.getSender());
