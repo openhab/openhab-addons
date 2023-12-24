@@ -17,24 +17,24 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.dto.GroupModel;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,69 +44,60 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = AVMFritzDiscoveryService.class)
 @NonNullByDefault
-public class AVMFritzDiscoveryService extends AbstractDiscoveryService
-        implements FritzAhaStatusListener, DiscoveryService, ThingHandlerService {
-
+public class AVMFritzDiscoveryService extends AbstractThingHandlerDiscoveryService<AVMFritzBaseBridgeHandler>
+        implements FritzAhaStatusListener, DiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(AVMFritzDiscoveryService.class);
-    /**
-     * Handler of the bridge of which devices have to be discovered.
-     */
-    private @NonNullByDefault({}) AVMFritzBaseBridgeHandler bridgeHandler;
 
     public AVMFritzDiscoveryService() {
-        super(Stream
+        super(AVMFritzBaseBridgeHandler.class, Stream
                 .of(SUPPORTED_LIGHTING_THING_TYPES, SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES,
                         SUPPORTED_DEVICE_THING_TYPES_UIDS, SUPPORTED_GROUP_THING_TYPES_UIDS)
                 .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet()), 30);
     }
 
     @Override
-    public void activate() {
-        super.activate(null);
-        bridgeHandler.registerStatusListener(this);
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).registerStatusListener(this);
     }
 
     @Override
-    public void deactivate() {
-        bridgeHandler.unregisterStatusListener(this);
-        super.deactivate();
+    public void dispose() {
+        Objects.requireNonNull(thingHandler).unregisterStatusListener(this);
     }
 
     @Override
     public void startScan() {
-        logger.debug("Start manual scan on bridge {}", bridgeHandler.getThing().getUID());
-        bridgeHandler.handleRefreshCommand();
-    }
-
-    @Override
-    protected synchronized void stopScan() {
-        logger.debug("Stop manual scan on bridge {}", bridgeHandler.getThing().getUID());
-        super.stopScan();
-    }
-
-    @Override
-    public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
-        if (handler instanceof AVMFritzBaseBridgeHandler baseBridgeHandler) {
-            bridgeHandler = baseBridgeHandler;
+        final AVMFritzBaseBridgeHandler bridgeHandler = thingHandler;
+        if (bridgeHandler != null) {
+            logger.debug("Start manual scan on bridge {}", bridgeHandler.getThing().getUID());
+            bridgeHandler.handleRefreshCommand();
         }
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    protected synchronized void stopScan() {
+        final AVMFritzBaseBridgeHandler bridgeHandler = thingHandler;
+        if (bridgeHandler != null) {
+            logger.debug("Stop manual scan on bridge {}", bridgeHandler.getThing().getUID());
+        }
+        super.stopScan();
     }
 
     @Override
     public void onDeviceAdded(AVMFritzBaseModel device) {
-        String id = bridgeHandler.getThingTypeId(device);
-        ThingTypeUID thingTypeUID = id.isEmpty() ? null : new ThingTypeUID(BINDING_ID, id);
-        if (thingTypeUID != null && getSupportedThingTypes().contains(thingTypeUID)) {
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(),
-                    bridgeHandler.getThingName(device));
-            onDeviceAddedInternal(thingUID, device);
-        } else {
-            logger.debug("Discovered unsupported device: {}", device);
+        final AVMFritzBaseBridgeHandler bridgeHandler = thingHandler;
+        if (bridgeHandler != null) {
+            String id = bridgeHandler.getThingTypeId(device);
+            ThingTypeUID thingTypeUID = id.isEmpty() ? null : new ThingTypeUID(BINDING_ID, id);
+            if (thingTypeUID != null && getSupportedThingTypes().contains(thingTypeUID)) {
+                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(),
+                        bridgeHandler.getThingName(device));
+                onDeviceAddedInternal(thingUID, device);
+            } else {
+                logger.debug("Discovered unsupported device: {}", device);
+            }
         }
     }
 
@@ -121,25 +112,28 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
     }
 
     private void onDeviceAddedInternal(ThingUID thingUID, AVMFritzBaseModel device) {
-        if (device.getPresent() == 1) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(CONFIG_AIN, device.getIdentifier());
-            properties.put(PROPERTY_VENDOR, device.getManufacturer());
-            properties.put(PRODUCT_NAME, device.getProductName());
-            properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
-            properties.put(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
-            if (device instanceof GroupModel model && model.getGroupinfo() != null) {
-                properties.put(PROPERTY_MASTER, model.getGroupinfo().getMasterdeviceid());
-                properties.put(PROPERTY_MEMBERS, model.getGroupinfo().getMembers());
+        final AVMFritzBaseBridgeHandler bridgeHandler = thingHandler;
+        if (bridgeHandler != null) {
+            if (device.getPresent() == 1) {
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(CONFIG_AIN, device.getIdentifier());
+                properties.put(PROPERTY_VENDOR, device.getManufacturer());
+                properties.put(PRODUCT_NAME, device.getProductName());
+                properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
+                properties.put(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
+                if (device instanceof GroupModel model && model.getGroupinfo() != null) {
+                    properties.put(PROPERTY_MASTER, model.getGroupinfo().getMasterdeviceid());
+                    properties.put(PROPERTY_MEMBERS, model.getGroupinfo().getMembers());
+                }
+
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withRepresentationProperty(CONFIG_AIN).withBridge(bridgeHandler.getThing().getUID())
+                        .withLabel(device.getName()).build();
+
+                thingDiscovered(discoveryResult);
+            } else {
+                thingRemoved(thingUID);
             }
-
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(CONFIG_AIN).withBridge(bridgeHandler.getThing().getUID())
-                    .withLabel(device.getName()).build();
-
-            thingDiscovered(discoveryResult);
-        } else {
-            thingRemoved(thingUID);
         }
     }
 }
