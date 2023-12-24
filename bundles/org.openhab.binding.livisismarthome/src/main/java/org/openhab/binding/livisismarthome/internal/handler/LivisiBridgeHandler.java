@@ -727,7 +727,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                         (capabilityId) -> client.setVariableActuatorState(capabilityId, state));
                 // PSS / PSSO / ISS2 / BT-PSS
             } else if (DEVICE_PSS.equals(deviceType) || DEVICE_PSSO.equals(deviceType) || DEVICE_ISS2.equals(deviceType)
-                    || DEVICE_BT_PSS.equals((deviceType))) {
+                    || DEVICE_BT_PSS.equals(deviceType)) {
                 executeCommand(deviceId, CapabilityDTO.TYPE_SWITCHACTUATOR,
                         (capabilityId) -> client.setSwitchActuatorState(capabilityId, state));
             }

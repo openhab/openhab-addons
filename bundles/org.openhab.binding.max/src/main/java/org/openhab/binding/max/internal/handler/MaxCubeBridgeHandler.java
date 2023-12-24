@@ -997,7 +997,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private boolean socketConnect() throws UnknownHostException, IOException {
         socket = new Socket(ipAddress, port);
-        socket.setSoTimeout((NETWORK_TIMEOUT));
+        socket.setSoTimeout(NETWORK_TIMEOUT);
         logger.debug("Open new connection... to {} port {}", ipAddress, port);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         writer = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
