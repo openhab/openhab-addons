@@ -28,7 +28,7 @@ public interface CloudApi {
 
     Optional<Device> findDevice(String dsn);
 
-    void setValueForProperty(String dsn, String propertyName, Object value);
+    boolean setValueForProperty(String dsn, String propertyName, Object value);
 
     SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn);
 }
