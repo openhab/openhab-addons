@@ -35,7 +35,7 @@ import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.types.GroupType;
 import org.openhab.binding.deconz.internal.types.LightType;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -43,7 +43,9 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,25 +55,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ThingDiscoveryService.class)
 @NonNullByDefault
-public class ThingDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<DeconzBridgeHandler>
+        implements DiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(LightThingHandler.SUPPORTED_THING_TYPE_UIDS, SensorThingHandler.SUPPORTED_THING_TYPES,
                     SensorThermostatThingHandler.SUPPORTED_THING_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(ThingDiscoveryService.class);
 
-    private @Nullable DeconzBridgeHandler handler;
     private @Nullable ScheduledFuture<?> scanningJob;
     private @Nullable ThingUID bridgeUID;
 
+    @Activate
     public ThingDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, 30);
+        super(DeconzBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, 30);
     }
 
     @Override
     public void startScan() {
-        final DeconzBridgeHandler handler = this.handler;
+        final DeconzBridgeHandler handler = this.thingHandler;
         if (handler != null) {
             handler.getBridgeFullState().thenAccept(fullState -> {
                 stopScan();
@@ -290,26 +294,13 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DeconzBridgeHandler bridgeHandler) {
-            this.handler = bridgeHandler;
-            this.bridgeUID = handler.getThing().getUID();
-        }
+    public void setThingHandler(ThingHandler handler) {
+        super.setThingHandler(handler);
+        bridgeUID = handler.getThing().getUID();
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
+    public void dispose() {
         removeOlderResults(new Date().getTime());
-        super.deactivate();
     }
 }
