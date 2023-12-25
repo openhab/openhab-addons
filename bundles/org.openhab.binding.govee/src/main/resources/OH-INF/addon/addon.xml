@@ -26,7 +26,6 @@
 				</discovery-parameter>
 				<discovery-parameter>
 					<name>requestPlain</name>
-					<!-- {"msg": {"cmd": "scan", "data": {"account_topic": "reserve"}}} -->
 					<value>{&quot;msg&quot;: {&quot;cmd&quot;: &quot;scan&quot;, &quot;data&quot;: {&quot;account_topic&quot;:
 						&quot;reserve&quot;}}}</value>
 				</discovery-parameter>
