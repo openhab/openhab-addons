@@ -26,8 +26,19 @@
 				</discovery-parameter>
 				<discovery-parameter>
 					<name>requestPlain</name>
-					<!-- <?xml version="1.0" encoding="UTF-8"?><e:Envelope xmlns:e="http://www.w3.org/2003/05/soap-envelope" xmlns:w="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:d="http://schemas.xmlsoap.org/ws/2005/04/discovery" xmlns:dn="http://www.onvif.org/ver10/network/wsdl"><e:Header><w:MessageID>uuid:randomUUID()</w:MessageID><w:To e:mustUnderstand="true">urn:schemas-xmlsoap-org:ws:2005:04:discovery</w:To><w:Action a:mustUnderstand="true">http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe</w:Action></e:Header><e:Body><d:Probe><d:Types xmlns:d="http://schemas.xmlsoap.org/ws/2005/04/discovery" xmlns:dp0="http://www.onvif.org/ver10/network/wsdl">dp0:NetworkVideoTransmitter</d:Types></d:Probe></e:Body></e:Envelope> -->
-					<value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;e:Envelope xmlns:e=&quot;http://www.w3.org/2003/05/soap-envelope&quot; xmlns:w=&quot;http://schemas.xmlsoap.org/ws/2004/08/addressing&quot; xmlns:d=&quot;http://schemas.xmlsoap.org/ws/2005/04/discovery&quot; xmlns:dn=&quot;http://www.onvif.org/ver10/network/wsdl&quot;&gt;&lt;e:Header&gt;&lt;w:MessageID&gt;uuid:$uuid&lt;/w:MessageID&gt;&lt;w:To e:mustUnderstand=&quot;true&quot;&gt;urn:schemas-xmlsoap-org:ws:2005:04:discovery&lt;/w:To&gt;&lt;w:Action a:mustUnderstand=&quot;true&quot;&gt;http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe&lt;/w:Action&gt;&lt;/e:Header&gt;&lt;e:Body&gt;&lt;d:Probe&gt;&lt;d:Types xmlns:d=&quot;http://schemas.xmlsoap.org/ws/2005/04/discovery&quot; xmlns:dp0=&quot;http://www.onvif.org/ver10/network/wsdl&quot;&gt;dp0:NetworkVideoTransmitter&lt;/d:Types&gt;&lt;/d:Probe&gt;&lt;/e:Body&gt;&lt;/e:Envelope&gt;</value>
+					<!-- <?xml version="1.0" encoding="UTF-8"?><e:Envelope xmlns:e="http://www.w3.org/2003/05/soap-envelope" xmlns:w="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+						xmlns:d="http://schemas.xmlsoap.org/ws/2005/04/discovery" xmlns:dn="http://www.onvif.org/ver10/network/wsdl"><e:Header><w:MessageID>uuid:randomUUID()</w:MessageID><w:To
+						e:mustUnderstand="true">urn:schemas-xmlsoap-org:ws:2005:04:discovery</w:To><w:Action a:mustUnderstand="true">http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe</w:Action></e:Header><e:Body><d:Probe><d:Types
+						xmlns:d="http://schemas.xmlsoap.org/ws/2005/04/discovery" xmlns:dp0="http://www.onvif.org/ver10/network/wsdl">dp0:NetworkVideoTransmitter</d:Types></d:Probe></e:Body></e:Envelope> -->
+					<value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;e:Envelope
+						xmlns:e=&quot;http://www.w3.org/2003/05/soap-envelope&quot;
+						xmlns:w=&quot;http://schemas.xmlsoap.org/ws/2004/08/addressing&quot;
+						xmlns:d=&quot;http://schemas.xmlsoap.org/ws/2005/04/discovery&quot;
+						xmlns:dn=&quot;http://www.onvif.org/ver10/network/wsdl&quot;&gt;&lt;e:Header&gt;&lt;w:MessageID&gt;uuid:$uuid&lt;/w:MessageID&gt;&lt;w:To
+						e:mustUnderstand=&quot;true&quot;&gt;urn:schemas-xmlsoap-org:ws:2005:04:discovery&lt;/w:To&gt;&lt;w:Action
+						a:mustUnderstand=&quot;true&quot;&gt;http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe&lt;/w:Action&gt;&lt;/e:Header&gt;&lt;e:Body&gt;&lt;d:Probe&gt;&lt;d:Types
+						xmlns:d=&quot;http://schemas.xmlsoap.org/ws/2005/04/discovery&quot;
+						xmlns:dp0=&quot;http://www.onvif.org/ver10/network/wsdl&quot;&gt;dp0:NetworkVideoTransmitter&lt;/d:Types&gt;&lt;/d:Probe&gt;&lt;/e:Body&gt;&lt;/e:Envelope&gt;</value>
 				</discovery-parameter>
 				<discovery-parameter>
 					<name>timeoutMs</name>
@@ -42,5 +53,5 @@
 			</match-properties>
 		</discovery-method>
 	</discovery-methods>
-	
+
 </addon:addon>
