@@ -10,9 +10,9 @@
 
 	<discovery-methods>
 		<discovery-method>
-				<service-type>ip</service-type>
+			<service-type>ip</service-type>
+			<discovery-parameters>
 				<discovery-parameters>
-					<discovery-parameters>
 					<discovery-parameter>
 						<name>type</name>
 						<value>ipMulticast</value>
@@ -28,7 +28,8 @@
 					<discovery-parameter>
 						<name>requestPlain</name>
 						<!-- {"msg": {"cmd": "scan", "data": {"account_topic": "reserve"}}} -->
-						<value>{&quot;msg&quot;: {&quot;cmd&quot;: &quot;scan&quot;, &quot;data&quot;: {&quot;account_topic&quot;: &quot;reserve&quot;}}}</value>
+						<value>{&quot;msg&quot;: {&quot;cmd&quot;: &quot;scan&quot;, &quot;data&quot;: {&quot;account_topic&quot;:
+							&quot;reserve&quot;}}}</value>
 					</discovery-parameter>
 					<discovery-parameter>
 						<name>timeoutMs</name>
