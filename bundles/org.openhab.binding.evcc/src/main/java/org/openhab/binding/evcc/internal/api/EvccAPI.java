@@ -100,12 +100,12 @@ public class EvccAPI {
     }
 
     public String setTargetEnergy(int loadpoint, float targetEnergy) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/energy/" + targetEnergy,
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/limitenergy/" + targetEnergy,
                 "POST");
     }
 
     public String setTargetSoC(int loadpoint, int targetSoC) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/soc/" + targetSoC, "POST");
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/limitsoc/" + targetSoC, "POST");
     }
 
     public String setPhases(int loadpoint, int phases) throws EvccApiException {
