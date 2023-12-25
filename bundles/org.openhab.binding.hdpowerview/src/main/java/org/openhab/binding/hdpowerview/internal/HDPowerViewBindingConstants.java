@@ -51,7 +51,6 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNEL_SHADE_REPEATER_RSSI = "repeaterRssi";
 
     public static final String CHANNEL_REPEATER_COLOR = "color";
-    public static final String CHANNEL_REPEATER_BRIGHTNESS = "brightness";
     public static final String CHANNEL_REPEATER_IDENTIFY = "identify";
     public static final String CHANNEL_REPEATER_BLINKING_ENABLED = "blinkingEnabled";
 

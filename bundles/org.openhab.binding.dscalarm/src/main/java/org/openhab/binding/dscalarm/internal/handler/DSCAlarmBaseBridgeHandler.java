@@ -233,7 +233,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), BRIDGE_RESET);
-        updateState(channelUID, isOnline ? OnOffType.ON : OnOffType.OFF);
+        updateState(channelUID, OnOffType.from(isOnline));
     }
 
     /**

@@ -104,7 +104,7 @@ public class ElroConnectsDeviceEntrySensor extends ElroConnectsDevice {
                         ElroDeviceStatus.OPEN.equals(elroStatus) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 handler.updateState(SIGNAL_STRENGTH, new DecimalType(signalStrength));
                 handler.updateState(BATTERY_LEVEL, new DecimalType(batteryLevel));
-                handler.updateState(LOW_BATTERY, (batteryLevel < 15) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateState(LOW_BATTERY, OnOffType.from(batteryLevel < 15));
                 handler.updateStatus(ThingStatus.ONLINE);
         }
     }

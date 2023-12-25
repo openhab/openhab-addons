@@ -421,7 +421,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                         // % values have been stored as-is
                         return new PercentType(numberState);
                     } else if (item instanceof SwitchItem) {
-                        return numberState.compareTo(BigDecimal.ZERO) != 0 ? OnOffType.ON : OnOffType.OFF;
+                        return OnOffType.from(numberState.compareTo(BigDecimal.ZERO) != 0);
                     } else if (item instanceof ContactItem) {
                         return numberState.compareTo(BigDecimal.ZERO) != 0 ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED;

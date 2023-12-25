@@ -4,7 +4,7 @@ This is the binding for [Jellyfin](https://jellyfin.org) the volunteer-built med
 Stream to any device from your own server, with no strings attached.
 Your media, your server, your way.
 This binding allows connect to Jellyfin clients that supports remote control, it's build on top of the official Jellyfin kotlin sdk.
-Compatible with Jellyfin servers in version 10.8.x.
+Compatible with Jellyfin servers from version 10.8.1, recommended 10.8.13.
 
 ## Supported Things
 

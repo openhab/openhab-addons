@@ -64,7 +64,7 @@ public class ColorItemConverter extends AbstractTransformingItemConverter {
             state = newState;
             return hsbToString(newState);
         } else if (command instanceof PercentType percentCommand && state instanceof HSBType hsb) {
-            HSBType newState = new HSBType(hsb.getBrightness(), hsb.getSaturation(), percentCommand);
+            HSBType newState = new HSBType(hsb.getHue(), hsb.getSaturation(), percentCommand);
             state = newState;
             return hsbToString(newState);
         }

@@ -748,8 +748,7 @@ class RioZoneProtocol extends AbstractRioProtocol
                         break;
 
                     case ZONE_LOUDNESS:
-                        stateChanged(RioConstants.CHANNEL_ZONELOUDNESS,
-                                "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONELOUDNESS, OnOffType.from("ON".equals(value)));
                         break;
 
                     case ZONE_TURNONVOLUME:
@@ -770,16 +769,14 @@ class RioZoneProtocol extends AbstractRioProtocol
                         break;
 
                     case ZONE_STATUS:
-                        stateChanged(RioConstants.CHANNEL_ZONESTATUS,
-                                "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONESTATUS, OnOffType.from("ON".equals(value)));
                         break;
                     case ZONE_MUTE:
-                        stateChanged(RioConstants.CHANNEL_ZONEMUTE, "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONEMUTE, OnOffType.from("ON".equals(value)));
                         break;
 
                     case ZONE_SHAREDSOURCE:
-                        stateChanged(RioConstants.CHANNEL_ZONESHAREDSOURCE,
-                                "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONESHAREDSOURCE, OnOffType.from("ON".equals(value)));
                         break;
 
                     case ZONE_LASTERROR:
@@ -787,7 +784,7 @@ class RioZoneProtocol extends AbstractRioProtocol
                         break;
 
                     case ZONE_PAGE:
-                        stateChanged(RioConstants.CHANNEL_ZONEPAGE, "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONEPAGE, OnOffType.from("ON".equals(value)));
                         break;
 
                     case ZONE_SLEEPTIMEREMAINING:
@@ -800,8 +797,7 @@ class RioZoneProtocol extends AbstractRioProtocol
                         break;
 
                     case ZONE_ENABLED:
-                        stateChanged(RioConstants.CHANNEL_ZONEENABLED,
-                                "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONEENABLED, OnOffType.from("ON".equals(value)));
                         break;
 
                     case ZONE_VOLUME:

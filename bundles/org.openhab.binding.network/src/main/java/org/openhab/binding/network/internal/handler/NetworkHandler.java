@@ -92,8 +92,7 @@ public class NetworkHandler extends BaseThingHandler
 
         switch (channelUID.getId()) {
             case CHANNEL_ONLINE:
-                presenceDetection.getValue(
-                        value -> updateState(CHANNEL_ONLINE, value.isReachable() ? OnOffType.ON : OnOffType.OFF));
+                presenceDetection.getValue(value -> updateState(CHANNEL_ONLINE, OnOffType.from(value.isReachable())));
                 break;
             case CHANNEL_LATENCY:
             case CHANNEL_DEPRECATED_TIME:

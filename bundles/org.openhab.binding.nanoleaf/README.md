@@ -172,7 +172,7 @@ The controller bridge has the following channels:
 | rhythmActive        | Switch             | Activity state of the rhythm module                                                                       | Yes       |
 | rhythmMode          | Number             | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                             | No        |
 | state               | Image              | Shows the current state of your panels with colors.                                                       | Yes       |
-| swipe               | Trigger            | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | Yes       |
+| swipe               | Trigger            | [Canvas / Shapes Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported.         | Yes       |
 
 A lightpanel thing has the following channels:
 

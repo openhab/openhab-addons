@@ -1033,12 +1033,9 @@ class PrgProtocolHandler {
                 final boolean zoneLock = (q4bits.length() > 2 ? q4bits.charAt(2) : '0') == '1';
                 final boolean sceneLock = (q4bits.length() > 3 ? q4bits.charAt(4) : '0') == '1';
 
-                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENESEQ,
-                        seqMode ? OnOffType.ON : OnOffType.OFF);
-                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENELOCK,
-                        sceneLock ? OnOffType.ON : OnOffType.OFF);
-                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_ZONELOCK,
-                        zoneLock ? OnOffType.ON : OnOffType.OFF);
+                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENESEQ, OnOffType.from(seqMode));
+                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENELOCK, OnOffType.from(sceneLock));
+                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_ZONELOCK, OnOffType.from(zoneLock));
             } catch (NumberFormatException e) {
                 logger.error("Invalid controller information response: '{}'", resp);
             }

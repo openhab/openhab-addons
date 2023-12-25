@@ -183,7 +183,7 @@ public abstract class SmartthingsConverter {
             case "String":
                 return new StringType((String) deviceValue);
             case "Switch":
-                return "on".equals(deviceValue) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from("on".equals(deviceValue));
 
             // Vector3 can't be triggered now but keep it to handle acceleration device
             case "Vector3":

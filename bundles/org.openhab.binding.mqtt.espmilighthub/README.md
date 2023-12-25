@@ -45,6 +45,9 @@ Leave this blank.
 **MQTT Client Status Topic:**
 `milight/status`
 
+**MQTT Client Status Messages Mode:**
+Simple.
+
 **group_state_fields:**
 IMPORTANT: Make sure only the following are ticked:
 
@@ -115,9 +118,10 @@ Note that the group 0 (or ALL group) is not auto discovered as a thing and thus 
 
 | Channel | Type | Description |
 |-|-|-|
-| `level` | Dimmer | Level changes the brightness of the globe. |
+| `level` | Dimmer | Level changes the brightness of the globe. Not present if the bulb supports the `colour` channel. |
 | `colourTemperature` | Dimmer | Change from cool to warm white with this control. |
-| `colour` | Color | Allows you to change the colour, brightness and saturation of the globe. |
+| `colourTemperatureAbs` | Number:Temperature | Colour temperature in mireds. |
+| `colour` | Color | Allows you to change the colour, brightness and saturation of the globe. Can also be linked directly with a Dimmer item if you happen to have a bulb that doesn't support colour, but is controlled by a remote that normally does support colour. |
 | `discoMode` | String | Switch to a Disco mode directly from a drop down list. |
 | `bulbMode` | String (read only) | Displays the mode the bulb is currently in so that rules can determine if the globe is white, a color, disco modes or night mode are selected. |
 | `command` | String | Sends the raw commands that the buttons on a remote send. |
@@ -189,8 +193,9 @@ Thing mqtt:rgb_cct:myBroker:0xE6C4 "Hallway" (mqtt:broker:myBroker) @ "MQTT"
 *.items
 
 ```java
-Dimmer Hallway_Level "Front Hall" {channel="mqtt:rgb_cct:myBroker:0xE6C4:level"}
+Dimmer Hallway_Level "Front Hall" {channel="mqtt:rgb_cct:myBroker:0xE6C4:colour"}
 Dimmer Hallway_ColourTemperature "White Color Temp" {channel="mqtt:rgb_cct:myBroker:0xE6C4:colourTemperature"}
+Number:Temperature Hallway_ColourTemperatureK "White Color Temp [%d %unit%]" {channel="mqtt:rgb_cct:myBroker:0xE6C4:colourTemperatureAbs", unit="K"}
 Color  Hallway_Colour "Front Hall" ["Lighting"] {channel="mqtt:rgb_cct:myBroker:0xE6C4:colour"}
 String Hallway_DiscoMode "Disco Mode" {channel="mqtt:rgb_cct:myBroker:0xE6C4:discoMode"}
 String Hallway_BulbCommand "Send Command" {channel="mqtt:rgb_cct:myBroker:0xE6C4:command"}

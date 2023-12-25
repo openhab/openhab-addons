@@ -4,6 +4,7 @@ Binding for the Bosch Smart Home.
 
 - [Bosch Smart Home Binding](#bosch-smart-home-binding)
   - [Supported Things](#supported-things)
+    - [Smart Home Controller](#smart-home-controller)
     - [In-Wall Switch](#in-wall-switch)
     - [Compact Smart Plug](#compact-smart-plug)
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
@@ -26,6 +27,17 @@ Binding for the Bosch Smart Home.
   - [Item Configuration](#item-configuration)
 
 ## Supported Things
+
+### Smart Home Controller
+
+The Smart Home Controller is the central hub that allows you to monitor and control your smart home devices from one place.
+
+**Bridge Type ID**: ``shc``
+
+| Channel Type ID    | Item Type | Writable | Description                                                             |
+|--------------------|-----------|:--------:|-------------------------------------------------------------------------|
+| scenario-triggered | String    | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex)      | 
+| trigger-scenario   | String    | &#9745;  | Name of a scenario to be triggered on the Bosch Smart Home Controller.  |
 
 ### In-Wall Switch
 
@@ -92,6 +104,7 @@ Detects every movement through an intelligent combination of passive infra-red t
 | Channel Type ID | Item Type | Writable | Description                    |
 | --------------- | --------- | :------: | ------------------------------ |
 | latest-motion   | DateTime  | &#9744;  | The date of the latest motion. |
+| illuminance     | Number    | &#9744;  | The illuminance level measured by the sensor as integer value in the range 0 to 1000. Note that the sensor only reports the value if the motion light service is activated or if the illuminance state is used in a scenario trigger condition. |
 | battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 

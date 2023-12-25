@@ -163,7 +163,7 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
         Integer vol = zoneState.getVol();
         Integer sourceId = zoneState.getSourceId();
 
-        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, OnOffType.from(mute));
         updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(vol));
         updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(sourceId));
     }

@@ -38,12 +38,14 @@ public enum WindDirections {
     NW,
     NNW;
 
+    private static final double STEP = 360.0 / values().length;
+
     /**
      * Returns the wind direction based on degree.
      */
     public static WindDirections getWindDirection(int degree) {
-        double step = 360.0 / values().length;
-        double b = Math.floor((degree + (step / 2.0)) / step);
+
+        double b = Math.floor((degree + (STEP / 2.0)) / STEP);
         return values()[(int) (b % values().length)];
     }
 }

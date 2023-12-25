@@ -263,7 +263,7 @@ public class TapoUtils {
      * @param boolVal
      */
     public static OnOffType getOnOffType(@Nullable Boolean boolVal) {
-        return (boolVal != null ? boolVal ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
+        return boolVal != null ? OnOffType.from(boolVal) : OnOffType.OFF;
     }
 
     /**
@@ -272,7 +272,7 @@ public class TapoUtils {
      * @param intVal
      */
     public static OnOffType getOnOffType(Integer intVal) {
-        return intVal == 0 ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(intVal != 0);
     }
 
     /**

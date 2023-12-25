@@ -283,7 +283,8 @@ Currently the miio binding supports more than 360 different models.
 | HUIZUO ZIWEI Ceiling Lamp          | miio:basic       | [huayi.light.zw131](#huayi-light-zw131) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MiJia Rice Cooker                  | miio:unsupported | hunmi.cooker.normal3   | No           |            |
 | Jinxing Smart Air Conditioner      | miio:unsupported | idelan.aircondition.v1 | No           |            |
-| Xiaomi Robot Vacuum-Mop 2S         | miio:basic       | [ijai.vacuum.v19](#ijai-vacuum-v19) | Yes          |            |
+| Mi Robot Vacuum-Mop 2 Pro          | miio:basic       | [ijai.vacuum.v3](#ijai-vacuum-v3) | Yes          | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')` |
+| Xiaomi Robot Vacuum-Mop 2S         | miio:basic       | [ijai.vacuum.v19](#ijai-vacuum-v19) | Yes          | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')` |
 | IKEA E27 white spectrum opal       | miio:lumi        | [ikea.light.led1545g12](#ikea-light-led1545g12) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | IKEA E27 white spectrum clear      | miio:lumi        | [ikea.light.led1546g12](#ikea-light-led1546g12) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | IKEA E14 white spectrum            | miio:lumi        | [ikea.light.led1536g5](#ikea-light-led1536g5) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -363,59 +364,59 @@ Currently the miio binding supports more than 360 different models.
 | CHINGMI Smart Power Strip v1       | miio:basic       | [qmi.powerstrip.v1](#qmi-powerstrip-v1) | Yes          |            |
 | Rockrobo Xiaowa Sweeper v2         | miio:unsupported | roborock.sweeper.e2v2  | No           |            |
 | Rockrobo Xiaowa Sweeper v3         | miio:unsupported | roborock.sweeper.e2v3  | No           |            |
-| Roborock S6 Pure                   | miio:vacuum      | [roborock.vacuum.a08](#roborock-vacuum-a08) | Yes          |            |
-| Roborock T7 Pro                    | miio:vacuum      | [roborock.vacuum.a09](#roborock-vacuum-a09) | Yes          |            |
-| Roborock S6 MaxV                   | miio:vacuum      | [roborock.vacuum.a10](#roborock-vacuum-a10) | Yes          |            |
-| Roborock T7                        | miio:vacuum      | [roborock.vacuum.a11](#roborock-vacuum-a11) | Yes          |            |
-| Roborock T7S                       | miio:vacuum      | [roborock.vacuum.a14](#roborock-vacuum-a14) | Yes          |            |
-| Roborock S7                        | miio:vacuum      | [roborock.vacuum.a15](#roborock-vacuum-a15) | Yes          |            |
-| Roborock S4 Max                    | miio:vacuum      | [roborock.vacuum.a19](#roborock-vacuum-a19) | Yes          |            |
-| Roborock T7S Plus                  | miio:vacuum      | [roborock.vacuum.a23](#roborock-vacuum-a23) | Yes          |            |
-| Roborock G10S Pro                  | miio:vacuum      | [roborock.vacuum.a26](#roborock-vacuum-a26) | Yes          |            |
-| Roborock S7 MaxV                   | miio:vacuum      | [roborock.vacuum.a27](#roborock-vacuum-a27) | Yes          |            |
-| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a29](#roborock-vacuum-a29) | Yes          |            |
-| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a30](#roborock-vacuum-a30) | Yes          |            |
-| Roborock Q5                        | miio:vacuum      | [roborock.vacuum.a34](#roborock-vacuum-a34) | Yes          |            |
-| Roborock T8                        | miio:vacuum      | [roborock.vacuum.a37](#roborock-vacuum-a37) | Yes          |            |
-| Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#roborock-vacuum-a38) | Yes          |            |
-| Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#roborock-vacuum-a40) | Yes          |            |
-| Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#roborock-vacuum-a46) | Yes          |            |
-| Roborock S8                        | miio:vacuum      | [roborock.vacuum.a51](#roborock-vacuum-a51) | Yes          |            |
-| Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#roborock-vacuum-a52) | Yes          |            |
-| Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-a62) | Yes          |            |
-| Roborock G10S Pure                 | miio:vacuum      | [roborock.vacuum.a64](#roborock-vacuum-a64) | Yes          |            |
-| Roborock S7 Max Ultra              | miio:vacuum      | [roborock.vacuum.a65](#roborock-vacuum-a65) | Yes          |            |
-| Roborock G10 Plus                  | miio:vacuum      | [roborock.vacuum.a66](#roborock-vacuum-a66) | Yes          |            |
-| Roborock G20                       | miio:vacuum      | [roborock.vacuum.a69](#roborock-vacuum-a69) | Yes          |            |
-| Roborock S8 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a70](#roborock-vacuum-a70) | Yes          |            |
-| Roborock Q5 Pro                    | miio:vacuum      | [roborock.vacuum.a72](#roborock-vacuum-a72) | Yes          |            |
-| Roborock Q8 Max                    | miio:vacuum      | [roborock.vacuum.a73](#roborock-vacuum-a73) | Yes          |            |
-| Roborock P10                       | miio:vacuum      | [roborock.vacuum.a74](#roborock-vacuum-a74) | Yes          |            |
-| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a75](#roborock-vacuum-a75) | Yes          |            |
-| Roborock G10S Auto                 | miio:vacuum      | [roborock.vacuum.a76](#roborock-vacuum-a76) | Yes          |            |
-| Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes          |            |
+| Roborock S6 Pure                   | miio:vacuum      | [roborock.vacuum.a08](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock T7 Pro                    | miio:vacuum      | [roborock.vacuum.a09](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S6 MaxV                   | miio:vacuum      | [roborock.vacuum.a10](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock T7                        | miio:vacuum      | [roborock.vacuum.a11](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock T7S                       | miio:vacuum      | [roborock.vacuum.a14](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S7                        | miio:vacuum      | [roborock.vacuum.a15](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S4 Max                    | miio:vacuum      | [roborock.vacuum.a19](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock T7S Plus                  | miio:vacuum      | [roborock.vacuum.a23](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock G10S Pro                  | miio:vacuum      | [roborock.vacuum.a26](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S7 MaxV                   | miio:vacuum      | [roborock.vacuum.a27](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a29](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a30](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Q5                        | miio:vacuum      | [roborock.vacuum.a34](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock T8                        | miio:vacuum      | [roborock.vacuum.a37](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S8                        | miio:vacuum      | [roborock.vacuum.a51](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock G10S Pure                 | miio:vacuum      | [roborock.vacuum.a64](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S7 Max Ultra              | miio:vacuum      | [roborock.vacuum.a65](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock G10 Plus                  | miio:vacuum      | [roborock.vacuum.a66](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock G20                       | miio:vacuum      | [roborock.vacuum.a69](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S8 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a70](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Q5 Pro                    | miio:vacuum      | [roborock.vacuum.a72](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Q8 Max                    | miio:vacuum      | [roborock.vacuum.a73](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock P10                       | miio:vacuum      | [roborock.vacuum.a74](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a75](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock G10S Auto                 | miio:vacuum      | [roborock.vacuum.a76](#robo-rock-vacuum-channels) | Yes          |            |
+| Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#robo-rock-vacuum-channels) | Yes          |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No           |            |
-| Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes          |            |
-| Roborock P5                        | miio:vacuum      | [roborock.vacuum.p5](#roborock-vacuum-p5) | Yes          |            |
-| Roborock S4                        | miio:vacuum      | [roborock.vacuum.s4](#roborock-vacuum-s4) | Yes          |            |
-| Roborock Vacuum S4v2               | miio:vacuum      | [roborock.vacuum.s4v2](#roborock-vacuum-s4v2) | Yes          |            |
-| Roborock S5                        | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-s5) | Yes          |            |
-| Roborock S5 Max                    | miio:vacuum      | [roborock.vacuum.s5e](#roborock-vacuum-s5e) | Yes          |            |
-| Roborock S6                        | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes          |            |
-| Roborock T4                        | miio:vacuum      | [roborock.vacuum.t4](#roborock-vacuum-t4) | Yes          |            |
-| Roborock Vacuum T4 v2              | miio:vacuum      | [roborock.vacuum.t4v2](#roborock-vacuum-t4v2) | Yes          |            |
-| Roborock Vacuum T4 v3              | miio:vacuum      | [roborock.vacuum.t4v3](#roborock-vacuum-t4v3) | Yes          |            |
-| Roborock T6                        | miio:vacuum      | [roborock.vacuum.t6](#roborock-vacuum-t6) | Yes          |            |
-| Roborock Vacuum T6 v2              | miio:vacuum      | [roborock.vacuum.t6v2](#roborock-vacuum-t6v2) | Yes          |            |
-| Roborock Vacuum T6 v3              | miio:vacuum      | [roborock.vacuum.t6v3](#roborock-vacuum-t6v3) | Yes          |            |
-| Roborock Vacuum T7                 | miio:vacuum      | [roborock.vacuum.t7](#roborock-vacuum-t7) | Yes          |            |
-| Roborock Vacuum T7p                | miio:vacuum      | [roborock.vacuum.t7p](#roborock-vacuum-t7p) | Yes          |            |
-| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7pv2](#roborock-vacuum-t7pv2) | Yes          |            |
-| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7pv3](#roborock-vacuum-t7pv3) | Yes          |            |
-| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7v2](#roborock-vacuum-t7v2) | Yes          |            |
-| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7v3](#roborock-vacuum-t7v3) | Yes          |            |
-| Roborock Vacuum S6                 | miio:vacuum      | [rockrobo.vacuum.s6](#rockrobo-vacuum-s6) | Yes          |            |
-| Mi Robot Vacuum                    | miio:vacuum      | [rockrobo.vacuum.v1](#rockrobo-vacuum-v1) | Yes          |            |
+| Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock P5                        | miio:vacuum      | [roborock.vacuum.p5](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S4                        | miio:vacuum      | [roborock.vacuum.s4](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum S4v2               | miio:vacuum      | [roborock.vacuum.s4v2](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S5                        | miio:vacuum      | [roborock.vacuum.s5](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S5 Max                    | miio:vacuum      | [roborock.vacuum.s5e](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S6                        | miio:vacuum      | [roborock.vacuum.s6](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock T4                        | miio:vacuum      | [roborock.vacuum.t4](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T4 v2              | miio:vacuum      | [roborock.vacuum.t4v2](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T4 v3              | miio:vacuum      | [roborock.vacuum.t4v3](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock T6                        | miio:vacuum      | [roborock.vacuum.t6](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T6 v2              | miio:vacuum      | [roborock.vacuum.t6v2](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T6 v3              | miio:vacuum      | [roborock.vacuum.t6v3](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7                 | miio:vacuum      | [roborock.vacuum.t7](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7p                | miio:vacuum      | [roborock.vacuum.t7p](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7pv2](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7pv3](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7v2](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7v3](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum S6                 | miio:vacuum      | [rockrobo.vacuum.s6](#robo-rock-vacuum-channels) | Yes          |            |
+| Mi Robot Vacuum                    | miio:vacuum      | [rockrobo.vacuum.v1](#robo-rock-vacuum-channels) | Yes          |            |
 | ROIDMI EVE vacuum                  | miio:basic       | [roidmi.vacuum.v60](#roidmi-vacuum-v60) | Yes          |            |
 | ROIDMI EVA                         | miio:basic       | [roidmi.vacuum.v66](#roidmi-vacuum-v66) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | PTX OneKey Switch (WIFI)           | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes          |            |
@@ -645,6 +646,13 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
 | Switch  | status#is_locating                | Robot is locating          |
 | Number  | actions#segment                   | Room Clean  (enter room #) |
+| Switch  | actions#collect_dust              | Start collecting dust      |
+| Switch  | actions#clean_mop_start           | Start mop wash             |
+| Switch  | actions#clean_mop_stop            | Stop mop wash              |
+| Number  | status#mop_drying_time            | Mop drying Time            |
+| Switch  | status#is_mop_drying              | Mop cleaning active        |
+| Number  | status#dock_state_id              | Dock status id             |
+| String  | status#dock_state                 | Dock status message        |
 
 Note: cleaning map is only available with cloud access.
 
@@ -661,6 +669,8 @@ This allows you to control the colors, if logo is displayed, if and what text is
 To (re-)read the file either restart openHAB, restart the binding or alternatively edit the thing and make (any) minor change.
 Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
 Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
+
+### Basic, gateway and lumi Things channels
 
 ### Mi Air Frying Pan (<a name="careli-fryer-maf01">careli.fryer.maf01</a>) Channels
 
@@ -1840,6 +1850,74 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | on                   | Switch               | Light - Power                            |            |
 | brightness           | Dimmer               | Light - Brightness                       |            |
 | color-temperature    | Number:Temperature   | Light - Color Temperature                |            |
+
+### Mi Robot Vacuum-Mop 2 Pro (<a name="ijai-vacuum-v3">ijai.vacuum.v3</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Robot Cleaner - Actions                  | Value mapping `["vacuum-start-sweep"="Start","vacuum-start-sweep-mop"="Start Sweep+Mop","vacuum-start-only-sweep"="Start Sweep","vacuum-start-only-mop"="Start Only Mop","vacuum-start-mop"="Start Mop","vacuum-start-room-sweep"="Room Sweep","battery-start-charge"="Start Charge"]` |
+| advanced_actions     | String               | Robot Cleaner - Advanced Actions         | Value mapping `["sweep-reset-consumable"="Reset Consumable","sweep-set-calibration"="Set Calibration","sweep-set-room-clean"="Set Room Clean","sweep-set-preference-clean"="Set Preference Clean","sweep-get-preference-clean"="Get Preference Clean","sweep-set-preference-type"="Set Preference Type","sweep-set-go-charging"="Set Go Charging","sweep-erase-preference"="Erase Preference","sweep-set-preference-ii"="Set Preference Ii","sweep-get-preference-ii"="Get Preference Ii","order-add"="Order Add","order-del"="Order Del","order-get"="Order Get","order-add-ii"="Order Add Ii","order-get-map-order-count"="Order Get Map Order Count","point-zone-start-point-clean"="Point Zone Start Point Clean","point-zone-pause-point-clean"="Point Zone Pause Point Clean","point-zone-start-zone-clean"="Point Zone Start Zone Clean","point-zone-pause-zone-clean"="Point Zone Pause Zone Clean","point-zone-set-virtual-wall"="Point Zone Set Virtual Wall","point-zone-set-zone-point"="Point Zone Set Zone Point","point-zone-start-point-clean-ii"="Point Zone Start Point Clean Ii","map-get-map-list"="Map Get Map List","map-upload-by-mapid"="Map Upload By Mapid","map-set-cur-map"="Map Set Cur Map","map-del-map"="Map Del Map","map-rename-map"="Map Rename Map","map-upload-by-maptype"="Map Upload By Maptype","map-rename-room"="Map Rename Room","map-arrange-room"="Map Arrange Room","map-split-room"="Map Split Room","map-reset-map"="Map Reset Map","map-build-new-map"="Map Build New Map","map-get-cur-path"="Map Get Cur Path","map-get-map-room-list"="Map Get Map Room List","map-upload-by-mapid-ii"="Map Upload By Mapid Ii","map-upload-by-maptype-ii"="Map Upload By Maptype Ii","map-reset-map-ii"="Map Reset Map Ii","map-build-map-ii"="Map Build Map Ii","map-set-mijia-room-list"="Map Set Mijia Room List","disturb-set-notdisturb"="Disturb Set Notdisturb","language-download-voice"="Language Download Voice","language-get-download-status"="Language Get Download Status"]` |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping","8"="Upgrading"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             |            |
+| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Sweep","1"="Sweep And Mop","2"="Mop"]` |
+| sweep_type           | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Global","1"="Mop","2"="Edge","3"="Area","4"="Point","5"="Remote","6"="Explore","7"="Room","8"="Floor"]` |
+| on                   | String               | Robot Cleaner - Switch Status            |            |
+| battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
+| alarm                | Switch               | Alarm                                    |            |
+| volume               | Number:Dimensionless | Locating Volume                          |            |
+| repeat_state         | Switch               | Sweep - Repeat State                     |            |
+| door_state           | Number               | Sweep - Door State                       | Value mapping `["0"="None","1"="DustBox","2"="WaterBox","3"="TwoInOne"]` |
+| cloth_state          | Contact              | Sweep - Cloth State                      |            |
+| suction_state        | Number               | Robot Cleaner - Power                    | Value mapping `["0"="Slient","1"="Standard","2"="Medium","3"="Turbo"]` |
+| water_state          | Number               | Sweep - Water State                      | Value mapping `["0"="Low","1"="Mid","2"="High"]` |
+| mop_route            | Number               | Sweep - Mop Route                        | Value mapping `["0"="S","1"="Y"]` |
+| side_brush_life      | Number:Dimensionless | Sweep - Side Brush Life                  |            |
+| side_brush_hours     | Number:Time          | Sweep - Side Brush Hours                 |            |
+| main_brush_life      | Number:Dimensionless | Sweep - Main Brush Life                  |            |
+| main_brush_hours     | Number:Time          | Sweep - Main Brush Hours                 |            |
+| hypa_life            | Number:Dimensionless | Sweep - Hypa Life                        |            |
+| hypa_hours           | Number:Time          | Sweep - Hypa Hours                       |            |
+| mop_life             | Number:Dimensionless | Sweep - Mop Life                         |            |
+| mop_hours            | Number:Time          | Sweep - Mop Hours                        |            |
+| direction            | Number               | Sweep - Direction                        | Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Back","5"="Stop","10"="Exit"]` |
+| time_zone            | Number               | Sweep - Time Zone                        |            |
+| cur_lang             | String               | Sweep - Cur Lang                         |            |
+| cleaning_time        | Number:Time          | Sweep - Cleaning Time                    |            |
+| cleaning_area        | Number               | Sweep - Cleaning Area                    |            |
+| multi_prop_vacuum    | String               | Sweep - Multi Prop Vacuum                |            |
+| tank_shake           | Switch               | Sweep - Tank Shake                       |            |
+| shake_shift          | Number               | Sweep - Shake Shift                      | Value mapping `["1"="Low","2"="Mid","3"="High"]` |
+| order_id             | Number               | Order - Order Id                         |            |
+| enable               | Switch               | Order - Enable                           |            |
+| day                  | Number:Time          | Order - Day                              |            |
+| hour                 | Number:Time          | Order - Hour                             |            |
+| minute               | Number:Time          | Order - Minute                           |            |
+| repeat               | Switch               | Order - Repeat                           |            |
+| clean_way            | Number               | Order - Clean Way                        | Value mapping `["0"="Sweep","1"="Sweep Mop","2"="Mop"]` |
+| suction              | Number               | Order - Suction                          | Value mapping `["0"="Slient","1"="Normal","2"="Medium","3"="Turbo"]` |
+| water                | Number               | Order - Water                            | Value mapping `["0"="Low","1"="Mid","2"="High"]` |
+| twice_clean          | Switch               | Order - Twice Clean                      |            |
+| mapid                | Number               | Order - Mapid                            |            |
+| room_count           | Number               | Order - Room Count                       |            |
+| room_data            | String               | Order - Room Data                        |            |
+| time_zone1           | Number               | Order - Time Zone                        |            |
+| all_enable_count     | String               | Order - All Enable Count                 |            |
+| zone_points          | String               | Point Zone - Zone Points                 |            |
+| restrict_points      | String               | Point Zone - Restrict Points             |            |
+| target_point         | String               | Point Zone - Target Point                |            |
+| remember_state       | Switch               | Map - Remember State                     |            |
+| cur_map_id           | Number               | Map - Cur Map Id                         |            |
+| map_num              | Number               | Map - Map Num                            |            |
+| cur_cleaning_path    | String               | Map - Cur Cleaning Path                  |            |
+| build_map            | Number               | Map - Build Map                          | Value mapping `["0"="None","1"="Build","2"="Clean"]` |
+| has_new_map          | Number               | Map - Has New Map                        | Value mapping `["0"="Without Map To Save","1"="Wait To Rename Map"]` |
+| map_uploads          | Number               | Map - Map Uploads                        | Value mapping `["0"="Upload","1"="Do Not Upload"]` |
+| dnd_enable           | Contact              | Disturb - Dnd Enable                     |            |
+| dnd_start_hour       | Number:Time          | Disturb - Dnd Start Hour                 |            |
+| dnd_start_minute     | Number:Time          | Disturb - Dnd Start Minute               |            |
+| dnd_end_hour         | Number:Time          | Disturb - Dnd End Hour                   |            |
+| dnd_end_minute       | Number:Time          | Disturb - Dnd End Minute                 |            |
+| multi_prop_dnd       | String               | Disturb - Multi Prop Dnd                 |            |
 
 ### Xiaomi Robot Vacuum-Mop 2S (<a name="ijai-vacuum-v19">ijai.vacuum.v19</a>) Channels
 
@@ -6191,6 +6269,8 @@ Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vac
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
+### Basic, gateway and lumi Things item files examples
+
 ### Mi Air Frying Pan (careli.fryer.maf01) item file lines
 
 note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -7557,6 +7637,77 @@ Group G_light "HUIZUO ZIWEI Ceiling Lamp" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### Mi Robot Vacuum-Mop 2 Pro (ijai.vacuum.v3) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_vacuum "Mi Robot Vacuum-Mop 2 Pro" <status>
+String actions "Robot Cleaner - Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+String advanced_actions "Robot Cleaner - Advanced Actions" (G_vacuum) {channel="miio:basic:vacuum:advanced_actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+String on "Robot Cleaner - Switch Status" (G_vacuum) {channel="miio:basic:vacuum:on"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Switch alarm "Alarm" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
+Number:Dimensionless volume "Locating Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch repeat_state "Sweep - Repeat State" (G_vacuum) {channel="miio:basic:vacuum:repeat_state"}
+Number door_state "Sweep - Door State" (G_vacuum) {channel="miio:basic:vacuum:door_state"}
+Contact cloth_state "Sweep - Cloth State" (G_vacuum) {channel="miio:basic:vacuum:cloth_state"}
+Number suction_state "Robot Cleaner - Power" (G_vacuum) {channel="miio:basic:vacuum:suction_state"}
+Number water_state "Sweep - Water State" (G_vacuum) {channel="miio:basic:vacuum:water_state"}
+Number mop_route "Sweep - Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Dimensionless side_brush_life "Sweep - Side Brush Life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Time side_brush_hours "Sweep - Side Brush Hours" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Dimensionless main_brush_life "Sweep - Main Brush Life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Time main_brush_hours "Sweep - Main Brush Hours" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Dimensionless hypa_life "Sweep - Hypa Life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Time hypa_hours "Sweep - Hypa Hours" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Dimensionless mop_life "Sweep - Mop Life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+Number:Time mop_hours "Sweep - Mop Hours" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number direction "Sweep - Direction" (G_vacuum) {channel="miio:basic:vacuum:direction"}
+Number time_zone "Sweep - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time_zone"}
+String cur_lang "Sweep - Cur Lang" (G_vacuum) {channel="miio:basic:vacuum:cur_lang"}
+Number:Time cleaning_time "Sweep - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number cleaning_area "Sweep - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+String multi_prop_vacuum "Sweep - Multi Prop Vacuum" (G_vacuum) {channel="miio:basic:vacuum:multi_prop_vacuum"}
+Switch tank_shake "Sweep - Tank Shake" (G_vacuum) {channel="miio:basic:vacuum:tank_shake"}
+Number shake_shift "Sweep - Shake Shift" (G_vacuum) {channel="miio:basic:vacuum:shake_shift"}
+Number order_id "Order - Order Id" (G_vacuum) {channel="miio:basic:vacuum:order_id"}
+Switch enable "Order - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
+Number:Time day "Order - Day" (G_vacuum) {channel="miio:basic:vacuum:day"}
+Number:Time hour "Order - Hour" (G_vacuum) {channel="miio:basic:vacuum:hour"}
+Number:Time minute "Order - Minute" (G_vacuum) {channel="miio:basic:vacuum:minute"}
+Switch repeat "Order - Repeat" (G_vacuum) {channel="miio:basic:vacuum:repeat"}
+Number clean_way "Order - Clean Way" (G_vacuum) {channel="miio:basic:vacuum:clean_way"}
+Number suction "Order - Suction" (G_vacuum) {channel="miio:basic:vacuum:suction"}
+Number water "Order - Water" (G_vacuum) {channel="miio:basic:vacuum:water"}
+Switch twice_clean "Order - Twice Clean" (G_vacuum) {channel="miio:basic:vacuum:twice_clean"}
+Number mapid "Order - Mapid" (G_vacuum) {channel="miio:basic:vacuum:mapid"}
+Number room_count "Order - Room Count" (G_vacuum) {channel="miio:basic:vacuum:room_count"}
+String room_data "Order - Room Data" (G_vacuum) {channel="miio:basic:vacuum:room_data"}
+Number time_zone1 "Order - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time_zone1"}
+String all_enable_count "Order - All Enable Count" (G_vacuum) {channel="miio:basic:vacuum:all_enable_count"}
+String zone_points "Point Zone - Zone Points" (G_vacuum) {channel="miio:basic:vacuum:zone_points"}
+String restrict_points "Point Zone - Restrict Points" (G_vacuum) {channel="miio:basic:vacuum:restrict_points"}
+String target_point "Point Zone - Target Point" (G_vacuum) {channel="miio:basic:vacuum:target_point"}
+Switch remember_state "Map - Remember State" (G_vacuum) {channel="miio:basic:vacuum:remember_state"}
+Number cur_map_id "Map - Cur Map Id" (G_vacuum) {channel="miio:basic:vacuum:cur_map_id"}
+Number map_num "Map - Map Num" (G_vacuum) {channel="miio:basic:vacuum:map_num"}
+String cur_cleaning_path "Map - Cur Cleaning Path" (G_vacuum) {channel="miio:basic:vacuum:cur_cleaning_path"}
+Number build_map "Map - Build Map" (G_vacuum) {channel="miio:basic:vacuum:build_map"}
+Number has_new_map "Map - Has New Map" (G_vacuum) {channel="miio:basic:vacuum:has_new_map"}
+Number map_uploads "Map - Map Uploads" (G_vacuum) {channel="miio:basic:vacuum:map_uploads"}
+Contact dnd_enable "Disturb - Dnd Enable" (G_vacuum) {channel="miio:basic:vacuum:dnd_enable"}
+Number:Time dnd_start_hour "Disturb - Dnd Start Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_hour"}
+Number:Time dnd_start_minute "Disturb - Dnd Start Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_minute"}
+Number:Time dnd_end_hour "Disturb - Dnd End Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_hour"}
+Number:Time dnd_end_minute "Disturb - Dnd End Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_minute"}
+String multi_prop_dnd "Disturb - Multi Prop Dnd" (G_vacuum) {channel="miio:basic:vacuum:multi_prop_dnd"}
 ```
 
 ### Xiaomi Robot Vacuum-Mop 2S (ijai.vacuum.v19) item file lines

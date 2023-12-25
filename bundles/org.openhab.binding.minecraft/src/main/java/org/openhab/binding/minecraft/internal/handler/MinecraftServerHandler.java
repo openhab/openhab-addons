@@ -114,7 +114,7 @@ public class MinecraftServerHandler extends BaseBridgeHandler {
      * @param isOnline true if server is online
      */
     private void updateOnlineState(boolean isOnline) {
-        State onlineState = isOnline ? OnOffType.ON : OnOffType.OFF;
+        State onlineState = OnOffType.from(isOnline);
         updateState(MinecraftBindingConstants.CHANNEL_ONLINE, onlineState);
     }
 
