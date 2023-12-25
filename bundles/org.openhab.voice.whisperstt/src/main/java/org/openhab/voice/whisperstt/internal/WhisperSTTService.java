@@ -20,7 +20,6 @@ import static org.openhab.voice.whisperstt.internal.WhisperSTTConstants.SERVICE_
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -45,6 +44,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
@@ -235,8 +235,11 @@ public class WhisperSTTService implements STTService {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return Set.of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null,
-                (long) WHISPER_SAMPLE_RATE, 1));
+        return Set.of(
+                new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null,
+                        (long) WHISPER_SAMPLE_RATE, 1),
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null,
+                        (long) WHISPER_SAMPLE_RATE, 1));
     }
 
     @Override
@@ -337,7 +340,7 @@ public class WhisperSTTService implements STTService {
     }
 
     private void backgroundRecognize(WhisperJNI whisper, WhisperContext ctx, WhisperState state, final int nSamplesStep,
-            Locale locale, STTListener sttListener, InputStream audioStream, VAD vad, AtomicBoolean aborted) {
+            Locale locale, STTListener sttListener, AudioStream audioStream, VAD vad, AtomicBoolean aborted) {
         var releaseContext = !config.preloadModel;
         final int nSamplesMax = config.maxSeconds * WHISPER_SAMPLE_RATE;
         final int nSamplesMin = (int) (config.minSeconds * (float) WHISPER_SAMPLE_RATE);
@@ -366,6 +369,9 @@ public class WhisperSTTService implements STTService {
                 try (state; //
                         audioStream; //
                         vad) {
+                    if (AudioFormat.CONTAINER_WAVE.equals(audioStream.getFormat().getContainer())) {
+                        AudioWaveUtils.removeFMT(audioStream);
+                    }
                     final ByteBuffer captureBuffer = ByteBuffer.allocate(nSamplesStep * 2)
                             .order(ByteOrder.LITTLE_ENDIAN);
                     // init remaining to full capacity
