@@ -70,7 +70,9 @@
 	<channel-type id="batteryPrioritySoC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Priority SoC</label>
-		<description>State of Charge for which the battery has priority over charging the ev when charging mode is "pv".</description>
+		<description>State of Charge for which the battery has priority over charging the ev when charging mode is
+			"pv".
+		</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
@@ -128,14 +130,14 @@
 	<channel-type id="chargeRemainingDuration">
 		<item-type>Number:Time</item-type>
 		<label>Charging Remaining Duration</label>
-		<description>Remaining duration until target SoC is reached</description>
+		<description>Remaining duration until limit SoC is reached</description>
 		<category>Time</category>
 		<state pattern="%.1f min" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargeRemainingEnergy">
 		<item-type>Number:Energy</item-type>
 		<label>Charging Remaining Energy</label>
-		<description>Remaining energy until target SoC is reached</description>
+		<description>Remaining energy until limit SoC is reached</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -186,14 +188,6 @@
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="minSoC">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Charging min SoC</label>
-		<description>Charge immediately with maximum power up to the defined SoC, if the charge mode is not set to "off"</description>
-		<category>BatteryLevel</category>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Charging Mode</label>
@@ -231,27 +225,6 @@
 		<description>Until which state of charge (SoC) should the vehicle be charged</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="targetTime">
-		<item-type>DateTime</item-type>
-		<label>Charging Target Time</label>
-		<description>When the target SoC should be reached</description>
-		<category>Time</category>
-		<state readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="targetTimeEnabled">
-		<item-type>Switch</item-type>
-		<label>Charging Target Time Enabled</label>
-		<description>Target time for charging enabled</description>
-		<category>Switch</category>
-		<state readOnly="false">
-			<options>
-				<option value="ON">Enabled</option>
-				<option value="OFF">Disabled</option>
-			</options>
-		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="title">
@@ -320,11 +293,65 @@
 		<category>BatteryLevel</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="vehicleTitle">
+	<channel-type id="loadpointVehicleTitle">
 		<item-type>String</item-type>
 		<label>Vehicle Title</label>
 		<description>Name of EV</description>
 		<category>Text</category>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Channels for vehicles -->
+	<channel-type id="vehicleTitle">
+		<item-type>String</item-type>
+		<label>Vehicle Title</label>
+		<description>Title of vehicle</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vehicleMinSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Vehicle Min SoC</label>
+		<description>Minimum state of charge (SoC) a vehicle should have</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehicleLimitSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Vehicle Charging Limit SoC</label>
+		<description>Until which state of charge (SoC) should the specific vehicle be charged</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehiclePlanEnabled">
+		<item-type>Switch</item-type>
+		<label>Vehicle Plan Enabled</label>
+		<description>Plan for charging enabled</description>
+		<category>Switch</category>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehiclePlanSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Vehicle Plan SoC</label>
+		<description>Until which state of charge (SoC) should vehicle be charged in plan</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehiclePlanTime">
+		<item-type>DateTime</item-type>
+		<label>Vehicle Plan Time</label>
+		<description>When the plan SoC should be reached</description>
+		<category>Time</category>
+		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

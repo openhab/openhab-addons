@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.evcc.internal.api.dto;
 
+import java.util.Map;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * This class represents the result object of the status response (/api/state).
- * This DTO was written for evcc version 0.117.0
+ * This class represents a loadpoint object of the status response (/api/state).
+ * This DTO was written for evcc version 0.123.1
  *
  * @author Florian Hotze - Initial contribution
+ * @author Luca Arnecke - update to evcc version 0.123.1
  */
 public class Result {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
@@ -61,6 +64,9 @@ public class Result {
 
     @SerializedName("siteTitle")
     private String siteTitle;
+
+    @SerializedName("vehicles")
+    private Map<String, Vehicle> vehicles;
 
     /**
      * @return battery's capacity
@@ -144,5 +150,9 @@ public class Result {
      */
     public String getSiteTitle() {
         return siteTitle;
+    }
+
+    public Map<String, Vehicle> getVehicles() {
+        return vehicles;
     }
 }

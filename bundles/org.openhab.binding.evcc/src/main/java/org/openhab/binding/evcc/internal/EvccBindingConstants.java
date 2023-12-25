@@ -21,6 +21,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * used across the whole binding.
  *
  * @author Florian Hotze - Initial contribution
+ * @author Luca Arnecke - update to evcc version 0.123.1
  */
 @NonNullByDefault
 public class EvccBindingConstants {
@@ -28,6 +29,9 @@ public class EvccBindingConstants {
     private static final String BINDING_ID = "evcc";
 
     public static final String CHANNEL_GROUP_ID_GENERAL = "general";
+
+    // regex to check if group id is a loadpoint
+    public static final String CHANNEL_GROUP_ID_LOADPOINT = "^loadpoint.+";
 
     // List of all Channel ids
     public static final String CHANNEL_BATTERY_CAPACITY = "batteryCapacity";
@@ -55,18 +59,19 @@ public class EvccBindingConstants {
     public static final String CHANNEL_LOADPOINT_PHASES = "phases";
     public static final String CHANNEL_LOADPOINT_LIMIT_ENERGY = "limitEnergy";
     public static final String CHANNEL_LOADPOINT_LIMIT_SOC = "limitSoC";
-    public static final String CHANNEL_LOADPOINT_TARGET_TIME = "targetTime";
-    /**
-     * Whether a target time is set on loadpoint.
-     */
-    public static final String CHANNEL_LOADPOINT_TARGET_TIME_ENABLED = "targetTimeEnabled";
     public static final String CHANNEL_LOADPOINT_TITLE = "title";
     public static final String CHANNEL_LOADPOINT_VEHICLE_CAPACITY = "vehicleCapacity";
     public static final String CHANNEL_LOADPOINT_VEHICLE_ODOMETER = "vehicleOdometer";
     public static final String CHANNEL_LOADPOINT_VEHICLE_PRESENT = "vehiclePresent";
     public static final String CHANNEL_LOADPOINT_VEHICLE_RANGE = "vehicleRange";
     public static final String CHANNEL_LOADPOINT_VEHICLE_SOC = "vehicleSoC";
-    public static final String CHANNEL_LOADPOINT_VEHICLE_TITLE = "vehicleTitle";
+    public static final String CHANNEL_LOADPOINT_VEHICLE_TITLE = "loadpointVehicleTitle";
+    public static final String CHANNEL_VEHICLE_TITLE = "vehicleTitle";
+    public static final String CHANNEL_VEHICLE_MIN_SOC = "vehicleMinSoC";
+    public static final String CHANNEL_VEHICLE_LIMIT_SOC = "vehicleLimitSoC";
+    public static final String CHANNEL_VEHICLE_PLAN_ENABLED = "vehiclePlanEnabled";
+    public static final String CHANNEL_VEHICLE_PLAN_SOC = "vehiclePlanSoC";
+    public static final String CHANNEL_VEHICLE_PLAN_TIME = "vehiclePlanTime";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
@@ -117,10 +122,6 @@ public class EvccBindingConstants {
             CHANNEL_LOADPOINT_LIMIT_ENERGY);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_LIMIT_SOC = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_LIMIT_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_TARGET_TIME);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ENABLED = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TITLE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_TITLE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_CAPACITY = new ChannelTypeUID(BINDING_ID,
@@ -135,6 +136,18 @@ public class EvccBindingConstants {
             CHANNEL_LOADPOINT_VEHICLE_SOC);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TITLE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_VEHICLE_TITLE);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_TITLE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_VEHICLE_TITLE);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_MIN_SOC = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_VEHICLE_MIN_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_LIMIT_SOC = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_VEHICLE_LIMIT_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_PLAN_ENABLED = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_VEHICLE_PLAN_ENABLED);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_PLAN_SOC = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_VEHICLE_PLAN_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_PLAN_TIME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_VEHICLE_PLAN_TIME);
 
     public static final int CONNECTION_TIMEOUT_MILLISEC = 5000;
     public static final int LONG_CONNECTION_TIMEOUT_MILLISEC = 60000;
