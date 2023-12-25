@@ -231,7 +231,7 @@ var myVar = 'Hello world!';
 // Schedule a timer that expires in ten seconds
 setTimeout(() => {
   console.info(`Timer expired with variable value = "${myVar}"`);
-}, 1000);
+}, 10000);
 
 myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello mutation!" instead of "Hello world!"
 ```
@@ -245,7 +245,7 @@ var myVar = 'Hello world!';
 // Schedule a timer that expires in ten seconds
 setTimeout((myVariable) => {
   console.info(`Timer expired with variable value = "${myVariable}"`);
-}, 1000, myVar); // Pass one or more variables as parameters here. They are passed through to the callback function.
+}, 10000, myVar); // Pass one or more variables as parameters here. They are passed through to the callback function.
 
 myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello world!"
 ```
@@ -496,12 +496,12 @@ The Things namespace allows to interact with openHAB Things.
 See [openhab-js : things](https://openhab.github.io/openhab-js/things.html) for full API documentation.
 
 - things : <code>object</code>
-  - .getThing(uid, nullIfMissing) ⇒ <code>Thing</code>
-  - .getThings() ⇒ <code>Array.&lt;Thing&gt;</code>
+  - .getThing(uid) ⇒ <code>Thing|null</code>
+  - .getThings() ⇒ <code>Array[Thing]</code>
 
 #### `getThing(uid, nullIfMissing)`
 
-Calling `getThing(...)` returns a `Thing` object with the following properties:
+Calling `getThing(uid)` returns a `Thing` object with the following properties:
 
 - Thing : <code>object</code>
   - .bridgeUID ⇒ <code>String</code>
@@ -1094,7 +1094,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-    console.log(event);
+  console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
