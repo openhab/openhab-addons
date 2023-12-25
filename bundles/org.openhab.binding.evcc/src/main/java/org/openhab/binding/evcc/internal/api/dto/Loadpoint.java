@@ -69,8 +69,8 @@ public class Loadpoint {
     @SerializedName("phasesEnabled")
     private int phases;
 
-    @SerializedName("targetEnergy")
-    private float targetEnergy;
+    @SerializedName("limitEnergy")
+    private float limitEnergy;
 
     @SerializedName("targetSoc")
     private float targetSoC;
@@ -205,10 +205,10 @@ public class Loadpoint {
     }
 
     /**
-     * @return target energy
+     * @return limit energy
      */
-    public float getTargetEnergy() {
-        return targetEnergy;
+    public float getLimitEnergy() {
+        return limitEnergy;
     }
 
     /**

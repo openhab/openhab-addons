@@ -110,9 +110,9 @@ public class EvccHandler extends BaseThingHandler {
                                 logger.debug("Command has wrong type, StringType required!");
                             }
                         }
-                        case CHANNEL_LOADPOINT_TARGET_ENERGY -> {
+                        case CHANNEL_LOADPOINT_LIMIT_ENERGY -> {
                             if (command instanceof QuantityType<?> qt) {
-                                evccAPI.setTargetEnergy(loadpoint, qt.toUnit(Units.WATT_HOUR).floatValue());
+                                evccAPI.setLimitEnergy(loadpoint, qt.toUnit(Units.WATT_HOUR).floatValue());
                             } else {
                                 logger.debug("Command has wrong type, QuantityType required!");
                             }
@@ -313,7 +313,7 @@ public class EvccHandler extends BaseThingHandler {
         createChannel(CHANNEL_LOADPOINT_MODE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_MODE, CoreItemFactory.STRING);
         createChannel(CHANNEL_LOADPOINT_PHASES, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_PHASES,
                 CoreItemFactory.NUMBER);
-        createChannel(CHANNEL_LOADPOINT_TARGET_ENERGY, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_TARGET_ENERGY,
+        createChannel(CHANNEL_LOADPOINT_LIMIT_ENERGY, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_LIMIT_ENERGY,
                 "Number:Energy");
         createChannel(CHANNEL_LOADPOINT_TARGET_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_TARGET_SOC,
                 "Number:Dimensionless");
@@ -451,8 +451,8 @@ public class EvccHandler extends BaseThingHandler {
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_PHASES);
         updateState(channel, new DecimalType(phases));
 
-        float targetEnergy = loadpoint.getTargetEnergy();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TARGET_ENERGY);
+        float targetEnergy = loadpoint.getLimitEnergy();
+        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_LIMIT_ENERGY);
         updateState(channel, new QuantityType<>(targetEnergy, Units.WATT_HOUR));
 
         float targetSoC = loadpoint.getTargetSoC();
