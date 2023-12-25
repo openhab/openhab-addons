@@ -110,15 +110,6 @@ public class EvccHandler extends BaseThingHandler {
                                 logger.debug("Command has wrong type, StringType required!");
                             }
                         }
-                        case CHANNEL_LOADPOINT_MIN_SOC -> {
-                            if (command instanceof QuantityType<?> qt) {
-                                evccAPI.setMinSoC(loadpoint, qt.toUnit(Units.PERCENT).intValue());
-                            } else if (command instanceof DecimalType dt) {
-                                evccAPI.setMinSoC(loadpoint, dt.intValue());
-                            } else {
-                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                            }
-                        }
                         case CHANNEL_LOADPOINT_TARGET_ENERGY -> {
                             if (command instanceof QuantityType<?> qt) {
                                 evccAPI.setTargetEnergy(loadpoint, qt.toUnit(Units.WATT_HOUR).floatValue());
@@ -319,8 +310,6 @@ public class EvccHandler extends BaseThingHandler {
                 "Number:ElectricCurrent");
         createChannel(CHANNEL_LOADPOINT_MIN_CURRENT, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_MIN_CURRENT,
                 "Number:ElectricCurrent");
-        createChannel(CHANNEL_LOADPOINT_MIN_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_MIN_SOC,
-                "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_MODE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_MODE, CoreItemFactory.STRING);
         createChannel(CHANNEL_LOADPOINT_PHASES, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_PHASES,
                 CoreItemFactory.NUMBER);
@@ -453,10 +442,6 @@ public class EvccHandler extends BaseThingHandler {
         float minCurrent = loadpoint.getMinCurrent();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MIN_CURRENT);
         updateState(channel, new QuantityType<>(minCurrent, Units.AMPERE));
-
-        float minSoC = loadpoint.getMinSoC();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MIN_SOC);
-        updateState(channel, new QuantityType<>(minSoC, Units.PERCENT));
 
         String mode = loadpoint.getMode();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MODE);

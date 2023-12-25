@@ -63,17 +63,11 @@ public class Loadpoint {
     @SerializedName("minCurrent")
     private float minCurrent;
 
-    @SerializedName("minSoc")
-    private float minSoC;
-
     @SerializedName("mode")
     private String mode;
 
     @SerializedName("phasesEnabled")
     private int phases;
-
-    @SerializedName("planActive")
-    private boolean planActive;
 
     @SerializedName("targetEnergy")
     private float targetEnergy;
@@ -197,13 +191,6 @@ public class Loadpoint {
     }
 
     /**
-     * @return minimum state of charge
-     */
-    public float getMinSoC() {
-        return minSoC;
-    }
-
-    /**
      * @return charging mode: off, now, minpv, pv
      */
     public String getMode() {
@@ -215,13 +202,6 @@ public class Loadpoint {
      */
     public int getPhases() {
         return phases;
-    }
-
-    /**
-     * @return whether charging plan is active
-     */
-    public boolean getPlanActive() {
-        return planActive;
     }
 
     /**

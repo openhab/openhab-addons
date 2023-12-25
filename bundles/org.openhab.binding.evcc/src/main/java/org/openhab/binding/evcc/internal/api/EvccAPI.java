@@ -95,10 +95,6 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mode/" + mode, "POST");
     }
 
-    public String setMinSoC(int loadpoint, int minSoC) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/minsoc/" + minSoC, "POST");
-    }
-
     public String setTargetEnergy(int loadpoint, float targetEnergy) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/limitenergy/" + targetEnergy,
                 "POST");
