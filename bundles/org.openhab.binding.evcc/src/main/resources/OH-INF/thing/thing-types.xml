@@ -225,9 +225,9 @@
 		<state min="0" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="targetSoC">
+	<channel-type id="limitSoC">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Charging Target SoC</label>
+		<label>Charging Limit SoC</label>
 		<description>Until which state of charge (SoC) should the vehicle be charged</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>

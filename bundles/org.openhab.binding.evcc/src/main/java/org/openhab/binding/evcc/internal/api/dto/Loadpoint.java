@@ -72,8 +72,8 @@ public class Loadpoint {
     @SerializedName("limitEnergy")
     private float limitEnergy;
 
-    @SerializedName("targetSoc")
-    private float targetSoC;
+    @SerializedName("limitSoc")
+    private float limitSoC;
 
     @SerializedName("targetTime")
     private String targetTime;
@@ -212,10 +212,10 @@ public class Loadpoint {
     }
 
     /**
-     * @return target state of charge (SoC)
+     * @return limit state of charge (SoC)
      */
-    public float getTargetSoC() {
-        return targetSoC;
+    public float getLimitSoC() {
+        return limitSoC;
     }
 
     /**

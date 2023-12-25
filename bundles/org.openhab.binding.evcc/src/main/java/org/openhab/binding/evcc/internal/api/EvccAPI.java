@@ -95,13 +95,13 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mode/" + mode, "POST");
     }
 
-    public String setLimitEnergy(int loadpoint, float targetEnergy) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/limitenergy/" + targetEnergy,
+    public String setLimitEnergy(int loadpoint, float limitEnergy) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/limitenergy/" + limitEnergy,
                 "POST");
     }
 
-    public String setTargetSoC(int loadpoint, int targetSoC) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/limitsoc/" + targetSoC, "POST");
+    public String setLimitSoC(int loadpoint, int limitSoC) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/limitsoc/" + limitSoC, "POST");
     }
 
     public String setPhases(int loadpoint, int phases) throws EvccApiException {
