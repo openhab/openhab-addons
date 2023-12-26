@@ -146,7 +146,7 @@ public class PentairIntelliFloHandler extends PentairBaseThingHandler {
         switch (channel) {
             case INTELLIFLO_RUN:
                 if (pps == null || (pps.run != ppscur.run)) {
-                    updateState(channel, (ppscur.run) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((ppscur.run)));
                 }
                 break;
             case INTELLIFLO_MODE:

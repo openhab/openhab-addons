@@ -15,7 +15,7 @@ package org.openhab.binding.max.internal.device;
 /**
  * MAX! wall mounted thermostat.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  */
 public class WallMountedThermostat extends HeatingThermostat {
 

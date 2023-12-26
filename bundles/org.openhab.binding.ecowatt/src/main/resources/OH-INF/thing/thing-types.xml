@@ -34,12 +34,22 @@
 			</channel>
 			<channel id="currentHourSignal" typeId="signal">
 				<label>Current Hour Signal</label>
-				<description>The signal relating to the forecast consumption level for the current hour. Values are 1 for normal
-					consumption (green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+				<description>The signal relating to the forecast consumption level for the current hour. Values are 0 for normal
+					consumption (green) and carbon-free production, 1 for normal consumption (green), 2 for strained electrical system
+					(orange) and 3 for very strained electrical system (red).</description>
 			</channel>
 		</channels>
 
 		<config-description>
+			<parameter name="apiVersion" type="integer" required="false">
+				<label>API Version</label>
+				<description>The version of the Ecowatt tile to which you subscribed in the RTE portal.</description>
+				<options>
+					<option value="4">V4.0 (deprecated)</option>
+					<option value="5">V5.0</option>
+				</options>
+				<default>4</default>
+			</parameter>
 			<parameter name="idClient" type="text" required="true">
 				<label>ID Client</label>
 				<description>ID client provided with the application you created in the RTE portal.</description>
@@ -55,10 +65,12 @@
 	<channel-type id="signal">
 		<item-type>Number</item-type>
 		<label>Consumption Signal</label>
-		<description>The signal relating to the forecast consumption level. Values are 1 for normal consumption (green), 2 for
-			strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+		<description>The signal relating to the forecast consumption level. Values are 0 for normal consumption (green) and
+			carbon-free production, 1 for normal consumption (green), 2 for strained electrical system (orange) and 3 for very
+			strained electrical system (red).</description>
 		<state readOnly="true">
 			<options>
+				<option value="0">Green + carbon-free production</option>
 				<option value="1">Green</option>
 				<option value="2">Orange</option>
 				<option value="3">Red</option>

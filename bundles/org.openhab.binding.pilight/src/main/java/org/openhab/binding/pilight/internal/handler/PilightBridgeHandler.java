@@ -14,8 +14,8 @@
 package org.openhab.binding.pilight.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -65,8 +65,7 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable PilightDeviceDiscoveryService discoveryService = null;
 
-    private final ExecutorService connectorExecutor = Executors
-            .newSingleThreadExecutor(new NamedThreadFactory(getThing().getUID().getAsString(), true));
+    private @Nullable ExecutorService connectorExecutor = null;
 
     public PilightBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -116,7 +115,10 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
+        ExecutorService connectorExecutor = Executors
+                .newSingleThreadExecutor(new NamedThreadFactory(getThing().getUID().getAsString(), true));
         connectorExecutor.execute(connector);
+        this.connectorExecutor = connectorExecutor;
         this.connector = connector;
     }
 
@@ -133,7 +135,20 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
             this.connector = null;
         }
 
-        connectorExecutor.shutdown();
+        final @Nullable ExecutorService connectorExecutor = this.connectorExecutor;
+        if (connectorExecutor != null) {
+            connectorExecutor.shutdown();
+            this.connectorExecutor = null;
+        }
+    }
+
+    /**
+     * Is background discovery for this bridge enabled?
+     *
+     * @return background discovery
+     */
+    public boolean isBackgroundDiscoveryEnabled() {
+        return getConfigAs(PilightBridgeConfiguration.class).getBackgroundDiscovery();
     }
 
     /**
@@ -185,8 +200,8 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
         if (!DeviceType.SERVER.equals(type)) {
             for (Thing thing : getThing().getThings()) {
                 final @Nullable ThingHandler handler = thing.getHandler();
-                if (handler instanceof PilightBaseHandler) {
-                    ((PilightBaseHandler) handler).updateFromStatusIfMatches(status);
+                if (handler instanceof PilightBaseHandler baseHandler) {
+                    baseHandler.updateFromStatusIfMatches(status);
                 }
             }
         }
@@ -194,7 +209,7 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(PilightDeviceDiscoveryService.class);
+        return Set.of(PilightDeviceDiscoveryService.class);
     }
 
     /**
@@ -228,8 +243,8 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
     private void processConfig(Config config) {
         for (Thing thing : getThing().getThings()) {
             final @Nullable ThingHandler handler = thing.getHandler();
-            if (handler instanceof PilightBaseHandler) {
-                ((PilightBaseHandler) handler).updateFromConfigIfMatches(config);
+            if (handler instanceof PilightBaseHandler baseHandler) {
+                baseHandler.updateFromConfigIfMatches(config);
             }
         }
 

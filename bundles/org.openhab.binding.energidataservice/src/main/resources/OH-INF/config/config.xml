@@ -28,6 +28,7 @@
 			<description>Global Location Number of the grid company.</description>
 			<limitToOptions>false</limitToOptions>
 			<options>
+				<option value="5790001095451">Aal Elnet</option>
 				<option value="5790000705184">Cerius</option>
 				<option value="5790000610099">Dinel</option>
 				<option value="5790002502699">El-net Kongerslev</option>
@@ -63,6 +64,11 @@
 			<description>Global Location Number of Energinet.</description>
 			<advanced>true</advanced>
 			<default>5790000432752</default>
+		</parameter>
+		<parameter name="reducedElectricityTax" type="boolean">
+			<label>Reduced Electricity Tax</label>
+			<description>Reduced electricity tax applies. For electric heating customers only.</description>
+			<default>false</default>
 		</parameter>
 	</config-description>
 

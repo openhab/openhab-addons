@@ -29,7 +29,7 @@ public final class OJGSonBuilder {
     /**
      * Gets a correct initialized {@link Gson}
      *
-     * @return {@link GSon}
+     * @return {@link com.google.gson.GSon}
      */
     public static Gson getGSon() {
         return new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).setPrettyPrinting()

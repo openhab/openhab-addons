@@ -272,8 +272,7 @@ public class VehicleHandler extends BaseThingHandler {
             if (api != null) {
                 queryApiAndUpdateChannels(api);
             }
-        } else if (command instanceof OnOffType) {
-            OnOffType onOffCommand = (OnOffType) command;
+        } else if (command instanceof OnOffType onOffCommand) {
             if (ENGINE_START.equals(channelID) && onOffCommand == OnOffType.ON) {
                 actionStart(5);
             } else if (REMOTE_HEATER.equals(channelID) || PRECLIMATIZATION.equals(channelID)) {
@@ -449,7 +448,7 @@ public class VehicleHandler extends BaseThingHandler {
             case SERVICE_WARNING:
                 return new StringType(status.serviceWarningStatus);
             case BULB_FAILURE:
-                return status.aFailedBulb() ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(status.aFailedBulb());
             case REMOTE_HEATER:
             case PRECLIMATIZATION:
                 return status.getHeater().map(heater -> getHeaterValue(channelId, heater)).orElse(UnDefType.NULL);
@@ -492,7 +491,7 @@ public class VehicleHandler extends BaseThingHandler {
                 return status.averageFuelConsumption != UNDEFINED ? new DecimalType(status.averageFuelConsumption / 10)
                         : UnDefType.UNDEF;
             case FUEL_ALERT:
-                return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(status.distanceToEmpty < 100);
         }
         return UnDefType.UNDEF;
     }
@@ -549,7 +548,7 @@ public class VehicleHandler extends BaseThingHandler {
         VocHttpApi api = bridgeHandler.getApi();
         if (api != null) {
             try {
-                PostResponse postResponse = api.postURL(url.toString(), param);
+                PostResponse postResponse = api.postURL(url, param);
                 if (postResponse != null) {
                     pendingActions
                             .add(scheduler.schedule(new ActionResultController(api, postResponse, scheduler, this),
@@ -560,13 +559,12 @@ public class VehicleHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
-        ;
         pendingActions.removeIf(ScheduledFuture::isDone);
     }
 
     public void actionOpenClose(String action, OnOffType controlState) {
         if (activeOptions.containsKey(action)) {
-            if (!vehicleStatus.getCarLocked().isPresent() || vehicleStatus.getCarLocked().get() != controlState) {
+            if (vehicleStatus.getCarLocked().isEmpty() || vehicleStatus.getCarLocked().get() != controlState) {
                 post(String.format("vehicles/%s/%s", configuration.vin, action), "{}");
             } else {
                 logger.info("The car {} is already {}ed", configuration.vin, action);
@@ -599,6 +597,6 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(VolvoOnCallActions.class);
+        return List.of(VolvoOnCallActions.class);
     }
 }

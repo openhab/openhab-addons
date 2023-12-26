@@ -41,7 +41,7 @@ public class SwitchDevice extends SmartHomeDevice {
 
     @Override
     public boolean handleCommand(ChannelUID channelUid, Command command) throws IOException {
-        return command instanceof OnOffType && handleOnOffType(channelUid, (OnOffType) command);
+        return command instanceof OnOffType onOffCommand && handleOnOffType(channelUid, onOffCommand);
     }
 
     /**

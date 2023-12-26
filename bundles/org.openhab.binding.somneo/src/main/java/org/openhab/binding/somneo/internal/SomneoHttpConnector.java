@@ -510,7 +510,7 @@ public class SomneoHttpConnector {
             logger.debug("Method failed: {}", statusLine);
         }
 
-        final String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
+        final String encoding = response.getEncoding() != null ? response.getEncoding().replace("\"", "").trim()
                 : StandardCharsets.UTF_8.name();
 
         try {

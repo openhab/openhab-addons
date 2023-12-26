@@ -13,7 +13,7 @@
 package org.openhab.binding.qolsysiq.internal.client.dto.event;
 
 /**
- * A {@link InfoEventType.SECURE_ARM} type of {@link InfoEvent} message sent by the panel
+ * A {@link InfoEventType#SECURE_ARM} type of {@link InfoEvent} message sent by the panel
  *
  * @author Dan Cunningham - Initial contribution
  */

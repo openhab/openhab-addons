@@ -57,13 +57,13 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (channelUID.getId().equals("run")) {
+            if ("run".equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     getBridgeHandler().sendCommand("unpause " + myId());
                 } else if (command == OnOffType.OFF) {
                     getBridgeHandler().sendCommand("pause " + myId());
                 }
-            } else if (channelUID.getId().equals("finish")) {
+            } else if ("finish".equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     getBridgeHandler().sendCommand("finish " + myId());
                 } else if (command == OnOffType.OFF) {
@@ -83,8 +83,8 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
         updateState(getThing().getChannel("status").getUID(), new StringType(si.status));
         boolean finishing = "FINISHING".equals(si.status);
         boolean run = finishing || "READY".equals(si.status) || "RUNNING".equals(si.status);
-        updateState(getThing().getChannel("finish").getUID(), finishing ? OnOffType.ON : OnOffType.OFF);
-        updateState(getThing().getChannel("run").getUID(), run ? OnOffType.ON : OnOffType.OFF);
+        updateState(getThing().getChannel("finish").getUID(), OnOffType.from(finishing));
+        updateState(getThing().getChannel("run").getUID(), OnOffType.from(run));
         updateState(getThing().getChannel("description").getUID(), new StringType(si.description));
     }
 }

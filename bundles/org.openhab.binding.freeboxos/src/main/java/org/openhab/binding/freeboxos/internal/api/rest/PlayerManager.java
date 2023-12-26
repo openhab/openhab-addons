@@ -48,7 +48,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     protected static class PlayerResponse extends Response<Player> {
     }
 
-    public static enum DeviceModel {
+    public enum DeviceModel {
         FBX7HD_DELTA, // Freebox Player Devialet
         TBX8AM, // Player Pop
         FBX6HD,
@@ -57,18 +57,18 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         FBX7HD,
         FBX7HD_ONE,
         FBX8AM,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Player(MACAddress mac, StbType stbType, int id, ZonedDateTime lastTimeReachable,
             boolean apiAvailable, String deviceName, DeviceModel deviceModel, boolean reachable, String uid,
             @Nullable String apiVersion, List<String> lanGids) {
-        private static enum StbType {
+        private enum StbType {
             STB_ANDROID,
             STB_V6,
             STB_V7,
             STB_V8,
-            UNKNOWN;
+            UNKNOWN
         }
 
         /**
@@ -83,10 +83,10 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     private static class StatusResponse extends Response<Status> {
     }
 
-    public static enum PowerState {
+    public enum PowerState {
         STANDBY,
         RUNNING,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Status(PowerState powerState, StatusInformation player,
@@ -113,7 +113,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
 
     private enum MediaState {
         READY,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private static record AudioTrack(int bitrate, @SerializedName("channelCount") int channelCount,
@@ -121,10 +121,10 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
             @SerializedName("metadataId") @Nullable String metadataId, int pid, int samplerate, long uid) {
     }
 
-    private static enum Type {
+    private enum Type {
         NORMAL,
         HEARINGIMPAIRED,
-        UNKNOWN;
+        UNKNOWN
     }
 
     protected static record Metadata(@Nullable String album,
@@ -137,10 +137,10 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
             @Nullable String title, @SerializedName("trackNumber") int trackNumber,
             @SerializedName("trackTotal") int trackTotal, @Nullable String url) {
 
-        protected static enum PlaybackState {
+        protected enum PlaybackState {
             PLAY,
             PAUSE,
-            UNKNOWN;
+            UNKNOWN
         }
 
         protected static record SubtitleTrack(@Nullable String codec, @Nullable String language, @Nullable String pid,
@@ -164,14 +164,14 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         }
     }
 
-    private static enum BouquetType {
+    private enum BouquetType {
         ADSL,
-        UNKNOWN;
+        UNKNOWN
     }
 
-    private static enum ChannelType {
+    private enum ChannelType {
         REGULAR,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private static record Service(long id, @Nullable String name,
@@ -197,21 +197,30 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     public static record TvContext(@Nullable Channel channel, @Nullable PlayerDetails player) {
     }
 
-    private final Map<Integer, String> subPaths = new HashMap<>();
+    private final Map<Integer, @Nullable String> subPaths = new HashMap<>();
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.PLAYER, PlayerResponse.class,
                 session.getUriBuilder().path(THING_PLAYER));
+    }
+
+    private @Nullable String getSubPath(int id) throws FreeboxException {
+        String subPath = subPaths.get(id);
+        if (subPath != null) {
+            return subPath;
+        }
         getDevices().stream().filter(Player::apiAvailable).forEach(player -> {
             String baseUrl = player.baseUrl();
             if (baseUrl != null) {
                 subPaths.put(player.id, baseUrl);
             }
         });
+        return subPaths.get(id);
     }
 
-    public Status getPlayerStatus(int id) throws FreeboxException {
-        return getSingle(StatusResponse.class, subPaths.get(id), STATUS_PATH);
+    public @Nullable Status getPlayerStatus(int id) throws FreeboxException {
+        String subPath = getSubPath(id);
+        return subPath != null ? getSingle(StatusResponse.class, subPath, STATUS_PATH) : null;
     }
 
     // The player API does not allow to directly request a given player like others api parts
@@ -220,8 +229,9 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         return getDevices().stream().filter(player -> player.id == id).findFirst().orElse(null);
     }
 
-    public Configuration getConfig(int id) throws FreeboxException {
-        return getSingle(ConfigurationResponse.class, subPaths.get(id), SYSTEM_PATH);
+    public @Nullable Configuration getConfig(int id) throws FreeboxException {
+        String subPath = getSubPath(id);
+        return subPath != null ? getSingle(ConfigurationResponse.class, subPath, SYSTEM_PATH) : null;
     }
 
     public void sendKey(String ip, String code, String key, boolean longPress, int count) {
@@ -240,7 +250,12 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         }
     }
 
-    public void reboot(int id) throws FreeboxException {
-        post(subPaths.get(id), SYSTEM_PATH, REBOOT_ACTION);
+    public boolean reboot(int id) throws FreeboxException {
+        String subPath = getSubPath(id);
+        if (subPath != null) {
+            post(subPath, SYSTEM_PATH, REBOOT_ACTION);
+            return true;
+        }
+        return false;
     }
 }

@@ -252,6 +252,13 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
 | Switch  | status#is_locating                | Robot is locating          |
 | Number  | actions#segment                   | Room Clean  (enter room #) |
+| Switch  | actions#collect_dust              | Start collecting dust      |
+| Switch  | actions#clean_mop_start           | Start mop wash             |
+| Switch  | actions#clean_mop_stop            | Stop mop wash              |
+| Number  | status#mop_drying_time            | Mop drying Time            |
+| Switch  | status#is_mop_drying              | Mop cleaning active        |
+| Number  | status#dock_state_id              | Dock status id             |
+| String  | status#dock_state                 | Dock status message        |
 
 Note: cleaning map is only available with cloud access.
 
@@ -268,6 +275,8 @@ This allows you to control the colors, if logo is displayed, if and what text is
 To (re-)read the file either restart openHAB, restart the binding or alternatively edit the thing and make (any) minor change.
 Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
 Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
+
+### Basic, gateway and lumi Things channels
 
 !!!channelList
 
@@ -316,6 +325,8 @@ Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vac
 
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
+
+### Basic, gateway and lumi Things item files examples
 
 !!!itemFileExamples
 

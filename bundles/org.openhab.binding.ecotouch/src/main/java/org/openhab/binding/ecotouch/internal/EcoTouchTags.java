@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Represents all valid commands which could be processed by this binding
  *
- * @author Sebastian Held <sebastian.held@gmx.de> - Initial contribution
+ * @author Sebastian Held - Initial contribution
  * @since 1.5.0
  */
 @NonNullByDefault

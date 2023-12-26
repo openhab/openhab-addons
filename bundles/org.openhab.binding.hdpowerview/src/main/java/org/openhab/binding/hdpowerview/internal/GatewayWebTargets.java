@@ -66,6 +66,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
     private static final String IDS = "ids";
     private static final int SLEEP_SECONDS = 360;
     private static final Set<Integer> HTTP_OK_CODES = Set.of(HttpStatus.OK_200, HttpStatus.NO_CONTENT_204);
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Logger logger = LoggerFactory.getLogger(GatewayWebTargets.class);
     private final Gson jsonParser = new Gson();
@@ -248,7 +249,8 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
                 logger.trace("invoke() request JSON:{}", jsonCommand);
             }
         }
-        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*");
+        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*")
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (query != null) {
             request.param(query.getKey(), query.getValue());
         }
@@ -422,7 +424,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
      * @throws HubProcessingException if any error occurs.
      */
     public void stopShade(int shadeId) throws HubProcessingException {
-        invoke(HttpMethod.PUT, shadeStop, Query.of(IDS, Integer.valueOf(shadeId).toString()), null);
+        invoke(HttpMethod.PUT, shadeStop, Query.of(IDS, Integer.toString(shadeId)), null);
     }
 
     /**

@@ -23,7 +23,7 @@ import org.openhab.binding.max.internal.Utils;
 /**
  * Tests cases for {@link Utils}.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 Version and updates
  */
 @NonNullByDefault
@@ -93,14 +93,14 @@ public class UtilsTest {
 
     @Test
     public void getBitsTest() {
-        boolean b1[] = Utils.getBits(0xFF);
+        boolean[] b1 = Utils.getBits(0xFF);
 
         assertEquals(b1.length, 8);
         for (int i = 0; i < 8; i++) {
             assertEquals(true, b1[i]);
         }
 
-        boolean b2[] = Utils.getBits(0x5A);
+        boolean[] b2 = Utils.getBits(0x5A);
 
         assertEquals(b2.length, 8);
         assertEquals(false, b2[0]);

@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>persistence</type>
-	<name>MongoDB persistence</name>
+	<name>MongoDB Persistence</name>
 	<description>This is the persistence add-on for MongoDB.</description>
 	<connection>local</connection>
 
@@ -23,5 +23,17 @@
 			<label>Collection</label>
 		</parameter>
 	</config-description>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>command</name>
+					<regex>(?i).*[/\\](mongod)(\.exe)?$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>

@@ -19,7 +19,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
 
 /**
- * OnOffType <-> WSIntegerValue converter.
+ * OnOffType {@literal <->} WSIntegerValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */
@@ -28,7 +28,7 @@ public class OnOffTypeWSIntegerValueConverter implements Converter<WSIntegerValu
     @Override
     public OnOffType convertFromResourceValue(@NonNull WSIntegerValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return from.value > 0 ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(from.value > 0 ^ convertData.getInverted());
     }
 
     @Override

@@ -58,7 +58,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String TEMPERATURE_LOW_CH_ID = "temperatureLow";
     public static final String POWER_CH_ID = "power";
 
-    public static enum TemperatureUnit {
+    public enum TemperatureUnit {
         @SerializedName("C")
         CELSIUS(SIUnits.CELSIUS, new BigDecimal("0.1")),
         @SerializedName("F")
@@ -286,7 +286,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
             @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic,
             @Nullable Predicate<Command> commandFilter) {
         if ((commandTopic != null && !commandTopic.isBlank()) || (stateTopic != null && !stateTopic.isBlank())) {
-            return buildChannel(channelId, valueState, channelConfiguration.getName(), channelStateUpdateListener)
+            return buildChannel(channelId, valueState, getName(), channelStateUpdateListener)
                     .stateTopic(stateTopic, stateTemplate, channelConfiguration.getValueTemplate())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos(),
                             commandTemplate)

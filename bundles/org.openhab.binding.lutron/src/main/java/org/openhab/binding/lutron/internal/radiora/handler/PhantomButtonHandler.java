@@ -60,14 +60,14 @@ public class PhantomButtonHandler extends LutronHandler {
 
     @Override
     public void handleFeedback(RadioRAFeedback feedback) {
-        if (feedback instanceof LEDMapFeedback) {
-            handleLEDMapFeedback((LEDMapFeedback) feedback);
+        if (feedback instanceof LEDMapFeedback ledMapFeedback) {
+            handleLEDMapFeedback(ledMapFeedback);
         }
     }
 
     private void handleLEDMapFeedback(LEDMapFeedback feedback) {
         boolean zoneEnabled = feedback.getZoneValue(getConfigAs(PhantomButtonConfig.class).getButtonNumber()) == '1';
 
-        updateState(LutronBindingConstants.CHANNEL_SWITCH, zoneEnabled ? OnOffType.ON : OnOffType.OFF);
+        updateState(LutronBindingConstants.CHANNEL_SWITCH, OnOffType.from(zoneEnabled));
     }
 }

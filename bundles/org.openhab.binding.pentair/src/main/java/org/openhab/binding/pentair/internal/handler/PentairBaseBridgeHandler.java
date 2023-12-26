@@ -246,7 +246,7 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
         @Override
         public void run() {
             logger.debug("parser thread started");
-            byte buf[] = new byte[40];
+            byte[] buf = new byte[40];
             int c;
             int chksum, i, length;
             Thing thing;

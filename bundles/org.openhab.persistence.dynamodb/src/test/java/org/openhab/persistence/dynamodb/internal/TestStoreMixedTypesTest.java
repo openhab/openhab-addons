@@ -65,7 +65,6 @@ public class TestStoreMixedTypesTest extends BaseIntegrationTest {
 
     @SuppressWarnings("null")
     public void storeItemWithDifferentTypes() {
-
         try {
             // First writing two values with string item
             {

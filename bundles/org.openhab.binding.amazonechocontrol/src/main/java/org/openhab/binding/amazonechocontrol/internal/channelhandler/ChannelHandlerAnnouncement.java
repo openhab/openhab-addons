@@ -49,8 +49,8 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
     public boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
             throws IOException, URISyntaxException {
         if (channelId.equals(CHANNEL_NAME)) {
-            if (command instanceof StringType) {
-                String commandValue = ((StringType) command).toFullString();
+            if (command instanceof StringType stringCommand) {
+                String commandValue = stringCommand.toFullString();
                 String body = commandValue;
                 String title = null;
                 String speak = commandValue;

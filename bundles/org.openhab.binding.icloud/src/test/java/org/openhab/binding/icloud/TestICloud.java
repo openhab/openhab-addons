@@ -53,6 +53,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,8 +75,8 @@ public class TestICloud {
     @BeforeEach
     public void setUp() {
         final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        if (logger instanceof ch.qos.logback.classic.Logger) {
-            ((ch.qos.logback.classic.Logger) logger).setLevel(ch.qos.logback.classic.Level.DEBUG);
+        if (logger instanceof ch.qos.logback.classic.Logger qLogger) {
+            qLogger.setLevel(ch.qos.logback.classic.Level.DEBUG);
         }
     }
 
@@ -122,7 +123,6 @@ public class TestICloud {
     @Test
     @EnabledIfSystemProperty(named = "icloud.test.email", matches = ".*", disabledReason = "Only for manual execution.")
     public void testDiscovery() {
-
         String icloudDeviceRespond = """
                          {
                      "userInfo": {
@@ -464,6 +464,10 @@ public class TestICloud {
 
             @Override
             public void postCommand(ChannelUID channelUID, Command command) {
+            }
+
+            @Override
+            public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
             }
 
             @Override

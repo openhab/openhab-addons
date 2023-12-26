@@ -16,8 +16,8 @@ import static org.openhab.binding.zoneminder.internal.ZmBindingConstants.*;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -125,8 +125,8 @@ public class ZmMonitorHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_ENABLE:
-                if (command instanceof OnOffType) {
-                    localHandler.setEnabled(monitorId, (OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    localHandler.setEnabled(monitorId, onOffCommand);
                     logger.debug("Monitor {}: Set monitor enable to {}", monitorId, command);
                 }
                 break;
@@ -147,7 +147,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ZmActions.class);
+        return Set.of(ZmActions.class);
     }
 
     public String getId() {
@@ -185,7 +185,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
         updateChannelState(CHANNEL_ID, new StringType(m.getId()));
         updateChannelState(CHANNEL_NAME, new StringType(m.getName()));
         updateChannelState(CHANNEL_FUNCTION, new StringType(m.getFunction()));
-        updateChannelState(CHANNEL_ENABLE, m.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+        updateChannelState(CHANNEL_ENABLE, OnOffType.from(m.isEnabled()));
         updateChannelState(CHANNEL_HOUR_EVENTS, new DecimalType(m.getHourEvents()));
         updateChannelState(CHANNEL_DAY_EVENTS, new DecimalType(m.getDayEvents()));
         updateChannelState(CHANNEL_WEEK_EVENTS, new DecimalType(m.getWeekEvents()));
@@ -193,10 +193,10 @@ public class ZmMonitorHandler extends BaseThingHandler {
         updateChannelState(CHANNEL_TOTAL_EVENTS, new DecimalType(m.getTotalEvents()));
         updateChannelState(CHANNEL_IMAGE_URL, new StringType(m.getImageUrl()));
         updateChannelState(CHANNEL_VIDEO_URL, new StringType(m.getVideoUrl()));
-        updateChannelState(CHANNEL_ALARM, m.isAlarm() ? OnOffType.ON : OnOffType.OFF);
+        updateChannelState(CHANNEL_ALARM, OnOffType.from(m.isAlarm()));
         updateChannelState(CHANNEL_STATE, new StringType(m.getState().toString()));
         if (!m.isAlarm()) {
-            updateChannelState(CHANNEL_TRIGGER_ALARM, m.isAlarm() ? OnOffType.ON : OnOffType.OFF);
+            updateChannelState(CHANNEL_TRIGGER_ALARM, OnOffType.from(m.isAlarm()));
         }
         Event event = m.getMostRecentCompletedEvent();
         if (event == null) {

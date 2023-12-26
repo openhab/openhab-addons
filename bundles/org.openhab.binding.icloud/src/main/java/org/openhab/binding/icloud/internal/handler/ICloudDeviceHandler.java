@@ -81,7 +81,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
             Double batteryLevel = deviceInformationRecord.getBatteryLevel();
             if (batteryLevel != Double.NaN) {
                 updateState(BATTERY_LEVEL, new DecimalType(deviceInformationRecord.getBatteryLevel() * 100));
-                updateState(LOW_BATTERY, batteryLevel < 0.2 ? OnOffType.ON : OnOffType.OFF);
+                updateState(LOW_BATTERY, OnOffType.from(batteryLevel < 0.2));
             }
 
             if (deviceInformationRecord.getLocation() != null) {
@@ -160,8 +160,8 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof ICloudAccountBridgeHandler) {
-                ((ICloudAccountBridgeHandler) bridgeHandler).unregisterListener(this);
+            if (bridgeHandler instanceof ICloudAccountBridgeHandler iCloudAccountBridgeHandler) {
+                iCloudAccountBridgeHandler.unregisterListener(this);
             }
         }
         super.dispose();

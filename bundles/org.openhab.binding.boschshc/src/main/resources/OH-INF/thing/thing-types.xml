@@ -9,6 +9,15 @@
 		<label>Smart Home Controller</label>
 		<description>The Bosch Smart Home Bridge representing the Bosch Smart Home Controller.</description>
 
+		<channels>
+			<channel id="scenario-triggered" typeId="scenario-triggered"/>
+			<channel id="trigger-scenario" typeId="trigger-scenario"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
 	</bridge-type>
 
@@ -105,9 +114,14 @@
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
+			<channel id="illuminance" typeId="illuminance"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 
@@ -481,6 +495,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="illuminance">
+		<item-type>Number</item-type>
+		<label>Illuminance</label>
+		<description>The illuminance level measured by the sensor (0 to 1000).</description>
+		<state min="0" max="1000" step="1" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="level">
 		<item-type>Rollershutter</item-type>
 		<label>Level</label>
@@ -518,6 +539,18 @@
 				<option value="MODE_SILENT">Silent mode enabled (higher battery usage)</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="scenario-triggered">
+		<item-type>String</item-type>
+		<label>Scenario Triggered</label>
+		<description>Name of the triggered scenario</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="trigger-scenario">
+		<item-type>String</item-type>
+		<label>Trigger Scenario</label>
+		<description>Name of the scenario to trigger</description>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -21,12 +21,12 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
 /**
  * The {@link OnvifCodec} is used by Netty to decode Onvif traffic into message Strings.
- *
  *
  * @author Matthew Skinner - Initial contribution
  */
@@ -46,8 +46,7 @@ public class OnvifCodec extends ChannelDuplexHandler {
             return;
         }
         try {
-            if (msg instanceof HttpContent) {
-                HttpContent content = (HttpContent) msg;
+            if (msg instanceof HttpContent content) {
                 incomingMessage += content.content().toString(CharsetUtil.UTF_8);
             }
             if (msg instanceof LastHttpContent) {
@@ -56,6 +55,21 @@ public class OnvifCodec extends ChannelDuplexHandler {
             }
         } finally {
             ReferenceCountUtil.release(msg);
+        }
+    }
+
+    @Override
+    public void userEventTriggered(@Nullable ChannelHandlerContext ctx, @Nullable Object evt) throws Exception {
+        if (ctx == null) {
+            return;
+        }
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent e = (IdleStateEvent) evt;
+            logger.trace("IdleStateEvent received: {}", e.state());
+            onvifConnection.setIsConnected(false);
+            ctx.close();
+        } else {
+            logger.trace("Other ONVIF netty channel event occurred: {}", evt);
         }
     }
 

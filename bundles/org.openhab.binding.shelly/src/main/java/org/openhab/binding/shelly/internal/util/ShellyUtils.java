@@ -236,17 +236,17 @@ public class ShellyUtils {
     }
 
     public static Double getNumber(Command command) throws IllegalArgumentException {
-        if (command instanceof DecimalType) {
-            return ((DecimalType) command).doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.doubleValue();
         }
-        if (command instanceof QuantityType) {
-            return ((QuantityType<?>) command).doubleValue();
+        if (command instanceof QuantityType quantityCommand) {
+            return quantityCommand.doubleValue();
         }
         throw new IllegalArgumentException("Unable to convert number");
     }
 
     public static OnOffType getOnOff(@Nullable Boolean value) {
-        return (value != null && value ? OnOffType.ON : OnOffType.OFF);
+        return OnOffType.from(value != null && value);
     }
 
     public static OpenClosedType getOpenClosed(@Nullable Boolean value) {
@@ -254,7 +254,7 @@ public class ShellyUtils {
     }
 
     public static OnOffType getOnOff(int value) {
-        return value == 0 ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(value != 0);
     }
 
     public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {

@@ -38,7 +38,7 @@ public class A5_07_01 extends A5_07 {
 
     @Override
     protected State getMotion() {
-        return getDB1Value() <= PIR_OFF ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(PIR_OFF < getDB1Value());
     }
 
     @Override

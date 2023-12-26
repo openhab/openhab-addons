@@ -28,8 +28,7 @@ public class SensitiveGroupConfiguration {
 
     public @Nullable SensitiveGroup asSensitiveGroup() {
         try {
-            SensitiveGroup value = SensitiveGroup.valueOf(group);
-            return value;
+            return SensitiveGroup.valueOf(group);
         } catch (IllegalArgumentException e) {
             return null;
         }

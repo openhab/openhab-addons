@@ -18,10 +18,10 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.oceanic.internal.NetworkOceanicBindingConfiguration;
@@ -29,6 +29,7 @@ import org.openhab.binding.oceanic.internal.Throttler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,13 +63,12 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
         NetworkOceanicBindingConfiguration config = getConfigAs(NetworkOceanicBindingConfiguration.class);
 
         try {
-            socket = new Socket(config.ipAddress, config.portNumber);
-            if (socket != null) {
-                socket.setSoTimeout(REQUEST_TIMEOUT);
-                outputStream = socket.getOutputStream();
-                inputStream = socket.getInputStream();
-                updateStatus(ThingStatus.ONLINE);
-            }
+            Socket socket = new Socket(config.ipAddress, config.portNumber);
+            this.socket = socket;
+            socket.setSoTimeout(REQUEST_TIMEOUT);
+            outputStream = socket.getOutputStream();
+            inputStream = socket.getInputStream();
+            updateStatus(ThingStatus.ONLINE);
         } catch (UnknownHostException e) {
             logger.error("An exception occurred while resolving host {}:{} : '{}'", config.ipAddress, config.portNumber,
                     e.getMessage());
@@ -86,7 +86,7 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
     @Override
     public void dispose() {
         NetworkOceanicBindingConfiguration config = getConfigAs(NetworkOceanicBindingConfiguration.class);
-
+        Socket socket = this.socket;
         if (socket != null) {
             try {
                 socket.close();
@@ -94,7 +94,7 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                 logger.error("An exception occurred while disconnecting to host {}:{} : '{}'", config.ipAddress,
                         config.portNumber, e.getMessage());
             } finally {
-                socket = null;
+                this.socket = null;
                 outputStream = null;
                 inputStream = null;
             }
@@ -186,7 +186,7 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                                     if (index > 0) {
                                         line = new String(Arrays.copyOf(dataBuffer, index));
                                         logger.debug("Received response '{}'", line);
-                                        line = StringUtils.chomp(line);
+                                        line = Objects.requireNonNull(StringUtils.chomp(line));
                                         line = line.replace(",", ".");
                                         line = line.trim();
                                         index = 0;
@@ -200,7 +200,6 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                                 }
                             }
                         }
-
                     }
                 } catch (IOException e) {
                     logger.debug("An exception occurred while quering host {}:{} : '{}'", config.ipAddress,

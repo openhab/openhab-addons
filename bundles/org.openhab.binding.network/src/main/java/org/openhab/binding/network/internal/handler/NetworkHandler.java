@@ -17,8 +17,9 @@ import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -91,8 +92,7 @@ public class NetworkHandler extends BaseThingHandler
 
         switch (channelUID.getId()) {
             case CHANNEL_ONLINE:
-                presenceDetection.getValue(
-                        value -> updateState(CHANNEL_ONLINE, value.isReachable() ? OnOffType.ON : OnOffType.OFF));
+                presenceDetection.getValue(value -> updateState(CHANNEL_ONLINE, OnOffType.from(value.isReachable())));
                 break;
             case CHANNEL_LATENCY:
             case CHANNEL_DEPRECATED_TIME:
@@ -181,7 +181,7 @@ public class NetworkHandler extends BaseThingHandler
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No port configured!");
                 return;
             }
-            presenceDetection.setServicePorts(Collections.singleton(port));
+            presenceDetection.setServicePorts(Set.of(port));
         } else {
             // It does not harm to send an additional UDP packet to a device,
             // therefore we assume all ping devices are iOS devices. If this
@@ -239,7 +239,7 @@ public class NetworkHandler extends BaseThingHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(NetworkActions.class);
+        return List.of(NetworkActions.class);
     }
 
     public void sendWakeOnLanPacketViaIp() {

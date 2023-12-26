@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,12 +58,16 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class ChatGPTHandler extends BaseThingHandler {
 
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHandler.class);
 
     private HttpClient httpClient;
     private Gson gson = new Gson();
 
     private String apiKey = "";
+    private String apiUrl = "";
+    private String modelUrl = "";
+
     private String lastPrompt = "";
 
     private List<String> models = List.of();
@@ -122,9 +127,11 @@ public class ChatGPTHandler extends BaseThingHandler {
         messages.add(userMessage);
         root.add("messages", messages);
 
-        Request request = httpClient.newRequest(OPENAI_API_URL).method(HttpMethod.POST)
-                .header("Content-Type", "application/json").header("Authorization", "Bearer " + apiKey)
-                .content(new StringContentProvider(gson.toJson(root)));
+        String queryJson = gson.toJson(root);
+        Request request = httpClient.newRequest(apiUrl).method(HttpMethod.POST)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + apiKey).content(new StringContentProvider(queryJson));
+        logger.trace("Query '{}'", queryJson);
         try {
             ContentResponse response = request.send();
             updateStatus(ThingStatus.ONLINE);
@@ -156,12 +163,15 @@ public class ChatGPTHandler extends BaseThingHandler {
         }
 
         this.apiKey = apiKey;
+        this.apiUrl = config.apiUrl;
+        this.modelUrl = config.modelUrl;
+
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
             try {
-                Request request = httpClient.newRequest(OPENAI_MODELS_URL).method(HttpMethod.GET)
-                        .header("Authorization", "Bearer " + apiKey);
+                Request request = httpClient.newRequest(modelUrl).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                        .method(HttpMethod.GET).header("Authorization", "Bearer " + apiKey);
                 ContentResponse response = request.send();
                 if (response.getStatus() == 200) {
                     updateStatus(ThingStatus.ONLINE);

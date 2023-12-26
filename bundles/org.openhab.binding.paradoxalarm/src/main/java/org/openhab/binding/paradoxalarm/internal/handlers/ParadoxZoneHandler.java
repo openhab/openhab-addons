@@ -94,7 +94,7 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
     }
 
     private OnOffType booleanToSwitchState(boolean value) {
-        return value ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(value);
     }
 
     @Override
@@ -131,8 +131,7 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
             return null;
         }
 
-        Zone zone = zones.get(index);
-        return zone;
+        return zones.get(index);
     }
 
     private ParadoxIP150BridgeHandler getBridgeHandler() {
