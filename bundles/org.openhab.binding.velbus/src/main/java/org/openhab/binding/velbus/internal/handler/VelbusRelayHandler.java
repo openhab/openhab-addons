@@ -61,8 +61,8 @@ public class VelbusRelayHandler extends VelbusThingHandler {
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);
-        } else if (command instanceof OnOffType) {
-            byte commandByte = determineCommandByte((OnOffType) command);
+        } else if (command instanceof OnOffType onOffCommand) {
+            byte commandByte = determineCommandByte(onOffCommand);
 
             VelbusRelayPacket packet = new VelbusRelayPacket(getModuleAddress().getChannelIdentifier(channelUID),
                     commandByte);
@@ -91,7 +91,7 @@ public class VelbusRelayHandler extends VelbusThingHandler {
                 boolean on = packet[7] != 0x00;
 
                 VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address, channel);
-                OnOffType state = on ? OnOffType.ON : OnOffType.OFF;
+                OnOffType state = OnOffType.from(on);
                 updateState(getModuleAddress().getChannelId(velbusChannelIdentifier), state);
             }
         }

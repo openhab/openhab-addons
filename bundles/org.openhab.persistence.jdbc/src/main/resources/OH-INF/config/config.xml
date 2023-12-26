@@ -26,7 +26,7 @@
 			# Some URL-Examples, 'service' identifies and activates internally the correct jdbc driver.
 			# required database url like 'jdbc:<service>:<host>[:<port>;<attributes>]'
 			# jdbc:url=jdbc:derby:./testDerby;create=true
-			# jdbc:url=jdbc:h2:./testH2
+			# jdbc:url=jdbc:h2:./testH2;NON_KEYWORDS=VALUE
 			# jdbc:url=jdbc:hsqldb:./testHsqlDb
 			# jdbc:url=jdbc:mariadb://192.168.0.1:3306/testMariadb
 			# jdbc:url=jdbc:mysql://192.168.0.1:3306/testMysql
@@ -40,7 +40,7 @@
 			Parameter 'service' is used as identifier for the selected jdbc driver.
 			URL-Examples:<br>
 			jdbc:derby:./testDerby;create=true<br>
-			jdbc:h2:./testH2<br>
+			jdbc:h2:./testH2;NON_KEYWORDS=VALUE<br>
 			jdbc:hsqldb:./testHsqlDb<br>
 			jdbc:mariadb://192.168.0.1:3306/testMariadb<br>
 			jdbc:mysql://192.168.0.1:3306/testMysql<br>

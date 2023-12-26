@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -109,7 +108,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
         this.vehiclesTarget = teslaTarget.path(API_VERSION).path(VEHICLES);
         this.vehicleTarget = vehiclesTarget.path(PATH_VEHICLE_ID);
-        this.dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST);
+        this.dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST).queryParam("endpoints",
+                "location_data;charge_state;climate_state;vehicle_state;gui_settings;vehicle_config");
         this.commandTarget = vehicleTarget.path(PATH_COMMAND);
         this.wakeUpTarget = vehicleTarget.path(PATH_WAKE_UP);
     }
@@ -472,6 +472,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(TeslaVehicleDiscoveryService.class);
+        return List.of(TeslaVehicleDiscoveryService.class);
     }
 }

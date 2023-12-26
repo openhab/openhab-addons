@@ -15,6 +15,7 @@ package org.openhab.persistence.rrd4j.internal;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -209,8 +210,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             }
 
             Object v = config.get(key);
-            if (v instanceof String) {
-                String value = (String) v;
+            if (v instanceof String value) {
                 String name = subkeys[0].toLowerCase();
                 String property = subkeys[1].toLowerCase();
 
@@ -430,10 +430,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         Unit<?> unit = null;
         try {
             item = itemRegistry.getItem(itemName);
-            if (item instanceof NumberItem) {
+            if (item instanceof NumberItem numberItem) {
                 // we already retrieve the unit here once as it is a very costly operation,
                 // see https://github.com/openhab/openhab-addons/issues/8928
-                unit = ((NumberItem) item).getUnit();
+                unit = numberItem.getUnit();
             }
         } catch (ItemNotFoundException e) {
             logger.debug("Could not find item '{}' in registry", itemName);
@@ -445,15 +445,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         try {
             if (filterBeginDate == null) {
-                // as rrd goes back for years and gets more and more
-                // inaccurate, we only support descending order
-                // and a single return value
-                // if there is no begin date is given - this case is
-                // required specifically for the historicState()
-                // query, which we want to support
+                // as rrd goes back for years and gets more and more inaccurate, we only support descending order
+                // and a single return value if no begin date is given - this case is required specifically for the
+                // historicState() query, which we want to support
                 if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
                         && filter.getPageNumber() == 0) {
-                    if (filterEndDate == null) {
+                    if (filterEndDate == null || Duration.between(filterEndDate, ZonedDateTime.now()).getSeconds() < db
+                            .getRrdDef().getStep()) {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
@@ -566,8 +564,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 if (!isSupportedItemType(item)) {
                     return null;
                 }
-                if (item instanceof NumberItem) {
-                    NumberItem numberItem = (NumberItem) item;
+                if (item instanceof NumberItem numberItem) {
                     useRdc = numberItem.getDimension() != null ? rrdDefs.get(DEFAULT_QUANTIFIABLE)
                             : rrdDefs.get(DEFAULT_NUMERIC);
                 } else {
@@ -608,12 +605,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private State mapToState(double value, @Nullable Item item, @Nullable Unit unit) {
-        if (item instanceof GroupItem) {
-            item = ((GroupItem) item).getBaseItem();
+        if (item instanceof GroupItem groupItem) {
+            item = groupItem.getBaseItem();
         }
 
         if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
-            return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(value != 0.0d);
         } else if (item instanceof ContactItem) {
             return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem || item instanceof ColorItem) {
@@ -628,8 +625,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     private boolean isSupportedItemType(Item item) {
-        if (item instanceof GroupItem) {
-            final Item baseItem = ((GroupItem) item).getBaseItem();
+        if (item instanceof GroupItem groupItem) {
+            final Item baseItem = groupItem.getBaseItem();
             if (baseItem != null) {
                 item = baseItem;
             }
@@ -720,7 +717,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         public void addArchives(String archivesString) {
-            String splitArchives[] = archivesString.split(":");
+            String[] splitArchives = archivesString.split(":");
             for (String archiveString : splitArchives) {
                 String[] opts = archiveString.split(",");
                 if (opts.length != 4) { // check if correct number of parameters

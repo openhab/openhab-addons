@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link PHCBinding} class defines common constants, which are used across
+ * The {@link PHCBindingConstants} class defines common constants, which are used across
  * the whole binding.
  *
  * @author Jonas Hohaus - Initial contribution

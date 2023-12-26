@@ -13,16 +13,14 @@
 
 		<channels>
 			<channel id="color" typeId="system.color">
-				<description>Controls the color of the LED ring</description>
-			</channel>
-			<channel id="brightness" typeId="system.brightness">
-				<description>Controls the brightness of the LED ring</description>
+				<description>Controls the color and brightness of the LED ring</description>
 			</channel>
 			<channel id="identify" typeId="repeater-identify"/>
 			<channel id="blinkingEnabled" typeId="repeater-blinking-enabled"/>
 		</channels>
 
 		<properties>
+			<property name="thingTypeVersion">1</property>
 			<property name="vendor">Hunter Douglas (Luxaflex)</property>
 			<property name="modelId">PowerView Repeater</property>
 		</properties>

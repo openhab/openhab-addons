@@ -199,10 +199,10 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
             veluxBindingHandlers.remove(thingHandler);
         } else
         // Handle Bridge removal
-        if (thingHandler instanceof VeluxBridgeHandler) {
+        if (thingHandler instanceof VeluxBridgeHandler veluxBridgeHandler) {
             logger.trace("removeHandler() removing bridge '{}'.", thingHandler.toString());
             veluxBridgeHandlers.remove(thingHandler);
-            unregisterDeviceDiscoveryService((VeluxBridgeHandler) thingHandler);
+            unregisterDeviceDiscoveryService(veluxBridgeHandler);
         } else
         // Handle removal of Things behind the Bridge
         if (thingHandler instanceof VeluxHandler) {

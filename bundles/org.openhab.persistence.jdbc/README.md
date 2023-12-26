@@ -7,16 +7,16 @@ It is designed for a maximum of scalability, to store very large amounts of data
 The generic design makes it relatively easy for developers to integrate other databases that have JDBC drivers.
 The following databases are currently supported and tested:
 
-| Database                                     | Tested Driver / Version                                      |
-| -------------------------------------------- | ------------------------------------------------------------ |
-| [Apache Derby](https://db.apache.org/derby/) | [derby-10.14.2.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby) |
-| [H2](https://www.h2database.com/)            | [h2-1.4.191.jar](https://mvnrepository.com/artifact/com.h2database/h2) |
-| [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb) |
+| Database                                     | Tested Driver / Version                                                                                  |
+| -------------------------------------------- |----------------------------------------------------------------------------------------------------------|
+| [Apache Derby](https://db.apache.org/derby/) | [derby-10.14.2.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby)                         |
+| [H2](https://www.h2database.com/)            | [h2-2.2.224.jar](https://mvnrepository.com/artifact/com.h2database/h2)                                   |
+| [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb)                                 |
 | [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.0.8.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client) |
-| [MySQL](https://www.mysql.com/)              | [mysql-connector-j-8.0.33.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j) |
-| [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.3.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
-| [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.16.1.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc) |
-| [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.3.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
+| [MySQL](https://www.mysql.com/)              | [mysql-connector-j-8.1.0.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j)            |
+| [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.3.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                    |
+| [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.42.0.0.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc)                    |
+| [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.3.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                    |
 
 ## Table of Contents
 

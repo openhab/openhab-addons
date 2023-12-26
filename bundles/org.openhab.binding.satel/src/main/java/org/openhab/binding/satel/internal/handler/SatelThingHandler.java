@@ -57,9 +57,9 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
         final Bridge bridge = getBridge();
         if (bridge != null) {
             final ThingHandler handler = bridge.getHandler();
-            if (handler != null && handler instanceof SatelBridgeHandler) {
-                ((SatelBridgeHandler) handler).addEventListener(this);
-                this.bridgeHandler = (SatelBridgeHandler) handler;
+            if (handler instanceof SatelBridgeHandler satelBridgeHandler) {
+                satelBridgeHandler.addEventListener(this);
+                this.bridgeHandler = satelBridgeHandler;
             }
             if (bridge.getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
@@ -108,7 +108,7 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
      * @param switchOn if <code>true</code> the channel is updated with ON state, with OFF state otherwise
      */
     protected void updateSwitch(ChannelUID channelUID, boolean switchOn) {
-        State state = switchOn ? OnOffType.ON : OnOffType.OFF;
+        State state = OnOffType.from(switchOn);
         updateState(channelUID, state);
     }
 

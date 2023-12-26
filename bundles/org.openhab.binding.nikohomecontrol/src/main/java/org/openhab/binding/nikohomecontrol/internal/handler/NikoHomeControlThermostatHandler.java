@@ -110,8 +110,8 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case CHANNEL_MODE:
-                if (command instanceof DecimalType) {
-                    nhcThermostat.executeMode(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    nhcThermostat.executeMode(decimalCommand.intValue());
                 }
                 updateStatus(ThingStatus.ONLINE);
                 break;
@@ -128,20 +128,20 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                 if (time <= 0) {
                     time = overruleTime;
                 }
-                if (command instanceof QuantityType<?>) {
-                    QuantityType<?> setpoint = ((QuantityType<?>) command).toUnit(CELSIUS);
+                if (command instanceof QuantityType<?> quantityCommand) {
+                    QuantityType<?> setpoint = quantityCommand.toUnit(CELSIUS);
                     if (setpoint != null) {
                         nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
                     }
-                } else if (command instanceof DecimalType) {
-                    BigDecimal setpoint = ((DecimalType) command).toBigDecimal();
+                } else if (command instanceof DecimalType decimalCommand) {
+                    BigDecimal setpoint = decimalCommand.toBigDecimal();
                     nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
                 }
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case CHANNEL_OVERRULETIME:
-                if (command instanceof DecimalType) {
-                    int overruletime = ((DecimalType) command).intValue();
+                if (command instanceof DecimalType decimalCommand) {
+                    int overruletime = decimalCommand.intValue();
                     int overrule = nhcThermostat.getOverrule();
                     if (overruletime <= 0) {
                         overruletime = 0;
@@ -244,8 +244,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     private void updateProperties(NhcThermostat nhcThermostat) {
         Map<String, String> properties = new HashMap<>();
 
-        if (nhcThermostat instanceof NhcThermostat2) {
-            NhcThermostat2 thermostat = (NhcThermostat2) nhcThermostat;
+        if (nhcThermostat instanceof NhcThermostat2 thermostat) {
             properties.put(PROPERTY_DEVICE_TYPE, thermostat.getDeviceType());
             properties.put(PROPERTY_DEVICE_TECHNOLOGY, thermostat.getDeviceTechnology());
             properties.put(PROPERTY_DEVICE_MODEL, thermostat.getDeviceModel());

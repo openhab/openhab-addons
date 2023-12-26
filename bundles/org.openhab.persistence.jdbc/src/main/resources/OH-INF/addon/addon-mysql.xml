@@ -4,11 +4,23 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>persistence</type>
-	<name>JDBC persistence (MySQL)</name>
+	<name>JDBC Persistence (MySQL)</name>
 	<description>This is the persistence add-on for JDBC.</description>
 
 	<service-id>org.openhab.jdbc</service-id>
 
 	<config-description-ref uri="persistence:jdbc"/>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>command</name>
+					<regex>(?i).*[/\\](mysqld)(\.exe)?$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>

@@ -140,7 +140,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         TapoErrorHandler configErr = new TapoErrorHandler();
 
         /* check bridge */
-        if (bridge == null || !(bridge instanceof TapoBridgeHandler)) {
+        if (!(bridge instanceof TapoBridgeHandler)) {
             configErr.raiseError(ERR_CONFIG_NO_BRIDGE);
             return configErr;
         }
@@ -206,7 +206,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     /**
      * Stop scheduler
      *
-     * @param scheduler ScheduledFeature<?> which schould be stopped
+     * @param scheduler {@code ScheduledFeature<?>} which schould be stopped
      */
     protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
         if (scheduler != null) {
@@ -376,7 +376,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     /**
      * Set Device Child data to device
      *
-     * @param energyData
+     * @param hostData
      */
     public void setChildData(TapoChildData hostData) {
         hostData.getChildDeviceList().forEach(child -> {
@@ -399,7 +399,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      * If only one property must be changed, there is also a convenient method
      * updateProperty(String name, String value).
      *
-     * @param TapoDeviceInfo
+     * @param deviceInfo
      */
     protected void devicePropertiesChanged(TapoDeviceInfo deviceInfo) {
         /* device properties */

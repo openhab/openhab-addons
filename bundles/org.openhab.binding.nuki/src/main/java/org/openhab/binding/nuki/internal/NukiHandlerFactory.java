@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Markus Katter - Initial contribution
- * @contributer Jan Vybíral - Improved thing id generation
+ * @author Jan Vybíral - Improved thing id generation
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nuki")
 @NonNullByDefault
@@ -101,8 +101,8 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     public void unregisterHandler(Thing thing) {
         super.unregisterHandler(thing);
         ThingHandler handler = thing.getHandler();
-        if (handler instanceof NukiBridgeHandler) {
-            nukiApiServlet.remove((NukiBridgeHandler) handler);
+        if (handler instanceof NukiBridgeHandler bridgeHandler) {
+            nukiApiServlet.remove(bridgeHandler);
         }
     }
 

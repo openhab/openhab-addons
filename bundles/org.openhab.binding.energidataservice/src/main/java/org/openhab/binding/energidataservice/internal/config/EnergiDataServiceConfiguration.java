@@ -47,6 +47,12 @@ public class EnergiDataServiceConfiguration {
     public String energinetGLN = "5790000432752";
 
     /**
+     * Reduced electricity tax applies.
+     * For electric heating customers only.
+     */
+    public boolean reducedElectricityTax;
+
+    /**
      * Get {@link Currency} representing the configured currency code.
      * 
      * @return Currency instance

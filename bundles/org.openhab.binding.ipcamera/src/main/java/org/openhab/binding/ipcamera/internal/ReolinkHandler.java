@@ -120,12 +120,10 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.logger.debug("The GetAiStateResponse could not be parsed");
                         return;
                     }
-                    if (aiResponse[0].value.dog_cat != null) {
-                        if (aiResponse[0].value.dog_cat.alarm_state == 1) {
-                            ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
-                        } else {
-                            ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
-                        }
+                    if (aiResponse[0].value.dog_cat.alarm_state == 1) {
+                        ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
                     }
                     if (aiResponse[0].value.face.alarm_state == 1) {
                         ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
@@ -242,8 +240,8 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 1,\"channel\": "
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 1}}}]");
-                } else if (command instanceof PercentType) {
-                    int value = ((PercentType) command).toBigDecimal().intValue();
+                } else if (command instanceof PercentType percentCommand) {
+                    int value = percentCommand.toBigDecimal().intValue();
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 1,\"channel\": "
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 1,\"bright\": " + value

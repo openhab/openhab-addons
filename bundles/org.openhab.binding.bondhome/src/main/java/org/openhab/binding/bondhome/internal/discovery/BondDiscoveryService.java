@@ -58,9 +58,7 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof BondBridgeHandler) {
-            @Nullable
-            BondBridgeHandler localHandler = (BondBridgeHandler) handler;
+        if (handler instanceof BondBridgeHandler localHandler) {
             bridgeHandler = localHandler;
             localHandler.setDiscoveryService(this);
             api = localHandler.getBridgeAPI();
@@ -108,7 +106,7 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
                 }
             }
         } catch (BondException ignored) {
-            logger.warn("Error getting devices for discovery: {}", ignored.getMessage());
+            logger.debug("Error getting devices for discovery: {}", ignored.getMessage());
         } finally {
             removeOlderResults(getTimestampOfLastScan());
         }

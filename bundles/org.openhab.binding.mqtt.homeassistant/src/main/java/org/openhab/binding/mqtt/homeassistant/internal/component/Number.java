@@ -82,8 +82,7 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
         NumberValue value = new NumberValue(channelConfiguration.min, channelConfiguration.max,
                 channelConfiguration.step, UnitUtils.parseUnit(channelConfiguration.unitOfMeasurement));
 
-        buildChannel(NUMBER_CHANNEL_ID, value, channelConfiguration.getName(),
-                componentConfiguration.getUpdateListener())
+        buildChannel(NUMBER_CHANNEL_ID, value, getName(), componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)

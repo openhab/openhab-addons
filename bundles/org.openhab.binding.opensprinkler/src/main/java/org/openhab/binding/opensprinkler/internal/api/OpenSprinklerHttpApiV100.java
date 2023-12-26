@@ -379,22 +379,34 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             } else {
                 location = url;
             }
-            ContentResponse response;
-            try {
-                response = withGeneralProperties(httpClient.newRequest(location)).timeout(5, TimeUnit.SECONDS)
-                        .method(HttpMethod.GET).send();
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
+            ContentResponse response = null;
+            int retriesLeft = Math.max(1, config.retry);
+            boolean connectionSuccess = false;
+            while (connectionSuccess == false && retriesLeft > 0) {
+                retriesLeft--;
+                try {
+                    response = withGeneralProperties(httpClient.newRequest(location))
+                            .timeout(config.timeout, TimeUnit.SECONDS).method(HttpMethod.GET).send();
+                    connectionSuccess = true;
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    logger.debug("Request to OpenSprinkler device failed (retries left: {}): {}", retriesLeft,
+                            e.getMessage());
+                }
             }
-            if (response.getStatus() != HTTP_OK_CODE) {
+            if (connectionSuccess == false) {
+                throw new CommunicationApiException("Request to OpenSprinkler device failed");
+            }
+            if (response != null && response.getStatus() != HTTP_OK_CODE) {
                 throw new CommunicationApiException(
                         "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
+            } else if (response != null) {
+                String content = response.getContentAsString();
+                if ("{\"result\":2}".equals(content)) {
+                    throw new UnauthorizedApiException("Unauthorized, check your password is correct");
+                }
+                return content;
             }
-            String content = response.getContentAsString();
-            if ("{\"result\":2}".equals(content)) {
-                throw new UnauthorizedApiException("Unauthorized, check your password is correct");
-            }
-            return content;
+            return "";
         }
 
         private Request withGeneralProperties(Request request) {
@@ -431,5 +443,24 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             }
             return response.getContentAsString();
         }
+    }
+
+    @Override
+    public int getQueuedZones() {
+        return state.jcReply.nq;
+    }
+
+    @Override
+    public int getCloudConnected() {
+        return state.jcReply.otcs;
+    }
+
+    @Override
+    public int getPausedState() {
+        return state.jcReply.pt;
+    }
+
+    @Override
+    public void setPausePrograms(int seconds) throws UnauthorizedApiException, CommunicationApiException {
     }
 }

@@ -99,6 +99,9 @@ public class TeslaBindingConstants {
 
     public static final String CHANNEL_CHARGE = "charge";
     public static final String CHANNEL_COMBINED_TEMP = "combinedtemp";
+    public static final String CHANNEL_EVENTSTAMP = "eventstamp";
+
+    public static final String CHANNEL_SOFTWARE_UPDATE_AVAILABLE = "softwareupdateavailable";
 
     // thing configurations
     public static final String CONFIG_ALLOWWAKEUP = "allowWakeup";

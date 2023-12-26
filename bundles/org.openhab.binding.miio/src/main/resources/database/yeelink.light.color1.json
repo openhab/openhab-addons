@@ -121,7 +121,7 @@
 				"channel": "rgbColor",
 				"type": "Color",
 				"refresh": true,
-				"transformation": "addBrightToHSV",
+				"transformation": "addBrightToHSVPower",
 				"ChannelGroup": "actions",
 				"actions": [
 					{

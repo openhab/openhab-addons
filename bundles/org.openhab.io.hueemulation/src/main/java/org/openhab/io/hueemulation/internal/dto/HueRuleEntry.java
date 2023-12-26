@@ -41,7 +41,7 @@ public class HueRuleEntry {
 
     public String owner = "";
 
-    public static enum Operator {
+    public enum Operator {
         unknown,
         eq, // equals, Used for bool and int.
         gt, // greater than, Allowed on int values.

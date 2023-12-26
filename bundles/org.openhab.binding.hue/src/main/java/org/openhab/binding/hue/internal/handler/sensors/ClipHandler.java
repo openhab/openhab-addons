@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.dto.FullSensor;
-import org.openhab.binding.hue.internal.dto.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullSensor;
+import org.openhab.binding.hue.internal.api.dto.clip1.SensorConfigUpdate;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
@@ -46,6 +46,7 @@ public class ClipHandler extends HueSensorHandler {
         return new SensorConfigUpdate();
     }
 
+    @Override
     protected void doSensorStateChanged(FullSensor sensor, Configuration config) {
     }
 }

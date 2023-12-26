@@ -31,7 +31,7 @@ public class HueStatePlug extends AbstractHueState {
     }
 
     public OnOffType toOnOffType() {
-        return on ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(on);
     }
 
     @Override

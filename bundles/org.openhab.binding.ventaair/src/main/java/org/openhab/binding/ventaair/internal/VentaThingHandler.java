@@ -92,20 +92,20 @@ public class VentaThingHandler extends BaseThingHandler {
                 }
                 break;
             case VentaAirBindingConstants.CHANNEL_FAN_SPEED:
-                if (command instanceof DecimalType) {
-                    int fanStage = ((DecimalType) command).intValue();
+                if (command instanceof DecimalType decimalCommand) {
+                    int fanStage = decimalCommand.intValue();
                     dispatchActionToDevice(new FanAction(fanStage));
                 }
                 break;
             case VentaAirBindingConstants.CHANNEL_TARGET_HUMIDITY:
-                if (command instanceof DecimalType) {
-                    int targetHumidity = ((DecimalType) command).intValue();
+                if (command instanceof DecimalType decimalCommand) {
+                    int targetHumidity = decimalCommand.intValue();
                     dispatchActionToDevice(new HumidityAction(targetHumidity));
                 }
                 break;
             case VentaAirBindingConstants.CHANNEL_TIMER:
-                if (command instanceof DecimalType) {
-                    int timer = ((DecimalType) command).intValue();
+                if (command instanceof DecimalType decimalCommand) {
+                    int timer = decimalCommand.intValue();
                     dispatchActionToDevice(new TimerAction(timer));
                 }
                 break;
@@ -308,7 +308,7 @@ public class VentaThingHandler extends BaseThingHandler {
                 updateState(VentaAirBindingConstants.CHANNEL_CLEANING_TIME, cleaningHoursState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_CLEANING_TIME, cleaningHoursState);
 
-                OnOffType cleanModeState = info.isCleanMode() ? OnOffType.ON : OnOffType.OFF;
+                OnOffType cleanModeState = OnOffType.from(info.isCleanMode());
                 updateState(VentaAirBindingConstants.CHANNEL_CLEAN_MODE, cleanModeState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_CLEAN_MODE, cleanModeState);
 

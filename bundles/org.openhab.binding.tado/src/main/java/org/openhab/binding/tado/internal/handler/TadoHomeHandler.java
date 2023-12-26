@@ -161,7 +161,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     public void updateHomeState() {
         try {
             updateState(TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE,
-                    getHomeState().getPresence() == PresenceState.HOME ? OnOffType.ON : OnOffType.OFF);
+                    OnOffType.from(getHomeState().getPresence() == PresenceState.HOME));
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
         }
@@ -179,8 +179,8 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         switch (id) {
             case TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE:
                 HomePresence presence = new HomePresence();
-                presence.setHomePresence(command.toFullString().toUpperCase().equals("ON")
-                        || command.toFullString().toUpperCase().equals("HOME") ? PresenceState.HOME
+                presence.setHomePresence("ON".equals(command.toFullString().toUpperCase())
+                        || "HOME".equals(command.toFullString().toUpperCase()) ? PresenceState.HOME
                                 : PresenceState.AWAY);
                 try {
                     api.updatePresenceLock(homeId, presence);

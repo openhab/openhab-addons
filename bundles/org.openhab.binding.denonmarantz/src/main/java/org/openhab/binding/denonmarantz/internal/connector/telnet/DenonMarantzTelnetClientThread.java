@@ -20,6 +20,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
 
     private OutputStreamWriter out;
 
-    private BufferedReader in;
+    private @Nullable BufferedReader in;
 
     public DenonMarantzTelnetClientThread(DenonMarantzConfiguration config, DenonMarantzTelnetListener listener) {
         logger.debug("Denon listener created");
@@ -65,7 +66,11 @@ public class DenonMarantzTelnetClientThread extends Thread {
 
             do {
                 try {
-                    String line = in.readLine();
+                    String line = null;
+                    BufferedReader in = this.in;
+                    if (in != null) {
+                        line = in.readLine();
+                    }
                     if (line == null) {
                         logger.debug("No more data read from client. Disconnecting..");
                         listener.telnetClientConnected(false);

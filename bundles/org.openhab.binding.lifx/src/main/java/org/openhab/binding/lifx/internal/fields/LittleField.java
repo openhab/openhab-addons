@@ -44,9 +44,7 @@ public class LittleField<T> extends Field<T> {
 
         ByteBuffer flipped = flip(ByteBuffer.wrap(field));
 
-        T value = wrapped.value(flipped);
-
-        return value;
+        return wrapped.value(flipped);
     }
 
     @Override

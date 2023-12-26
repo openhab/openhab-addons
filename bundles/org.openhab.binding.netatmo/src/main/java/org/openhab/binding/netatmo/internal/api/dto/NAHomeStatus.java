@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,30 +35,37 @@ public class NAHomeStatus {
         private @Nullable NAObjectMap<HomeStatusModule> modules;
 
         public NAObjectMap<HomeStatusModule> getModules() {
-            NAObjectMap<HomeStatusModule> localModules = modules;
-            return localModules != null ? localModules : new NAObjectMap<>();
+            NAObjectMap<HomeStatusModule> local = modules;
+            return local != null ? local : new NAObjectMap<>();
         }
     }
 
     public class Energy extends HomeStatus {
-        private NAObjectMap<Room> rooms = new NAObjectMap<>();
+        private @Nullable NAObjectMap<Room> rooms;
 
         public NAObjectMap<Room> getRooms() {
-            return rooms;
+            NAObjectMap<Room> local = rooms;
+            return local != null ? local : new NAObjectMap<>();
         }
     }
 
     public class Security extends HomeStatus {
-        private NAObjectMap<HomeStatusPerson> persons = new NAObjectMap<>();
+        private @Nullable NAObjectMap<HomeStatusPerson> persons;
 
         public NAObjectMap<HomeStatusPerson> getPersons() {
-            return persons;
+            NAObjectMap<HomeStatusPerson> local = persons;
+            return local != null ? local : new NAObjectMap<>();
         }
     }
 
     private @Nullable HomeStatus home;
+    private List<NAError> errors = List.of();
 
     public Optional<HomeStatus> getHomeStatus() {
         return Optional.ofNullable(home);
+    }
+
+    public List<NAError> getErrors() {
+        return errors;
     }
 }

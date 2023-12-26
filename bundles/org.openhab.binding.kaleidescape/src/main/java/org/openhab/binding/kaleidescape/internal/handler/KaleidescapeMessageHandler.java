@@ -34,6 +34,7 @@ import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeStatu
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -83,7 +84,7 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(POWER, (ONE).equals(matcher.group(1)) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateChannel(POWER, OnOffType.from(ONE.equals(matcher.group(1))));
             } else {
                 logger.debug("DEVICE_POWER_STATE - no match on message: {}", message);
             }
@@ -110,6 +111,8 @@ public enum KaleidescapeMessageHandler {
             if (matcher.find()) {
                 handler.updateChannel(PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
+
+                handler.updateChannel(CONTROL, "2".equals(matcher.group(1)) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
                 handler.updateChannel(PLAY_SPEED, new StringType(matcher.group(2)));
 
@@ -312,6 +315,9 @@ public enum KaleidescapeMessageHandler {
                 handler.updateChannel(MUSIC_PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
 
+                handler.updateChannel(MUSIC_CONTROL,
+                        "2".equals(matcher.group(1)) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+
                 handler.updateChannel(MUSIC_PLAY_SPEED, new StringType(matcher.group(2)));
 
                 handler.updateChannel(MUSIC_TRACK_LENGTH,
@@ -340,10 +346,10 @@ public enum KaleidescapeMessageHandler {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
                 // update REPEAT switch state
-                handler.updateChannel(MUSIC_REPEAT, (ONE).equals(matcher.group(3)) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateChannel(MUSIC_REPEAT, OnOffType.from(ONE.equals(matcher.group(3))));
 
                 // update RANDOM switch state
-                handler.updateChannel(MUSIC_RANDOM, (ONE).equals(matcher.group(4)) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateChannel(MUSIC_RANDOM, OnOffType.from(ONE.equals(matcher.group(4))));
             } else {
                 logger.debug("MUSIC_NOW_PLAYING_STATUS - no match on message: {}", message);
             }

@@ -13,9 +13,9 @@
 package org.openhab.binding.phc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.phc.internal.util.StringUtils;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.StringUtils;
 
 /**
  * The {@link PHCHelper} is responsible for finding the appropriate Thing(UID)
@@ -38,15 +38,13 @@ public class PHCHelper {
         String thingID = StringUtils.padLeft(Integer.toBinaryString(moduleAddr & 0xFF).trim(), 5, "0");
         thingID = new StringBuilder(thingID).reverse().toString();
 
-        ThingUID thingUID = new ThingUID(thingTypeUID, thingID);
-
-        return thingUID;
+        return new ThingUID(thingTypeUID, thingID);
     }
 
     /**
      * Convert the byte b into a binary String
      *
-     * @param b
+     * @param bytes
      * @return
      */
     public static Object bytesToBinaryString(byte[] bytes) {

@@ -17,7 +17,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
 /**
- * The {@link NZWaterAlertsControllerListener} is responsible for handling the events from the WebClient and Handler.
+ * # * The {@link NZWaterAlertsBinderListener} is responsible for handling the events from the WebClient and Handler.
  *
  * @author Stewart Cossey - Initial contribution
  */

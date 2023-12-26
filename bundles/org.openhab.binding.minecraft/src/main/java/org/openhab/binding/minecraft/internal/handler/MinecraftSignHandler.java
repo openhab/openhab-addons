@@ -95,7 +95,7 @@ public class MinecraftSignHandler extends BaseThingHandler {
      * @param sign the sign to update
      */
     private void updateSignState(SignData sign) {
-        State activeState = sign.getState() ? OnOffType.ON : OnOffType.OFF;
+        State activeState = OnOffType.from(sign.getState());
         updateState(MinecraftBindingConstants.CHANNEL_SIGN_ACTIVE, activeState);
     }
 
@@ -113,8 +113,8 @@ public class MinecraftSignHandler extends BaseThingHandler {
         MinecraftServerHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof MinecraftServerHandler) {
-            bridgeHandler = (MinecraftServerHandler) handler;
+        if (handler instanceof MinecraftServerHandler serverHandler) {
+            bridgeHandler = serverHandler;
         } else {
             logger.debug("No available bridge handler found yet. Bridge: {} .", bridge.getUID());
             bridgeHandler = null;

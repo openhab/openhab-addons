@@ -196,7 +196,7 @@ public class NeeoRoomProtocol {
         final NeeoRecipe recipe = neeoRoom.getRecipes().getRecipe(recipeKey);
         if (recipe != null) {
             callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_RECIPE_ID,
-                    NeeoConstants.ROOM_CHANNEL_ENABLED, recipeKey), recipe.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+                    NeeoConstants.ROOM_CHANNEL_ENABLED, recipeKey), OnOffType.from(recipe.isEnabled()));
         }
     }
 
@@ -241,8 +241,7 @@ public class NeeoRoomProtocol {
         final NeeoScenario scenario = neeoRoom.getScenarios().getScenario(scenarioKey);
         if (scenario != null) {
             callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_SCENARIO_ID,
-                    NeeoConstants.ROOM_CHANNEL_ENABLED, scenarioKey),
-                    scenario.isConfigured() ? OnOffType.ON : OnOffType.OFF);
+                    NeeoConstants.ROOM_CHANNEL_ENABLED, scenarioKey), OnOffType.from(scenario.isConfigured()));
         }
     }
 

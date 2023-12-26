@@ -16,6 +16,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSett
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -213,6 +214,7 @@ public class TapoCloudConnector {
     @Nullable
     protected ContentResponse sendCloudRequest(String url, String payload) {
         Request httpRequest = httpClient.newRequest(url).method(HttpMethod.POST.toString());
+        httpRequest.timeout(TAPO_HTTP_CLOUD_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         /* set header */
         httpRequest.header("content-type", CONTENT_TYPE_JSON);
@@ -222,8 +224,7 @@ public class TapoCloudConnector {
         httpRequest.content(new StringContentProvider(payload, CONTENT_CHARSET), CONTENT_TYPE_JSON);
 
         try {
-            ContentResponse httpResponse = httpRequest.send();
-            return httpResponse;
+            return httpRequest.send();
         } catch (InterruptedException e) {
             logger.debug("({}) sending request interrupted: {}", uid, e.toString());
             handleError(new TapoErrorHandler(e));

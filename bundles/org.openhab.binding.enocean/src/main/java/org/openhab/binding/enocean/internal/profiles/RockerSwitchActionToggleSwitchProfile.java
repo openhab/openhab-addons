@@ -49,7 +49,7 @@ public class RockerSwitchActionToggleSwitchProfile extends RockerSwitchActionBas
     public void onTriggerFromHandler(String event) {
         // Ignore released event
         if (!CommonTriggerEvents.RELEASED.equals(event) && isEventValid(event)) {
-            OnOffType newState = OnOffType.ON.equals(previousState) ? OnOffType.OFF : OnOffType.ON;
+            OnOffType newState = OnOffType.from(!OnOffType.ON.equals(previousState));
             callback.sendCommand(newState);
             previousState = newState;
         }

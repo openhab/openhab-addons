@@ -77,6 +77,7 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
         active = discoveryService.isBackgroundDiscoveryEnabled();
     }
 
+    @Override
     public boolean isActive() {
         synchronized (LOCK) {
             return this.active;
@@ -127,6 +128,7 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
     }
 
     @Deactivate
+    @Override
     public void disable() {
         errorDetail = "";
         active = false;

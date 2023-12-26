@@ -180,32 +180,32 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                 }
                 case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR:
                 case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR: {
-                    if (command instanceof DecimalType) {
-                        byte wakeupHour = ((DecimalType) command).byteValue();
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte wakeupHour = decimalCommand.byteValue();
                         alarmClock.setWakeupHour(wakeupHour);
                     }
                     break;
                 }
                 case CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE:
                 case CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE: {
-                    if (command instanceof DecimalType) {
-                        byte wakeupMinute = ((DecimalType) command).byteValue();
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte wakeupMinute = decimalCommand.byteValue();
                         alarmClock.setWakeupMinute(wakeupMinute);
                     }
                     break;
                 }
                 case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR:
                 case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR: {
-                    if (command instanceof DecimalType) {
-                        byte bedTimeHour = ((DecimalType) command).byteValue();
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte bedTimeHour = decimalCommand.byteValue();
                         alarmClock.setBedtimeHour(bedTimeHour);
                     }
                     break;
                 }
                 case CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE:
                 case CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE: {
-                    if (command instanceof DecimalType) {
-                        byte bedTimeMinute = ((DecimalType) command).byteValue();
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte bedTimeMinute = decimalCommand.byteValue();
                         alarmClock.setBedtimeMinute(bedTimeMinute);
                     }
                     break;
@@ -290,7 +290,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                     VelbusClockAlarm alarmClock1 = this.alarmClockConfiguration.getAlarmClock1();
                     alarmClock1.setEnabled(alarmClock1Enabled);
                     alarmClock1.setLocal(alarmClock1IsLocal);
-                    updateState(clockAlarm1Enabled, alarmClock1.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(clockAlarm1Enabled, OnOffType.from(alarmClock1.isEnabled()));
                     updateState(clockAlarm1Type, alarmClock1.isLocal() ? ALARM_TYPE_LOCAL : ALARM_TYPE_GLOBAL);
 
                     boolean alarmClock2Enabled = (alarmAndProgramSelection & 0x10) > 0;
@@ -298,7 +298,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                     VelbusClockAlarm alarmClock2 = this.alarmClockConfiguration.getAlarmClock2();
                     alarmClock2.setEnabled(alarmClock2Enabled);
                     alarmClock2.setLocal(alarmClock2IsLocal);
-                    updateState(clockAlarm2Enabled, alarmClock2.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(clockAlarm2Enabled, OnOffType.from(alarmClock2.isEnabled()));
                     updateState(clockAlarm2Type, alarmClock2.isLocal() ? ALARM_TYPE_LOCAL : ALARM_TYPE_GLOBAL);
                 }
             }
@@ -319,13 +319,13 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                 alarmClock1.setEnabled((data & ALARM_1_ENABLED_MASK) > 0);
                 alarmClock1.setLocal((data & ALARM_1_TYPE_MASK) > 0);
 
-                updateState(clockAlarm1Enabled, alarmClock1.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+                updateState(clockAlarm1Enabled, OnOffType.from(alarmClock1.isEnabled()));
                 updateState(clockAlarm1Type, alarmClock1.isLocal() ? ALARM_TYPE_LOCAL : ALARM_TYPE_GLOBAL);
 
                 alarmClock2.setEnabled((data & ALARM_2_ENABLED_MASK) > 0);
                 alarmClock2.setLocal((data & ALARM_2_TYPE_MASK) > 0);
 
-                updateState(clockAlarm2Enabled, alarmClock2.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+                updateState(clockAlarm2Enabled, OnOffType.from(alarmClock2.isEnabled()));
                 updateState(clockAlarm2Type, alarmClock2.isLocal() ? ALARM_TYPE_LOCAL : ALARM_TYPE_GLOBAL);
                 break;
             case 1:

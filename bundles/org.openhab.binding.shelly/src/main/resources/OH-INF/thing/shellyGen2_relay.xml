@@ -35,10 +35,18 @@
 		<label>ShellyPlus 2 Relay</label>
 		<description>@text/thing-type.shelly.shellyplus2-relay.description</description>
 		<channel-groups>
-			<channel-group id="relay1" typeId="relayChannel"/>
-			<channel-group id="meter1" typeId="meter"/>
-			<channel-group id="relay2" typeId="relayChannel"/>
-			<channel-group id="meter2" typeId="meter"/>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
+			</channel-group>
+			<channel-group id="meter1" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter1.label</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter1.label</label>
+			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -349,7 +357,19 @@
 	<thing-type id="shellypluswdus">
 		<label>Shelly Plus Dimmer US</label>
 		<description>@text/thing-type.shelly.shellypluswdus.description</description>
-		<category>DimmableLight</category>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplus10v">
+		<label>Shelly Plus Dimmer 10V</label>
+		<description>@text/thing-type.shelly.shellyplus10v.description</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>

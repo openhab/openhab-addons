@@ -50,8 +50,8 @@ public class EncryptionHandler {
     private static final int PAYLOAD_RATE_LENGTH = 16;
     private static final int ROUNDS = 14;
 
-    private static final int[] lTable = new int[TABLE_SIZE];
-    private static final int[] aTable = new int[TABLE_SIZE];
+    private static final int[] L_TABLE = new int[TABLE_SIZE];
+    private static final int[] A_TABLE = new int[TABLE_SIZE];
 
     private static EncryptionHandler instance = new EncryptionHandler(new byte[] {});
     static {
@@ -62,7 +62,7 @@ public class EncryptionHandler {
         int a = 1;
         int d;
         for (int index = 0; index < 255; index++) {
-            aTable[index] = a & 0xFF;
+            A_TABLE[index] = a & 0xFF;
             /* Multiply by three */
             d = (a & 0x80) & 0xFF;
             a <<= 1;
@@ -70,13 +70,13 @@ public class EncryptionHandler {
                 a ^= 0x1b;
                 a &= 0xFF;
             }
-            a ^= aTable[index];
+            a ^= A_TABLE[index];
             a &= 0xFF;
             /* Set the log table value */
-            lTable[aTable[index]] = index & 0xFF;
+            L_TABLE[A_TABLE[index]] = index & 0xFF;
         }
-        aTable[255] = aTable[0];
-        lTable[0] = 0;
+        A_TABLE[255] = A_TABLE[0];
+        L_TABLE[0] = 0;
     }
 
     private final int[] expandedKey = new int[KEY_LENGTH];
@@ -163,8 +163,7 @@ public class EncryptionHandler {
             byteArray[i] = (byte) (keyBytes[i] & 0xFF);
         }
 
-        byte[] expandedArray = ParadoxUtil.extendArray(byteArray, KEY_ARRAY_LENGTH);
-        return expandedArray;
+        return ParadoxUtil.extendArray(byteArray, KEY_ARRAY_LENGTH);
     }
 
     private void expandKey(byte[] input) {
@@ -196,9 +195,7 @@ public class EncryptionHandler {
             if (i % 8 == 0) {
                 int tmp = temp[0];
 
-                for (int j = 1; j < 4; j++) {
-                    temp[j - 1] = temp[j];
-                }
+                System.arraycopy(temp, 1, temp, 0, temp.length - 1);
 
                 temp[3] = tmp;
                 temp[0] ^= EncryptionHandlerConstants.RCON[(i / 8 - 1)];
@@ -212,9 +209,9 @@ public class EncryptionHandler {
     }
 
     private int gmul(int c, int b) {
-        int s = lTable[c] + lTable[b];
+        int s = L_TABLE[c] + L_TABLE[b];
         s %= 255;
-        s = aTable[s];
+        s = A_TABLE[s];
         if (b == 0 || c == 0) {
             s = 0;
         }
@@ -267,8 +264,7 @@ public class EncryptionHandler {
         int[] tmpArray = new int[] { 0, 0, 0, 0 };
         for (int i = 1; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                int[][][] shifts = EncryptionHandlerConstants.SHIFTS;
-                int index = i * 4 + (j + shifts[0][i][d]) % 4;
+                int index = i * 4 + (j + EncryptionHandlerConstants.SHIFTS[0][i][d]) % 4;
                 tmpArray[j] = a[index];
             }
             for (int j = 0; j < 4; j++) {

@@ -91,7 +91,7 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
                     break;
                 }
             }
-            State onlineState = playerOnline ? OnOffType.ON : OnOffType.OFF;
+            State onlineState = OnOffType.from(playerOnline);
             updateState(MinecraftBindingConstants.CHANNEL_PLAYER_ONLINE, onlineState);
         }).flatMap(players -> Observable.from(players)).filter(player -> config.getName().equals(player.getName()))
                 .subscribe(player -> updatePlayerState(player));
@@ -141,8 +141,8 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
         MinecraftServerHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof MinecraftServerHandler) {
-            bridgeHandler = (MinecraftServerHandler) handler;
+        if (handler instanceof MinecraftServerHandler serverHandler) {
+            bridgeHandler = serverHandler;
         } else {
             logger.debug("No available bridge handler found yet. Bridge: {} .", bridge.getUID());
             bridgeHandler = null;
