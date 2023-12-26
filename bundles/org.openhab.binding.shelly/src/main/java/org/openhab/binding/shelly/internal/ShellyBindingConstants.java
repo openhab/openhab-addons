@@ -103,6 +103,7 @@ public class ShellyBindingConstants {
             // Shelly BLU
             THING_TYPE_SHELLYBLUBUTTON, //
             THING_TYPE_SHELLYBLUDW, //
+            THING_TYPE_SHELLYBLUMOTION, //
 
             THING_TYPE_SHELLYPROTECTED, //
             THING_TYPE_SHELLYUNKNOWN);
@@ -119,6 +120,7 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_DEV_TYPE = "deviceType";
     public static final String PROPERTY_DEV_MODE = "deviceMode";
     public static final String PROPERTY_DEV_GEN = "deviceGeneration";
+    public static final String PROPERTY_DEV_AUTH = "deviceAuth";
     public static final String PROPERTY_GW_DEVICE = "gatewayDevice";
     public static final String PROPERTY_HWREV = "deviceHwRev";
     public static final String PROPERTY_HWBATCH = "deviceHwBatch";
@@ -333,7 +335,7 @@ public class ShellyBindingConstants {
     public static final int UPDATE_MIN_DELAY = 15;// update every x triggers or when a key was pressed
     public static final int UPDATE_SETTINGS_INTERVAL_SECONDS = 60; // check for updates every x sec
     public static final int HEALTH_CHECK_INTERVAL_SEC = 300; // Health check interval, 5min
-    public static final int VIBRATION_FILTER_SEC = 5; // Absore duplicate vibration events for xx sec
+    public static final int VIBRATION_FILTER_SEC = 5; // Absorb duplicate vibration events for xx sec
 
     public static final String BUNDLE_RESOURCE_SNIPLETS = "sniplets"; // where to find code sniplets in the bundle
     public static final String BUNDLE_RESOURCE_SCRIPTS = "scripts"; // where to find scrips in the bundle

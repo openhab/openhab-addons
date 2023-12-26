@@ -106,7 +106,7 @@ public class BsbLanParameterConverter {
 
     private static State getStateForSwitchValueChannel(BsbLanApiParameterDTO parameter) {
         // treat "0" as OFF and everything else as ON
-        return "0".equals(parameter.value) ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(!"0".equals(parameter.value));
     }
 
     /**

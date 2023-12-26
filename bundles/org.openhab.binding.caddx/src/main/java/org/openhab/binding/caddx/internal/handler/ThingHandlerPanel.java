@@ -75,7 +75,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             // All Panel channels are OnOffType
             OnOffType onOffType;
 
-            onOffType = ("true".equals(data)) ? OnOffType.ON : OnOffType.OFF;
+            onOffType = OnOffType.from("true".equals(data));
             updateState(channelUID, onOffType);
         }
     }

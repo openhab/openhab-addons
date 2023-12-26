@@ -183,7 +183,7 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
                 }
                 // Deprecated if statement - to be removed in a future release
                 if (config.onCommandId == null && config.offCommandId == null) {
-                    return ON_COMMAND_IDS.contains(commandId) ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(ON_COMMAND_IDS.contains(commandId));
                 }
                 throw new RFXComInvalidStateException(channelId, Integer.toString(commandId),
                         "Device not configured for received commandId");

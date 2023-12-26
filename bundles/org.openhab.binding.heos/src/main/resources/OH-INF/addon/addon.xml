@@ -8,4 +8,24 @@
 	<description>Binding for the Denon HEOS system.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>Denon</regex>
+				</match-property>
+				<match-property>
+					<name>modelName</name>
+					<regex>HEOS.*|.*H|.*Home.*</regex>
+				</match-property>
+				<match-property>
+					<name>deviceType</name>
+					<regex>ACT.*|Aios.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

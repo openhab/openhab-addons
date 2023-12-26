@@ -79,7 +79,7 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
 
             logger.trace("  updateChannel: {} = {}", channelUID, data);
         } else {
-            OnOffType onOffType = ("true".equals(data)) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType onOffType = OnOffType.from("true".equals(data));
             updateState(channelUID, onOffType);
 
             logger.trace("  updateChannel: {} = {}", channelUID, onOffType);

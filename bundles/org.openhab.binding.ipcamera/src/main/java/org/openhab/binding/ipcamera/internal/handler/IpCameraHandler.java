@@ -583,8 +583,8 @@ public class IpCameraHandler extends BaseThingHandler {
                                     new FoscamHandler(getHandle(), cameraConfig.getUser(), cameraConfig.getPassword()));
                             break;
                         case HIKVISION_THING:
-                            socketChannel.pipeline()
-                                    .addLast(new HikvisionHandler(getHandle(), cameraConfig.getNvrChannel()));
+                            socketChannel.pipeline().addLast(HIKVISION_HANDLER,
+                                    new HikvisionHandler(getHandle(), cameraConfig.getNvrChannel()));
                             break;
                         case INSTAR_THING:
                             socketChannel.pipeline().addLast(INSTAR_HANDLER, new InstarHandler(getHandle()));
@@ -653,6 +653,11 @@ public class IpCameraHandler extends BaseThingHandler {
                                 case AMCREST_THING:
                                     AmcrestHandler amcrestHandler = (AmcrestHandler) ch.pipeline().get(AMCREST_HANDLER);
                                     amcrestHandler.setURL(httpRequestURL);
+                                    break;
+                                case HIKVISION_THING:
+                                    HikvisionHandler hikvisionHandler = (HikvisionHandler) ch.pipeline()
+                                            .get(HIKVISION_HANDLER);
+                                    hikvisionHandler.setURL(httpRequestURL);
                                     break;
                                 case INSTAR_THING:
                                     InstarHandler instarHandler = (InstarHandler) ch.pipeline().get(INSTAR_HANDLER);
@@ -1424,7 +1429,7 @@ public class IpCameraHandler extends BaseThingHandler {
             }
             logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP: {}:{}", cameraConfig.getIp(),
                     cameraConfig.getOnvifPort());
-            onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
+            onvifCamera.connect(supportsOnvifEvents());
             return;
         }
         if ("ffmpeg".equals(snapshotUri)) {
@@ -1701,7 +1706,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     snapshotUri = "/ISAPI/Streaming/channels/" + cameraConfig.getNvrChannel() + "01/picture";
                 }
                 if (lowPriorityRequests.isEmpty()) {
-                    lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel() + "/status");
+                    lowPriorityRequests.add("/ISAPI/System/IO/capabilities");
                 }
                 break;
             case INSTAR_THING:

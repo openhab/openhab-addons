@@ -215,7 +215,7 @@ public class DwdWarningsData {
 
     public State getWarning(int number) {
         DwdWarningData data = getGemeindeData(number);
-        return data == null ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(data != null);
     }
 
     public State getSeverity(int number) {

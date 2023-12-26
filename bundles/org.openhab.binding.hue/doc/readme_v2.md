@@ -59,30 +59,40 @@ The configuration of all things (as described above) is the same regardless of w
 
 Device things support some of the following channels:
 
-| Channel ID            | Item Type          | Description                                                                                                         |
-|-----------------------|--------------------|---------------------------------------------------------------------------------------------------------------------|
-| color                 | Color              | Supports full color control with hue, saturation and brightness values, or brightness only, or switching on or off. |
-| brightness            | Dimmer             | Supports control of the brightness value, or switching on or off.                                                   |
-| color-temperature     | Dimmer             | Supports control of the color temperature in percent from cold (0%) to warm (100%).                                 |
-| color-temperature-abs | Number:Temperature | Supports control of the color temperature via a QuantityType having a temperature unit e.g. Kelvin. (Advanced)      |
-| switch                | Switch             | Supports switching the device on and off.                                                                           |
-| dynamics              | Number:Time        | Sets the duration of dynamic transitions between light states. (Advanced)                                           |
-| alert                 | String             | Allows setting an alert on a light e.g. flashing them. (Advanced)                                                   |
-| effect                | String             | Allows setting an effect on a light e.g. 'candle' effect. (Advanced)                                                |
-| button-last-event     | (String)           | Informs which button was last pressed in the device. (Trigger Channel)                                              |
-| rotary-steps          | (String)           | Informs about the number of rotary steps of the last rotary dial movement. (Trigger Channel)                        |
-| motion                | Switch             | Shows if motion has been detected by the sensor. (Read Only)                                                        |
-| motion-enabled        | Switch             | Supports enabling / disabling the motion sensor. (Advanced)                                                         |
-| light-level           | Number:Illuminance | Shows the current light level measured by the sensor. (Read Only)                                                   |
-| light-level-enabled   | Switch             | Supports enabling / disabling the light level sensor. (Advanced)                                                    |
-| temperature           | Number:Temperature | Shows the current temperature measured by the sensor. (Read Only)                                                   |
-| temperature-enabled   | Switch             | Supports enabling / disabling the temperature sensor. (Advanced)                                                    |
-| battery-level         | Number             | Shows the battery level. (Read Only)                                                                                |
-| battery-low           | Switch             | Indicates whether the battery is low or not. (Read Only)                                                            |
-| last-updated          | DateTime           | The date and time when the thing state was last updated. (Read Only) (Advanced)                                     |
-| color-xy-only         | Color              | Allows access to the `color-xy` parameter of the light(s) only. Has no impact on `dimming` or `on-off` parameters.  |
-| dimming-only          | Dimmer             | Allows access to the `dimming` parameter of the light(s) only. Has no impact on `color-xy` or `on-off` parameters.  |
-| on-off-only           | Switch             | Allows access to the `on-off` parameter of the light(s) only. Has no impact on `color-xy` or `dimming` parameters.  |
+| Channel ID                    | Item Type          | Description                                                                                                         |
+|-------------------------------|--------------------|---------------------------------------------------------------------------------------------------------------------|
+| color                         | Color              | Supports full color control with hue, saturation and brightness values, or brightness only, or switching on or off. |
+| brightness                    | Dimmer             | Supports control of the brightness value, or switching on or off.                                                   |
+| color-temperature             | Dimmer             | Supports control of the color temperature in percent from cold (0%) to warm (100%).                                 |
+| color-temperature-abs         | Number:Temperature | Supports control of the color temperature via a QuantityType having a temperature unit e.g. Kelvin. (Advanced)      |
+| switch                        | Switch             | Supports switching the device on and off.                                                                           |
+| dynamics                      | Number:Time        | Sets the duration of dynamic transitions between light states. (Advanced)                                           |
+| alert                         | String             | Allows setting an alert on a light e.g. flashing them. (Advanced)                                                   |
+| effect                        | String             | Allows setting an effect on a light e.g. 'candle' effect. (Advanced)                                                |
+| button-last-event             | (String)           | Informs which button was last pressed in the device. (Trigger Channel)                                              |
+| button-last-updated           | DateTime           | The date and time when a button was last pressed. (Read Only) (Advanced)                                            |
+| rotary-steps                  | (String)           | Informs about the number of rotary steps of the last rotary dial movement. (Trigger Channel)                        |
+| rotary-steps-last-updated     | DateTime           | The date and time when the rotary steps were last updated. (Read Only) (Advanced)                                   |
+| motion                        | Switch             | Shows if motion has been detected by the sensor. (Read Only)                                                        |
+| motion-enabled                | Switch             | Supports enabling / disabling the motion sensor. (Advanced)                                                         |
+| motion-last-updated           | DateTime           | The date and time when the motion value was last updated. (Read Only) (Advanced)                                    |
+| light-level                   | Number:Illuminance | Shows the current light level measured by the sensor. (Read Only)                                                   |
+| light-level-last-updated      | DateTime           | The date and time when the light level was last updated. (Read Only) (Advanced)                                     |
+| light-level-enabled           | Switch             | Supports enabling / disabling the light level sensor. (Advanced)                                                    |
+| temperature                   | Number:Temperature | Shows the current temperature measured by the sensor. (Read Only)                                                   |
+| temperature-last-updated      | DateTime           | The date and time when the temperature was last updated. (Read Only) (Advanced)                                     |
+| temperature-enabled           | Switch             | Supports enabling / disabling the temperature sensor. (Advanced)                                                    |
+| battery-level                 | Number             | Shows the battery level. (Read Only)                                                                                |
+| battery-low                   | Switch             | Indicates whether the battery is low or not. (Read Only)                                                            |
+| last-updated                  | DateTime           | The date and time when the thing state was last updated. (Read Only) (Advanced)                                     |
+| color-xy-only                 | Color              | Allows access to the `color-xy` parameter of the light(s) only. Has no impact on `dimming` or `on-off` parameters.  |
+| dimming-only                  | Dimmer             | Allows access to the `dimming` parameter of the light(s) only. Has no impact on `color-xy` or `on-off` parameters.  |
+| on-off-only                   | Switch             | Allows access to the `on-off` parameter of the light(s) only. Has no impact on `color-xy` or `dimming` parameters.  |
+| security-contact              | Contact            | Indicates whether a security contact has been triggered. (Read Only)                                                |
+| security-contact-enabled      | Switch             | Supports enabling / disabling the security contact. (Advanced)                                                      |
+| security-contact-last-updated | DateTime           | The date and time when the security contact state was last updated. (Read Only) (Advanced)                          |
+| security-tamper               | Contact            | Indicates whether a security tamper contact has been triggered. `Open` means tampering detected. (Read Only)        |
+| security-tamper-last-updated  | DateTime           | The date and time when the security tamper contact state was last updated. (Read Only) (Advanced)                   |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.

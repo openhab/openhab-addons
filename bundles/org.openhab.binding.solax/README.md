@@ -16,6 +16,9 @@ In case the parsed information that comes with the binding out of the box differ
 |------------------------|------------|-------------------------------------------------------------------------------------|
 | local-connect-inverter | Thing      | This is model representation of inverter with all the data available as a channels  |
 
+Note: Channels may vary depending on the inverter type and the availability of information for parsing the raw data. 
+If you're missing a channel this means that it's not supported for your inverter type.
+
 ## Thing Configuration
 
 ### Local Connect Inverter Configuration
@@ -28,12 +31,25 @@ In case the parsed information that comes with the binding out of the box differ
 
 ### Inverter Output Channels
 
-| Channel                  | Type                       | Description                                      |
-|--------------------------|----------------------------|--------------------------------------------------|
-| inverter-output-power    | Number:Power               | The output power of the inverter [W]             |
-| inverter-current         | Number:ElectricCurrent     | The output current of the inverter [A]           |
-| inverter-voltage         | Number:ElectricPotential   | The output voltage of the inverter [V]           |
-| inverter-frequency       | Number:Frequency           | The frequency of the output voltage [Hz]         |
+| Channel                         | Type                       | Description                                                    |
+|---------------------------------|----------------------------|----------------------------------------------------------------|
+| inverter-output-power           | Number:Power               | The output power of the inverter [W]                           |
+| inverter-current                | Number:ElectricCurrent     | The output current of the inverter [A]                         |
+| inverter-voltage                | Number:ElectricPotential   | The output voltage of the inverter [V]                         |
+| inverter-frequency              | Number:Frequency           | The frequency of the electricity of the inverter [Hz]          |
+| inverter-output-power-phase1    | Number:Power               | The output power of phase 1 of the inverter [W]                |
+| inverter-output-power-phase2    | Number:Power               | The output power of phase 2 of the inverter [W]                |
+| inverter-output-power-phase3    | Number:Power               | The output power of phase 3 of the inverter [W]                |
+| inverter-total-output-power     | Number:Power               | The total output power of all phases of the inverter [W]       |
+| inverter-current-phase1         | Number:ElectricCurrent     | The output current of phase 1 of the inverter [A]              |
+| inverter-current-phase2         | Number:ElectricCurrent     | The output current of phase 2 of the inverter [A]              |
+| inverter-current-phase3         | Number:ElectricCurrent     | The output current of phase 3 of the inverter [A]              |
+| inverter-voltage-phase1         | Number:ElectricPotential   | The output voltage of phase 1 of the inverter [V]              |
+| inverter-voltage-phase2         | Number:ElectricPotential   | The output voltage of phase 2 of the inverter [V]              |
+| inverter-voltage-phase3         | Number:ElectricPotential   | The output voltage of phase 3 of the inverter [V]              |
+| inverter-frequency-phase1       | Number:Frequency           | The frequency of phase 1 of the inverter [Hz]                  |
+| inverter-frequency-phase2       | Number:Frequency           | The frequency of phase 2 of the inverter [Hz]                  |
+| inverter-frequency-phase3       | Number:Frequency           | The frequency of phase 3 of the inverter [Hz]                  |
 
 ### Photovoltaic Panels Production Channels
 
@@ -71,6 +87,23 @@ In case the parsed information that comes with the binding out of the box differ
 | last-update-time         | DateTime                   | Last time when a call has been made to the inverter                                                                                         |
 | raw-data                 | String                     | The raw data retrieved from inverter in JSON format. (Usable for channels not implemented. Can be consumed with the JSONpath transformation |
 
+### Statistics / Usage related Channels
+
+| Channel                          | Type                       | Description                                               |
+|----------------------------------|----------------------------|-----------------------------------------------------------|
+| power-usage                      | Number:Power               | Current power usage / consumption of the building [W]     |
+| total-energy                     | Number:Energy              | Total energy output from the inverter [kWh]               |
+| total-battery-discharge-energy   | Number:Energy              | Total energy from the battery [kWh]                       |
+| total-battery-charge-energy      | Number:Energy              | Total energy to the battery [kWh]                         |
+| total-pv-energy                  | Number:Energy              | Total energy from the PV [kWh]                            |
+| total-consumption                | Number:Energy              | Total energy consumed for the building [kWh]              |
+| total-feed-in-energy             | Number:Energy              | Total energy consumed from the electricity provider [kWh] |
+| today-energy                     | Number:Energy              | Energy output from the inverter for the day [kWh]         |
+| today-battery-discharge-energy   | Number:Energy              | Total energy from the battery output for the day [kWh]    |
+| today-battery-charge-energy      | Number:Energy              | Total energy charged to the battery for the day [kWh]     |
+| today-feed-in-energy             | Number:Energy              | Total energy charged to the battery for the day [kWh]     |
+| today-consumption                | Number:Energy              | Total energy consumed for the day [kWh]                   |
+
 ### Properties
 
 | Property          | Description                               |
@@ -95,17 +128,17 @@ Thing solax:local-connect-inverter:localInverter  [ refreshInterval=10, password
 Group gSolaxInverter "Solax Inverter" <energy> (boilerRoom)
 Group solarPanels "Solar panels" <energy> (gSolaxInverter)
 
-Number solaxPowerWest "West [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:localConnectInverter:localInverter:pv1-power" }
-Number solaxPowerEast "East [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:localConnectInverter:localInverter:pv2-power" }
-Number solaxBatteryPower "Battery power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:localConnectInverter:localInverter:battery-power" }
-Number solaxBatterySoc "Battery SoC [%.0f %%]" <batterylevel> (gsolax_inverter,EveryChangePersist) { channel="solax:localConnectInverter:localInverter:battery-state-of-charge" }
+Number solaxPowerWest "West [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:local-connect-inverter:localInverter:pv1-power" }
+Number solaxPowerEast "East [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:local-connect-inverter:localInverter:pv2-power" }
+Number solaxBatteryPower "Battery power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:local-connect-inverter:localInverter:battery-power" }
+Number solaxBatterySoc "Battery SoC [%.0f %%]" <batterylevel> (gsolax_inverter,EveryChangePersist) { channel="solax:local-connect-inverter:localInverter:battery-state-of-charge" }
 
-Number solaxFeedInPower "Feed-in power (CEZ) [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:localConnectInverter:localInverter:feed-in-power" }
-Number solaxAcPower "Invertor output power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist){ channel="solax:localConnectInverter:localInverter:inverter-output-power" }
+Number solaxFeedInPower "Feed-in power (CEZ) [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:local-connect-inverter:localInverter:feed-in-power" }
+Number solaxAcPower "Invertor output power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist){ channel="solax:local-connect-inverter:localInverter:inverter-output-power" }
 
-String solaxInverterType "Inverter Type [%s]" <energy> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:inverter-type"}
-String solaxUploadTime "Last update time [%s]" <calendar> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:last-update-time" }
-String solaxRawData "Raw data [%s]" <data> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:raw-data" }
+String solaxInverterType "Inverter Type [%s]" <energy> (gsolax_inverter) { channel="solax:local-connect-inverter:localInverter:inverter-type"}
+String solaxUploadTime "Last update time [%s]" <calendar> (gsolax_inverter) { channel="solax:local-connect-inverter:localInverter:last-update-time" }
+String solaxRawData "Raw data [%s]" <data> (gsolax_inverter) { channel="solax:local-connect-inverter:localInverter:raw-data" }
 ```
 
 ### Sitemap Configuration

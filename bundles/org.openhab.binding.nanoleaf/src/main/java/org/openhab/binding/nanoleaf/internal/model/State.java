@@ -42,7 +42,7 @@ public class State {
 
     public OnOffType getOnOff() {
         On localOn = on;
-        return (localOn != null && localOn.getValue()) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from((localOn != null && localOn.getValue()));
     }
 
     public void setOn(On on) {
