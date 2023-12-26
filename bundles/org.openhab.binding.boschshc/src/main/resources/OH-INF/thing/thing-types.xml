@@ -116,7 +116,7 @@
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 			<channel id="bypass-state" typeId="bypass-state"/>
-			<channel id="communication-quality" typeId="system.signal-strength"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
