@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -29,10 +30,16 @@ import org.openhab.core.library.types.OnOffType;
  */
 class UserStateServiceStateTest {
 
+    UserStateServiceState subject;
+
+    @BeforeEach
+    void setUp() {
+        subject = new UserStateServiceState();
+    }
+
     @ParameterizedTest
     @MethodSource("provideStringsForIsBlank")
     void setStateFromString_UpdatesTheState(String inputState, boolean expectedState) {
-        var subject = new UserStateServiceState();
         subject.setStateFromString(inputState);
 
         assertEquals(expectedState, subject.isState());
@@ -47,7 +54,6 @@ class UserStateServiceStateTest {
 
     @Test
     void getStateAsString_ReturnsState() {
-        var subject = new UserStateServiceState();
         subject.setState(false);
 
         assertEquals("false", subject.getStateAsString());
@@ -58,7 +64,6 @@ class UserStateServiceStateTest {
 
     @Test
     void toOnOffType_ReturnsType() {
-        var subject = new UserStateServiceState();
         subject.setState(false);
 
         assertEquals(OnOffType.OFF, subject.toOnOffType());

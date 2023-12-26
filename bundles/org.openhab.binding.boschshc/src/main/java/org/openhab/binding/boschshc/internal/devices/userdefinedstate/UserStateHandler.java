@@ -98,7 +98,7 @@ public class UserStateHandler extends BoschSHCHandler {
     protected void initializeServices() throws BoschSHCException {
         super.initializeServices();
 
-        logger.debug("initialize service for UserStateHandler");
+        logger.debug("Initializing service for UserStateHandler");
         this.registerService(userStateService, this::updateChannels, List.of(CHANNEL_USER_DEFINED_STATE), true);
     }
 
@@ -118,11 +118,11 @@ public class UserStateHandler extends BoschSHCHandler {
             getBridgeHandler().putState(stateId, "", serviceState);
         } catch (BoschSHCException | ExecutionException | TimeoutException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    String.format("Error while put user-defined state for %s", stateId));
+                    String.format("Error while putting user-defined state for %s", stateId));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    String.format("Error while put user-defined state for %s", stateId));
+                    String.format("Error while putting user-defined state for %s", stateId));
         }
     }
 

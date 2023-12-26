@@ -221,7 +221,7 @@ The smoke detector warns you in case of fire.
 
 ### User-defined States
 
-The User-defined states enable automations to be better adapted to specific needs and everyday situations. 
+User-defined states enable automations to be better adapted to specific needs and everyday situations. 
 Individual states can be activated/deactivated and can be used as triggers, conditions and actions in automations.
 
 **Thing Type ID**: `user-defined-state`

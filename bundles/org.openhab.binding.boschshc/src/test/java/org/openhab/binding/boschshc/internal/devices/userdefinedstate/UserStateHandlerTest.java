@@ -107,7 +107,7 @@ class UserStateHandlerTest extends AbstractBoschSHCHandlerTest<UserStateHandler>
 
         ThingStatusInfo expectedStatusInfo = new ThingStatusInfo(ThingStatus.OFFLINE,
                 ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error while put user-defined state for %s", channel.getThingUID().getId()));
+                String.format("Error while putting user-defined state for %s", channel.getThingUID().getId()));
         verify(getCallback()).statusUpdated(same(getThing()), eq(expectedStatusInfo));
     }
 
