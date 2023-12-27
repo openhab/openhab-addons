@@ -923,9 +923,11 @@
 			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
 			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
 		</channels>
+
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
+
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -2310,10 +2312,14 @@
 			<channel id="doorBell" typeId="doorBell"/>
 			<channel id="enableRecordings" typeId="enableRecordings"/>
 			<channel id="enableFTP" typeId="enableFTP"/>
+			<channel id="enableEmail" typeId="enableEmail"/>
+			<channel id="enablePush" typeId="enablePush"/>
 		</channels>
+
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
+
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -2960,7 +2966,7 @@
 
 	<channel-type id="whiteLED" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>White LED Controls</label>
+		<label>White LED</label>
 		<description>Turn the visible white LED ON and OFF and if supported 0-100% dimming.</description>
 		<category>Light</category>
 	</channel-type>
