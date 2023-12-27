@@ -280,6 +280,14 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 case CHANNEL_ENABLE_PRIVACY_MODE:
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=LeLensMask[0]");
                     return;
+                case CHANNEL_AUTO_LED:
+                case CHANNEL_ENABLE_LED:
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=Light");
+                    return;
+                case CHANNEL_AUTO_WHITE_LED:
+                case CHANNEL_WHITE_LED:
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=Lighting_V2");
+                    return;
             }
             return;
         } // end of "REFRESH"
@@ -297,41 +305,43 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_WHITE_LED:
                 if (DecimalType.ZERO.equals(command) || OnOffType.OFF.equals(command)) {
-                    ipCameraHandler
-                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[0][0][0].Mode=Off");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[" + nvrChannel
+                            + "][1][0].Mode=Off");
                 } else if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[0][0][0].Mode=Manual");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[" + nvrChannel
+                            + "][1][0].Mode=Manual");
                 } else {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[0][0][0].Mode=Manual&Lighting_V2[0][0][1].PercentOfMaxBrightness="
-                                    + command.toString());
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[" + nvrChannel
+                            + "][1][0].Mode=Manual&Lighting_V2[" + nvrChannel + "][1][0].PercentOfMaxBrightness="
+                            + command.toString());
                 }
                 return;
             case CHANNEL_AUTO_WHITE_LED:
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.setChannelState(CHANNEL_WHITE_LED, UnDefType.UNDEF);
-                    ipCameraHandler
-                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[0][0][0].Mode=Auto");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[" + nvrChannel
+                            + "][1][0].Mode=Auto");
                 }
                 return;
             case CHANNEL_ENABLE_LED:
                 ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
                 if (DecimalType.ZERO.equals(command) || OnOffType.OFF.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Off");
-                } else if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler
-                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Manual");
-                } else {
                     ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Manual&Lighting[0][0].MiddleLight[0].Light="
-                                    + command.toString());
+                            "/cgi-bin/configManager.cgi?action=setConfig&Lighting[" + nvrChannel + "][1].Mode=Off");
+                } else if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&Lighting[" + nvrChannel + "][1].Mode=Manual");
+                } else {
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[" + nvrChannel
+                            + "][1].Mode=Manual&Lighting[" + nvrChannel + "][1].MiddleLight[0].Light="
+                            + command.toString());
                 }
                 return;
             case CHANNEL_AUTO_LED:
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, UnDefType.UNDEF);
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Auto");
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&Lighting[" + nvrChannel + "][1].Mode=Auto");
                 }
                 return;
             case CHANNEL_THRESHOLD_AUDIO_ALARM:
