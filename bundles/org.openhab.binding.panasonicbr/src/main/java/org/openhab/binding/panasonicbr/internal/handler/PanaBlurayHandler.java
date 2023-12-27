@@ -158,14 +158,14 @@ public class PanaBlurayHandler extends BaseThingHandler {
                     updateState(PLAYER_STATUS, new StringType(translationProvider.getText(bundle, "status." + i18nKey,
                             i18nKey, localeProvider.getLocale())));
                     updateState(CONTROL, PLAY_STATUS.equals(playerMode) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
-                }
 
-                // playback stopped, tray open, or power switched off, zero out time and chapters
-                if (!isPlayingMode()) {
-                    updateState(TIME_ELAPSED, UnDefType.UNDEF);
-                    updateState(TIME_TOTAL, UnDefType.UNDEF);
-                    updateState(CHAPTER_CURRENT, UnDefType.UNDEF);
-                    updateState(CHAPTER_TOTAL, UnDefType.UNDEF);
+                    // playback stopped, tray open, or power switched off, zero out time and chapters
+                    if (!isPlayingMode()) {
+                        updateState(TIME_ELAPSED, UnDefType.UNDEF);
+                        updateState(TIME_TOTAL, UnDefType.UNDEF);
+                        updateState(CHAPTER_CURRENT, UnDefType.UNDEF);
+                        updateState(CHAPTER_TOTAL, UnDefType.UNDEF);
+                    }
                 }
 
                 if (debounce) {
