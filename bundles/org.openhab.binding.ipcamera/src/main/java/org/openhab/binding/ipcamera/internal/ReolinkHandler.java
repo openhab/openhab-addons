@@ -27,6 +27,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -246,6 +247,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 break;
             case CHANNEL_AUTO_WHITE_LED:
                 if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.setChannelState(CHANNEL_WHITE_LED, UnDefType.UNDEF);
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\":\"SetWhiteLed\",\"param\":{\"WhiteLed\":{\"channel\": "
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + ", \"mode\": 1}}}]");
@@ -302,6 +304,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 }
                 break;
             case CHANNEL_ENABLE_LED:
+                ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
                 if (OnOffType.OFF.equals(command) || PercentType.ZERO.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetIrLights\",\"action\": 0,\"param\": {\"IrLights\": {\"channel\": "
@@ -334,6 +337,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 }
                 break;
             case CHANNEL_WHITE_LED:
+                ipCameraHandler.setChannelState(CHANNEL_AUTO_WHITE_LED, OnOffType.OFF);
                 if (OnOffType.OFF.equals(command) || PercentType.ZERO.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 0,\"channel\": "

@@ -295,6 +295,26 @@ public class DahuaHandler extends ChannelDuplexHandler {
                                     + text);
                 }
                 return;
+            case CHANNEL_WHITE_LED:
+                if (DecimalType.ZERO.equals(command) || OnOffType.OFF.equals(command)) {
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[0][0][0].Mode=Off");
+                } else if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[0][0][0].Mode=Manual");
+                } else {
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[0][0][0].Mode=Manual&Lighting_V2[0][0][1].PercentOfMaxBrightness="
+                                    + command.toString());
+                }
+                return;
+            case CHANNEL_AUTO_WHITE_LED:
+                if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.setChannelState(CHANNEL_WHITE_LED, UnDefType.UNDEF);
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[0][0][0].Mode=Auto");
+                }
+                return;
             case CHANNEL_ENABLE_LED:
                 ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
                 if (DecimalType.ZERO.equals(command) || OnOffType.OFF.equals(command)) {
