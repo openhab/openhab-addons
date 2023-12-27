@@ -20,15 +20,15 @@
 		</instruction-set>
 	</thing-type>
 
-    <thing-type uid="ipcamera:dahua">
-        <instruction-set targetVersion="1">
-            <add-channel id="whiteLED">
-                <type>ipcamera:whiteLED</type>
-            </add-channel>
-            <add-channel id="autoWhiteLED">
-                <type>ipcamera:autoWhiteLED</type>
-            </add-channel>            
-        </instruction-set>
-    </thing-type>
-    
+	<thing-type uid="ipcamera:dahua">
+		<instruction-set targetVersion="1">
+			<add-channel id="whiteLED">
+				<type>ipcamera:whiteLED</type>
+			</add-channel>
+			<add-channel id="autoWhiteLED">
+				<type>ipcamera:autoWhiteLED</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>

@@ -923,9 +923,9 @@
 			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
 			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
 		</channels>
-        <properties>
-            <property name="thingTypeVersion">1</property>
-        </properties>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
