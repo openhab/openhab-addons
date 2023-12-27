@@ -29,6 +29,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -115,30 +116,34 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     break;
                 case "/api.cgi?cmd=GetAiState":
                     ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
-                    GetAiStateResponse[] aiResponse = gson.fromJson(content, GetAiStateResponse[].class);
-                    if (aiResponse == null) {
-                        ipCameraHandler.logger.debug("The GetAiStateResponse could not be parsed");
-                        return;
-                    }
-                    if (aiResponse[0].value.dog_cat.alarm_state == 1) {
-                        ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
-                    } else {
-                        ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
-                    }
-                    if (aiResponse[0].value.face.alarm_state == 1) {
-                        ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
-                    } else {
-                        ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
-                    }
-                    if (aiResponse[0].value.people.alarm_state == 1) {
-                        ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
-                    } else {
-                        ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
-                    }
-                    if (aiResponse[0].value.vehicle.alarm_state == 1) {
-                        ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.ON);
-                    } else {
-                        ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.OFF);
+                    try {
+                        GetAiStateResponse[] aiResponse = gson.fromJson(content, GetAiStateResponse[].class);
+                        if (aiResponse == null || aiResponse[0].value == null) {
+                            ipCameraHandler.logger.debug("The GetAiStateResponse could not be parsed");
+                            return;
+                        }
+                        if (aiResponse[0].value.dog_cat.alarm_state == 1) {
+                            ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
+                        }
+                        if (aiResponse[0].value.face.alarm_state == 1) {
+                            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
+                        }
+                        if (aiResponse[0].value.people.alarm_state == 1) {
+                            ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
+                        }
+                        if (aiResponse[0].value.vehicle.alarm_state == 1) {
+                            ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.OFF);
+                        }
+                    } catch (JsonParseException e) {
+                        ipCameraHandler.logger.debug("API GetAiState is not supported by the camera.");
                     }
                     break;
                 case "/api.cgi?cmd=GetAudioAlarmV20":
