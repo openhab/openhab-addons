@@ -905,6 +905,8 @@
 			<channel id="itemTaken" typeId="itemTaken"/>
 			<channel id="autoLED" typeId="autoLED"/>
 			<channel id="enableLED" typeId="enableLED"/>
+			<channel id="whiteLED" typeId="whiteLED"/>
+			<channel id="autoWhiteLED" typeId="autoWhiteLED"/>
 			<channel id="textOverlay" typeId="textOverlay"/>
 			<channel id="pan" typeId="pan"/>
 			<channel id="tilt" typeId="tilt"/>
@@ -921,6 +923,9 @@
 			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
 			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
 		</channels>
+        <properties>
+            <property name="thingTypeVersion">1</property>
+        </properties>
 		<config-description>
 
 			<parameter-group name="Settings">
