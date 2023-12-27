@@ -16,9 +16,10 @@ import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.sunsa.internal.SunsaBindingConstants.THING_TYPE_BRIDGE;
 import static org.openhab.binding.sunsa.internal.SunsaBindingConstants.THING_TYPE_DEVICE;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -31,6 +32,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
@@ -38,6 +40,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -53,18 +57,18 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 @NonNullByDefault
 @Component(configurationPid = "binding.sunsa", service = ThingHandlerFactory.class)
 public class SunsaHandlerFactory extends BaseThingHandlerFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SunsaHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE);
 
-    private final List<ServiceRegistration<?>> serviceRegistrations;
     private final ClientBuilder clientBuilder;
     private final ObjectMapper objectMapper;
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
     public SunsaHandlerFactory(@Reference ClientBuilder clientBuilder) {
         this.objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setSerializationInclusion(Include.NON_EMPTY);
         this.clientBuilder = requireNonNull(clientBuilder).register(new JacksonJsonProvider(objectMapper));
-        this.serviceRegistrations = new ArrayList<>();
     }
 
     @Override
@@ -80,9 +84,7 @@ public class SunsaHandlerFactory extends BaseThingHandlerFactory {
             return new SunsaDeviceHandler(thing);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             final SunsaCloudBridgeHandler bridgeHandler = new SunsaCloudBridgeHandler((Bridge) thing, clientBuilder);
-            final DiscoveryService discoveryService = new SunsaDiscoveryService(bridgeHandler.getSunsaService(),
-                    thing.getUID());
-            registerService(discoveryService, DiscoveryService.class);
+            registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         }
 
@@ -94,15 +96,16 @@ public class SunsaHandlerFactory extends BaseThingHandlerFactory {
         super.removeHandler(thingHandler);
 
         if (thingHandler instanceof SunsaCloudBridgeHandler) {
-            unregisterServices();
+            Optional.ofNullable(discoveryServiceRegs.remove(thingHandler.getThing().getUID()))
+                    .ifPresent(ServiceRegistration::unregister);
         }
     }
 
-    private synchronized <T> void registerService(final T service, final Class<T> clazz) {
-        serviceRegistrations.add(bundleContext.registerService(clazz.getName(), service, new Hashtable<>()));
-    }
-
-    private synchronized void unregisterServices() {
-        serviceRegistrations.stream().map(ServiceRegistration::getReference).forEach(bundleContext::ungetService);
+    private void registerDeviceDiscoveryService(final SunsaCloudBridgeHandler bridgeHandler) {
+        final ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        final DiscoveryService discoveryService = new SunsaDiscoveryService(bridgeHandler.getSunsaService(), bridgeUID);
+        this.discoveryServiceRegs.put(bridgeUID,
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
+        LOGGER.info("Registered discovery service");
     }
 }

@@ -46,7 +46,7 @@ public class SunsaCloudBridgeHandler extends SunsaBridgeHandler {
         config = getConfigAs(SunsaCloudBridgeConfiguration.class);
 
         if (config.isValid()) {
-            updateStatus(ThingStatus.INITIALIZING);
+            updateStatus(ThingStatus.ONLINE);
             // Force an API call to verify we can make network calls.
             scheduler.execute(this::getDevices);
         }
