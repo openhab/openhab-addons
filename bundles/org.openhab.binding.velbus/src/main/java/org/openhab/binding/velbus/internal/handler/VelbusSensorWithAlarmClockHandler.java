@@ -290,7 +290,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                     VelbusClockAlarm alarmClock1 = this.alarmClockConfiguration.getAlarmClock1();
                     alarmClock1.setEnabled(alarmClock1Enabled);
                     alarmClock1.setLocal(alarmClock1IsLocal);
-                    updateState(clockAlarm1Enabled, alarmClock1.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(clockAlarm1Enabled, OnOffType.from(alarmClock1.isEnabled()));
                     updateState(clockAlarm1Type, alarmClock1.isLocal() ? ALARM_TYPE_LOCAL : ALARM_TYPE_GLOBAL);
 
                     boolean alarmClock2Enabled = (alarmAndProgramSelection & 0x10) > 0;
@@ -298,7 +298,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                     VelbusClockAlarm alarmClock2 = this.alarmClockConfiguration.getAlarmClock2();
                     alarmClock2.setEnabled(alarmClock2Enabled);
                     alarmClock2.setLocal(alarmClock2IsLocal);
-                    updateState(clockAlarm2Enabled, alarmClock2.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(clockAlarm2Enabled, OnOffType.from(alarmClock2.isEnabled()));
                     updateState(clockAlarm2Type, alarmClock2.isLocal() ? ALARM_TYPE_LOCAL : ALARM_TYPE_GLOBAL);
                 }
             }
@@ -319,13 +319,13 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                 alarmClock1.setEnabled((data & ALARM_1_ENABLED_MASK) > 0);
                 alarmClock1.setLocal((data & ALARM_1_TYPE_MASK) > 0);
 
-                updateState(clockAlarm1Enabled, alarmClock1.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+                updateState(clockAlarm1Enabled, OnOffType.from(alarmClock1.isEnabled()));
                 updateState(clockAlarm1Type, alarmClock1.isLocal() ? ALARM_TYPE_LOCAL : ALARM_TYPE_GLOBAL);
 
                 alarmClock2.setEnabled((data & ALARM_2_ENABLED_MASK) > 0);
                 alarmClock2.setLocal((data & ALARM_2_TYPE_MASK) > 0);
 
-                updateState(clockAlarm2Enabled, alarmClock2.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+                updateState(clockAlarm2Enabled, OnOffType.from(alarmClock2.isEnabled()));
                 updateState(clockAlarm2Type, alarmClock2.isLocal() ? ALARM_TYPE_LOCAL : ALARM_TYPE_GLOBAL);
                 break;
             case 1:

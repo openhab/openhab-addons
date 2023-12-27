@@ -330,9 +330,8 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 updateGroupState(group, CHANNEL_ZONE_SUSPENDUNTIL, UnDefType.UNDEF);
             }
         }
-        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN, anyRunning.get() ? OnOffType.ON : OnOffType.OFF);
-        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPEND,
-                anySuspended.get() ? OnOffType.ON : OnOffType.OFF);
+        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN, OnOffType.from(anyRunning.get()));
+        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPEND, OnOffType.from(anySuspended.get()));
         updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPENDUNTIL, UnDefType.UNDEF);
     }
 
@@ -352,7 +351,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 updateGroupState(group, CHANNEL_SENSOR_OFFLEVEL, new DecimalType(sensor.model.offLevel));
             }
             if (sensor.status.active != null) {
-                updateGroupState(group, CHANNEL_SENSOR_ACTIVE, sensor.status.active ? OnOffType.ON : OnOffType.OFF);
+                updateGroupState(group, CHANNEL_SENSOR_ACTIVE, OnOffType.from(sensor.status.active));
             }
             if (sensor.status.waterFlow != null) {
                 updateGroupState(group, CHANNEL_SENSOR_WATERFLOW,

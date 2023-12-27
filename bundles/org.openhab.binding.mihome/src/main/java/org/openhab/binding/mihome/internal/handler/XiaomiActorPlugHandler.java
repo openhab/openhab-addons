@@ -79,7 +79,7 @@ public class XiaomiActorPlugHandler extends XiaomiActorBaseHandler {
     void parseDefault(JsonObject data) {
         getStatusFromData(data);
         if (data.has(IN_USE)) {
-            updateState(CHANNEL_IN_USE, (data.get(IN_USE).getAsInt() == 1) ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_IN_USE, OnOffType.from(data.get(IN_USE).getAsInt() == 1));
         }
         if (data.has(LOAD_POWER)) {
             updateState(CHANNEL_LOAD_POWER, new DecimalType(data.get(LOAD_POWER).getAsBigDecimal()));
@@ -93,7 +93,7 @@ public class XiaomiActorPlugHandler extends XiaomiActorBaseHandler {
     private void getStatusFromData(JsonObject data) {
         if (data.has(STATUS)) {
             boolean isOn = ON.equals(data.get(STATUS).getAsString());
-            updateState(CHANNEL_POWER_ON, isOn ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_POWER_ON, OnOffType.from(isOn));
             if (!isOn) {
                 updateState(CHANNEL_IN_USE, OnOffType.OFF);
                 updateState(CHANNEL_LOAD_POWER, new DecimalType(0));

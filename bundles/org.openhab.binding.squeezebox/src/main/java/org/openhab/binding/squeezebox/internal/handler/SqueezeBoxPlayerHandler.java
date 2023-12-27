@@ -346,7 +346,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void powerChangeEvent(String mac, boolean power) {
-        updateChannel(mac, CHANNEL_POWER, power ? OnOffType.ON : OnOffType.OFF);
+        updateChannel(mac, CHANNEL_POWER, OnOffType.from(power));
         if (!power && isMe(mac)) {
             playing = false;
         }
@@ -355,8 +355,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public synchronized void modeChangeEvent(String mac, String mode) {
         updateChannel(mac, CHANNEL_CONTROL, "play".equals(mode) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
-        updateChannel(mac, CHANNEL_PLAY_PAUSE, "play".equals(mode) ? OnOffType.ON : OnOffType.OFF);
-        updateChannel(mac, CHANNEL_STOP, "stop".equals(mode) ? OnOffType.ON : OnOffType.OFF);
+        updateChannel(mac, CHANNEL_PLAY_PAUSE, OnOffType.from("play".equals(mode)));
+        updateChannel(mac, CHANNEL_STOP, OnOffType.from("stop".equals(mode)));
         if (isMe(mac)) {
             playing = "play".equalsIgnoreCase(mode);
         }
@@ -389,7 +389,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void muteChangeEvent(String mac, boolean mute) {
-        updateChannel(mac, CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateChannel(mac, CHANNEL_MUTE, OnOffType.from(mute));
     }
 
     @Override

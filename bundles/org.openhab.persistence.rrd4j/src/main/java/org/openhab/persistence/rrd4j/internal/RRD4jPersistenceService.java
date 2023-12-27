@@ -610,7 +610,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
-            return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(value != 0.0d);
         } else if (item instanceof ContactItem) {
             return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem || item instanceof ColorItem) {

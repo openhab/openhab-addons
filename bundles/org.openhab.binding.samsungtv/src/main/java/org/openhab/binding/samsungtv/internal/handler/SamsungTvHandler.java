@@ -125,7 +125,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public void channelLinked(ChannelUID channelUID) {
         logger.trace("channelLinked: {}", channelUID);
 
-        updateState(POWER, getPowerState() ? OnOffType.ON : OnOffType.OFF);
+        updateState(POWER, OnOffType.from(getPowerState()));
 
         for (SamsungTvService service : services) {
             service.clearCache();

@@ -484,7 +484,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 updateState(channel, new PercentType(this.volume));
                 break;
             case MUTE:
-                updateState(channel, this.isMuted ? OnOffType.ON : OnOffType.OFF);
+                updateState(channel, OnOffType.from(this.isMuted));
                 break;
             case TITLE_NAME:
                 connector.sendCommand(GET_PLAYING_TITLE_NAME, cache.get("TITLE_NAME"));

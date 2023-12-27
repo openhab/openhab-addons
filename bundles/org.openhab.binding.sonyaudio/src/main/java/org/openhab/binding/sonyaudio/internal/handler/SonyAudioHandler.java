@@ -281,7 +281,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
             try {
                 logger.debug("handlePowerCommand RefreshType {}", zone);
                 Boolean result = powerCache[zone].getValue();
-                updateState(channelUID, result ? OnOffType.ON : OnOffType.OFF);
+                updateState(channelUID, OnOffType.from(result));
             } catch (CompletionException ex) {
                 throw new IOException(ex.getCause());
             }
@@ -363,7 +363,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 logger.debug("handleMuteCommand RefreshType {}", zone);
                 SonyAudioConnection.SonyAudioVolume result = volumeCache[zone].getValue();
                 if (result != null) {
-                    updateState(channelUID, result.mute ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(result.mute));
                 }
             } catch (CompletionException ex) {
                 throw new IOException(ex.getCause());
@@ -534,23 +534,23 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         switch (zone) {
             case 0:
                 updateState(SonyAudioBindingConstants.CHANNEL_VOLUME, new PercentType(volume.volume));
-                updateState(SonyAudioBindingConstants.CHANNEL_MUTE, volume.mute ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_MUTE, OnOffType.from(volume.mute));
                 break;
             case 1:
                 updateState(SonyAudioBindingConstants.CHANNEL_ZONE1_VOLUME, new PercentType(volume.volume));
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE1_MUTE, volume.mute ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE1_MUTE, OnOffType.from(volume.mute));
                 break;
             case 2:
                 updateState(SonyAudioBindingConstants.CHANNEL_ZONE2_VOLUME, new PercentType(volume.volume));
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE2_MUTE, volume.mute ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE2_MUTE, OnOffType.from(volume.mute));
                 break;
             case 3:
                 updateState(SonyAudioBindingConstants.CHANNEL_ZONE3_VOLUME, new PercentType(volume.volume));
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE3_MUTE, volume.mute ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE3_MUTE, OnOffType.from(volume.mute));
                 break;
             case 4:
                 updateState(SonyAudioBindingConstants.CHANNEL_ZONE4_VOLUME, new PercentType(volume.volume));
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE4_MUTE, volume.mute ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE4_MUTE, OnOffType.from(volume.mute));
                 break;
         }
     }
@@ -560,20 +560,20 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         powerCache[zone].invalidateValue();
         switch (zone) {
             case 0:
-                updateState(SonyAudioBindingConstants.CHANNEL_POWER, power ? OnOffType.ON : OnOffType.OFF);
-                updateState(SonyAudioBindingConstants.CHANNEL_MASTER_POWER, power ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_POWER, OnOffType.from(power));
+                updateState(SonyAudioBindingConstants.CHANNEL_MASTER_POWER, OnOffType.from(power));
                 break;
             case 1:
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE1_POWER, power ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE1_POWER, OnOffType.from(power));
                 break;
             case 2:
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE2_POWER, power ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE2_POWER, OnOffType.from(power));
                 break;
             case 3:
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE3_POWER, power ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE3_POWER, OnOffType.from(power));
                 break;
             case 4:
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE4_POWER, power ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE4_POWER, OnOffType.from(power));
                 break;
         }
     }
