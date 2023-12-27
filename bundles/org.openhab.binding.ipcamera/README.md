@@ -220,10 +220,12 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `animalAlarm` | Switch | Toggles when an animal is in view. |
 | `audioAlarm` | Switch (read only) | When the camera detects noise above a threshold this switch will move to ON. |
 | `autoLED` | Switch | When ON this sets a cameras IR LED to automatically turn on or off. |
+| `autoWhiteLED` | Switch | When ON this sets a cameras visible white LED to automatically turn on or off. |
 | `carAlarm` | Switch | When a car is detected the switch will turn ON. |
 | `cellMotionAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
 | `doorBell` | Switch (read only) | Doorbird only, will reflect the status of the doorbell button. |
 | `enableAudioAlarm` | Switch | Allows the audio alarm to be turned ON or OFF. |
+| `enableEmail` | Switch | Allows the email features to be turned ON or OFF. |
 | `enableExternalAlarmInput` | Switch | Hikvision and Instar allow the Alarm input terminals to be disabled by this control. |
 | `enableFieldDetectionAlarm` | Switch | Allows the field detection alarm to be turned ON or OFF. Some cameras will call this the Intrusion Alarm. |
 | `enableFTP` | Switch | Turn the cameras internal FTP recordings ON or OFF. |
@@ -231,6 +233,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `enableLineCrossingAlarm` | Switch | Turns the line crossing alarm for API cameras, ON and OFF. |
 | `enableMotionAlarm` | Switch | Turns the motion alarm ON and OFF for API cameras. This will not effect FFmpeg based alarms which have their own control. |
 | `enablePirAlarm` | Switch | Turn PIR sensor ON or OFF. |
+| `enablePush` | Switch | Allows the push notification features to be turned ON or OFF. |
 | `enableRecordings` | Switch | Turn the cameras internal recordings ON or OFF. |
 | `externalAlarmInput` | Switch (read only) | Reflects the status of the alarm input terminals on some cameras. |
 | `externalAlarmInput2`  | Switch (read only) | Reflects the status of the alarm input 2 terminals on some cameras. |
@@ -274,6 +277,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `tooBrightAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
 | `tooDarkAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
 | `pollImage` | Switch | This control can be used to manually start and stop using your CPU to create snapshots from a RTSP source. If you have a snapshot URL setup in the binding, only then can this control can be used to update the Image channel. |
+| `whiteLED` | Dimmer | Turn the visible white LED ON or OFF and if supported dim from 0-100%. |
 | `zoom` | Dimmer | Works with ONVIF cameras that can be moved. |
 
 ## Moving PTZ Cameras
