@@ -18,6 +18,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.growatt.internal.discovery.GrowattDiscoveryService;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
+import org.openhab.binding.growatt.internal.dto.GrottIntegerDeserializer;
 import org.openhab.binding.growatt.internal.servlet.GrowattHttpServlet;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -41,7 +43,8 @@ import com.google.gson.JsonSyntaxException;
 public class GrowattBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GrowattBridgeHandler.class);
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(Integer.class, new GrottIntegerDeserializer())
+            .create();
     private final GrowattDiscoveryService discoveryService;
     private final Map<String, GrottDevice> inverters = new HashMap<>();
     private final GrowattHttpServlet httpServlet;

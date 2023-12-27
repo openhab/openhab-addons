@@ -38,6 +38,7 @@ import org.openhab.binding.growatt.internal.GrowattChannels.UoM;
 import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
 import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
+import org.openhab.binding.growatt.internal.dto.GrottIntegerDeserializer;
 import org.openhab.binding.growatt.internal.dto.GrottValues;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.QuantityType;
@@ -46,6 +47,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -58,7 +60,8 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class GrowattTest {
 
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(Integer.class, new GrottIntegerDeserializer())
+            .create();
 
     /**
      * Load a (JSON) string from a file
@@ -151,7 +154,7 @@ public class GrowattTest {
                 continue;
             }
         }
-        if (errors.size() > 0) {
+        if (!errors.isEmpty()) {
             fail(errors.toString());
         }
     }
@@ -261,7 +264,7 @@ public class GrowattTest {
                         errors.add(msg != null ? msg : ex.getClass().getName());
                     }
                 }
-                if (errors.size() > 0) {
+                if (!errors.isEmpty()) {
                     fail(errors.toString());
                 }
                 assertEquals(1, mappedFieldCount);
@@ -338,5 +341,19 @@ public class GrowattTest {
             assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
             assertEquals(programEnable, GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ENABLE));
         }
+    }
+
+    @Test
+    void testThreePhaseGrottValuesContents() throws FileNotFoundException, IOException, NoSuchFieldException,
+            SecurityException, IllegalAccessException, IllegalArgumentException {
+        GrottValues grottValues = loadGrottValues("3phase");
+        assertNotNull(grottValues);
+    }
+
+    @Test
+    void testMeterGrottValuesContents() throws FileNotFoundException, IOException, NoSuchFieldException,
+            SecurityException, IllegalAccessException, IllegalArgumentException {
+        GrottValues grottValues = loadGrottValues("meter");
+        assertNotNull(grottValues);
     }
 }
