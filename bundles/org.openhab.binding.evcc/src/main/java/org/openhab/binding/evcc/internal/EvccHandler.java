@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.api.EvccAPI;
@@ -57,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Florian Hotze - Initial contribution
- * @author Luca Arnecke - update to evcc version 0.123.1
+ * @author Luca Arnecke - Update to evcc version 0.123.1
  */
 @NonNullByDefault
 public class EvccHandler extends BaseThingHandler {
@@ -104,7 +103,7 @@ public class EvccHandler extends BaseThingHandler {
                     } else {
                         logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                     }
-                } else if (channelGroupId.matches(CHANNEL_GROUP_ID_LOADPOINT)) {
+                } else if (channelGroupId.startsWith(CHANNEL_GROUP_ID_LOADPOINT)) {
                     int loadpoint = Integer.parseInt(groupId.substring(9)) + 1;
                     switch (channelIdWithoutGroup) {
                         case CHANNEL_LOADPOINT_MODE -> {
@@ -159,71 +158,71 @@ public class EvccHandler extends BaseThingHandler {
                             return;
                         }
                     }
-                } else {
-                    String vehicle = groupId.substring(7);
+                } else if (channelGroupId.startsWith(CHANNEL_GROUP_ID_VEHICLE)) {
+                    String vehicleName = groupId.substring(7);
                     switch (channelIdWithoutGroup) {
                         case CHANNEL_VEHICLE_MIN_SOC -> {
                             if (command instanceof QuantityType<?> qt) {
-                                evccAPI.setVehicleMinSoC(vehicle, qt.toUnit(Units.PERCENT).intValue());
+                                evccAPI.setVehicleMinSoC(vehicleName, qt.toUnit(Units.PERCENT).intValue());
                             } else if (command instanceof DecimalType dt) {
-                                evccAPI.setVehicleMinSoC(vehicle, dt.intValue());
+                                evccAPI.setVehicleMinSoC(vehicleName, dt.intValue());
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
                         }
                         case CHANNEL_VEHICLE_LIMIT_SOC -> {
                             if (command instanceof QuantityType<?> qt) {
-                                evccAPI.setVehicleLimitSoC(vehicle, qt.toUnit(Units.PERCENT).intValue());
+                                evccAPI.setVehicleLimitSoC(vehicleName, qt.toUnit(Units.PERCENT).intValue());
                             } else if (command instanceof DecimalType dt) {
-                                evccAPI.setVehicleLimitSoC(vehicle, dt.intValue());
+                                evccAPI.setVehicleLimitSoC(vehicleName, dt.intValue());
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
                         }
                         case CHANNEL_VEHICLE_PLAN_ENABLED -> {
-                            Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicle);
+                            Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
                             if (command == OnOffType.ON) {
-                                evccAPI.setVehiclePlan(vehicle, planValues.getMiddle().intValue(),
+                                evccAPI.setVehiclePlan(vehicleName, planValues.getMiddle().intValue(),
                                         planValues.getRight());
-                                vehiclePlans.put(vehicle,
-                                        Triple.of(true, planValues.getMiddle(), planValues.getRight()));
+                                vehiclePlans.put(vehicleName,
+                                        new Triple<>(true, planValues.getMiddle(), planValues.getRight()));
                             } else if (command == OnOffType.OFF) {
-                                evccAPI.removeVehiclePlan(vehicle);
-                                vehiclePlans.put(vehicle,
-                                        Triple.of(false, planValues.getMiddle(), planValues.getRight()));
+                                evccAPI.removeVehiclePlan(vehicleName);
+                                vehiclePlans.put(vehicleName,
+                                        new Triple<>(false, planValues.getMiddle(), planValues.getRight()));
                             } else {
                                 logger.debug("Command has wrong type, OnOffType required!");
                             }
-                            updateChannelsVehicle(vehicle);
+                            updateChannelsVehicle(vehicleName);
                         }
                         case CHANNEL_VEHICLE_PLAN_SOC -> {
-                            Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicle);
+                            Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
                             if (command instanceof QuantityType<?> qt) {
-                                vehiclePlans.put(vehicle, Triple.of(planValues.getLeft(),
+                                vehiclePlans.put(vehicleName, new Triple<>(planValues.getLeft(),
                                         qt.toUnit(Units.PERCENT).floatValue(), planValues.getRight()));
                                 if (planValues.getLeft()) {
-                                    evccAPI.setVehiclePlan(vehicle, qt.toUnit(Units.PERCENT).intValue(),
+                                    evccAPI.setVehiclePlan(vehicleName, qt.toUnit(Units.PERCENT).intValue(),
                                             planValues.getRight());
                                 }
                             } else if (command instanceof DecimalType dt) {
-                                vehiclePlans.put(vehicle,
-                                        Triple.of(planValues.getLeft(), dt.floatValue(), planValues.getRight()));
+                                vehiclePlans.put(vehicleName,
+                                        new Triple<>(planValues.getLeft(), dt.floatValue(), planValues.getRight()));
                                 if (planValues.getLeft()) {
-                                    evccAPI.setVehiclePlan(vehicle, dt.intValue(), planValues.getRight());
+                                    evccAPI.setVehiclePlan(vehicleName, dt.intValue(), planValues.getRight());
                                 }
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsVehicle(vehicle);
+                            updateChannelsVehicle(vehicleName);
                         }
                         case CHANNEL_VEHICLE_PLAN_TIME -> {
-                            Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicle);
+                            Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
                             if (command instanceof DateTimeType dtt) {
-                                vehiclePlans.put(vehicle, Triple.of(planValues.getLeft(), planValues.getMiddle(),
+                                vehiclePlans.put(vehicleName, new Triple<>(planValues.getLeft(), planValues.getMiddle(),
                                         dtt.getZonedDateTime()));
                                 if (planValues.getLeft()) {
                                     try {
-                                        evccAPI.setVehiclePlan(vehicle, planValues.getMiddle().intValue(),
+                                        evccAPI.setVehiclePlan(vehicleName, planValues.getMiddle().intValue(),
                                                 dtt.getZonedDateTime());
                                     } catch (DateTimeParseException e) {
                                         logger.debug("Failed to set vehicle plan time: ", e);
@@ -232,7 +231,7 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, DateTimeType required!");
                             }
-                            updateChannelsVehicle(vehicle);
+                            updateChannelsVehicle(vehicleName);
                         }
                     }
                 }
@@ -303,9 +302,9 @@ public class EvccHandler extends BaseThingHandler {
                 createChannelsLoadpoint(i);
                 updateChannelsLoadpoint(i);
             }
-            for (String vehicleId : vehicles.keySet()) {
-                createChannelsVehicle(vehicleId);
-                updateChannelsVehicle(vehicleId);
+            for (String vehicleName : vehicles.keySet()) {
+                createChannelsVehicle(vehicleName);
+                updateChannelsVehicle(vehicleName);
             }
         }
     }
@@ -392,8 +391,8 @@ public class EvccHandler extends BaseThingHandler {
         removeChannel(CHANNEL_LOADPOINT_HAS_VEHICLE, channelGroup);
     }
 
-    private void createChannelsVehicle(String vehicleId) {
-        final String channelGroup = "vehicle" + vehicleId;
+    private void createChannelsVehicle(String vehicleName) {
+        final String channelGroup = "vehicle" + vehicleName;
         createChannel(CHANNEL_VEHICLE_TITLE, channelGroup, CHANNEL_TYPE_UID_VEHICLE_TITLE, CoreItemFactory.STRING);
         createChannel(CHANNEL_VEHICLE_MIN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_MIN_SOC, "Number:Dimensionless");
         createChannel(CHANNEL_VEHICLE_LIMIT_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_LIMIT_SOC,
@@ -459,146 +458,146 @@ public class EvccHandler extends BaseThingHandler {
             return;
         }
         final ThingUID uid = getThing().getUID();
-        final String loadpointName = "loadpoint" + loadpointId;
+        final String channelGroup = "loadpoint" + loadpointId;
         ChannelUID channel;
         Loadpoint loadpoint = result.getLoadpoints()[loadpointId];
 
         int activePhases = loadpoint.getActivePhases();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_ACTIVE_PHASES);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_ACTIVE_PHASES);
         updateState(channel, new DecimalType(activePhases));
 
         float chargeCurrent = loadpoint.getChargeCurrent();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGE_CURRENT);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_CURRENT);
         updateState(channel, new QuantityType<>(chargeCurrent, Units.AMPERE));
 
         long chargeDuration = loadpoint.getChargeDuration();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGE_DURATION);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_DURATION);
         updateState(channel, new QuantityType<>(chargeDuration, MetricPrefix.NANO(Units.SECOND)));
 
         float chargePower = loadpoint.getChargePower();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGE_POWER);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_POWER);
         updateState(channel, new QuantityType<>(chargePower, Units.WATT));
 
         long chargeRemainingDuration = loadpoint.getChargeRemainingDuration();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION);
         updateState(channel, new QuantityType<>(chargeRemainingDuration, MetricPrefix.NANO(Units.SECOND)));
 
         float chargeRemainingEnergy = loadpoint.getChargeRemainingEnergy();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY);
         updateState(channel, new QuantityType<>(chargeRemainingEnergy, Units.WATT_HOUR));
 
         float chargedEnergy = loadpoint.getChargedEnergy();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGED_ENERGY);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGED_ENERGY);
         updateState(channel, new QuantityType<>(chargedEnergy, Units.WATT_HOUR));
 
         boolean charging = loadpoint.getCharging();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGING);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGING);
         updateState(channel, OnOffType.from(charging));
 
         boolean connected = loadpoint.getConnected();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CONNECTED);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CONNECTED);
         updateState(channel, OnOffType.from(connected));
 
         long connectedDuration = loadpoint.getConnectedDuration();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CONNECTED_DURATION);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CONNECTED_DURATION);
         updateState(channel, new QuantityType<>(connectedDuration, MetricPrefix.NANO(Units.SECOND)));
 
         boolean enabled = loadpoint.getEnabled();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_ENABLED);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_ENABLED);
         updateState(channel, OnOffType.from(enabled));
 
         float maxCurrent = loadpoint.getMaxCurrent();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MAX_CURRENT);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_MAX_CURRENT);
         updateState(channel, new QuantityType<>(maxCurrent, Units.AMPERE));
 
         float minCurrent = loadpoint.getMinCurrent();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MIN_CURRENT);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_MIN_CURRENT);
         updateState(channel, new QuantityType<>(minCurrent, Units.AMPERE));
 
         String mode = loadpoint.getMode();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MODE);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_MODE);
         updateState(channel, new StringType(mode));
 
         int phases = loadpoint.getPhases();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_PHASES);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_PHASES);
         updateState(channel, new DecimalType(phases));
 
         float limitEnergy = loadpoint.getLimitEnergy();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_LIMIT_ENERGY);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_LIMIT_ENERGY);
         updateState(channel, new QuantityType<>(limitEnergy, Units.WATT_HOUR));
 
         float limitSoC = loadpoint.getLimitSoC();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_LIMIT_SOC);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_LIMIT_SOC);
         updateState(channel, new QuantityType<>(limitSoC, Units.PERCENT));
 
         String title = loadpoint.getTitle();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TITLE);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_TITLE);
         updateState(channel, new StringType(title));
 
         float vehicleCapacity = loadpoint.getVehicleCapacity();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_CAPACITY);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_CAPACITY);
         updateState(channel, new QuantityType<>(vehicleCapacity, Units.KILOWATT_HOUR));
 
         float vehicleOdometer = loadpoint.getVehicleOdometer();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_ODOMETER);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_ODOMETER);
         updateState(channel, new QuantityType<>(vehicleOdometer, MetricPrefix.KILO(SIUnits.METRE)));
 
         boolean vehiclePresent = loadpoint.getVehiclePresent();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_PRESENT);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_PRESENT);
         updateState(channel, OnOffType.from(vehiclePresent));
 
         float vehicleRange = loadpoint.getVehicleRange();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_RANGE);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_RANGE);
         updateState(channel, new QuantityType<>(vehicleRange, MetricPrefix.KILO(SIUnits.METRE)));
 
         float vehicleSoC = loadpoint.getVehicleSoC();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_SOC);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_SOC);
         updateState(channel, new QuantityType<>(vehicleSoC, Units.PERCENT));
 
         String vehicleTitle = loadpoint.getVehicleTitle();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_TITLE);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_TITLE);
         updateState(channel, new StringType(vehicleTitle));
     }
 
-    private void updateChannelsVehicle(String vehicleId) {
+    private void updateChannelsVehicle(String vehicleName) {
         final Result result = this.result;
         if (result == null) {
             return;
         }
         final ThingUID uid = getThing().getUID();
-        final String vehicleName = "vehicle" + vehicleId;
+        final String channelGroup = "vehicle" + vehicleName;
         ChannelUID channel;
-        Vehicle vehicle = result.getVehicles().get(vehicleId);
+        Vehicle vehicle = result.getVehicles().get(vehicleName);
 
         String title = vehicle.getTitle();
-        channel = new ChannelUID(uid, vehicleName, CHANNEL_VEHICLE_TITLE);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_TITLE);
         updateState(channel, new StringType(title));
 
         float minSoC = vehicle.getMinSoC();
-        channel = new ChannelUID(uid, vehicleName, CHANNEL_VEHICLE_MIN_SOC);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_MIN_SOC);
         updateState(channel, new QuantityType<>(minSoC, Units.PERCENT));
 
         float limitSoC = vehicle.getLimitSoC();
-        channel = new ChannelUID(uid, vehicleName, CHANNEL_VEHICLE_LIMIT_SOC);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_LIMIT_SOC);
         updateState(channel, new QuantityType<>(limitSoC, Units.PERCENT));
 
         Plan plan = vehicle.getPlan();
-        if (plan == null && vehiclePlans.get(vehicleId) == null) {
-            vehiclePlans.put(vehicleId, Triple.of(false, 100f, ZonedDateTime.now().plusHours(12)));
+        if (plan == null && vehiclePlans.get(vehicleName) == null) {
+            vehiclePlans.put(vehicleName, new Triple<>(false, 100f, ZonedDateTime.now().plusHours(12)));
         } else if (plan != null) {
-            vehiclePlans.put(vehicleId, Triple.of(true, plan.getSoC(), ZonedDateTime.parse(plan.getTime())));
+            vehiclePlans.put(vehicleName, new Triple<>(true, plan.getSoC(), ZonedDateTime.parse(plan.getTime())));
         }
-        updateVehiclePlanChannel(vehicleId, uid, vehicleName, channel);
+        updateVehiclePlanChannel(vehicleName, uid, channelGroup, channel);
     }
 
-    private void updateVehiclePlanChannel(String vehicleId, ThingUID uid, String vehicleName, ChannelUID channel) {
-        Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleId);
+    private void updateVehiclePlanChannel(String vehicleName, ThingUID uid, String channelGroup, ChannelUID channel) {
+        Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
 
-        channel = new ChannelUID(uid, vehicleName, CHANNEL_VEHICLE_PLAN_ENABLED);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_ENABLED);
         updateState(channel, planValues.getLeft() ? OnOffType.ON : OnOffType.OFF);
-        channel = new ChannelUID(uid, vehicleName, CHANNEL_VEHICLE_PLAN_SOC);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_SOC);
         updateState(channel, new QuantityType<>(planValues.getMiddle(), Units.PERCENT));
-        channel = new ChannelUID(uid, vehicleName, CHANNEL_VEHICLE_PLAN_TIME);
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_TIME);
         updateState(channel, new DateTimeType(planValues.getRight()));
     }
 
@@ -614,6 +613,30 @@ public class EvccHandler extends BaseThingHandler {
         ChannelUID channelUid = new ChannelUID(thing.getUID(), channelGroupId, channel);
         if (thing.getChannel(channelUid) != null) {
             updateThing(editThing().withoutChannel(channelUid).build());
+        }
+    }
+
+    private class Triple<L, M, R> {
+        private final L left;
+        private final M middle;
+        private final R right;
+
+        private Triple(L left, M middle, R right) {
+            this.left = left;
+            this.middle = middle;
+            this.right = right;
+        }
+
+        private L getLeft() {
+            return left;
+        }
+
+        private M getMiddle() {
+            return middle;
+        }
+
+        private R getRight() {
+            return right;
         }
     }
 }

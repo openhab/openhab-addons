@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
  * This DTO was written for evcc version 0.123.1
  *
  * @author Florian Hotze - Initial contribution
- * @author Luca Arnecke - update to evcc version 0.123.1
+ * @author Luca Arnecke - Update to evcc version 0.123.1
  */
 public class Loadpoint {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go

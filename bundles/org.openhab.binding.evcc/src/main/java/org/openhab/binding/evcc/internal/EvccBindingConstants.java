@@ -21,7 +21,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * used across the whole binding.
  *
  * @author Florian Hotze - Initial contribution
- * @author Luca Arnecke - update to evcc version 0.123.1
+ * @author Luca Arnecke - Update to evcc version 0.123.1
  */
 @NonNullByDefault
 public class EvccBindingConstants {
@@ -29,9 +29,8 @@ public class EvccBindingConstants {
     private static final String BINDING_ID = "evcc";
 
     public static final String CHANNEL_GROUP_ID_GENERAL = "general";
-
-    // regex to check if group id is a loadpoint
-    public static final String CHANNEL_GROUP_ID_LOADPOINT = "^loadpoint.+";
+    public static final String CHANNEL_GROUP_ID_LOADPOINT = "loadpoint";
+    public static final String CHANNEL_GROUP_ID_VEHICLE = "vehicle";
 
     // List of all Channel ids
     public static final String CHANNEL_BATTERY_CAPACITY = "batteryCapacity";

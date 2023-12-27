@@ -34,7 +34,7 @@ import com.google.gson.JsonSyntaxException;
  * API requests were written for evcc version 0.123.1
  *
  * @author Florian Hotze - Initial contribution
- * @author Luca Arnecke - update to evcc version 0.123.1
+ * @author Luca Arnecke - Update to evcc version 0.123.1
  */
 @NonNullByDefault
 public class EvccAPI {
@@ -118,20 +118,20 @@ public class EvccAPI {
     }
 
     // Vehicle specific API calls.
-    public String setVehicleMinSoC(String vehicle, int minSoC) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicle + "/minsoc/" + minSoC, "POST");
+    public String setVehicleMinSoC(String vehicleName, int minSoC) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/minsoc/" + minSoC, "POST");
     }
 
-    public String setVehicleLimitSoC(String vehicle, int limitSoC) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicle + "/limitsoc/" + limitSoC, "POST");
+    public String setVehicleLimitSoC(String vehicleName, int limitSoC) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/limitsoc/" + limitSoC, "POST");
     }
 
-    public String setVehiclePlan(String vehicle, int planSoC, ZonedDateTime planTime) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicle + "/plan/soc/" + planSoC + "/"
+    public String setVehiclePlan(String vehicleName, int planSoC, ZonedDateTime planTime) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/plan/soc/" + planSoC + "/"
                 + planTime.toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "Z", "POST");
     }
 
-    public String removeVehiclePlan(String vehicle) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicle + "/plan/soc", "DELETE");
+    public String removeVehiclePlan(String vehicleName) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/plan/soc", "DELETE");
     }
 }

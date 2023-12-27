@@ -83,7 +83,7 @@ Please note that you have to replace _N_ with your loadpoint number.
 ### Vehicle channels
 
 Those channels exist per configured vehicle.
-Please note that you have to preplace _ID_ with your vehicle id/name.
+Please note that you have to replace _ID_ with your vehicle id/name.
 
 | Channel                      | Type                 | Read/Write | Description                                                              |
 |------------------------------|----------------------|------------|--------------------------------------------------------------------------|
@@ -106,7 +106,7 @@ Thing evcc:device:demo "evcc Demo" [url="https://demo.evcc.io", refreshInterval=
 
 ```java
 // General
-Number:General            evcc_batteryCapacity                        "Battery Capacity [%.0f kWH]"                        <energy>          {channel="evcc:device:demo:general#batteryCapacity"}
+Number:Energy             evcc_batteryCapacity                        "Battery Capacity [%.0f kWH]"                        <energy>          {channel="evcc:device:demo:general#batteryCapacity"}
 Number:Power              evcc_batteryPower                           "Battery Power [%.1f kW]"                            <energy>          {channel="evcc:device:demo:general#batteryPower"}
 Number:Dimensionless      evcc_batterySoC                             "Battery SoC [%d %%]"                                <batterylevel>    {channel="evcc:device:demo:general#batterySoC"}
 Number:Dimensionless      evcc_batteryPrioritySoC                     "Battery Priority SoC [%d %%]"                       <batterylevel>    {channel="evcc:device:demo:general#batteryPrioritySoC"}
