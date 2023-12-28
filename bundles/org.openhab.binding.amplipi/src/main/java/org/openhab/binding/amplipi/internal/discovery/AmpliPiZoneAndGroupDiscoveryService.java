@@ -13,22 +13,23 @@
 package org.openhab.binding.amplipi.internal.discovery;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amplipi.internal.AmpliPiBindingConstants;
 import org.openhab.binding.amplipi.internal.AmpliPiHandler;
 import org.openhab.binding.amplipi.internal.AmpliPiStatusChangeListener;
 import org.openhab.binding.amplipi.internal.model.Group;
 import org.openhab.binding.amplipi.internal.model.Status;
 import org.openhab.binding.amplipi.internal.model.Zone;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * This class discoveres the available zones and groups of the AmpliPi system.
@@ -36,30 +37,26 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  * @author Kai Kreuzer - Initial contribution
  *
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = AmpliPiZoneAndGroupDiscoveryService.class)
 @NonNullByDefault
-public class AmpliPiZoneAndGroupDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService, AmpliPiStatusChangeListener {
+public class AmpliPiZoneAndGroupDiscoveryService extends AbstractThingHandlerDiscoveryService<AmpliPiHandler>
+        implements AmpliPiStatusChangeListener {
 
     private static final int TIMEOUT = 10;
 
-    private @Nullable AmpliPiHandler handler;
     private List<Zone> zones = List.of();
     private List<Group> groups = List.of();
 
     public AmpliPiZoneAndGroupDiscoveryService() throws IllegalArgumentException {
-        super(Set.of(AmpliPiBindingConstants.THING_TYPE_GROUP, AmpliPiBindingConstants.THING_TYPE_ZONE), TIMEOUT, true);
+        super(AmpliPiHandler.class,
+                Set.of(AmpliPiBindingConstants.THING_TYPE_GROUP, AmpliPiBindingConstants.THING_TYPE_ZONE), TIMEOUT,
+                true);
     }
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        AmpliPiHandler ampliPiHander = (AmpliPiHandler) handler;
-        ampliPiHander.addStatusChangeListener(this);
-        this.handler = ampliPiHander;
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
+        super.setThingHandler(handler);
+        Objects.requireNonNull(thingHandler).addStatusChangeListener(this);
     }
 
     @Override
@@ -75,6 +72,7 @@ public class AmpliPiZoneAndGroupDiscoveryService extends AbstractDiscoveryServic
     }
 
     private void createZone(Zone z) {
+        AmpliPiHandler handler = thingHandler;
         if (handler != null) {
             ThingUID bridgeUID = handler.getThing().getUID();
             ThingUID uid = new ThingUID(AmpliPiBindingConstants.THING_TYPE_ZONE, bridgeUID, z.getId().toString());
@@ -86,6 +84,7 @@ public class AmpliPiZoneAndGroupDiscoveryService extends AbstractDiscoveryServic
     }
 
     private void createGroup(Group g) {
+        AmpliPiHandler handler = thingHandler;
         if (handler != null) {
             ThingUID bridgeUID = handler.getThing().getUID();
             ThingUID uid = new ThingUID(AmpliPiBindingConstants.THING_TYPE_GROUP, bridgeUID, g.getId().toString());
@@ -97,11 +96,12 @@ public class AmpliPiZoneAndGroupDiscoveryService extends AbstractDiscoveryServic
     }
 
     @Override
-    public void deactivate() {
+    public void dispose() {
+        AmpliPiHandler handler = thingHandler;
         if (handler != null) {
             handler.removeStatusChangeListener(this);
         }
-        super.deactivate();
+        super.dispose();
     }
 
     @Override
