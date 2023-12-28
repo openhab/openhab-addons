@@ -43,7 +43,7 @@ public class UidUtils {
         String channelNameString;
 
         if (isReadOnly) {
-            channelNameString = valueType + "-channeltype" + "_ro";
+            channelNameString = valueType + "-channeltype-ro";
         } else {
             channelNameString = valueType + "-channeltype";
         }
