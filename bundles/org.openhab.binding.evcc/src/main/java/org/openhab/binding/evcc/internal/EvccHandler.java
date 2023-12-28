@@ -389,7 +389,6 @@ public class EvccHandler extends BaseThingHandler {
                 CoreItemFactory.STRING);
 
         removeChannel(CHANNEL_LOADPOINT_HAS_VEHICLE, channelGroup);
-        removeChannel(CHANNEL_LOADPOINT_HAS_VEHICLE, channelGroup);
         removeChannel("minSoC", channelGroup);
         removeChannel("targetEnergy", channelGroup);
         removeChannel("targetSoC", channelGroup);

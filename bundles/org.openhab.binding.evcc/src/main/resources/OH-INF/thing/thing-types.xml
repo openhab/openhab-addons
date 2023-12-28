@@ -97,7 +97,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<!-- Channels for loadpoints -->
+	<!-- Channel Types for loadpoints -->
 	<channel-type id="activePhases">
 		<item-type>Number</item-type>
 		<label>Charging Active Phases</label>
@@ -292,15 +292,9 @@
 		<category>BatteryLevel</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="vehicleTitle">
-		<item-type>String</item-type>
-		<label>Vehicle Title</label>
-		<description>Name of EV</description>
-		<category>Text</category>
-		<state readOnly="true"/>
-	</channel-type>
 
-	<!-- Channels for vehicles -->
+	<!-- Channel Types for vehicles -->
+    <!-- Channel Types shared across loadpoints and vehicles -->
 	<channel-type id="vehicleTitle">
 		<item-type>String</item-type>
 		<label>Vehicle Title</label>
