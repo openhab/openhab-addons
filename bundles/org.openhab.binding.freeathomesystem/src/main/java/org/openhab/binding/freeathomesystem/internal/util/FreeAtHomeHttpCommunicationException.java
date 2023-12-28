@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * via HTTP link
  *
  * @author Andras Uhrin - Initial contribution
- * @param <FreeAtHomeHttpCommunicationException>
  *
  */
 @NonNullByDefault
