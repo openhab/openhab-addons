@@ -64,7 +64,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
 
     private void generateThingTypes() {
         String label = "free-at-home-device";
-        String description = String.format("Generic free@home device");
+        String description = "Generic free@home device";
 
         List<String> supportedBridgeTypeUids = new ArrayList<>();
         supportedBridgeTypeUids.add(BRIDGE_TYPE_UID.toString());
@@ -100,7 +100,6 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
         this.httpClient = httpClientFactory.createHttpClient("FreeAtHome");
 
         generateThingTypes();
-        logger.debug("FreeAtHomeSystemHandlerFactory created");
     }
 
     @Override
@@ -113,10 +112,8 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (BRIDGE_TYPE_UID.equals(thingTypeUID)) {
-            logger.debug("Create SysAP bridge");
             return new FreeAtHomeBridgeHandler((Bridge) thing, httpClient);
         } else if (FREEATHOMEDEVICE_TYPE_UID.equals(thingTypeUID)) {
-            logger.debug("Create free@home device");
             return new FreeAtHomeDeviceHandler(thing, channelTypeProvider, channelGroupsTypeProvider);
         }
 

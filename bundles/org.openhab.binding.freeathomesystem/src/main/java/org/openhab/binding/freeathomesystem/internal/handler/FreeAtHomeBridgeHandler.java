@@ -706,7 +706,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             // load configuration
             FreeAtHomeBridgeHandlerConfiguration locConfig = getConfigAs(FreeAtHomeBridgeHandlerConfiguration.class);
 
-            ipAddress = locConfig.ipaddress;
+            ipAddress = locConfig.ipAddress;
             password = locConfig.password;
             username = locConfig.username;
 
@@ -745,7 +745,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         // load configuration
         FreeAtHomeBridgeHandlerConfiguration locConfig = getConfigAs(FreeAtHomeBridgeHandlerConfiguration.class);
 
-        ipAddress = locConfig.ipaddress;
+        ipAddress = locConfig.ipAddress;
         password = locConfig.password;
         username = locConfig.username;
     }

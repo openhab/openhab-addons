@@ -68,7 +68,7 @@ public class EventSocket extends WebSocketAdapter {
                 getSession().close(StatusCode.NORMAL, "Thanks");
                 logger.debug("Websocket connection closed: {} ", message);
             } else {
-                logger.info("Received websocket text: {} ", message);
+                logger.debug("Received websocket text: {} ", message);
 
                 FreeAtHomeBridgeHandler bridge = freeAtHomeBridge;
 

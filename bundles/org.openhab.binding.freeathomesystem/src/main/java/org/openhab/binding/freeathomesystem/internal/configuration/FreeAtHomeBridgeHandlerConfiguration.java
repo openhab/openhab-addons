@@ -26,7 +26,7 @@ public class FreeAtHomeBridgeHandlerConfiguration {
     /**
      * Bridgeconfiguration parameter.
      */
-    public String ipaddress = "";
+    public String ipAddress = "";
     public String username = "";
     public String password = "";
 }

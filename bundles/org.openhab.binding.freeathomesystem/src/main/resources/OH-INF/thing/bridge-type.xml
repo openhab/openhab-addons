@@ -19,18 +19,15 @@
 				<context>network-address</context>
 				<label>Sysap IP Address</label>
 				<description>IP Address of the Busch-Jaeger Gateway</description>
-				<default>192.168.1.2</default>
 			</parameter>
 			<parameter name="username" type="text" required="true" groupName="identification">
 				<label>User Name</label>
 				<description>The login name</description>
-				<default>installer</default>
 			</parameter>
 			<parameter name="password" type="text" required="true" groupName="identification">
 				<label>Password</label>
 				<context>password</context>
 				<description>Password for gateway</description>
-				<default>12345</default>
 			</parameter>
 
 		</config-description>

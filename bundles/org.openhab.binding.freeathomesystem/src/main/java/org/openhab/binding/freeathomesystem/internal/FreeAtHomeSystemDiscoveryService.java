@@ -48,15 +48,16 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if (bridge != null) {
-                ThingUID bridgeUID = bridge.getThing().getUID();
+            if (bridgeHandler != null) {
+                ThingUID bridgeUID = bridgeHandler.getThing().getUID();
 
                 List<String> deviceList;
                 try {
-                    deviceList = bridge.getDeviceDeviceList();
+                    deviceList = bridgeHandler.getDeviceDeviceList();
 
                     for (int i = 0; i < deviceList.size(); i++) {
-                        FreeAtHomeDeviceDescription device = bridge.getFreeatHomeDeviceDescription(deviceList.get(i));
+                        FreeAtHomeDeviceDescription device = bridgeHandler
+                                .getFreeatHomeDeviceDescription(deviceList.get(i));
 
                         boolean useGenericDevice = true;
 
@@ -82,7 +83,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
                     stopScan();
                 } catch (FreeAtHomeHttpCommunicationException e) {
                     logger.debug("TCommunication error in device discovery with the bridge: {}",
-                            bridge.getThing().getLabel());
+                            bridgeHandler.getThing().getLabel());
                 }
             }
         }
@@ -99,7 +100,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
     @Override
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
-            this.bridge = bridgeHandler;
+            this.bridgeHandler = bridgeHandler;
         }
     }
 
@@ -110,7 +111,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return bridge;
+        return bridgeHandler;
     }
 
     @Override
