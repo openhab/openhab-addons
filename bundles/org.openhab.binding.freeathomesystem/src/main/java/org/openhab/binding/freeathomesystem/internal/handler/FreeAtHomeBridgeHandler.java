@@ -70,7 +70,6 @@ import com.google.gson.stream.JsonReader;
  * its main communication.
  *
  * @author Andras Uhrin - Initial contribution
- * @param <FreeAtHomeSystemHttpQueueResponse>
  *
  */
 @NonNullByDefault

@@ -86,8 +86,6 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
         } catch (URISyntaxException e) {
             logger.error("Exception during creating config description URI");
         }
-
-        return;
     }
 
     @Activate

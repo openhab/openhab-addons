@@ -74,7 +74,7 @@ The ABB/Busch free@home system is calling its smart home components as free@home
 The free@home system devices can have one or multiple channels depending the device's features.
 During the scanning process the openHAB binding will detect only the devices IDs, the device features will be detected at the point in time, when a openHAB Thing is created.
 At the of the creation the free@home binding will automatically create the relevant channels without any further configuration.
-If a free@home system device has multiple smart-home  channels (e.g. 4x DIN/rail Actuator), the newly created Thing will get all relevant channels to operate all actuators existing inside the free@home device.
+If a free@home system device has multiple smart-home channels (e.g. 4x DIN/rail Actuator), the newly created Thing will get all relevant channels to operate all actuators existing inside the free@home device.
 
 ## Sensors and Actuators of free@home Devices as Things in openHAB
 
@@ -96,7 +96,7 @@ There are several settings for a bridge:
 
 Things are all discovered automatically and visible on the openHAB dashboard after pushing the scan button
 
-If you really like to manually configure a thing:
+In order to manually configure a Thing:
 
 ```java
 Bridge freeathomesystem:bridge:mysysap [ ipaddress="...", username="...", password="..." ]
