@@ -13,7 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.dto;
 
 /**
- * {@TapoBaseRequestInterface} is interface for main requests sent to devices
+ * Interface for main requests sent to devices
  *
  * @author Christian Wild - Initial contribution
  */

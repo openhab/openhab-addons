@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
 import io.reactivex.annotations.Nullable;
 
 /**
- * {@TapoChildRequest} holds child data sent to device
+ * Holds child data sent to device
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Christian Wild - Code revision

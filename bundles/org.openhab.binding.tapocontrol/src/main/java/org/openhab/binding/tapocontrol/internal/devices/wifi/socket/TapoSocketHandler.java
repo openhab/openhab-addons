@@ -48,7 +48,8 @@ public class TapoSocketHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * Function called by {@link TapoDeviceConnector} if new data were received
+     * Function called by {@link org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector} if new data were
+     * received
      * 
      * @param queryCommand command where new data belong to
      */

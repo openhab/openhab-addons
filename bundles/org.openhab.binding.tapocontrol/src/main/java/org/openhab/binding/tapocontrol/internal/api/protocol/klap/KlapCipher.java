@@ -159,8 +159,7 @@ public class KlapCipher {
             throws TapoErrorHandler, NoSuchAlgorithmException {
         byte[] fullBytes = concatBytes("lsk".getBytes(), localSeed, remoteSeed, userHash);
         byte[] byteHash = sha256Encode(fullBytes);
-        byte[] keyBytes = truncateByteArray(byteHash, 0, 16);
-        return keyBytes;
+        return truncateByteArray(byteHash, 0, 16);
     }
 
     /**
@@ -171,8 +170,7 @@ public class KlapCipher {
         /* used to create a hash with which to prefix each request */
         byte[] fullBytes = concatBytes("ldk".getBytes(), localSeed, remoteSeed, userHash);
         byte[] byteHash = sha256Encode(fullBytes);
-        byte[] sigBytes = truncateByteArray(byteHash, 0, 28);
-        return sigBytes;
+        return truncateByteArray(byteHash, 0, 28);
     }
 
     /************************

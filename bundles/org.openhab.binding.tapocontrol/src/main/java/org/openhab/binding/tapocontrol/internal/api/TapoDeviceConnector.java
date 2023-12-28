@@ -27,9 +27,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum;
 import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface;
+import org.openhab.binding.tapocontrol.internal.api.protocol.aes.SecurePassthrough;
 import org.openhab.binding.tapocontrol.internal.api.protocol.klap.KlapProtocol;
 import org.openhab.binding.tapocontrol.internal.api.protocol.passthrough.PassthroughProtocol;
-import org.openhab.binding.tapocontrol.internal.api.protocol.securePassthrough.SecurePassthrough;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
@@ -147,7 +147,6 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
      * Send DeviceQueryCommand to Device
      *
      * @param queryCommand Command to be queried
-     * @param ignoreGap ignore gap to last query. query anyway
      */
     public void sendQueryCommand(String queryCommand) {
         sendQueryCommand(queryCommand, false);
@@ -193,6 +192,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
      * 
      * @param command command
      * @param deviceDataClass clazz contains devicedata which should be sent
+     * @param ignoreGap ignore gap to last query. query anyway
      */
     public void sendDeviceCommand(String command, Object deviceDataClass, boolean ignoreGap) {
         long now = System.currentTimeMillis();
@@ -209,13 +209,18 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     /**
      * Send command to child device
      * 
-     * @param deviceId Id of child-device
      * @param childData ChildDeviceData-Class
      */
     public void sendChildCommand(TapoChildDeviceData childData) {
         sendChildCommand(childData, false);
     }
 
+    /**
+     * Send command to child device
+     * 
+     * @param childData ChildDeviceData-Class
+     * @param ignoreGap ignore gap to last query. query anyway
+     */
     public void sendChildCommand(TapoChildDeviceData childData, boolean ignoreGap) {
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastSent + TAPO_SEND_MIN_GAP_MS) {
@@ -227,14 +232,19 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     }
 
     /**
-     * send asynchron multi-request
+     * send asynchronous multi-request
+     *
+     * @param requests list of TapoRequests should be sent to device
      */
     public void sendMultipleRequest(List<TapoRequest> requests) {
         sendMultipleRequest(requests, false);
     }
 
     /**
-     * send asynchron multi-request igrnoring min-gap
+     * send asynchronous multi-request igrnoring min-gap
+     * 
+     * @param requests list of TapoRequests should be sent to device
+     * @param ignoreGap ignoreGap ignore gap to last query. query anyway
      */
     public void sendMultipleRequest(List<TapoRequest> requests, boolean ignoreGap) {
         long now = System.currentTimeMillis();
@@ -247,7 +257,9 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     }
 
     /**
-     * send asynchron multi-request igrnoring min-gap
+     * send asynchron multi-request
+     * 
+     * @param requests array of TapoRequest
      */
     public void sendMultipleRequest(TapoRequest... requests) {
         sendMultipleRequest(requests);
@@ -255,6 +267,8 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * send asynchron request to protocol handler
+     * 
+     * @param tapoRequest Request inherits TapoBaseRequestInterface
      */
     public void sendAsyncRequest(TapoBaseRequestInterface tapoRequest) {
         try {
@@ -302,9 +316,10 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     /**
      * handle and decrypt response from device
      * 
-     * @param responseBody string response from device
+     * @param response TapoResponse was received
      * @param command was sent to device belonging to response
      */
+    @Override
     public void handleResponse(TapoResponse response, String command) {
         if (!response.hasError()) {
             if (DEVICE_CMD_MULTIPLE_REQ.equals(command)) {
@@ -317,6 +332,12 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
         }
     }
 
+    /**
+     * Handle response got from single-request
+     * 
+     * @param response response from request
+     * @param command command was sent
+     */
     private void handleSingleResponse(TapoResponse response, String command) {
         logger.trace("({}) handle singleResponse from command '{}'", uid, command);
         if (DEVICE_CMDLIST_QUERY.contains(command)) {
@@ -328,6 +349,11 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
         }
     }
 
+    /**
+     * Handle response got from multiple-request
+     * 
+     * @param response response from request
+     */
     private void handleMultipleRespone(TapoResponse response) {
         logger.trace("({}) handle multipleResponse '{}'", uid, response);
         for (TapoResponse results : response.responses()) {
@@ -336,7 +362,10 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     }
 
     /**
-     * parse responsedata from result to object and inform device about new data
+     * Parse responsedata from result to object and inform device about new data
+     * 
+     * @param response response from request
+     * @param command command was sent
      */
     private void handleQueryResult(TapoResponse response, String command) {
         if (!response.hasError()) {
@@ -351,6 +380,8 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Handle SuccessResponse (setDeviceInfo)
+     * 
+     * @param response response from request
      */
     private void handleSuccessResponse(TapoResponse response) {
         if (response.hasError()) {
@@ -362,9 +393,9 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     }
 
     /**
-     * handle custom response
+     * Handle custom response
      *
-     * @param responseBody String with responseBody from device
+     * @param response response from request
      */
     protected void handleCustomResponse(TapoResponse response) {
         logger.trace("({}) handle custom response '{}'", uid, response);
@@ -374,6 +405,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     /**
      * handle error
      */
+    @Override
     public void handleError(TapoErrorHandler tapoError) {
         logger.debug("({}) handle error '{}'", uid, tapoError.getMessage());
         device.setError(tapoError);
@@ -413,7 +445,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     /**
      * Get Dataobject from response
      * 
-     * @param clazz object class response schould be transformed
+     * @param clazz object class response should be transformed
      */
     public <T> T getResponseData(Class<T> clazz) {
         return getObjectFromJson(queryResponse.result(), clazz);
@@ -432,18 +464,22 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
         }
     }
 
+    @Override
     public HttpClient getHttpClient() {
         return bridge.getHttpClient();
     }
 
+    @Override
     public void responsePasstrough(String response, String command) {
         throw new UnsupportedOperationException("Unimplemented method 'responsePasstrough'");
     }
 
+    @Override
     public String getBaseUrl() {
         return device.getIpAddress() + ":" + device.getDeviceConfig().httpPort;
     }
 
+    @Override
     public String getThingUID() {
         return device.getThingUID().toString();
     }

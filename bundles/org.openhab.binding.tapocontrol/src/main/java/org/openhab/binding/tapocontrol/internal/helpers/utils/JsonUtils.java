@@ -28,6 +28,13 @@ import com.google.gson.JsonParseException;
  */
 @NonNullByDefault
 public class JsonUtils {
+
+    /**
+     * Check if string is valid json
+     * 
+     * @param json string to check
+     * @return true if is valid json
+     */
     public static boolean isValidJson(String json) {
         try {
             JsonObject jsnObject = GSON.fromJson(json, JsonObject.class);
@@ -38,9 +45,11 @@ public class JsonUtils {
     }
 
     /**
+     * Get String from jsonObject with a json key
      * 
-     * @param name parameter name
-     * @param defVal - default value;
+     * @param jsonObject jsonObject
+     * @param name parameter name (json-key)
+     * @param defVal default value;
      * @return string value
      */
     public static String jsonObjectToString(@Nullable JsonObject jsonObject, String name, String defVal) {
@@ -52,7 +61,9 @@ public class JsonUtils {
     }
 
     /**
+     * Get String from jsonObject
      * 
+     * @param jsonObject jsonObject
      * @param name parameter name
      * @return string value
      */
@@ -61,8 +72,10 @@ public class JsonUtils {
     }
 
     /**
+     * Get Boolean from jsonObject with a json key
      * 
-     * @param name parameter name
+     * @param jsonObject jsonObject
+     * @param name parameter name (json-key)
      * @param defVal - default value;
      * @return boolean value
      */
@@ -75,8 +88,10 @@ public class JsonUtils {
     }
 
     /**
+     * Get Boolean from jsonObject with a json key
      * 
-     * @param name parameter name
+     * @param jsonObject jsonObject
+     * @param name parameter name (json-key)
      * @return boolean value
      */
     public static Boolean jsonObjectToBool(@Nullable JsonObject jsonObject, String name) {
@@ -84,8 +99,10 @@ public class JsonUtils {
     }
 
     /**
+     * Get Integer from jsonObject with a json key
      * 
-     * @param name parameter name
+     * @param jsonObject jsonObject
+     * @param name parameter name (json-key)
      * @param defVal - default value;
      * @return integer value
      */
@@ -98,8 +115,10 @@ public class JsonUtils {
     }
 
     /**
+     * Get Integer from jsonObject with a json key
      * 
-     * @param name parameter name
+     * @param jsonObject jsonObject
+     * @param name parameter name (json-key)
      * @return integer value
      */
     public static Integer jsonObjectToInt(@Nullable JsonObject jsonObject, String name) {
@@ -107,7 +126,9 @@ public class JsonUtils {
     }
 
     /**
+     * Get Number from jsonObject with a json key
      * 
+     * @param jsonObject jsonObject
      * @param name parameter name
      * @param defVal - default value;
      * @return number value
@@ -121,7 +142,9 @@ public class JsonUtils {
     }
 
     /**
+     * Get Number from jsonObject with a json key
      * 
+     * @param jsonObject jsonObject
      * @param name parameter name
      * @return number value
      */

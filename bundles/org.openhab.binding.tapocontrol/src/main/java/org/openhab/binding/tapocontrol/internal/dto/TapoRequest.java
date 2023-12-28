@@ -20,7 +20,7 @@ import com.google.gson.annotations.Expose;
 import io.reactivex.annotations.Nullable;
 
 /**
- * {@TapoRequest} holds data sent to device
+ * Holds data sent to device
  *
  * @author Christian Wild - Initial contribution
  */

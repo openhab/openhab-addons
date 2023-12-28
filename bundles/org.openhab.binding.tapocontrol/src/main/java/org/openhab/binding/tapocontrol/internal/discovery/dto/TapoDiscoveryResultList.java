@@ -102,6 +102,7 @@ public class TapoDiscoveryResultList implements Iterable<TapoDiscoveryResult> {
         return Objects.requireNonNullElse(deviceList, List.of());
     }
 
+    @Override
     public Iterator<TapoDiscoveryResult> iterator() {
         return deviceList.iterator();
     }

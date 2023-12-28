@@ -28,6 +28,7 @@ public class StringUtils {
      * 
      * @param s - string to be converted
      * @param defVal - Default Value
+     * @return boolean value
      */
     public Boolean stringToBool(@Nullable String s, boolean defVal) {
         if (s == null) {
@@ -45,6 +46,7 @@ public class StringUtils {
      * 
      * @param s - string to be converted
      * @param defVal - Default Value
+     * @return Integer
      */
     public Integer stringToInteger(@Nullable String s, Integer defVal) {
         if (s == null) {

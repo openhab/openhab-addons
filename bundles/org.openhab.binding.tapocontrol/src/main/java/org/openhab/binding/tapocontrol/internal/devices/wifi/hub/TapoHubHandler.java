@@ -20,8 +20,8 @@ import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
@@ -109,7 +109,7 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(TapoChildDiscoveryService.class);
+        return Set.of(TapoChildDiscoveryService.class);
     }
 
     /**
@@ -154,7 +154,8 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
     }
 
     /**
-     * Function called by {@link TapoDeviceConnector} if new data were received
+     * Function called by {@link org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector} if new data were
+     * received
      * 
      * @param queryCommand command where new data belong to
      */

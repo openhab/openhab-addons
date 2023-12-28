@@ -64,12 +64,14 @@ public class TapoCloudConnector implements TapoConnectorInterface {
     /**
      * handle received reponse-string
      */
+    @Override
     public void responsePasstrough(String response, String command) {
     }
 
     /**
      * handle received response
      */
+    @Override
     public void handleResponse(TapoResponse tapoResponse, String command) throws TapoErrorHandler {
         switch (command) {
             case CLOUD_CMD_LOGIN:
@@ -87,6 +89,7 @@ public class TapoCloudConnector implements TapoConnectorInterface {
     /**
      * set bridge error
      */
+    @Override
     public void handleError(TapoErrorHandler tapoError) {
         bridge.setError(tapoError);
     }
@@ -157,10 +160,12 @@ public class TapoCloudConnector implements TapoConnectorInterface {
      * Get Values
      **********************/
 
+    @Override
     public HttpClient getHttpClient() {
         return bridge.getHttpClient();
     }
 
+    @Override
     public String getThingUID() {
         return bridge.getUID().toString();
     }
@@ -172,6 +177,7 @@ public class TapoCloudConnector implements TapoConnectorInterface {
     /**
      * Get Cloud-URL
      */
+    @Override
     public String getBaseUrl() {
         String url = TAPO_CLOUD_URL;
         if (!token.isBlank()) {

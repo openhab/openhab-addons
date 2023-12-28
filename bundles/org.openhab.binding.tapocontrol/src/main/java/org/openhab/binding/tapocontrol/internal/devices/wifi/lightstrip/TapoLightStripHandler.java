@@ -51,7 +51,8 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * Function called by {@link TapoDeviceConnector} if new data were received
+     * Function called by {@link org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector} if new data were
+     * received
      * 
      * @param queryCommand command where new data belong to
      */
@@ -214,7 +215,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     /**
      * Set light effect
      * 
-     * @param fxName (String) id of LightEffect
+     * @param lightEffect TapoLightEffect
      */
     protected void setLightEffect(TapoLightEffect lightEffect) {
         connector.sendDeviceCommand(DEVICE_CMD_SET_LIGHT_FX, lightEffect);

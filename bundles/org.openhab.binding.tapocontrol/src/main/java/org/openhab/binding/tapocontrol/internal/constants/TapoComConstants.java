@@ -17,7 +17,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link TapoComSettings} class defines communication constants, which are
+ * The {@link TapoComConstants} class defines communication constants, which are
  * used across the whole binding.
  *
  * @author Christian Wild - Initial contribution

@@ -97,7 +97,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     }
 
     /**
-     * Init {@Link TapoBridgeHandler} and {@Link TapoConnector}
+     * Init TapoBridgeHandler TapoDeviceConnector
      */
     protected void initConnector() {
         Bridge bridgeThing = getBridge();
@@ -219,7 +219,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     /**
      * Stop scheduler
      *
-     * @param scheduler ScheduledFeature<?> which schould be stopped
+     * @param scheduler ScheduledFeature which should be stopped
      */
     protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
         if (scheduler != null) {
@@ -359,7 +359,8 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     }
 
     /**
-     * Function called by {@link TapoDeviceConnector} if new data were received
+     * Function called by {@link org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector} if new data were
+     * received
      * 
      * @param queryCommand command where new data belong to
      */
@@ -402,8 +403,8 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
 
     /**
      * Handle full responsebody received from connector
-     *
-     * @param responseBody
+     * 
+     * @param fullResponse complete TapoResponse
      */
     public void responsePasstrough(TapoResponse fullResponse) {
     }
@@ -498,7 +499,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * If only one property must be changed, there is also a convenient method
      * updateProperty(String name, String value).
      *
-     * @param TapobaseDeviceData
+     * @param baseDeviceData Object BaseDeviceData
      */
     protected void updateDeviceProperties(TapoBaseDeviceData baseDeviceData) {
         /* device properties */

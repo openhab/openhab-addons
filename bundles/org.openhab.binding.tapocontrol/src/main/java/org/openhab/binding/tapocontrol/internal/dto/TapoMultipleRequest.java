@@ -25,7 +25,7 @@ import com.google.gson.annotations.Expose;
 import io.reactivex.annotations.Nullable;
 
 /**
- * {@TapoMultiRequest} holds multi-request-data sent to device
+ * Holds multi-request-data sent to device
  *
  * @author Christian Wild - Changed SubRequest top MultiRequest
  */

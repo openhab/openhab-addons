@@ -87,7 +87,7 @@ public class PassthroughProtocol implements TapoProtocolInterface {
      **********************/
 
     /*
-     * send synchron request - response will be handled in [responseReceived()] function
+     * send synchronous request - response will be handled in [responseReceived()] function
      */
     @Override
     public void sendRequest(TapoRequest tapoRequest) throws TapoErrorHandler {
@@ -122,7 +122,7 @@ public class PassthroughProtocol implements TapoProtocolInterface {
     }
 
     /*
-     * send asynchron request - response will be handled in [asyncResponseReceived()] function
+     * send asynchronous request - response will be handled in [asyncResponseReceived()] function
      */
     @Override
     public void sendAsyncRequest(TapoBaseRequestInterface tapoRequest) throws TapoErrorHandler {
@@ -166,7 +166,6 @@ public class PassthroughProtocol implements TapoProtocolInterface {
                     } catch (TapoErrorHandler tapoError) {
                         httpDelegator.handleError(tapoError);
                     }
-
                 }
             }
         });
@@ -177,7 +176,7 @@ public class PassthroughProtocol implements TapoProtocolInterface {
      ************************/
 
     /**
-     * handle synchron request-response - pushes TapoResponse to [httpDelegator.handleResponse()]-function
+     * handle synchronous request-response - pushes TapoResponse to [httpDelegator.handleResponse()]-function
      */
     @Override
     public void responseReceived(ContentResponse response, String command) throws TapoErrorHandler {
@@ -197,7 +196,7 @@ public class PassthroughProtocol implements TapoProtocolInterface {
     }
 
     /**
-     * handle asynchron request-response - pushes TapoResponse to [httpDelegator.handleResponse()]-function
+     * handle asynchronous request-response - pushes TapoResponse to [httpDelegator.handleResponse()]-function
      */
     @Override
     public void asyncResponseReceived(String responseBody, String command) throws TapoErrorHandler {

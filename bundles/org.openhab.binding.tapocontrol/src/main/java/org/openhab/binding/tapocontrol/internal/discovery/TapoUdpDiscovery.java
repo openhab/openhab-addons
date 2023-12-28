@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.discovery.dto.TapoDiscoveryResult;
@@ -158,11 +159,11 @@ public class TapoUdpDiscovery {
             List<InetAddress> broadcastList = new ArrayList<>();
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
+                @Nullable
                 NetworkInterface networkInterface = interfaces.nextElement();
                 if (networkInterface.isLoopback() || !networkInterface.isUp()) {
                     continue;
                 }
-
                 networkInterface.getInterfaceAddresses().stream().map(a -> a.getBroadcast()).filter(Objects::nonNull)
                         .forEach(broadcastList::add);
             }

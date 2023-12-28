@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.api.protocol.securePassthrough;
+package org.openhab.binding.tapocontrol.internal.api.protocol.aes;
 
 import static java.util.Base64.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
@@ -59,9 +59,9 @@ public class SecurePasstroughCipher {
     /**
      * CREATE NEW CIPHER WITH KEY AND CREDENTIALS
      * 
-     * @param handshakeKey Key from Handshake-Request
-     * @param TapoKeyPair keyPair
-     * @throws Exception
+     * @param handshakeKey key from Handshake-Request
+     * @param keyPair keyPair
+     * @throws TapoErrorHandler
      */
     public SecurePasstroughCipher(String handshakeKey, TapoKeyPair keyPair) throws TapoErrorHandler {
         setKey(handshakeKey, keyPair);
@@ -70,8 +70,8 @@ public class SecurePasstroughCipher {
     /**
      * SET NEW KEY AND CREDENTIALS
      * 
-     * @param handshakeKey
-     * @param credentials
+     * @param handshakeKey key from Handshake-Request
+     * @param keyPair keyPair
      */
     public void setKey(String handshakeKey, TapoKeyPair keyPair) throws TapoErrorHandler {
         logger.trace("Init passtroughCipher with key: {} ", handshakeKey);

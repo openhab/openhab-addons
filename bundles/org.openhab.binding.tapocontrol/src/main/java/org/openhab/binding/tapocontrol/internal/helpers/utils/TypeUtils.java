@@ -43,16 +43,16 @@ public class TypeUtils {
      * @param boolVal
      */
     public static OnOffType getOnOffType(@Nullable Boolean boolVal) {
-        return (boolVal != null ? boolVal ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
+        return boolVal != null ? OnOffType.from(boolVal) : OnOffType.OFF;
     }
 
     /**
-     * Return OnOffType from bool
+     * Return OnOffType from Integer
      * 
-     * @param boolVal
+     * @param intVal
      */
     public static OnOffType getOnOffType(Integer intVal) {
-        return intVal == 0 ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(intVal != 0);
     }
 
     /**
@@ -120,8 +120,8 @@ public class TypeUtils {
      * Return QuantityType with Time
      * 
      * @param numVal Number with value
-     * @param unit TimeUnit (Unit<Time>)
-     * @return QuantityType<Time>
+     * @param unit TimeUnit
+     * @return QuantityType of Type Time
      */
     public static QuantityType<Time> getTimeType(@Nullable Number numVal, Unit<Time> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
@@ -131,8 +131,8 @@ public class TypeUtils {
      * Return QuantityType with Power
      * 
      * @param numVal Number with value
-     * @param unit PowerUnit (Unit<Power>)
-     * @return QuantityType<Power>
+     * @param unit PowerUnit
+     * @return QuantityType of Type Power
      */
     public static QuantityType<Power> getPowerType(@Nullable Number numVal, Unit<Power> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
@@ -142,8 +142,8 @@ public class TypeUtils {
      * Return QuantityType with Energy
      * 
      * @param numVal Number with value
-     * @param unit PowerUnit (Unit<Power>)
-     * @return QuantityType<Energy>
+     * @param unit PowerUnit
+     * @return QuantityType of Type Energy
      */
     public static QuantityType<Energy> getEnergyType(@Nullable Number numVal, Unit<Energy> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
@@ -153,8 +153,8 @@ public class TypeUtils {
      * Return QuantityType with Temperature
      * 
      * @param numVal Number with value
-     * @param unit TemperatureUnit (Unit<Temperature>)
-     * @return QuantityType<Temperature>
+     * @param unit TemperatureUnit
+     * @return QuantityType of Type Temperature
      */
     public static QuantityType<Temperature> getTemperatureType(@Nullable Number numVal, Unit<Temperature> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);

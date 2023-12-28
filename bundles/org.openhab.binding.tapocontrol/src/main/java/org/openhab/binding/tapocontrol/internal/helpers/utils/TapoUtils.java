@@ -92,15 +92,14 @@ public class TapoUtils {
      */
     public static String formatMac(String mac, char newDivisionChar) {
         String unformatedMac = unformatMac(mac);
-        String formatedMac = unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
-        return formatedMac;
+        return unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
     }
 
     /**
      * unformat MAC-Address replace all division chars
      * 
-     * @param mac
-     * @return
+     * @param mac string with mac address
+     * @return mac address without any division chars
      */
     public static String unformatMac(String mac) {
         mac = mac.replace("-", "");

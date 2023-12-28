@@ -164,7 +164,7 @@ public abstract class TapoChildDeviceHandler extends BaseThingHandler {
     /**
      * UPDATE PROPERTIES
      *
-     * @param TapoDeviceInfo
+     * @param deviceInfo ChildDeviceData
      */
     protected void devicePropertiesChanged(TapoChildDeviceData deviceInfo) {
         logger.trace("({}) devicePropertiesChanged ", uid);

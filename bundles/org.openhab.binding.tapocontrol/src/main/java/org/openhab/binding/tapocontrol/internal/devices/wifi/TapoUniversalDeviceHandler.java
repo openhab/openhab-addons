@@ -64,7 +64,8 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
     }
 
     /**
-     * Function called by {@link TapoDeviceConnector} if new data were received
+     * Function called by {@link org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector} if new data were
+     * received
      * 
      * @param queryCommand command where new data belong to
      */
@@ -254,7 +255,7 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
     /**
      * Handle full responsebody received from connector
      * 
-     * @param responseBody
+     * @param fullResponse TapoResponse received
      */
     @Override
     public void responsePasstrough(TapoResponse fullResponse) {
@@ -266,7 +267,7 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
     /**
      * UPDATE PROPERTIES
      * 
-     * @param TapoDeviceInfo
+     * @param deviceInfo TapoLightStripData
      */
     protected void updateChannels(TapoLightStripData deviceInfo) {
         updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT), getOnOffType(deviceInfo.isOn()));

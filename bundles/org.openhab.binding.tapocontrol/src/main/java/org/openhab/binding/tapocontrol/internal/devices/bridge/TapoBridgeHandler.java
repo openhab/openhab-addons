@@ -158,7 +158,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     /**
      * Stop scheduler
      * 
-     * @param scheduler ScheduledFeature<?> which schould be stopped
+     * @param scheduler ScheduledFeature which should be stopped
      */
     protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
         if (scheduler != null) {
