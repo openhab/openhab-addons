@@ -227,8 +227,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof FreeAtHomeBridgeHandler) {
-                freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
+            if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
+                freeAtHomeBridge = bridgeHandler;
             }
         }
 
@@ -275,8 +275,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof FreeAtHomeBridgeHandler) {
-                freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
+            if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
+                freeAtHomeBridge = bridgeHandler;
             }
         }
 
@@ -368,8 +368,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             if (bridge != null) {
                 ThingHandler handler = bridge.getHandler();
 
-                if (handler instanceof FreeAtHomeBridgeHandler) {
-                    freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
+                if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
+                    freeAtHomeBridge = bridgeHandler;
 
                     device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
                 }
@@ -483,8 +483,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             if (bridge != null) {
                 ThingHandler handler = bridge.getHandler();
 
-                if (handler instanceof FreeAtHomeBridgeHandler) {
-                    freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
+                if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
+                    freeAtHomeBridge = bridgeHandler;
 
                     device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
                 }
@@ -541,8 +541,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             if (bridge != null) {
                 ThingHandler handler = bridge.getHandler();
 
-                if (handler instanceof FreeAtHomeBridgeHandler) {
-                    freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
+                if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
+                    freeAtHomeBridge = bridgeHandler;
 
                     device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
                 }
