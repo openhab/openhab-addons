@@ -84,7 +84,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
 
             this.thingTypeProvider.addThingType(thingType);
         } catch (URISyntaxException e) {
-            logger.debug("Exception during creating config description URI");
+            logger.error("Exception during creating config description URI");
         }
 
         return;
