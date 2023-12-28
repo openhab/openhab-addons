@@ -38,8 +38,8 @@ import org.openhab.binding.growatt.internal.GrowattChannels.UoM;
 import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
 import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
-import org.openhab.binding.growatt.internal.dto.GrottIntegerDeserializer;
 import org.openhab.binding.growatt.internal.dto.GrottValues;
+import org.openhab.binding.growatt.internal.gson.GrottIntegerDeserializer;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -348,6 +348,16 @@ public class GrowattTest {
             SecurityException, IllegalAccessException, IllegalArgumentException {
         GrottValues grottValues = loadGrottValues("3phase");
         assertNotNull(grottValues);
+
+        Map<String, QuantityType<?>> channelStates = grottValues.getChannelStates();
+        assertNotNull(channelStates);
+        assertEquals(63, channelStates.size());
+
+        assertEquals(QuantityType.valueOf(-36.5, Units.WATT), channelStates.get("inverter-power"));
+        assertEquals(QuantityType.valueOf(11, Units.PERCENT), channelStates.get("battery-soc"));
+        assertEquals(QuantityType.valueOf(408.4, Units.VOLT), channelStates.get("grid-voltage-rs"));
+        assertEquals(QuantityType.valueOf(326.5, Units.VOLT), channelStates.get("n-bus-voltage"));
+        assertEquals(QuantityType.valueOf(404.1, Units.VOLT), channelStates.get("battery-voltage"));
     }
 
     @Test
@@ -355,5 +365,14 @@ public class GrowattTest {
             SecurityException, IllegalAccessException, IllegalArgumentException {
         GrottValues grottValues = loadGrottValues("meter");
         assertNotNull(grottValues);
+
+        Map<String, QuantityType<?>> channelStates = grottValues.getChannelStates();
+        assertNotNull(channelStates);
+        assertEquals(13, channelStates.size());
+
+        assertEquals(QuantityType.valueOf(171.0, Units.WATT), channelStates.get("inverter-power-s"));
+        assertEquals(QuantityType.valueOf(237.4, Units.VOLT), channelStates.get("grid-voltage-s"));
+        assertEquals(QuantityType.valueOf(1.5, Units.AMPERE), channelStates.get("inverter-current-s"));
+        assertEquals(QuantityType.valueOf(409.5, Units.VOLT), channelStates.get("grid-voltage-rs"));
     }
 }

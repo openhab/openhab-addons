@@ -18,7 +18,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.growatt.internal.discovery.GrowattDiscoveryService;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
-import org.openhab.binding.growatt.internal.dto.GrottIntegerDeserializer;
+import org.openhab.binding.growatt.internal.gson.GrottIntegerDeserializer;
 import org.openhab.binding.growatt.internal.servlet.GrowattHttpServlet;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.growatt.internal.dto;
+package org.openhab.binding.growatt.internal.gson;
 
 import java.lang.reflect.Type;
 import java.util.Objects;
@@ -24,16 +24,23 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
- * Special deserializer for integer values. Handles integer overflows gently.
+ * Special deserializer for integer values. It processes inputs which overflow the Integer.MAX_VALUE limit by
+ * transposing them to negative numbers by means of the 2's complement process.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class GrottIntegerDeserializer implements JsonDeserializer<Integer> {
 
+    private static final long INT_BIT_MASK = 0xffffffff;
+
     @Override
     public @NonNull Integer deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
             @Nullable JsonDeserializationContext context) throws JsonParseException {
         long value = Long.parseLong(Objects.requireNonNull(json).getAsString());
+        if (value > Integer.MAX_VALUE) {
+            // transpose values above Integer.MAX_VALUE to a negative int by 2's complement
+            return Integer.valueOf(1 - (int) (value ^ INT_BIT_MASK));
+        }
         return Long.valueOf(value).intValue();
     }
 }

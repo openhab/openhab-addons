@@ -163,10 +163,10 @@ public class GrottValues {
 
     // battery data
     public @Nullable @SerializedName(value = "batterytype") Integer battery_type;
-    public @Nullable @SerializedName(value = "batttemp", alternate = { "bdc1_tempa" }) Integer battery_temperature;
-    public @Nullable @SerializedName(value = "vbat", alternate = { "uwBatVolt_DSP", "bat_Volt", "bdc1_vbat" }) Integer battery_voltage;
-    public @Nullable @SerializedName(value = "bat_dsp") Integer battery_display;
-    public @Nullable @SerializedName(value = "SOC", alternate = { "batterySOC", "bdc1_soc" }) Integer battery_soc;
+    public @Nullable @SerializedName(value = "batttemp", alternate = { "bms_batterytemp" }) Integer battery_temperature;
+    public @Nullable @SerializedName(value = "vbat", alternate = { "uwBatVolt_DSP", "bat_Volt", "bms_batteryvolt" }) Integer battery_voltage;
+    public @Nullable @SerializedName(value = "bat_dsp", alternate = { "bms_status" }) Integer battery_display;
+    public @Nullable @SerializedName(value = "SOC", alternate = { "batterySOC", "bms_soc" }) Integer battery_soc;
 
     // fault codes
     public @Nullable @SerializedName(value = "systemfaultword0", alternate = { "isof", "faultBit" }) Integer system_fault_0;
