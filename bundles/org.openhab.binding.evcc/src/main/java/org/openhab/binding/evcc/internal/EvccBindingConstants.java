@@ -64,7 +64,7 @@ public class EvccBindingConstants {
     public static final String CHANNEL_LOADPOINT_VEHICLE_PRESENT = "vehiclePresent";
     public static final String CHANNEL_LOADPOINT_VEHICLE_RANGE = "vehicleRange";
     public static final String CHANNEL_LOADPOINT_VEHICLE_SOC = "vehicleSoC";
-    public static final String CHANNEL_LOADPOINT_VEHICLE_TITLE = "loadpointVehicleTitle";
+    public static final String CHANNEL_LOADPOINT_VEHICLE_TITLE = "vehicleTitle";
     public static final String CHANNEL_VEHICLE_TITLE = "vehicleTitle";
     public static final String CHANNEL_VEHICLE_MIN_SOC = "vehicleMinSoC";
     public static final String CHANNEL_VEHICLE_LIMIT_SOC = "vehicleLimitSoC";

@@ -292,7 +292,7 @@
 		<category>BatteryLevel</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="loadpointVehicleTitle">
+	<channel-type id="vehicleTitle">
 		<item-type>String</item-type>
 		<label>Vehicle Title</label>
 		<description>Name of EV</description>

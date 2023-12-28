@@ -392,7 +392,7 @@ public class EvccHandler extends BaseThingHandler {
     }
 
     private void createChannelsVehicle(String vehicleName) {
-        final String channelGroup = "vehicle" + vehicleName;
+        final String channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
         createChannel(CHANNEL_VEHICLE_TITLE, channelGroup, CHANNEL_TYPE_UID_VEHICLE_TITLE, CoreItemFactory.STRING);
         createChannel(CHANNEL_VEHICLE_MIN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_MIN_SOC, "Number:Dimensionless");
         createChannel(CHANNEL_VEHICLE_LIMIT_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_LIMIT_SOC,
