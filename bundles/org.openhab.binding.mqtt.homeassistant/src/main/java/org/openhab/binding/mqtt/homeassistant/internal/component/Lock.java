@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -82,7 +83,8 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
                         channelConfiguration.stateUnlocking, channelConfiguration.stateJammed },
                 channelConfiguration.payloadLock, channelConfiguration.payloadUnlock);
 
-        buildChannel(LOCK_CHANNEL_ID, lockValue, "Lock", componentConfiguration.getUpdateListener())
+        buildChannel(LOCK_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_SWITCH, lockValue, "Lock",
+                componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
@@ -103,7 +105,8 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
         stateValue = new TextValue(new String[] { channelConfiguration.stateJammed, channelConfiguration.stateLocked,
                 channelConfiguration.stateLocking, channelConfiguration.stateUnlocked,
                 channelConfiguration.stateUnlocking }, commands);
-        buildChannel(STATE_CHANNEL_ID, stateValue, "State", componentConfiguration.getUpdateListener())
+        buildChannel(STATE_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_STRING, stateValue, "State",
+                componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())

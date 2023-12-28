@@ -37,6 +37,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.component.Sensor;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Switch;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.StateDescription;
 
 /**
  * Tests for {@link HomeAssistantThingHandler}
@@ -73,8 +74,8 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
-        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, transformationServiceProvider,
-                SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
+                channelTypeRegistry, transformationServiceProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         nonSpyThingHandler = thingHandler;
@@ -106,7 +107,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
         thingHandler.delayedProcessing.forceProcessNow();
         assertThat(haThing.getChannels().size(), CoreMatchers.is(6));
-        verify(channelTypeProvider, times(6)).setChannelType(any(), any());
+        verify(stateDescriptionProvider, times(6)).setDescription(any(), any(StateDescription.class));
         verify(channelTypeProvider, times(1)).setChannelGroupType(any(), any());
 
         configTopic = "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config";
@@ -117,7 +118,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
         thingHandler.delayedProcessing.forceProcessNow();
         assertThat(haThing.getChannels().size(), CoreMatchers.is(7));
-        verify(channelTypeProvider, times(7)).setChannelType(any(), any());
+        verify(stateDescriptionProvider, times(7)).setDescription(any(), any(StateDescription.class));
         verify(channelTypeProvider, times(2)).setChannelGroupType(any(), any());
     }
 
@@ -240,7 +241,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
                 getResourceAsByteArray("component/configTS0601AutoLock.json"));
         thingHandler.delayedProcessing.forceProcessNow();
         assertThat(haThing.getChannels().size(), CoreMatchers.is(7));
-        verify(channelTypeProvider, times(7)).setChannelType(any(), any());
+        verify(stateDescriptionProvider, times(7)).setDescription(any(), any(StateDescription.class));
 
         // When dispose
         thingHandler.dispose();
@@ -250,8 +251,8 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
             verify(bridgeConnection, timeout(SUBSCRIBE_TIMEOUT)).unsubscribe(eq(t), any());
         });
 
-        // Expect channel types removed, 6 for climate and 1 for switch
-        verify(channelTypeProvider, times(7)).removeChannelType(any());
+        // Expect channel descriptions removed, 6 for climate and 1 for switch
+        verify(stateDescriptionProvider, times(7)).remove(any());
         // Expect channel group types removed, 1 for each component
         verify(channelTypeProvider, times(2)).removeChannelGroupType(any());
     }

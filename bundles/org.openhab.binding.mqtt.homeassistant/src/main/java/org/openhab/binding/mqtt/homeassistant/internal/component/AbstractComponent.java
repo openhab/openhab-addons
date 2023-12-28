@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
+import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
@@ -45,6 +46,9 @@ import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.CommandDescription;
+import org.openhab.core.types.StateDescription;
 
 import com.google.gson.Gson;
 
@@ -138,9 +142,10 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         }
     }
 
-    protected ComponentChannel.Builder buildChannel(String channelID, Value valueState, String label,
-            ChannelStateUpdateListener channelStateUpdateListener) {
-        return new ComponentChannel.Builder(this, channelID, valueState, label, channelStateUpdateListener);
+    protected ComponentChannel.Builder buildChannel(String channelID, ChannelTypeUID channelTypeUID, Value valueState,
+            String label, ChannelStateUpdateListener channelStateUpdateListener) {
+        return new ComponentChannel.Builder(this, channelID, channelTypeUID, valueState, label,
+                channelStateUpdateListener);
     }
 
     public void setConfigSeen() {
@@ -181,12 +186,22 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      *
      * @param channelTypeProvider The channel type provider
      */
-    public void addChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
+    public void addChannelTypes(MqttChannelTypeProvider channelTypeProvider,
+            MqttChannelStateDescriptionProvider stateDescriptionProvider) {
         ChannelGroupTypeUID groupTypeUID = channelGroupTypeUID;
         if (groupTypeUID != null) {
             channelTypeProvider.setChannelGroupType(groupTypeUID, Objects.requireNonNull(getType()));
         }
-        channels.values().forEach(v -> v.addChannelTypes(channelTypeProvider));
+        channels.values().forEach(channel -> {
+            StateDescription stateDescription = channel.getStateDescription();
+            if (stateDescription != null) {
+                stateDescriptionProvider.setDescription(channel.getChannelUID(), stateDescription);
+            }
+            CommandDescription commandDescription = channel.getCommandDescription();
+            if (commandDescription != null) {
+                stateDescriptionProvider.setDescription(channel.getChannelUID(), commandDescription);
+            }
+        });
     }
 
     /**
@@ -195,12 +210,13 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      *
      * @param channelTypeProvider The channel type provider
      */
-    public void removeChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
-        channels.values().forEach(v -> v.removeChannelTypes(channelTypeProvider));
+    public void removeChannelTypes(MqttChannelTypeProvider channelTypeProvider,
+            MqttChannelStateDescriptionProvider stateDescriptionProvider) {
         ChannelGroupTypeUID groupTypeUID = channelGroupTypeUID;
         if (groupTypeUID != null) {
             channelTypeProvider.removeChannelGroupType(groupTypeUID);
         }
+        channels.values().forEach(v -> stateDescriptionProvider.remove(v.getChannelUID()));
     }
 
     public ChannelUID buildChannelUID(String channelID) {
@@ -275,14 +291,14 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         if (groupTypeUID == null) {
             return null;
         }
-        final List<ChannelDefinition> channelDefinitions = channels.values().stream().map(ComponentChannel::type)
-                .collect(Collectors.toList());
+        final List<ChannelDefinition> channelDefinitions = channels.values().stream()
+                .map(ComponentChannel::channelDefinition).collect(Collectors.toList());
         return ChannelGroupTypeBuilder.instance(groupTypeUID, getName()).withChannelDefinitions(channelDefinitions)
                 .build();
     }
 
     public List<ChannelDefinition> getChannels() {
-        return channels.values().stream().map(ComponentChannel::type).collect(Collectors.toList());
+        return channels.values().stream().map(ComponentChannel::channelDefinition).collect(Collectors.toList());
     }
 
     /**

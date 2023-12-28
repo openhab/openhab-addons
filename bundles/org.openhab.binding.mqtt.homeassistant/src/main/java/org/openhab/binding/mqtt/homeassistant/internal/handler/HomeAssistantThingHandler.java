@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
 import org.openhab.binding.mqtt.generic.ChannelState;
+import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.tools.DelayedBatchProcessing;
@@ -58,6 +59,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.util.ThingHelper;
 import org.slf4j.Logger;
@@ -93,6 +95,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantThingHandler.class);
 
     protected final MqttChannelTypeProvider channelTypeProvider;
+    protected final MqttChannelStateDescriptionProvider stateDescriptionProvider;
+    protected final ChannelTypeRegistry channelTypeRegistry;
     public final int attributeReceiveTimeout;
     protected final DelayedBatchProcessing<AbstractComponent<?>> delayedProcessing;
     protected final DiscoverComponents discoverComponents;
@@ -118,11 +122,14 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
      * @param attributeReceiveTimeout The timeout per attribute field subscription. In milliseconds.
      */
     public HomeAssistantThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
+            MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
             TransformationServiceProvider transformationServiceProvider, int subscribeTimeout,
             int attributeReceiveTimeout) {
         super(thing, subscribeTimeout);
         this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
         this.channelTypeProvider = channelTypeProvider;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.channelTypeRegistry = channelTypeRegistry;
         this.transformationServiceProvider = transformationServiceProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);
@@ -148,7 +155,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             AbstractComponent<?> component = haComponents.get(groupID);
             if (component != null) {
                 // the types may have been removed in dispose() so we need to add them again
-                component.addChannelTypes(channelTypeProvider);
+                component.addChannelTypes(channelTypeProvider, stateDescriptionProvider);
                 continue;
             }
 
@@ -168,7 +175,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                         id = groupUID.getId();
                     }
                     haComponents.put(id, component);
-                    component.addChannelTypes(channelTypeProvider);
+                    component.addChannelTypes(channelTypeProvider, stateDescriptionProvider);
                 } catch (ConfigurationException e) {
                     logger.error("Cannot not restore component {}: {}", thing, e.getMessage());
                 }
@@ -183,7 +190,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     public void dispose() {
         // super.dispose() calls stop()
         super.dispose();
-        haComponents.values().forEach(c -> c.removeChannelTypes(channelTypeProvider));
+        haComponents.values().forEach(c -> c.removeChannelTypes(channelTypeProvider, stateDescriptionProvider));
     }
 
     @Override
@@ -289,7 +296,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 }
 
                 // Add channel and group types to the types registry
-                discovered.addChannelTypes(channelTypeProvider);
+                discovered.addChannelTypes(channelTypeProvider, stateDescriptionProvider);
                 // Add component to the component map
                 haComponents.put(id, discovered);
                 // Start component / Subscribe to channel topics

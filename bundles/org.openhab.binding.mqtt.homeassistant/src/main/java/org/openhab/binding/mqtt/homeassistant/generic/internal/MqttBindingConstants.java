@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.generic.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link MqttBindingConstants} class defines common constants, which are
@@ -29,5 +30,13 @@ public class MqttBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID HOMEASSISTANT_MQTT_THING = new ThingTypeUID(BINDING_ID, "homeassistant");
 
-    public static final String CONFIG_HA_CHANNEL = "channel-type:mqtt:ha-channel";
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_COLOR = new ChannelTypeUID(BINDING_ID, "ha-color");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_DIMMER = new ChannelTypeUID(BINDING_ID, "ha-dimmer");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_IMAGE = new ChannelTypeUID(BINDING_ID, "ha-image");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "ha-number");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_ROLLERSHUTTER = new ChannelTypeUID(BINDING_ID,
+            "ha-rollershutter");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_STRING = new ChannelTypeUID(BINDING_ID, "ha-string");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_SWITCH = new ChannelTypeUID(BINDING_ID, "ha-switch");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_TRIGGER = new ChannelTypeUID(BINDING_ID, "ha-trigger");
 }

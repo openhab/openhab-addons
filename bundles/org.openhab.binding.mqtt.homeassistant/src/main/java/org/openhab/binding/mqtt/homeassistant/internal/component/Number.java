@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
+import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.types.util.UnitUtils;
@@ -82,7 +83,8 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
         NumberValue value = new NumberValue(channelConfiguration.min, channelConfiguration.max,
                 channelConfiguration.step, UnitUtils.parseUnit(channelConfiguration.unitOfMeasurement));
 
-        buildChannel(NUMBER_CHANNEL_ID, value, getName(), componentConfiguration.getUpdateListener())
+        buildChannel(NUMBER_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_NUMBER, value, getName(),
+                componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)

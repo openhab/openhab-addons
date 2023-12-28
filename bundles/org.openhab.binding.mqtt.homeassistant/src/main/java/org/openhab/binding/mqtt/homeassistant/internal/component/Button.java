@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
 
@@ -51,7 +52,8 @@ public class Button extends AbstractComponent<Button.ChannelConfiguration> {
 
         TextValue value = new TextValue(new String[] { channelConfiguration.payloadPress });
 
-        buildChannel(BUTTON_CHANNEL_ID, value, getName(), componentConfiguration.getUpdateListener())
+        buildChannel(BUTTON_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_STRING, value, getName(),
+                componentConfiguration.getUpdateListener())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();

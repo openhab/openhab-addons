@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
@@ -50,6 +51,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.transform.jinja.internal.JinjaTransformationService;
@@ -83,6 +85,8 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
     protected @Mock @NonNullByDefault({}) TransformationServiceProvider transformationServiceProvider;
 
     protected @NonNullByDefault({}) MqttChannelTypeProvider channelTypeProvider;
+    protected @NonNullByDefault({}) MqttChannelStateDescriptionProvider stateDescriptionProvider;
+    protected @NonNullByDefault({}) ChannelTypeRegistry channelTypeRegistry;
 
     protected final Bridge bridgeThing = BridgeBuilder.create(BRIDGE_TYPE_UID, BRIDGE_UID).build();
     protected final BrokerHandler bridgeHandler = spy(new BrokerHandler(bridgeThing));
@@ -102,6 +106,8 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
                 .thenReturn(jinjaTransformationService);
 
         channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistry));
+        stateDescriptionProvider = spy(new MqttChannelStateDescriptionProvider());
+        channelTypeRegistry = spy(new ChannelTypeRegistry());
 
         setupConnection();
 

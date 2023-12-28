@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.Value;
+import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.OffDelayUpdateStateListener;
@@ -72,7 +73,8 @@ public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfigur
 
         OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
 
-        buildChannel(SENSOR_CHANNEL_ID, value, "value", getListener(componentConfiguration, value))
+        buildChannel(SENSOR_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_SWITCH, value, "value",
+                getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
     }
