@@ -500,7 +500,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         boolean ret = false;
 
         try {
-            // Start HttpClient.
+            // Stop HttpClient.
             switch (httpClient.getState()) {
                 case AbstractLifeCycle.FAILED:
                 case AbstractLifeCycle.STOPPING:
