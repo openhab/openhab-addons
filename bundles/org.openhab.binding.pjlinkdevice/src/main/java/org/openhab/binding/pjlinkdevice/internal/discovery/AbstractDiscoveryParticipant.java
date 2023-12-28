@@ -97,6 +97,7 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
             Thread.currentThread().interrupt(); // Reset interrupt flag
         }
         executorService.shutdown();
+        this.executorService = null;
     }
 
     public static ThingUID createServiceUID(String ip, int tcpPort) {
