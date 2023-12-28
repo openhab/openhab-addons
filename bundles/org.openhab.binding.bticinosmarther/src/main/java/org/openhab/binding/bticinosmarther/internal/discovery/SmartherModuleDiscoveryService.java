@@ -24,14 +24,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bticinosmarther.internal.account.SmartherAccountHandler;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Location;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Module;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +42,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Fabio Possieri - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = SmartherModuleDiscoveryService.class)
 @NonNullByDefault
-public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class SmartherModuleDiscoveryService extends AbstractThingHandlerDiscoveryService<SmartherAccountHandler> {
 
     // Only modules can be discovered. A bridge must be manually added.
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_MODULE);
@@ -54,14 +55,13 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
 
     private final Logger logger = LoggerFactory.getLogger(SmartherModuleDiscoveryService.class);
 
-    private @Nullable SmartherAccountHandler bridgeHandler;
     private @Nullable ThingUID bridgeUID;
 
     /**
      * Constructs a {@code SmartherModuleDiscoveryService}.
      */
     public SmartherModuleDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
+        super(SmartherAccountHandler.class, SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
     }
 
     @Override
@@ -71,29 +71,26 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void activate() {
-        logger.debug("Bridge[{}] Activating chronothermostat discovery service", this.bridgeUID);
         Map<String, Object> properties = new HashMap<>();
         properties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, Boolean.TRUE);
         super.activate(properties);
     }
 
     @Override
-    public void deactivate() {
+    public void initialize() {
+        logger.debug("Bridge[{}] Activating chronothermostat discovery service", this.bridgeUID);
+    }
+
+    @Override
+    public void dispose() {
         logger.debug("Bridge[{}] Deactivating chronothermostat discovery service", this.bridgeUID);
         removeOlderResults(new Date().getTime());
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SmartherAccountHandler localBridgeHandler) {
-            this.bridgeHandler = localBridgeHandler;
-            this.bridgeUID = localBridgeHandler.getUID();
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return this.bridgeHandler;
+    public void setThingHandler(ThingHandler handler) {
+        super.setThingHandler(handler);
+        this.bridgeUID = handler.getThing().getUID();
     }
 
     @Override
@@ -123,7 +120,7 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
      * Discovers Chronothermostat devices for the given bridge handler.
      */
     private synchronized void discoverChronothermostats() {
-        final SmartherAccountHandler localBridgeHandler = this.bridgeHandler;
+        final SmartherAccountHandler localBridgeHandler = this.thingHandler;
         if (localBridgeHandler != null) {
             // If the bridge is not online no other thing devices can be found, so no reason to scan at this moment
             if (localBridgeHandler.isOnline()) {
