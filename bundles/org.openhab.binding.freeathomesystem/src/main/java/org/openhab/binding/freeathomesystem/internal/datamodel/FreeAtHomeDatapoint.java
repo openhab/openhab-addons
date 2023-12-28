@@ -74,7 +74,7 @@ public class FreeAtHomeDatapoint {
         Iterator<String> iter = keys.iterator();
 
         // Scan datapoints for pairingID IDs
-        while (iter.hasNext() && (!foundId)) {
+        while (iter.hasNext() && !foundId) {
             String datapointId = iter.next();
 
             JsonObject datapointJsonObject = localDataponits.getAsJsonObject(datapointId);
