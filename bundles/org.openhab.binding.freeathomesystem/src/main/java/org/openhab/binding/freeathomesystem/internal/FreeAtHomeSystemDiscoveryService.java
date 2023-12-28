@@ -43,7 +43,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeSystemDiscoveryService.class);
 
-    private @NonNullByDefault({}) FreeAtHomeBridgeHandler bridge;
+    private @NonNullByDefault({}) FreeAtHomeBridgeHandler bridgeHandler;
 
     Runnable runnable = new Runnable() {
         @Override
@@ -98,8 +98,8 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof FreeAtHomeBridgeHandler) {
-            this.bridge = (FreeAtHomeBridgeHandler) handler;
+        if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
+            this.bridge = bridgeHandler;
         }
     }
 
