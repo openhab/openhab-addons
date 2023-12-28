@@ -361,8 +361,6 @@ public class FidTranslationUtils {
     }
 
     public static @Nullable String getFunctionIdText(String Key) {
-        String functionIdString = MAP_FUNCTIONID.get(Key);
-
-        return functionIdString;
+        return MAP_FUNCTIONID.get(Key);
     }
 }

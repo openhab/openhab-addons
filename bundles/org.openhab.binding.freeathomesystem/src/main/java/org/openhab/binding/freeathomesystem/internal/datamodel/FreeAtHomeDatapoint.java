@@ -91,7 +91,7 @@ public class FreeAtHomeDatapoint {
             }
         }
 
-        // not founded id add dummy
+        // id not found, add dummy
         if (!foundId) {
             this.channelId = "";
             this.datapointId = "";

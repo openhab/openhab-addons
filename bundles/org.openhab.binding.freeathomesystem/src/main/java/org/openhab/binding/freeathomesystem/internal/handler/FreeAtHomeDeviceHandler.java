@@ -88,7 +88,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         Map<String, String> properties = getThing().getProperties();
 
         deviceID = properties.get("deviceId");
-        ;
 
         logger.debug("Start creating device - device id: {}", deviceID);
 
@@ -236,13 +235,13 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         if (freeAtHomeBridge != null) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
             return;
         }
 
         FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
 
-        // is the dataponitgroup invalid
+        // is the datapointgroup invalid
         if (dpg == null) {
             logger.debug("Handle command for device (but invalid datapointgroup) {} - at channel {} - full command {}",
                     deviceID, channelUID.getAsString(), command.toFullString());
@@ -313,7 +312,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             logger.debug("Handle feedback for virtual device {} - at channel {} - value {}", deviceID,
                     channelUID.getAsString(), valueString);
         } catch (FreeAtHomeHttpCommunicationException e) {
-            logger.debug("Communication error during set command {} - at channel {} - vakue {} - Error string {}",
+            logger.debug("Communication error during set command {} - at channel {} - value {} - Error string {}",
                     deviceID, channelUID.getAsString(), valueString, e.getMessage());
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

@@ -110,9 +110,9 @@ public class EventSocket extends WebSocketAdapter {
     }
 
     public void resetEventSocket() {
-        if (phaser.getRegisteredParties() > 0)
-
+        if (phaser.getRegisteredParties() > 0) {
             registeredParties = phaser.register();
+        }
         logger.debug("Socket phaser reseted - restart phaser to [ {} ]", phaser.getRegisteredParties());
     }
 
