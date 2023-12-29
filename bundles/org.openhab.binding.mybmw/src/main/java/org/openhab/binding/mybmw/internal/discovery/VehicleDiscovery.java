@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleAttributes;
@@ -31,12 +30,12 @@ import org.openhab.binding.mybmw.internal.handler.enums.RemoteService;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +46,9 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - refactoring
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = VehicleDiscovery.class)
 @NonNullByDefault
-public class VehicleDiscovery extends AbstractDiscoveryService implements ThingHandlerService {
+public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMWBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(VehicleDiscovery.class);
 
@@ -59,35 +59,20 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
     private Optional<ThingUID> bridgeUid = Optional.empty();
 
     public VehicleDiscovery() {
-        super(MyBMWConstants.SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false);
+        super(MyBMWBridgeHandler.class, MyBMWConstants.SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false);
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof MyBMWBridgeHandler bmwBridgeHandler) {
-            logger.trace("VehicleDiscovery.setThingHandler for MybmwBridge");
-            bridgeHandler = Optional.of(bmwBridgeHandler);
-            bridgeHandler.get().setVehicleDiscovery(this);
-            bridgeUid = Optional.of(bridgeHandler.get().getThing().getUID());
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler.orElse(null);
+    public void initialize() {
+        bridgeHandler = Optional.ofNullable(thingHandler);
+        bridgeHandler.get().setVehicleDiscovery(this);
+        bridgeUid = Optional.of(bridgeHandler.get().getThing().getUID());
     }
 
     @Override
     protected void startScan() {
         logger.trace("VehicleDiscovery.startScan");
         discoverVehicles();
-    }
-
-    @Override
-    public void deactivate() {
-        logger.trace("VehicleDiscovery.deactivate");
-
-        super.deactivate();
     }
 
     public void discoverVehicles() {
