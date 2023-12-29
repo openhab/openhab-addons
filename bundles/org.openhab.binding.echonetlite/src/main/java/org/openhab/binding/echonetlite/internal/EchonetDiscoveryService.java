@@ -23,35 +23,32 @@ import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstan
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Michael Barker - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = EchonetDiscoveryService.class)
 @NonNullByDefault
-public class EchonetDiscoveryService extends AbstractDiscoveryService
-        implements EchonetDiscoveryListener, ThingHandlerService {
+public class EchonetDiscoveryService extends AbstractThingHandlerDiscoveryService<EchonetLiteBridgeHandler>
+        implements EchonetDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(EchonetDiscoveryService.class);
 
-    @Nullable
-    private EchonetLiteBridgeHandler bridgeHandler;
-
     public EchonetDiscoveryService() {
-        super(Set.of(THING_TYPE_ECHONET_DEVICE), 10);
+        super(EchonetLiteBridgeHandler.class, Set.of(THING_TYPE_ECHONET_DEVICE), 10);
     }
 
     @Override
     protected void startScan() {
-        final EchonetLiteBridgeHandler bridgeHandler = this.bridgeHandler;
+        final EchonetLiteBridgeHandler bridgeHandler = this.thingHandler;
         logger.debug("startScan: {}", bridgeHandler);
         if (null != bridgeHandler) {
             bridgeHandler.startDiscovery(this);
@@ -60,7 +57,7 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected synchronized void stopScan() {
-        final EchonetLiteBridgeHandler bridgeHandler = this.bridgeHandler;
+        final EchonetLiteBridgeHandler bridgeHandler = this.thingHandler;
         logger.debug("stopScan: {}", bridgeHandler);
         if (null != bridgeHandler) {
             bridgeHandler.stopDiscovery();
@@ -69,7 +66,7 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void onDeviceFound(String identifier, InstanceKey instanceKey) {
-        final EchonetLiteBridgeHandler bridgeHandler = this.bridgeHandler;
+        final EchonetLiteBridgeHandler bridgeHandler = this.thingHandler;
 
         if (null == bridgeHandler) {
             return;
@@ -86,27 +83,5 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
                 .withBridge(bridgeHandler.getThing().getUID()).withRepresentationProperty(PROPERTY_NAME_INSTANCE_KEY)
                 .build();
         thingDiscovered(discoveryResult);
-    }
-
-    @Override
-    public void deactivate() {
-        ThingHandlerService.super.deactivate();
-    }
-
-    @Override
-    public void activate() {
-        ThingHandlerService.super.activate();
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof EchonetLiteBridgeHandler bridgeHandler) {
-            this.bridgeHandler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
     }
 }
