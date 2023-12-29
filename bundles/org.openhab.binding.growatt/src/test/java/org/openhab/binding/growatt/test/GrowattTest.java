@@ -368,11 +368,12 @@ public class GrowattTest {
 
         Map<String, QuantityType<?>> channelStates = grottValues.getChannelStates();
         assertNotNull(channelStates);
-        assertEquals(13, channelStates.size());
+        assertEquals(15, channelStates.size());
 
-        assertEquals(QuantityType.valueOf(171.0, Units.WATT), channelStates.get("inverter-power-s"));
+        assertEquals(QuantityType.valueOf(809.8, Units.WATT), channelStates.get("import-power"));
+        assertEquals(QuantityType.valueOf(171.0, Units.WATT), channelStates.get("import-power-s"));
         assertEquals(QuantityType.valueOf(237.4, Units.VOLT), channelStates.get("grid-voltage-s"));
-        assertEquals(QuantityType.valueOf(1.5, Units.AMPERE), channelStates.get("inverter-current-s"));
         assertEquals(QuantityType.valueOf(409.5, Units.VOLT), channelStates.get("grid-voltage-rs"));
+        assertEquals(QuantityType.valueOf(1.5, Units.AMPERE), channelStates.get("inverter-current-s"));
     }
 }

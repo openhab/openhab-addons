@@ -64,7 +64,7 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "pv2watt", alternate = { "ppv2" }) Integer pv2_power;
 
     // AC mains electric data (1-phase resp. 3-phase)
-    public @Nullable @SerializedName(value = "pvfrequentie", alternate = { "line_freq", "outputfreq", "frequency" }) Integer grid_frequency;
+    public @Nullable @SerializedName(value = "pvfrequentie", alternate = { "line_freq", "outputfreq" }) Integer grid_frequency;
     public @Nullable @SerializedName(value = "pvgridvoltage", alternate = { "grid_volt", "outputvolt", "voltage_l1" }) Integer grid_voltage_r;
     public @Nullable @SerializedName(value = "pvgridvoltage2", alternate = { "voltage_l2" }) Integer grid_voltage_s;
     public @Nullable @SerializedName(value = "pvgridvoltage3", alternate = { "voltage_l3" }) Integer grid_voltage_t;
@@ -74,12 +74,12 @@ public class GrottValues {
 
     // solar AC mains power
     public @Nullable @SerializedName(value = "pvgridcurrent", alternate = { "OP_Curr", "Inv_Curr", "Current_l1" }) Integer inverter_current_r;
-    public @Nullable @SerializedName(value = "pvgridcurrent2", alternate = { "Current_l2"}) Integer inverter_current_s;
-    public @Nullable @SerializedName(value = "pvgridcurrent3", alternate = { "Current_l3"}) Integer inverter_current_t;
+    public @Nullable @SerializedName(value = "pvgridcurrent2", alternate = { "Current_l2" }) Integer inverter_current_s;
+    public @Nullable @SerializedName(value = "pvgridcurrent3", alternate = { "Current_l3" }) Integer inverter_current_t;
 
-    public @Nullable @SerializedName(value = "pvgridpower", alternate = { "op_watt", "AC_InWatt", "act_power_l1" }) Integer inverter_power_r;
-    public @Nullable @SerializedName(value = "pvgridpower2", alternate = { "act_power_l2" }) Integer inverter_power_s;
-    public @Nullable @SerializedName(value = "pvgridpower3", alternate = { "act_power_l3" }) Integer inverter_power_t;
+    public @Nullable @SerializedName(value = "pvgridpower", alternate = { "op_watt", "AC_InWatt" }) Integer inverter_power_r;
+    public @Nullable @SerializedName(value = "pvgridpower2") Integer inverter_power_s;
+    public @Nullable @SerializedName(value = "pvgridpower3") Integer inverter_power_t;
 
     public @Nullable @SerializedName(value = "op_va", alternate = { "AC_InVA" }) Integer inverter_va;
 
@@ -98,10 +98,10 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "pactogridt") Integer export_power_t;
 
     // power imported from utility company
-    public @Nullable @SerializedName(value = "pactousertot", alternate = { "ptousertotal" }) Integer import_power;
-    public @Nullable @SerializedName(value = "pactouserr") Integer import_power_r;
-    public @Nullable @SerializedName(value = "pactousers") Integer import_power_s;
-    public @Nullable @SerializedName(value = "pactousert") Integer import_power_t;
+    public @Nullable @SerializedName(value = "pactousertot", alternate = { "ptousertotal", "pos_rev_act_power" }) Integer import_power;
+    public @Nullable @SerializedName(value = "pactouserr", alternate = { "act_power_l1" }) Integer import_power_r;
+    public @Nullable @SerializedName(value = "pactousers", alternate = { "act_power_l2" }) Integer import_power_s;
+    public @Nullable @SerializedName(value = "pactousert", alternate = { "act_power_l3" }) Integer import_power_t;
 
     // power delivered to internal load
     public @Nullable @SerializedName(value = "plocaloadtot", alternate = { "ptoloadtotal" }) Integer load_power;
@@ -124,23 +124,23 @@ public class GrottValues {
 
     // energy exported to utility company
     public @Nullable @SerializedName(value = "etogrid_tod", alternate = { "etogridtoday" }) Integer export_energy_today;
-    public @Nullable @SerializedName(value = "etogrid_tot", alternate = { "etogridtotal" }) Integer export_energy_total;
+    public @Nullable @SerializedName(value = "etogrid_tot", alternate = { "etogridtotal", "rev_act_energy" }) Integer export_energy_total;
 
     // energy imported from utility company
     public @Nullable @SerializedName(value = "etouser_tod", alternate = { "etousertoday" }) Integer import_energy_today;
-    public @Nullable @SerializedName(value = "etouser_tot", alternate = { "etousertotal" }) Integer import_energy_total;
+    public @Nullable @SerializedName(value = "etouser_tot", alternate = { "etousertotal", "pos_act_energy" }) Integer import_energy_total;
 
     // energy supplied to local load
     public @Nullable @SerializedName(value = "elocalload_tod", alternate = { "eloadtoday" }) Integer load_energy_today;
     public @Nullable @SerializedName(value = "elocalload_tot", alternate = { "eloadtotal" }) Integer load_energy_total;
 
     // charging energy from import
-    public @Nullable @SerializedName(value = "eharge1_tod", alternate = { "echrtoday" }) Integer import_charge_energy_today;
-    public @Nullable @SerializedName(value = "eharge1_tot", alternate = { "echrtotal" }) Integer import_charge_energy_total;
+    public @Nullable @SerializedName(value = "eacharge_today", alternate = { "eacCharToday", "eacchrtoday" }) Integer import_charge_energy_today;
+    public @Nullable @SerializedName(value = "eacharge_total", alternate = { "eacCharTotal", "eacchrtotal" }) Integer import_charge_energy_total;
 
     // charging energy from solar
-    public @Nullable @SerializedName(value = "eacharge_today", alternate = { "eacCharToday", "eacchrtoday" }) Integer inverter_charge_energy_today;
-    public @Nullable @SerializedName(value = "eacharge_total", alternate = { "eacCharTotal", "eacchrtotal" }) Integer inverter_charge_energy_total;
+    public @Nullable @SerializedName(value = "eharge1_tod", alternate = { "echrtoday" }) Integer inverter_charge_energy_today;
+    public @Nullable @SerializedName(value = "eharge1_tot", alternate = { "echrtotal" }) Integer inverter_charge_energy_total;
 
     // discharging energy
     public @Nullable @SerializedName(value = "edischarge1_tod", alternate = { "eacDischarToday", "ebatDischarToday", "edischrtoday" }) Integer discharge_energy_today;
