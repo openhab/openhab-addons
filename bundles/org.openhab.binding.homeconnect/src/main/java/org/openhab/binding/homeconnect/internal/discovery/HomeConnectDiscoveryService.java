@@ -24,14 +24,13 @@ import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationEx
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.client.model.HomeAppliance;
 import org.openhab.binding.homeconnect.internal.handler.HomeConnectBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,41 +39,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jonas Brüstel - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = HomeConnectDiscoveryService.class)
 @NonNullByDefault
-public class HomeConnectDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class HomeConnectDiscoveryService extends AbstractThingHandlerDiscoveryService<HomeConnectBridgeHandler> {
 
     private static final int SEARCH_TIME_SEC = 20;
 
     private final Logger logger = LoggerFactory.getLogger(HomeConnectDiscoveryService.class);
-
-    private @Nullable HomeConnectBridgeHandler bridgeHandler;
 
     /**
      * Construct a {@link HomeConnectDiscoveryService}.
      *
      */
     public HomeConnectDiscoveryService() {
-        super(DISCOVERABLE_DEVICE_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof HomeConnectBridgeHandler homeConnectBridgeHandler) {
-            this.bridgeHandler = homeConnectBridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+        super(HomeConnectBridgeHandler.class, DISCOVERABLE_DEVICE_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
     }
 
     @Override
     protected void startScan() {
         logger.debug("Starting device scan.");
 
-        var bridgeHandler = this.bridgeHandler;
+        var bridgeHandler = this.thingHandler;
         if (bridgeHandler != null) {
             HomeConnectApiClient apiClient = bridgeHandler.getApiClient();
 
@@ -114,9 +99,9 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void deactivate() {
+    public void dispose() {
         super.deactivate();
-        var bridgeHandler = this.bridgeHandler;
+        var bridgeHandler = this.thingHandler;
         if (bridgeHandler != null) {
             removeOlderResults(System.currentTimeMillis(), bridgeHandler.getThing().getUID());
         }
@@ -125,7 +110,7 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        var bridgeHandler = this.bridgeHandler;
+        var bridgeHandler = this.thingHandler;
         if (bridgeHandler != null) {
             removeOlderResults(getTimestampOfLastScan(), bridgeHandler.getThing().getUID());
         }
