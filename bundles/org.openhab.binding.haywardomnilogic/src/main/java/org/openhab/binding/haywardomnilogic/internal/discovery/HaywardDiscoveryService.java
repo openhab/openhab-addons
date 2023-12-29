@@ -27,14 +27,13 @@ import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardTypeToRequest;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,29 +42,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matt Myers - Initial contribution
  */
-
+@Component(scope = ServiceScope.PROTOTYPE, service = HaywardDiscoveryService.class)
 @NonNullByDefault
-public class HaywardDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+public class HaywardDiscoveryService extends AbstractThingHandlerDiscoveryService<HaywardBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(HaywardDiscoveryService.class);
-    private @Nullable HaywardBridgeHandler discoveryBridgehandler;
 
     public HaywardDiscoveryService() {
-        super(THING_TYPES_UIDS, 0, false);
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(HaywardBridgeHandler.class, THING_TYPES_UIDS, 0, false);
     }
 
     @Override
     protected void startScan() {
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
+        HaywardBridgeHandler bridgehandler = thingHandler;
         try {
             if (bridgehandler != null) {
                 String xmlResults = bridgehandler.getMspConfig();
@@ -83,7 +71,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         List<String> names = new ArrayList<>();
         Map<String, Object> backyardProperties = new HashMap<>();
         Map<String, Object> bowProperties = new HashMap<>();
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
+        HaywardBridgeHandler bridgehandler = thingHandler;
 
         if (bridgehandler == null) {
             return;
@@ -333,7 +321,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void onDeviceDiscovered(ThingTypeUID thingType, String label, Map<String, Object> properties) {
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
+        HaywardBridgeHandler bridgehandler = thingHandler;
         String systemID = (String) properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
         if (bridgehandler != null) {
             if (systemID != null) {
@@ -345,17 +333,5 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                 thingDiscovered(result);
             }
         }
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HaywardBridgeHandler bridgeHandler) {
-            this.discoveryBridgehandler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return discoveryBridgehandler;
     }
 }
