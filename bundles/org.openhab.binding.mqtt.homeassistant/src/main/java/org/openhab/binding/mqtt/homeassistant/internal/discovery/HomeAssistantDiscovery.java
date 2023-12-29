@@ -51,7 +51,6 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.type.ThingType;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -206,11 +205,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
                     .fromString(new String(payload, StandardCharsets.UTF_8), gson);
 
             final String thingID = config.getThingId(haID.objectID);
-
-            final ThingTypeUID typeID = new ThingTypeUID(MqttBindingConstants.BINDING_ID,
-                    MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId() + "_" + thingID);
-
-            final ThingUID thingUID = new ThingUID(typeID, connectionBridge, thingID);
+            final ThingUID thingUID = new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, connectionBridge,
+                    thingID);
 
             thingIDPerTopic.put(topic, thingUID);
 
@@ -282,10 +278,6 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         results.clear();
         componentsPerThingID.clear();
         for (DiscoveryResult result : localResults) {
-            final ThingTypeUID typeID = result.getThingTypeUID();
-            ThingType type = typeProvider.derive(typeID, MqttBindingConstants.HOMEASSISTANT_MQTT_THING).build();
-            typeProvider.setThingTypeIfAbsent(typeID, type);
-
             thingDiscovered(result);
         }
     }

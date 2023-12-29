@@ -60,7 +60,6 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
-import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.util.ThingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,6 +147,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         }
         discoveryHomeAssistantIDs.addAll(HaID.fromConfig(config));
 
+        ThingTypeUID typeID = getThing().getThingTypeUID();
         for (Channel channel : thing.getChannels()) {
             final String groupID = channel.getUID().getGroupId();
             // Already restored component?
@@ -169,6 +169,10 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 try {
                     component = ComponentFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, this,
                             scheduler, gson, transformationServiceProvider);
+                    if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
+                        typeID = calculateThingTypeUID(component);
+                    }
+
                     final ChannelGroupUID groupUID = component.getGroupUID();
                     String id = null;
                     if (groupUID != null) {
@@ -181,9 +185,9 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 }
             }
         }
-        updateThingType();
-
-        super.initialize();
+        if (updateThingType(typeID)) {
+            super.initialize();
+        }
     }
 
     @Override
@@ -276,7 +280,11 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         }
 
         synchronized (haComponents) { // sync whenever discoverComponents is started
+            ThingTypeUID typeID = getThing().getThingTypeUID();
             for (AbstractComponent<?> discovered : discoveredComponentsList) {
+                if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
+                    typeID = calculateThingTypeUID(discovered);
+                }
                 final ChannelGroupUID groupUID = discovered.getGroupUID();
                 String id = null;
                 if (groupUID != null) {
@@ -326,7 +334,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 discoveredChannels.sort(CHANNEL_COMPARATOR_BY_UID);
                 ThingHelper.addChannelsToThing(thing, discoveredChannels);
             }
-            updateThingType();
+            updateThingType(typeID);
         }
     }
 
@@ -379,10 +387,22 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         super.handleConfigurationUpdate(configurationParameters);
     }
 
-    private void updateThingType() {
+    private boolean updateThingType(ThingTypeUID typeID) {
         // if this is a dynamic type, then we update the type
-        ThingTypeUID typeID = thing.getThingTypeUID();
         if (!MqttBindingConstants.HOMEASSISTANT_MQTT_THING.equals(typeID)) {
+            var builder = channelTypeProvider.derive(typeID, MqttBindingConstants.HOMEASSISTANT_MQTT_THING);
+
+            if (getThing().getThingTypeUID().equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
+                logger.debug("Migrating Home Assistant thing {} from generic type to dynamic type {}",
+                        getThing().getUID(), typeID);
+
+                // just create an empty thing type for now; channel configurations won't follow over
+                // to the re-created Thing, so we need to re-discover them all anyway
+                channelTypeProvider.setThingType(typeID, builder.build());
+                changeThingType(typeID, getConfig());
+                return false;
+            }
+
             List<ChannelGroupDefinition> groupDefs;
             List<ChannelDefinition> channelDefs;
             synchronized (haComponents) { // sync whenever discoverComponents is started
@@ -391,16 +411,20 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 channelDefs = haComponents.values().stream().map(AbstractComponent::getChannels).flatMap(List::stream)
                         .collect(Collectors.toList());
             }
-            var builder = channelTypeProvider.derive(typeID, MqttBindingConstants.HOMEASSISTANT_MQTT_THING)
-                    .withChannelDefinitions(channelDefs).withChannelGroupDefinitions(groupDefs);
+            builder.withChannelDefinitions(channelDefs).withChannelGroupDefinitions(groupDefs);
             Update updateComponent = this.updateComponent;
             if (updateComponent != null && updateComponent.isUpdatable()) {
                 builder.withConfigDescriptionURI(UPDATABLE_CONFIG_DESCRIPTION_URI);
             }
-            ThingType thingType = builder.build();
 
-            channelTypeProvider.setThingType(typeID, thingType);
+            channelTypeProvider.setThingType(typeID, builder.build());
         }
+        return true;
+    }
+
+    private ThingTypeUID calculateThingTypeUID(AbstractComponent component) {
+        return new ThingTypeUID(MqttBindingConstants.BINDING_ID, MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId()
+                + "_" + component.getChannelConfiguration().getThingId(component.getHaID().objectID));
     }
 
     private void releaseStateUpdated(Update.ReleaseState state) {

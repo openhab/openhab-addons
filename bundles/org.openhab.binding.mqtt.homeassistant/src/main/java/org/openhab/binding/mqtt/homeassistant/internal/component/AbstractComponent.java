@@ -340,4 +340,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     public Gson getGson() {
         return componentConfiguration.getGson();
     }
+
+    public C getChannelConfiguration() {
+        return channelConfiguration;
+    }
 }
