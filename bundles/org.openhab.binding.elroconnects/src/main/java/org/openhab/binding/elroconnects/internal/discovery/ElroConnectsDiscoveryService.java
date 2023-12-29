@@ -16,6 +16,7 @@ import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConst
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -25,12 +26,12 @@ import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants;
 import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.ElroDeviceType;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDevice;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +40,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ElroConnectsDiscoveryService.class)
 @NonNullByDefault
-public class ElroConnectsDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class ElroConnectsDiscoveryService extends AbstractThingHandlerDiscoveryService<ElroConnectsBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(ElroConnectsDiscoveryService.class);
-
-    private @Nullable ElroConnectsBridgeHandler bridgeHandler;
 
     private static final int TIMEOUT_S = 5;
     private static final int REFRESH_INTERVAL_S = 60;
@@ -52,7 +52,7 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     private @Nullable ScheduledFuture<?> discoveryJob;
 
     public ElroConnectsDiscoveryService() {
-        super(ElroConnectsBindingConstants.SUPPORTED_DEVICE_TYPES_UIDS, TIMEOUT_S);
+        super(ElroConnectsBridgeHandler.class, ElroConnectsBindingConstants.SUPPORTED_DEVICE_TYPES_UIDS, TIMEOUT_S);
         logger.debug("Discovery service started");
     }
 
@@ -63,7 +63,7 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
 
     private void discoverDevices() {
         logger.debug("Starting device discovery scan");
-        ElroConnectsBridgeHandler bridge = bridgeHandler;
+        ElroConnectsBridgeHandler bridge = thingHandler;
         if (bridge != null) {
             Map<Integer, ElroConnectsDevice> devices = bridge.getDevices();
             ThingUID bridgeUID = bridge.getThing().getUID();
@@ -120,15 +120,7 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ElroConnectsBridgeHandler bridgeHandler) {
-            this.bridgeHandler = bridgeHandler;
-            bridgeHandler.setDiscoveryService(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
     }
 }
