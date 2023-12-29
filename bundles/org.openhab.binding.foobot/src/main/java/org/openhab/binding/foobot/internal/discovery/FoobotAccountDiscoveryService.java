@@ -17,20 +17,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.foobot.internal.FoobotApiException;
 import org.openhab.binding.foobot.internal.FoobotBindingConstants;
 import org.openhab.binding.foobot.internal.FoobotHandlerFactory;
 import org.openhab.binding.foobot.internal.handler.FoobotAccountHandler;
 import org.openhab.binding.foobot.internal.handler.FoobotDeviceHandler;
 import org.openhab.binding.foobot.internal.json.FoobotDevice;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,19 +39,18 @@ import org.slf4j.LoggerFactory;
  * @author George Katsis - Initial contribution
  * @author Hilbrand Bouwkamp - Completed implementation
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = FoobotAccountDiscoveryService.class)
 @NonNullByDefault
-public class FoobotAccountDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class FoobotAccountDiscoveryService extends AbstractThingHandlerDiscoveryService<FoobotAccountHandler> {
 
     private static final int TIMEOUT_SECONDS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(FoobotAccountDiscoveryService.class);
 
-    private @Nullable FoobotAccountHandler handler;
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
     public FoobotAccountDiscoveryService() {
-        super(FoobotHandlerFactory.DISCOVERABLE_THING_TYPE_UIDS, TIMEOUT_SECONDS, false);
+        super(FoobotAccountHandler.class, FoobotHandlerFactory.DISCOVERABLE_THING_TYPE_UIDS, TIMEOUT_SECONDS, false);
     }
 
     @Override
@@ -62,6 +59,7 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService
     }
 
     private void retrieveFoobots() {
+        FoobotAccountHandler handler = thingHandler;
         if (handler == null) {
             return;
         }
@@ -77,11 +75,6 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
     private void addThing(final FoobotDevice foobot) {
         logger.debug("Adding new Foobot '{}' with uuid: {}", foobot.getName(), foobot.getUuid());
 
@@ -94,17 +87,5 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService
 
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withProperties(properties)
                 .withLabel(foobot.getName()).withRepresentationProperty(foobot.getUuid()).build());
-    }
-
-    @Override
-    public void setThingHandler(@Nullable final ThingHandler handler) {
-        if (handler instanceof FoobotAccountHandler accountHandler) {
-            this.handler = accountHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
     }
 }
