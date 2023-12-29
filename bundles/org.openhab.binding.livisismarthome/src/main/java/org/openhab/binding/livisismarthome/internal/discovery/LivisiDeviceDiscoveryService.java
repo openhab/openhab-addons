@@ -21,18 +21,16 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.device.DeviceDTO;
 import org.openhab.binding.livisismarthome.internal.handler.LivisiBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,21 +40,19 @@ import org.slf4j.LoggerFactory;
  * @author Oliver Kuhl - Initial contribution
  * @author Sven Strohschein - Renamed from Innogy to Livisi
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = LivisiDeviceDiscoveryService.class)
 @NonNullByDefault
-public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class LivisiDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<LivisiBridgeHandler> {
 
     private static final int SEARCH_TIME_SECONDS = 60;
 
     private final Logger logger = LoggerFactory.getLogger(LivisiDeviceDiscoveryService.class);
 
-    private @Nullable LivisiBridgeHandler bridgeHandler;
-
     /**
      * Construct a {@link LivisiDeviceDiscoveryService}.
      */
     public LivisiDeviceDiscoveryService() {
-        super(SEARCH_TIME_SECONDS);
+        super(LivisiBridgeHandler.class, SEARCH_TIME_SECONDS);
     }
 
     /**
@@ -67,7 +63,7 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
      * @see org.openhab.core.config.discovery.AbstractDiscoveryService#deactivate()
      */
     @Override
-    public void deactivate() {
+    public void dispose() {
         removeOlderResults(new Date().getTime());
     }
 
@@ -79,7 +75,7 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void startScan() {
         logger.debug("SCAN for new LIVISI SmartHome devices started...");
-        final LivisiBridgeHandler bridgeHandlerNonNullable = bridgeHandler;
+        final LivisiBridgeHandler bridgeHandlerNonNullable = thingHandler;
         if (bridgeHandlerNonNullable != null) {
             for (final DeviceDTO d : bridgeHandlerNonNullable.loadDevices()) {
                 onDeviceAdded(d);
@@ -94,7 +90,7 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     public void onDeviceAdded(DeviceDTO device) {
-        final LivisiBridgeHandler bridgeHandlerNonNullable = bridgeHandler;
+        final LivisiBridgeHandler bridgeHandlerNonNullable = thingHandler;
         if (bridgeHandlerNonNullable != null) {
             final ThingUID bridgeUID = bridgeHandlerNonNullable.getThing().getUID();
             final Optional<ThingUID> thingUID = getThingUID(bridgeUID, device);
@@ -156,17 +152,5 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
             return Optional.of(new ThingTypeUID(LivisiBindingConstants.BINDING_ID, thingTypeId));
         }
         return Optional.empty();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof LivisiBridgeHandler livisiBridgeHandler) {
-            bridgeHandler = livisiBridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
     }
 }
