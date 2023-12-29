@@ -316,14 +316,10 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
 
-            logger.error("Http connection timeout or http connection interrupt in getDatapoint [{}]", e.getMessage());
-
             throw new FreeAtHomeHttpCommunicationException(0,
                     "Http communication interrupted [ " + e.getMessage() + " ]");
         } catch (JsonParseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-
-            logger.error("Invalid JSON file is received by getDatapoint with the URL [{}]", e.getMessage());
 
             throw new FreeAtHomeHttpCommunicationException(0,
                     "Invalid JSON file is received by getDatapoint with the URL [ " + e.getMessage() + " ]");

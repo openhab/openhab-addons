@@ -248,7 +248,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
             String errInfo = "Datapointgroup is not available in RefreshCommand - channel: " + channelUID.getAsString();
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, errInfo);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errInfo);
         } else {
             if (command instanceof RefreshType) {
                 handleRefreshCommand(freeAtHomeBridge, dpg, channelUID);
@@ -280,22 +280,20 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             }
         }
 
-        if (freeAtHomeBridge != null) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE);
+        if (freeAtHomeBridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bride is not valid!");
             return;
         }
 
         if (dpg == null) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Datapoint group is not valid!");
             return;
         }
 
         FreeAtHomeDatapoint inputDatapoint = dpg.getInputDatapoint();
 
         if (inputDatapoint == null) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Input Datapoint is not valid!");
             return;
         }
 
@@ -308,6 +306,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         try {
             freeAtHomeBridge.setDatapoint(deviceID, inputDatapoint.channelId, inputDatapoint.getDatapointId(),
                     valueString);
+
+            updateStatus(ThingStatus.ONLINE);
 
             logger.debug("Handle feedback for virtual device {} - at channel {} - value {}", deviceID,
                     channelUID.getAsString(), valueString);
@@ -375,8 +375,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 }
             }
         } catch (FreeAtHomeHttpCommunicationException e) {
-            logger.debug("Communication error during updateChannels - {}", e.getMessage());
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
@@ -490,8 +488,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 }
             }
         } catch (FreeAtHomeHttpCommunicationException e) {
-            logger.debug("Communication error during updateChannels - {}", e.getMessage());
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
@@ -548,8 +544,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 }
             }
         } catch (FreeAtHomeHttpCommunicationException e) {
-            logger.debug("Communication error during updateChannels - {}", e.getMessage());
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
