@@ -14,6 +14,8 @@ package org.openhab.binding.easee.internal.discovery;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.easee.internal.EaseeBindingConstants;
@@ -21,12 +23,12 @@ import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.site.GetSite;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.binding.easee.internal.handler.EaseeSiteHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,38 +42,27 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  *
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = EaseeSiteDiscoveryService.class)
 @NonNullByDefault
-public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class EaseeSiteDiscoveryService extends AbstractThingHandlerDiscoveryService<EaseeSiteHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(EaseeSiteDiscoveryService.class);
-    private @NonNullByDefault({}) EaseeSiteHandler bridgeHandler;
 
     public EaseeSiteDiscoveryService() throws IllegalArgumentException {
-        super(EaseeBindingConstants.SUPPORTED_THING_TYPES_UIDS, 300, false);
+        super(EaseeSiteHandler.class, EaseeBindingConstants.SUPPORTED_THING_TYPES_UIDS, 300, false);
     }
 
     @Override
     protected void startScan() {
-        bridgeHandler.enqueueCommand(new GetSite(bridgeHandler, this::processSiteDiscoveryResult));
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof EaseeSiteHandler siteHandler) {
-            this.bridgeHandler = siteHandler;
-            this.bridgeHandler.setDiscoveryService(this);
+        EaseeSiteHandler bridgeHandler = thingHandler;
+        if (bridgeHandler != null) {
+            bridgeHandler.enqueueCommand(new GetSite(bridgeHandler, this::processSiteDiscoveryResult));
         }
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    // method is defined in both implemented interface and inherited class, thus we must define a behaviour here.
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
     }
 
     /**
@@ -157,6 +148,10 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
      */
     private DiscoveryResultBuilder initDiscoveryResultBuilder(String deviceType, String deviceId,
             @Nullable String deviceName) {
+        EaseeSiteHandler bridgeHandler = thingHandler;
+        if (bridgeHandler == null) {
+            throw new IllegalStateException("thingHandler must not be null when scan is running.");
+        }
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingTypeUID typeUid = new ThingTypeUID(BINDING_ID, deviceType);
 
