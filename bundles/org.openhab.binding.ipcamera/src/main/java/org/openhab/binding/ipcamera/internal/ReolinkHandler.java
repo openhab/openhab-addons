@@ -82,6 +82,9 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel="
                                 + ipCameraHandler.cameraConfig.getNvrChannel() + "&rs=openHAB"
                                 + ipCameraHandler.reolinkAuth;
+                        // We will use admin so users don't blame missing channels/features on a bug.
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAbility" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"GetAbility\",\"param\":{\"User\":{\"userName\":\"admin\"}}}]");
                     } else {
                         ipCameraHandler.logger.info("Your Reolink camera gave a bad login response:{}", content);
                     }
