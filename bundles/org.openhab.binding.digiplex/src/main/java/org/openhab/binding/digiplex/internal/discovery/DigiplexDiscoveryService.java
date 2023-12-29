@@ -16,10 +16,10 @@ import static org.openhab.binding.digiplex.internal.DigiplexBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.digiplex.internal.communication.AreaLabelRequest;
 import org.openhab.binding.digiplex.internal.communication.AreaLabelResponse;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
@@ -27,13 +27,12 @@ import org.openhab.binding.digiplex.internal.communication.DigiplexRequest;
 import org.openhab.binding.digiplex.internal.communication.ZoneLabelRequest;
 import org.openhab.binding.digiplex.internal.communication.ZoneLabelResponse;
 import org.openhab.binding.digiplex.internal.handler.DigiplexBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * Service for discovering things on Digiplex alarm systems
@@ -41,24 +40,27 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  * @author Robert Michalak - Initial contribution
  *
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = DigiplexDiscoveryService.class)
 @NonNullByDefault
-public class DigiplexDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService, DigiplexMessageHandler {
+public class DigiplexDiscoveryService extends AbstractThingHandlerDiscoveryService<DigiplexBridgeHandler>
+        implements DigiplexMessageHandler {
 
     private static final int MAX_ZONE = 96;
     private static final int MAX_AREA = 8;
 
     private static final int DISCOVERY_TIMEOUT = 30;
 
-    private @Nullable DigiplexBridgeHandler bridgeHandler;
-
     public DigiplexDiscoveryService() {
-        super(Set.of(THING_TYPE_ZONE), DISCOVERY_TIMEOUT, false);
+        super(DigiplexBridgeHandler.class, Set.of(THING_TYPE_ZONE), DISCOVERY_TIMEOUT, false);
     }
 
     @Override
     @SuppressWarnings("null")
     protected void startScan() {
+        DigiplexBridgeHandler bridgeHandler = thingHandler;
+        if (bridgeHandler == null) {
+            return;
+        }
         bridgeHandler.registerMessageHandler(this);
         // find zones
         for (int i = 1; i <= MAX_ZONE; i++) {
@@ -75,7 +77,10 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
     @Override
     @SuppressWarnings("null")
     protected synchronized void stopScan() {
-        bridgeHandler.unregisterMessageHandler(this);
+        DigiplexBridgeHandler bridgeHandler = thingHandler;
+        if (bridgeHandler != null) {
+            bridgeHandler.unregisterMessageHandler(this);
+        }
         super.stopScan();
     }
 
@@ -86,7 +91,10 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
         if (isDefaultName(response)) {
             return;
         }
-
+        DigiplexBridgeHandler bridgeHandler = thingHandler;
+        if (bridgeHandler == null) {
+            return;
+        }
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingUID thingUID = new ThingUID(THING_TYPE_ZONE, bridgeUID, String.format("zone%d", response.zoneNo));
 
@@ -112,6 +120,11 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
             return;
         }
 
+        DigiplexBridgeHandler bridgeHandler = thingHandler;
+        if (bridgeHandler == null) {
+            return;
+        }
+
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingUID thingUID = new ThingUID(THING_TYPE_AREA, bridgeUID, String.format("area%d", response.areaNo));
 
@@ -125,25 +138,7 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DigiplexBridgeHandler digiplexBridgeHandler) {
-            bridgeHandler = digiplexBridgeHandler;
-            bridgeHandler.registerMessageHandler(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).registerMessageHandler(this);
     }
 }
