@@ -15,6 +15,7 @@ package org.openhab.binding.gardena.internal.discovery;
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.BINDING_ID;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -28,15 +29,14 @@ import org.openhab.binding.gardena.internal.handler.GardenaAccountHandler;
 import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.util.PropertyUtils;
 import org.openhab.binding.gardena.internal.util.UidUtils;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,32 +45,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = GardenaDeviceDiscoveryService.class)
 @NonNullByDefault
-public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class GardenaDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<GardenaAccountHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(GardenaDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
-
-    private @NonNullByDefault({}) GardenaAccountHandler accountHandler;
     private @Nullable Future<?> scanFuture;
 
     public GardenaDeviceDiscoveryService() {
-        super(Collections.unmodifiableSet(Stream.of(new ThingTypeUID(BINDING_ID, "-")).collect(Collectors.toSet())),
+        super(GardenaAccountHandler.class,
+                Collections.unmodifiableSet(Stream.of(new ThingTypeUID(BINDING_ID, "-")).collect(Collectors.toSet())),
                 DISCOVER_TIMEOUT_SECONDS, false);
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof GardenaAccountHandler gardenaAccountHandler) {
-            this.accountHandler = gardenaAccountHandler;
-            this.accountHandler.setDiscoveryService(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return accountHandler;
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
     }
 
     /**
@@ -108,6 +99,10 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
     private void loadDevices() {
         if (scanFuture == null) {
             scanFuture = scheduler.submit(() -> {
+                GardenaAccountHandler accountHandler = thingHandler;
+                if (thingHandler == null) {
+                    return;
+                }
                 GardenaSmart gardena = accountHandler.getGardenaSmart();
                 if (gardena != null) {
                     for (Device device : gardena.getAllDevices()) {
@@ -155,6 +150,10 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
      */
     public void deviceDiscovered(Device device) {
         if (device.active) {
+            GardenaAccountHandler accountHandler = thingHandler;
+            if (accountHandler == null) {
+                return;
+            }
             ThingUID accountUID = accountHandler.getThing().getUID();
             ThingUID thingUID = UidUtils.generateThingUID(device, accountHandler.getThing());
 
