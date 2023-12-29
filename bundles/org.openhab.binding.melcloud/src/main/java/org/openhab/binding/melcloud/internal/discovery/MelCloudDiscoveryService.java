@@ -20,21 +20,20 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.melcloud.internal.MelCloudBindingConstants;
 import org.openhab.binding.melcloud.internal.api.json.Device;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudLoginException;
 import org.openhab.binding.melcloud.internal.handler.MelCloudAccountHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,32 +44,22 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Refactoring
  * @author Wietse van Buitenen - Check device type, added heatpump device
  */
-public class MelCloudDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+@Component(scope = ServiceScope.PROTOTYPE, service = MelCloudDiscoveryService.class)
+public class MelCloudDiscoveryService extends AbstractThingHandlerDiscoveryService<@NonNull MelCloudAccountHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(MelCloudDiscoveryService.class);
 
     private static final String PROPERTY_DEVICE_ID = "deviceID";
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
 
-    private MelCloudAccountHandler melCloudHandler;
     private ScheduledFuture<?> scanTask;
 
     /**
      * Creates a MelCloudDiscoveryService with enabled autostart.
      */
     public MelCloudDiscoveryService() {
-        super(MelCloudBindingConstants.DISCOVERABLE_THING_TYPE_UIDS, DISCOVER_TIMEOUT_SECONDS, true);
-    }
-
-    @Override
-    protected void activate(Map<String, Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(MelCloudAccountHandler.class, MelCloudBindingConstants.DISCOVERABLE_THING_TYPE_UIDS,
+                DISCOVER_TIMEOUT_SECONDS, true);
     }
 
     @Override
@@ -104,7 +93,7 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
 
     private void discoverDevices() {
         logger.debug("Discover devices");
-
+        MelCloudAccountHandler melCloudHandler = thingHandler;
         if (melCloudHandler != null) {
             try {
                 List<Device> deviceList = melCloudHandler.getDeviceList();
@@ -163,17 +152,5 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
         }
         sb.append(device.getDeviceName());
         return sb.toString();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof MelCloudAccountHandler accountHandler) {
-            melCloudHandler = accountHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return melCloudHandler;
     }
 }
