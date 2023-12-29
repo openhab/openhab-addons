@@ -15,6 +15,7 @@ package org.openhab.binding.mielecloud.internal.discovery;
 import static org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.*;
 import static org.openhab.binding.mielecloud.internal.handler.MieleHandlerFactory.SUPPORTED_THING_TYPES;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,15 +23,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mielecloud.internal.handler.MieleBridgeHandler;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +40,10 @@ import org.slf4j.LoggerFactory;
  * @author Roland Edelhoff - Initial contribution
  * @author Björn Lange - Do not directly listen to webservice events
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ThingDiscoveryService.class)
 @NonNullByDefault
-public class ThingDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<MieleBridgeHandler> {
     private static final int BACKGROUND_DISCOVERY_TIMEOUT_IN_SECONDS = 5;
-
-    @Nullable
-    private MieleBridgeHandler bridgeHandler;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -55,12 +53,12 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
      * Creates a new {@link ThingDiscoveryService}.
      */
     public ThingDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, BACKGROUND_DISCOVERY_TIMEOUT_IN_SECONDS);
+        super(MieleBridgeHandler.class, SUPPORTED_THING_TYPES, BACKGROUND_DISCOVERY_TIMEOUT_IN_SECONDS);
     }
 
     @Nullable
     private ThingUID getBridgeUid() {
-        var bridgeHandler = this.bridgeHandler;
+        var bridgeHandler = this.thingHandler;
         if (bridgeHandler == null) {
             return null;
         } else {
@@ -100,7 +98,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     }
 
     private void createDiscoveryResult(DeviceState deviceState, ThingTypeUID thingTypeUid) {
-        MieleBridgeHandler bridgeHandler = this.bridgeHandler;
+        MieleBridgeHandler bridgeHandler = this.thingHandler;
         if (bridgeHandler == null) {
             return;
         }
@@ -199,15 +197,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof MieleBridgeHandler bridgeHandler) {
-            bridgeHandler.setDiscoveryService(this);
-            this.bridgeHandler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
     }
 }
