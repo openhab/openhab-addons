@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.chatgpt.internal;
 
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.CHANNEL_TYPE_UID_CHAT;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,9 +41,7 @@ public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOp
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        String accountParameterUrl = "channel-type:" + ChatGPTBindingConstants.BINDING_ID + ":"
-                + ChatGPTBindingConstants.CHANNEL_CHAT;
-        if (accountParameterUrl.equals(uri.toString())) {
+        if (CHANNEL_TYPE_UID_CHAT.getAsString().equals(uri.toString())) {
             if ("model".equals(param)) {
                 List<ParameterOption> options = new ArrayList<>();
                 if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {

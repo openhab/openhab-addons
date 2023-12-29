@@ -14,6 +14,7 @@ package org.openhab.binding.chatgpt.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link ChatGPTBindingConstants} class defines common constants, which are
@@ -24,11 +25,13 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class ChatGPTBindingConstants {
 
-    public static final String BINDING_ID = "chatgpt";
+    private static final String BINDING_ID = "chatgpt";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
 
     // List of all Channel ids
     public static final String CHANNEL_CHAT = "chat";
+
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_CHAT = new ChannelTypeUID(BINDING_ID, CHANNEL_CHAT);
 }
