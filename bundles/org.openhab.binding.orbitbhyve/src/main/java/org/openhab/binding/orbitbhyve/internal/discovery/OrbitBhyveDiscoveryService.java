@@ -25,15 +25,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.orbitbhyve.internal.handler.OrbitBhyveBridgeHandler;
 import org.openhab.binding.orbitbhyve.internal.model.OrbitBhyveDevice;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,13 +42,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = OrbitBhyveDiscoveryService.class)
 @NonNullByDefault
-public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class OrbitBhyveDiscoveryService extends AbstractThingHandlerDiscoveryService<OrbitBhyveBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(OrbitBhyveDiscoveryService.class);
-
-    private @Nullable OrbitBhyveBridgeHandler bridgeHandler;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
@@ -57,7 +54,7 @@ public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
     private static final int DISCOVERY_REFRESH_SEC = 1800;
 
     public OrbitBhyveDiscoveryService() {
-        super(DISCOVERY_TIMEOUT_SEC);
+        super(OrbitBhyveBridgeHandler.class, DISCOVERY_TIMEOUT_SEC);
         logger.debug("Creating discovery service");
     }
 
@@ -74,18 +71,6 @@ public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
     @Override
     public void deactivate() {
         super.deactivate();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler thingHandler) {
-        if (thingHandler instanceof OrbitBhyveBridgeHandler bridgeHandler) {
-            this.bridgeHandler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
     }
 
     @Override
@@ -109,7 +94,7 @@ public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
     }
 
     private synchronized void runDiscovery() {
-        OrbitBhyveBridgeHandler localBridgeHandler = bridgeHandler;
+        OrbitBhyveBridgeHandler localBridgeHandler = thingHandler;
         if (localBridgeHandler != null && ThingStatus.ONLINE == localBridgeHandler.getThing().getStatus()) {
             List<OrbitBhyveDevice> devices = localBridgeHandler.getDevices();
             logger.debug("Discovered total of {} devices", devices.size());
@@ -120,7 +105,7 @@ public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
     }
 
     private void sprinklerDiscovered(OrbitBhyveDevice device) {
-        OrbitBhyveBridgeHandler localBridgeHandler = bridgeHandler;
+        OrbitBhyveBridgeHandler localBridgeHandler = thingHandler;
         if (localBridgeHandler != null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put("id", device.getId());
