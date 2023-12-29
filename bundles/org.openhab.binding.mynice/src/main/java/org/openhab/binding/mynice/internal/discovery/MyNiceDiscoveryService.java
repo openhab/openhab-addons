@@ -19,17 +19,16 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mynice.internal.handler.It4WifiHandler;
 import org.openhab.binding.mynice.internal.handler.MyNiceDataListener;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +38,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = MyNiceDiscoveryService.class)
 @NonNullByDefault
-public class MyNiceDiscoveryService extends AbstractDiscoveryService
-        implements MyNiceDataListener, ThingHandlerService {
+public class MyNiceDiscoveryService extends AbstractThingHandlerDiscoveryService<It4WifiHandler>
+        implements MyNiceDataListener {
 
     private static final int SEARCH_TIME = 5;
     private final Logger logger = LoggerFactory.getLogger(MyNiceDiscoveryService.class);
@@ -52,32 +52,18 @@ public class MyNiceDiscoveryService extends AbstractDiscoveryService
      * Creates a MyNiceDiscoveryService with background discovery disabled.
      */
     public MyNiceDiscoveryService() {
-        super(Set.of(THING_TYPE_SWING, THING_TYPE_SLIDING), SEARCH_TIME, false);
+        super(It4WifiHandler.class, Set.of(THING_TYPE_SWING, THING_TYPE_SLIDING), SEARCH_TIME, false);
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof It4WifiHandler it4Handler) {
-            bridgeHandler = Optional.of(it4Handler);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler.orElse(null);
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
+    public void initialize() {
+        bridgeHandler = Optional.ofNullable(thingHandler);
         bridgeHandler.ifPresent(h -> h.registerDataListener(this));
     }
 
     @Override
-    public void deactivate() {
+    public void dispose() {
         bridgeHandler.ifPresent(h -> h.unregisterDataListener(this));
-        bridgeHandler = Optional.empty();
-        super.deactivate();
     }
 
     @Override
