@@ -33,7 +33,6 @@ import org.osgi.service.component.annotations.ServiceScope;
  *
  * @author Kai Kreuzer - Initial contribution
  */
-@Component(scope = ServiceScope.PROTOTYPE, service = { ChatGPTModelOptionProvider.class, ConfigOptionProvider.class })
 @NonNullByDefault
 public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOptionProvider {
 
