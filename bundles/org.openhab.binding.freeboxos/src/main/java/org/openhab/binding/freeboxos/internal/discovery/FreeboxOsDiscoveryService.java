@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager;
@@ -47,15 +46,15 @@ import org.openhab.binding.freeboxos.internal.config.FreeplugConfigurationBuilde
 import org.openhab.binding.freeboxos.internal.config.NodeConfigurationBuilder;
 import org.openhab.binding.freeboxos.internal.config.PhoneConfigurationBuilder;
 import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,42 +66,25 @@ import inet.ipaddr.mac.MACAddress;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = FreeboxOsDiscoveryService.class)
 @NonNullByDefault
-public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryService<FreeboxOsHandler> {
     private static final int DISCOVERY_TIME_SECONDS = 10;
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsDiscoveryService.class);
 
     private Optional<ScheduledFuture<?>> backgroundFuture = Optional.empty();
-    private @Nullable FreeboxOsHandler bridgeHandler;
 
     public FreeboxOsDiscoveryService() {
-        super(Stream.of(THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet()),
+        super(FreeboxOsHandler.class,
+                Stream.of(THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet()),
                 DISCOVERY_TIME_SECONDS);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof FreeboxOsHandler freeboxosHandler) {
-            bridgeHandler = freeboxosHandler;
-            activate(null);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
     }
 
     @Override
     protected void startBackgroundDiscovery() {
         stopBackgroundDiscovery();
-        FreeboxOsHandler handler = bridgeHandler;
+        FreeboxOsHandler handler = thingHandler;
         if (handler != null) {
             int interval = handler.getConfiguration().discoveryInterval;
             if (interval > 0) {
@@ -121,7 +103,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
     @Override
     protected void startScan() {
         logger.debug("Starting Freebox discovery scan");
-        FreeboxOsHandler handler = bridgeHandler;
+        FreeboxOsHandler handler = thingHandler;
         if (handler != null && handler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 ThingUID bridgeUID = handler.getThing().getUID();
