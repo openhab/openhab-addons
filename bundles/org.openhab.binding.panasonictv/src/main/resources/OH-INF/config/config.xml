@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:panasonictv:tv">
+		<parameter name="remoteControllerUdn" type="text" required="true">
+			<label>Remote Controller UDN</label>
+			<description>The UDN of this device's remote controller service</description>
+		</parameter>
+		<parameter name="mediaRendererUdn" type="text" required="true">
+			<label>Media Renderer UDN</label>
+			<description>The UDN of this device's media renderer service</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" unit="ms">
+			<label>Refresh Interval</label>
+			<description>States how often a refresh shall occur in milliseconds.
+			</description>
+			<default>1000</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

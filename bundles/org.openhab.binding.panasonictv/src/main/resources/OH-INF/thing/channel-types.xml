@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="panasonictv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Volume level of the TV.</description>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute state of the TV.</description>
+	</channel-type>
+
+	<channel-type id="sourcename">
+		<item-type>String</item-type>
+		<label>Source Name</label>
+		<description>Name of the current source.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sourceid" advanced="true">
+		<item-type>String</item-type>
+		<label>Source ID</label>
+		<description>Id of the current source.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="keycode">
+		<item-type>String</item-type>
+		<label>Key Code</label>
+		<description>The key code channel emulates the infrared remote controller and
+			allows to send virtual button presses.
+		</description>
+		<state>
+			<options>
+				<option value="NRC_CH_DOWN-ONOFF">CH_DOWN</option>
+				<option value="NRC_30S_SKIP-ONOFF">30S_SKIP</option>
+				<option value="NRC_3D-ONOFF">3D</option>
+				<option value="NRC_BD-ONOFF">DB</option>
+				<option value="NRC_BLUE-ONOFF">BLUE</option>
+				<option value="NRC_CANCEL-ONOFF">CANCEL</option>
+				<option value="NRC_CC-ONOFF">CC</option>
+				<option value="NRC_CH_UP-ONOFF">CH_UP</option>
+				<option value="NRC_CHG_INPUT-ONOFF">CHG_INPUT</option>
+				<option value="NRC_CHG_NETWORK-ONOFF">CHG_NETWORK</option>
+				<option value="NRC_D0-ONOFF">D0</option>
+				<option value="NRC_D1-ONOFF">D1</option>
+				<option value="NRC_D2-ONOFF">D2</option>
+				<option value="NRC_D3-ONOFF">D3</option>
+				<option value="NRC_D4-ONOFF">D4</option>
+				<option value="NRC_D5-ONOFF">D5</option>
+				<option value="NRC_D6-ONOFF">D6</option>
+				<option value="NRC_D7-ONOFF">D7</option>
+				<option value="NRC_D8-ONOFF">D8</option>
+				<option value="NRC_D9-ONOFF">D9</option>
+				<option value="NRC_DATA-ONOFF">DATA</option>
+				<option value="NRC_DIGA_CTL-ONOFF">DIGA_CTL</option>
+				<option value="NRC_DISP_MODE-ONOFF">DSIP_MODE</option>
+				<option value="NRC_DMS_CH_DOWN-ONOFF">DMS_CH_DOWN</option>
+				<option value="NRC_DMS_CH_UP-ONOFF">DMS_CH_UP</option>
+				<option value="NRC_DOWN-ONOFF">DOWN</option>
+				<option value="NRC_DRIVE-ONOFF">DRIVE</option>
+				<option value="NRC_ECO-ONOFF">ECO</option>
+				<option value="NRC_ENTER-ONOFF">ENTER</option>
+				<option value="NRC_EPG-ONOFF">EPG</option>
+				<option value="NRC_EZ_SYNC-ONOFF">EZ_SYNC</option>
+				<option value="NRC_FAVORITE-ONOFF">FAVORITE</option>
+				<option value="NRC_FF-ONOFF">FF</option>
+				<option value="NRC_GAME-ONOFF">GAME</option>
+				<option value="NRC_GREEN-ONOFF">GREEN</option>
+				<option value="NRC_HDMI1-ONOFF">HDMI1</option>
+				<option value="NRC_HDMI2-ONOFF">HDMI2</option>
+				<option value="NRC_HDMI3-ONOFF">HDMI3</option>
+				<option value="NRC_HDMI4-ONOFF">HDMI4</option>
+				<option value="NRC_HOLD-ONOFF">HOLD</option>
+				<option value="NRC_INDEX-ONOFF">INDEX</option>
+				<option value="NRC_INFO-ONOFF">INFO</option>
+				<option value="NRC_INTERNET-ONOFF">INTERNET</option>
+				<option value="NRC_LEFT-ONOFF">LEFT</option>
+				<option value="NRC_MENU-ONOFF">MENU</option>
+				<option value="NRC_MPX-ONOFF">MPX</option>
+				<option value="NRC_MUTE-ONOFF">MUTE</option>
+				<option value="NRC_OFFTIMER-ONOFF">OFFTIMER</option>
+				<option value="NRC_P_NR-ONOFF">P_NR</option>
+				<option value="NRC_PAUSE-ONOFF">PAUSE</option>
+				<option value="NRC_PICTAI-ONOFF">PICTAI</option>
+				<option value="NRC_PLAY-ONOFF">PLAY</option>
+				<option value="NRC_POWER-ONOFF">POWER</option>
+				<option value="NRC_PROG-ONOFF">PROG</option>
+				<option value="NRC_R_TUNE-ONOFF">R_TUNE</option>
+				<option value="NRC_RECLIST-ONOFF">RECLIST</option>
+				<option value="NRC_REC-ONOFF">REC</option>
+				<option value="NRC_RED-ONOFF">RED</option>
+				<option value="NRC_RETURN-ONOFF">RETURN</option>
+				<option value="NRC_REW-ONOFF">REW</option>
+				<option value="NRC_RIGHT-ONOFF">RIGHT</option>
+				<option value="NRC_SAP-ONOFF">SAP</option>
+				<option value="NRC_SD_CARD-ONOFF">SD_CARD</option>
+				<option value="NRC_SKIP_NEXT-ONOFF">SKIP_NEXT</option>
+				<option value="NRC_SKIP_PREV-ONOFF">SKIP_PREV</option>
+				<option value="NRC_SPLIT-ONOFF">SPLIT</option>
+				<option value="NRC_STOP-ONOFF">STOP</option>
+				<option value="NRC_STTL-ONOFF">STTL</option>
+				<option value="NRC_SUBMENU-ONOFF">SUBMENU</option>
+				<option value="NRC_SWAP-ONOFF">SWAP</option>
+				<option value="NRC_TEXT-ONOFF">TEXT</option>
+				<option value="NRC_TV_MUTE_OFF-ONOFF">TV_MUTE_OFF</option>
+				<option value="NRC_TV_MUTE_ON-ONOFF">TV_MUTE_ON</option>
+				<option value="NRC_TV-ONOFF">TV</option>
+				<option value="NRC_UP-ONOFF">UP</option>
+				<option value="NRC_VIDEO1-ONOFF">VIDEO1</option>
+				<option value="NRC_VIDEO2-ONOFF">VIDEO2</option>
+				<option value="NRC_VIERA_LINK-ONOFF">VIERA_LINK</option>
+				<option value="NRC_VOD-ONOFF">VOD</option>
+				<option value="NRC_VOLDOWN-ONOFF">VOLDOWN</option>
+				<option value="NRC_VOLUP-ONOFF">VOLUP</option>
+				<option value="NRC_VTOOLS-ONOFF">VTOOLS</option>
+				<option value="NRC_YELLOW-ONOFF">YELLOW</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
