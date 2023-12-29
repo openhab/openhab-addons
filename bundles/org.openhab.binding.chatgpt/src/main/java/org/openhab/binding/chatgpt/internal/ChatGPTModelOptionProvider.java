@@ -24,6 +24,8 @@ import org.openhab.core.config.core.ConfigOptionProvider;
 import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link ChatGPTModelOptionProvider} provides the available models from OpenAI as options for the channel
@@ -31,6 +33,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { ChatGPTModelOptionProvider.class, ConfigOptionProvider.class })
 @NonNullByDefault
 public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOptionProvider {
 
@@ -39,7 +42,8 @@ public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOp
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        String accountParameterUrl = "thing-type:" + ChatGPTBindingConstants.THING_TYPE_ACCOUNT.getAsString();
+        String accountParameterUrl = "channel-type:" + ChatGPTBindingConstants.BINDING_ID + ":"
+                + ChatGPTBindingConstants.CHANNEL_CHAT;
         if (accountParameterUrl.equals(uri.toString())) {
             if ("model".equals(param)) {
                 List<ParameterOption> options = new ArrayList<>();

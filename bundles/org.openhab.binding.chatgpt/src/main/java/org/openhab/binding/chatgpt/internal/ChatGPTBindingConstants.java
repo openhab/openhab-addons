@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class ChatGPTBindingConstants {
 
-    private static final String BINDING_ID = "chatgpt";
+    public static final String BINDING_ID = "chatgpt";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
