@@ -14,18 +14,15 @@ package org.openhab.binding.lutron.internal.hw;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.lutron.internal.LutronHandlerFactory;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,42 +35,26 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Shilliday - Initial contribution
  */
-public class HwDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@NonNull HwSerialBridgeHandler> {
     private Logger logger = LoggerFactory.getLogger(HwDiscoveryService.class);
 
     private final AtomicBoolean isScanning = new AtomicBoolean(false);
 
-    private @NonNullByDefault({}) HwSerialBridgeHandler handler;
-
     public HwDiscoveryService() {
-        super(LutronHandlerFactory.HW_DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
+        super(HwSerialBridgeHandler.class, LutronHandlerFactory.HW_DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HwSerialBridgeHandler bridgeHandler) {
-            this.handler = bridgeHandler;
-            this.handler.setDiscoveryService(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
     }
 
     @Override
     protected void startScan() {
+        HwSerialBridgeHandler handler = thingHandler;
+        if (handler == null) {
+            return;
+        }
         scheduler.submit(() -> {
             if (isScanning.compareAndSet(false, true)) {
                 try {
@@ -98,12 +79,13 @@ public class HwDiscoveryService extends AbstractDiscoveryService implements Disc
      * Called by the bridge when it receives a status update for a dimmer that is not registered.
      */
     public void declareUnknownDimmer(String address) {
-        if (address == null) {
-            logger.info("Discovered HomeWorks dimmer with no address");
+        HwSerialBridgeHandler handler = thingHandler;
+        if (address == null || handler == null) {
+            logger.info("Discovered HomeWorks dimmer with no address or thing handler");
             return;
         }
         String addressUid = address.replaceAll("[\\[\\]]", "").replace(":", "-");
-        ThingUID bridgeUID = this.handler.getThing().getUID();
+        ThingUID bridgeUID = handler.getThing().getUID();
         ThingUID uid = new ThingUID(HwConstants.THING_TYPE_HWDIMMER, bridgeUID, addressUid);
 
         Map<String, Object> props = new HashMap<>();
