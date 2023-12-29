@@ -126,6 +126,9 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                         thingHandler.requestUpdates(1, false);
                     }
                     break;
+                case "3122": // boost mode, Type=S, Range=0/1
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BCONTROL, getOnOff(value > 0));
+                    break;
                 default:
                     processed = false;
             }
@@ -348,14 +351,12 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                     thingHandler.postEvent("ROLLER_" + reason.toUpperCase(), true);
                 }
             case "6106": // A, flood, 0/1, -1
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
-                        value == 1 ? OnOffType.ON : OnOffType.OFF);
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD, OnOffType.from(value == 1));
                 break;
 
             case "6107": // A, motion, 0/1, -1
                 // {"I":6107,"T":"A","D":"motion","R":["0/1","-1"],"L":1},
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
-                        value == 1 ? OnOffType.ON : OnOffType.OFF);
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION, OnOffType.from(value == 1));
                 break;
             case "3119": // Motion timestamp (timestamp os GMT, not adapted to the adapted timezone)
                 // {"I":3119,"T":"S","D":"timestamp","U":"s","R":["U32","-1"],"L":1},
@@ -374,8 +375,7 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE, getStringType(s.valueStr));
                 break;
             case "6110": // A, vibration, 0/1, -1=unknown
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                        s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION, OnOffType.from(s.value == 1));
                 if (s.value == 1) {
                     // post event
                     thingHandler.triggerChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM, EVENT_TYPE_VIBRATION);

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,6 +59,7 @@ import com.google.gson.JsonSyntaxException;
 public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 300;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final HttpClient httpClient;
@@ -97,7 +99,8 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
                 List<InetAddress> hosts = findActiveHosts(addresses);
                 for (InetAddress host : hosts) {
                     Request request = httpClient.newRequest("http://" + host.getHostAddress() + "/infos.json")
-                            .method(HttpMethod.GET).followRedirects(false);
+                            .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.GET)
+                            .followRedirects(false);
                     try {
                         ContentResponse response = request.send();
                         if (response.getStatus() == 200) {

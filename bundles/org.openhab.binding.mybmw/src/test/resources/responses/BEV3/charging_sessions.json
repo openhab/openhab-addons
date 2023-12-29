@@ -1,0 +1,50 @@
+{
+    "paginationInfo": {},
+    "chargingSessions": {
+        "total": "~ 78 kWh",
+        "numberOfSessions": "4",
+        "chargingListState": "HAS_SESSIONS",
+        "sessions": [
+            {
+                "id": "2023-01-21T09:26:09Z_c700db02",
+                "title": "Today 10:26",
+                "subtitle": "anonymousAddress • 36 min • – EUR",
+                "energyCharged": "~ 7 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": false
+            },
+            {
+                "id": "2023-01-17T10:33:37Z_c700db02",
+                "title": "Tuesday 11:33",
+                "subtitle": "anonymousAddress • 3h 39min • – EUR",
+                "energyCharged": "~ 39 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": true
+            },
+            {
+                "id": "2023-01-05T14:07:49Z_c700db02",
+                "title": "1/5/2023 15:07",
+                "subtitle": "anonymousAddress • 52 min • – EUR",
+                "energyCharged": "~ 9 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": false
+            },
+            {
+                "id": "2023-01-01T20:00:27Z_c700db02",
+                "title": "1/1/2023 21:00",
+                "subtitle": "anonymousAddress • 2h 38min • ~ 10,27 EUR",
+                "energyCharged": "~ 23 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": false
+            }
+        ],
+        "costsGroupedByCurrency": [
+            "~10.27 EUR"
+        ]
+    },
+    "datePicker": {
+        "startDate": "2022-06-13T10:29:32Z",
+        "selectedDate": "2023-01-21T09:26:09Z",
+        "endDate": "2023-01-21T18:57:40Z"
+    }
+}

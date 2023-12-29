@@ -115,7 +115,7 @@ public class FeicanHandler extends BaseThingHandler {
      * @throws IOException Connection to the bulb failed
      */
     private void handleOnOff(DecimalType value) throws IOException {
-        handleOnOff(DecimalType.ZERO.equals(value) ? OnOffType.OFF : OnOffType.ON);
+        handleOnOff(OnOffType.from(!DecimalType.ZERO.equals(value)));
     }
 
     /**

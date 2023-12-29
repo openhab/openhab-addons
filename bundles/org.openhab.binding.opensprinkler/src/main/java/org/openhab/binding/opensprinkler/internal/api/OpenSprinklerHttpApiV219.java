@@ -21,7 +21,7 @@ import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterf
 
 /**
  * The {@link OpenSprinklerHttpApiV219} class is used for communicating with
- * the firmware versions 2.1.9 and up.
+ * the firmware versions 2.1.9
  *
  * @author Matthew Skinner - Initial contribution
  */

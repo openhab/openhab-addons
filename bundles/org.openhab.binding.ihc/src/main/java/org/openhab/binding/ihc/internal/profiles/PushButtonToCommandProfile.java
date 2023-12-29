@@ -202,7 +202,7 @@ public class PushButtonToCommandProfile implements TriggerProfile {
     private Command toggleCommandIfNeeded(@Nullable Command command) {
         if (command == null) {
             logger.debug("Toggling command: previous state is '{}'", previousState);
-            return OnOffType.ON.equals(previousState) ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(!OnOffType.ON.equals(previousState));
         }
         return command;
     }

@@ -42,6 +42,6 @@ public enum CameraNotificationState {
      * @return the on/off state corresponding to the notification state of this enumeration literal
      */
     public OnOffType toOnOffType() {
-        return this == ENABLED ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(this == ENABLED);
     }
 }

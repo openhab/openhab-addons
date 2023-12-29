@@ -79,7 +79,7 @@ public class LcnModuleKeyLockTableSubHandler extends AbstractLcnModuleSubHandler
                 try {
                     LcnChannelGroup channelGroup = LcnChannelGroup.fromTableId(tableId);
                     for (int i = 0; i < states.length; i++) {
-                        fireUpdate(channelGroup, i, states[i] ? OnOffType.ON : OnOffType.OFF);
+                        fireUpdate(channelGroup, i, OnOffType.from(states[i]));
                     }
                 } catch (LcnException e) {
                     logger.warn("Failed to set key table lock state: {}", e.getMessage());

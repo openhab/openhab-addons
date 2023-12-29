@@ -461,7 +461,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 skipPreviousEnabled = OnOffType.ON;
                 break;
             case Volume:
-                OnOffType muted = volumeMuteEnabled ? OnOffType.ON : OnOffType.OFF;
+                OnOffType muted = OnOffType.from(volumeMuteEnabled);
                 commandExecutor.setCurrentMuted(volumeMuteEnabled);
                 commandExecutor.postVolumeMuted(muted);
                 break;

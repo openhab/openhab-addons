@@ -246,7 +246,7 @@ public abstract class Device {
     }
 
     public final OnOffType getBatteryLow() {
-        return (this.batteryLow ? OnOffType.ON : OnOffType.OFF);
+        return OnOffType.from(batteryLow);
     }
 
     public final String getRFAddress() {

@@ -119,6 +119,9 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
         assertState(component, Light.BRIGHTNESS_CHANNEL_ID,
                 new PercentType(new BigDecimal(128 * 100).divide(new BigDecimal(255), MathContext.DECIMAL128)));
 
+        publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"OFF\", \"brightness\": 128 }");
+        assertState(component, Light.BRIGHTNESS_CHANNEL_ID, PercentType.ZERO);
+
         sendCommand(component, Light.BRIGHTNESS_CHANNEL_ID, PercentType.HUNDRED);
         assertPublished("zigbee2mqtt/light/set/state", "{\"state\":\"ON\",\"brightness\":255}");
 

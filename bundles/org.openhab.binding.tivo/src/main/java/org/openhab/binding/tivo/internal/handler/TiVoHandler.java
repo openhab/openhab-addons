@@ -333,7 +333,7 @@ public class TiVoHandler extends BaseThingHandler {
                                     newStatusData.getChannelNum() + "." + newStatusData.getSubChannelNum()));
                         }
                     }
-                    updateState(CHANNEL_TIVO_IS_RECORDING, newStatusData.isRecording() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(CHANNEL_TIVO_IS_RECORDING, OnOffType.from(newStatusData.isRecording()));
                 }
 
                 // Now set the pubToUI flag to false, as we have already published this status

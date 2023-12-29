@@ -339,6 +339,11 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     if (openConnection()) {
                         try {
                             cache.clear();
+
+                            // register the connection in the Kaleidescape System log
+                            connector.sendCommand(SEND_TO_SYSLOG + "openHAB Kaleidescape Binding version "
+                                    + org.openhab.core.OpenHAB.getVersion());
+
                             Set<String> initialCommands = new HashSet<>(Arrays.asList(GET_DEVICE_TYPE_NAME,
                                     GET_FRIENDLY_NAME, GET_DEVICE_INFO, GET_SYSTEM_VERSION, GET_DEVICE_POWER_STATE,
                                     GET_CINEMASCAPE_MASK, GET_CINEMASCAPE_MODE, GET_SCALE_MODE, GET_SCREEN_MASK,
@@ -479,7 +484,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 updateState(channel, new PercentType(this.volume));
                 break;
             case MUTE:
-                updateState(channel, this.isMuted ? OnOffType.ON : OnOffType.OFF);
+                updateState(channel, OnOffType.from(this.isMuted));
                 break;
             case TITLE_NAME:
                 connector.sendCommand(GET_PLAYING_TITLE_NAME, cache.get("TITLE_NAME"));

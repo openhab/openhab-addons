@@ -36,7 +36,7 @@ public class A5_07_02 extends A5_07 {
 
     @Override
     protected State getMotion() {
-        return getBit(getDB0Value(), 7) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(getBit(getDB0Value(), 7));
     }
 
     @Override

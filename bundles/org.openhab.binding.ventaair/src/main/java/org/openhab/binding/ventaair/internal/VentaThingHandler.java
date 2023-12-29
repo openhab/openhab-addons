@@ -308,7 +308,7 @@ public class VentaThingHandler extends BaseThingHandler {
                 updateState(VentaAirBindingConstants.CHANNEL_CLEANING_TIME, cleaningHoursState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_CLEANING_TIME, cleaningHoursState);
 
-                OnOffType cleanModeState = info.isCleanMode() ? OnOffType.ON : OnOffType.OFF;
+                OnOffType cleanModeState = OnOffType.from(info.isCleanMode());
                 updateState(VentaAirBindingConstants.CHANNEL_CLEAN_MODE, cleanModeState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_CLEAN_MODE, cleanModeState);
 
