@@ -22,18 +22,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,18 +41,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = OwDiscoveryService.class)
 @NonNullByDefault
-public class OwDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class OwDiscoveryService extends AbstractThingHandlerDiscoveryService<OwserverBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(OwDiscoveryService.class);
-
-    private @Nullable OwserverBridgeHandler bridgeHandler;
 
     Map<SensorId, OwDiscoveryItem> owDiscoveryItems = new HashMap<>();
     Set<SensorId> associatedSensors = new HashSet<>();
 
     public OwDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, 60, false);
-        logger.debug("registering discovery service for {}", bridgeHandler);
+        super(OwserverBridgeHandler.class, SUPPORTED_THING_TYPES, 60, false);
     }
 
     private void scanDirectory(OwserverBridgeHandler bridgeHandler, String baseDirectory) {
@@ -95,7 +92,7 @@ public class OwDiscoveryService extends AbstractDiscoveryService implements Thin
 
     @Override
     public void startScan() {
-        OwserverBridgeHandler bridgeHandler = this.bridgeHandler;
+        OwserverBridgeHandler bridgeHandler = this.thingHandler;
         if (bridgeHandler == null) {
             logger.warn("bridgeHandler not found");
             return;
@@ -141,19 +138,7 @@ public class OwDiscoveryService extends AbstractDiscoveryService implements Thin
     }
 
     @Override
-    public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof OwserverBridgeHandler serverBridgeHandler) {
-            this.bridgeHandler = serverBridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void deactivate() {
+    public void dispose() {
         removeOlderResults(new Date().getTime());
     }
 }
