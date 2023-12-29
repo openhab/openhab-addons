@@ -33,14 +33,14 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +49,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Fiddian-Green - Initial Contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = Clip2ThingDiscoveryService.class)
 @NonNullByDefault
-public class Clip2ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<Clip2BridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingDiscoveryService.class);
 
@@ -66,30 +67,24 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
             ResourceType.ZONE, THING_TYPE_ZONE, //
             ResourceType.BRIDGE_HOME, THING_TYPE_ZONE);
 
-    private @Nullable Clip2BridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> discoveryTask;
 
     public Clip2ThingDiscoveryService() {
-        super(Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE), DISCOVERY_TIMEOUT_SECONDS, true);
+        super(Clip2BridgeHandler.class, Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE),
+                DISCOVERY_TIMEOUT_SECONDS, true);
     }
 
     @Override
-    public void activate() {
-        Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
-        if (Objects.nonNull(bridgeHandler)) {
-            bridgeHandler.registerDiscoveryService(this);
-        }
-        super.activate(null);
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).registerDiscoveryService(this);
     }
 
     @Override
-    public void deactivate() {
-        super.deactivate();
-        Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
-        if (Objects.nonNull(bridgeHandler)) {
+    public void dispose() {
+        Clip2BridgeHandler bridgeHandler = thingHandler;
+        if (bridgeHandler != null) {
             bridgeHandler.unregisterDiscoveryService();
             removeOlderResults(new Date().getTime(), bridgeHandler.getThing().getBridgeUID());
-            this.bridgeHandler = null;
         }
     }
 
@@ -98,7 +93,7 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
      * as OH things, and announce those respective things by calling the core 'thingDiscovered()' method.
      */
     private synchronized void discoverThings() {
-        Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
+        Clip2BridgeHandler bridgeHandler = thingHandler;
         if (Objects.nonNull(bridgeHandler) && bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 ThingUID bridgeUID = bridgeHandler.getThing().getUID();
@@ -155,18 +150,6 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
             }
         }
         stopScan();
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof Clip2BridgeHandler) {
-            bridgeHandler = (Clip2BridgeHandler) handler;
-        }
     }
 
     @Override
