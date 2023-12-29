@@ -15,25 +15,24 @@ package org.openhab.binding.ecovacs.internal.discovery;
 import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
 import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
 import org.openhab.binding.ecovacs.internal.handler.EcovacsApiHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,13 +42,11 @@ import org.slf4j.LoggerFactory;
  * @author Danny Baumann - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, configurationPid = "discovery.ecovacs")
-public class EcovacsDeviceDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+@Component(scope = ServiceScope.PROTOTYPE, service = DiscoveryService.class, configurationPid = "discovery.ecovacs")
+public class EcovacsDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<EcovacsApiHandler> {
     private final Logger logger = LoggerFactory.getLogger(EcovacsDeviceDiscoveryService.class);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
-
-    private @NonNullByDefault({}) EcovacsApiHandler apiHandler;
     private Optional<EcovacsApi> api = Optional.empty();
     private final SchedulerTask onDemandScanTask = new SchedulerTask(scheduler, logger, "OnDemandScan",
             this::scanForDevices);
@@ -57,30 +54,12 @@ public class EcovacsDeviceDiscoveryService extends AbstractDiscoveryService impl
             this::scanForDevices);
 
     public EcovacsDeviceDiscoveryService() {
-        super(Set.of(THING_TYPE_VACUUM), DISCOVER_TIMEOUT_SECONDS, true);
+        super(EcovacsApiHandler.class, Set.of(THING_TYPE_VACUUM), DISCOVER_TIMEOUT_SECONDS, true);
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof EcovacsApiHandler ecovacsApiHandler) {
-            this.apiHandler = ecovacsApiHandler;
-            this.apiHandler.setDiscoveryService(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return apiHandler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
     }
 
     @Override
@@ -123,6 +102,10 @@ public class EcovacsDeviceDiscoveryService extends AbstractDiscoveryService impl
                 for (EcovacsDevice device : devices) {
                     deviceDiscovered(device);
                 }
+                EcovacsApiHandler apiHandler = thingHandler;
+                if (apiHandler == null) {
+                    return;
+                }
                 for (Thing thing : apiHandler.getThing().getThings()) {
                     String serial = thing.getUID().getId();
                     if (!devices.stream().anyMatch(d -> serial.equals(d.getSerialNumber()))) {
@@ -140,6 +123,10 @@ public class EcovacsDeviceDiscoveryService extends AbstractDiscoveryService impl
     }
 
     private void deviceDiscovered(EcovacsDevice device) {
+        EcovacsApiHandler apiHandler = thingHandler;
+        if (apiHandler == null) {
+            return;
+        }
         ThingUID thingUID = new ThingUID(THING_TYPE_VACUUM, apiHandler.getThing().getUID(), device.getSerialNumber());
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withBridge(apiHandler.getThing().getUID()).withLabel(device.getModelName())
