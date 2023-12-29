@@ -70,8 +70,8 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
         protected @Nullable String jsonAttributesTemplate;
     }
 
-    public Number(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Number(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
 
         boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
                 : channelConfiguration.stateTopic.isBlank();

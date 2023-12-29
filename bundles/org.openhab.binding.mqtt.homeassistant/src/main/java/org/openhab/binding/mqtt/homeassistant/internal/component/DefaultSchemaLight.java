@@ -54,8 +54,8 @@ public class DefaultSchemaLight extends Light {
     protected @Nullable ComponentChannel rgbChannel;
     protected @Nullable ComponentChannel xyChannel;
 
-    public DefaultSchemaLight(ComponentFactory.ComponentConfiguration builder) {
-        super(builder);
+    public DefaultSchemaLight(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
+        super(builder, newStyleChannels);
     }
 
     @Override

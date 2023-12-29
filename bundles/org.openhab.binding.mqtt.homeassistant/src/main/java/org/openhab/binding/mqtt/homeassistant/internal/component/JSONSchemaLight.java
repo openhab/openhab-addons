@@ -74,8 +74,8 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
     TextValue colorModeValue;
 
-    public JSONSchemaLight(ComponentFactory.ComponentConfiguration builder) {
-        super(builder);
+    public JSONSchemaLight(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
+        super(builder, newStyleChannels);
         colorModeValue = new TextValue();
     }
 

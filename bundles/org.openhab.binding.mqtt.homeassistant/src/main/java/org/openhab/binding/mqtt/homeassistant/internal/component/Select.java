@@ -55,8 +55,8 @@ public class Select extends AbstractComponent<Select.ChannelConfiguration> {
         protected @Nullable String jsonAttributesTemplate;
     }
 
-    public Select(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Select(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
 
         boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
                 : channelConfiguration.stateTopic.isBlank();

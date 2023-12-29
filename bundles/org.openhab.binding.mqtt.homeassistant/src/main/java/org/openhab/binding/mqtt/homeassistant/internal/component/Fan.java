@@ -51,8 +51,8 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
         protected String payloadOff = "OFF";
     }
 
-    public Fan(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Fan(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
         buildChannel(SWITCH_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_SWITCH, value, getName(),

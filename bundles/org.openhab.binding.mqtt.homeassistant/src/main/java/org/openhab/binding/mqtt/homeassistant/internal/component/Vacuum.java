@@ -190,8 +190,8 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
      *
      * @param componentConfiguration generic componentConfiguration with not parsed JSON config
      */
-    public Vacuum(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Vacuum(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
         final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
         final var allowedSupportedFeatures = channelConfiguration.schema == Schema.LEGACY ? LEGACY_SUPPORTED_FEATURES

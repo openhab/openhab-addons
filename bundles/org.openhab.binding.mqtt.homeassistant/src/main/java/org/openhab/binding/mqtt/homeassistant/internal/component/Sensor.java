@@ -69,8 +69,8 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         protected @Nullable List<String> jsonAttributes;
     }
 
-    public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
 
         Value value;
         String uom = channelConfiguration.unitOfMeasurement;

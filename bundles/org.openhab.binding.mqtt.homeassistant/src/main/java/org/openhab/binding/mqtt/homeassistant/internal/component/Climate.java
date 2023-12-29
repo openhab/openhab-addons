@@ -212,8 +212,8 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         protected Boolean sendIfOff = true;
     }
 
-    public Climate(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Climate(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         BigDecimal precision = channelConfiguration.precision != null ? channelConfiguration.precision
                 : channelConfiguration.temperatureUnit.getDefaultPrecision();

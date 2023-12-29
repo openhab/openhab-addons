@@ -60,8 +60,8 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
         protected @Nullable String jsonAttributesTemplate;
     }
 
-    public Switch(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Switch(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
 
         boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
                 : channelConfiguration.stateTopic.isBlank();
@@ -73,7 +73,7 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
         OnOffValue value = new OnOffValue(channelConfiguration.stateOn, channelConfiguration.stateOff,
                 channelConfiguration.payloadOn, channelConfiguration.payloadOff);
 
-        buildChannel(SWITCH_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_SWITCH, value, "state",
+        buildChannel(SWITCH_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_SWITCH, value, getName(),
                 componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),

@@ -67,7 +67,7 @@ public class BinarySensorTests extends AbstractComponentTests {
         assertThat(component.getName(), is("onoffsensor"));
         assertThat(component.getGroupUID().getId(), is("sn1"));
 
-        assertChannel(component, BinarySensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "value",
+        assertChannel(component, BinarySensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "onoffsensor",
                 OnOffValue.class);
 
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"ON_\" }");

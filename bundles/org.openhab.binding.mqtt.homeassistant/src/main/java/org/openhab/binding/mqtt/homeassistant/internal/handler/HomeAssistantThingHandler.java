@@ -109,6 +109,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     protected final TransformationServiceProvider transformationServiceProvider;
 
     private boolean started;
+    private boolean newStyleChannels;
     private @Nullable Update updateComponent;
 
     /**
@@ -132,8 +133,12 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         this.transformationServiceProvider = transformationServiceProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);
+
+        Map<String, String> properties = getThing().getProperties();
+        newStyleChannels = "true".equals(thing.getProperties().get("newStyleChannels"));
+
         this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, this, gson,
-                this.transformationServiceProvider);
+                this.transformationServiceProvider, newStyleChannels);
     }
 
     @Override
@@ -168,7 +173,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             } else {
                 try {
                     component = ComponentFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, this,
-                            scheduler, gson, transformationServiceProvider);
+                            scheduler, gson, transformationServiceProvider, newStyleChannels);
                     if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
                         typeID = calculateThingTypeUID(component);
                     }

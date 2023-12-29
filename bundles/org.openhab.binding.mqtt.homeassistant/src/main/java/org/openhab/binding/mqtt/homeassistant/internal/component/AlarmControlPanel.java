@@ -69,8 +69,8 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
         protected String payloadArmAway = "ARM_AWAY";
     }
 
-    public AlarmControlPanel(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public AlarmControlPanel(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         final String[] stateEnum = { channelConfiguration.stateDisarmed, channelConfiguration.stateArmedHome,
                 channelConfiguration.stateArmedAway, channelConfiguration.statePending,

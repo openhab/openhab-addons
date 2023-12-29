@@ -237,6 +237,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             properties = handlerConfig.appendToProperties(properties);
             properties = config.appendToProperties(properties);
             properties.put("deviceId", thingID);
+            properties.put("newStyleChannels", "true");
 
             // Because we need the new properties map with the updated "components" list
             results.put(thingUID.getAsString(),

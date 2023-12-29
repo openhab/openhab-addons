@@ -68,12 +68,12 @@ public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfigur
         protected @Nullable List<String> jsonAttributes;
     }
 
-    public BinarySensor(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public BinarySensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
 
         OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
 
-        buildChannel(SENSOR_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_SWITCH, value, "value",
+        buildChannel(SENSOR_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_SWITCH, value, getName(),
                 getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();

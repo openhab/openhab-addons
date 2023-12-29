@@ -80,15 +80,29 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     protected final C channelConfiguration;
 
     protected boolean configSeen;
+    protected final boolean newStyleChannels;
+    protected final boolean singleChannelComponent;
+    protected final String groupId;
+
+    public AbstractComponent(ComponentFactory.ComponentConfiguration componentConfiguration, Class<C> clazz,
+            boolean newStyleChannels) {
+        this(componentConfiguration, clazz, newStyleChannels, false);
+    }
 
     /**
      * Creates component based on generic configuration and component configuration type.
      *
      * @param componentConfiguration generic componentConfiguration with not parsed JSON config
      * @param clazz target configuration type
+     * @param newStyleChannels if new style channels should be used
+     * @param singleChannelComponent if this component only ever has one channel, so should never be in a group
+     *            (only if newStyleChannels is true)
      */
-    public AbstractComponent(ComponentFactory.ComponentConfiguration componentConfiguration, Class<C> clazz) {
+    public AbstractComponent(ComponentFactory.ComponentConfiguration componentConfiguration, Class<C> clazz,
+            boolean newStyleChannels, boolean singleChannelComponent) {
         this.componentConfiguration = componentConfiguration;
+        this.newStyleChannels = newStyleChannels;
+        this.singleChannelComponent = newStyleChannels ? singleChannelComponent : false;
 
         this.channelConfigurationJson = componentConfiguration.getConfigJSON();
         this.channelConfiguration = componentConfiguration.getConfig(clazz);
@@ -98,11 +112,17 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         String name = channelConfiguration.getName();
         if (name != null && !name.isEmpty()) {
-            String groupId = this.haID.getGroupId(channelConfiguration.getUniqueId());
+            groupId = this.haID.getGroupId(channelConfiguration.getUniqueId(), newStyleChannels);
 
-            this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, groupId);
-            this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), groupId);
+            if (this.singleChannelComponent) {
+                this.channelGroupTypeUID = null;
+                this.channelGroupUID = null;
+            } else {
+                this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, groupId);
+                this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), groupId);
+            }
         } else {
+            groupId = "";
             this.channelGroupTypeUID = null;
             this.channelGroupUID = null;
         }
@@ -144,6 +164,9 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     protected ComponentChannel.Builder buildChannel(String channelID, ChannelTypeUID channelTypeUID, Value valueState,
             String label, ChannelStateUpdateListener channelStateUpdateListener) {
+        if (singleChannelComponent) {
+            channelID = groupId;
+        }
         return new ComponentChannel.Builder(this, channelID, channelTypeUID, valueState, label,
                 channelStateUpdateListener);
     }
