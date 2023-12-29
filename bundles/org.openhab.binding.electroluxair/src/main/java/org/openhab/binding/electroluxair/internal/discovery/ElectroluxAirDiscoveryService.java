@@ -20,12 +20,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.electroluxair.internal.ElectroluxAirConfiguration;
 import org.openhab.binding.electroluxair.internal.handler.ElectroluxAirBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link ElectroluxAirDiscoveryService} searches for available
@@ -33,26 +32,13 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ElectroluxAirDiscoveryService.class)
 @NonNullByDefault
-public class ElectroluxAirDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService, DiscoveryService {
+public class ElectroluxAirDiscoveryService extends AbstractThingHandlerDiscoveryService<ElectroluxAirBridgeHandler> {
     private static final int SEARCH_TIME = 2;
-    private @Nullable ElectroluxAirBridgeHandler handler;
 
     public ElectroluxAirDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ElectroluxAirBridgeHandler bridgeHandler) {
-            this.handler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
+        super(ElectroluxAirBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
     }
 
     @Override
@@ -67,7 +53,7 @@ public class ElectroluxAirDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startScan() {
-        ElectroluxAirBridgeHandler bridgeHandler = this.handler;
+        ElectroluxAirBridgeHandler bridgeHandler = this.thingHandler;
         if (bridgeHandler != null) {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             bridgeHandler.getElectroluxAirThings().entrySet().stream().forEach(thing -> {
