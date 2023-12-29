@@ -19,14 +19,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikobus.internal.handler.NikobusPcLinkHandler;
 import org.openhab.binding.nikobus.internal.utils.Utils;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,14 +36,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = NikobusDiscoveryService.class)
 @NonNullByDefault
-public class NikobusDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class NikobusDiscoveryService extends AbstractThingHandlerDiscoveryService<NikobusPcLinkHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(NikobusDiscoveryService.class);
-    private @Nullable NikobusPcLinkHandler bridgeHandler;
 
     public NikobusDiscoveryService() throws IllegalArgumentException {
-        super(Set.of(THING_TYPE_PUSH_BUTTON), 0);
+        super(NikobusPcLinkHandler.class, Set.of(THING_TYPE_PUSH_BUTTON), 0);
     }
 
     @Override
@@ -53,7 +52,7 @@ public class NikobusDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     protected void stopBackgroundDiscovery() {
-        NikobusPcLinkHandler handler = bridgeHandler;
+        NikobusPcLinkHandler handler = thingHandler;
         if (handler != null) {
             handler.resetUnhandledCommandProcessor();
         }
@@ -61,7 +60,7 @@ public class NikobusDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     protected void startBackgroundDiscovery() {
-        NikobusPcLinkHandler handler = bridgeHandler;
+        NikobusPcLinkHandler handler = thingHandler;
         if (handler != null) {
             handler.setUnhandledCommandProcessor(this::process);
         }
@@ -75,7 +74,7 @@ public class NikobusDiscoveryService extends AbstractDiscoveryService implements
         String address = command.substring(2);
         logger.debug("Received address = '{}'", address);
 
-        NikobusPcLinkHandler handler = bridgeHandler;
+        NikobusPcLinkHandler handler = thingHandler;
         if (handler != null) {
             ThingUID thingUID = new ThingUID(THING_TYPE_PUSH_BUTTON, handler.getThing().getUID(), address);
 
@@ -88,27 +87,5 @@ public class NikobusDiscoveryService extends AbstractDiscoveryService implements
                     .withLabel("Nikobus Push Button " + humanReadableNikobusAddress).withProperties(properties)
                     .withRepresentationProperty(CONFIG_ADDRESS).withBridge(handler.getThing().getUID()).build());
         }
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof NikobusPcLinkHandler pcLinkHandler) {
-            bridgeHandler = pcLinkHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
     }
 }
